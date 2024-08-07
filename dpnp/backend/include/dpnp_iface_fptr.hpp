@@ -59,42 +59,25 @@
 enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE,          /**< Very first element of the enumeration */
-    DPNP_FN_ALL,           /**< Used in numpy.all() impl  */
-    DPNP_FN_ALLCLOSE,      /**< Used in numpy.allclose() impl  */
-    DPNP_FN_ALLCLOSE_EXT,  /**< Used in numpy.allclose() impl, requires extra
-                              parameters */
-    DPNP_FN_ANY,           /**< Used in numpy.any() impl  */
     DPNP_FN_ARGMAX,        /**< Used in numpy.argmax() impl  */
     DPNP_FN_ARGMIN,        /**< Used in numpy.argmin() impl  */
     DPNP_FN_ARGSORT,       /**< Used in numpy.argsort() impl  */
     DPNP_FN_CHOOSE,        /**< Used in numpy.choose() impl  */
     DPNP_FN_CHOOSE_EXT,    /**< Used in numpy.choose() impl, requires extra
                               parameters */
-    DPNP_FN_COPYTO,        /**< Used in numpy.copyto() impl  */
-    DPNP_FN_COPYTO_EXT,    /**< Used in numpy.copyto() impl, requires extra
-                              parameters */
     DPNP_FN_CORRELATE,     /**< Used in numpy.correlate() impl  */
     DPNP_FN_CORRELATE_EXT, /**< Used in numpy.correlate() impl, requires extra
                               parameters */
     DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
     DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
-    DPNP_FN_DEGREES,       /**< Used in numpy.degrees() impl  */
-    DPNP_FN_DEGREES_EXT,   /**< Used in numpy.degrees() impl, requires extra
-                              parameters */
     DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
     DPNP_FN_EDIFF1D, /**< Used in numpy.ediff1d() impl  */
-    DPNP_FN_EDIFF1D_EXT,  /**< Used in numpy.ediff1d() impl, requires extra
-                             parameters */
-    DPNP_FN_ERF,          /**< Used in scipy.special.erf impl  */
-    DPNP_FN_ERF_EXT,      /**< Used in scipy.special.erf impl, requires extra
-                             parameters */
-    DPNP_FN_FFT_FFT,      /**< Used in numpy.fft.fft() impl  */
-    DPNP_FN_FFT_FFT_EXT,  /**< Used in numpy.fft.fft() impl, requires extra
-                             parameters */
-    DPNP_FN_FFT_RFFT,     /**< Used in numpy.fft.rfft() impl  */
-    DPNP_FN_FFT_RFFT_EXT, /**< Used in numpy.fft.rfft() impl, requires extra
-                             parameters */
+    DPNP_FN_EDIFF1D_EXT, /**< Used in numpy.ediff1d() impl, requires extra
+                            parameters */
+    DPNP_FN_ERF,         /**< Used in scipy.special.erf impl  */
+    DPNP_FN_ERF_EXT,     /**< Used in scipy.special.erf impl, requires extra
+                            parameters */
     DPNP_FN_INITVAL, /**< Used in numpy ones, ones_like, zeros, zeros_like impls
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
@@ -116,9 +99,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PARTITION_EXT, /**< Used in numpy.partition() impl, requires extra
                               parameters */
     DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
-    DPNP_FN_RADIANS,       /**< Used in numpy.radians() impl  */
-    DPNP_FN_RADIANS_EXT,   /**< Used in numpy.radians() impl, requires extra
-                              parameters */
     DPNP_FN_RNG_BETA,      /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT,  /**< Used in numpy.random.beta() impl, requires extra
                               parameters */

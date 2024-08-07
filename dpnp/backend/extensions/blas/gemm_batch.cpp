@@ -276,6 +276,7 @@ std::tuple<sycl::event, sycl::event, bool>
 
     standardize_strides_to_nonzero(a_stride, a_shape);
     standardize_strides_to_nonzero(b_stride, b_shape);
+    standardize_strides_to_nonzero(c_stride, c_shape);
 
     oneapi::mkl::transpose transA;
     oneapi::mkl::transpose transB;
@@ -287,12 +288,33 @@ std::tuple<sycl::event, sycl::event, bool>
 #else
     const bool A_base_is_f_contig =
         a_stride[1] == 1 && a_stride[2] == a_shape[1];
+    const bool A_base_is_c_contig =
+        a_stride[1] == a_shape[2] && a_stride[2] == 1;
     const bool B_base_is_f_contig =
         b_stride[1] == 1 && b_stride[2] == b_shape[1];
+    const bool B_base_is_c_contig =
+        b_stride[1] == b_shape[2] && b_stride[2] == 1;
+    const bool C_base_is_f_contig =
+        c_stride[1] == 1 && c_stride[2] == c_shape[1];
+    const bool C_base_is_c_contig =
+        c_stride[1] == c_shape[2] && c_stride[2] == 1;
 
     bool is_row_major = true;
     if (A_base_is_f_contig && B_base_is_f_contig) {
         is_row_major = false;
+    }
+
+    if (!A_base_is_f_contig and !A_base_is_c_contig) {
+        throw py::value_error("The 2D base of the first input array is not "
+                              "c-contiguous nor f-contiguous.");
+    }
+    if (!B_base_is_f_contig and !B_base_is_c_contig) {
+        throw py::value_error("The 2D base of the second input array is not "
+                              "c-contiguous nor f-contiguous.");
+    }
+    if (!C_base_is_f_contig and !C_base_is_c_contig) {
+        throw py::value_error("The 2D base of result array is not c-contiguous "
+                              "nor f-contiguous.");
     }
 
     if (is_row_major) {
@@ -359,10 +381,10 @@ std::tuple<sycl::event, sycl::event, bool>
                       strideb, stridec, transA, transB, a_typeless_ptr,
                       b_typeless_ptr, r_typeless_ptr, is_row_major, depends);
 
-    sycl::event args_batch_ev = dpctl::utils::keep_args_alive(
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, {gemm_batch_ev});
 
-    return std::make_tuple(args_batch_ev, gemm_batch_ev, is_row_major);
+    return std::make_tuple(args_ev, gemm_batch_ev, is_row_major);
 }
 
 template <typename fnT, typename Tab, typename Tc>

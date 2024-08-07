@@ -35,10 +35,6 @@ tests/test_umath.py::test_umaths[('ldexp', 'fi')]
 tests/test_umath.py::test_umaths[('ldexp', 'fl')]
 tests/test_umath.py::test_umaths[('ldexp', 'di')]
 tests/test_umath.py::test_umaths[('ldexp', 'dl')]
-tests/test_umath.py::test_umaths[('logaddexp2', 'ff')]
-tests/test_umath.py::test_umaths[('logaddexp2', 'dd')]
-tests/test_umath.py::test_umaths[('nextafter', 'ff')]
-tests/test_umath.py::test_umaths[('nextafter', 'dd')]
 tests/test_umath.py::test_umaths[('spacing', 'f')]
 tests/test_umath.py::test_umaths[('spacing', 'd')]
 
@@ -265,14 +261,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_par
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
 
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2
-tests/third_party/cupy/math_tests/test_explog.py::TestExplog::test_logaddexp2_infinities
-
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_frexp
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_ldexp
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_combination
-tests/third_party/cupy/math_tests/test_floating.py::TestFloating::test_nextafter_float
-
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_negative
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_for_old_numpy
@@ -312,15 +300,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside_nan_inf
 
 tests/third_party/cupy/math_tests/test_rounding.py::TestRounding::test_fix
-
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_period
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_1dim_with_discont_and_period
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_axis
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_discont
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_without_axis
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_period
-tests/third_party/cupy/math_tests/test_trigonometric.py::TestUnwrap::test_unwrap_2dim_with_discont_and_period
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_0_{a_shape=(), b_shape=(), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_1_{a_shape=(), b_shape=(), shape=(3, 2)}::test_beta

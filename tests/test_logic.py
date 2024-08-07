@@ -139,25 +139,21 @@ class TestAllClose:
         assert_allclose(dp_res, np_res)
 
     def test_input_as_scalars(self):
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(TypeError):
             dpnp.allclose(1.0, 1.0)
 
     @pytest.mark.parametrize("val", [[1.0], (-3, 7), numpy.arange(5)])
     def test_wrong_input_arrays(self, val):
-        with pytest.raises(NotImplementedError):
+        with pytest.raises(TypeError):
             dpnp.allclose(val, val)
 
-    @pytest.mark.parametrize(
-        "tol", [[0.001], (1.0e-6,), dpnp.array(1.0e-3), numpy.array([1.0e-5])]
-    )
+    @pytest.mark.parametrize("tol", [[0.001], (1.0e-6,), numpy.array([1.0e-5])])
     def test_wrong_tols(self, tol):
         a = dpnp.ones(10)
         b = dpnp.ones(10)
 
         for kw in [{"rtol": tol}, {"atol": tol}, {"rtol": tol, "atol": tol}]:
-            with pytest.raises(
-                TypeError, match=r"An argument .* must be a scalar, but got"
-            ):
+            with pytest.raises(TypeError):
                 dpnp.allclose(a, b, **kw)
 
 
@@ -479,3 +475,22 @@ def test_infinity_sign_errors(func):
     out = dpnp.empty_like(x, dtype="int32")
     with pytest.raises(ValueError):
         getattr(dpnp, func)(x, out=out)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize(
+    "rtol", [1e-05, dpnp.array(1e-05), dpnp.full(10, 1e-05)]
+)
+@pytest.mark.parametrize(
+    "atol", [1e-08, dpnp.array(1e-08), dpnp.full(10, 1e-08)]
+)
+def test_isclose(dtype, rtol, atol):
+    a = numpy.random.rand(10)
+    b = a + numpy.random.rand(10) * 1e-8
+
+    dpnp_a = dpnp.array(a, dtype=dtype)
+    dpnp_b = dpnp.array(b, dtype=dtype)
+
+    np_res = numpy.isclose(a, b, 1e-05, 1e-08)
+    dpnp_res = dpnp.isclose(dpnp_a, dpnp_b, rtol, atol)
+    assert_allclose(dpnp_res, np_res)

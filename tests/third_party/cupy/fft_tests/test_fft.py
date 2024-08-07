@@ -1,5 +1,4 @@
 import functools
-import string
 import unittest
 
 import numpy as np
@@ -230,38 +229,48 @@ class TestFftn(unittest.TestCase):
         return out
 
 
+@pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *testing.product(
         {
             "n": [None, 5, 10, 15],
             "shape": [(10,), (10, 10)],
-            "norm": [None, "ortho"],
+            "norm": [None, "backward", "ortho", "forward", ""],
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRfft:
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
-        type_check=False,
+        accept_error=ValueError,
+        contiguous_check=False,
+        type_check=has_support_aspect64(),
     )
     def test_rfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.rfft(a, n=self.n, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
-        atol=1e-7,
+        atol=2e-6,
+        accept_error=ValueError,
+        contiguous_check=False,
         type_check=has_support_aspect64(),
     )
     def test_irfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.irfft(a, n=self.n, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.float32)
 
         return out
 
@@ -308,26 +317,31 @@ class TestRfftnEmptyAxes:
                 xp.fft.irfftn(a, s=self.s, axes=self.axes, norm=self.norm)
 
 
+@pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *testing.product(
         {
             "n": [None, 5, 10, 15],
             "shape": [(10,), (10, 10)],
-            "norm": [None, "ortho"],
+            "norm": [None, "backward", "ortho", "forward", ""],
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestHfft:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
-        atol=1e-7,
+        atol=2e-6,
+        accept_error=ValueError,
+        contiguous_check=False,
         type_check=has_support_aspect64(),
     )
     def test_hfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.hfft(a, n=self.n, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.float32)
 
         return out
 
@@ -335,11 +349,16 @@ class TestHfft:
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
+        accept_error=ValueError,
+        contiguous_check=False,
         type_check=has_support_aspect64(),
     )
     def test_ihfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.ihfft(a, n=self.n, norm=self.norm)
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 
@@ -380,7 +399,6 @@ class TestFftfreq:
     {"shape": (10, 10), "axes": 0},
     {"shape": (10, 10), "axes": (0, 1)},
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestFftshift:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(

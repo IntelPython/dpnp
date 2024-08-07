@@ -40,7 +40,7 @@ it contains:
 
 import dpctl.tensor as dpt
 import numpy
-from numpy.core.numeric import normalize_axis_index
+from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
 
@@ -82,6 +82,7 @@ __all__ = [
     "swapaxes",
     "tile",
     "transpose",
+    "trim_zeros",
     "unique",
     "vstack",
 ]
@@ -675,8 +676,6 @@ def concatenate(
     elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
-
-    dpnp.synchronize_array_data(res)
     return res
 
 
@@ -912,8 +911,6 @@ def expand_dims(a, axis):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.expand_dims(usm_a, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1303,8 +1300,6 @@ def repeat(a, repeats, axis=None):
 
     usm_arr = dpnp.get_usm_ndarray(a)
     usm_res = dpt.repeat(usm_arr, repeats, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1382,8 +1377,6 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.reshape(usm_a, shape=newshape, order=order, copy=copy)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1494,8 +1487,6 @@ def roll(x, shift, axis=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1645,8 +1636,6 @@ def squeeze(a, /, axis=None):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.squeeze(usm_a, axis=axis)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1732,8 +1721,6 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
     elif out is not None:
         dpnp.copyto(out, res, casting=casting)
         return out
-
-    dpnp.synchronize_array_data(res)
     return res
 
 
@@ -1788,8 +1775,6 @@ def swapaxes(a, axis1, axis2):
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.swapaxes(usm_a, axis1=axis1, axis2=axis2)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1870,8 +1855,6 @@ def tile(A, reps):
 
     usm_a = dpnp.get_usm_ndarray(A)
     usm_res = dpt.tile(usm_a, reps)
-
-    dpnp.synchronize_array_data(usm_res)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
@@ -1943,6 +1926,71 @@ def transpose(a, axes=None):
     if axes is None:
         return array.transpose()
     return array.transpose(*axes)
+
+
+def trim_zeros(filt, trim="fb"):
+    """
+    Trim the leading and/or trailing zeros from a 1-D array.
+
+    For full documentation refer to :obj:`numpy.trim_zeros`.
+
+    Parameters
+    ----------
+    filt : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array.
+    trim : str, optional
+        A string with 'f' representing trim from front and 'b' to trim from
+        back. By defaults, trim zeros from both front and back of the array.
+        Default: ``"fb"``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The result of trimming the input.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array((0, 0, 0, 1, 2, 3, 0, 2, 1, 0))
+    >>> np.trim_zeros(a)
+    array([1, 2, 3, 0, 2, 1])
+
+    >>> np.trim_zeros(a, 'b')
+    array([0, 0, 0, 1, 2, 3, 0, 2, 1])
+
+    """
+
+    dpnp.check_supported_arrays_type(filt)
+    if filt.ndim == 0:
+        raise TypeError("0-d array cannot be trimmed")
+    if filt.ndim > 1:
+        raise ValueError("Multi-dimensional trim is not supported")
+
+    if not isinstance(trim, str):
+        raise TypeError("only string trim is supported")
+
+    trim = trim.upper()
+    if not any(x in trim for x in "FB"):
+        return filt  # no trim rule is specified
+
+    if filt.size == 0:
+        return filt  # no trailing zeros in empty array
+
+    a = dpnp.nonzero(filt)[0]
+    a_size = a.size
+    if a_size == 0:
+        # 'filt' is array of zeros
+        return dpnp.empty_like(filt, shape=(0,))
+
+    first = 0
+    if "F" in trim:
+        first = a[0]
+
+    last = filt.size
+    if "B" in trim:
+        last = a[-1] + 1
+
+    return filt[first:last]
 
 
 def unique(ar, **kwargs):

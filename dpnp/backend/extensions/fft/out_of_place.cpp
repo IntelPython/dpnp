@@ -23,10 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#if not defined(USE_ONEMKL_INTERFACES)
-#include <oneapi/mkl/dfti.hpp>
-#endif // USE_ONEMKL_INTERFACES
-
+#include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
 #include <dpctl4pybind11.hpp>
@@ -87,20 +84,44 @@ std::pair<sycl::event, sycl::event>
                               "execution queue of the descriptor.");
     }
 
-    py::ssize_t in_size = in.get_size();
-    py::ssize_t out_size = out.get_size();
-    if (in_size != out_size) {
-        throw py::value_error("The size of the input vector must be "
-                              "equal to the size of the output vector.");
+    const py::ssize_t *in_shape = in.get_shape_raw();
+    const py::ssize_t *out_shape = out.get_shape_raw();
+    const std::int64_t m = in_shape[in_nd - 1];
+    const std::int64_t n = out_shape[out_nd - 1];
+
+    std::int64_t in_size = 1;
+    if (in_nd > 1) {
+        for (int i = 0; i < in_nd - 1; ++i) {
+            if (in_shape[i] != out_shape[i]) {
+                throw py::value_error("The shape of the input and output "
+                                      "arrays must be the same.");
+            }
+            in_size *= in_shape[i];
+        }
     }
 
-    size_t src_nelems = in_size;
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(out, src_nelems);
+    std::int64_t N;
+    if (dom == mkl_dft::domain::REAL && is_forward) {
+        // r2c FFT
+        N = m / 2 + 1; // integer divide
+        if (n != N) {
+            throw py::value_error("The shape of the output array is not "
+                                  "correct for real to complex transform.");
+        }
+    }
+    else {
+        // c2c and c2r FFT. For c2r FFT, input is zero-padded in python side to
+        // have the same size as output before calling this function
+        N = m;
+        if (n != N) {
+            throw py::value_error("The shape of the input array must be "
+                                  "the same as the shape of the output array.");
+        }
+    }
 
-    using ScaleT = typename ScaleType<prec>::value_type;
-    std::complex<ScaleT> *in_ptr = in.get_data<std::complex<ScaleT>>();
-    std::complex<ScaleT> *out_ptr = out.get_data<std::complex<ScaleT>>();
+    const std::size_t n_elems = in_size * N;
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(out, n_elems);
 
     sycl::event fft_event = {};
     std::stringstream error_msg;
@@ -108,10 +129,18 @@ std::pair<sycl::event, sycl::event>
 
     try {
         if (is_forward) {
+            using ScaleT_in = typename ScaleType<prec, dom, true>::type_in;
+            using ScaleT_out = typename ScaleType<prec, dom, true>::type_out;
+            ScaleT_in *in_ptr = in.get_data<ScaleT_in>();
+            ScaleT_out *out_ptr = out.get_data<ScaleT_out>();
             fft_event = mkl_dft::compute_forward(descr.get_descriptor(), in_ptr,
                                                  out_ptr, depends);
         }
         else {
+            using ScaleT_in = typename ScaleType<prec, dom, false>::type_in;
+            using ScaleT_out = typename ScaleType<prec, dom, false>::type_out;
+            ScaleT_in *in_ptr = in.get_data<ScaleT_in>();
+            ScaleT_out *out_ptr = out.get_data<ScaleT_out>();
             fft_event = mkl_dft::compute_backward(descr.get_descriptor(),
                                                   in_ptr, out_ptr, depends);
         }
@@ -136,6 +165,7 @@ std::pair<sycl::event, sycl::event>
 }
 
 // Explicit instantiations
+// single precision c2c FFT
 template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
     DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX>
         &descr,
@@ -144,6 +174,7 @@ template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
     const bool is_forward,
     const std::vector<sycl::event> &depends);
 
+// double precision c2c FFT
 template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
     DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX>
         &descr,
@@ -152,4 +183,19 @@ template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
     const bool is_forward,
     const std::vector<sycl::event> &depends);
 
+// single precision r2c/c2r FFT
+template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
+    DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::REAL> &descr,
+    const dpctl::tensor::usm_ndarray &in,
+    const dpctl::tensor::usm_ndarray &out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
+
+// double precision r2c/c2r FFT
+template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
+    DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::REAL> &descr,
+    const dpctl::tensor::usm_ndarray &in,
+    const dpctl::tensor::usm_ndarray &out,
+    const bool is_forward,
+    const std::vector<sycl::event> &depends);
 } // namespace dpnp::extensions::fft

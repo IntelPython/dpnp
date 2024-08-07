@@ -41,20 +41,17 @@
 #include "kernels/elementwise_functions/maximum.hpp"
 #include "utils/type_dispatch.hpp"
 
-namespace py = pybind11;
-
 namespace dpnp::extensions::ufunc
 {
-namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
-namespace max_ns = dpctl::tensor::kernels::maximum;
+namespace py = pybind11;
 namespace py_int = dpnp::extensions::py_internal;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-using ew_cmn_ns::unary_contig_impl_fn_ptr_t;
-using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
-
 namespace impl
 {
+namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace max_ns = dpctl::tensor::kernels::maximum;
+
 // Supports the same types table as for maximum function in dpctl
 template <typename T1, typename T2>
 using OutputType = max_ns::MaximumOutputType<T1, T2>;

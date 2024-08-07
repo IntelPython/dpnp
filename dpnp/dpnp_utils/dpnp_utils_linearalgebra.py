@@ -28,8 +28,8 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._numpy_helper import normalize_axis_tuple
 from dpctl.utils import ExecutionPlacementError
-from numpy.core.numeric import normalize_axis_tuple
 
 import dpnp
 import dpnp.backend.extensions.blas._blas_impl as bi
@@ -134,11 +134,12 @@ def _create_result_array(
     """
     Create the result array.
 
-    If `out` is not ``None`` and its features match the specified `shape`, `dtype,
-    `usm_type`, and `sycl_queue` and it is C-contiguous or F-contiguous and
-    does not have any memory overlap with `x1` and `x2`, `out` itself is returned.
+    If `out` is not ``None`` and its shape and dtype match the desired `shape`
+    and `dtype`, and its 2-D base is contiguous and it does not have any memory
+    overlap with `x1` and `x2`, `out` itself is returned.
     If these conditions are not satisfied, an empty array is returned with the
     specified `shape`, `dtype, `usm_type`, and `sycl_queue`.
+
     """
 
     if out is not None:
@@ -150,7 +151,6 @@ def _create_result_array(
         if (
             out.dtype == dtype
             and out.shape == shape
-            and out.usm_type == usm_type
             and contig_flag
             and not ti._array_overlap(x1_usm, out_usm)
             and not ti._array_overlap(x2_usm, out_usm)
@@ -350,16 +350,16 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
     _manager = dpu.SequentialOrderManager[exec_q]
 
     # onemkl::blas::gemm_bacth throws an exception (Provided range is out
-    # of integer limits) if the batch_size is too large (>=4096*4096), so
-    # we need to split the batch into smaller chunks
-    chunk = 2048 * 2048
-    batch_size = res.shape[0]
+    # of integer limits) if the batch_size is too large, so we need to
+    # split the batch into smaller chunks, the size depnends on device
+    chunk = 4096 * 4096 - 2
+    batch_size = res_shape[0]
     for i in range(0, batch_size, chunk):
-        if x1.shape[0] == 1:
+        if x1_shape[0] == 1:
             # x1 is repeatedly multiplied with each matrix in x2
             x1_usm = dpnp.get_usm_ndarray(x1)
             x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
-        elif x2.shape[0] == 1:
+        elif x2_shape[0] == 1:
             x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
             x2_usm = dpnp.get_usm_ndarray(x2)
         else:
@@ -376,25 +376,35 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
         )
         _manager.add_event_pair(ht_ev, blas_ev)
 
-    res_shape = res.shape
     _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
     if row_major:
         if res_is_f_contig:
-            res = dpnp.reshape(
-                dpnp.ravel(res, order="F"),
-                (res_shape[1], res_shape[2], batch_size),
-            ).transpose(2, 0, 1)
+            # Considering the multiplication for one of the batches,
+            # we have result[0, 1] = a[0, :]*b[1, :]. In row_major mode,
+            # it is assumed result array is c-contiguous, i.e. the value of
+            # result[0, 1] is has the second place memory.
+            # however, the result array is batches of 2D f-contiguous array,
+            # i.e. the second place of memory points out to res[1, 0].
+            # So, we need to read data of each 2D array in the batch in
+            # "F" order and write it in "C" order
+            res = (
+                res.ravel(order="F")
+                .reshape(res_shape[1], res_shape[2], batch_size)
+                .transpose(2, 0, 1)
     elif bi._row_major_is_available():
         if res_is_c_contig:
-            res = dpnp.reshape(
-                dpnp.ravel(res, order="C"),
-                (batch_size, res_shape[2], res_shape[1]),
-            ).transpose(0, 2, 1)
+            # read data of each 2D array in the batch in "C" order and
+            # write it in "F" order
+            res = (
+                res.ravel(order="C")
+                .reshape(batch_size, res_shape[2], res_shape[1])
+                .transpose(0, 2, 1)
+            )
 
     if res_shape != orig_shape:
         res = res.reshape(orig_shape)
 
-    return dpnp.ascontiguousarray(res)
+    return res
 
 
 def _gemm_matmul(exec_q, x1, x2, res):
@@ -412,13 +422,13 @@ def _gemm_matmul(exec_q, x1, x2, res):
     if row_major:
         if res.flags.f_contiguous is True:
             # read data in "F" order and write it in "C" order
-            res = dpnp.reshape(dpnp.ravel(res, order="F"), res.shape, order="C")
+            res = dpnp.ravel(res, order="F").reshape(res.shape, order="C")
     else:
         if res.flags.c_contiguous is True:
             # read data in "C" order and write it in "F" order
-            res = dpnp.reshape(dpnp.ravel(res, order="C"), res.shape, order="F")
+            res = dpnp.ravel(res, order="C").reshape(res.shape, order="F")
 
-    return dpnp.ascontiguousarray(res)
+    return res
 
 
 def _shape_error(a, b, core_dim, err_msg):
@@ -779,9 +789,9 @@ def dpnp_matmul(
         call_flag = "multiply"
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
-        x1 = dpnp.reshape(x1, x1_shape[-1])
-        if x2_ndim != 1:
-            x2 = dpnp.reshape(x2, x2_shape[-2])
+        # arrays are inehrently 1D, make them 1D
+        x1 = dpnp.ravel(x1)
+        x2 = dpnp.ravel(x2)
     elif x1_base_is_1D and x2_base_is_1D:
         # TODO: implement a batch version of dot to use it here
         call_flag = "gemm_batch"
@@ -941,12 +951,11 @@ def dpnp_matmul(
         # we need to update it to match the passed `order`.
         if order not in ["k", "K"]:
             return dpnp.array(result, copy=False, order=order)
-        return result
+        # dpnp.ascontiguousarray changes 0-D array to 1-D array
+        if result.ndim == 0:
+            return result
+        return dpnp.ascontiguousarray(result)
 
-    # TODO: There is opportunity to improve performance when out keyword is
-    # present. For some cases, out is NOT result but they have the same base
-    # (They are views of the same data). In this case, we can avoid copyign
-    # result to out.
     result = dpnp.get_result_array(result, out, casting=casting)
     if axes is not None and out is result:
         # out and out_orig contain the same data but they have different shape

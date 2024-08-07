@@ -33,18 +33,13 @@ from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
-        DPNP_FN_ALLCLOSE_EXT
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_CORRELATE_EXT
-        DPNP_FN_DEGREES_EXT
         DPNP_FN_EDIFF1D_EXT
         DPNP_FN_ERF_EXT
-        DPNP_FN_FFT_FFT_EXT
-        DPNP_FN_FFT_RFFT_EXT
         DPNP_FN_MEDIAN_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
-        DPNP_FN_RADIANS_EXT
         DPNP_FN_RNG_BETA_EXT
         DPNP_FN_RNG_BINOMIAL_EXT
         DPNP_FN_RNG_CHISQUARE_EXT
@@ -159,17 +154,3 @@ Internal functions
 """
 cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype)
 cdef dpnp_DPNPFuncType_to_dtype(size_t type)
-
-
-"""
-Logic functions
-"""
-cpdef dpnp_descriptor dpnp_isclose(dpnp_descriptor input1, dpnp_descriptor input2,
-                                   double rtol=*, double atol=*, cpp_bool equal_nan=*)
-
-
-"""
-Trigonometric functions
-"""
-cpdef dpnp_descriptor dpnp_degrees(dpnp_descriptor array1)
-cpdef dpnp_descriptor dpnp_radians(dpnp_descriptor array1)

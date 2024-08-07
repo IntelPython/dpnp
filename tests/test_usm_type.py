@@ -381,8 +381,7 @@ def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
         "equal",
         "greater",
         "greater_equal",
-        # TODO: unblock when dpnp.isclose() is updated
-        # "isclose",
+        "isclose",
         "less",
         "less_equal",
         "logical_and",
@@ -547,12 +546,14 @@ def test_norm(usm_type, ord, axis):
         pytest.param("cumlogsumexp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
@@ -585,6 +586,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("prod", [1.0, 2.0]),
         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
         pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("radians", [180, 90, 45, 0]),
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
@@ -610,7 +612,9 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         ),
+        pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
@@ -653,8 +657,10 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("nextafter", [1, 2], [2, 1]),
         pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
         pytest.param(
             "tensordot",
@@ -933,6 +939,19 @@ def test_eigenvalue(func, shape, usm_type):
     assert a.usm_type == dp_val.usm_type
 
 
+@pytest.mark.parametrize(
+    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_fft(func, usm_type):
+    dtype = dp.float32 if func in ["rfft", "ihfft"] else dp.complex64
+    dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dtype)
+    result = getattr(dp.fft, func)(dpnp_data)
+
+    assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
 @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_fftfreq(func, usm_type):
@@ -947,10 +966,10 @@ def test_fftfreq(func, usm_type):
     assert result.usm_type == usm_type
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft"])
+@pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_fft(func, usm_type):
-    dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dp.complex64)
+def test_fftshift(func, usm_type):
+    dpnp_data = dp.fft.fftfreq(10, 0.5, usm_type=usm_type)
     result = getattr(dp.fft, func)(dpnp_data)
 
     assert dpnp_data.usm_type == usm_type
