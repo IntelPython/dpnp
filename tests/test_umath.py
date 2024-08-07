@@ -360,7 +360,7 @@ class TestFloatPower:
         assert_allclose(result, expected)
 
 
-class TestLogaddexp:
+class TestLogAddExp:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_logaddexp(self, dtype):
         np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(

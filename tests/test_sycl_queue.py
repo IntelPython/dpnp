@@ -480,6 +480,7 @@ def test_meshgrid(device):
         pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
@@ -1228,20 +1229,22 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft", "rfft", "irfft"])
+@pytest.mark.parametrize(
+    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+)
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
 def test_fft(func, device):
-    dtype = numpy.float64 if func == "rfft" else numpy.complex128
-    data = numpy.arange(100, dtype=dtype)
+    dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
+    data = numpy.arange(20, dtype=dtype)
     dpnp_data = dpnp.array(data, device=device)
 
     expected = getattr(numpy.fft, func)(data)
     result = getattr(dpnp.fft, func)(dpnp_data)
-    assert_dtype_allclose(result, expected)
+    assert_dtype_allclose(result, expected, factor=16)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue

@@ -614,13 +614,12 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
 
     dpnp.check_limitations(where=where)
 
-    dpt_array = dpnp.get_usm_ndarray(a)
-    result = dpnp_array._create_from_usm_ndarray(
-        dpt.mean(dpt_array, axis=axis, keepdims=keepdims)
-    )
-    result = result.astype(dtype) if dtype is not None else result
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_res = dpt.mean(usm_a, axis=axis, keepdims=keepdims)
+    if dtype is not None:
+        usm_res = dpt.astype(usm_res, dtype)
 
-    return dpnp.get_result_array(result, out, casting="same_kind")
+    return dpnp.get_result_array(usm_res, out, casting="same_kind")
 
 
 def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
@@ -904,11 +903,9 @@ def std(
         )
         dpnp.sqrt(result, out=result)
     else:
-        dpt_array = dpnp.get_usm_ndarray(a)
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.std(dpt_array, axis=axis, correction=ddof, keepdims=keepdims)
-        )
-        result = dpnp.get_result_array(result, out)
+        usm_a = dpnp.get_usm_ndarray(a)
+        usm_res = dpt.std(usm_a, axis=axis, correction=ddof, keepdims=keepdims)
+        result = dpnp.get_result_array(usm_res, out)
 
     if dtype is not None and out is None:
         result = result.astype(dtype, casting="same_kind")
@@ -1028,11 +1025,9 @@ def var(
 
         dpnp.divide(result, cnt, out=result)
     else:
-        dpt_array = dpnp.get_usm_ndarray(a)
-        result = dpnp_array._create_from_usm_ndarray(
-            dpt.var(dpt_array, axis=axis, correction=ddof, keepdims=keepdims)
-        )
-        result = dpnp.get_result_array(result, out)
+        usm_a = dpnp.get_usm_ndarray(a)
+        usm_res = dpt.var(usm_a, axis=axis, correction=ddof, keepdims=keepdims)
+        result = dpnp.get_result_array(usm_res, out)
 
     if out is None and dtype is not None:
         result = result.astype(dtype, casting="same_kind")

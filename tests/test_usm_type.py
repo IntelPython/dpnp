@@ -614,6 +614,7 @@ def test_norm(usm_type, ord, axis):
         ),
         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
@@ -943,10 +944,12 @@ def test_eigenvalue(func, shape, usm_type):
     assert a.usm_type == dp_val.usm_type
 
 
-@pytest.mark.parametrize("func", ["fft", "ifft", "rfft", "irfft"])
+@pytest.mark.parametrize(
+    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+)
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_fft(func, usm_type):
-    dtype = dp.float32 if func == "rfft" else dp.complex64
+    dtype = dp.float32 if func in ["rfft", "ihfft"] else dp.complex64
     dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dtype)
     result = getattr(dp.fft, func)(dpnp_data)
 

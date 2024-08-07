@@ -654,7 +654,7 @@ def get_result_array(a, out=None, casting="safe"):
 
     Parameters
     ----------
-    a : {dpnp_array}
+    a : {dpnp.ndarray, usm_ndarray}
         Input array.
     out : {dpnp.ndarray, usm_ndarray}
         If provided, value of `a` array will be copied into it
@@ -671,6 +671,8 @@ def get_result_array(a, out=None, casting="safe"):
     """
 
     if out is None:
+        if isinstance(a, dpt.usm_ndarray):
+            return dpnp_array._create_from_usm_ndarray(a)
         return a
 
     if isinstance(out, dpt.usm_ndarray):
