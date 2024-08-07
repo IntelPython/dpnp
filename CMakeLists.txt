@@ -118,7 +118,7 @@ if(_use_onemkl_interfaces)
     FetchContent_Declare(
             onemkl_interfaces_library
             GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
-            GIT_TAG develop
+            GIT_TAG f2d2dcb4213a435bb60fbb88320c5f24892423ce
     )
     FetchContent_MakeAvailable(onemkl_interfaces_library)
 endif()
