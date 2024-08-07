@@ -1,0 +1,6 @@
+﻿dpnp.ufunc.nargs
+================
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ufunc.nargs

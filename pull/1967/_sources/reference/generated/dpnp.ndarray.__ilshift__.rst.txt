@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_ilshift\_\_
+============================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__ilshift__

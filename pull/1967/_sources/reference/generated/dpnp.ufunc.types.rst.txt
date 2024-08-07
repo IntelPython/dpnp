@@ -1,0 +1,6 @@
+﻿dpnp.ufunc.types
+================
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ufunc.types

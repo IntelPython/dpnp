@@ -1,0 +1,71 @@
+﻿dpnp.ufunc
+==========
+
+.. currentmodule:: dpnp
+
+.. autoclass:: ufunc
+
+   ..
+      Methods
+
+
+
+   .. rubric:: Methods
+
+   ..
+      Special methods
+
+
+
+
+
+
+
+
+   ..
+      Ordinary methods
+
+
+
+
+   .. automethod:: outer
+
+
+   ..
+      Special methods
+
+
+
+   .. automethod:: __eq__
+
+
+   .. automethod:: __ne__
+
+
+   .. automethod:: __lt__
+
+
+   .. automethod:: __le__
+
+
+   .. automethod:: __gt__
+
+
+   .. automethod:: __ge__
+
+
+
+   ..
+      Attributes
+
+ 
+
+   .. rubric:: Attributes
+
+
+   .. autoattribute:: nargs
+   .. autoattribute:: nin
+   .. autoattribute:: nout
+   .. autoattribute:: ntypes
+   .. autoattribute:: types
+ 

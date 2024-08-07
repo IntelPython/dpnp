@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dpnp.ufunc &mdash; Data Parallel Extension for NumPy 0.16.0dev0+107.g82d0bf1d92 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../_static/documentation_options.js?v=2c230a35"></script>
+        <script src="../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="dpnp.ufunc.nin" href="dpnp.ufunc.nin.html" />
+    <link rel="prev" title="Universal Functions (ufunc)" href="../ufunc.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+              <div class="version">
+                0.16.0dev0+107.g82d0bf1d92
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../ufunc.html#ufuncs">ufuncs</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.ufunc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#attributes">Attributes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../ufunc.html#methods">Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../ufunc.html#available-ufuncs">Available ufuncs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
+          <li class="breadcrumb-item"><a href="../ufunc.html">Universal Functions (ufunc)</a></li>
+      <li class="breadcrumb-item active">dpnp.ufunc</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/reference/generated/dpnp.ufunc.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dpnp-ufunc">
+<h1>dpnp.ufunc<a class="headerlink" href="#dpnp-ufunc" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="dpnp.ufunc">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">ufunc</span></span><a class="reference internal" href="../../_modules/dpnp/dpnp_algo/dpnp_elementwise_common.html#ufunc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ufunc" title="Link to this definition"></a></dt>
+<dd><p>Functions that operate element by element on whole arrays.</p>
+<section id="calling-ufuncs">
+<h2>Calling ufuncs<a class="headerlink" href="#calling-ufuncs" title="Link to this heading"></a></h2>
+<p>op(<a href="#id1"><span class="problematic" id="id2">*</span></a>x[, out], <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs)</p>
+<p>Apply <cite>op</cite> to the arguments <cite>*x</cite> elementwise, broadcasting the arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param *x<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Input arrays.</p>
+</dd>
+<dt class="field-even">type *x<span class="colon">:</span></dt>
+<dd class="field-even"><p>{dpnp.ndarray, usm_ndarray}</p>
+</dd>
+<dt class="field-odd">param out<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Output array to populate.
+Array must have the correct shape and the expected data type.</p>
+</dd>
+<dt class="field-even">type out<span class="colon">:</span></dt>
+<dd class="field-even"><p>{None, dpnp.ndarray, usm_ndarray}, optional</p>
+</dd>
+<dt class="field-odd">param order<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Memory layout of the newly output array, Cannot be provided
+together with <cite>out</cite>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
+</dd>
+<dt class="field-even">type order<span class="colon">:</span></dt>
+<dd class="field-even"><p>{None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</p>
+</dd>
+<dt class="field-odd">param dtype<span class="colon">:</span></dt>
+<dd class="field-odd"><p>If provided, the destination array will have this dtype. Cannot be
+provided together with <cite>out</cite>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt class="field-even">type dtype<span class="colon">:</span></dt>
+<dd class="field-even"><p>{None, dtype}, optional</p>
+</dd>
+<dt class="field-odd">param casting<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Controls what kind of data casting may occur. Cannot be provided
+together with <cite>out</cite>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;safe&quot;</span></code>.</p>
+</dd>
+<dt class="field-even">type casting<span class="colon">:</span></dt>
+<dd class="field-even"><p>{&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</p>
+</dd>
+</dl>
+<p class="rubric">Limitations</p>
+<p>Keyword arguments <cite>where</cite> and <cite>subok</cite> are supported with their default values.
+Other keyword arguments is currently unsupported.
+Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+<p class="rubric">Methods</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.ufunc.outer">
+<span class="sig-name descname"><span class="pre">outer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_algo/dpnp_elementwise_common.html#ufunc.outer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ufunc.outer" title="Link to this definition"></a></dt>
+<dd><p>Apply the ufunc op to all pairs (a, b) with a in A and b in B.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First input array.</p></li>
+<li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second input array.</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Output array to populate.
+Array must have the correct shape and the expected data type.</p></li>
+<li><p><strong>**kwargs</strong> -- For other keyword-only arguments, see the <a class="reference internal" href="#dpnp.ufunc" title="dpnp.ufunc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ufunc</span></code></a>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- Output array. The data type of the returned array is determined by
+the Type Promotion Rules.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
+<p class="rubric">Limitations</p>
+<p>Parameters <cite>where</cite> and <cite>subok</cite> are supported with their default values.
+Keyword argument <cite>kwargs</cite> is currently unsupported.
+Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.outer.html#dpnp.outer" title="dpnp.outer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.outer</span></code></a></dt><dd><p>A less powerful version of dpnp.multiply.outer that ravels all inputs to 1D. This exists primarily for compatibility with old code.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.tensordot.html#dpnp.tensordot" title="dpnp.tensordot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.tensordot</span></code></a></dt><dd><p>dpnp.tensordot(a, b, axes=((), ())) and dpnp.multiply.outer(a, b) behave same for all dimensions of a and b.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="go">array([[ 4,  5,  6],</span>
+<span class="go">       [ 8, 10, 12],</span>
+<span class="go">       [12, 15, 18]])</span>
+</pre></div>
+</div>
+<p>A multi-dimensional example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">A</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(2, 3)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(1, 4)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">C</span><span class="o">.</span><span class="n">shape</span><span class="p">;</span> <span class="n">C</span>
+<span class="go">(2, 3, 1, 4)</span>
+<span class="go">array([[[[ 1,  2,  3,  4]],</span>
+<span class="go">        [[ 2,  4,  6,  8]],</span>
+<span class="go">        [[ 3,  6,  9, 12]]],</span>
+<span class="go">       [[[ 4,  8, 12, 16]],</span>
+<span class="go">        [[ 5, 10, 15, 20]],</span>
+<span class="go">        [[ 6, 12, 18, 24]]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.ufunc.__eq__">
+<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ufunc.__eq__" title="Link to this definition"></a></dt>
+<dd><p>Return self==value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.ufunc.__ne__">
+<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ufunc.__ne__" title="Link to this definition"></a></dt>
+<dd><p>Return self!=value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.ufunc.__lt__">
+<span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ufunc.__lt__" title="Link to this definition"></a></dt>
+<dd><p>Return self&lt;value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.ufunc.__le__">
+<span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ufunc.__le__" title="Link to this definition"></a></dt>
+<dd><p>Return self&lt;=value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.ufunc.__gt__">
+<span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ufunc.__gt__" title="Link to this definition"></a></dt>
+<dd><p>Return self&gt;value.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dpnp.ufunc.__ge__">
+<span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ufunc.__ge__" title="Link to this definition"></a></dt>
+<dd><p>Return self&gt;=value.</p>
+</dd></dl>
+
+<p class="rubric">Attributes</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpnp.ufunc.nargs">
+<span class="sig-name descname"><span class="pre">nargs</span></span><a class="headerlink" href="#dpnp.ufunc.nargs" title="Link to this definition"></a></dt>
+<dd><p>Returns the number of arguments treated.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">2</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpnp.ufunc.nin">
+<span class="sig-name descname"><span class="pre">nin</span></span><a class="headerlink" href="#dpnp.ufunc.nin" title="Link to this definition"></a></dt>
+<dd><p>Returns the number of arguments treated as inputs.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpnp.ufunc.nout">
+<span class="sig-name descname"><span class="pre">nout</span></span><a class="headerlink" href="#dpnp.ufunc.nout" title="Link to this definition"></a></dt>
+<dd><p>Returns the number of arguments treated as outputs.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">nin</span>
+<span class="go">1</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpnp.ufunc.ntypes">
+<span class="sig-name descname"><span class="pre">ntypes</span></span><a class="headerlink" href="#dpnp.ufunc.ntypes" title="Link to this definition"></a></dt>
+<dd><p>The number of types.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">ntypes</span>
+<span class="go">14</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">ntypes</span>
+<span class="go">14</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">ntypes</span>
+<span class="go">13</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">ntypes</span>
+<span class="go">5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="o">.</span><span class="n">ntypes</span>
+<span class="go">11</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dpnp.ufunc.types">
+<span class="sig-name descname"><span class="pre">types</span></span><a class="headerlink" href="#dpnp.ufunc.types" title="Link to this definition"></a></dt>
+<dd><p>Returns information about types supported by implementation function,
+using NumPy's character encoding for data types, e.g.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="o">.</span><span class="n">types</span>
+<span class="go">[&#39;??-&gt;?&#39;, &#39;bb-&gt;b&#39;, &#39;BB-&gt;B&#39;, &#39;hh-&gt;h&#39;, &#39;HH-&gt;H&#39;, &#39;ii-&gt;i&#39;, &#39;II-&gt;I&#39;,</span>
+<span class="go">&#39;ll-&gt;l&#39;, &#39;LL-&gt;L&#39;, &#39;ee-&gt;e&#39;, &#39;ff-&gt;f&#39;, &#39;dd-&gt;d&#39;, &#39;FF-&gt;F&#39;, &#39;DD-&gt;D&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">types</span>
+<span class="go">[&#39;??-&gt;?&#39;, &#39;bb-&gt;b&#39;, &#39;BB-&gt;B&#39;, &#39;hh-&gt;h&#39;, &#39;HH-&gt;H&#39;, &#39;ii-&gt;i&#39;, &#39;II-&gt;I&#39;,</span>
+<span class="go">&#39;ll-&gt;l&#39;, &#39;LL-&gt;L&#39;, &#39;ee-&gt;e&#39;, &#39;ff-&gt;f&#39;, &#39;dd-&gt;d&#39;, &#39;FF-&gt;F&#39;, &#39;DD-&gt;D&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="o">.</span><span class="n">types</span>
+<span class="go">[&#39;bb-&gt;b&#39;, &#39;BB-&gt;B&#39;, &#39;hh-&gt;h&#39;, &#39;HH-&gt;H&#39;, &#39;ii-&gt;i&#39;, &#39;II-&gt;I&#39;, &#39;ll-&gt;l&#39;,</span>
+<span class="go">&#39;LL-&gt;L&#39;, &#39;ee-&gt;e&#39;, &#39;ff-&gt;f&#39;, &#39;dd-&gt;d&#39;, &#39;FF-&gt;F&#39;, &#39;DD-&gt;D&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="o">.</span><span class="n">types</span>
+<span class="go">[&#39;e-&gt;e&#39;, &#39;f-&gt;f&#39;, &#39;d-&gt;d&#39;, &#39;F-&gt;F&#39;, &#39;D-&gt;D&#39;]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">remainder</span><span class="o">.</span><span class="n">types</span>
+<span class="go">[&#39;bb-&gt;b&#39;, &#39;BB-&gt;B&#39;, &#39;hh-&gt;h&#39;, &#39;HH-&gt;H&#39;, &#39;ii-&gt;i&#39;, &#39;II-&gt;I&#39;, &#39;ll-&gt;l&#39;,</span>
+<span class="go">&#39;LL-&gt;L&#39;, &#39;ee-&gt;e&#39;, &#39;ff-&gt;f&#39;, &#39;dd-&gt;d&#39;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../ufunc.html" class="btn btn-neutral float-left" title="Universal Functions (ufunc)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.ufunc.nin.html" class="btn btn-neutral float-right" title="dpnp.ufunc.nin" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
