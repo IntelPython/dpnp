@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+108.g94dc6a0c6 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+110.gfd7222b337 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=15b3d8be"></script>
+        <script src="../../_static/documentation_options.js?v=4005cd12"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+108.g94dc6a0c6
+                0.16.0dev0+110.gfd7222b337
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -188,6 +188,7 @@
     <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ediff1d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fabs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;float_power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor_divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fmax&quot;</span><span class="p">,</span>
@@ -1478,6 +1479,105 @@
 <span class="p">)</span>
 
 
+<span class="n">_FLOAT_POWER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array</span>
+<span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
+
+<span class="s2">This differs from the power function in that boolean, integers, and float16 are</span>
+<span class="s2">promoted to floats with a minimum precision of float32 so that the result is</span>
+<span class="s2">always inexact. The intent is that the function will return a usable result for</span>
+<span class="s2">negative powers and seldom overflow for positive powers.</span>
+
+<span class="s2">Negative values raised to a non-integral value will return ``NaN``. To get</span>
+<span class="s2">complex results, cast the input to complex, or specify the ``dtype`` to be one</span>
+<span class="s2">of complex dtype.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.float_power`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have floating-point data types.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to floating-point data types.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate. Array must have the correct shape and</span>
+<span class="s2">    the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the bases in `x1` raised to the exponents in `x2`</span>
+<span class="s2">    element-wise.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.power` : Power function that preserves type.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+
+<span class="s2">Cube each element in an array:</span>
+
+<span class="s2">&gt;&gt;&gt; x1 = np.arange(6)</span>
+<span class="s2">&gt;&gt;&gt; x1</span>
+<span class="s2">array([0, 1, 2, 3, 4, 5])</span>
+<span class="s2">&gt;&gt;&gt; np.float_power(x1, 3)</span>
+<span class="s2">array([  0.,   1.,   8.,  27.,  64., 125.])</span>
+
+<span class="s2">Raise the bases to different exponents:</span>
+
+<span class="s2">&gt;&gt;&gt; x2 = np.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])</span>
+<span class="s2">&gt;&gt;&gt; np.float_power(x1, x2)</span>
+<span class="s2">array([ 0.,  1.,  8., 27., 16.,  5.])</span>
+
+<span class="s2">The effect of broadcasting:</span>
+
+<span class="s2">&gt;&gt;&gt; x2 = np.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])</span>
+<span class="s2">&gt;&gt;&gt; x2</span>
+<span class="s2">array([[1, 2, 3, 3, 2, 1],</span>
+<span class="s2">       [1, 2, 3, 3, 2, 1]])</span>
+<span class="s2">&gt;&gt;&gt; np.float_power(x1, x2)</span>
+<span class="s2">array([[ 0.,  1.,  8., 27., 16.,  5.],</span>
+<span class="s2">       [ 0.,  1.,  8., 27., 16.,  5.]])</span>
+
+<span class="s2">Negative values raised to a non-integral value will result in ``NaN``:</span>
+
+<span class="s2">&gt;&gt;&gt; x3 = np.array([-1, -4])</span>
+<span class="s2">&gt;&gt;&gt; np.float_power(x3, 1.5)</span>
+<span class="s2">array([nan, nan])</span>
+
+<span class="s2">To get complex results, give the argument one of complex dtype, i.e.</span>
+<span class="s2">``dtype=np.complex64``:</span>
+
+<span class="s2">&gt;&gt;&gt; np.float_power(x3, 1.5, dtype=np.complex64)</span>
+<span class="s2">array([1.1924881e-08-1.j, 9.5399045e-08-8.j], dtype=complex64)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">float_power</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;float_power&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_float_power_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
+    <span class="n">_FLOAT_POWER_DOCSTRING</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_pow_to_call</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
+    <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_pow_inplace</span><span class="p">,</span>
+<span class="p">)</span>
+
+
 <span class="n">_FLOOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Returns the floor for each element `x_i` for input array `x`.</span>
 
@@ -2588,6 +2688,7 @@
 <span class="s2">:obj:`dpnp.fmax` : Element-wise maximum of array elements.</span>
 <span class="s2">:obj:`dpnp.fmin` : Element-wise minimum of array elements.</span>
 <span class="s2">:obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
+<span class="s2">:obj:`dpnp.float_power` : Power function that promotes integers to floats.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
