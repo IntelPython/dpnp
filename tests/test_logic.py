@@ -518,11 +518,46 @@ def test_array_equiv(a, b):
     assert_equal(expected, result)
 
 
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+def test_array_equiv_dtype(dtype):
+    a = numpy.array([1, 2], dtype=dtype)
+    b = numpy.array([1, 2], dtype=dtype)
+    c = numpy.array([1, 3], dtype=dtype)
+
+    result = dpnp.array_equiv(dpnp.array(a), dpnp.array(b))
+    expected = numpy.array_equiv(a, b)
+
+    assert_equal(expected, result)
+
+    result = dpnp.array_equiv(dpnp.array(a), dpnp.array(c))
+    expected = numpy.array_equiv(a, c)
+
+    assert_equal(expected, result)
+
+
 @pytest.mark.parametrize("a", [numpy.array([1, 2]), numpy.array([1, 1])])
 def test_array_equiv_scalar(a):
     b = 1
     result = dpnp.array_equiv(dpnp.array(a), b)
     expected = numpy.array_equiv(a, b)
+
+    assert_equal(expected, result)
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("equal_nan", [True, False])
+def test_array_equal_dtype(dtype, equal_nan):
+    a = numpy.array([1, 2], dtype=dtype)
+    b = numpy.array([1, 2], dtype=dtype)
+    c = numpy.array([1, 3], dtype=dtype)
+
+    result = dpnp.array_equal(dpnp.array(a), dpnp.array(b), equal_nan=equal_nan)
+    expected = numpy.array_equal(a, b, equal_nan=equal_nan)
+
+    assert_equal(expected, result)
+
+    result = dpnp.array_equal(dpnp.array(a), dpnp.array(c), equal_nan=equal_nan)
+    expected = numpy.array_equal(a, c, equal_nan=equal_nan)
 
     assert_equal(expected, result)
 
@@ -536,7 +571,27 @@ def test_array_equiv_scalar(a):
     ],
 )
 def test_array_equal_same_arr(a):
-    expected = numpy.array_equal(a, a.copy())
+    expected = numpy.array_equal(a, a)
     b = dpnp.array(a)
-    result = dpnp.array_equal(b, b.copy())
+    result = dpnp.array_equal(b, b)
+    assert_equal(expected, result)
+
+    expected = numpy.array_equal(a, a, equal_nan=True)
+    result = dpnp.array_equal(b, b, equal_nan=True)
+    assert_equal(expected, result)
+
+
+@pytest.mark.parametrize(
+    "a",
+    [
+        numpy.array([1, 2]),
+        numpy.array([1.0, numpy.nan]),
+        numpy.array([1.0, numpy.inf]),
+    ],
+)
+def test_array_equal_nan(a):
+    a = numpy.array([1.0, numpy.nan])
+    b = numpy.array([1.0, 2.0])
+    result = dpnp.array_equal(dpnp.array(a), dpnp.array(b), equal_nan=True)
+    expected = numpy.array_equal(a, b, equal_nan=True)
     assert_equal(expected, result)
