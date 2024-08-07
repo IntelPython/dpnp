@@ -10,6 +10,7 @@ quiet-level = 3
 
 [tool.pylint.basic]
 include-naming-hint = true
+class-naming-style = "snake_case"
 
 [tool.pylint.classes]
 exclude-protected = ["_create_from_usm_ndarray"]
