@@ -1327,13 +1327,10 @@ def ediff1d(ary, to_end=None, to_begin=None):
     if to_begin is None:
         l_begin = 0
     else:
-        to_begin = (
-            dpnp.asarray(
+        if not dpnp.is_supported_array_type(to_begin):
+            to_begin = dpnp.asarray(
                 to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
             )
-            if not dpnp.is_supported_array_type(to_begin)
-            else to_begin
-        )
         if not dpnp.can_cast(to_begin, ary_dtype, casting="same_kind"):
             raise TypeError(
                 "dtype of `to_begin` must be compatible "
@@ -1345,18 +1342,15 @@ def ediff1d(ary, to_end=None, to_begin=None):
         if to_begin_ndim > 1:
             to_begin = dpnp.ravel(to_begin)
 
-        l_begin = len(to_begin) if to_begin_ndim != 0 else 1
+        l_begin = to_begin.size
 
     if to_end is None:
         l_end = 0
     else:
-        to_end = (
-            dpnp.asarray(
+        if not dpnp.is_supported_array_type(to_end):
+            to_end = dpnp.asarray(
                 to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
             )
-            if not dpnp.is_supported_array_type(to_end)
-            else to_end
-        )
         if not dpnp.can_cast(to_end, ary_dtype, casting="same_kind"):
             raise TypeError(
                 "dtype of `to_end` must be compatible "
@@ -1368,7 +1362,7 @@ def ediff1d(ary, to_end=None, to_begin=None):
         if to_end_ndim > 1:
             to_end = dpnp.ravel(to_end)
 
-        l_end = len(to_end) if to_end_ndim != 0 else 1
+        l_end = to_end.size
 
     # calculating using in place operation
     l_diff = max(len(ary) - 1, 0)
