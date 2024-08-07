@@ -98,6 +98,7 @@ __all__ = [
     "divide",
     "ediff1d",
     "fabs",
+    "float_power",
     "floor",
     "floor_divide",
     "fmax",
@@ -1364,6 +1365,105 @@ fabs = DPNPUnaryFunc(
 )
 
 
+_FLOAT_POWER_DOCSTRING = """
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+This differs from the power function in that boolean, integers, and float16 are
+promoted to floats with a minimum precision of float32 so that the result is
+always inexact. The intent is that the function will return a usable result for
+negative powers and seldom overflow for positive powers.
+
+Negative values raised to a non-integral value will return ``NaN``. To get
+complex results, cast the input to complex, or specify the ``dtype`` to be one
+of complex dtype.
+
+For full documentation refer to :obj:`numpy.float_power`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have floating-point data types.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to floating-point data types.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the bases in `x1` raised to the exponents in `x2`
+    element-wise.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.power` : Power function that preserves type.
+
+Examples
+--------
+>>> import dpnp as np
+
+Cube each element in an array:
+
+>>> x1 = np.arange(6)
+>>> x1
+array([0, 1, 2, 3, 4, 5])
+>>> np.float_power(x1, 3)
+array([  0.,   1.,   8.,  27.,  64., 125.])
+
+Raise the bases to different exponents:
+
+>>> x2 = np.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
+>>> np.float_power(x1, x2)
+array([ 0.,  1.,  8., 27., 16.,  5.])
+
+The effect of broadcasting:
+
+>>> x2 = np.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
+>>> x2
+array([[1, 2, 3, 3, 2, 1],
+       [1, 2, 3, 3, 2, 1]])
+>>> np.float_power(x1, x2)
+array([[ 0.,  1.,  8., 27., 16.,  5.],
+       [ 0.,  1.,  8., 27., 16.,  5.]])
+
+Negative values raised to a non-integral value will result in ``NaN``:
+
+>>> x3 = np.array([-1, -4])
+>>> np.float_power(x3, 1.5)
+array([nan, nan])
+
+To get complex results, give the argument one of complex dtype, i.e.
+``dtype=np.complex64``:
+
+>>> np.float_power(x3, 1.5, dtype=np.complex64)
+array([1.1924881e-08-1.j, 9.5399045e-08-8.j], dtype=complex64)
+"""
+
+float_power = DPNPBinaryFunc(
+    "float_power",
+    ufi._float_power_result_type,
+    ti._pow,
+    _FLOAT_POWER_DOCSTRING,
+    mkl_fn_to_call=vmi._mkl_pow_to_call,
+    mkl_impl_fn=vmi._pow,
+    binary_inplace_fn=ti._pow_inplace,
+)
+
+
 _FLOOR_DOCSTRING = """
 Returns the floor for each element `x_i` for input array `x`.
 
@@ -2468,6 +2568,7 @@ See Also
 :obj:`dpnp.fmax` : Element-wise maximum of array elements.
 :obj:`dpnp.fmin` : Element-wise minimum of array elements.
 :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+:obj:`dpnp.float_power` : Power function that promotes integers to floats.
 
 Examples
 --------
