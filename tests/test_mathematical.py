@@ -1169,7 +1169,7 @@ class TestNanToNum:
         assert_raises(TypeError, dpnp.nan_to_num, ia, neginf=i_neginf)
 
     @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
-    @pytest.mark.parametrize("value", [True, 1 - 0j, [1, 2]])
+    @pytest.mark.parametrize("value", [1 - 0j, [1, 2], (1,)])
     def test_errors_diff_types(self, kwarg, value):
         ia = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
         with pytest.raises(TypeError):

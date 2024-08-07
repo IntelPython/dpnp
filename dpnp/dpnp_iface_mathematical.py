@@ -2290,15 +2290,15 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
         Whether to create a copy of `x` (``True``) or to replace values
         in-place (``False``). The in-place operation only occurs if casting to
         an array does not require a copy.
-    nan : {int, float}, optional
+    nan : {int, float, bool}, optional
         Value to be used to fill ``NaN`` values.
         Default: ``0.0``.
-    posinf : {int, float, None}, optional
+    posinf : {int, float, bool, None}, optional
         Value to be used to fill positive infinity values. If no value is
         passed then positive infinity values will be replaced with a very
         large number.
         Default: ``None``.
-    neginf : {int, float, None} optional
+    neginf : {int, float, bool, None} optional
         Value to be used to fill negative infinity values. If no value is
         passed then negative infinity values will be replaced with a very
         small (or negative) number.
@@ -2347,9 +2347,12 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     dpnp.check_supported_arrays_type(x)
 
-    if isinstance(nan, bool) or not isinstance(nan, (int, float)):
+    # Python boolean is a subtype of an integer
+    # so additional check for bool is not needed.
+    if not isinstance(nan, (int, float)):
         raise TypeError(
-            f"nan must be a scalar of an integer or float, but got {type(nan)}"
+            "nan must be a scalar of an integer, float, bool, "
+            f"but got {type(nan)}"
         )
 
     out = dpnp.empty_like(x) if copy else x
@@ -2368,17 +2371,17 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     )
     max_f, min_f = _get_max_min(x.real.dtype)
     if posinf is not None:
-        if isinstance(posinf, bool) or not isinstance(posinf, (int, float)):
+        if not isinstance(posinf, (int, float)):
             raise TypeError(
-                "posinf must be a scalar of an integer or float, or None, "
-                f"but got {type(posinf)}"
+                "posinf must be a scalar of an integer, float, bool, "
+                f"or be None, but got {type(posinf)}"
             )
         max_f = posinf
     if neginf is not None:
-        if isinstance(neginf, bool) or not isinstance(neginf, (int, float)):
+        if not isinstance(neginf, (int, float)):
             raise TypeError(
-                "neginf must be a scalar of an integer or float, or None, "
-                f"but got {type(neginf)}"
+                "neginf must be a scalar of an integer, float, bool, "
+                f"or be None, but got {type(neginf)}"
             )
         min_f = neginf
 
