@@ -2329,3 +2329,22 @@ def test_astype(device_x, device_y):
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, dtype="f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_unique(axis, device):
+    a = numpy.array([[1, 1], [2, 3]])
+    ia = dpnp.array(a, device=device)
+
+    result = dpnp.unique(ia, True, True, True, axis=axis)
+    expected = numpy.unique(a, True, True, True, axis=axis)
+    for iv, v in zip(result, expected):
+        assert_array_equal(iv, v)
+
+        iv_queue = iv.sycl_queue
+        assert_sycl_queue_equal(iv_queue, ia.sycl_queue)

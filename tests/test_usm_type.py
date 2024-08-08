@@ -1354,3 +1354,12 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_unique(axis, usm_type):
+    a = dp.array([[1, 1], [2, 3]], usm_type=usm_type)
+    res = dp.unique(a, True, True, True, axis=axis)
+    for x in res:
+        assert x.usm_type == usm_type
