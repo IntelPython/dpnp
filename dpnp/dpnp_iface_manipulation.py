@@ -104,44 +104,81 @@ def _unique_1d(
 ):
     """Find the unique elements of a 1D array."""
 
-    num_of_flags = (return_index, return_inverse, return_counts).count(True)
-    if num_of_flags == 0:
-        unique_func = dpt.unique_values
-    elif num_of_flags == 1 and return_inverse:
-        unique_func = dpt.unique_inverse
-    elif num_of_flags == 1 and return_counts:
-        unique_func = dpt.unique_counts
-    else:
-        unique_func = dpt.unique_all
+    def _get_first_nan_index(usm_a):
+        """
+        Find the first index of NaN in the input array with at least two NaNs.
 
-    usm_ar = dpnp.get_usm_ndarray(ar)
-    usm_res = unique_func(usm_ar)
+        Assume the input array sorted where the NaNs are always at the end.
+        Return None if the input array does not have at least two NaN values or
+        data type of the array is not inexact.
 
-    def _collapse_nans(a):
-        """Collapse multiple NaN values in an array into one NaN value."""
+        """
 
         if (
-            a.size > 2
-            and dpnp.issubdtype(a.dtype, dpnp.inexact)
-            and dpnp.isnan(a[-2])
+            usm_a.size > 2
+            and dpnp.issubdtype(usm_a.dtype, dpnp.inexact)
+            and dpnp.isnan(usm_a[-2])
         ):
-            if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+            if dpnp.issubdtype(usm_a.dtype, dpnp.complexfloating):
                 # for complex all NaNs are considered equivalent
-                first_nan = dpnp.searchsorted(dpnp.isnan(a), True, side="left")
-            else:
-                first_nan = dpnp.searchsorted(a, dpnp.nan, side="left")
-            return a[: first_nan + 1]
-        return a
+                true_val = dpt.asarray(
+                    True, sycl_queue=usm_a.sycl_queue, usm_type=usm_a.usm_type
+                )
+                return dpt.searchsorted(dpt.isnan(usm_a), true_val, side="left")
+            return dpt.searchsorted(usm_a, usm_a[-1], side="left")
+        return None
 
-    if isinstance(usm_res, tuple):
-        result = tuple(dpnp_array._create_from_usm_ndarray(x) for x in usm_res)
-        if equal_nan:
-            result = (_collapse_nans(result[0]),) + result[1:]
+    usm_ar = dpnp.get_usm_ndarray(ar)
+
+    num_of_flags = (return_index, return_inverse, return_counts).count(True)
+    if num_of_flags == 0:
+        usm_res = dpt.unique_values(usm_ar)
+        usm_res = (usm_res,)  # cast to a tuple to align with other cases
+    elif num_of_flags == 1 and return_inverse:
+        usm_res = dpt.unique_inverse(usm_ar)
+    elif num_of_flags == 1 and return_counts:
+        usm_res = dpt.unique_counts(usm_ar)
     else:
-        result = dpnp_array._create_from_usm_ndarray(usm_res)
-        if equal_nan:
-            result = _collapse_nans(result)
-    return result
+        usm_res = dpt.unique_all(usm_ar)
+
+    first_nan = None
+    if equal_nan:
+        first_nan = _get_first_nan_index(usm_res[0])
+
+    # collapse multiple NaN values in an array into one NaN value if applicable
+    result = (
+        usm_res[0][: first_nan + 1] if first_nan is not None else usm_res[0],
+    )
+    if return_index:
+        result += (
+            (
+                usm_res.indices[: first_nan + 1]
+                if first_nan is not None
+                else usm_res.indices
+            ),
+        )
+    if return_inverse:
+        if first_nan is not None:
+            # all NaNs are collapsed, so need to replace the indices with
+            # the index of the first NaN value in result array of unique values
+            dpt.place(
+                usm_res.inverse_indices,
+                usm_res.inverse_indices > first_nan,
+                dpt.reshape(first_nan, 1),
+            )
+
+        result += (usm_res.inverse_indices,)
+    if return_counts:
+        if first_nan is not None:
+            # all NaNs are collapsed, so need to put a count of all NaNs
+            # at the last index
+            dpt.sum(usm_res.counts[first_nan:], out=usm_res.counts[first_nan])
+            result += (usm_res.counts[: first_nan + 1],)
+        else:
+            result += (usm_res.counts,)
+
+    result = tuple(dpnp_array._create_from_usm_ndarray(x) for x in result)
+    return _unpack_tuple(result)
 
 
 def _unique_build_sort_indices(a, index_sh):
@@ -154,6 +191,8 @@ def _unique_build_sort_indices(a, index_sh):
     is_complex = dpnp.iscomplexobj(a)
     if dpnp.issubdtype(a.dtype, numpy.unsignedinteger):
         ar_cmp = a.astype(dpnp.intp)
+    elif dpnp.issubdtype(a.dtype, dpnp.bool):
+        ar_cmp = a.astype(numpy.int8)
     else:
         ar_cmp = a
 
@@ -190,6 +229,14 @@ def _unique_build_sort_indices(a, index_sh):
 
         sorted_indices[elem_pos] = mid_elem
     return sorted_indices
+
+
+def _unpack_tuple(a):
+    """Unpacks one-element tuples for use as return values."""
+
+    if len(a) == 1:
+        return a[0]
+    return a
 
 
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
@@ -2250,14 +2297,14 @@ def unique(
     ar = ar.reshape(mask.sum().asnumpy(), *orig_sh[1:])
     ar = dpnp.moveaxis(ar, 0, axis)
 
-    ret = (ar,)
+    result = (ar,)
     if return_index:
-        ret += (sorted_indices[mask],)
+        result += (sorted_indices[mask],)
     if return_inverse:
         imask = dpnp.cumsum(mask) - 1
         inv_idx = dpnp.empty_like(mask, dtype=dpnp.intp)
         inv_idx[sorted_indices] = imask
-        ret += (inv_idx,)
+        result += (inv_idx,)
     if return_counts:
         nonzero = dpnp.nonzero(mask)[0]
         idx = dpnp.empty_like(
@@ -2265,11 +2312,9 @@ def unique(
         )
         idx[:-1] = nonzero
         idx[-1] = mask.size
-        ret += (idx[1:] - idx[:-1],)
+        result += (idx[1:] - idx[:-1],)
 
-    if len(ret) == 1:
-        ret = ret[0]
-    return ret
+    return _unpack_tuple(result)
 
 
 def vstack(tup, *, dtype=None, casting="same_kind"):
