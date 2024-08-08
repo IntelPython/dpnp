@@ -476,7 +476,13 @@ def _batched_qr(a, mode="reduced"):
 
 
 def _batched_svd(
-    a, uv_type, s_type, full_matrices=True, compute_uv=True, related_arrays=None
+    a,
+    uv_type,
+    s_type,
+    full_matrices=True,
+    compute_uv=True,
+    related_arrays=None,
+    new=True,
 ):
     """
     _batched_svd(
@@ -501,7 +507,7 @@ def _batched_svd(
     # compute-follows-data execution model for `a` and `related arrays`.
     usm_type, exec_q = get_usm_allocations([a] + (related_arrays or []))
 
-    new = True
+    # new = True
 
     if new:
         a_shape = a.shape
@@ -2698,6 +2704,7 @@ def dpnp_svd(
     compute_uv=True,
     hermitian=False,
     related_arrays=None,
+    new=True,
 ):
     """
     dpnp_svd(
@@ -2730,6 +2737,7 @@ def dpnp_svd(
             full_matrices,
             compute_uv,
             related_arrays=related_arrays,
+            new=new,
         )
 
     # Set USM type and SYCL queue to be used based on `a`
