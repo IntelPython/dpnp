@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+116.g4e566e2a95 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+117.gd92103742e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=536640bd"></script>
+        <script src="../../_static/documentation_options.js?v=c959f9c8"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+116.g4e566e2a95
+                0.16.0dev0+117.gd92103742e
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2392,7 +2392,8 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.unique([1, 1, 2, 2, 3, 3])</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 1, 2, 2, 3, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.unique(a)</span>
 <span class="sd">    array([1, 2, 3])</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1, 1], [2, 3]])</span>
 <span class="sd">    &gt;&gt;&gt; np.unique(a)</span>
@@ -2402,18 +2403,8 @@
 
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0, 0], [1, 0, 0], [2, 3, 4]])</span>
 <span class="sd">    &gt;&gt;&gt; np.unique(a, axis=0)</span>
-<span class="sd">    array([[1, 0, 0], [2, 3, 4]])</span>
-
-<span class="sd">    Return the indices of the original array that give the unique values:</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([&#39;a&#39;, &#39;b&#39;, &#39;b&#39;, &#39;c&#39;, &#39;a&#39;])</span>
-<span class="sd">    &gt;&gt;&gt; u, indices = np.unique(a, return_index=True)</span>
-<span class="sd">    &gt;&gt;&gt; u</span>
-<span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], dtype=&#39;&lt;U1&#39;)</span>
-<span class="sd">    &gt;&gt;&gt; indices</span>
-<span class="sd">    array([0, 1, 3])</span>
-<span class="sd">    &gt;&gt;&gt; a[indices]</span>
-<span class="sd">    array([&#39;a&#39;, &#39;b&#39;, &#39;c&#39;], dtype=&#39;&lt;U1&#39;)</span>
+<span class="sd">    array([[1, 0, 0],</span>
+<span class="sd">           [2, 3, 4]])</span>
 
 <span class="sd">    Reconstruct the input array from the unique values and inverse:</span>
 
