@@ -2210,7 +2210,8 @@ def unique(
     Examples
     --------
     >>> import dpnp as np
-    >>> np.unique([1, 1, 2, 2, 3, 3])
+    >>> a = np.array([1, 1, 2, 2, 3, 3])
+    >>> np.unique(a)
     array([1, 2, 3])
     >>> a = np.array([[1, 1], [2, 3]])
     >>> np.unique(a)
@@ -2220,18 +2221,8 @@ def unique(
 
     >>> a = np.array([[1, 0, 0], [1, 0, 0], [2, 3, 4]])
     >>> np.unique(a, axis=0)
-    array([[1, 0, 0], [2, 3, 4]])
-
-    Return the indices of the original array that give the unique values:
-
-    >>> a = np.array(['a', 'b', 'b', 'c', 'a'])
-    >>> u, indices = np.unique(a, return_index=True)
-    >>> u
-    array(['a', 'b', 'c'], dtype='<U1')
-    >>> indices
-    array([0, 1, 3])
-    >>> a[indices]
-    array(['a', 'b', 'c'], dtype='<U1')
+    array([[1, 0, 0],
+           [2, 3, 4]])
 
     Reconstruct the input array from the unique values and inverse:
 
