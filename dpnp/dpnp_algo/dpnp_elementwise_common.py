@@ -57,9 +57,7 @@ class ufunc:
 
     Functions that operate element by element on whole arrays.
 
-    Calling ufuncs
-    --------------
-    op(*x[, out], **kwargs)
+    Calling ufuncs: `op(*x[, out], **kwargs)`
 
     Apply `op` to the arguments `*x` elementwise, broadcasting the arguments.
 
