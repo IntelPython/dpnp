@@ -175,8 +175,10 @@ class TestSVD(unittest.TestCase):
         array = testing.shaped_random(shape, numpy, dtype=dtype, seed=self.seed)
         a_cpu = numpy.asarray(array, dtype=dtype)
         a_gpu = cupy.asarray(array, dtype=dtype)
+        a_gpu_queue = a_gpu.sycl_queue
         result_cpu = numpy.linalg.svd(a_cpu, full_matrices=self.full_matrices)
         result_gpu = cupy.linalg.svd(a_gpu, full_matrices=self.full_matrices)
+        a_gpu_queue.wait()
         # Check if the input matrix is not broken
         testing.assert_allclose(a_gpu, a_cpu)
 
