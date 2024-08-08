@@ -723,6 +723,17 @@ class TestUnique:
         expected = numpy.unique(a, axis=0)
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("axis", [None, 0])
+    @pytest.mark.parametrize("dt", "bBhHiIlLqQ")
+    def test_1d_axis_all_inetger(self, axis, dt):
+        a = numpy.array([5, 7, 1, 2, 1, 5, 7], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.unique(ia, True, True, True, axis=axis)
+        expected = numpy.unique(a, True, True, True, axis=axis)
+        for iv, v in zip(result, expected):
+            assert_array_equal(iv, v)
+
     @pytest.mark.parametrize(
         "eq_nan_kwd",
         [
