@@ -65,8 +65,8 @@ class ufunc:
 
     Parameters
     ----------
-    *x : {dpnp.ndarray, usm_ndarray}
-        Input arrays.
+    x : {dpnp.ndarray, usm_ndarray}
+        One or two input arrays.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Output array to populate.
         Array must have the correct shape and the expected data type.
@@ -78,7 +78,7 @@ class ufunc:
         provided together with `out`. Default: ``None``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur. Cannot be provided
-        together with `out`. Default: ``"safe"``.
+        together with `out`. Default: ``"same_kind"``.
 
     Limitations
     -----------
