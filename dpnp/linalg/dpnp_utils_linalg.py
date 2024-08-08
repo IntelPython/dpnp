@@ -545,13 +545,13 @@ def _batched_svd(
         k = min(m, n)
         if compute_uv:
             if full_matrices:
-                u_shape = (batch_size,) + (m, m)
-                vt_shape = (batch_size,) + (n, n)
+                u_shape = (m, m) + (batch_size,)
+                vt_shape = (n, n) + (batch_size,)
                 jobu = ord("A")
                 jobvt = ord("A")
             else:
-                u_shape = (batch_size,) + (k, m)
-                vt_shape = (batch_size,) + (n, k)
+                u_shape = (m, k) + (batch_size,)
+                vt_shape = (k, n) + (batch_size,)
                 jobu = ord("S")
                 jobvt = ord("S")
         else:
@@ -582,14 +582,14 @@ def _batched_svd(
 
         u_h = dpnp.empty(
             u_shape,
-            order="C",
+            order="F",
             dtype=uv_type,
             usm_type=usm_type,
             sycl_queue=exec_q,
         )
         vt_h = dpnp.empty(
             vt_shape,
-            order="C",
+            order="F",
             dtype=uv_type,
             usm_type=usm_type,
             sycl_queue=exec_q,
@@ -619,8 +619,8 @@ def _batched_svd(
             # gesvd call writes `u_h` and `vt_h` in Fortran order;
             # reorder the axes to match C order by moving the last axis
             # to the front
-            u = dpnp.moveaxis(u_h, (-2, -1), (-1, -2))
-            vt = dpnp.moveaxis(vt_h, (-2, -1), (-1, -2))
+            u = dpnp.moveaxis(u_h, -1, 0)
+            vt = dpnp.moveaxis(vt_h, -1, 0)
             if a_ndim > 3:
                 u = u.reshape(batch_shape_orig + u.shape[-2:])
                 vt = vt.reshape(batch_shape_orig + vt.shape[-2:])

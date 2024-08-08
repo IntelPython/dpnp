@@ -282,12 +282,12 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("The input array must be F-contiguous");
     }
 
-    bool is_out_u_array_c_contig = out_u.is_c_contiguous();
-    bool is_out_vt_array_c_contig = out_vt.is_c_contiguous();
+    bool is_out_u_array_f_contig = out_u.is_f_contiguous();
+    bool is_out_vt_array_f_contig = out_vt.is_f_contiguous();
 
-    if (!is_out_u_array_c_contig || !is_out_vt_array_c_contig) {
+    if (!is_out_u_array_f_contig || !is_out_vt_array_f_contig) {
         throw py::value_error("The output arrays of the left and right "
-                              "singular vectors must be C-contiguous");
+                              "singular vectors must be F-contiguous");
     }
 
     bool is_out_s_array_c_contig = out_s.is_c_contiguous();
