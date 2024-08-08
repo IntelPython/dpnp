@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_algo.dpnp_elementwise_common &mdash; Data Parallel Extension for NumPy 0.16.0dev0+107.g82d0bf1d92 documentation</title>
+  <title>dpnp.dpnp_algo.dpnp_elementwise_common &mdash; Data Parallel Extension for NumPy 0.16.0dev0+109.g49827e573c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=2c230a35"></script>
+        <script src="../../../_static/documentation_options.js?v=499aa7ee"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+107.g82d0bf1d92
+                0.16.0dev0+109.g49827e573c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -157,8 +157,8 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    *x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input arrays.</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        One or two input arrays.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Output array to populate.</span>
 <span class="sd">        Array must have the correct shape and the expected data type.</span>
@@ -170,7 +170,7 @@
 <span class="sd">        provided together with `out`. Default: ``None``.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Cannot be provided</span>
-<span class="sd">        together with `out`. Default: ``&quot;safe&quot;``.</span>
+<span class="sd">        together with `out`. Default: ``&quot;same_kind&quot;``.</span>
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
