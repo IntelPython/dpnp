@@ -121,6 +121,10 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
     std::stringstream error_msg;
     bool is_exception_caught = false;
 
+    // Release GIL to avoid serialization of host task
+    // submissions to the same queue in OneMKL
+    py::gil_scoped_release release;
+
     for (std::int64_t batch_id = 0; batch_id < batch_size; ++batch_id) {
 
         T *a_batch = a + batch_id * a_size;
