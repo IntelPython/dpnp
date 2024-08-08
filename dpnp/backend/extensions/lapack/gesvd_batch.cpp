@@ -26,15 +26,12 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
 #include "utils/type_utils.hpp"
 
 #include "common_helpers.hpp"
 #include "gesvd.hpp"
 #include "gesvd_common_utils.hpp"
 #include "types_matrix.hpp"
-
-#include "dpnp_utils.hpp"
 
 namespace dpnp::extensions::lapack
 {
@@ -214,102 +211,19 @@ std::pair<sycl::event, sycl::event>
                 dpctl::tensor::usm_ndarray out_vt,
                 const std::vector<sycl::event> &depends)
 {
-    const int a_array_nd = a_array.get_ndim();
-    const int out_u_array_nd = out_u.get_ndim();
-    const int out_s_array_nd = out_s.get_ndim();
-    const int out_vt_array_nd = out_vt.get_ndim();
+    constexpr int expected_a_u_vt_ndim = 3;
+    constexpr int expected_s_ndim = 2;
 
-    if (a_array_nd != 3) {
-        throw py::value_error(
-            "The input array has ndim=" + std::to_string(a_array_nd) +
-            ", but a 3-dimensional array is expected.");
-    }
+    gesvd_utils::common_gesvd_checks(exec_q, a_array, out_s, out_u, out_vt,
+                                     jobu_val, jobvt_val, expected_a_u_vt_ndim,
+                                     expected_s_ndim);
 
-    if (out_s_array_nd != 2) {
-        throw py::value_error("The output array of singular values has ndim=" +
-                              std::to_string(out_s_array_nd) +
-                              ", but a 2-dimensional array is expected.");
-    }
-
-    if (jobu_val == 'N' && jobvt_val == 'N') {
-        if (out_u_array_nd != 0) {
-            throw py::value_error(
-                "The output array of the left singular vectors has ndim=" +
-                std::to_string(out_u_array_nd) +
-                ", but it is not used and should have ndim=0.");
-        }
-        if (out_vt_array_nd != 0) {
-            throw py::value_error(
-                "The output array of the right singular vectors has ndim=" +
-                std::to_string(out_vt_array_nd) +
-                ", but it is not used and should have ndim=0.");
-        }
-    }
-    else {
-        if (out_u_array_nd != 3) {
-            throw py::value_error(
-                "The output array of the left singular vectors has ndim=" +
-                std::to_string(out_u_array_nd) +
-                ", but a 3-dimensional array is expected.");
-        }
-        if (out_vt_array_nd != 3) {
-            throw py::value_error(
-                "The output array of the right singular vectors has ndim=" +
-                std::to_string(out_vt_array_nd) +
-                ", but a 3-dimensional array is expected.");
-        }
-    }
-
-    // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(
-            exec_q, {a_array.get_queue(), out_s.get_queue(), out_u.get_queue(),
-                     out_vt.get_queue()}))
-    {
-        throw std::runtime_error(
-            "USM allocations are not compatible with the execution queue.");
-    }
-
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(a_array, out_s) || overlap(a_array, out_u) ||
-        overlap(a_array, out_vt) || overlap(out_s, out_u) ||
-        overlap(out_s, out_vt) || overlap(out_u, out_vt))
-    {
-        throw py::value_error("Arrays have overlapping segments of memory");
-    }
-
-    bool is_a_array_f_contig = a_array.is_f_contiguous();
-    if (!is_a_array_f_contig) {
-        throw py::value_error("The input array must be F-contiguous");
-    }
-
-    bool is_out_u_array_f_contig = out_u.is_f_contiguous();
-    bool is_out_vt_array_f_contig = out_vt.is_f_contiguous();
-
-    if (!is_out_u_array_f_contig || !is_out_vt_array_f_contig) {
-        throw py::value_error("The output arrays of the left and right "
-                              "singular vectors must be F-contiguous");
-    }
-
-    bool is_out_s_array_c_contig = out_s.is_c_contiguous();
-
-    if (!is_out_s_array_c_contig) {
-        throw py::value_error("The output array of singular values "
-                              "must be C-contiguous");
-    }
+    // TODO: check non_zero shape
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
-    int out_u_type_id = array_types.typenum_to_lookup_id(out_u.get_typenum());
     int out_s_type_id = array_types.typenum_to_lookup_id(out_s.get_typenum());
-    int out_vt_type_id = array_types.typenum_to_lookup_id(out_vt.get_typenum());
-
-    if (a_array_type_id != out_u_type_id || a_array_type_id != out_vt_type_id) {
-        throw py::type_error(
-            "Input array, output left singular vectors array, "
-            "and outpuy right singular vectors array must have "
-            "the same data type");
-    }
 
     gesvd_batch_impl_fn_ptr_t gesvd_batch_fn =
         gesvd_batch_dispatch_table[a_array_type_id][out_s_type_id];
