@@ -32,6 +32,8 @@
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
+#include "common_helpers.hpp"
+
 namespace dpnp::extensions::lapack::gesvd_utils
 {
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
@@ -168,6 +170,41 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
             "and outpuy right singular vectors array must have "
             "the same data type");
     }
+}
+
+// Checks if the shape of input arrays for gesvd has any non-zero dimension.
+inline bool check_zeros_shape_gesvd(dpctl::tensor::usm_ndarray a_array,
+                                    dpctl::tensor::usm_ndarray out_s,
+                                    dpctl::tensor::usm_ndarray out_u,
+                                    dpctl::tensor::usm_ndarray out_vt,
+                                    const std::int8_t jobu_val,
+                                    const std::int8_t jobvt_val)
+{
+
+    const int a_array_nd = a_array.get_ndim();
+    const int out_u_array_nd = out_u.get_ndim();
+    const int out_s_array_nd = out_s.get_ndim();
+    const int out_vt_array_nd = out_vt.get_ndim();
+
+    const py::ssize_t *a_array_shape = a_array.get_shape_raw();
+    const py::ssize_t *s_out_shape = out_s.get_shape_raw();
+    const py::ssize_t *u_out_shape = out_u.get_shape_raw();
+    const py::ssize_t *vt_out_shape = out_vt.get_shape_raw();
+
+    bool is_zeros_shape = helper::check_zeros_shape(a_array_nd, a_array_shape);
+    if (jobu_val == 'N' && jobvt_val == 'N') {
+        is_zeros_shape = is_zeros_shape || helper::check_zeros_shape(
+                                               out_vt_array_nd, vt_out_shape);
+    }
+    else {
+        is_zeros_shape =
+            is_zeros_shape ||
+            helper::check_zeros_shape(out_u_array_nd, s_out_shape) ||
+            helper::check_zeros_shape(out_s_array_nd, u_out_shape) ||
+            helper::check_zeros_shape(out_vt_array_nd, vt_out_shape);
+    }
+
+    return is_zeros_shape;
 }
 
 inline void handle_lapack_exc(std::int64_t scratchpad_size,
