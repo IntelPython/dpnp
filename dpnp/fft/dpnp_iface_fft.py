@@ -1151,18 +1151,18 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
-        Input array.
+        Input array, can be complex.
     s : {None, sequence of ints}, optional
         Shape (length of each transformed axis) of the output
-        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.).`s` is also the
+        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.). `s` is also the
         number of input points used along this axis, except for the last axis,
         where ``s[-1]//2+1`` points of the input are used.
         Along each axis, if the given shape is smaller than that of the input,
         the input is cropped. If it is larger, the input is padded with zeros.
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes
-        specified by axes is used. Except for the last axis which is taken to
-        be ``2*(m-1)`` where ``m`` is the length of the input along that axis.
+        specified by `axes` is used. Except for the last axis which is taken to
+        be ``2*(m-1)`` where `m` is the length of the input along that axis.
         If `s` is not ``None``, `axes` must not be ``None``
         Default: ``None``.
     axes : {None, sequence of ints}, optional
@@ -1182,26 +1182,26 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype for the last transformation.
-        Default: ``None``.
+        of the appropriate shape and dtype for the last transformation (and
+        hence only the last axis can have `s` not equal to the shape at that
+        axis). Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray of complex dtype
         The truncated or zero-padded input, transformed along the axes
-        indicated by `axes`, or by a combination of `s` and `a`,
-        as explained in the parameters section above.
+        indicated by `axes`, or the last two axes if `axes` is not given.
 
     See Also
     --------
-    :obj:`dpnp.rfft` : Overall view of discrete Fourier transforms, with
+    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with
         definitions and conventions used.
     :obj:`dpnp.fft.rfft2` : The forward two-dimensional FFT of real input,
                         of which :obj:`dpnp.fft.irfft2` is the inverse.
     :obj:`dpnp.fft.rfft` : The one-dimensional FFT for real input.
     :obj:`dpnp.fft.irfft` : The inverse of the one-dimensional FFT of
                         real input.
-    :obj:`dpnp.fft.irfftn` : The inverse of the `N`-dimensional FFT of
+    :obj:`dpnp.fft.irfftn` : The inverse of the *N*-dimensional FFT of
                         real input.
 
     Notes
@@ -1212,15 +1212,14 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.zeros((3, 2, 2))
-    >>> a[0, 0, 0] = 3 * 2 * 2
-    >>> np.fft.irfftn(a)
-    array([[[1.,  1.],
-            [1.,  1.]],
-           [[1.,  1.],
-            [1.,  1.]],
-           [[1.,  1.],
-            [1.,  1.]]])
+    >>> a = np.mgrid[:5, :5][0]
+    >>> A = np.fft.rfft2(a)
+    >>> np.fft.irfft2(A, s=a.shape)
+    array([[0., 0., 0., 0., 0.],
+           [1., 1., 1., 1., 1.],
+           [2., 2., 2., 2., 2.],
+           [3., 3., 3., 3., 3.],
+           [4., 4., 4., 4., 4.]])
 
     """
 
@@ -1234,8 +1233,8 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
     """
     Computes the inverse of :obj:`dpnp.fft.rfftn`.
 
-    This function computes the inverse of the N-dimensional discrete Fourier
-    Transform for real input over any number of axes in an `M`-dimensional
+    This function computes the inverse of the *N*-dimensional discrete Fourier
+    Transform for real input over any number of axes in an *M*-dimensional
     array by means of the Fast Fourier Transform (FFT). In other words,
     ``irfftn(rfftn(a), a.shape) == a`` to within numerical accuracy. (The
     ``a.shape`` is necessary like ``len(a)`` is for :obj:`dpnp.fft.irfft`,
@@ -1251,10 +1250,10 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
-        Input array.
+        Input array, can be complex.
     s : {None, sequence of ints}, optional
         Shape (length of each transformed axis) of the output
-        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.).`s` is also the
+        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.). `s` is also the
         number of input points used along this axis, except for the last axis,
         where ``s[-1]//2+1`` points of the input are used.
         Along each axis, if the given shape is smaller than that of the input,
@@ -1262,7 +1261,7 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes
         specified by axes is used. Except for the last axis which is taken to
-        be ``2*(m-1)`` where ``m`` is the length of the input along that axis.
+        be ``2*(m-1)`` where `m` is the length of the input along that axis.
         If `s` is not ``None``, `axes` must not be ``None``
         Default: ``None``.
     axes : {None, sequence of ints}, optional
@@ -1282,8 +1281,9 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype for the last transformation.
-        Default: ``None``.
+        of the appropriate shape and dtype for the last transformation (and
+        hence only the last axis can have `s` not equal to the shape at that
+        axis). Default: ``None``.
 
     Returns
     -------
@@ -1293,16 +1293,18 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         as explained in the parameters section above.
         The length of each transformed axis is as given by the corresponding
         element of `s`, or the length of the input in every axis except for the
-        last one if `s` is not given.  In the final transformed axis the length
-        of the output when `s` is not given is ``2*(m-1)`` where ``m`` is the
-        length of the final transformed axis of the input.  To get an odd
+        last one if `s` is not given. In the final transformed axis the length
+        of the output when `s` is not given is ``2*(m-1)`` where `m` is the
+        length of the final transformed axis of the input. To get an odd
         number of output points in the final axis, `s` must be specified.
 
     See Also
     --------
-    :obj:`dpnp.rfft` : Overall view of discrete Fourier transforms, with
+    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with
         definitions and conventions used.
     :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.
+    :obj:`dpnp.fft.fft` : The one-dimensional FFT, with definitions and
+                        conventions used.
     :obj:`dpnp.fft.irfft` : The inverse of the one-dimensional FFT of
                         real input.
     :obj:`dpnp.fft.irfft2` : The inverse of the two-dimensional FFT of
@@ -1315,7 +1317,7 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
     See :obj:`dpnp.fft.rfft` for definitions and conventions used for real
     input.
 
-    The correct interpretation of the hermitian input depends on the shape of
+    The correct interpretation of the Hermitian input depends on the shape of
     the original data, as given by `s`. This is because each input shape could
     correspond to either an odd or even length signal. By default,
     :obj:`dpnp.fft.irfftn` assumes an even output length which puts the last
@@ -1447,9 +1449,10 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
     a : {dpnp.ndarray, usm_ndarray}
         Input array, taken to be real.
     s : {None, sequence of ints}, optional
-        Shape (length of each transformed axis) of the output
+        Shape (length of each transformed axis) to use from the input.
         (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.).
-        This corresponds to ``n`` for ``fft(x, n)``.
+        The final element of `s` corresponds to `n` for ``rfft(x, n)``, while
+        for the remaining axes, it corresponds to `n` for ``fft(x, n)``.
         Along each axis, if the given shape is smaller than that of the input,
         the input is cropped. If it is larger, the input is padded with zeros.
         If it is ``-1``, the whole input is used (no padding/trimming).
@@ -1484,7 +1487,7 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
 
     See Also
     --------
-    :obj:`dpnp.rfft` : Overall view of discrete Fourier transforms, with
+    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with
         definitions and conventions used.
     :obj:`dpnp.fft.rfft` : The one-dimensional FFT of real input.
     :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.
@@ -1492,8 +1495,8 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
 
     Notes
     -----
-    :obj:`dpnp.fft.fft2` is just :obj:`dpnp.fft.fftn` with a different
-    default for `axes`.
+    This is just :obj:`dpnp.fft.rfftn` with different default behavior.
+    For more details see :obj:`dpnp.fft.rfftn`.
 
     Examples
     --------
@@ -1616,7 +1619,13 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
 
 def rfftn(a, s=None, axes=None, norm=None, out=None):
     """
-    Compute the `N`-dimensional discrete Fourier Transform for real input.
+    Compute the *N*-dimensional discrete Fourier Transform for real input.
+
+    This function computes the *N*-dimensional discrete Fourier Transform over
+    any number of axes in an *M*-dimensional real array by means of the Fast
+    Fourier Transform (FFT). By default, all axes are transformed, with the
+    real transform performed over the last axis, while the remaining
+    transforms are complex.
 
     For full documentation refer to :obj:`numpy.fft.rfftn`.
 
@@ -1668,20 +1677,20 @@ def rfftn(a, s=None, axes=None, norm=None, out=None):
 
     See Also
     --------
-    :obj:`dpnp.rfft` : Overall view of discrete Fourier transforms, with
+    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with
         definitions and conventions used.
-    :obj:`dpnp.fft.irfftn` : The inverse of the `n`-dimensional FFT of
+    :obj:`dpnp.fft.irfftn` : The inverse of the *N*-dimensional FFT of
                         real input.
     :obj:`dpnp.fft.fft` : The one-dimensional FFT of general (complex) input.
     :obj:`dpnp.fft.rfft` : The one-dimensional FFT of real input.
-    :obj:`dpnp.fft.fftn` : The `n`-dimensional FFT.
+    :obj:`dpnp.fft.fftn` : The *N*-dimensional FFT.
     :obj:`dpnp.fft.fftn` : The two-dimensional FFT.
 
     Notes
     -----
     The transform for real input is performed over the last transformation
     axis, as by :obj:`dpnp.fft.rfft`, then the transform over the remaining
-    axes is performed as by :obj:`dpnp.fft.rfftn`. The order of the output
+    axes is performed as by :obj:`dpnp.fft.fftn`. The order of the output
     is as for :obj:`dpnp.fft.rfft` for the final transformation axis, and
     as for :obj:`dpnp.fft.fftn` for the remaining transformation axes.
 

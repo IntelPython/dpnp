@@ -561,25 +561,48 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
         )
 
     if r2c:
-        a = _fft(a, norm, out, forward, False, False, axes[-1], a.ndim != 1)
-        return call_complex(
-            a, norm, out, forward, False, True, axes[:-1], a.ndim != len_axes - 1
+        # a 1D real-to-complext FFT is performed on the last axis and then
+        # an N-D complex-to-complex FFT over the remaining axes
+        a = _fft(
+            a, norm, out, forward, in_place and c2c, c2c, axes[-1], a.ndim != 1
+        )
+        return _complex_nd_fft(
+            a,
+            norm,
+            out,
+            forward,
+            in_place,
+            True,  # c2c
+            axes[:-1],
+            a.ndim != len_axes - 1,
         )
 
     if c2r:
-        a = call_complex(
-            a, norm, out, forward, False, True, axes[:-1], a.ndim != len_axes - 1
+        # an N-D complex-to-complex FFT is performed on all axes except the
+        # last one then a 1D complex-to-real FFT is performed on the last axis
+        a = _complex_nd_fft(
+            a,
+            norm,
+            out,
+            forward,
+            in_place,
+            True,  # c2c
+            axes[:-1],
+            a.ndim != len_axes - 1,
         )
-        return _fft(a, norm, out, forward, False, False, axes[-1], a.ndim != 1)
+        return _fft(
+            a, norm, out, forward, in_place and c2c, c2c, axes[-1], a.ndim != 1
+        )
 
     # c2c
-    return call_complex(
-        a, norm, out, forward, in_place, c2c, axes, a.ndim != len_axes - 1
+    return _complex_nd_fft(
+        a, norm, out, forward, in_place, c2c, axes, a.ndim != len_axes
     )
 
 
-def call_complex(a, norm, out, forward, in_place, c2c, axes, batch_fft):
-    """Call complex"""
+def _complex_nd_fft(a, norm, out, forward, in_place, c2c, axes, batch_fft):
+    """Computes complex-to-complex FFT of the input N-D array."""
+
     len_axes = len(axes)
     # OneMKL supports up to 3-dimensional FFT on GPU
     # repeated axis in OneMKL FFT is not allowed
@@ -592,7 +615,7 @@ def call_complex(a, norm, out, forward, in_place, c2c, axes, batch_fft):
                 out=out,
                 forward=forward,
                 # TODO: in-place FFT is only implemented for c2c, see SAT-7154
-                in_place=in_place,
+                in_place=in_place and c2c,
                 c2c=c2c,
                 axes=chunk,
             )
@@ -604,7 +627,7 @@ def call_complex(a, norm, out, forward, in_place, c2c, axes, batch_fft):
         out=out,
         forward=forward,
         # TODO: in-place FFT is only implemented for c2c, see SAT-7154
-        in_place=in_place,
+        in_place=in_place and c2c,
         c2c=c2c,
         axes=axes,
         batch_fft=batch_fft,
