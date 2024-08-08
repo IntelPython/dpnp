@@ -44,6 +44,7 @@ no_complex_types = [numpy.bool_] + float_types + int_types
                     "subtract",
                     "true_divide",
                     "floor_divide",
+                    "float_power",
                     "fmod",
                     "remainder",
                 ],
@@ -260,7 +261,7 @@ class ArithmeticBinaryBase:
         if xp.isscalar(arg1) and xp.isscalar(arg2):
             pytest.skip("both scalar inputs is not supported")
 
-        if self.name == "power":
+        if self.name == "power" or self.name == "float_power":
             # TODO(niboshi): Fix this: power(0, 1j)
             #     numpy => 1+0j
             #     cupy => 0j
@@ -302,6 +303,14 @@ class ArithmeticBinaryBase:
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore")
                 if self.use_dtype:
+                    if (
+                        xp is numpy
+                        and self.name == "float_power"
+                        and self.dtype == numpy.float32
+                    ):
+                        # numpy.float_power does not have a loop for float32,
+                        # while dpnp.float_power does
+                        self.dtype = numpy.float64
                     y = func(arg1, arg2, dtype=self.dtype)
                 else:
                     y = func(arg1, arg2)
@@ -309,10 +318,23 @@ class ArithmeticBinaryBase:
         # TODO(niboshi): Fix this. If rhs is a Python complex,
         #    numpy returns complex64
         #    cupy returns complex128
-        if xp is cupy and isinstance(arg2, complex):
+        if (
+            xp is cupy
+            and isinstance(arg2, complex)
+            and self.name != "float_power"
+        ):
             if dtype1 in (numpy.float16, numpy.float32):
                 y = y.astype(numpy.complex64)
 
+        if xp is cupy and self.name == "float_power" and has_support_aspect64():
+            # numpy.float_power does not have a loop for float32 and complex64,
+            # and will upcast input array to float64 or complex128,
+            # while dpnp has to support float32 and complex64 to compatibility
+            # with devices without fp64 support
+            if y.dtype == cupy.float32:
+                y = y.astype(cupy.float64)
+            elif y.dtype == cupy.complex64:
+                y = y.astype(cupy.complex128)
         return y
 
 
@@ -331,7 +353,7 @@ class ArithmeticBinaryBase:
                     for d in all_types
                 ]
                 + [0, 0.0, 0j, 2, 2.0, 2j, True, False],
-                "name": ["add", "multiply", "power", "subtract"],
+                "name": ["add", "multiply", "power", "subtract", "float_power"],
             }
         )
         + testing.product(
@@ -405,7 +427,7 @@ class TestArithmeticBinary(ArithmeticBinaryBase):
                     for d in float_types
                 ]
                 + [0.0, 2.0, -2.0],
-                "name": ["power", "true_divide", "subtract"],
+                "name": ["power", "true_divide", "subtract", "float_power"],
                 "dtype": [cupy.default_float_type()],
                 "use_dtype": [True, False],
             }
