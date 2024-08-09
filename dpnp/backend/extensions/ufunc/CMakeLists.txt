@@ -28,6 +28,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/degrees.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fabs.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fix.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/float_power.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmod.cpp

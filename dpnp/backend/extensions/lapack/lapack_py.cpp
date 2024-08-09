@@ -53,6 +53,7 @@ void init_dispatch_vectors(void)
 {
     lapack_ext::init_geqrf_batch_dispatch_vector();
     lapack_ext::init_geqrf_dispatch_vector();
+    lapack_ext::init_gesv_batch_dispatch_vector();
     lapack_ext::init_gesv_dispatch_vector();
     lapack_ext::init_getrf_batch_dispatch_vector();
     lapack_ext::init_getrf_dispatch_vector();
@@ -105,6 +106,13 @@ PYBIND11_MODULE(_lapack_impl, m)
     m.def("_gesv", &lapack_ext::gesv,
           "Call `gesv` from OneMKL LAPACK library to return "
           "the solution of a system of linear equations with "
+          "a square coefficient matrix A and multiple dependent variables",
+          py::arg("sycl_queue"), py::arg("coeff_matrix"),
+          py::arg("dependent_vals"), py::arg("depends") = py::list());
+
+    m.def("_gesv_batch", &lapack_ext::gesv_batch,
+          "Call `gesv` from OneMKL LAPACK library to return "
+          "the batch solution of a system of linear equations with "
           "a square coefficient matrix A and multiple dependent variables",
           py::arg("sycl_queue"), py::arg("coeff_matrix"),
           py::arg("dependent_vals"), py::arg("depends") = py::list());
