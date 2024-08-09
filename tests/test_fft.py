@@ -486,7 +486,7 @@ class TestFftn:
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("axes", [(2, 3, 3, 2), (0, 0, 3, 3)])
-    @pytest.mark.parametrize("s", [(5, 4, 3, 3), (7, 8, 10, 7)])
+    @pytest.mark.parametrize("s", [(5, 4, 3, 3), (7, 8, 10, 9)])
     def test_fftn_repeated_axes_with_s(self, axes, s):
         x1 = numpy.random.uniform(-10, 10, 120)
         x2 = numpy.random.uniform(-10, 10, 120)
@@ -495,18 +495,55 @@ class TestFftn:
         )
         a = dpnp.asarray(a_np)
 
-        result = dpnp.fft.fftn(a, axes=axes)
+        result = dpnp.fft.fftn(a, s=s, axes=axes)
         # Intel® NumPy ignores repeated axes, handle it one by one
         expected = a_np
-        for ii in axes:
-            expected = numpy.fft.fft(expected, axis=ii)
+        for jj, ii in zip(s[::-1], axes[::-1]):
+            expected = numpy.fft.fft(expected, n=jj, axis=ii)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-        iresult = dpnp.fft.ifftn(result, axes=axes)
+        iresult = dpnp.fft.ifftn(result, s=s, axes=axes)
         iexpected = expected
-        for ii in axes:
-            iexpected = numpy.fft.ifft(iexpected, axis=ii)
+        for jj, ii in zip(s[::-1], axes[::-1]):
+            iexpected = numpy.fft.ifft(iexpected, n=jj, axis=ii)
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("axes", [(0, 1, 2, 3), (1, 2, 1, 2), (2, 2, 2, 3)])
+    @pytest.mark.parametrize("s", [(2, 3, 4, 5), (5, 4, 7, 8), (2, 5, 1, 2)])
+    def test_fftn_out(self, axes, s):
+        x1 = numpy.random.uniform(-10, 10, 120)
+        x2 = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(
+            2, 3, 4, 5
+        )
+        a = dpnp.asarray(a_np)
+
+        out_shape = list(a.shape)
+        for s_i, axis in zip(s[::-1], axes[::-1]):
+            out_shape[axis] = s_i
+        result = dpnp.empty(out_shape, dtype=a.dtype)
+        dpnp.fft.fftn(a, out=result, s=s, axes=axes)
+        # Intel® NumPy ignores repeated axes, handle it one by one
+        expected = a_np
+        for jj, ii in zip(s[::-1], axes[::-1]):
+            expected = numpy.fft.fft(expected, n=jj, axis=ii)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.empty(out_shape, dtype=a.dtype)
+        dpnp.fft.ifftn(result, out=iresult, s=s, axes=axes)
+        iexpected = expected
+        for jj, ii in zip(s[::-1], axes[::-1]):
+            iexpected = numpy.fft.ifft(iexpected, n=jj, axis=ii)
+        assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
+
+    def test_negative_s(self):
+        # stock NumPy 2.0, if s is -1, the whole input is used (no padding/trimming).
+        a_np = numpy.empty((3, 4, 5), dtype=numpy.complex64)
+        a = dpnp.array(a_np)
+
+        result = dpnp.fft.fftn(a, s=(-1, -1), axes=(0, 2))
+        expected = numpy.fft.fftn(a_np, s=(3, 5), axes=(0, 2))
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     def test_fftn_empty_array(self):
         a_np = numpy.empty((10, 0, 4), dtype=numpy.complex64)

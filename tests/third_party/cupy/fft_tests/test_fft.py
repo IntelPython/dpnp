@@ -216,7 +216,7 @@ class TestFft2:
                 {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
-                {"shape": (3, 4), "s": None, "axes": [-1, -2]},
+                {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
                 # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (3, 4), "s": None, "axes": None},
