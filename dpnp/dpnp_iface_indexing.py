@@ -1162,7 +1162,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     v : {scalar, array_like}
          Values to be put into `a`. Must be broadcastable to the result shape
          ``a.shape[:axis] + ind.shape + a.shape[axis+1:]``.
-    axis {None, int}, optional
+    axis : {None, int}, optional
         The axis along which the values will be placed. If `a` is 1-D array,
         this argument is optional.
         Default: ``None``.
