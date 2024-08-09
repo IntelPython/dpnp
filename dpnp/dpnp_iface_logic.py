@@ -459,7 +459,6 @@ def array_equal(a1, a2, equal_nan=False):
             False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
         )
     # Shapes of a1, a2 and masks are guaranteed to be consistent by this point
-    # pylint:disable=invalid-unary-operand-type
     return (a1[~a1nan] == a2[~a1nan]).all()
 
 
