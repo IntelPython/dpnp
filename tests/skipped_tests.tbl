@@ -182,22 +182,6 @@ tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_par
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
 tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
 
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_negative
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_for_old_numpy
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_negative_for_old_numpy
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_inf
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_inf_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_nan_arg
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_inf_arg
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_broadcast[nan]
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_broadcast[posinf]
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_broadcast[neginf]
-
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_scalar_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_copy
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_nan_to_num_inplace
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_real_if_close_real_dtypes
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_real_if_close_with_tol_real_dtypes
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_real_if_close_true

@@ -245,6 +245,7 @@ class TestMisc:
     def test_nan_to_num_nan(self):
         self.check_unary_nan("nan_to_num")
 
+    @pytest.mark.skip(reason="Scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_nan_to_num_scalar_nan(self, xp):
         return xp.nan_to_num(xp.nan)
@@ -260,26 +261,27 @@ class TestMisc:
 
     @testing.numpy_cupy_array_equal()
     def test_nan_to_num_copy(self, xp):
-        x = xp.asarray([0, 1, xp.nan, 4], dtype=xp.float64)
+        x = xp.asarray([0, 1, xp.nan, 4], dtype=cupy.default_float_type())
         y = xp.nan_to_num(x, copy=True)
         assert x is not y
         return y
 
     @testing.numpy_cupy_array_equal()
     def test_nan_to_num_inplace(self, xp):
-        x = xp.asarray([0, 1, xp.nan, 4], dtype=xp.float64)
+        x = xp.asarray([0, 1, xp.nan, 4], dtype=cupy.default_float_type())
         y = xp.nan_to_num(x, copy=False)
         assert x is y
         return y
 
+    @pytest.mark.skip(reason="nan, posinf, neginf as array are not supported")
     @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
     def test_nan_to_num_broadcast(self, kwarg):
         for xp in (numpy, cupy):
-            x = xp.asarray([0, 1, xp.nan, 4], dtype=xp.float64)
-            y = xp.zeros((2, 4), dtype=xp.float64)
-            with pytest.raises(ValueError):
+            x = xp.asarray([0, 1, xp.nan, 4], dtype=cupy.default_float_type())
+            y = xp.zeros((2, 4), dtype=cupy.default_float_type())
+            with pytest.raises(TypeError):
                 xp.nan_to_num(x, **{kwarg: y})
-            with pytest.raises(ValueError):
+            with pytest.raises(TypeError):
                 xp.nan_to_num(0.0, **{kwarg: y})
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
