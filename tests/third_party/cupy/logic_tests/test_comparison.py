@@ -102,7 +102,6 @@ class TestArrayEqual(unittest.TestCase):
     @testing.with_requires("numpy>=1.19")
     @testing.for_float_dtypes()
     @testing.numpy_cupy_equal()
-    @pytest.mark.skip("Not supported yet")
     def test_array_equal_infinite_equal_nan(self, xp, dtype):
         nan = float("nan")
         inf = float("inf")
@@ -114,7 +113,6 @@ class TestArrayEqual(unittest.TestCase):
     @testing.with_requires("numpy>=1.19")
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_equal()
-    @pytest.mark.skip("Not supported yet")
     def test_array_equal_complex_equal_nan(self, xp, dtype):
         a = xp.array([1 + 2j], dtype=dtype)
         b = a.copy()
@@ -141,7 +139,6 @@ class TestArrayEqual(unittest.TestCase):
         return xp.array_equal(a, b)
 
 
-@pytest.mark.skip("dpnp.array_equiv() is not implemented yet")
 class TestArrayEquiv(unittest.TestCase):
 
     @testing.for_all_dtypes()
