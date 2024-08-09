@@ -860,7 +860,6 @@ class TestGradientErrors:
                 xp.gradient(x)
 
 
-@pytest.mark.skip("ediff1d() is not implemented yet")
 class TestEdiff1d:
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()

@@ -194,53 +194,6 @@ INP_DLLEXPORT void dpnp_dot_c(void *result_out,
 
 /**
  * @ingroup BACKEND_API
- * @brief The differences between consecutive elements of an array.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result_out          Output array.
- * @param [in]  result_size         Size of output array.
- * @param [in]  result_ndim         Number of output array dimensions.
- * @param [in]  result_shape        Shape of output array.
- * @param [in]  result_strides      Strides of output array.
- * @param [in]  input1_in           First input array.
- * @param [in]  input1_size         Size of first input array.
- * @param [in]  input1_ndim         Number of first input array dimensions.
- * @param [in]  input1_shape        Shape of first input array.
- * @param [in]  input1_strides      Strides of first input array.
- * @param [in]  where               Mask array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_ediff1d_c(DPCTLSyclQueueRef q_ref,
-                   void *result_out,
-                   const size_t result_size,
-                   const size_t result_ndim,
-                   const shape_elem_type *result_shape,
-                   const shape_elem_type *result_strides,
-                   const void *input1_in,
-                   const size_t input1_size,
-                   const size_t input1_ndim,
-                   const shape_elem_type *input1_shape,
-                   const shape_elem_type *input1_strides,
-                   const size_t *where,
-                   const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType_input, typename _DataType_output>
-INP_DLLEXPORT void dpnp_ediff1d_c(void *result_out,
-                                  const size_t result_size,
-                                  const size_t result_ndim,
-                                  const shape_elem_type *result_shape,
-                                  const shape_elem_type *result_strides,
-                                  const void *input1_in,
-                                  const size_t input1_size,
-                                  const size_t input1_ndim,
-                                  const shape_elem_type *input1_shape,
-                                  const shape_elem_type *input1_strides,
-                                  const size_t *where);
-
-/**
- * @ingroup BACKEND_API
  * @brief Compute summary of input array elements.
  *
  * Input array is expected as @ref _DataType_input type and assume result as
