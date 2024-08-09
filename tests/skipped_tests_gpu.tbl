@@ -169,20 +169,6 @@ tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_i
 tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_index
 tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_order
 
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_scalar
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_empty_lists
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_length_error
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_condlist
-
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
 

@@ -355,10 +355,9 @@ class TestSelect(unittest.TestCase):
         a = cupy.arange(10, dtype=dtype)
         condlist = [[3] * 10, [2] * 10]
         choicelist = [a, a**2]
-        with pytest.raises(AttributeError):
+        with pytest.raises(TypeError):
             cupy.select(condlist, choicelist)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes(no_bool=True)
     def test_select_type_error_choicelist(self, dtype):
         a, b = list(range(10)), list(range(-10, 0))
@@ -388,7 +387,7 @@ class TestSelect(unittest.TestCase):
         b = cupy.arange(20)
         condlist = [a < 3, b > 8]
         choicelist = [a, b]
-        with pytest.raises(TypeError):
+        with pytest.raises(ValueError):
             cupy.select(condlist, choicelist, [dtype(2)])
 
     @pytest.mark.skip("as_strided() is not implemented yet")

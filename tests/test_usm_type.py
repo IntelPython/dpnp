@@ -1359,3 +1359,11 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_select(usm_type):
+    condlist = [dp.array([True, False], usm_type=usm_type)]
+    choicelist = [dp.array([1, 2], usm_type=usm_type)]
+    res = dp.select(condlist, choicelist)
+    assert res.usm_type == usm_type
