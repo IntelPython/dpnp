@@ -72,37 +72,6 @@ def _check_norm(norm):
         )
 
 
-# TODO: c2r keyword is place holder for irfftn
-def _cook_nd_args(a, s=None, axes=None, c2r=False):
-    if s is None:
-        shapeless = True
-        if axes is None:
-            s = list(a.shape)
-        else:
-            s = numpy.take(a.shape, axes)
-    else:
-        shapeless = False
-
-    for s_i in s:
-        if s_i is not None and s_i < 1 and s_i != -1:
-            raise ValueError(
-                f"Invalid number of FFT data points ({s_i}) specified."
-            )
-
-    if axes is None:
-        axes = list(range(-len(s), 0))
-
-    if len(s) != len(axes):
-        raise ValueError("Shape and axes have different lengths.")
-
-    s = list(s)
-    if c2r and shapeless:
-        s[-1] = (a.shape[axes[-1]] - 1) * 2
-    # use the whole input array along axis `i` if `s[i] == -1`
-    s = [a.shape[_a] if _s == -1 else _s for _s, _a in zip(s, axes)]
-    return s, axes
-
-
 def _commit_descriptor(a, in_place, c2c, a_strides, index, axes):
     """Commit the FFT descriptor for the input array."""
 
@@ -195,6 +164,37 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
     if not isinstance(result, dpnp_array):
         return dpnp_array._create_from_usm_ndarray(result)
     return result
+
+
+# TODO: c2r keyword is place holder for irfftn
+def _cook_nd_args(a, s=None, axes=None, c2r=False):
+    if s is None:
+        shapeless = True
+        if axes is None:
+            s = list(a.shape)
+        else:
+            s = numpy.take(a.shape, axes)
+    else:
+        shapeless = False
+
+    for s_i in s:
+        if s_i is not None and s_i < 1 and s_i != -1:
+            raise ValueError(
+                f"Invalid number of FFT data points ({s_i}) specified."
+            )
+
+    if axes is None:
+        axes = list(range(-len(s), 0))
+
+    if len(s) != len(axes):
+        raise ValueError("Shape and axes have different lengths.")
+
+    s = list(s)
+    if c2r and shapeless:
+        s[-1] = (a.shape[axes[-1]] - 1) * 2
+    # use the whole input array along axis `i` if `s[i] == -1`
+    s = [a.shape[_a] if _s == -1 else _s for _s, _a in zip(s, axes)]
+    return s, axes
 
 
 def _copy_array(x, complex_input):

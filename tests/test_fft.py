@@ -361,10 +361,10 @@ class TestFft2:
     def setup_method(self):
         numpy.random.seed(42)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     def test_fft2(self, dtype):
         x1 = numpy.random.uniform(-10, 10, 24)
-        a_np = numpy.array(x1).reshape(2, 3, 4)
+        a_np = numpy.array(x1, dtype=dtype).reshape(2, 3, 4)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.fft2(a)
