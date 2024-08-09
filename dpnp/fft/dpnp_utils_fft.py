@@ -36,11 +36,16 @@ available as a pybind11 extension.
 # pylint: disable=protected-access
 # pylint: disable=no-name-in-module
 
+from collections.abc import Sequence
+
 import dpctl
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_index
+from dpctl.tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
@@ -54,6 +59,7 @@ from ..dpnp_utils.dpnp_utils_linearalgebra import (
 
 __all__ = [
     "dpnp_fft",
+    "dpnp_fftn",
 ]
 
 
@@ -159,6 +165,37 @@ def _compute_result(dsc, a, out, forward, c2c, a_strides):
     return result
 
 
+# TODO: c2r keyword is place holder for irfftn
+def _cook_nd_args(a, s=None, axes=None, c2r=False):
+    if s is None:
+        shapeless = True
+        if axes is None:
+            s = list(a.shape)
+        else:
+            s = numpy.take(a.shape, axes)
+    else:
+        shapeless = False
+
+    for s_i in s:
+        if s_i is not None and s_i < 1 and s_i != -1:
+            raise ValueError(
+                f"Invalid number of FFT data points ({s_i}) specified."
+            )
+
+    if axes is None:
+        axes = list(range(-len(s), 0))
+
+    if len(s) != len(axes):
+        raise ValueError("Shape and axes have different lengths.")
+
+    s = list(s)
+    if c2r and shapeless:
+        s[-1] = (a.shape[axes[-1]] - 1) * 2
+    # use the whole input array along axis `i` if `s[i] == -1`
+    s = [a.shape[_a] if _s == -1 else _s for _s, _a in zip(s, axes)]
+    return s, axes
+
+
 def _copy_array(x, complex_input):
     """
     Creating a C-contiguous copy of input array if input array has a negative
@@ -204,6 +241,63 @@ def _copy_array(x, complex_input):
     return x, copy_flag
 
 
+def _extract_axes_chunk(a, chunk_size=3):
+    """
+    Classify input into a list of list with each list containing
+    only unique values and its length is at most `chunk_size`.
+
+    Parameters
+    ----------
+    a : list, tuple
+        Input.
+    chunk_size : int
+        Maximum number of elements in each chunk.
+
+    Return
+    ------
+    out : list of lists
+        List of lists with each list containing only unique values
+        and its length is at most `chunk_size`.
+        The final list is returned in reverse order.
+
+    Examples
+    --------
+    >>> axes = (0, 1, 2, 3, 4)
+    >>> _extract_axes_chunk(axes, chunk_size=3)
+    [[2, 3, 4], [0, 1]]
+
+    >>> axes = (0, 1, 2, 3, 4, 4)
+    >>> _extract_axes_chunk(axes, chunk_size=3)
+    [[4], [2, 3, 4], [0, 1]]
+
+    """
+
+    chunks = []
+    current_chunk = []
+    seen_elements = set()
+
+    for elem in a:
+        if elem in seen_elements:
+            # If element is already seen, start a new chunk
+            chunks.append(current_chunk)
+            current_chunk = [elem]
+            seen_elements = {elem}
+        else:
+            current_chunk.append(elem)
+            seen_elements.add(elem)
+
+        if len(current_chunk) == chunk_size:
+            chunks.append(current_chunk)
+            current_chunk = []
+            seen_elements = set()
+
+    # Add the last chunk if it's not empty
+    if current_chunk:
+        chunks.append(current_chunk)
+
+    return chunks[::-1]
+
+
 def _fft(a, norm, out, forward, in_place, c2c, axes=None):
     """Calculates FFT of the input array along the specified axes."""
 
@@ -238,7 +332,11 @@ def _fft(a, norm, out, forward, in_place, c2c, axes=None):
 
 def _scale_result(res, a_shape, norm, forward, index):
     """Scale the result of the FFT according to `norm`."""
-    scale = numpy.prod(a_shape[index:], dtype=res.real.dtype)
+    if res.dtype in [dpnp.float32, dpnp.complex64]:
+        dtype = dpnp.float32
+    else:
+        dtype = dpnp.float64
+    scale = numpy.prod(a_shape[index:], dtype=dtype)
     norm_factor = 1
     if norm == "ortho":
         norm_factor = numpy.sqrt(scale)
@@ -328,9 +426,33 @@ def _validate_out_keyword(a, out, axis, c2r, r2c):
                 raise TypeError("output array should have complex data type.")
 
 
+def _validate_s_axes(a, s, axes):
+    if axes is not None:
+        # validate axes is a sequence and
+        # each axis is an integer within the range
+        normalize_axis_tuple(list(set(axes)), a.ndim, "axes")
+
+    if s is not None:
+        raise_error = False
+        if isinstance(s, Sequence):
+            if any(not isinstance(s_i, int) for s_i in s):
+                raise_error = True
+        else:
+            raise_error = True
+
+        if raise_error:
+            raise TypeError("`s` must be `None` or a sequence of integers.")
+
+        if axes is None:
+            raise ValueError(
+                "`axes` should not be `None` if `s` is not `None`."
+            )
+
+
 def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     """Calculates 1-D FFT of the input array along axis"""
 
+    _check_norm(norm)
     a_ndim = a.ndim
     if a_ndim == 0:
         raise ValueError("Input array must be at least 1D")
@@ -376,4 +498,68 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
         in_place=in_place and c2c,
         c2c=c2c,
         axes=axis,
+    )
+
+
+def dpnp_fftn(a, forward, s=None, axes=None, norm=None, out=None):
+    """Calculates N-D FFT of the input array along axes"""
+
+    _check_norm(norm)
+    if isinstance(axes, (list, tuple)) and len(axes) == 0:
+        return a
+
+    if a.ndim == 0:
+        if axes is not None:
+            raise IndexError(
+                "Input array is 0-dimensional while axis is not `None`."
+            )
+
+        return a
+
+    _validate_s_axes(a, s, axes)
+    s, axes = _cook_nd_args(a, s, axes)
+    a = _truncate_or_pad(a, s, axes)
+    # TODO: None, False, False are place holder for future development of
+    # rfft2, irfft2, rfftn, irfftn
+    _validate_out_keyword(a, out, None, False, False)
+    # TODO: True is place holder for future development of
+    # rfft2, irfft2, rfftn, irfftn
+    a, in_place = _copy_array(a, True)
+
+    if a.size == 0:
+        return dpnp.get_result_array(a, out=out, casting="same_kind")
+
+    len_axes = len(axes)
+    # OneMKL supports up to 3-dimensional FFT on GPU
+    # repeated axis in OneMKL FFT is not allowed
+    if len_axes > 3 or len(set(axes)) < len_axes:
+        axes_chunk = _extract_axes_chunk(axes, chunk_size=3)
+        for chunk in axes_chunk:
+            a = _fft(
+                a,
+                norm=norm,
+                out=out,
+                forward=forward,
+                in_place=in_place,
+                # TODO: c2c=True is place holder for future development of
+                # rfft2, irfft2, rfftn, irfftn
+                c2c=True,
+                axes=chunk,
+            )
+        return a
+
+    if a.ndim == len_axes:
+        # non-batch FFT
+        axes = None
+
+    return _fft(
+        a,
+        norm=norm,
+        out=out,
+        forward=forward,
+        in_place=in_place,
+        # TODO: c2c=True is place holder for future development of
+        # rfft2, irfft2, rfftn, irfftn
+        c2c=True,
+        axes=axes,
     )

@@ -1,5 +1,4 @@
 import functools
-import unittest
 
 import numpy as np
 import pytest
@@ -116,115 +115,179 @@ class TestFftOrder:
         return out
 
 
+@pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
-    {"shape": (3, 4), "s": None, "axes": None, "norm": None},
-    {"shape": (3, 4), "s": (1, None), "axes": None, "norm": None},
-    {"shape": (3, 4), "s": (1, 5), "axes": None, "norm": None},
-    {"shape": (3, 4), "s": None, "axes": (-2, -1), "norm": None},
-    {"shape": (3, 4), "s": None, "axes": (-1, -2), "norm": None},
-    {"shape": (3, 4), "s": None, "axes": (0,), "norm": None},
-    {"shape": (3, 4), "s": None, "axes": None, "norm": "ortho"},
-    {"shape": (3, 4), "s": None, "axes": (), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": None, "norm": None},
-    {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None, "norm": None},
-    {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": None, "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": (0, 1), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": None, "norm": "ortho"},
-    {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
-    {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2), "norm": "ortho"},
-    {"shape": (2, 3, 4, 5), "s": None, "axes": None, "norm": None},
-    {"shape": (0, 5), "s": None, "axes": None, "norm": None},
-    {"shape": (2, 0, 5), "s": None, "axes": None, "norm": None},
-    {"shape": (0, 0, 5), "s": None, "axes": None, "norm": None},
-    {"shape": (3, 4), "s": (0, 5), "axes": None, "norm": None},
-    {"shape": (3, 4), "s": (1, 0), "axes": None, "norm": None},
+    *(
+        testing.product_dict(
+            [
+                # some of the following cases are modified, since in NumPy 2.0.0
+                # `s` must contain only integer `s`, not None values, and
+                # If `s` is not None, `axes`` must not be None either.
+                {"shape": (3, 4), "s": None, "axes": None},
+                {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
+                {"shape": (3, 4), "s": None, "axes": (-2, -1)},
+                {"shape": (3, 4), "s": None, "axes": (-1, -2)},
+                # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
+                {"shape": (3, 4), "s": None, "axes": None},
+                # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                {"shape": (2, 3, 4), "s": None, "axes": None},
+                {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
+                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)},
+                {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
+                {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
+                # {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": None, "axes": None},
+                # {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                # {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4, 5), "s": None, "axes": None},
+                # {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                # {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                # {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                {"shape": (3, 4), "s": (0, 5), "axes": None},
+                {"shape": (3, 4), "s": (1, 0), "axes": None},
+            ],
+            testing.product(
+                {"norm": [None, "backward", "ortho", "forward", ""]}
+            ),
+        )
+    )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestFft2(unittest.TestCase):
+class TestFft2:
+    @testing.for_orders("CF")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
-    def test_fft2(self, xp, dtype):
+    def test_fft2(self, xp, dtype, order):
         a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
         out = xp.fft.fft2(a, s=self.s, axes=self.axes, norm=self.norm)
 
+        if self.axes is not None and not self.axes:
+            assert out is a
+            return out
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
+
         return out
 
+    @testing.for_orders("CF")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
-    def test_ifft2(self, xp, dtype):
+    def test_ifft2(self, xp, dtype, order):
         a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
         out = xp.fft.ifft2(a, s=self.s, axes=self.axes, norm=self.norm)
 
+        if self.axes is not None and not self.axes:
+            assert out is a
+            return out
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
+
         return out
 
 
+@pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
-    {"shape": (3, 4), "s": None, "axes": None, "norm": None},
-    {"shape": (3, 4), "s": (1, None), "axes": None, "norm": None},
-    {"shape": (3, 4), "s": (1, 5), "axes": None, "norm": None},
-    {"shape": (3, 4), "s": None, "axes": (-2, -1), "norm": None},
-    {"shape": (3, 4), "s": None, "axes": (-1, -2), "norm": None},
-    {"shape": (3, 4), "s": None, "axes": [-1, -2], "norm": None},
-    {"shape": (3, 4), "s": None, "axes": (0,), "norm": None},
-    {"shape": (3, 4), "s": None, "axes": (), "norm": None},
-    {"shape": (3, 4), "s": None, "axes": None, "norm": "ortho"},
-    {"shape": (2, 3, 4), "s": None, "axes": None, "norm": None},
-    {"shape": (2, 3, 4), "s": (1, 4, None), "axes": None, "norm": None},
-    {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": None, "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": (-1, -3), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": (0, 1), "norm": None},
-    {"shape": (2, 3, 4), "s": None, "axes": None, "norm": "ortho"},
-    {"shape": (2, 3, 4), "s": None, "axes": (), "norm": "ortho"},
-    {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2), "norm": "ortho"},
-    {"shape": (2, 3, 4), "s": (4, 3, 2), "axes": (2, 0, 1), "norm": "ortho"},
-    {"shape": (2, 3, 4, 5), "s": None, "axes": None, "norm": None},
-    {"shape": (0, 5), "s": None, "axes": None, "norm": None},
-    {"shape": (2, 0, 5), "s": None, "axes": None, "norm": None},
-    {"shape": (0, 0, 5), "s": None, "axes": None, "norm": None},
+    *(
+        testing.product_dict(
+            [
+                # some of the following cases are modified, since in NumPy 2.0.0
+                # `s` must contain only integer `s`, not None values, and
+                # If `s` is not None, `axes`` must not be None either.
+                {"shape": (3, 4), "s": None, "axes": None},
+                {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
+                {"shape": (3, 4), "s": None, "axes": (-2, -1)},
+                {"shape": (3, 4), "s": None, "axes": (-1, -2)},
+                {"shape": (3, 4), "s": None, "axes": [-1, -2]},
+                # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
+                # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                {"shape": (3, 4), "s": None, "axes": None},
+                {"shape": (2, 3, 4), "s": None, "axes": None},
+                {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
+                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)},
+                {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
+                {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
+                # {"shape": (2, 3, 4), "s": None, "axes": (-1, -3)}, # mkl_fft gh-109
+                # {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": None, "axes": None},
+                # {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                # {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": (4, 3, 2), "axes": (2, 0, 1)},
+                {"shape": (2, 3, 4, 5), "s": None, "axes": None},
+                # {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                # {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                # {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+            ],
+            testing.product(
+                {"norm": [None, "backward", "ortho", "forward", ""]}
+            ),
+        )
+    )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestFftn(unittest.TestCase):
+class TestFftn:
+    @testing.for_orders("CF")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
-    def test_fftn(self, xp, dtype):
+    def test_fftn(self, xp, dtype, order):
         a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
         out = xp.fft.fftn(a, s=self.s, axes=self.axes, norm=self.norm)
 
+        if self.axes is not None and not self.axes:
+            assert out is a
+            return out
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
+
         return out
 
+    @testing.for_orders("CF")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-4,
         atol=1e-7,
         accept_error=ValueError,
         contiguous_check=False,
-        type_check=False,
+        type_check=has_support_aspect64(),
     )
-    def test_ifftn(self, xp, dtype):
+    def test_ifftn(self, xp, dtype, order):
         a = testing.shaped_random(self.shape, xp, dtype)
+        if order == "F":
+            a = xp.asfortranarray(a)
         out = xp.fft.ifftn(a, s=self.s, axes=self.axes, norm=self.norm)
+
+        if self.axes is not None and not self.axes:
+            assert out is a
+            return out
+
+        if xp is np and dtype in [np.float16, np.float32, np.complex64]:
+            out = out.astype(np.complex64)
 
         return out
 

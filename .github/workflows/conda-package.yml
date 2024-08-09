@@ -52,6 +52,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/core_tests
+      third_party/cupy/fft_tests
       third_party/cupy/creation_tests
       third_party/cupy/indexing_tests/test_indexing.py
       third_party/cupy/lib_tests
