@@ -51,10 +51,14 @@ import numpy
 import dpnp
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
+from .dpnp_utils import get_usm_allocations
+
 __all__ = [
     "all",
     "allclose",
     "any",
+    "array_equal",
+    "array_equiv",
     "equal",
     "greater",
     "greater_equal",
@@ -111,7 +115,7 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        An array with a data type of `bool`
+        An array with a data type of `bool`.
         containing the results of the logical AND reduction is returned
         unless `out` is specified. Otherwise, a reference to `out` is returned.
         The result has the same shape as `a` if `axis` is not ``None``
@@ -275,7 +279,7 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
     Returns
     -------
     out : dpnp.ndarray
-        An array with a data type of `bool`
+        An array with a data type of `bool`.
         containing the results of the logical OR reduction is returned
         unless `out` is specified. Otherwise, a reference to `out` is returned.
         The result has the same shape as `a` if `axis` is not ``None``
@@ -334,6 +338,191 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
 
     # TODO: temporary solution until dpt.any supports out parameter
     return dpnp.get_result_array(usm_res, out)
+
+
+def array_equal(a1, a2, equal_nan=False):
+    """
+    ``True`` if two arrays have the same shape and elements, ``False``
+    otherwise.
+
+    For full documentation refer to :obj:`numpy.array_equal`.
+
+    Parameters
+    ----------
+    a1 : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+    a2 : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+    equal_nan : bool, optional
+        Whether to compare ``NaNs`` as equal. If the dtype of `a1` and `a2` is
+        complex, values will be considered equal if either the real or the
+        imaginary component of a given value is ``NaN``.
+        Default: ``False``.
+
+    Returns
+    -------
+    b : dpnp.ndarray
+        An array with a data type of `bool`.
+        Returns ``True`` if the arrays are equal.
+
+    See Also
+    --------
+    :obj:`dpnp.allclose`: Returns ``True`` if two arrays are element-wise equal
+                          within a tolerance.
+    :obj:`dpnp.array_equiv`: Returns ``True`` if input arrays are shape
+                             consistent and all elements equal.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2])
+    >>> b = np.array([1, 2])
+    >>> np.array_equal(a, b)
+    array(True)
+
+    >>> b = np.array([1, 2, 3])
+    >>> np.array_equal(a, b)
+    array(False)
+
+    >>> b = np.array([1, 4])
+    >>> np.array_equal(a, b)
+    array(False)
+
+    >>> a = np.array([1, np.nan])
+    >>> np.array_equal(a, a)
+    array(False)
+
+    >>> np.array_equal(a, a, equal_nan=True)
+    array(True)
+
+    When ``equal_nan`` is ``True``, complex values with nan components are
+    considered equal if either the real *or* the imaginary components are
+    ``NaNs``.
+
+    >>> a = np.array([1 + 1j])
+    >>> b = a.copy()
+    >>> a.real = np.nan
+    >>> b.imag = np.nan
+    >>> np.array_equal(a, b, equal_nan=True)
+    array(True)
+
+    """
+
+    dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
+    if dpnp.isscalar(a1):
+        usm_type_alloc = a2.usm_type
+        sycl_queue_alloc = a2.sycl_queue
+        a1 = dpnp.array(
+            a1,
+            dtype=dpnp.result_type(a1, a2),
+            usm_type=usm_type_alloc,
+            sycl_queue=sycl_queue_alloc,
+        )
+    elif dpnp.isscalar(a2):
+        usm_type_alloc = a1.usm_type
+        sycl_queue_alloc = a1.sycl_queue
+        a2 = dpnp.array(
+            a2,
+            dtype=dpnp.result_type(a1, a2),
+            usm_type=usm_type_alloc,
+            sycl_queue=sycl_queue_alloc,
+        )
+    else:
+        usm_type_alloc, sycl_queue_alloc = get_usm_allocations([a1, a2])
+
+    if a1.shape != a2.shape:
+        return dpnp.array(
+            False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+        )
+
+    if not equal_nan:
+        return (a1 == a2).all()
+
+    if a1 is a2:
+        # NaN will compare equal so an array will compare equal to itself
+        return dpnp.array(
+            True, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+        )
+
+    if not (
+        dpnp.issubdtype(a1, dpnp.inexact) or dpnp.issubdtype(a2, dpnp.inexact)
+    ):
+        return (a1 == a2).all()
+
+    # Handling NaN values if equal_nan is True
+    a1nan, a2nan = isnan(a1), isnan(a2)
+    # NaNs occur at different locations
+    if not (a1nan == a2nan).all():
+        return dpnp.array(
+            False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+        )
+    # Shapes of a1, a2 and masks are guaranteed to be consistent by this point
+    return (a1[~a1nan] == a2[~a1nan]).all()
+
+
+def array_equiv(a1, a2):
+    """
+    Returns ``True`` if input arrays are shape consistent and all elements
+    equal.
+
+    Shape consistent means they are either the same shape, or one input array
+    can be broadcasted to create the same shape as the other one.
+
+    For full documentation refer to :obj:`numpy.array_equiv`.
+
+    Parameters
+    ----------
+    a1 : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+    a2 : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array.
+        Both inputs `x1` and `x2` can not be scalars at the same time.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array with a data type of `bool`.
+        ``True`` if equivalent, ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2])
+    >>> b = np.array([1, 2])
+    >>> c = np.array([1, 3])
+    >>> np.array_equiv(a, b)
+    array(True)
+    >>> np.array_equiv(a, c)
+    array(False)
+
+    Showing the shape equivalence:
+
+    >>> b = np.array([[1, 2], [1, 2]])
+    >>> c = np.array([[1, 2, 1, 2], [1, 2, 1, 2]])
+    >>> np.array_equiv(a, b)
+    array(True)
+    >>> np.array_equiv(a, c)
+    array(False)
+
+    >>> b = np.array([[1, 2], [1, 3]])
+    >>> np.array_equiv(a, b)
+    array(False)
+
+    """
+
+    dpnp.check_supported_arrays_type(a1, a2, scalar_type=True)
+    if not dpnp.isscalar(a1) and not dpnp.isscalar(a2):
+        usm_type_alloc, sycl_queue_alloc = get_usm_allocations([a1, a2])
+        try:
+            dpnp.broadcast_arrays(a1, a2)
+        except ValueError:
+            return dpnp.array(
+                False, usm_type=usm_type_alloc, sycl_queue=sycl_queue_alloc
+            )
+    return (a1 == a2).all()
 
 
 _EQUAL_DOCSTRING = """
