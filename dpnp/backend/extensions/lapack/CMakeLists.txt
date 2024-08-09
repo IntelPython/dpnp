@@ -32,6 +32,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/gesv.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gesv_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gesvd.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gesvd_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/getrf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/getrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/getri_batch.cpp

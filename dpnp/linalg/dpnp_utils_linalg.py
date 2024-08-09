@@ -155,7 +155,7 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
     w = w.reshape(w_orig_shape)
 
     if eigen_mode == "V":
-        # syevd/heevd call overwtires `a` in Fortran order, reorder the axes
+        # syevd/heevd call overwrites `a` in Fortran order, reorder the axes
         # to match C order by moving the last axis to the front and
         # reshape it back to the original shape of `a`.
         v = dpnp.moveaxis(a_copy, -1, 0).reshape(a_orig_shape)
@@ -476,7 +476,13 @@ def _batched_qr(a, mode="reduced"):
 
 
 def _batched_svd(
-    a, uv_type, s_type, full_matrices=True, compute_uv=True, related_arrays=None
+    a,
+    uv_type,
+    s_type,
+    full_matrices=True,
+    compute_uv=True,
+    related_arrays=None,
+    new=True,
 ):
     """
     _batched_svd(
@@ -501,72 +507,197 @@ def _batched_svd(
     # compute-follows-data execution model for `a` and `related arrays`.
     usm_type, exec_q = get_usm_allocations([a] + (related_arrays or []))
 
-    reshape = False
-    batch_shape_orig = a.shape[:-2]
+    # new = True
 
-    if a.ndim > 3:
-        # get 3d input arrays by reshape
-        a = dpnp.reshape(a, (prod(a.shape[:-2]), a.shape[-2], a.shape[-1]))
-        reshape = True
+    if new:
+        a_shape = a.shape
+        a_ndim = a.ndim
+        batch_shape_orig = a_shape[:-2]
 
-    batch_size = a.shape[0]
-    if batch_size == 0:
-        return _zero_batched_svd(
-            a,
-            uv_type,
-            s_type,
-            full_matrices,
-            compute_uv,
-            exec_q,
-            usm_type,
-            batch_shape_orig,
-        )
+        a = dpnp.reshape(a, (prod(a_shape[:-2]), a_shape[-2], a_shape[-1]))
 
-    m, n = a.shape[-2:]
-    if m == 0 or n == 0:
-        return _zero_m_n_batched_svd(
-            a,
-            uv_type,
-            s_type,
-            full_matrices,
-            compute_uv,
-            exec_q,
-            usm_type,
-            batch_shape_orig,
-        )
-
-    u_matrices = [None] * batch_size
-    s_matrices = [None] * batch_size
-    vt_matrices = [None] * batch_size
-    for i in range(batch_size):
-        if compute_uv:
-            (
-                u_matrices[i],
-                s_matrices[i],
-                vt_matrices[i],
-            ) = dpnp_svd(a[i], full_matrices, compute_uv=True)
-        else:
-            s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv=False)
-
-    # TODO: Need to return C-contiguous array to match the output of
-    # numpy.linalg.svd
-    # Allocate 'F' order memory for dpnp output arrays to be aligned with
-    # dpnp_svd
-    out_s = dpnp.array(s_matrices, order="F")
-    if reshape:
-        out_s = out_s.reshape(batch_shape_orig + out_s.shape[-1:])
-
-    if compute_uv:
-        out_u = dpnp.array(u_matrices, order="F")
-        out_vt = dpnp.array(vt_matrices, order="F")
-        if reshape:
-            return (
-                out_u.reshape(batch_shape_orig + out_u.shape[-2:]),
-                out_s,
-                out_vt.reshape(batch_shape_orig + out_vt.shape[-2:]),
+        batch_size = a.shape[0]
+        if batch_size == 0:
+            return _zero_batched_svd(
+                a,
+                uv_type,
+                s_type,
+                full_matrices,
+                compute_uv,
+                exec_q,
+                usm_type,
+                batch_shape_orig,
             )
-        return out_u, out_s, out_vt
-    return out_s
+
+        m, n = a.shape[-2:]
+        if m == 0 or n == 0:
+            return _zero_m_n_batched_svd(
+                a,
+                uv_type,
+                s_type,
+                full_matrices,
+                compute_uv,
+                exec_q,
+                usm_type,
+                batch_shape_orig,
+            )
+
+        k = min(m, n)
+        if compute_uv:
+            if full_matrices:
+                u_shape = (m, m) + (batch_size,)
+                vt_shape = (n, n) + (batch_size,)
+                jobu = ord("A")
+                jobvt = ord("A")
+            else:
+                u_shape = (m, k) + (batch_size,)
+                vt_shape = (k, n) + (batch_size,)
+                jobu = ord("S")
+                jobvt = ord("S")
+        else:
+            u_shape = vt_shape = ()
+            jobu = ord("N")
+            jobvt = ord("N")
+
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
+        # Reorder the elements by moving the last two axes of `a` to the front
+        # to match fortran-like array order which is assumed by gesvd.
+        a = dpnp.moveaxis(a, (-2, -1), (0, 1))
+
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+
+        # oneMKL LAPACK gesvd destroys `a` and assumes fortran-like array
+        # as input.
+        a_f = dpnp.empty_like(a, dtype=uv_type, order="F", usm_type=usm_type)
+
+        ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr,
+            dst=a_f.get_array(),
+            sycl_queue=exec_q,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(ht_ev, a_copy_ev)
+
+        u_h = dpnp.empty(
+            u_shape,
+            order="F",
+            dtype=uv_type,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
+        vt_h = dpnp.empty(
+            vt_shape,
+            order="F",
+            dtype=uv_type,
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
+        s_h = dpnp.empty(
+            (batch_size,) + (k,),
+            dtype=s_type,
+            order="C",
+            usm_type=usm_type,
+            sycl_queue=exec_q,
+        )
+
+        ht_ev, gesvd_batch_ev = li._gesvd_batch(
+            exec_q,
+            jobu,
+            jobvt,
+            a_f.get_array(),
+            s_h.get_array(),
+            u_h.get_array(),
+            vt_h.get_array(),
+            depends=[a_copy_ev],
+        )
+        _manager.add_event_pair(ht_ev, gesvd_batch_ev)
+
+        s = s_h.reshape(batch_shape_orig + s_h.shape[-1:])
+        if compute_uv:
+            # gesvd call writes `u_h` and `vt_h` in Fortran order;
+            # reorder the axes to match C order by moving the last axis
+            # to the front
+            u = dpnp.moveaxis(u_h, -1, 0)
+            vt = dpnp.moveaxis(vt_h, -1, 0)
+            if a_ndim > 3:
+                u = u.reshape(batch_shape_orig + u.shape[-2:])
+                vt = vt.reshape(batch_shape_orig + vt.shape[-2:])
+            # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+            # Convert to contiguous to align with NumPy
+            u = dpnp.ascontiguousarray(u)
+            vt = dpnp.ascontiguousarray(vt)
+            return u, s, vt
+        return s
+
+    else:
+        reshape = False
+        batch_shape_orig = a.shape[:-2]
+
+        if a.ndim > 3:
+            # get 3d input arrays by reshape
+            a = dpnp.reshape(a, (prod(a.shape[:-2]), a.shape[-2], a.shape[-1]))
+            reshape = True
+
+        batch_size = a.shape[0]
+        if batch_size == 0:
+            return _zero_batched_svd(
+                a,
+                uv_type,
+                s_type,
+                full_matrices,
+                compute_uv,
+                exec_q,
+                usm_type,
+                batch_shape_orig,
+            )
+
+        m, n = a.shape[-2:]
+        if m == 0 or n == 0:
+            return _zero_m_n_batched_svd(
+                a,
+                uv_type,
+                s_type,
+                full_matrices,
+                compute_uv,
+                exec_q,
+                usm_type,
+                batch_shape_orig,
+            )
+
+        u_matrices = [None] * batch_size
+        s_matrices = [None] * batch_size
+        vt_matrices = [None] * batch_size
+        for i in range(batch_size):
+            if compute_uv:
+                (
+                    u_matrices[i],
+                    s_matrices[i],
+                    vt_matrices[i],
+                ) = dpnp_svd(a[i], full_matrices, compute_uv=True)
+            else:
+                s_matrices[i] = dpnp_svd(a[i], full_matrices, compute_uv=False)
+
+        # TODO: Need to return C-contiguous array to match the output of
+        # numpy.linalg.svd
+        # Allocate 'F' order memory for dpnp output arrays to be aligned with
+        # dpnp_svd
+        out_s = dpnp.array(s_matrices, order="F")
+        if reshape:
+            out_s = out_s.reshape(batch_shape_orig + out_s.shape[-1:])
+
+        if compute_uv:
+            out_u = dpnp.array(u_matrices, order="F")
+            out_vt = dpnp.array(vt_matrices, order="F")
+            if reshape:
+                return (
+                    out_u.reshape(batch_shape_orig + out_u.shape[-2:]),
+                    out_s,
+                    out_vt.reshape(batch_shape_orig + out_vt.shape[-2:]),
+                )
+            return out_u, out_s, out_vt
+        return out_s
 
 
 def _calculate_determinant_sign(ipiv, diag, res_type, n):
@@ -2573,6 +2704,7 @@ def dpnp_svd(
     compute_uv=True,
     hermitian=False,
     related_arrays=None,
+    new=True,
 ):
     """
     dpnp_svd(
@@ -2605,6 +2737,7 @@ def dpnp_svd(
             full_matrices,
             compute_uv,
             related_arrays=related_arrays,
+            new=new,
         )
 
     # Set USM type and SYCL queue to be used based on `a`

@@ -175,8 +175,10 @@ class TestSVD(unittest.TestCase):
         array = testing.shaped_random(shape, numpy, dtype=dtype, seed=self.seed)
         a_cpu = numpy.asarray(array, dtype=dtype)
         a_gpu = cupy.asarray(array, dtype=dtype)
+        a_gpu_queue = a_gpu.sycl_queue
         result_cpu = numpy.linalg.svd(a_cpu, full_matrices=self.full_matrices)
         result_gpu = cupy.linalg.svd(a_gpu, full_matrices=self.full_matrices)
+        a_gpu_queue.wait()
         # Check if the input matrix is not broken
         testing.assert_allclose(a_gpu, a_cpu)
 
@@ -279,12 +281,6 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
-    # The issue was expected to be resolved once CMPLRLLVM-53771 is available,
-    # which has to be included in DPC++ 2024.1.0, but problem still exists
-    # on Windows
-    @pytest.mark.skipif(
-        is_cpu_device() and is_win_platform(), reason="SAT-7145"
-    )
     @_condition.repeat(3, 10)
     def test_svd_rank3(self):
         self.check_usv((2, 3, 4))
@@ -294,9 +290,6 @@ class TestSVD(unittest.TestCase):
         self.check_usv((2, 4, 3))
         self.check_usv((2, 32, 32))
 
-    @pytest.mark.skipif(
-        is_cpu_device() and is_win_platform(), reason="SAT-7145"
-    )
     @_condition.repeat(3, 10)
     def test_svd_rank3_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
@@ -344,9 +337,6 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
-    @pytest.mark.skipif(
-        is_cpu_device() and is_win_platform(), reason="SAT-7145"
-    )
     @_condition.repeat(3, 10)
     def test_svd_rank4(self):
         self.check_usv((2, 2, 3, 4))
@@ -356,9 +346,6 @@ class TestSVD(unittest.TestCase):
         self.check_usv((2, 2, 4, 3))
         self.check_usv((2, 2, 32, 32))
 
-    @pytest.mark.skipif(
-        is_cpu_device() and is_win_platform(), reason="SAT-7145"
-    )
     @_condition.repeat(3, 10)
     def test_svd_rank4_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
