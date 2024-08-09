@@ -34,7 +34,6 @@ available as a pybind11 extension.
 """
 
 # pylint: disable=protected-access
-# pylint: disable=c-extension-no-member
 # pylint: disable=no-name-in-module
 
 import dpctl
