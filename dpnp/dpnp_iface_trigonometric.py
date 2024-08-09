@@ -47,7 +47,6 @@ import dpctl.tensor._type_utils as dtu
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
-import dpnp.backend.extensions.vm._vm_impl as vmi
 
 from .dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
@@ -152,8 +151,8 @@ arccos = DPNPUnaryFunc(
     ti._acos_result_type,
     ti._acos,
     _ACOS_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_acos_to_call,
-    mkl_impl_fn=vmi._acos,
+    mkl_fn_to_call="_mkl_acos_to_call",
+    mkl_impl_fn="_acos",
 )
 
 
@@ -207,8 +206,8 @@ arccosh = DPNPUnaryFunc(
     ti._acosh_result_type,
     ti._acosh,
     _ACOSH_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_acosh_to_call,
-    mkl_impl_fn=vmi._acosh,
+    mkl_fn_to_call="_mkl_acosh_to_call",
+    mkl_impl_fn="_acosh",
 )
 
 
@@ -262,8 +261,8 @@ arcsin = DPNPUnaryFunc(
     ti._asin_result_type,
     ti._asin,
     _ASIN_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_asin_to_call,
-    mkl_impl_fn=vmi._asin,
+    mkl_fn_to_call="_mkl_asin_to_call",
+    mkl_impl_fn="_asin",
 )
 
 
@@ -317,8 +316,8 @@ arcsinh = DPNPUnaryFunc(
     ti._asinh_result_type,
     ti._asinh,
     _ASINH_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_asinh_to_call,
-    mkl_impl_fn=vmi._asinh,
+    mkl_fn_to_call="_mkl_asinh_to_call",
+    mkl_impl_fn="_asinh",
 )
 
 
@@ -374,8 +373,8 @@ arctan = DPNPUnaryFunc(
     ti._atan_result_type,
     ti._atan,
     _ATAN_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_atan_to_call,
-    mkl_impl_fn=vmi._atan,
+    mkl_fn_to_call="_mkl_atan_to_call",
+    mkl_impl_fn="_atan",
 )
 
 
@@ -450,8 +449,8 @@ arctan2 = DPNPBinaryFunc(
     ti._atan2_result_type,
     ti._atan2,
     _ATAN2_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_atan2_to_call,
-    mkl_impl_fn=vmi._atan2,
+    mkl_fn_to_call="_mkl_atan2_to_call",
+    mkl_impl_fn="_atan2",
 )
 
 
@@ -505,8 +504,8 @@ arctanh = DPNPUnaryFunc(
     ti._atanh_result_type,
     ti._atanh,
     _ATANH_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_atanh_to_call,
-    mkl_impl_fn=vmi._atanh,
+    mkl_fn_to_call="_mkl_atanh_to_call",
+    mkl_impl_fn="_atanh",
 )
 
 
@@ -557,8 +556,8 @@ cbrt = DPNPUnaryFunc(
     ti._cbrt_result_type,
     ti._cbrt,
     _CBRT_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_cbrt_to_call,
-    mkl_impl_fn=vmi._cbrt,
+    mkl_fn_to_call="_mkl_cbrt_to_call",
+    mkl_impl_fn="_cbrt",
 )
 
 
@@ -611,8 +610,8 @@ cos = DPNPUnaryFunc(
     ti._cos_result_type,
     ti._cos,
     _COS_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_cos_to_call,
-    mkl_impl_fn=vmi._cos,
+    mkl_fn_to_call="_mkl_cos_to_call",
+    mkl_impl_fn="_cos",
 )
 
 
@@ -666,8 +665,8 @@ cosh = DPNPUnaryFunc(
     ti._cosh_result_type,
     ti._cosh,
     _COSH_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_cosh_to_call,
-    mkl_impl_fn=vmi._cosh,
+    mkl_fn_to_call="_mkl_cosh_to_call",
+    mkl_impl_fn="_cosh",
 )
 
 
@@ -920,8 +919,8 @@ exp = DPNPUnaryFunc(
     ti._exp_result_type,
     ti._exp,
     _EXP_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_exp_to_call,
-    mkl_impl_fn=vmi._exp,
+    mkl_fn_to_call="_mkl_exp_to_call",
+    mkl_impl_fn="_exp",
 )
 
 
@@ -974,8 +973,8 @@ exp2 = DPNPUnaryFunc(
     ti._exp2_result_type,
     ti._exp2,
     _EXP2_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_exp2_to_call,
-    mkl_impl_fn=vmi._exp2,
+    mkl_fn_to_call="_mkl_exp2_to_call",
+    mkl_impl_fn="_exp2",
 )
 
 
@@ -1036,8 +1035,8 @@ expm1 = DPNPUnaryFunc(
     ti._expm1_result_type,
     ti._expm1,
     _EXPM1_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_expm1_to_call,
-    mkl_impl_fn=vmi._expm1,
+    mkl_fn_to_call="_mkl_expm1_to_call",
+    mkl_impl_fn="_expm1",
 )
 
 
@@ -1102,8 +1101,8 @@ hypot = DPNPBinaryFunc(
     ti._hypot_result_type,
     ti._hypot,
     _HYPOT_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_hypot_to_call,
-    mkl_impl_fn=vmi._hypot,
+    mkl_fn_to_call="_mkl_hypot_to_call",
+    mkl_impl_fn="_hypot",
 )
 
 
@@ -1157,8 +1156,8 @@ log = DPNPUnaryFunc(
     ti._log_result_type,
     ti._log,
     _LOG_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_ln_to_call,
-    mkl_impl_fn=vmi._ln,
+    mkl_fn_to_call="_mkl_ln_to_call",
+    mkl_impl_fn="_ln",
 )
 
 
@@ -1214,8 +1213,8 @@ log10 = DPNPUnaryFunc(
     ti._log10_result_type,
     ti._log10,
     _LOG10_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_log10_to_call,
-    mkl_impl_fn=vmi._log10,
+    mkl_fn_to_call="_mkl_log10_to_call",
+    mkl_impl_fn="_log10",
 )
 
 
@@ -1277,8 +1276,8 @@ log1p = DPNPUnaryFunc(
     ti._log1p_result_type,
     ti._log1p,
     _LOG1P_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_log1p_to_call,
-    mkl_impl_fn=vmi._log1p,
+    mkl_fn_to_call="_mkl_log1p_to_call",
+    mkl_impl_fn="_log1p",
 )
 
 
@@ -1335,8 +1334,8 @@ log2 = DPNPUnaryFunc(
     ti._log2_result_type,
     ti._log2,
     _LOG2_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_log2_to_call,
-    mkl_impl_fn=vmi._log2,
+    mkl_fn_to_call="_mkl_log2_to_call",
+    mkl_impl_fn="_log2",
 )
 
 
@@ -1910,8 +1909,8 @@ sin = DPNPUnaryFunc(
     ti._sin_result_type,
     ti._sin,
     _SIN_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_sin_to_call,
-    mkl_impl_fn=vmi._sin,
+    mkl_fn_to_call="_mkl_sin_to_call",
+    mkl_impl_fn="_sin",
 )
 
 
@@ -1963,8 +1962,8 @@ sinh = DPNPUnaryFunc(
     ti._sinh_result_type,
     ti._sinh,
     _SINH_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_sinh_to_call,
-    mkl_impl_fn=vmi._sinh,
+    mkl_fn_to_call="_mkl_sinh_to_call",
+    mkl_impl_fn="_sinh",
 )
 
 
@@ -2019,8 +2018,8 @@ sqrt = DPNPUnaryFunc(
     ti._sqrt_result_type,
     ti._sqrt,
     _SQRT_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_sqrt_to_call,
-    mkl_impl_fn=vmi._sqrt,
+    mkl_fn_to_call="_mkl_sqrt_to_call",
+    mkl_impl_fn="_sqrt",
 )
 
 
@@ -2074,8 +2073,8 @@ square = DPNPUnaryFunc(
     ti._square_result_type,
     ti._square,
     _SQUARE_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_sqr_to_call,
-    mkl_impl_fn=vmi._sqr,
+    mkl_fn_to_call="_mkl_sqr_to_call",
+    mkl_impl_fn="_sqr",
 )
 
 
@@ -2128,8 +2127,8 @@ tan = DPNPUnaryFunc(
     ti._tan_result_type,
     ti._tan,
     _TAN_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_tan_to_call,
-    mkl_impl_fn=vmi._tan,
+    mkl_fn_to_call="_mkl_tan_to_call",
+    mkl_impl_fn="_tan",
 )
 
 
@@ -2182,8 +2181,8 @@ tanh = DPNPUnaryFunc(
     ti._tanh_result_type,
     ti._tanh,
     _TANH_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_tanh_to_call,
-    mkl_impl_fn=vmi._tanh,
+    mkl_fn_to_call="_mkl_tanh_to_call",
+    mkl_impl_fn="_tanh",
 )
 
 

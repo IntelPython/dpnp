@@ -378,6 +378,8 @@ def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
 @pytest.mark.parametrize(
     "op",
     [
+        "array_equal",
+        "array_equiv",
         "equal",
         "greater",
         "greater_equal",
@@ -1367,3 +1369,13 @@ def test_select(usm_type):
     choicelist = [dp.array([1, 2], usm_type=usm_type)]
     res = dp.select(condlist, choicelist)
     assert res.usm_type == usm_type
+
+    
+@pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
+def test_nan_to_num(copy, usm_type_a):
+    a = dp.array([-dp.nan, -1, 0, 1, dp.nan], usm_type=usm_type_a)
+    result = dp.nan_to_num(a, copy=copy)
+
+    assert result.usm_type == usm_type_a
+    assert copy == (result is not a)
