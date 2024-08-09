@@ -615,6 +615,73 @@ class TestDiff:
         assert_raises(AxisError, xp.diff, a, axis=3, append=0)
 
 
+class TestFix:
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_basic(self, dt):
+        a = numpy.array(
+            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=dt
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.fix(ia)
+        expected = numpy.fix(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex(self, xp, dt):
+        a = xp.array([1.1, -1.1], dtype=dt)
+        with pytest.raises((ValueError, TypeError)):
+            xp.fix(a)
+
+    @pytest.mark.parametrize(
+        "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    )
+    def test_out(self, a_dt):
+        a = numpy.array(
+            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=a_dt
+        )
+        ia = dpnp.array(a)
+
+        if a.dtype != numpy.float32 and has_support_aspect64():
+            out_dt = numpy.float64
+        else:
+            out_dt = numpy.float32
+        out = numpy.zeros_like(a, dtype=out_dt)
+        iout = dpnp.array(out)
+
+        result = dpnp.fix(ia, out=iout)
+        expected = numpy.fix(a, out=out)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    @pytest.mark.parametrize("dt", [bool, numpy.float16])
+    def test_out_float16(self, dt):
+        a = numpy.array(
+            [[1.0, 1.1], [1.5, 1.8], [-1.0, -1.1], [-1.5, -1.8]], dtype=dt
+        )
+        out = numpy.zeros_like(a, dtype=numpy.float16)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        result = dpnp.fix(ia, out=iout)
+        expected = numpy.fix(a, out=out)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", [bool] + get_integer_dtypes())
+    def test_out_invalid_dtype(self, xp, dt):
+        a = xp.array([[1.5, 1.8], [-1.0, -1.1]])
+        out = xp.zeros_like(a, dtype=dt)
+
+        with pytest.raises((ValueError, TypeError)):
+            xp.fix(a, out=out)
+
+    def test_scalar(self):
+        assert_raises(TypeError, dpnp.fix, -3.4)
+
+
 class TestGradient:
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
     def test_basic(self, dt):
