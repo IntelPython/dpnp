@@ -38,7 +38,6 @@ it contains:
 """
 
 # pylint: disable=protected-access
-# pylint: disable=c-extension-no-member
 
 
 import dpctl.tensor._tensor_elementwise_impl as ti

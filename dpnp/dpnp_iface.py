@@ -56,7 +56,6 @@ from dpnp.random import *
 
 __all__ = [
     "are_same_logical_tensors",
-    "array_equal",
     "asnumpy",
     "astype",
     "as_usm_ndarray",
@@ -171,24 +170,6 @@ def are_same_logical_tensors(ar1, ar2):
     return ti._same_logical_tensors(
         dpnp.get_usm_ndarray(ar1), dpnp.get_usm_ndarray(ar2)
     )
-
-
-def array_equal(a1, a2, equal_nan=False):
-    """
-    True if two arrays have the same shape and elements, False otherwise.
-
-    For full documentation refer to :obj:`numpy.array_equal`.
-
-    See Also
-    --------
-    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal
-                           within a tolerance.
-    :obj:`dpnp.array_equiv` : Returns True if input arrays are shape consistent
-                              and all elements equal.
-
-    """
-
-    return numpy.array_equal(a1, a2, equal_nan=equal_nan)
 
 
 def asnumpy(a, order="C"):

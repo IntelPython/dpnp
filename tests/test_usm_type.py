@@ -378,6 +378,8 @@ def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
 @pytest.mark.parametrize(
     "op",
     [
+        "array_equal",
+        "array_equiv",
         "equal",
         "greater",
         "greater_equal",
@@ -1359,3 +1361,13 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
+def test_nan_to_num(copy, usm_type_a):
+    a = dp.array([-dp.nan, -1, 0, 1, dp.nan], usm_type=usm_type_a)
+    result = dp.nan_to_num(a, copy=copy)
+
+    assert result.usm_type == usm_type_a
+    assert copy == (result is not a)
