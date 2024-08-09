@@ -656,6 +656,11 @@ def test_reduce_hypot(device):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
         pytest.param(
+            "float_power",
+            [0, 1, 2, 3, 4, 5],
+            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        ),
+        pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
         pytest.param("fmax", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
@@ -747,6 +752,8 @@ def test_2in_1out(func, data1, data2, device):
 @pytest.mark.parametrize(
     "op",
     [
+        "array_equal",
+        "array_equiv",
         "equal",
         "greater",
         "greater_equal",
