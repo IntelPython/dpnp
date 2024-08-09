@@ -53,14 +53,15 @@ static sycl::event dotc_impl(sycl::queue &exec_q,
 
     sycl::event dotc_event;
     try {
-        dotc_event = mkl_blas::row_major::dotc(exec_q,
-                                               n, // size of the input vectors
-                                               x, // Pointer to vector x.
-                                               incx, // Stride of vector x.
-                                               y,    // Pointer to vector y.
-                                               incy, // Stride of vector y.
-                                               res,  // Pointer to result.
-                                               depends);
+        dotc_event =
+            mkl_blas::column_major::dotc(exec_q,
+                                         n,    // size of the input vectors
+                                         x,    // Pointer to vector x.
+                                         incx, // Stride of vector x.
+                                         y,    // Pointer to vector y.
+                                         incy, // Stride of vector y.
+                                         res,  // Pointer to result.
+                                         depends);
     } catch (oneapi::mkl::exception const &e) {
         error_msg
             << "Unexpected MKL exception caught during dotc() call:\nreason: "
