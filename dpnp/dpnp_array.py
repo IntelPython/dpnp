@@ -701,7 +701,7 @@ class dpnp_array:
         Return a copy of the array.
 
         Refer to :obj:`dpnp.copy` for full documentation.
-        
+
         Parameters
         ----------
         order : {"C", "F", "A", "K"}, optional
@@ -760,7 +760,13 @@ class dpnp_array:
 
         """
 
-        return dpnp.copy(self, order=order, device=device, usm_type=usm_type, sycl_queue=sycl_queue)
+        return dpnp.copy(
+            self,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     # 'ctypes',
 
