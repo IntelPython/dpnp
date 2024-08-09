@@ -1,3 +1,4 @@
+import copy
 import tempfile
 from math import prod
 
@@ -283,6 +284,25 @@ def test_array_creation_load_txt(usm_type):
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.shape == numpy_array.shape
     assert dpnp_array.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_method(usm_type_x, usm_type_y):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type_x)
+
+    y = x.copy()
+    assert x.usm_type == y.usm_type == usm_type_x
+
+    y = x.copy(usm_type=usm_type_y)
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_operation(usm_type):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type)
+    y = copy.copy(x)
+    assert x.usm_type == y.usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)

@@ -211,17 +211,16 @@ void wait_and_write(long long *x) {
 
 
 class TestNdarrayCopy:
-    @pytest.mark.skip("SAT-7167: add device keyword")
     @testing.multi_gpu(2)
     @testing.for_orders("CFA")
     def test_copy_multi_device_non_contiguous(self, order):
         arr = cupy.ndarray((20,))[::2]
         dev1 = dpctl.SyclDevice()
         arr2 = arr.copy(order, device=dev1)
-        assert arr2.device == dev1
+        assert arr2.sycl_device == dev1
         testing.assert_array_equal(arr, arr2)
 
-    @pytest.mark.skip("SAT-7167: add device keyword")
+    @pytest.mark.skip("order='K' is supported in copy method")
     @testing.multi_gpu(2)
     def test_copy_multi_device_non_contiguous_K(self):
         arr = cupy.ndarray((20,))[::2]
