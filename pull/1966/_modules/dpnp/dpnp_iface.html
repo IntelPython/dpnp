@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.16.0dev0+117.g6c371e544b documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.16.0dev0+123.g1ed346a611 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=66f9846c"></script>
+        <script src="../../_static/documentation_options.js?v=fbe59a4d"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+117.g6c371e544b
+                0.16.0dev0+123.g1ed346a611
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,7 +146,6 @@
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;are_same_logical_tensors&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;array_equal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
     <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;as_usm_ndarray&quot;</span><span class="p">,</span>
@@ -261,27 +260,6 @@
     <span class="k">return</span> <span class="n">ti</span><span class="o">.</span><span class="n">_same_logical_tensors</span><span class="p">(</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ar1</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ar2</span><span class="p">)</span>
     <span class="p">)</span>
-
-
-<div class="viewcode-block" id="array_equal">
-<a class="viewcode-back" href="../../reference/generated/dpnp.array_equal.html#dpnp.array_equal">[docs]</a>
-<span class="k">def</span> <span class="nf">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    True if two arrays have the same shape and elements, False otherwise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.array_equal`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.allclose` : Returns True if two arrays are element-wise equal</span>
-<span class="sd">                           within a tolerance.</span>
-<span class="sd">    :obj:`dpnp.array_equiv` : Returns True if input arrays are shape consistent</span>
-<span class="sd">                              and all elements equal.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">equal_nan</span><span class="o">=</span><span class="n">equal_nan</span><span class="p">)</span></div>
-
 
 
 <div class="viewcode-block" id="asnumpy">

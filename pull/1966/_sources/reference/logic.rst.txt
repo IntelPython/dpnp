@@ -68,6 +68,7 @@ Comparison
    dpnp.allclose
    dpnp.isclose
    dpnp.array_equal
+   dpnp.array_equiv
    dpnp.greater
    dpnp.greater_equal
    dpnp.less
