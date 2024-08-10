@@ -1,0 +1,6 @@
+﻿dpnp.random.beta
+================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: beta
