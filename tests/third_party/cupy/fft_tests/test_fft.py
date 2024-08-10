@@ -128,20 +128,20 @@ class TestFftOrder:
                 {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
-                # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
-                # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
+                {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (2, 3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
-                # {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
-                # {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
-                # {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
                 {"shape": (2, 3, 4, 5), "s": None, "axes": None},
-                # {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
-                # {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
-                # {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
                 {"shape": (3, 4), "s": (0, 5), "axes": None},
                 {"shape": (3, 4), "s": (1, 0), "axes": None},
             ],
@@ -215,22 +215,22 @@ class TestFft2:
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 {"shape": (3, 4), "s": None, "axes": [-1, -2]},
-                # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
-                # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
+                {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (2, 3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)},
                 {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)},
-                # {"shape": (2, 3, 4), "s": None, "axes": (-1, -3)}, # mkl_fft gh-109
-                # {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
-                # {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
-                # {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": None, "axes": (-1, -3)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": None, "axes": (0, 1)}, # mkl_fft gh-109
+                {"shape": (2, 3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
+                {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)}, # mkl_fft gh-109
                 {"shape": (2, 3, 4), "s": (4, 3, 2), "axes": (2, 0, 1)},
                 {"shape": (2, 3, 4, 5), "s": None, "axes": None},
-                # {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
-                # {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
-                # {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
+                {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
             ],
             testing.product(
                 {"norm": [None, "backward", "ortho", "forward", ""]}
@@ -348,14 +348,14 @@ class TestRfft:
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 {"shape": (3, 4), "s": None, "axes": (0,)},
-                # {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
-                # {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
-                # {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
-                # {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)}, # mkl_fft gh-116
-                # {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)}, # mkl_fft gh-116
                 {"shape": (2, 3, 4), "s": None, "axes": (0, 1)},
                 {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)},
-                # {"shape": (2, 3, 4, 5), "s": None, "axes": None}, # mkl_fft gh-109 and gh-116
+                {"shape": (2, 3, 4, 5), "s": None, "axes": None}, # mkl_fft gh-109 and gh-116
             ],
             testing.product(
                 {"norm": [None, "backward", "ortho", "forward", ""]}
@@ -441,14 +441,14 @@ class TestRfft2EmptyAxes:
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 {"shape": (3, 4), "s": None, "axes": (0,)},
-                # {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
-                # {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
-                # {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
-                # {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)}, # mkl_fft gh-116
-                # {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
+                {"shape": (2, 3, 4), "s": None, "axes": (-3, -2, -1)}, # mkl_fft gh-116
+                {"shape": (2, 3, 4), "s": None, "axes": (-1, -2, -3)}, # mkl_fft gh-116
                 {"shape": (2, 3, 4), "s": None, "axes": (0, 1)},
                 {"shape": (2, 3, 4), "s": (2, 3), "axes": (0, 1, 2)},
-                # {"shape": (2, 3, 4, 5), "s": None, "axes": None}, # mkl_fft gh-109 and gh-116
+                {"shape": (2, 3, 4, 5), "s": None, "axes": None}, # mkl_fft gh-109 and gh-116
             ],
             testing.product(
                 {"norm": [None, "backward", "ortho", "forward", ""]}

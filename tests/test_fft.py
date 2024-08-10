@@ -480,16 +480,11 @@ class TestFftn:
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.fftn(a, axes=axes)
-        # Intel® NumPy ignores repeated axes, handle it one by one
-        expected = a_np
-        for ii in axes:
-            expected = numpy.fft.fft(expected, axis=ii)
+        expected = numpy.fft.fftn(a_np, axes=axes)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifftn(result, axes=axes)
-        iexpected = expected
-        for ii in axes:
-            iexpected = numpy.fft.ifft(iexpected, axis=ii)
+        iexpected = numpy.fft.ifftn(expected, axes=axes)
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("axes", [(2, 3, 3, 2), (0, 0, 3, 3)])
@@ -503,16 +498,11 @@ class TestFftn:
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.fftn(a, s=s, axes=axes)
-        # Intel® NumPy ignores repeated axes, handle it one by one
-        expected = a_np
-        for jj, ii in zip(s[::-1], axes[::-1]):
-            expected = numpy.fft.fft(expected, n=jj, axis=ii)
+        expected = numpy.fft.fftn(a_np, s=s, axes=axes)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.ifftn(result, s=s, axes=axes)
-        iexpected = expected
-        for jj, ii in zip(s[::-1], axes[::-1]):
-            iexpected = numpy.fft.ifft(iexpected, n=jj, axis=ii)
+        iexpected = numpy.fft.ifftn(expected, s=s, axes=axes)
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("axes", [(0, 1, 2, 3), (1, 2, 1, 2), (2, 2, 2, 3)])
@@ -987,7 +977,7 @@ class TestRfft2:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
-    @pytest.mark.parametrize("axes", [(0, 1)])  # (1, 2),(0, 2),(2, 1),(2, 0)
+    @pytest.mark.parametrize("axes", [(0, 1), (1, 2), (0, 2), (2, 1), (2, 0)])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_rfft2(self, dtype, axes, norm, order):
@@ -1047,10 +1037,9 @@ class TestRfftn:
     def setup_method(self):
         numpy.random.seed(42)
 
-    # TODO: add additional axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
-        "axes", [(0, 1, 2), (-2, -4, -1, -3)]  # (-1, -4, -2)
+        "axes", [(0, 1, 2), (-1, -4, -2), (-2, -4, -1, -3)]
     )
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
@@ -1079,22 +1068,11 @@ class TestRfftn:
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfftn(a, axes=axes)
-        # Intel® NumPy ignores repeated axes, handle it one by one
-        expected = numpy.fft.rfft(a_np, axis=axes[-1])
-        # need to pass shape for c2c FFT since expected and a_np
-        # do not have the same shape after calling rfft
-        shape = []
-        for axis in axes:
-            shape.append(a_np.shape[axis])
-        for jj, ii in zip(shape[-2::-1], axes[-2::-1]):
-            expected = numpy.fft.fft(expected, n=jj, axis=ii)
+        expected = numpy.fft.rfftn(a_np, axes=axes)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
         iresult = dpnp.fft.irfftn(result, axes=axes)
-        iexpected = expected
-        for ii in axes[-2::-1]:
-            iexpected = numpy.fft.ifft(iexpected, axis=ii)
-        iexpected = numpy.fft.irfft(iexpected, axis=axes[-1])
+        iexpected = numpy.fft.irfftn(expected, axes=axes)
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("axes", [(2, 3, 3, 2), (0, 0, 3, 3)])
