@@ -787,7 +787,8 @@ def copy(
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
     order : {"C", "F", "A", "K"}, optional
-        Memory layout of the newly output array. Default: "K".
+        Memory layout of the newly output array.
+        Default: ``"K"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector

@@ -737,8 +737,9 @@ class dpnp_array:
 
         Notes
         -----
-        This function is the preferred method for creating an array copy. The
-        function :func:`dpnp.copy` is similar, but it defaults to using order 'K'.
+        This function is the preferred method for creating an array copy.
+        The function :func:`dpnp.copy` is similar, but it defaults to using
+        order ``"K"``.
 
         Examples
         --------
