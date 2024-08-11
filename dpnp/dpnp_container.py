@@ -79,8 +79,7 @@ def arange(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-
-    return dpnp_array(array_obj.shape, buffer=array_obj)
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def asarray(
@@ -132,7 +131,7 @@ def asarray(
         if array_obj is x1_obj and isinstance(x1, dpnp_array):
             return x1
 
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def copy(x1, /, *, order="K"):
@@ -141,7 +140,7 @@ def copy(x1, /, *, order="K"):
         order = "K"
 
     array_obj = dpt.copy(dpnp.get_usm_ndarray(x1), order=order)
-    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def empty(
@@ -169,7 +168,7 @@ def empty(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def eye(
@@ -202,7 +201,7 @@ def eye(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def full(
@@ -236,7 +235,7 @@ def full(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def ones(
@@ -264,19 +263,19 @@ def ones(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def tril(x1, /, *, k=0):
     """Creates `dpnp_array` as lower triangular part of an input array."""
     array_obj = dpt.tril(dpnp.get_usm_ndarray(x1), k=k)
-    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def triu(x1, /, *, k=0):
     """Creates `dpnp_array` as upper triangular part of an input array."""
     array_obj = dpt.triu(dpnp.get_usm_ndarray(x1), k=k)
-    return dpnp_array(array_obj.shape, buffer=array_obj, order="K")
+    return dpnp_array._create_from_usm_ndarray(array_obj)
 
 
 def zeros(
@@ -304,4 +303,4 @@ def zeros(
         usm_type=usm_type,
         sycl_queue=sycl_queue_normalized,
     )
-    return dpnp_array(array_obj.shape, buffer=array_obj, order=order)
+    return dpnp_array._create_from_usm_ndarray(array_obj)
