@@ -1380,7 +1380,7 @@ For full documentation refer to :obj:`numpy.fix`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    The array of numbers for which the absolute values are required.
+    An array of floats to be rounded.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
