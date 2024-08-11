@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+108.g9558a55656 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+117.g37b70ba206 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a11c77e7"></script>
+        <script src="../../_static/documentation_options.js?v=909ca649"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+108.g9558a55656
+                0.16.0dev0+117.g37b70ba206
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,7 +128,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
-<span class="c1"># pylint: disable=c-extension-no-member</span>
 <span class="c1"># pylint: disable=duplicate-code</span>
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
@@ -146,7 +145,6 @@
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span> <span class="k">as</span> <span class="nn">ufi</span>
-<span class="kn">import</span> <span class="nn">dpnp.backend.extensions.vm._vm_impl</span> <span class="k">as</span> <span class="nn">vmi</span>
 
 <span class="kn">from</span> <span class="nn">.backend.extensions.sycl_ext</span> <span class="kn">import</span> <span class="n">_sycl_ext_impl</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
@@ -202,6 +200,7 @@
     <span class="s2">&quot;mod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;modf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;multiply&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nan_to_num&quot;</span><span class="p">,</span>
     <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nextafter&quot;</span><span class="p">,</span>
     <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
@@ -220,6 +219,13 @@
     <span class="s2">&quot;true_divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_max_min</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the maximum and minimum representable values for an inexact dtype.&quot;&quot;&quot;</span>
+
+    <span class="n">f</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">min</span>
 
 
 <span class="k">def</span> <span class="nf">_get_reduction_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">_out</span><span class="p">):</span>
@@ -453,8 +459,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
     <span class="n">_ABS_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_abs_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_abs_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_abs&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -529,8 +535,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_add_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_add</span><span class="p">,</span>
     <span class="n">_ADD_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_add_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_add</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_add_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_add&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_add_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -683,8 +689,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_ceil_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_ceil</span><span class="p">,</span>
     <span class="n">_CEIL_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_ceil_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_ceil</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_ceil_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_ceil&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -812,8 +818,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj</span><span class="p">,</span>
     <span class="n">_CONJ_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_conj_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_conj</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_conj_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_conj&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">conj</span> <span class="o">=</span> <span class="n">conjugate</span>
@@ -1377,8 +1383,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_divide_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_divide</span><span class="p">,</span>
     <span class="n">_DIVIDE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_div_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_div</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_div_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_div&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_divide_inplace</span><span class="p">,</span>
     <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">_acceptance_fn_divide</span><span class="p">,</span>
 <span class="p">)</span>
@@ -1478,8 +1484,8 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fabs_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fabs</span><span class="p">,</span>
     <span class="n">_FABS_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_abs_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_abs_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_abs&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1494,7 +1500,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    The array of numbers for which the absolute values are required.</span>
+<span class="s2">    An array of floats to be rounded.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1634,8 +1640,8 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_float_power_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
     <span class="n">_FLOAT_POWER_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_pow_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_pow_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_pow&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_pow_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1695,8 +1701,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_floor</span><span class="p">,</span>
     <span class="n">_FLOOR_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_floor_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_floor</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_floor_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_floor&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1849,8 +1855,8 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fmax_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fmax</span><span class="p">,</span>
     <span class="n">_FMAX_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_fmax_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_fmax</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_fmax_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_fmax&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1934,8 +1940,8 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fmin_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fmin</span><span class="p">,</span>
     <span class="n">_FMIN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_fmin_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_fmin</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_fmin_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_fmin&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2008,8 +2014,8 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fmod_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fmod</span><span class="p">,</span>
     <span class="n">_FMOD_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_fmod_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_fmod</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_fmod_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_fmod&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2532,10 +2538,148 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_multiply_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_multiply</span><span class="p">,</span>
     <span class="n">_MULTIPLY_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_mul_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mul</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_mul_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_mul&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_multiply_inplace</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<div class="viewcode-block" id="nan_to_num">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nan_to_num.html#dpnp.nan_to_num">[docs]</a>
+<span class="k">def</span> <span class="nf">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Replace ``NaN`` with zero and infinity with large finite numbers (default</span>
+<span class="sd">    behaviour) or with the numbers defined by the user using the `nan`,</span>
+<span class="sd">    `posinf` and/or `neginf` keywords.</span>
+
+<span class="sd">    If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value</span>
+<span class="sd">    in `nan` keyword, infinity is replaced by the largest finite floating point</span>
+<span class="sd">    values representable by ``x.dtype`` or by the user defined value in</span>
+<span class="sd">    `posinf` keyword and -infinity is replaced by the most negative finite</span>
+<span class="sd">    floating point values representable by ``x.dtype`` or by the user defined</span>
+<span class="sd">    value in `neginf` keyword.</span>
+
+<span class="sd">    For complex dtypes, the above is applied to each of the real and</span>
+<span class="sd">    imaginary components of `x` separately.</span>
+
+<span class="sd">    If `x` is not inexact, then no replacements are made.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.nan_to_num`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input data.</span>
+<span class="sd">    copy : bool, optional</span>
+<span class="sd">        Whether to create a copy of `x` (``True``) or to replace values</span>
+<span class="sd">        in-place (``False``). The in-place operation only occurs if casting to</span>
+<span class="sd">        an array does not require a copy.</span>
+<span class="sd">    nan : {int, float, bool}, optional</span>
+<span class="sd">        Value to be used to fill ``NaN`` values.</span>
+<span class="sd">        Default: ``0.0``.</span>
+<span class="sd">    posinf : {int, float, bool, None}, optional</span>
+<span class="sd">        Value to be used to fill positive infinity values. If no value is</span>
+<span class="sd">        passed then positive infinity values will be replaced with a very</span>
+<span class="sd">        large number.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    neginf : {int, float, bool, None} optional</span>
+<span class="sd">        Value to be used to fill negative infinity values. If no value is</span>
+<span class="sd">        passed then negative infinity values will be replaced with a very</span>
+<span class="sd">        small (or negative) number.</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        `x`, with the non-finite values replaced. If `copy` is ``False``, this</span>
+<span class="sd">        may be `x` itself.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.isinf` : Shows which elements are positive or negative infinity.</span>
+<span class="sd">    :obj:`dpnp.isneginf` : Shows which elements are negative infinity.</span>
+<span class="sd">    :obj:`dpnp.isposinf` : Shows which elements are positive infinity.</span>
+<span class="sd">    :obj:`dpnp.isnan` : Shows which elements are Not a Number (NaN).</span>
+<span class="sd">    :obj:`dpnp.isfinite` : Shows which elements are finite</span>
+<span class="sd">                           (not NaN, not infinity)</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(np.array(np.inf))</span>
+<span class="sd">    array(1.79769313e+308)</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(np.array(-np.inf))</span>
+<span class="sd">    array(-1.79769313e+308)</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(np.array(np.nan))</span>
+<span class="sd">    array(0.)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([np.inf, -np.inf, np.nan, -128, 128])</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(x)</span>
+<span class="sd">    array([ 1.79769313e+308, -1.79769313e+308,  0.00000000e+000,</span>
+<span class="sd">           -1.28000000e+002,  1.28000000e+002])</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(x, nan=-9999, posinf=33333333, neginf=33333333)</span>
+<span class="sd">    array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,</span>
+<span class="sd">            1.2800000e+02])</span>
+<span class="sd">    &gt;&gt;&gt; y = np.array([complex(np.inf, np.nan), np.nan, complex(np.nan, np.inf)])</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(y)</span>
+<span class="sd">    array([1.79769313e+308 +0.00000000e+000j, # may vary</span>
+<span class="sd">           0.00000000e+000 +0.00000000e+000j,</span>
+<span class="sd">           0.00000000e+000 +1.79769313e+308j])</span>
+<span class="sd">    &gt;&gt;&gt; np.nan_to_num(y, nan=111111, posinf=222222)</span>
+<span class="sd">    array([222222.+111111.j, 111111.     +0.j, 111111.+222222.j])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="c1"># Python boolean is a subtype of an integer</span>
+    <span class="c1"># so additional check for bool is not needed.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">nan</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;nan must be a scalar of an integer, float, bool, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">nan</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">copy</span> <span class="k">else</span> <span class="n">x</span>
+    <span class="n">x_type</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">x</span>
+
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">x</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="n">parts_out</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">x_type</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">(</span><span class="n">out</span><span class="p">,)</span>
+    <span class="p">)</span>
+    <span class="n">max_f</span><span class="p">,</span> <span class="n">min_f</span> <span class="o">=</span> <span class="n">_get_max_min</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">real</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">posinf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">posinf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;posinf must be a scalar of an integer, float, bool, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;or be None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">posinf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">max_f</span> <span class="o">=</span> <span class="n">posinf</span>
+    <span class="k">if</span> <span class="n">neginf</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">neginf</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="s2">&quot;neginf must be a scalar of an integer, float, bool, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;or be None, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">neginf</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">min_f</span> <span class="o">=</span> <span class="n">neginf</span>
+
+    <span class="k">for</span> <span class="n">part</span><span class="p">,</span> <span class="n">part_out</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parts</span><span class="p">,</span> <span class="n">parts_out</span><span class="p">):</span>
+        <span class="n">nan_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">posinf_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isposinf</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+        <span class="n">neginf_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isneginf</span><span class="p">(</span><span class="n">part</span><span class="p">)</span>
+
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">nan_mask</span><span class="p">,</span> <span class="n">nan</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">posinf_mask</span><span class="p">,</span> <span class="n">max_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+        <span class="n">part</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">neginf_mask</span><span class="p">,</span> <span class="n">min_f</span><span class="p">,</span> <span class="n">part</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">part_out</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span></div>
+
 
 
 <span class="n">_NEGATIVE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -2647,8 +2791,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_nextafter_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_nextafter</span><span class="p">,</span>
     <span class="n">_NEXTAFTER_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_nextafter_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_nextafter</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_nextafter_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_nextafter&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2794,8 +2938,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_pow_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
     <span class="n">_POWER_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_pow_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_pow</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_pow_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_pow&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_pow_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -3113,8 +3257,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
     <span class="n">_RINT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_round_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_round_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_round&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -3174,8 +3318,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_round_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
     <span class="n">_ROUND_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_round_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_round</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_round_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_round&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -3354,8 +3498,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_subtract_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_subtract</span><span class="p">,</span>
     <span class="n">_SUBTRACT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sub_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sub</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sub_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sub&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_subtract_inplace</span><span class="p">,</span>
     <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_subtract</span><span class="p">,</span>
 <span class="p">)</span>
@@ -3603,8 +3747,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
     <span class="n">_TRUNC_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_trunc_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_trunc</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_trunc_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_trunc&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 </pre></div>
 
