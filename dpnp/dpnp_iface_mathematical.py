@@ -96,6 +96,7 @@ __all__ = [
     "divide",
     "ediff1d",
     "fabs",
+    "fix",
     "float_power",
     "floor",
     "floor_divide",
@@ -533,6 +534,7 @@ def around(x, /, decimals=0, out=None):
     :obj:`dpnp.round` : Equivalent function; see for details.
     :obj:`dpnp.ndarray.round` : Equivalent function.
     :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+    :obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
     :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
     :obj:`dpnp.floor` : Return the floor of the input, element-wise.
     :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -578,6 +580,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------
@@ -1371,6 +1375,64 @@ fabs = DPNPUnaryFunc(
 )
 
 
+_FIX_DOCSTRING = """
+Round to nearest integer towards zero.
+
+Round an array of floats element-wise to nearest integer towards zero.
+The rounded values are returned as floats.
+
+For full documentation refer to :obj:`numpy.fix`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    An array of floats to be rounded.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array with the rounded values and with the same dimensions as the input.
+    The returned array will have the default floating point data type for the
+    device where `a` is allocated.
+    If `out` is ``None`` then a float array is returned with the rounded values.
+    Otherwise the result is stored there and the return value `out` is
+    a reference to that array.
+
+See Also
+--------
+:obj:`dpnp.round` : Round to given number of decimals.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.fix(np.array(3.14))
+array(3.)
+>>> np.fix(np.array(3))
+array(3.)
+>>> a = np.array([2.1, 2.9, -2.1, -2.9])
+>>> np.fix(a)
+array([ 2.,  2., -2., -2.])
+"""
+
+fix = DPNPUnaryFunc(
+    "fix",
+    ufi._fix_result_type,
+    ufi._fix,
+    _FIX_DOCSTRING,
+)
+
+
 _FLOAT_POWER_DOCSTRING = """
 Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
@@ -1504,6 +1566,8 @@ See Also
 --------
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Notes
 -----
@@ -3048,6 +3112,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.round` : Evenly round to the given number of decimals.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -3103,6 +3168,7 @@ See Also
 :obj:`dpnp.ndarray.round` : Equivalent function.
 :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
@@ -3536,6 +3602,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
 :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------
