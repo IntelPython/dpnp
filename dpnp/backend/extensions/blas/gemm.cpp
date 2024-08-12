@@ -95,9 +95,13 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                 const std::int64_t ldb, Tab beta, Tc *c, const std::int64_t ldc,
                 const std::vector<sycl::event> &deps) -> sycl::event {
             if (is_row_major) {
+#if defined(USE_ONEMKL_CUBLAS)
+                throw py::value_error("Input matrices are not f-contiguous");
+#else
                 return mkl_blas::row_major::gemm(q, transA, transB, m, n, k,
                                                  alpha, a, lda, b, ldb, beta, c,
                                                  ldc, deps);
+#endif // USE_ONEMKL_CUBLAS
             }
             else {
                 return mkl_blas::column_major::gemm(q, transA, transB, m, n, k,

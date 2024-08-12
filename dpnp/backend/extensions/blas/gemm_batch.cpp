@@ -107,9 +107,14 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
                 const std::int64_t batch_size,
                 const std::vector<sycl::event> &deps) -> sycl::event {
             if (is_row_major) {
+#if defined(USE_ONEMKL_CUBLAS)
+                throw py::value_error(
+                    "last 2-dimensions of input matrices are not f-contiguous");
+#else
                 return mkl_blas::row_major::gemm_batch(
                     q, transA, transB, m, n, k, alpha, a, lda, stridea, b, ldb,
                     strideb, beta, c, ldc, stridec, batch_size, deps);
+#endif // USE_ONEMKL_CUBLAS
             }
             else {
                 return mkl_blas::column_major::gemm_batch(
@@ -273,11 +278,12 @@ std::tuple<sycl::event, sycl::event, bool>
     standardize_strides_to_nonzero(b_stride, b_shape);
     standardize_strides_to_nonzero(c_stride, c_shape);
     const bool A_base_is_f_contig =
-        a_stride[1] == 1 && a_stride[2] == a_shape[1];
+        (a_stride[1] == 1 || a_stride[1] == a_shape[2]) &&
+        a_stride[2] == a_shape[1];
     const bool A_base_is_c_contig =
         a_stride[1] == a_shape[2] && a_stride[2] == 1;
     const bool B_base_is_f_contig =
-        b_stride[1] == 1 && b_stride[2] == b_shape[1];
+        b_stride[1] == 1 && (b_stride[2] == b_shape[1] || b_stride[2] == 1);
     const bool B_base_is_c_contig =
         b_stride[1] == b_shape[2] && b_stride[2] == 1;
     const bool C_base_is_f_contig =
@@ -380,7 +386,8 @@ struct GemmBatchContigFactory
     fnT get()
     {
         if constexpr (types::GemmBatchTypePairSupportFactory<Tab,
-                                                             Tc>::is_defined) {
+                                                             Tc>::is_defined)
+        {
             return gemm_batch_impl<Tab, Tc>;
         }
         else {

@@ -325,12 +325,28 @@ def _get_result_shape(x1, x2, out, np_flag):
 
 def _gemm_batch_matmul(exec_q, x1, x2, res):
     # arrays here are already at least 3D, make them 3D
-    x1_shape = x1.shape
-    x2_shape = x2.shape
-    x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
-    x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
     orig_shape = res.shape
-    res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
+    if not bi._row_major_is_available():
+        tmp = x1
+        x1 = x2
+        x2 = tmp
+        x1_shape = x1.shape
+        x2_shape = x2.shape
+        if not x1.flags.c_contiguous:
+            x1 = dpnp.asarray(x1, order="C")
+        if not x2.flags.c_contiguous:
+            x2 = dpnp.asarray(x2, order="C")
+        x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
+        x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
+        res = dpnp.reshape(res, (-1, orig_shape[-1], orig_shape[-2]))
+        x1 = x1.transpose(0, 2, 1)
+        x2 = x2.transpose(0, 2, 1)
+    else:
+        x1_shape = x1.shape
+        x2_shape = x2.shape
+        x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
+        x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
+        res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
     res_shape = res.shape
 
     # gemm_batch does not handle negative strides, make a copy if needed
@@ -383,7 +399,7 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
                 .reshape(res_shape[1], res_shape[2], batch_size)
                 .transpose(2, 0, 1)
             )
-    else:
+    elif bi._row_major_is_available():
         if res_is_c_contig:
             # read data of each 2D array in the batch in "C" order and
             # write it in "F" order
@@ -419,6 +435,12 @@ def _gemm_matmul(exec_q, x1, x2, res):
         if res.flags.c_contiguous is True:
             # read data in "C" order and write it in "F" order
             res = dpnp.ravel(res, order="C").reshape(res.shape, order="F")
+        elif (
+            not bi._row_major_is_available() and res.flags.f_contiguous is True
+        ):
+            # read data in "C" order and write it in "C" order
+            # make result similar for row_major call
+            res = dpnp.ravel(res, order="C").reshape(res.shape, order="C")
 
     return res
 
@@ -794,16 +816,25 @@ def dpnp_matmul(
         x1 = dpnp.reshape(x1, x1.size)
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x2_shape[-1],)
+        if not bi._row_major_is_available() and x2.flags.c_contiguous:
+            x2 = dpnp.asarray(x2, order="F")
     elif x1_is_2D and x2_is_1D:
         call_flag = "gemv"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2.size)
         res_shape = (x1_shape[-2],)
+        if not bi._row_major_is_available() and x1.flags.c_contiguous:
+            x1 = dpnp.asarray(x1, order="F")
     elif x1_is_2D and x2_is_2D:
         call_flag = "gemm"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x1_shape[-2], x2_shape[-1])
+        if not bi._row_major_is_available():
+            if x1.flags.c_contiguous:
+                x1 = dpnp.asarray(x1, order="F")
+            if x2.flags.c_contiguous:
+                x2 = dpnp.asarray(x2, order="F")
     elif x1_base_is_1D:
         # TODO: implement gemv_batch to use it here with transpose
         call_flag = "gemm_batch"
@@ -839,6 +870,14 @@ def dpnp_matmul(
         x2_contig_flag, _, x2_f = _define_contig_flag(x2)
 
         res_order = "F" if (x1_f and x2_f and call_flag == "gemm") else "C"
+
+        if bi._row_major_is_available():
+            array_order = res_order
+        elif (call_flag == "gemm") or (call_flag == "gemv"):
+            array_order = "F"
+        else:
+            array_order = "C"
+
         result = _create_result_array(
             x1,
             x2,
@@ -862,13 +901,13 @@ def dpnp_matmul(
                 x1,
                 copy_flag=not x1_contig_flag,
                 dtype=compute_dtype,
-                order=res_order,
+                order=array_order,
             )
             x2 = _copy_array(
                 x2,
                 copy_flag=not x2_contig_flag,
                 dtype=compute_dtype,
-                order=res_order,
+                order=array_order,
             )
 
             if call_flag == "gemv":
