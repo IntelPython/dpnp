@@ -807,7 +807,11 @@ def normal(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1038,7 +1042,11 @@ def rand(d0, *dn, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1087,7 +1095,11 @@ def randint(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1141,7 +1153,11 @@ def randn(d0, *dn, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1189,7 +1205,11 @@ def random(size=None, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1233,7 +1253,11 @@ def random_integers(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1294,7 +1318,11 @@ def random_sample(size=None, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1337,7 +1365,11 @@ def ranf(size=None, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1416,7 +1448,11 @@ def sample(size=None, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1623,7 +1659,11 @@ def standard_normal(size=None, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1751,7 +1791,11 @@ def uniform(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------

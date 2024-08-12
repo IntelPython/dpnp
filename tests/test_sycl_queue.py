@@ -1,3 +1,4 @@
+import copy
 import tempfile
 
 import dpctl
@@ -370,6 +371,39 @@ def test_array_creation_load_txt(device):
 
     assert_dtype_allclose(dpnp_array, numpy_array)
     assert dpnp_array.sycl_device == device
+
+
+@pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_y",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_copy_method(device_x, device_y):
+    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device_x)
+
+    y = x.copy()
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+    q = dpctl.SyclQueue(device_y)
+    y = x.copy(sycl_queue=q)
+    assert_sycl_queue_equal(y.sycl_queue, q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_copy_operation(device):
+    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device)
+
+    y = copy.copy(x)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
 @pytest.mark.parametrize(

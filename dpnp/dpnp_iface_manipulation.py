@@ -128,7 +128,11 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
