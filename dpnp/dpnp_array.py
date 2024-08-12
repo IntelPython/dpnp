@@ -696,9 +696,34 @@ class dpnp_array:
         else:
             return dpnp.conjugate(self)
 
-    def copy(self, order="C"):
+    def copy(self, order="C", device=None, usm_type=None, sycl_queue=None):
         """
         Return a copy of the array.
+
+        Refer to :obj:`dpnp.copy` for full documentation.
+
+        Parameters
+        ----------
+        order : {"C", "F", "A", "K"}, optional
+            Memory layout of the newly output array.
+            Default: ``"C"``.
+        device : {None, string, SyclDevice, SyclQueue}, optional
+            An array API concept of device where the output array is created.
+            The `device` can be ``None`` (the default), an OneAPI filter
+            selector string, an instance of :class:`dpctl.SyclDevice`
+            corresponding to a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+            Default: ``None``.
+        sycl_queue : {None, SyclQueue}, optional
+            A SYCL queue to use for output array allocation and copying. The
+            `sycl_queue` can be passed as ``None`` (the default), which means
+            to get the SYCL queue from `device` keyword if present or to use
+            a default queue.
+            Default: ``None``.
 
         Returns
         -------
@@ -712,8 +737,9 @@ class dpnp_array:
 
         Notes
         -----
-        This function is the preferred method for creating an array copy. The
-        function :func:`dpnp.copy` is similar, but it defaults to using order 'K'.
+        This function is the preferred method for creating an array copy.
+        The function :func:`dpnp.copy` is similar, but it defaults to using
+        order ``"K"``.
 
         Examples
         --------
@@ -735,7 +761,13 @@ class dpnp_array:
 
         """
 
-        return dpnp.copy(self, order=order)
+        return dpnp.copy(
+            self,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     # 'ctypes',
 
@@ -1252,12 +1284,45 @@ class dpnp_array:
     @property
     def shape(self):
         """
-        Lengths of axes. A tuple of numbers represents size of each dimension.
+        Tuple of array dimensions.
 
-        Setter of this property involves reshaping without copy. If the array
-        cannot be reshaped without copy, it raises an exception.
+        The shape property is usually used to get the current shape of an array,
+        but may also be used to reshape the array in-place by assigning a tuple
+        of array dimensions to it. Unlike :obj:`dpnp.reshape`, only non-negative
+        values are supported to be set as new shape. Reshaping an array in-place
+        will fail if a copy is required.
 
-        .. seealso: :attr:`numpy.ndarray.shape`
+        For full documentation refer to :obj:`numpy.ndarray.shape`.
+
+        Note
+        ----
+        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
+        preferred approach to set new shape of an array.
+
+        See Also
+        --------
+        :obj:`dpnp.shape` : Equivalent getter function.
+        :obj:`dpnp.reshape` : Function similar to setting `shape`.
+        :obj:`dpnp.ndarray.reshape` : Method similar to setting `shape`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([1, 2, 3, 4])
+        >>> x.shape
+        (4,)
+        >>> y = np.zeros((2, 3, 4))
+        >>> y.shape
+        (2, 3, 4)
+
+        >>> y.shape = (3, 8)
+        >>> y
+        array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])
+        >>> y.shape = (3, 6)
+        ...
+        TypeError: Can not reshape array of size 24 into (3, 6)
 
         """
 
@@ -1268,16 +1333,23 @@ class dpnp_array:
         """
         Set new lengths of axes.
 
-        A tuple of numbers represents size of each dimension.
-        It involves reshaping without copy. If the array cannot be reshaped without copy,
-        it raises an exception.
+        Modifies array instance in-place by changing its metadata about the
+        shape and the strides of the array, or raises `AttributeError`
+        exception if in-place change is not possible.
 
-        .. seealso: :attr:`numpy.ndarray.shape`
+        Whether the array can be reshape in-place depends on its strides. Use
+        :obj:`dpnp.reshape` function which always succeeds to reshape the array
+        by performing a copy if necessary.
+
+        For full documentation refer to :obj:`numpy.ndarray.shape`.
+
+        Parameters
+        ----------
+        newshape : {tuple, int}
+            New shape. Only non-negative values are supported. The new shape
+            may not lead to the change in the number of elements in the array.
 
         """
-
-        if not isinstance(newshape, (list, tuple)):
-            newshape = (newshape,)
 
         self._array_obj.shape = newshape
 
