@@ -1264,7 +1264,7 @@ class dpnp_array:
 
         Note
         ----
-        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape is the
+        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
         preferred approach to set new shape of an array.
 
         See Also
