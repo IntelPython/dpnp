@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+129.gd1ad984108 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+131.gc8250d66ef documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=f962cff3"></script>
+        <script src="../../_static/documentation_options.js?v=5c1c98a8"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+129.gd1ad984108
+                0.16.0dev0+131.gc8250d66ef
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1299,7 +1299,7 @@
 <span class="sd">    v : {scalar, array_like}</span>
 <span class="sd">         Values to be put into `a`. Must be broadcastable to the result shape</span>
 <span class="sd">         ``a.shape[:axis] + ind.shape + a.shape[axis+1:]``.</span>
-<span class="sd">    axis {None, int}, optional</span>
+<span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        The axis along which the values will be placed. If `a` is 1-D array,</span>
 <span class="sd">        this argument is optional.</span>
 <span class="sd">        Default: ``None``.</span>
@@ -1642,7 +1642,7 @@
 
 <div class="viewcode-block" id="take_along_axis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.take_along_axis.html#dpnp.take_along_axis">[docs]</a>
-<span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">take_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take values from the input array by matching 1d index and data slices.</span>
 
@@ -1663,15 +1663,24 @@
 <span class="sd">        Indices to take along each 1d slice of `a`. This must match the</span>
 <span class="sd">        dimension of the input array, but dimensions ``Ni`` and ``Nj``</span>
 <span class="sd">        only need to broadcast against `a`.</span>
-<span class="sd">    axis : int</span>
+<span class="sd">    axis : {None, int}</span>
 <span class="sd">        The axis to take 1d slices along. If axis is ``None``, the input</span>
 <span class="sd">        array is treated as if it had first been flattened to 1d,</span>
 <span class="sd">        for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.</span>
+<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
+<span class="sd">        are:</span>
+
+<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">          negative indices.</span>
+<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+
+<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The indexed result.</span>
+<span class="sd">        The indexed result of the same data type as `a`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1731,12 +1740,21 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;when axis=None, `indices` must have a single dimension.&quot;</span>
+            <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span></div>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">take_along_axis</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
 
