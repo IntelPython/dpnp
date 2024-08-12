@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+120.g152572b470 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+122.g1479c15100 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=eb1d2ce7"></script>
+        <script src="../../_static/documentation_options.js?v=20949183"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+120.g152572b470
+                0.16.0dev0+122.g1479c15100
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -186,6 +186,7 @@
     <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ediff1d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fabs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
     <span class="s2">&quot;float_power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;floor_divide&quot;</span><span class="p">,</span>
@@ -625,6 +626,7 @@
 <span class="sd">    :obj:`dpnp.round` : Equivalent function; see for details.</span>
 <span class="sd">    :obj:`dpnp.ndarray.round` : Equivalent function.</span>
 <span class="sd">    :obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="sd">    :obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.</span>
 <span class="sd">    :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.</span>
 <span class="sd">    :obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
 <span class="sd">    :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
@@ -671,6 +673,8 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
 <span class="s2">:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
+<span class="s2">:obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="s2">:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1485,6 +1489,64 @@
 <span class="p">)</span>
 
 
+<span class="n">_FIX_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Round to nearest integer towards zero.</span>
+
+<span class="s2">Round an array of floats element-wise to nearest integer towards zero.</span>
+<span class="s2">The rounded values are returned as floats.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.fix`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    An array of floats to be rounded.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array with the rounded values and with the same dimensions as the input.</span>
+<span class="s2">    The returned array will have the default floating point data type for the</span>
+<span class="s2">    device where `a` is allocated.</span>
+<span class="s2">    If `out` is ``None`` then a float array is returned with the rounded values.</span>
+<span class="s2">    Otherwise the result is stored there and the return value `out` is</span>
+<span class="s2">    a reference to that array.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.round` : Round to given number of decimals.</span>
+<span class="s2">:obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="s2">:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
+<span class="s2">:obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
+<span class="s2">:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; np.fix(np.array(3.14))</span>
+<span class="s2">array(3.)</span>
+<span class="s2">&gt;&gt;&gt; np.fix(np.array(3))</span>
+<span class="s2">array(3.)</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([2.1, 2.9, -2.1, -2.9])</span>
+<span class="s2">&gt;&gt;&gt; np.fix(a)</span>
+<span class="s2">array([ 2.,  2., -2., -2.])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_fix_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_fix</span><span class="p">,</span>
+    <span class="n">_FIX_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
 <span class="n">_FLOAT_POWER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array</span>
 <span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
@@ -1618,6 +1680,8 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.</span>
 <span class="s2">:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
+<span class="s2">:obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="s2">:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
@@ -3174,6 +3238,7 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.round` : Evenly round to the given number of decimals.</span>
+<span class="s2">:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.</span>
 <span class="s2">:obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.</span>
 <span class="s2">:obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
 <span class="s2">:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
@@ -3229,6 +3294,7 @@
 <span class="s2">:obj:`dpnp.ndarray.round` : Equivalent function.</span>
 <span class="s2">:obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
 <span class="s2">:obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.</span>
+<span class="s2">:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.</span>
 <span class="s2">:obj:`dpnp.floor` : Return the floor of the input, element-wise.</span>
 <span class="s2">:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.</span>
 
@@ -3665,6 +3731,8 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.</span>
 <span class="s2">:obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.</span>
+<span class="s2">:obj:`dpnp.rint` : Round elements of the array to the nearest integer.</span>
+<span class="s2">:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
