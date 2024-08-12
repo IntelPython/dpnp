@@ -2011,9 +2011,7 @@ def test_power(array, val, data_type, val_type):
 
 
 class TestEdiff1d:
-    @pytest.mark.parametrize(
-        "data_type", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("data_type", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "array",
         [
@@ -2023,7 +2021,7 @@ class TestEdiff1d:
             [[1, 2, 3], [5, 2, 8], [7, 3, 4]],
         ],
     )
-    def test_ediff1d_int(self, array, data_type):
+    def test_ediff1d(self, array, data_type):
         np_a = numpy.array(array, dtype=data_type)
         dpnp_a = dpnp.array(array, dtype=data_type)
 
@@ -2031,16 +2029,127 @@ class TestEdiff1d:
         expected = numpy.ediff1d(np_a)
         assert_array_equal(expected, result)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    def test_ediff1d_args(self):
+    @pytest.mark.parametrize(
+        "to_begin",
+        [
+            -20,
+            numpy.array([-20, -30]),
+            dpnp.array([-20, -30]),
+            dpnp.array([[-20], [-30]]),
+            [1, 2],
+            (1, 2),
+        ],
+    )
+    def test_ediff1d_to_begin(self, to_begin):
         np_a = numpy.array([1, 2, 4, 7, 0])
+        dpnp_a = dpnp.array([1, 2, 4, 7, 0])
 
-        to_begin = numpy.array([-20, -30])
-        to_end = numpy.array([20, 15])
+        if isinstance(to_begin, dpnp.ndarray):
+            np_to_begin = dpnp.asnumpy(to_begin)
+        else:
+            np_to_begin = to_begin
 
-        result = dpnp.ediff1d(np_a, to_end=to_end, to_begin=to_begin)
-        expected = numpy.ediff1d(np_a, to_end=to_end, to_begin=to_begin)
+        result = dpnp.ediff1d(dpnp_a, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_begin=np_to_begin)
         assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "to_end",
+        [
+            20,
+            numpy.array([20, 15]),
+            dpnp.array([20, 15]),
+            dpnp.array([[-20], [-30]]),
+            [3, 4],
+            (3, 4),
+        ],
+    )
+    def test_ediff1d_to_end(self, to_end):
+        np_a = numpy.array([1, 2, 4, 7, 0])
+        dpnp_a = dpnp.array([1, 2, 4, 7, 0])
+
+        if isinstance(to_end, dpnp.ndarray):
+            np_to_end = dpnp.asnumpy(to_end)
+        else:
+            np_to_end = to_end
+
+        result = dpnp.ediff1d(dpnp_a, to_end=to_end)
+        expected = numpy.ediff1d(np_a, to_end=np_to_end)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "to_begin, to_end",
+        [
+            (-20, 20),
+            (numpy.array([-20, -30]), numpy.array([20, 15])),
+            (dpnp.array([-20, -30]), dpnp.array([20, 15])),
+            (dpnp.array([[-20], [-30]]), dpnp.array([[20], [15]])),
+            ([1, 2], [3, 4]),
+            ((1, 2), (3, 4)),
+        ],
+    )
+    def test_ediff1d_to_begin_to_end(self, to_begin, to_end):
+        np_a = numpy.array([1, 2, 4, 7, 0])
+        dpnp_a = dpnp.array([1, 2, 4, 7, 0])
+
+        if isinstance(to_begin, dpnp.ndarray):
+            np_to_begin = dpnp.asnumpy(to_begin)
+        else:
+            np_to_begin = to_begin
+
+        if isinstance(to_end, dpnp.ndarray):
+            np_to_end = dpnp.asnumpy(to_end)
+        else:
+            np_to_end = to_end
+
+        result = dpnp.ediff1d(dpnp_a, to_end=to_end, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_end=np_to_end, to_begin=np_to_begin)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "to_begin, to_end",
+        [
+            (-20, 20),
+            (dpt.asarray([-20, -30]), dpt.asarray([20, 15])),
+            (dpt.asarray([[-20, -30]]), dpt.asarray([[20, 15]])),
+            ([1, 2], [3, 4]),
+            ((1, 2), (3, 4)),
+        ],
+    )
+    def test_ediff1d_usm_ndarray(self, to_begin, to_end):
+        np_a = numpy.array([[1, 2, 0]])
+        dpt_a = dpt.asarray(np_a)
+
+        if isinstance(to_begin, dpt.usm_ndarray):
+            np_to_begin = dpt.asnumpy(to_begin)
+        else:
+            np_to_begin = to_begin
+
+        if isinstance(to_end, dpt.usm_ndarray):
+            np_to_end = dpt.asnumpy(to_end)
+        else:
+            np_to_end = to_end
+
+        result = dpnp.ediff1d(dpt_a, to_end=to_end, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_end=np_to_end, to_begin=np_to_begin)
+
+        assert_array_equal(expected, result)
+        assert isinstance(result, dpnp.ndarray)
+
+    def test_ediff1d_errors(self):
+        a_dp = dpnp.array([[1, 2], [2, 5]])
+
+        # unsupported type
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.ediff1d, a_np)
+
+        # unsupported `to_begin` type according to the `same_kind` rules
+        to_begin = dpnp.array([-5], dtype="f4")
+        assert_raises(TypeError, dpnp.ediff1d, a_dp, to_begin=to_begin)
+
+        # unsupported `to_end` type according to the `same_kind` rules
+        to_end = dpnp.array([5], dtype="f4")
+        assert_raises(TypeError, dpnp.ediff1d, a_dp, to_end=to_end)
 
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
