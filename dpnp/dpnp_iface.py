@@ -464,7 +464,7 @@ def default_float_type(device=None, sycl_queue=None):
     return map_dtype_to_device(float64, _sycl_queue.sycl_device)
 
 
-def from_dlpack(obj, /):
+def from_dlpack(obj, /, *, device=None, copy=None):
     """
     Create a dpnp array from a Python object implementing the ``__dlpack__``
     protocol.
@@ -476,6 +476,28 @@ def from_dlpack(obj, /):
     obj : object
         A Python object representing an array that implements the ``__dlpack__``
         and ``__dlpack_device__`` methods.
+    device : {:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`,
+              :class:`dpctl.tensor.Device`, tuple, None}, optional
+        Array API concept of a device where the output array is to be placed.
+        ``device`` can be ``None``, an oneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        a :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpctl.tensor.usm_ndarray.device`, or a 2-tuple matching
+        the format of the output of the ``__dlpack_device__`` method,
+        an integer enumerator representing the device type followed by
+        an integer representing the index of the device.
+        Default: ``None``.
+    copy {bool, None}, optional
+        Boolean indicating whether or not to copy the input.
+
+        * If `copy``is ``True``, the input will always be copied.
+        * If ``False``, a ``BufferError`` will be raised if a copy is deemed
+          necessary.
+        * If ``None``, a copy will be made only if deemed necessary, otherwise,
+          the existing memory buffer will be reused.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -483,10 +505,17 @@ def from_dlpack(obj, /):
         Returns a new dpnp array containing the data from another array
         (obj) with the ``__dlpack__`` method on the same device as object.
 
+    Raises
+    ------
+    TypeError:
+        if `obj` does not implement ``__dlpack__`` method
+    ValueError:
+        if the input array resides on an unsupported device
+
     """
 
-    usm_ary = dpt.from_dlpack(obj)
-    return dpnp_array._create_from_usm_ndarray(usm_ary)
+    usm_res = dpt.from_dlpack(obj, device=device, copy=copy)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def get_dpnp_descriptor(
