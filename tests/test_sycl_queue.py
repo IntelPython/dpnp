@@ -1,3 +1,4 @@
+import copy
 import tempfile
 
 import dpctl
@@ -373,6 +374,39 @@ def test_array_creation_load_txt(device):
 
 
 @pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_y",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_copy_method(device_x, device_y):
+    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device_x)
+
+    y = x.copy()
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+    q = dpctl.SyclQueue(device_y)
+    y = x.copy(sycl_queue=q)
+    assert_sycl_queue_equal(y.sycl_queue, q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_copy_operation(device):
+    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device)
+
+    y = copy.copy(x)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
@@ -422,6 +456,7 @@ def test_meshgrid(device):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
@@ -656,6 +691,11 @@ def test_reduce_hypot(device):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
         pytest.param(
+            "float_power",
+            [0, 1, 2, 3, 4, 5],
+            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        ),
+        pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
         ),
         pytest.param("fmax", [2.0, 3.0, 4.0], [1.0, 5.0, 2.0]),
@@ -747,6 +787,8 @@ def test_2in_1out(func, data1, data2, device):
 @pytest.mark.parametrize(
     "op",
     [
+        "array_equal",
+        "array_equiv",
         "equal",
         "greater",
         "greater_equal",
@@ -2329,6 +2371,20 @@ def test_astype(device_x, device_y):
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, dtype="f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_nan_to_num(copy, device):
+    a = dpnp.array([-dpnp.nan, -1, 0, 1, dpnp.nan], device=device)
+    result = dpnp.nan_to_num(a, copy=copy)
+
+    assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
+    assert copy == (result is not a)
 
 
 @pytest.mark.parametrize(

@@ -42,50 +42,50 @@ class TestNdarrayInit(unittest.TestCase):
             with pytest.raises(TypeError):
                 xp.ndarray((1.0,))
 
-    @pytest.mark.skip("passing buffer as dpnp array is not supported")
     def test_shape_int_with_strides(self):
         dummy = cupy.ndarray(3)
         a = cupy.ndarray(3, strides=(0,), buffer=dummy)
         assert a.shape == (3,)
         assert a.strides == (0,)
 
-    @pytest.mark.skip("passing buffer as dpnp array is not supported")
     def test_memptr(self):
         a = cupy.arange(6).astype(numpy.float32).reshape((2, 3))
         memptr = a
 
-        b = cupy.ndarray((2, 3), numpy.float32, buffer=memptr)
+        b = cupy.ndarray((2, 3), numpy.float32, memptr)
         testing.assert_array_equal(a, b)
 
         b += 1
         testing.assert_array_equal(a, b)
 
-    @pytest.mark.skip("self-overlapping strides are not supported")
+    @pytest.mark.skip(
+        "dpctl-1765: might lead to race condition (no plan to support that)"
+    )
     def test_memptr_with_strides(self):
         buf = cupy.ndarray(20, numpy.uint8)
         memptr = buf
 
         # self-overlapping strides
-        a = cupy.ndarray((2, 3), numpy.float32, buffer=memptr, strides=(8, 4))
-        assert a.strides == (8, 4)
+        a = cupy.ndarray((2, 3), numpy.float32, memptr, strides=(2, 1))
+        assert a.strides == (2, 1)
 
         a[:] = 1
         a[0, 2] = 4
         assert float(a[1, 0]) == 4
 
-    @pytest.mark.skip("no exception raised by dpctl")
+    @pytest.mark.skip(
+        "dpctl-1766: no exception raised by dpctl (no plan to support that)"
+    )
     def test_strides_without_memptr(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
                 xp.ndarray((2, 3), numpy.float32, strides=(20, 4))
 
-    @pytest.mark.skip("passing buffer as dpnp array is not supported")
     def test_strides_is_given_and_order_is_ignored(self):
         buf = cupy.ndarray(20, numpy.uint8)
         a = cupy.ndarray((2, 3), numpy.float32, buf, strides=(2, 1), order="C")
         assert a.strides == (2, 1)
 
-    @pytest.mark.skip("dpctl-1724 issue")
     @testing.with_requires("numpy>=1.19")
     def test_strides_is_given_but_order_is_invalid(self):
         for xp in (numpy, cupy):
@@ -102,7 +102,6 @@ class TestNdarrayInit(unittest.TestCase):
         assert a.flags.f_contiguous
         assert not a.flags.c_contiguous
 
-    @pytest.mark.skip("passing 'None' into order arguments is not supported")
     def test_order_none(self):
         shape = (2, 3, 4)
         a = cupy.ndarray(shape, order=None)
@@ -113,7 +112,6 @@ class TestNdarrayInit(unittest.TestCase):
             i * a.itemsize == j for i, j in zip(a.strides, a_cpu.strides)
         )
 
-    @pytest.mark.skip("__slots__ is not supported")
     def test_slots(self):
         # Test for #7883.
         a = cupy.ndarray((2, 3))
@@ -130,7 +128,7 @@ class TestNdarrayInit(unittest.TestCase):
 @testing.parameterize(
     *testing.product(
         {
-            "shape": [(), (1,), (1, 2), (1, 2, 3)],
+            "shape": [(), (1,), (2, 3), (1, 2, 3)],
             "order": ["C", "F"],
             "dtype": [
                 numpy.uint8,  # itemsize=1
@@ -139,13 +137,15 @@ class TestNdarrayInit(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skip("strides may vary")
 class TestNdarrayInitStrides(unittest.TestCase):
     # Check the strides given shape, itemsize and order.
     @testing.numpy_cupy_equal()
     def test_strides(self, xp):
         arr = xp.ndarray(self.shape, dtype=self.dtype, order=self.order)
-        return (arr.strides, arr.flags.c_contiguous, arr.flags.f_contiguous)
+        strides = arr.strides
+        if xp is cupy:
+            strides = tuple(i * arr.itemsize for i in strides)
+        return (strides, arr.flags.c_contiguous, arr.flags.f_contiguous)
 
 
 class TestNdarrayInitRaise(unittest.TestCase):
@@ -210,7 +210,6 @@ void wait_and_write(long long *x) {
 """
 
 
-@pytest.mark.skip()
 class TestNdarrayCopy:
     @testing.multi_gpu(2)
     @testing.for_orders("CFA")
@@ -218,17 +217,19 @@ class TestNdarrayCopy:
         arr = cupy.ndarray((20,))[::2]
         dev1 = dpctl.SyclDevice()
         arr2 = arr.copy(order, device=dev1)
-        assert arr2.device == dev1
+        assert arr2.sycl_device == dev1
         testing.assert_array_equal(arr, arr2)
 
+    @pytest.mark.skip("order='K' is supported in copy method")
     @testing.multi_gpu(2)
     def test_copy_multi_device_non_contiguous_K(self):
-        arr = _core.ndarray((20,))[::2]
-        with cuda.Device(1):
-            with pytest.raises(NotImplementedError):
-                arr.copy("K")
+        arr = cupy.ndarray((20,))[::2]
+        dev1 = dpctl.SyclDevice()
+        with pytest.raises(NotImplementedError):
+            arr.copy("K", device=dev1)
 
     # See cupy/cupy#5004
+    @pytest.mark.skip("RawKernel() is not supported")
     @testing.multi_gpu(2)
     def test_copy_multi_device_with_stream(self):
         # Kernel that takes long enough then finally writes values.
@@ -256,7 +257,6 @@ class TestNdarrayCopy:
                 )
 
 
-@pytest.mark.skip()
 class TestNdarrayShape(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_shape_set(self, xp):
@@ -264,6 +264,9 @@ class TestNdarrayShape(unittest.TestCase):
         arr.shape = (3, 2)
         return xp.array(arr.shape)
 
+    @pytest.mark.skip(
+        "dpctl-1699: shape setter does not work with negative shape"
+    )
     @testing.numpy_cupy_array_equal()
     def test_shape_set_infer(self, xp):
         arr = xp.ndarray((2, 3))
@@ -682,7 +685,7 @@ class C(cupy.ndarray):
         self.info = getattr(obj, "info", None)
 
 
-@pytest.mark.skip("explicit constructor call is not supported")
+@pytest.mark.skip("SAT-7168: explicit constructor call is not supported")
 class TestNdarraySubclass:
     def test_explicit_constructor_call(self):
         a = C([0, 1, 2, 3], info="information")

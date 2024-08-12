@@ -615,6 +615,73 @@ class TestDiff:
         assert_raises(AxisError, xp.diff, a, axis=3, append=0)
 
 
+class TestFix:
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_basic(self, dt):
+        a = numpy.array(
+            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=dt
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.fix(ia)
+        expected = numpy.fix(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex(self, xp, dt):
+        a = xp.array([1.1, -1.1], dtype=dt)
+        with pytest.raises((ValueError, TypeError)):
+            xp.fix(a)
+
+    @pytest.mark.parametrize(
+        "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    )
+    def test_out(self, a_dt):
+        a = numpy.array(
+            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=a_dt
+        )
+        ia = dpnp.array(a)
+
+        if a.dtype != numpy.float32 and has_support_aspect64():
+            out_dt = numpy.float64
+        else:
+            out_dt = numpy.float32
+        out = numpy.zeros_like(a, dtype=out_dt)
+        iout = dpnp.array(out)
+
+        result = dpnp.fix(ia, out=iout)
+        expected = numpy.fix(a, out=out)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    @pytest.mark.parametrize("dt", [bool, numpy.float16])
+    def test_out_float16(self, dt):
+        a = numpy.array(
+            [[1.0, 1.1], [1.5, 1.8], [-1.0, -1.1], [-1.5, -1.8]], dtype=dt
+        )
+        out = numpy.zeros_like(a, dtype=numpy.float16)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        result = dpnp.fix(ia, out=iout)
+        expected = numpy.fix(a, out=out)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", [bool] + get_integer_dtypes())
+    def test_out_invalid_dtype(self, xp, dt):
+        a = xp.array([[1.5, 1.8], [-1.0, -1.1]])
+        out = xp.zeros_like(a, dtype=dt)
+
+        with pytest.raises((ValueError, TypeError)):
+            xp.fix(a, out=out)
+
+    def test_scalar(self):
+        assert_raises(TypeError, dpnp.fix, -3.4)
+
+
 class TestGradient:
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
     def test_basic(self, dt):
@@ -1114,6 +1181,66 @@ class TestMathematical:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_subtract(self, dtype, lhs, rhs):
         self._test_mathematical("subtract", dtype, lhs, rhs, check_type=False)
+
+
+class TestNanToNum:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("shape", [(3,), (2, 3), (3, 2, 2)])
+    def test_nan_to_num(self, dtype, shape):
+        a = numpy.random.randn(*shape).astype(dtype)
+        if not dpnp.issubdtype(dtype, dpnp.integer):
+            a.flat[1] = numpy.nan
+        a_dp = dpnp.array(a)
+
+        result = dpnp.nan_to_num(a_dp)
+        expected = numpy.nan_to_num(a)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "data", [[], [numpy.nan], [numpy.inf], [-numpy.inf]]
+    )
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    def test_empty_and_single_value_arrays(self, data, dtype):
+        a = numpy.array(data, dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.nan_to_num(ia)
+        expected = numpy.nan_to_num(a)
+        assert_allclose(result, expected)
+
+    def test_boolean_array(self):
+        a = numpy.array([True, False, numpy.nan], dtype=bool)
+        ia = dpnp.array(a)
+
+        result = dpnp.nan_to_num(ia)
+        expected = numpy.nan_to_num(a)
+        assert_allclose(result, expected)
+
+    def test_errors(self):
+        ia = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+
+        # unsupported type `a`
+        a_np = dpnp.asnumpy(ia)
+        assert_raises(TypeError, dpnp.nan_to_num, a_np)
+
+        # unsupported type `nan`
+        i_nan = dpnp.array(1)
+        assert_raises(TypeError, dpnp.nan_to_num, ia, nan=i_nan)
+
+        # unsupported type `posinf`
+        i_posinf = dpnp.array(1)
+        assert_raises(TypeError, dpnp.nan_to_num, ia, posinf=i_posinf)
+
+        # unsupported type `neginf`
+        i_neginf = dpnp.array(1)
+        assert_raises(TypeError, dpnp.nan_to_num, ia, neginf=i_neginf)
+
+    @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
+    @pytest.mark.parametrize("value", [1 - 0j, [1, 2], (1,)])
+    def test_errors_diff_types(self, kwarg, value):
+        ia = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+        with pytest.raises(TypeError):
+            dpnp.nan_to_num(ia, **{kwarg: value})
 
 
 class TestNextafter:

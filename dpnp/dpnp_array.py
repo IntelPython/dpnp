@@ -70,31 +70,30 @@ class dpnp_array:
         usm_type="device",
         sycl_queue=None,
     ):
+        if order is None:
+            order = "C"
+
         if buffer is not None:
-            if not isinstance(buffer, dpt.usm_ndarray):
-                raise TypeError(
-                    "Expected dpctl.tensor.usm_ndarray, got {}"
-                    "".format(type(buffer))
-                )
-            if buffer.shape != shape:
-                raise ValueError(
-                    "Expected buffer.shape={}, got {}"
-                    "".format(shape, buffer.shape)
-                )
-            self._array_obj = dpt.asarray(buffer, copy=False, order=order)
+            buffer = dpnp.get_usm_ndarray(buffer)
+
+            if dtype is None:
+                dtype = buffer.dtype
         else:
-            sycl_queue_normalized = dpnp.get_normalized_queue_device(
-                device=device, sycl_queue=sycl_queue
-            )
-            self._array_obj = dpt.usm_ndarray(
-                shape,
-                dtype=dtype,
-                strides=strides,
-                buffer=usm_type,
-                offset=offset,
-                order=order,
-                buffer_ctor_kwargs={"queue": sycl_queue_normalized},
-            )
+            buffer = usm_type
+
+        sycl_queue_normalized = dpnp.get_normalized_queue_device(
+            device=device, sycl_queue=sycl_queue
+        )
+
+        self._array_obj = dpt.usm_ndarray(
+            shape,
+            dtype=dtype,
+            strides=strides,
+            buffer=buffer,
+            offset=offset,
+            order=order,
+            buffer_ctor_kwargs={"queue": sycl_queue_normalized},
+        )
 
     @property
     def __sycl_usm_array_interface__(self):
@@ -457,6 +456,8 @@ class dpnp_array:
     # '__setstate__',
     # '__sizeof__',
 
+    __slots__ = ("_array_obj",)
+
     def __str__(self):
         """Return ``str(self)``."""
         return self._array_obj.__str__()
@@ -695,9 +696,34 @@ class dpnp_array:
         else:
             return dpnp.conjugate(self)
 
-    def copy(self, order="C"):
+    def copy(self, order="C", device=None, usm_type=None, sycl_queue=None):
         """
         Return a copy of the array.
+
+        Refer to :obj:`dpnp.copy` for full documentation.
+
+        Parameters
+        ----------
+        order : {"C", "F", "A", "K"}, optional
+            Memory layout of the newly output array.
+            Default: ``"C"``.
+        device : {None, string, SyclDevice, SyclQueue}, optional
+            An array API concept of device where the output array is created.
+            The `device` can be ``None`` (the default), an OneAPI filter
+            selector string, an instance of :class:`dpctl.SyclDevice`
+            corresponding to a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+            Default: ``None``.
+        sycl_queue : {None, SyclQueue}, optional
+            A SYCL queue to use for output array allocation and copying. The
+            `sycl_queue` can be passed as ``None`` (the default), which means
+            to get the SYCL queue from `device` keyword if present or to use
+            a default queue.
+            Default: ``None``.
 
         Returns
         -------
@@ -711,8 +737,9 @@ class dpnp_array:
 
         Notes
         -----
-        This function is the preferred method for creating an array copy. The
-        function :func:`dpnp.copy` is similar, but it defaults to using order 'K'.
+        This function is the preferred method for creating an array copy.
+        The function :func:`dpnp.copy` is similar, but it defaults to using
+        order ``"K"``.
 
         Examples
         --------
@@ -734,7 +761,13 @@ class dpnp_array:
 
         """
 
-        return dpnp.copy(self, order=order)
+        return dpnp.copy(
+            self,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     # 'ctypes',
 
@@ -1274,6 +1307,9 @@ class dpnp_array:
         .. seealso: :attr:`numpy.ndarray.shape`
 
         """
+
+        if not isinstance(newshape, (list, tuple)):
+            newshape = (newshape,)
 
         self._array_obj.shape = newshape
 

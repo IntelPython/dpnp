@@ -30,6 +30,7 @@ set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/geqrf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/geqrf_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gesv.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gesv_batch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/gesvd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/getrf.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/getrf_batch.cpp
@@ -49,6 +50,20 @@ set(_module_src
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
+
+if(_dpnp_sycl_targets)
+    # make fat binary
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+    target_link_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+endif()
 
 if (WIN32)
     if (${CMAKE_VERSION} VERSION_LESS "3.27")
@@ -84,7 +99,12 @@ if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
-target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::LAPACK)
+if(_use_onemkl_interfaces)
+    target_link_libraries(${python_module_name} PUBLIC onemkl)
+    target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMKL_INTERFACES)
+else()
+    target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::LAPACK)
+endif()
 
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/lapack"

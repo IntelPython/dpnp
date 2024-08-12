@@ -260,99 +260,78 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
     """
 
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-    b_usm_arr = dpnp.get_usm_ndarray(b)
-
-    b_order = "C" if b.flags.c_contiguous else "F"
     a_shape = a.shape
     b_shape = b.shape
 
-    is_cpu_device = exec_q.sycl_device.has_aspect_cpu
-    reshape = False
-    orig_shape_b = b_shape
-    if a.ndim > 3:
-        # get 3d input arrays by reshape
-        if a.ndim == b.ndim:
-            b = dpnp.reshape(b, (-1, b_shape[-2], b_shape[-1]))
-        else:
-            b = dpnp.reshape(b, (-1, b_shape[-1]))
+    # gesv_batch expects `a` to be a 3D array and
+    # `b` to be either a 2D or 3D array.
+    if a.ndim == b.ndim:
+        b = dpnp.reshape(b, (-1, b_shape[-2], b_shape[-1]))
+    else:
+        b = dpnp.reshape(b, (-1, b_shape[-1]))
 
-        a = dpnp.reshape(a, (-1, a_shape[-2], a_shape[-1]))
+    a = dpnp.reshape(a, (-1, a_shape[-2], a_shape[-1]))
 
-        a_usm_arr = dpnp.get_usm_ndarray(a)
-        b_usm_arr = dpnp.get_usm_ndarray(b)
-        reshape = True
+    # Reorder the elements by moving the last two axes of `a` to the front
+    # to match fortran-like array order which is assumed by gesv.
+    a = dpnp.moveaxis(a, (-2, -1), (0, 1))
+    # The same for `b` if it is 3D;
+    # if it is 2D, transpose it.
+    if b.ndim > 2:
+        b = dpnp.moveaxis(b, (-2, -1), (0, 1))
+    else:
+        b = b.T
+
+    a_usm_arr = dpnp.get_usm_ndarray(a)
+    b_usm_arr = dpnp.get_usm_ndarray(b)
 
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
 
-    batch_size = a.shape[0]
-    coeff_vecs = [None] * batch_size
-    val_vecs = [None] * batch_size
+    # oneMKL LAPACK gesv destroys `a` and assumes fortran-like array
+    # as input.
+    a_f = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
 
-    for i in range(batch_size):
-        # oneMKL LAPACK assumes fortran-like array as input, so allocate
-        # a memory with 'F' order for dpnp array of coefficient matrix
-        coeff_vecs[i] = dpnp.empty_like(
-            a[i], order="F", dtype=res_type, usm_type=res_usm_type
-        )
-
-        # use DPCTL tensor function to fill the coefficient matrix array
-        # with content from the input array
-        ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=a_usm_arr[i],
-            dst=coeff_vecs[i].get_array(),
-            sycl_queue=a.sycl_queue,
-            depends=dep_evs,
-        )
-        _manager.add_event_pair(ht_ev, a_copy_ev)
-
-        # oneMKL LAPACK assumes fortran-like array as input, so
-        # allocate a memory with 'F' order for dpnp array of multiple
-        # dependent variables array
-        val_vecs[i] = dpnp.empty_like(
-            b[i], order="F", dtype=res_type, usm_type=res_usm_type
-        )
-
-        # use DPCTL tensor function to fill the array of multiple dependent
-        # variables with content from the input arrays
-        ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=b_usm_arr[i],
-            dst=val_vecs[i].get_array(),
-            sycl_queue=b.sycl_queue,
-            depends=dep_evs,
-        )
-        _manager.add_event_pair(ht_ev, b_copy_ev)
-
-        # Call the LAPACK extension function _gesv to solve the system of
-        # linear equations using a portion of the coefficient square matrix
-        # and a corresponding portion of the dependent variables array.
-        ht_ev, gesv_ev = li._gesv(
-            exec_q,
-            coeff_vecs[i].get_array(),
-            val_vecs[i].get_array(),
-            depends=[a_copy_ev, b_copy_ev],
-        )
-        _manager.add_event_pair(ht_ev, gesv_ev)
-
-        # TODO: Remove this w/a when MKLD-17201 is solved.
-        # Waiting for a host task executing an OneMKL LAPACK gesv call
-        # on CPU causes deadlock due to serialization of all host tasks
-        # in the queue.
-        # We need to wait for each host tasks before calling _gesv to avoid
-        # deadlock.
-        if is_cpu_device:
-            dpnp.synchronize_array_data(a)
-
-    # combine the list of solutions into a single array
-    out_v = dpnp.array(
-        val_vecs, order=b_order, dtype=res_type, usm_type=res_usm_type
+    ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=a_usm_arr,
+        dst=a_f.get_array(),
+        sycl_queue=exec_q,
+        depends=dep_evs,
     )
-    if reshape:
-        # shape of the out_v must be equal to the shape of the array of
-        # dependent variables
-        out_v = out_v.reshape(orig_shape_b)
-    return out_v
+    _manager.add_event_pair(ht_ev, a_copy_ev)
+
+    # oneMKL LAPACK gesv overwrites `b` and assumes fortran-like array
+    # as input.
+    b_f = dpnp.empty_like(b, order="F", dtype=res_type, usm_type=res_usm_type)
+
+    ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+        src=b_usm_arr,
+        dst=b_f.get_array(),
+        sycl_queue=exec_q,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(ht_ev, b_copy_ev)
+
+    ht_ev, gesv_batch_ev = li._gesv_batch(
+        exec_q,
+        a_f.get_array(),
+        b_f.get_array(),
+        depends=[a_copy_ev, b_copy_ev],
+    )
+
+    _manager.add_event_pair(ht_ev, gesv_batch_ev)
+
+    # Gesv call overwtires `b` in Fortran order, reorder the axes
+    # to match C order by moving the last axis to the front and
+    # reshape it back to the original shape of `b`.
+    v = dpnp.moveaxis(b_f, -1, 0).reshape(b_shape)
+
+    # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+    # Convert to contiguous to align with NumPy
+    if b.ndim > 2:
+        v = dpnp.ascontiguousarray(v)
+
+    return v
 
 
 def _batched_qr(a, mode="reduced"):
@@ -1229,7 +1208,11 @@ def _stacked_identity(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------

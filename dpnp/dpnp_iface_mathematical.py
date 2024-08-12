@@ -38,7 +38,6 @@ it contains:
 """
 
 # pylint: disable=protected-access
-# pylint: disable=c-extension-no-member
 # pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
@@ -56,7 +55,6 @@ from dpctl.tensor._type_utils import _acceptance_fn_divide
 
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
-import dpnp.backend.extensions.vm._vm_impl as vmi
 
 from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import dpnp_modf
@@ -95,6 +93,8 @@ __all__ = [
     "divide",
     "ediff1d",
     "fabs",
+    "fix",
+    "float_power",
     "floor",
     "floor_divide",
     "fmax",
@@ -107,6 +107,7 @@ __all__ = [
     "mod",
     "modf",
     "multiply",
+    "nan_to_num",
     "negative",
     "nextafter",
     "positive",
@@ -125,6 +126,13 @@ __all__ = [
     "true_divide",
     "trunc",
 ]
+
+
+def _get_max_min(dtype):
+    """Get the maximum and minimum representable values for an inexact dtype."""
+
+    f = dpnp.finfo(dtype)
+    return f.max, f.min
 
 
 def _get_reduction_res_dt(a, dtype, _out):
@@ -358,8 +366,8 @@ absolute = DPNPUnaryFunc(
     ti._abs_result_type,
     ti._abs,
     _ABS_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_abs_to_call,
-    mkl_impl_fn=vmi._abs,
+    mkl_fn_to_call="_mkl_abs_to_call",
+    mkl_impl_fn="_abs",
 )
 
 
@@ -434,8 +442,8 @@ add = DPNPBinaryFunc(
     ti._add_result_type,
     ti._add,
     _ADD_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_add_to_call,
-    mkl_impl_fn=vmi._add,
+    mkl_fn_to_call="_mkl_add_to_call",
+    mkl_impl_fn="_add",
     binary_inplace_fn=ti._add_inplace,
 )
 
@@ -523,6 +531,7 @@ def around(x, /, decimals=0, out=None):
     :obj:`dpnp.round` : Equivalent function; see for details.
     :obj:`dpnp.ndarray.round` : Equivalent function.
     :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+    :obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
     :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
     :obj:`dpnp.floor` : Return the floor of the input, element-wise.
     :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -568,6 +577,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------
@@ -582,8 +593,8 @@ ceil = DPNPUnaryFunc(
     ti._ceil_result_type,
     ti._ceil,
     _CEIL_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_ceil_to_call,
-    mkl_impl_fn=vmi._ceil,
+    mkl_fn_to_call="_mkl_ceil_to_call",
+    mkl_impl_fn="_ceil",
 )
 
 
@@ -708,8 +719,8 @@ conjugate = DPNPUnaryFunc(
     ti._conj_result_type,
     ti._conj,
     _CONJ_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_conj_to_call,
-    mkl_impl_fn=vmi._conj,
+    mkl_fn_to_call="_mkl_conj_to_call",
+    mkl_impl_fn="_conj",
 )
 
 conj = conjugate
@@ -1258,8 +1269,8 @@ divide = DPNPBinaryFunc(
     ti._divide_result_type,
     ti._divide,
     _DIVIDE_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_div_to_call,
-    mkl_impl_fn=vmi._div,
+    mkl_fn_to_call="_mkl_div_to_call",
+    mkl_impl_fn="_div",
     binary_inplace_fn=ti._divide_inplace,
     acceptance_fn=_acceptance_fn_divide,
 )
@@ -1423,8 +1434,165 @@ fabs = DPNPUnaryFunc(
     ufi._fabs_result_type,
     ufi._fabs,
     _FABS_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_abs_to_call,
-    mkl_impl_fn=vmi._abs,
+    mkl_fn_to_call="_mkl_abs_to_call",
+    mkl_impl_fn="_abs",
+)
+
+
+_FIX_DOCSTRING = """
+Round to nearest integer towards zero.
+
+Round an array of floats element-wise to nearest integer towards zero.
+The rounded values are returned as floats.
+
+For full documentation refer to :obj:`numpy.fix`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    An array of floats to be rounded.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array with the rounded values and with the same dimensions as the input.
+    The returned array will have the default floating point data type for the
+    device where `a` is allocated.
+    If `out` is ``None`` then a float array is returned with the rounded values.
+    Otherwise the result is stored there and the return value `out` is
+    a reference to that array.
+
+See Also
+--------
+:obj:`dpnp.round` : Round to given number of decimals.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.fix(np.array(3.14))
+array(3.)
+>>> np.fix(np.array(3))
+array(3.)
+>>> a = np.array([2.1, 2.9, -2.1, -2.9])
+>>> np.fix(a)
+array([ 2.,  2., -2., -2.])
+"""
+
+fix = DPNPUnaryFunc(
+    "fix",
+    ufi._fix_result_type,
+    ufi._fix,
+    _FIX_DOCSTRING,
+)
+
+
+_FLOAT_POWER_DOCSTRING = """
+Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
+`x1` with the respective element `x2_i` of the input array `x2`.
+
+This differs from the power function in that boolean, integers, and float16 are
+promoted to floats with a minimum precision of float32 so that the result is
+always inexact. The intent is that the function will return a usable result for
+negative powers and seldom overflow for positive powers.
+
+Negative values raised to a non-integral value will return ``NaN``. To get
+complex results, cast the input to complex, or specify the ``dtype`` to be one
+of complex dtype.
+
+For full documentation refer to :obj:`numpy.float_power`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have floating-point data types.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to floating-point data types.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the bases in `x1` raised to the exponents in `x2`
+    element-wise.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.power` : Power function that preserves type.
+
+Examples
+--------
+>>> import dpnp as np
+
+Cube each element in an array:
+
+>>> x1 = np.arange(6)
+>>> x1
+array([0, 1, 2, 3, 4, 5])
+>>> np.float_power(x1, 3)
+array([  0.,   1.,   8.,  27.,  64., 125.])
+
+Raise the bases to different exponents:
+
+>>> x2 = np.array([1.0, 2.0, 3.0, 3.0, 2.0, 1.0])
+>>> np.float_power(x1, x2)
+array([ 0.,  1.,  8., 27., 16.,  5.])
+
+The effect of broadcasting:
+
+>>> x2 = np.array([[1, 2, 3, 3, 2, 1], [1, 2, 3, 3, 2, 1]])
+>>> x2
+array([[1, 2, 3, 3, 2, 1],
+       [1, 2, 3, 3, 2, 1]])
+>>> np.float_power(x1, x2)
+array([[ 0.,  1.,  8., 27., 16.,  5.],
+       [ 0.,  1.,  8., 27., 16.,  5.]])
+
+Negative values raised to a non-integral value will result in ``NaN``:
+
+>>> x3 = np.array([-1, -4])
+>>> np.float_power(x3, 1.5)
+array([nan, nan])
+
+To get complex results, give the argument one of complex dtype, i.e.
+``dtype=np.complex64``:
+
+>>> np.float_power(x3, 1.5, dtype=np.complex64)
+array([1.1924881e-08-1.j, 9.5399045e-08-8.j], dtype=complex64)
+"""
+
+float_power = DPNPBinaryFunc(
+    "float_power",
+    ufi._float_power_result_type,
+    ti._pow,
+    _FLOAT_POWER_DOCSTRING,
+    mkl_fn_to_call="_mkl_pow_to_call",
+    mkl_impl_fn="_pow",
+    binary_inplace_fn=ti._pow_inplace,
 )
 
 
@@ -1462,6 +1630,8 @@ See Also
 --------
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Notes
 -----
@@ -1481,8 +1651,8 @@ floor = DPNPUnaryFunc(
     ti._floor_result_type,
     ti._floor,
     _FLOOR_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_floor_to_call,
-    mkl_impl_fn=vmi._floor,
+    mkl_fn_to_call="_mkl_floor_to_call",
+    mkl_impl_fn="_floor",
 )
 
 
@@ -1635,8 +1805,8 @@ fmax = DPNPBinaryFunc(
     ufi._fmax_result_type,
     ufi._fmax,
     _FMAX_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_fmax_to_call,
-    mkl_impl_fn=vmi._fmax,
+    mkl_fn_to_call="_mkl_fmax_to_call",
+    mkl_impl_fn="_fmax",
 )
 
 
@@ -1720,8 +1890,8 @@ fmin = DPNPBinaryFunc(
     ufi._fmin_result_type,
     ufi._fmin,
     _FMIN_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_fmin_to_call,
-    mkl_impl_fn=vmi._fmin,
+    mkl_fn_to_call="_mkl_fmin_to_call",
+    mkl_impl_fn="_fmin",
 )
 
 
@@ -1794,8 +1964,8 @@ fmod = DPNPBinaryFunc(
     ufi._fmod_result_type,
     ufi._fmod,
     _FMOD_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_fmod_to_call,
-    mkl_impl_fn=vmi._fmod,
+    mkl_fn_to_call="_mkl_fmod_to_call",
+    mkl_impl_fn="_fmod",
 )
 
 
@@ -2312,10 +2482,145 @@ multiply = DPNPBinaryFunc(
     ti._multiply_result_type,
     ti._multiply,
     _MULTIPLY_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_mul_to_call,
-    mkl_impl_fn=vmi._mul,
+    mkl_fn_to_call="_mkl_mul_to_call",
+    mkl_impl_fn="_mul",
     binary_inplace_fn=ti._multiply_inplace,
 )
+
+
+def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
+    """
+    Replace ``NaN`` with zero and infinity with large finite numbers (default
+    behaviour) or with the numbers defined by the user using the `nan`,
+    `posinf` and/or `neginf` keywords.
+
+    If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value
+    in `nan` keyword, infinity is replaced by the largest finite floating point
+    values representable by ``x.dtype`` or by the user defined value in
+    `posinf` keyword and -infinity is replaced by the most negative finite
+    floating point values representable by ``x.dtype`` or by the user defined
+    value in `neginf` keyword.
+
+    For complex dtypes, the above is applied to each of the real and
+    imaginary components of `x` separately.
+
+    If `x` is not inexact, then no replacements are made.
+
+    For full documentation refer to :obj:`numpy.nan_to_num`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input data.
+    copy : bool, optional
+        Whether to create a copy of `x` (``True``) or to replace values
+        in-place (``False``). The in-place operation only occurs if casting to
+        an array does not require a copy.
+    nan : {int, float, bool}, optional
+        Value to be used to fill ``NaN`` values.
+        Default: ``0.0``.
+    posinf : {int, float, bool, None}, optional
+        Value to be used to fill positive infinity values. If no value is
+        passed then positive infinity values will be replaced with a very
+        large number.
+        Default: ``None``.
+    neginf : {int, float, bool, None} optional
+        Value to be used to fill negative infinity values. If no value is
+        passed then negative infinity values will be replaced with a very
+        small (or negative) number.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        `x`, with the non-finite values replaced. If `copy` is ``False``, this
+        may be `x` itself.
+
+    See Also
+    --------
+    :obj:`dpnp.isinf` : Shows which elements are positive or negative infinity.
+    :obj:`dpnp.isneginf` : Shows which elements are negative infinity.
+    :obj:`dpnp.isposinf` : Shows which elements are positive infinity.
+    :obj:`dpnp.isnan` : Shows which elements are Not a Number (NaN).
+    :obj:`dpnp.isfinite` : Shows which elements are finite
+                           (not NaN, not infinity)
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.nan_to_num(np.array(np.inf))
+    array(1.79769313e+308)
+    >>> np.nan_to_num(np.array(-np.inf))
+    array(-1.79769313e+308)
+    >>> np.nan_to_num(np.array(np.nan))
+    array(0.)
+    >>> x = np.array([np.inf, -np.inf, np.nan, -128, 128])
+    >>> np.nan_to_num(x)
+    array([ 1.79769313e+308, -1.79769313e+308,  0.00000000e+000,
+           -1.28000000e+002,  1.28000000e+002])
+    >>> np.nan_to_num(x, nan=-9999, posinf=33333333, neginf=33333333)
+    array([ 3.3333333e+07,  3.3333333e+07, -9.9990000e+03, -1.2800000e+02,
+            1.2800000e+02])
+    >>> y = np.array([complex(np.inf, np.nan), np.nan, complex(np.nan, np.inf)])
+    >>> np.nan_to_num(y)
+    array([1.79769313e+308 +0.00000000e+000j, # may vary
+           0.00000000e+000 +0.00000000e+000j,
+           0.00000000e+000 +1.79769313e+308j])
+    >>> np.nan_to_num(y, nan=111111, posinf=222222)
+    array([222222.+111111.j, 111111.     +0.j, 111111.+222222.j])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+
+    # Python boolean is a subtype of an integer
+    # so additional check for bool is not needed.
+    if not isinstance(nan, (int, float)):
+        raise TypeError(
+            "nan must be a scalar of an integer, float, bool, "
+            f"but got {type(nan)}"
+        )
+
+    out = dpnp.empty_like(x) if copy else x
+    x_type = x.dtype.type
+
+    if not issubclass(x_type, dpnp.inexact):
+        return x
+
+    parts = (
+        (x.real, x.imag) if issubclass(x_type, dpnp.complexfloating) else (x,)
+    )
+    parts_out = (
+        (out.real, out.imag)
+        if issubclass(x_type, dpnp.complexfloating)
+        else (out,)
+    )
+    max_f, min_f = _get_max_min(x.real.dtype)
+    if posinf is not None:
+        if not isinstance(posinf, (int, float)):
+            raise TypeError(
+                "posinf must be a scalar of an integer, float, bool, "
+                f"or be None, but got {type(posinf)}"
+            )
+        max_f = posinf
+    if neginf is not None:
+        if not isinstance(neginf, (int, float)):
+            raise TypeError(
+                "neginf must be a scalar of an integer, float, bool, "
+                f"or be None, but got {type(neginf)}"
+            )
+        min_f = neginf
+
+    for part, part_out in zip(parts, parts_out):
+        nan_mask = dpnp.isnan(part)
+        posinf_mask = dpnp.isposinf(part)
+        neginf_mask = dpnp.isneginf(part)
+
+        part = dpnp.where(nan_mask, nan, part, out=part_out)
+        part = dpnp.where(posinf_mask, max_f, part, out=part_out)
+        part = dpnp.where(neginf_mask, min_f, part, out=part_out)
+
+    return out
 
 
 _NEGATIVE_DOCSTRING = """
@@ -2427,8 +2732,8 @@ nextafter = DPNPBinaryFunc(
     ti._nextafter_result_type,
     ti._nextafter,
     _NEXTAFTER_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_nextafter_to_call,
-    mkl_impl_fn=vmi._nextafter,
+    mkl_fn_to_call="_mkl_nextafter_to_call",
+    mkl_impl_fn="_nextafter",
 )
 
 
@@ -2532,6 +2837,7 @@ See Also
 :obj:`dpnp.fmax` : Element-wise maximum of array elements.
 :obj:`dpnp.fmin` : Element-wise minimum of array elements.
 :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
+:obj:`dpnp.float_power` : Power function that promotes integers to floats.
 
 Examples
 --------
@@ -2573,8 +2879,8 @@ power = DPNPBinaryFunc(
     ti._pow_result_type,
     ti._pow,
     _POWER_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_pow_to_call,
-    mkl_impl_fn=vmi._pow,
+    mkl_fn_to_call="_mkl_pow_to_call",
+    mkl_impl_fn="_pow",
     binary_inplace_fn=ti._pow_inplace,
 )
 
@@ -2870,6 +3176,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.round` : Evenly round to the given number of decimals.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -2888,8 +3195,8 @@ rint = DPNPUnaryFunc(
     ti._round_result_type,
     ti._round,
     _RINT_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_round_to_call,
-    mkl_impl_fn=vmi._round,
+    mkl_fn_to_call="_mkl_round_to_call",
+    mkl_impl_fn="_round",
 )
 
 
@@ -2925,6 +3232,7 @@ See Also
 :obj:`dpnp.ndarray.round` : Equivalent function.
 :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
@@ -2948,8 +3256,8 @@ round = DPNPRound(
     ti._round_result_type,
     ti._round,
     _ROUND_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_round_to_call,
-    mkl_impl_fn=vmi._round,
+    mkl_fn_to_call="_mkl_round_to_call",
+    mkl_impl_fn="_round",
 )
 
 
@@ -3128,8 +3436,8 @@ subtract = DPNPBinaryFunc(
     ti._subtract_result_type,
     ti._subtract,
     _SUBTRACT_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_sub_to_call,
-    mkl_impl_fn=vmi._sub,
+    mkl_fn_to_call="_mkl_sub_to_call",
+    mkl_impl_fn="_sub",
     binary_inplace_fn=ti._subtract_inplace,
     acceptance_fn=acceptance_fn_subtract,
 )
@@ -3358,6 +3666,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
 :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------
@@ -3372,6 +3682,6 @@ trunc = DPNPUnaryFunc(
     ti._trunc_result_type,
     ti._trunc,
     _TRUNC_DOCSTRING,
-    mkl_fn_to_call=vmi._mkl_trunc_to_call,
-    mkl_impl_fn=vmi._trunc,
+    mkl_fn_to_call="_mkl_trunc_to_call",
+    mkl_impl_fn="_trunc",
 )
