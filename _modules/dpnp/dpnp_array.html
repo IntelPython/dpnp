@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+113.g6ae16ce5bf documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+114.g4a232390fe documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=714a5aca"></script>
+        <script src="../../_static/documentation_options.js?v=30100828"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+113.g6ae16ce5bf
+                0.16.0dev0+114.g4a232390fe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1502,12 +1502,45 @@
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Lengths of axes. A tuple of numbers represents size of each dimension.</span>
+<span class="sd">        Tuple of array dimensions.</span>
 
-<span class="sd">        Setter of this property involves reshaping without copy. If the array</span>
-<span class="sd">        cannot be reshaped without copy, it raises an exception.</span>
+<span class="sd">        The shape property is usually used to get the current shape of an array,</span>
+<span class="sd">        but may also be used to reshape the array in-place by assigning a tuple</span>
+<span class="sd">        of array dimensions to it. Unlike :obj:`dpnp.reshape`, only non-negative</span>
+<span class="sd">        values are supported to be set as new shape. Reshaping an array in-place</span>
+<span class="sd">        will fail if a copy is required.</span>
 
-<span class="sd">        .. seealso: :attr:`numpy.ndarray.shape`</span>
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.shape`.</span>
+
+<span class="sd">        Note</span>
+<span class="sd">        ----</span>
+<span class="sd">        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the</span>
+<span class="sd">        preferred approach to set new shape of an array.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.shape` : Equivalent getter function.</span>
+<span class="sd">        :obj:`dpnp.reshape` : Function similar to setting `shape`.</span>
+<span class="sd">        :obj:`dpnp.ndarray.reshape` : Method similar to setting `shape`.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.array([1, 2, 3, 4])</span>
+<span class="sd">        &gt;&gt;&gt; x.shape</span>
+<span class="sd">        (4,)</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((2, 3, 4))</span>
+<span class="sd">        &gt;&gt;&gt; y.shape</span>
+<span class="sd">        (2, 3, 4)</span>
+
+<span class="sd">        &gt;&gt;&gt; y.shape = (3, 8)</span>
+<span class="sd">        &gt;&gt;&gt; y</span>
+<span class="sd">        array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],</span>
+<span class="sd">               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],</span>
+<span class="sd">               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])</span>
+<span class="sd">        &gt;&gt;&gt; y.shape = (3, 6)</span>
+<span class="sd">        ...</span>
+<span class="sd">        TypeError: Can not reshape array of size 24 into (3, 6)</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -1518,16 +1551,23 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set new lengths of axes.</span>
 
-<span class="sd">        A tuple of numbers represents size of each dimension.</span>
-<span class="sd">        It involves reshaping without copy. If the array cannot be reshaped without copy,</span>
-<span class="sd">        it raises an exception.</span>
+<span class="sd">        Modifies array instance in-place by changing its metadata about the</span>
+<span class="sd">        shape and the strides of the array, or raises `AttributeError`</span>
+<span class="sd">        exception if in-place change is not possible.</span>
 
-<span class="sd">        .. seealso: :attr:`numpy.ndarray.shape`</span>
+<span class="sd">        Whether the array can be reshape in-place depends on its strides. Use</span>
+<span class="sd">        :obj:`dpnp.reshape` function which always succeeds to reshape the array</span>
+<span class="sd">        by performing a copy if necessary.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.shape`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        newshape : {tuple, int}</span>
+<span class="sd">            New shape. Only non-negative values are supported. The new shape</span>
+<span class="sd">            may not lead to the change in the number of elements in the array.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">newshape</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-            <span class="n">newshape</span> <span class="o">=</span> <span class="p">(</span><span class="n">newshape</span><span class="p">,)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">newshape</span>
 
