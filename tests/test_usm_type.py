@@ -1,3 +1,4 @@
+import copy
 import tempfile
 from math import prod
 
@@ -287,6 +288,25 @@ def test_array_creation_load_txt(usm_type):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_method(usm_type_x, usm_type_y):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type_x)
+
+    y = x.copy()
+    assert x.usm_type == y.usm_type == usm_type_x
+
+    y = x.copy(usm_type=usm_type_y)
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_operation(usm_type):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type)
+    y = copy.copy(x)
+    assert x.usm_type == y.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_logspace_base(usm_type_x, usm_type_y):
     x0 = dp.full(10, 2, usm_type=usm_type_x)
 
@@ -551,10 +571,12 @@ def test_norm(usm_type, ord, axis):
         pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
@@ -1383,3 +1405,30 @@ def test_nan_to_num(copy, usm_type_a):
 
     assert result.usm_type == usm_type_a
     assert copy == (result is not a)
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "usm_type_args", list_of_usm_types, ids=list_of_usm_types
+)
+@pytest.mark.parametrize(
+    ["to_end", "to_begin"],
+    [
+        (10, None),
+        (None, -10),
+        (10, -10),
+    ],
+)
+def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
+    data = [1, 3, 5, 7]
+
+    x = dp.array(data, usm_type=usm_type_x)
+    if to_end:
+        to_end = dp.array(to_end, usm_type=usm_type_args)
+
+    if to_begin:
+        to_begin = dp.array(to_begin, usm_type=usm_type_args)
+
+    res = dp.ediff1d(x, to_end=to_end, to_begin=to_begin)
+
+    assert res.usm_type == x.usm_type

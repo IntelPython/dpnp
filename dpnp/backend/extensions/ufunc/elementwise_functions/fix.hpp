@@ -23,35 +23,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "degrees.hpp"
-#include "fabs.hpp"
-#include "fix.hpp"
-#include "float_power.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "logaddexp2.hpp"
-#include "radians.hpp"
+#include <pybind11/pybind11.h>
 
 namespace py = pybind11;
 
 namespace dpnp::extensions::ufunc
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
-{
-    init_degrees(m);
-    init_fabs(m);
-    init_fix(m);
-    init_float_power(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_logaddexp2(m);
-    init_radians(m);
-}
+void init_fix(py::module_ m);
 } // namespace dpnp::extensions::ufunc

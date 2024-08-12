@@ -57,10 +57,7 @@ import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
 from .backend.extensions.sycl_ext import _sycl_ext_impl
-from .dpnp_algo import (
-    dpnp_ediff1d,
-    dpnp_modf,
-)
+from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
@@ -96,6 +93,7 @@ __all__ = [
     "divide",
     "ediff1d",
     "fabs",
+    "fix",
     "float_power",
     "floor",
     "floor_divide",
@@ -533,6 +531,7 @@ def around(x, /, decimals=0, out=None):
     :obj:`dpnp.round` : Equivalent function; see for details.
     :obj:`dpnp.ndarray.round` : Equivalent function.
     :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+    :obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
     :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
     :obj:`dpnp.floor` : Return the floor of the input, element-wise.
     :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -578,6 +577,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------
@@ -1275,49 +1276,116 @@ divide = DPNPBinaryFunc(
 )
 
 
-def ediff1d(x1, to_end=None, to_begin=None):
+def ediff1d(ary, to_end=None, to_begin=None):
     """
     The differences between consecutive elements of an array.
 
     For full documentation refer to :obj:`numpy.ediff1d`.
 
-    Limitations
-    -----------
-    Parameter `x1`is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `to_end` and `to_begin` are currently supported only
-    with default values `None`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        If necessary, will be flattened before the differences are taken.
+    to_end : array_like, optional
+        Number(s) to append at the end of the returned differences.
+        Default: ``None``.
+    to_begin : array_like, optional
+        Number(s) to prepend at the beginning of the returned differences.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        New array consisting differences among succeeding elements.
+        Loosely, this is ``ary.flat[1:] - ary.flat[:-1]``.
 
     See Also
     --------
     :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
                        axis.
+    :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 4, 7, 0])
-    >>> result = np.ediff1d(a)
-    >>> [x for x in result]
-    [1, 2, 3, -7]
-    >>> b = np.array([[1, 2, 4], [1, 6, 24]])
-    >>> result = np.ediff1d(b)
-    >>> [x for x in result]
-    [1, 2, -3, 5, 18]
+    >>> x = np.array([1, 2, 4, 7, 0])
+    >>> np.ediff1d(x)
+    array([ 1,  2,  3, -7])
+
+    >>> np.ediff1d(x, to_begin=-99, to_end=np.array([88, 99]))
+    array([-99,   1,   2,   3,  -7,  88,  99])
+
+    The returned array is always 1D.
+
+    >>> y = np.array([[1, 2, 4], [1, 6, 24]])
+    >>> np.ediff1d(y)
+    array([ 1,  2, -3,  5, 18])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if to_begin is not None:
-            pass
-        elif to_end is not None:
-            pass
-        else:
-            return dpnp_ediff1d(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim > 1:
+        ary = dpnp.ravel(ary)
 
-    return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
+    # fast track default case
+    if to_begin is None and to_end is None:
+        return ary[1:] - ary[:-1]
+
+    ary_dtype = ary.dtype
+    ary_usm_type = ary.usm_type
+    ary_sycl_queue = ary.sycl_queue
+
+    if to_begin is None:
+        l_begin = 0
+    else:
+        if not dpnp.is_supported_array_type(to_begin):
+            to_begin = dpnp.asarray(
+                to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+            )
+        if not dpnp.can_cast(to_begin, ary_dtype, casting="same_kind"):
+            raise TypeError(
+                "dtype of `to_begin` must be compatible "
+                "with input `ary` under the `same_kind` rule."
+            )
+
+        to_begin_ndim = to_begin.ndim
+
+        if to_begin_ndim > 1:
+            to_begin = dpnp.ravel(to_begin)
+
+        l_begin = to_begin.size
+
+    if to_end is None:
+        l_end = 0
+    else:
+        if not dpnp.is_supported_array_type(to_end):
+            to_end = dpnp.asarray(
+                to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
+            )
+        if not dpnp.can_cast(to_end, ary_dtype, casting="same_kind"):
+            raise TypeError(
+                "dtype of `to_end` must be compatible "
+                "with input `ary` under the `same_kind` rule."
+            )
+
+        to_end_ndim = to_end.ndim
+
+        if to_end_ndim > 1:
+            to_end = dpnp.ravel(to_end)
+
+        l_end = to_end.size
+
+    # calculating using in place operation
+    l_diff = max(len(ary) - 1, 0)
+    result = dpnp.empty_like(ary, shape=l_diff + l_begin + l_end)
+
+    if l_begin > 0:
+        result[:l_begin] = to_begin
+    if l_end > 0:
+        result[l_begin + l_diff :] = to_end
+    dpnp.subtract(ary[1:], ary[:-1], out=result[l_begin : l_begin + l_diff])
+
+    return result
 
 
 _FABS_DOCSTRING = """
@@ -1368,6 +1436,64 @@ fabs = DPNPUnaryFunc(
     _FABS_DOCSTRING,
     mkl_fn_to_call="_mkl_abs_to_call",
     mkl_impl_fn="_abs",
+)
+
+
+_FIX_DOCSTRING = """
+Round to nearest integer towards zero.
+
+Round an array of floats element-wise to nearest integer towards zero.
+The rounded values are returned as floats.
+
+For full documentation refer to :obj:`numpy.fix`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    An array of floats to be rounded.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array with the rounded values and with the same dimensions as the input.
+    The returned array will have the default floating point data type for the
+    device where `a` is allocated.
+    If `out` is ``None`` then a float array is returned with the rounded values.
+    Otherwise the result is stored there and the return value `out` is
+    a reference to that array.
+
+See Also
+--------
+:obj:`dpnp.round` : Round to given number of decimals.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.fix(np.array(3.14))
+array(3.)
+>>> np.fix(np.array(3))
+array(3.)
+>>> a = np.array([2.1, 2.9, -2.1, -2.9])
+>>> np.fix(a)
+array([ 2.,  2., -2., -2.])
+"""
+
+fix = DPNPUnaryFunc(
+    "fix",
+    ufi._fix_result_type,
+    ufi._fix,
+    _FIX_DOCSTRING,
 )
 
 
@@ -1504,6 +1630,8 @@ See Also
 --------
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Notes
 -----
@@ -3048,6 +3176,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.round` : Evenly round to the given number of decimals.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -3103,6 +3232,7 @@ See Also
 :obj:`dpnp.ndarray.round` : Equivalent function.
 :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
@@ -3536,6 +3666,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
 :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------
