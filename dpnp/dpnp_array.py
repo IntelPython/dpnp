@@ -1285,12 +1285,9 @@ class dpnp_array:
 
         >>> y.shape = (3, 8)
         >>> y
-        array([[[0., 0., 0., 0.],
-                [0., 0., 0., 0.],
-                [0., 0., 0., 0.]],
-               [[0., 0., 0., 0.],
-                [0., 0., 0., 0.],
-                [0., 0., 0., 0.]]])
+array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+       [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])
         >>> y.shape = (3, 6)
         ...
         TypeError: Can not reshape array of size 24 into (3, 6)
@@ -1304,7 +1301,7 @@ class dpnp_array:
         """
         Set new lengths of axes.
 
-        Modifies array instamcee in-place by changing its metadata about the
+        Modifies array instance in-place by changing its metadata about the
         shape and the strides of the array, or raises `AttributeError`
         exception if in-place change is not possible.
 
