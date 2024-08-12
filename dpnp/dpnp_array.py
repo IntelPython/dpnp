@@ -696,9 +696,34 @@ class dpnp_array:
         else:
             return dpnp.conjugate(self)
 
-    def copy(self, order="C"):
+    def copy(self, order="C", device=None, usm_type=None, sycl_queue=None):
         """
         Return a copy of the array.
+
+        Refer to :obj:`dpnp.copy` for full documentation.
+
+        Parameters
+        ----------
+        order : {"C", "F", "A", "K"}, optional
+            Memory layout of the newly output array.
+            Default: ``"C"``.
+        device : {None, string, SyclDevice, SyclQueue}, optional
+            An array API concept of device where the output array is created.
+            The `device` can be ``None`` (the default), an OneAPI filter
+            selector string, an instance of :class:`dpctl.SyclDevice`
+            corresponding to a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a `Device` object returned by
+            :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+            Default: ``None``.
+        usm_type : {None, "device", "shared", "host"}, optional
+            The type of SYCL USM allocation for the output array.
+            Default: ``None``.
+        sycl_queue : {None, SyclQueue}, optional
+            A SYCL queue to use for output array allocation and copying. The
+            `sycl_queue` can be passed as ``None`` (the default), which means
+            to get the SYCL queue from `device` keyword if present or to use
+            a default queue.
+            Default: ``None``.
 
         Returns
         -------
@@ -712,8 +737,9 @@ class dpnp_array:
 
         Notes
         -----
-        This function is the preferred method for creating an array copy. The
-        function :func:`dpnp.copy` is similar, but it defaults to using order 'K'.
+        This function is the preferred method for creating an array copy.
+        The function :func:`dpnp.copy` is similar, but it defaults to using
+        order ``"K"``.
 
         Examples
         --------
@@ -735,7 +761,13 @@ class dpnp_array:
 
         """
 
-        return dpnp.copy(self, order=order)
+        return dpnp.copy(
+            self,
+            order=order,
+            device=device,
+            usm_type=usm_type,
+            sycl_queue=sycl_queue,
+        )
 
     # 'ctypes',
 

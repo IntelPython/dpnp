@@ -1,3 +1,4 @@
+import copy
 import tempfile
 from math import prod
 
@@ -287,6 +288,25 @@ def test_array_creation_load_txt(usm_type):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_method(usm_type_x, usm_type_y):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type_x)
+
+    y = x.copy()
+    assert x.usm_type == y.usm_type == usm_type_x
+
+    y = x.copy(usm_type=usm_type_y)
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_operation(usm_type):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type)
+    y = copy.copy(x)
+    assert x.usm_type == y.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_logspace_base(usm_type_x, usm_type_y):
     x0 = dp.full(10, 2, usm_type=usm_type_x)
 
@@ -555,6 +575,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
