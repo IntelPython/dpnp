@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+116.g51f10b8338 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+123.gd2cb65ba4c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=046e4312"></script>
+        <script src="../../_static/documentation_options.js?v=95c6a3ab"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+116.g51f10b8338
+                0.16.0dev0+123.gd2cb65ba4c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -137,7 +137,6 @@
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span> <span class="k">as</span> <span class="nn">ufi</span>
-<span class="kn">import</span> <span class="nn">dpnp.backend.extensions.vm._vm_impl</span> <span class="k">as</span> <span class="nn">vmi</span>
 
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_reduction</span> <span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
@@ -242,8 +241,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos</span><span class="p">,</span>
     <span class="n">_ACOS_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_acos_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_acos</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_acos_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acos&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -297,8 +296,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh</span><span class="p">,</span>
     <span class="n">_ACOSH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_acosh_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_acosh</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_acosh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acosh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -352,8 +351,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_asin_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asin</span><span class="p">,</span>
     <span class="n">_ASIN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_asin_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_asin</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_asin_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asin&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -407,8 +406,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_asinh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_asinh</span><span class="p">,</span>
     <span class="n">_ASINH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_asinh_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_asinh</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_asinh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asinh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -464,8 +463,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan</span><span class="p">,</span>
     <span class="n">_ATAN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_atan_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_atan</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atan_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -540,8 +539,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2</span><span class="p">,</span>
     <span class="n">_ATAN2_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_atan2_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_atan2</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atan2_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan2&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -595,8 +594,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh</span><span class="p">,</span>
     <span class="n">_ATANH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_atanh_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_atanh</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atanh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atanh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -647,8 +646,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
     <span class="n">_CBRT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_cbrt_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_cbrt</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cbrt_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cbrt&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -701,8 +700,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_cos_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cos</span><span class="p">,</span>
     <span class="n">_COS_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_cos_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_cos</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cos_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cos&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -756,8 +755,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_cosh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_cosh</span><span class="p">,</span>
     <span class="n">_COSH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_cosh_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_cosh</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_cosh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_cosh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1013,8 +1012,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp</span><span class="p">,</span>
     <span class="n">_EXP_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_exp_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_exp</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_exp_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_exp&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1067,8 +1066,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
     <span class="n">_EXP2_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_exp2_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_exp2</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_exp2_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_exp2&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1129,8 +1128,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_expm1_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_expm1</span><span class="p">,</span>
     <span class="n">_EXPM1_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_expm1_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_expm1</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_expm1_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_expm1&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1195,8 +1194,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_hypot_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_hypot</span><span class="p">,</span>
     <span class="n">_HYPOT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_hypot_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_hypot</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_hypot_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_hypot&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1250,8 +1249,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_log_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log</span><span class="p">,</span>
     <span class="n">_LOG_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_ln_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_ln</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_ln_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_ln&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1307,8 +1306,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_log10_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log10</span><span class="p">,</span>
     <span class="n">_LOG10_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_log10_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_log10</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log10_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log10&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1370,8 +1369,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_log1p_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log1p</span><span class="p">,</span>
     <span class="n">_LOG1P_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_log1p_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_log1p</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log1p_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log1p&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1428,8 +1427,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_log2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_log2</span><span class="p">,</span>
     <span class="n">_LOG2_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_log2_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_log2</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_log2_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_log2&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2009,8 +2008,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_sin_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
     <span class="n">_SIN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sin_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sin</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sin_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sin&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2062,8 +2061,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_sinh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
     <span class="n">_SINH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sinh_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sinh</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sinh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sinh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2118,8 +2117,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
     <span class="n">_SQRT_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sqrt_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sqrt</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqrt_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqrt&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2173,8 +2172,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_square_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_square</span><span class="p">,</span>
     <span class="n">_SQUARE_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_sqr_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_sqr</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_sqr_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_sqr&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2227,8 +2226,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_tan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
     <span class="n">_TAN_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_tan_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_tan</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tan_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tan&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2281,8 +2280,8 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_tanh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
     <span class="n">_TANH_DOCSTRING</span><span class="p">,</span>
-    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_mkl_tanh_to_call</span><span class="p">,</span>
-    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="n">vmi</span><span class="o">.</span><span class="n">_tanh</span><span class="p">,</span>
+    <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_tanh_to_call&quot;</span><span class="p">,</span>
+    <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_tanh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 
