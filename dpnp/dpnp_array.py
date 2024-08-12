@@ -1284,12 +1284,45 @@ class dpnp_array:
     @property
     def shape(self):
         """
-        Lengths of axes. A tuple of numbers represents size of each dimension.
+        Tuple of array dimensions.
 
-        Setter of this property involves reshaping without copy. If the array
-        cannot be reshaped without copy, it raises an exception.
+        The shape property is usually used to get the current shape of an array,
+        but may also be used to reshape the array in-place by assigning a tuple
+        of array dimensions to it. Unlike :obj:`dpnp.reshape`, only non-negative
+        values are supported to be set as new shape. Reshaping an array in-place
+        will fail if a copy is required.
 
-        .. seealso: :attr:`numpy.ndarray.shape`
+        For full documentation refer to :obj:`numpy.ndarray.shape`.
+
+        Note
+        ----
+        Using :obj:`dpnp.ndarray.reshape` or :obj:`dpnp.reshape` is the
+        preferred approach to set new shape of an array.
+
+        See Also
+        --------
+        :obj:`dpnp.shape` : Equivalent getter function.
+        :obj:`dpnp.reshape` : Function similar to setting `shape`.
+        :obj:`dpnp.ndarray.reshape` : Method similar to setting `shape`.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([1, 2, 3, 4])
+        >>> x.shape
+        (4,)
+        >>> y = np.zeros((2, 3, 4))
+        >>> y.shape
+        (2, 3, 4)
+
+        >>> y.shape = (3, 8)
+        >>> y
+        array([[ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.],
+               [ 0.,  0.,  0.,  0.,  0.,  0.,  0.,  0.]])
+        >>> y.shape = (3, 6)
+        ...
+        TypeError: Can not reshape array of size 24 into (3, 6)
 
         """
 
@@ -1300,16 +1333,23 @@ class dpnp_array:
         """
         Set new lengths of axes.
 
-        A tuple of numbers represents size of each dimension.
-        It involves reshaping without copy. If the array cannot be reshaped without copy,
-        it raises an exception.
+        Modifies array instance in-place by changing its metadata about the
+        shape and the strides of the array, or raises `AttributeError`
+        exception if in-place change is not possible.
 
-        .. seealso: :attr:`numpy.ndarray.shape`
+        Whether the array can be reshape in-place depends on its strides. Use
+        :obj:`dpnp.reshape` function which always succeeds to reshape the array
+        by performing a copy if necessary.
+
+        For full documentation refer to :obj:`numpy.ndarray.shape`.
+
+        Parameters
+        ----------
+        newshape : {tuple, int}
+            New shape. Only non-negative values are supported. The new shape
+            may not lead to the change in the number of elements in the array.
 
         """
-
-        if not isinstance(newshape, (list, tuple)):
-            newshape = (newshape,)
 
         self._array_obj.shape = newshape
 

@@ -551,7 +551,6 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
             raise TypeError("If input is inexact, then out must be inexact.")
 
     cnt_dtype = a.real.dtype if dtype is None else dtype
-    # pylint: disable=invalid-unary-operand-type
     cnt = dpnp.sum(
         ~mask, axis=axis, dtype=cnt_dtype, keepdims=keepdims, where=where
     )
@@ -1062,7 +1061,6 @@ def nanvar(
 
     # Compute mean
     var_dtype = a.real.dtype if dtype is None else dtype
-    # pylint: disable=invalid-unary-operand-type
     cnt = dpnp.sum(
         ~mask, axis=axis, dtype=var_dtype, keepdims=True, where=where
     )
