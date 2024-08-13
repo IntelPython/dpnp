@@ -22,7 +22,6 @@ Table below shows a list of all supported data types (dtypes) and constants of t
       -
         - :obj:`bool_ <numpy.bool_>`
         - :obj:`cdouble <numpy.cdouble>`
-        - :obj:`cfloat <numpy.cfloat>`
         - :obj:`csingle <numpy.csingle>`
         - :obj:`double <numpy.double>`
         - :obj:`float <numpy.float>`

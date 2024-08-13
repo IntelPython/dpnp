@@ -44,7 +44,6 @@ __all__ = [
     "complex128",
     "complex64",
     "complexfloating",
-    "cfloat",
     "csingle",
     "double",
     "dtype",
@@ -99,7 +98,6 @@ cdouble = numpy.cdouble
 complex128 = numpy.complex128
 complex64 = numpy.complex64
 complexfloating = numpy.complexfloating
-cfloat = numpy.cfloat
 csingle = numpy.csingle
 double = numpy.double
 dtype = numpy.dtype
