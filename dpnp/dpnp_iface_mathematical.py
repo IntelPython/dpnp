@@ -308,6 +308,30 @@ def _gradient_num_diff_edges(
         )
 
 
+def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
+    """Process the argument for ediff1d."""
+    if not dpnp.is_supported_array_type(arg):
+        arg = dpnp.asarray(arg, usm_type=usm_type, sycl_queue=ary_sycl_queue)
+    else:
+        usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
+        # check that arrays have the same allocation queue
+        if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
+            raise ValueError(
+                f"ary and {arg_name} must be allocated on the same SYCL queue"
+            )
+
+    if not dpnp.can_cast(arg, ary_dtype, casting="same_kind"):
+        raise TypeError(
+            f"dtype of {arg_name} must be compatible "
+            "with input ary under the `same_kind` rule."
+        )
+
+    if arg.ndim > 1:
+        arg = dpnp.ravel(arg)
+
+    return arg, usm_type
+
+
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element `x_i` of input array `x`.
 
@@ -1332,52 +1356,30 @@ def ediff1d(ary, to_end=None, to_begin=None):
         return ary[1:] - ary[:-1]
 
     ary_dtype = ary.dtype
-    ary_usm_type = ary.usm_type
     ary_sycl_queue = ary.sycl_queue
+    usm_type = ary.usm_type
 
     if to_begin is None:
         l_begin = 0
     else:
-        if not dpnp.is_supported_array_type(to_begin):
-            to_begin = dpnp.asarray(
-                to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
-            )
-        if not dpnp.can_cast(to_begin, ary_dtype, casting="same_kind"):
-            raise TypeError(
-                "dtype of `to_begin` must be compatible "
-                "with input `ary` under the `same_kind` rule."
-            )
-
-        to_begin_ndim = to_begin.ndim
-
-        if to_begin_ndim > 1:
-            to_begin = dpnp.ravel(to_begin)
-
+        to_begin, usm_type = _process_ediff1d_args(
+            to_begin, "to_begin", ary_dtype, ary_sycl_queue, usm_type
+        )
         l_begin = to_begin.size
 
     if to_end is None:
         l_end = 0
     else:
-        if not dpnp.is_supported_array_type(to_end):
-            to_end = dpnp.asarray(
-                to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
-            )
-        if not dpnp.can_cast(to_end, ary_dtype, casting="same_kind"):
-            raise TypeError(
-                "dtype of `to_end` must be compatible "
-                "with input `ary` under the `same_kind` rule."
-            )
-
-        to_end_ndim = to_end.ndim
-
-        if to_end_ndim > 1:
-            to_end = dpnp.ravel(to_end)
-
+        to_end, usm_type = _process_ediff1d_args(
+            to_end, "to_end", ary_dtype, ary_sycl_queue, usm_type
+        )
         l_end = to_end.size
 
     # calculating using in place operation
     l_diff = max(len(ary) - 1, 0)
-    result = dpnp.empty_like(ary, shape=l_diff + l_begin + l_end)
+    result = dpnp.empty_like(
+        ary, shape=l_diff + l_begin + l_end, usm_type=usm_type
+    )
 
     if l_begin > 0:
         result[:l_begin] = to_begin
