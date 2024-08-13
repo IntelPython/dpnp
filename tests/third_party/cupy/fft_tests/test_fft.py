@@ -129,7 +129,6 @@ class TestFftOrder:
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
-                {"shape": (3, 4), "s": None, "axes": None},
                 # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
                 {"shape": (2, 3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
@@ -218,7 +217,6 @@ class TestFft2:
                 {"shape": (3, 4), "s": None, "axes": [-1, -2]},
                 # {"shape": (3, 4), "s": None, "axes": (0,)}, # mkl_fft gh-109
                 # {"shape": (3, 4), "s": None, "axes": ()}, # mkl_fft gh-108
-                {"shape": (3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": None, "axes": None},
                 {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)},
                 {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)},
@@ -350,7 +348,6 @@ class TestRfft:
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 {"shape": (3, 4), "s": None, "axes": (0,)},
-                {"shape": (3, 4), "s": None, "axes": None},
                 # {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
                 # {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
                 # {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
@@ -397,6 +394,8 @@ class TestRfft2:
         type_check=has_support_aspect64(),
     )
     def test_irfft2(self, xp, dtype, order):
+        if self.s is None and self.axes in [None, (-2, -1)]:
+            pytest.skip("Input is not Hermitian Symmetric")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -442,7 +441,6 @@ class TestRfft2EmptyAxes:
                 {"shape": (3, 4), "s": None, "axes": (-2, -1)},
                 {"shape": (3, 4), "s": None, "axes": (-1, -2)},
                 {"shape": (3, 4), "s": None, "axes": (0,)},
-                {"shape": (3, 4), "s": None, "axes": None},
                 # {"shape": (2, 3, 4), "s": None, "axes": None}, # mkl_fft gh-116
                 # {"shape": (2, 3, 4), "s": (1, 4, 4), "axes": (0, 1, 2)}, # mkl_fft gh-115
                 # {"shape": (2, 3, 4), "s": (1, 4, 10), "axes": (0, 1, 2)}, # mkl_fft gh-115
@@ -489,6 +487,8 @@ class TestRfftn:
         type_check=has_support_aspect64(),
     )
     def test_irfftn(self, xp, dtype, order):
+        if self.s is None and self.axes in [None, (-2, -1)]:
+            pytest.skip("Input is not Hermitian Symmetric")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)

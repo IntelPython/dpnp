@@ -987,18 +987,20 @@ class TestRfft2:
         expected = numpy.fft.rfft2(a_np, axes=axes, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    # TODO: change to get_all_dtypes() when mkl_fft gh-116 and gh-119 is addressed
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    @pytest.mark.parametrize("axes", [(0, 1)])  # (1, 2),(0, 2),(2, 1),(2, 0)
-    @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
-    @pytest.mark.parametrize("order", ["C", "F"])
-    def test_irfft2(self, dtype, axes, norm, order):
-        x1 = numpy.random.uniform(-10, 10, 24)
-        a_np = numpy.array(x1, dtype=dtype).reshape(2, 3, 4, order=order)
+        s = (a.shape[axes[0]], a.shape[axes[1]])
+        result = dpnp.fft.irfft2(result, s=s, axes=axes, norm=norm)
+        expected = numpy.fft.irfft2(expected, s=s, axes=axes, norm=norm)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_irfft2(self, dtype):
+        # x1 is Hermitian symmetric
+        x1 = numpy.array([[0, 1, 2], [5, 4, 6], [5, 7, 6]])
+        a_np = numpy.array(x1, dtype=dtype)
         a = dpnp.asarray(a_np)
 
-        result = dpnp.fft.irfft2(a, axes=axes, norm=norm)
-        expected = numpy.fft.irfft2(a_np, axes=axes, norm=norm)
+        result = dpnp.fft.irfft2(a)
+        expected = numpy.fft.irfft2(a_np)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("s", [None, (3, 3), (10, 10), (3, 10)])
@@ -1011,8 +1013,8 @@ class TestRfft2:
         expected = numpy.fft.rfft2(a_np, s=s)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-        result = dpnp.fft.irfft2(a, s=s)
-        expected = numpy.fft.irfft2(a_np, s=s)
+        result = dpnp.fft.irfft2(result, s=s)
+        expected = numpy.fft.irfft2(expected, s=s)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
@@ -1036,7 +1038,7 @@ class TestRfftn:
     # TODO: add additional axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize(
-        "axes", [None, (0, 1, 2), (-2, -4, -1, -3)]  # (-1, -4, -2)
+        "axes", [(0, 1, 2), (-2, -4, -1, -3)]  # (-1, -4, -2)
     )
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
@@ -1049,8 +1051,11 @@ class TestRfftn:
         expected = numpy.fft.rfftn(a_np, axes=axes, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-        iresult = dpnp.fft.irfftn(result, axes=axes, norm=norm)
-        iexpected = numpy.fft.irfftn(expected, axes=axes, norm=norm)
+        s = []
+        for axis in axes:
+            s.append(a.shape[axis])
+        iresult = dpnp.fft.irfftn(result, s=s, axes=axes, norm=norm)
+        iexpected = numpy.fft.irfftn(expected, s=s, axes=axes, norm=norm)
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize(
@@ -1102,7 +1107,7 @@ class TestRfftn:
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("axes", [(0, 1, 2, 3), (1, 2, 1, 2), (2, 2, 2, 3)])
-    @pytest.mark.parametrize("s", [(2, 3, 4, 5), (5, 4, 7, 10), (2, 5, 1, 2)])
+    @pytest.mark.parametrize("s", [(2, 3, 4, 5), (5, 6, 7, 9), (2, 5, 1, 2)])
     def test_rfftn_out(self, axes, s):
         x1 = numpy.random.uniform(-10, 10, 120)
         a_np = numpy.array(x1, dtype=numpy.float32).reshape(2, 3, 4, 5)
@@ -1112,8 +1117,8 @@ class TestRfftn:
         out_shape[axes[-1]] = s[-1] // 2 + 1
         for s_i, axis in zip(s[-2::-1], axes[-2::-1]):
             out_shape[axis] = s_i
-
         out = dpnp.empty(out_shape, dtype=numpy.complex64)
+
         result = dpnp.fft.rfftn(a, out=out, s=s, axes=axes)
         assert out is result
         # Intel® NumPy ignores repeated axes, handle it one by one
@@ -1126,10 +1131,11 @@ class TestRfftn:
         for s_i, axis in zip(s[-2::-1], axes[-2::-1]):
             out_shape[axis] = s_i
         out_shape[axes[-1]] = s[-1]
-
         out = dpnp.empty(out_shape, dtype=numpy.float32)
+
         iresult = dpnp.fft.irfftn(result, out=out, s=s, axes=axes)
         assert out is iresult
+
         iexpected = expected
         for jj, ii in zip(s[-2::-1], axes[-2::-1]):
             iexpected = numpy.fft.ifft(iexpected, n=jj, axis=ii)

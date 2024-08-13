@@ -409,27 +409,6 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     return result
 
 
-def _make_array_hermitian(arr, s, axis):
-    """
-    Transforms each 1D array of the input array along a specified axis into
-    a Hermitian array.
-    To accomplish this, it sets the imaginary part of the first element and
-    the element corresponding to the Nyquist mode along each `axis` to zero.
-
-    """
-
-    index = [slice(None)] * arr.ndim
-    index[axis] = 0  # index first element
-
-    arr.imag[tuple(index)] = 0
-
-    if s % 2 == 0:
-        index[axis] = s // 2  # index Nyquist mode
-        arr.imag[tuple(index)] = 0
-
-    return arr
-
-
 def _scale_result(res, a_shape, norm, forward, index):
     """Scale the result of the FFT according to `norm`."""
     if res.dtype in [dpnp.float32, dpnp.complex64]:
@@ -683,10 +662,6 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
             a.ndim != len_axes - 1,
         )
         a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
-        # a is a batch of 1D arrays and each of them should be Hermitian
-        # otherwise c2r FFT behavior is undefined
-        a = _make_array_hermitian(a, s[-1], axes[-1])
-        # make sure input to the following function is Hermitian
         return _fft(
             a, norm, out, forward, in_place and c2c, c2c, axes[-1], a.ndim != 1
         )
