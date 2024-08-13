@@ -59,8 +59,6 @@ Python import functions
 """
 __all__ = [
     "call_origin",
-    "checker_throw_axis_error",
-    "checker_throw_index_error",
     "checker_throw_type_error",
     "checker_throw_value_error",
     "create_output_descriptor_py",
@@ -68,9 +66,7 @@ __all__ = [
     "dpnp_descriptor",
     "get_axis_offsets",
     "get_usm_allocations",
-    "_get_linear_index",
     "map_dtype_to_device",
-    "normalize_axis",
     "_object_to_tuple",
     "unwrap_array",
     "use_origin_backend"
@@ -308,17 +304,6 @@ def map_dtype_to_device(dtype, device):
     raise RuntimeError(f"Unrecognized type of input dtype={dtype}")
 
 
-cpdef checker_throw_axis_error(function_name, param_name, param, expected):
-    err_msg = f"{ERROR_PREFIX} in function {function_name}()"
-    err_msg += f" axes '{param_name}' expected `{expected}`, but '{param}' provided"
-    raise AxisError(err_msg)
-
-
-cpdef checker_throw_index_error(function_name, index, size):
-    raise IndexError(
-        f"{ERROR_PREFIX} in function {function_name}() index {index} is out of bounds. dimension size `{size}`")
-
-
 cpdef checker_throw_type_error(function_name, given_type):
     raise TypeError(f"{ERROR_PREFIX} in function {function_name}() type '{given_type}' is not supported")
 
@@ -364,22 +349,6 @@ cpdef tuple get_axis_offsets(shape):
     return _object_to_tuple(result)
 
 
-cpdef long _get_linear_index(key, tuple shape, int ndim):
-    """
-    Compute linear index of an element in memory from array indices
-    """
-
-    if isinstance(key, tuple):
-        li = 0
-        m = 1
-        for i in range(ndim - 1, -1, -1):
-            li += key[i] * m
-            m *= shape[i]
-    else:
-        li = key
-    return li
-
-
 cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
                                               DPNPFuncType c_type,
                                               dpnp_descriptor requested_out,
@@ -410,28 +379,6 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
             result_desc = dpnp_descriptor(requested_out)
 
     return result_desc
-
-
-cpdef shape_type_c normalize_axis(object axis_obj, size_t shape_size_inp):
-    """
-    Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
-    """
-
-    cdef shape_type_c axis = _object_to_tuple(axis_obj)  # axis_obj might be a scalar
-    cdef ssize_t shape_size = shape_size_inp  # convert type for comparison with axis id
-
-    cdef size_t axis_size = axis.size()
-    cdef shape_type_c result = shape_type_c(axis_size, 0)
-    for i in range(axis_size):
-        if (axis[i] >= shape_size) or (axis[i] < -shape_size):
-            checker_throw_axis_error("normalize_axis", "axis", axis[i], shape_size - 1)
-
-        if (axis[i] < 0):
-            result[i] = shape_size + axis[i]
-        else:
-            result[i] = axis[i]
-
-    return result
 
 
 @cython.profile(False)
