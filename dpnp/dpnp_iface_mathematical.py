@@ -316,7 +316,7 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
         usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
         # check that arrays have the same allocation queue
         if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
-            raise ValueError(
+            raise dpu.ExecutionPlacementError(
                 f"ary and {arg_name} must be allocated on the same SYCL queue"
             )
 
