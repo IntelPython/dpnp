@@ -1183,7 +1183,7 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
         Default: ``"backward"``.
-    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
+    out : {None, dpnp.ndarray or usm_ndarray}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype for the last transformation (and
         hence only the last axis can have `s` not equal to the shape at that
@@ -1191,7 +1191,7 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
 
     Returns
     -------
-    out : dpnp.ndarray of complex dtype
+    out : dpnp.ndarray
         The truncated or zero-padded input, transformed along the axes
         indicated by `axes`, or the last two axes if `axes` is not given.
 
@@ -1282,7 +1282,7 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
         Default: ``"backward"``.
-    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
+    out : {None, dpnp.ndarray or usm_ndarray}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype for the last transformation (and
         hence only the last axis can have `s` not equal to the shape at that
@@ -1290,7 +1290,7 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
 
     Returns
     -------
-    out : dpnp.ndarray of complex dtype
+    out : dpnp.ndarray
         The truncated or zero-padded input, transformed along the axes
         indicated by `axes`, or by a combination of `s` and `a`,
         as explained in the parameters section above.

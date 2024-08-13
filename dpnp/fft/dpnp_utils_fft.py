@@ -96,14 +96,13 @@ def _commit_descriptor(a, forward, in_place, c2c, a_strides, index, batch_fft):
         dsc.fwd_distance = a_strides[0]
         if c2c:
             dsc.bwd_distance = dsc.fwd_distance
-        else:
-            if dsc.fwd_strides[-1] == 1:
-                if forward:
-                    dsc.bwd_distance = shape[-1] // 2 + 1
-                else:
-                    dsc.bwd_distance = dsc.fwd_distance
+        elif dsc.fwd_strides[-1] == 1:
+            if forward:
+                dsc.bwd_distance = shape[-1] // 2 + 1
             else:
                 dsc.bwd_distance = dsc.fwd_distance
+        else:
+            dsc.bwd_distance = dsc.fwd_distance
         dsc.number_of_transforms = numpy.prod(a_shape[0])  # batch_size
         out_strides.insert(0, dsc.bwd_distance)
 
@@ -120,12 +119,17 @@ def _complex_nd_fft(a, s, norm, out, forward, in_place, c2c, axes, batch_fft):
     # repeated axis in OneMKL FFT is not allowed
     if len_axes > 3 or len(set(axes)) < len_axes:
         axes_chunk, shape_chunk = _extract_axes_chunk(axes, s, chunk_size=3)
-        for s_chunk, a_chunk in zip(shape_chunk, axes_chunk):
+        for i, (s_chunk, a_chunk) in enumerate(zip(shape_chunk, axes_chunk)):
             a = _truncate_or_pad(a, shape=s_chunk, axes=a_chunk)
-            if out is not None and out.shape == a.shape:
+            # if out is used in an intermediate step, it will have memory
+            # overlap with input and cannot be used in the final step (a new
+            # result array will be created for the final step), so there is no
+            # benefit in using out in an intermediate step
+            if i == len(axes_chunk) - 1:
                 tmp_out = out
             else:
                 tmp_out = None
+
             a = _fft(
                 a,
                 norm=norm,
@@ -136,6 +140,7 @@ def _complex_nd_fft(a, s, norm, out, forward, in_place, c2c, axes, batch_fft):
                 c2c=c2c,
                 axes=a_chunk,
             )
+
         return a
 
     a = _truncate_or_pad(a, s, axes)
@@ -174,7 +179,7 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
     else:
         if (
             out is not None
-            and out.strides == out_strides
+            and out.strides == tuple(out_strides)
             and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
             res_usm = dpnp.get_usm_ndarray(out)
@@ -382,10 +387,6 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
         local_shape = (-1,) + a_shape_orig[-len_axes:]
         a = dpnp.reshape(a, local_shape)
         index = 1
-    else:
-        if not (c2c or fft_1d):
-            # for N-D real FFT, axes[-1] of a should be at the end
-            a = dpnp.moveaxis(a, axes[-1], -1)
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
     dsc, out_strides = _commit_descriptor(
@@ -398,10 +399,6 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
         tmp_shape = a_shape_orig[:-1] + (res.shape[-1],)
         res = dpnp.reshape(res, tmp_shape)
         res = dpnp.moveaxis(res, local_axes, axes)
-    else:
-        if not (c2c or fft_1d):
-            # N-D real FFT, the last axis should be returned back to axes[-1]
-            res = dpnp.moveaxis(res, -1, axes[-1])
 
     result = dpnp.get_result_array(res, out=out, casting="same_kind")
     if out is None and not (
@@ -508,7 +505,7 @@ def _validate_out_keyword(a, out, s, axes, c2c, c2r, r2c):
         expected_shape = list(a.shape)
         if r2c:
             expected_shape[axes[-1]] = s[-1] // 2 + 1
-        if c2c:
+        elif c2c:
             expected_shape[axes[-1]] = s[-1]
         for s_i, axis in zip(s[-2::-1], axes[-2::-1]):
             expected_shape[axis] = s_i
@@ -645,17 +642,14 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
         # a 1D real-to-complext FFT is performed on the last axis and then
         # an N-D complex-to-complex FFT over the remaining axes
         a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
-        intermediate_shape = list(a.shape)
-        intermediate_shape[axes[-1]] = s[-1] // 2 + 1
-        if out is not None and out.shape == intermediate_shape:
-            tmp_out = out
-        else:
-            tmp_out = None
-
         a = _fft(
             a,
             norm,
-            tmp_out,
+            # if out is used in an intermediate step, it will have memory
+            # overlap with input and cannot be used in the final step (a new
+            # result array will be created for the final step), so there is no
+            # benefit in using out in an intermediate step
+            None,
             forward,
             in_place and c2c,
             c2c,

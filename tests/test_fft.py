@@ -522,16 +522,18 @@ class TestFftn:
         out_shape = list(a.shape)
         for s_i, axis in zip(s[::-1], axes[::-1]):
             out_shape[axis] = s_i
-        result = dpnp.empty(out_shape, dtype=a.dtype)
-        dpnp.fft.fftn(a, out=result, s=s, axes=axes)
+        out = dpnp.empty(out_shape, dtype=a.dtype)
+        result = dpnp.fft.fftn(a, out=out, s=s, axes=axes)
+        assert out is result
         # Intel® NumPy ignores repeated axes, handle it one by one
         expected = a_np
         for jj, ii in zip(s[::-1], axes[::-1]):
             expected = numpy.fft.fft(expected, n=jj, axis=ii)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-        iresult = dpnp.empty(out_shape, dtype=a.dtype)
-        dpnp.fft.ifftn(result, out=iresult, s=s, axes=axes)
+        out = dpnp.empty(out_shape, dtype=a.dtype)
+        iresult = dpnp.fft.ifftn(result, out=out, s=s, axes=axes)
+        assert out is iresult
         iexpected = expected
         for jj, ii in zip(s[::-1], axes[::-1]):
             iexpected = numpy.fft.ifft(iexpected, n=jj, axis=ii)
@@ -1111,8 +1113,9 @@ class TestRfftn:
         for s_i, axis in zip(s[-2::-1], axes[-2::-1]):
             out_shape[axis] = s_i
 
-        result = dpnp.empty(out_shape, dtype=numpy.complex64)
-        dpnp.fft.rfftn(a, out=result, s=s, axes=axes)
+        out = dpnp.empty(out_shape, dtype=numpy.complex64)
+        result = dpnp.fft.rfftn(a, out=out, s=s, axes=axes)
+        assert out is result
         # Intel® NumPy ignores repeated axes, handle it one by one
         expected = numpy.fft.rfft(a_np, n=s[-1], axis=axes[-1])
         for jj, ii in zip(s[-2::-1], axes[-2::-1]):
@@ -1124,8 +1127,9 @@ class TestRfftn:
             out_shape[axis] = s_i
         out_shape[axes[-1]] = s[-1]
 
-        iresult = dpnp.empty(out_shape, dtype=numpy.float32)
-        dpnp.fft.irfftn(result, out=iresult, s=s, axes=axes)
+        out = dpnp.empty(out_shape, dtype=numpy.float32)
+        iresult = dpnp.fft.irfftn(result, out=out, s=s, axes=axes)
+        assert out is iresult
         iexpected = expected
         for jj, ii in zip(s[-2::-1], axes[-2::-1]):
             iexpected = numpy.fft.ifft(iexpected, n=jj, axis=ii)
