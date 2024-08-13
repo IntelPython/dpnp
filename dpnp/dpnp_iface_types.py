@@ -56,10 +56,7 @@ __all__ = [
     "floating",
     "iinfo",
     "inexact",
-    "Inf",
     "inf",
-    "Infinity",
-    "infty",
     "int",
     "int_",
     "int32",
@@ -120,10 +117,7 @@ single = numpy.single
 # =============================================================================
 e = numpy.e
 euler_gamma = numpy.euler_gamma
-Inf = numpy.Inf
 inf = numpy.inf
-Infinity = numpy.Infinity
-infty = numpy.infty
 NAN = numpy.NAN
 NaN = numpy.NaN
 nan = numpy.nan
