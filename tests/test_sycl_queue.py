@@ -1288,6 +1288,25 @@ def test_fft(func, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
+@pytest.mark.parametrize("func", ["fftn", "ifftn"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_fftn(func, device):
+    data = numpy.arange(24, dtype=numpy.complex128).reshape(2, 3, 4)
+    dpnp_data = dpnp.array(data, device=device)
+
+    expected = getattr(numpy.fft, func)(data)
+    result = getattr(dpnp.fft, func)(dpnp_data)
+    assert_dtype_allclose(result, expected)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
 @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
 @pytest.mark.parametrize(
     "device",
@@ -2385,3 +2404,36 @@ def test_nan_to_num(copy, device):
 
     assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
     assert copy == (result is not a)
+
+
+@pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_args",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    ["to_end", "to_begin"],
+    [
+        (10, None),
+        (None, -10),
+        (10, -10),
+    ],
+)
+def test_ediff1d(device_x, device_args, to_end, to_begin):
+    data = [1, 3, 5, 7]
+
+    x = dpnp.array(data, device=device_x)
+    if to_end:
+        to_end = dpnp.array(to_end, device=device_args)
+
+    if to_begin:
+        to_begin = dpnp.array(to_begin, device=device_args)
+
+    res = dpnp.ediff1d(x, to_end=to_end, to_begin=to_begin)
+
+    assert_sycl_queue_equal(res.sycl_queue, x.sycl_queue)
