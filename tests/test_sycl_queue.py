@@ -1,3 +1,4 @@
+import copy
 import tempfile
 
 import dpctl
@@ -373,6 +374,39 @@ def test_array_creation_load_txt(device):
 
 
 @pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_y",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_copy_method(device_x, device_y):
+    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device_x)
+
+    y = x.copy()
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+    q = dpctl.SyclQueue(device_y)
+    y = x.copy(sycl_queue=q)
+    assert_sycl_queue_equal(y.sycl_queue, q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_copy_operation(device):
+    x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device)
+
+    y = copy.copy(x)
+    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
@@ -422,6 +456,7 @@ def test_meshgrid(device):
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
@@ -1247,6 +1282,25 @@ def test_fft(func, device):
     expected = getattr(numpy.fft, func)(data)
     result = getattr(dpnp.fft, func)(dpnp_data)
     assert_dtype_allclose(result, expected, factor=16)
+
+    expected_queue = dpnp_data.get_array().sycl_queue
+    result_queue = result.get_array().sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize("func", ["fftn", "ifftn"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_fftn(func, device):
+    data = numpy.arange(24, dtype=numpy.complex128).reshape(2, 3, 4)
+    dpnp_data = dpnp.array(data, device=device)
+
+    expected = getattr(numpy.fft, func)(data)
+    result = getattr(dpnp.fft, func)(dpnp_data)
+    assert_dtype_allclose(result, expected)
 
     expected_queue = dpnp_data.get_array().sycl_queue
     result_queue = result.get_array().sycl_queue
@@ -2336,3 +2390,50 @@ def test_astype(device_x, device_y):
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, dtype="f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_nan_to_num(copy, device):
+    a = dpnp.array([-dpnp.nan, -1, 0, 1, dpnp.nan], device=device)
+    result = dpnp.nan_to_num(a, copy=copy)
+
+    assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
+    assert copy == (result is not a)
+
+
+@pytest.mark.parametrize(
+    "device_x",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_args",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    ["to_end", "to_begin"],
+    [
+        (10, None),
+        (None, -10),
+        (10, -10),
+    ],
+)
+def test_ediff1d(device_x, device_args, to_end, to_begin):
+    data = [1, 3, 5, 7]
+
+    x = dpnp.array(data, device=device_x)
+    if to_end:
+        to_end = dpnp.array(to_end, device=device_args)
+
+    if to_begin:
+        to_begin = dpnp.array(to_begin, device=device_args)
+
+    res = dpnp.ediff1d(x, to_end=to_end, to_begin=to_begin)
+
+    assert_sycl_queue_equal(res.sycl_queue, x.sycl_queue)

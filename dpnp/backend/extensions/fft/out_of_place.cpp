@@ -23,7 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <oneapi/mkl/dfti.hpp>
+#include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
 #include <dpctl4pybind11.hpp>

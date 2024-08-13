@@ -38,6 +38,8 @@ def run(
     cmake_executable=None,
     verbose=False,
     cmake_opts="",
+    target="intel",
+    onemkl_interfaces=False,
 ):
     build_system = None
 
@@ -93,6 +95,19 @@ def run(
     if use_oneapi:
         if "DPL_ROOT" in os.environ:
             os.environ["DPL_ROOT_HINT"] = os.environ["DPL_ROOT"]
+
+    if target == "cuda":
+        cmake_args += [
+            "-DDPNP_TARGET_CUDA=ON",
+        ]
+        # Always builds using oneMKL interfaces for the cuda target
+        onemkl_interfaces = True
+
+    if onemkl_interfaces:
+        cmake_args += [
+            "-DDPNP_USE_ONEMKL_INTERFACES=ON",
+        ]
+
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
     )
@@ -147,6 +162,19 @@ if __name__ == "__main__":
         default="",
         type=str,
     )
+    driver.add_argument(
+        "--target",
+        help="Target backend for build",
+        dest="target",
+        default="intel",
+        type=str,
+    )
+    driver.add_argument(
+        "--onemkl_interfaces",
+        help="Build using oneMKL Interfaces",
+        dest="onemkl_interfaces",
+        action="store_true",
+    )
     args = parser.parse_args()
 
     args_to_validate = [
@@ -200,4 +228,6 @@ if __name__ == "__main__":
         cmake_executable=args.cmake_executable,
         verbose=args.verbose,
         cmake_opts=args.cmake_opts,
+        target=args.target,
+        onemkl_interfaces=args.onemkl_interfaces,
     )

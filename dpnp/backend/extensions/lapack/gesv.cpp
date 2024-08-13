@@ -56,6 +56,11 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                              char *in_b,
                              const std::vector<sycl::event> &depends)
 {
+#if defined(USE_ONEMKL_INTERFACES)
+    // Temporary flag for build only
+    // FIXME: Need to implement by using lapack::getrf and lapack::getrs
+    std::logic_error("Not Implemented");
+#else
     type_utils::validate_type_for_device<T>(exec_q);
 
     T *a = reinterpret_cast<T *>(in_a);
@@ -129,6 +134,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     });
 
     return ht_ev;
+#endif // USE_ONEMKL_INTERFACES
 }
 
 std::pair<sycl::event, sycl::event>
