@@ -1365,7 +1365,7 @@ def select(condlist, choicelist, default=0):
 
     See Also
     --------
-    :obj:`dpnp.where : Return elements from one of two arrays depending on
+    :obj:`dpnp.where` : Return elements from one of two arrays depending on
                        condition.
     :obj:`dpnp.take` : Take elements from an array along an axis.
     :obj:`dpnp.choose` : Construct an array from an index array and a set of
@@ -1409,31 +1409,22 @@ def select(condlist, choicelist, default=0):
 
     dpnp.check_supported_arrays_type(*condlist)
     dpnp.check_supported_arrays_type(*choicelist)
-    dpnp.check_supported_arrays_type(
-        default, scalar_type=True, all_scalars=True
+
+    if not dpnp.isscalar(default) and not (
+        dpnp.is_supported_array_type(default) and default.shape == ()
+    ):
+        raise TypeError(
+            "A default value must be any of scalar or 0-d supported array type"
+        )
+
+    dtype = dpnp.result_type(*choicelist, default)
+
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations(
+        condlist + choicelist + [default]
     )
 
-    if dpnp.isscalar(default):
-        usm_type_alloc, sycl_queue_alloc = get_usm_allocations(
-            condlist + choicelist
-        )
-        dtype = dpnp.result_type(*choicelist)
-        default = dpnp.asarray(
-            default,
-            dtype=dtype,
-            usm_type=usm_type_alloc,
-            sycl_queue=sycl_queue_alloc,
-        )
-        choicelist.append(default)
-    else:
-        choicelist.append(default)
-        usm_type_alloc, sycl_queue_alloc = get_usm_allocations(
-            condlist + choicelist
-        )
-        dtype = dpnp.result_type(*choicelist)
-
     for i, cond in enumerate(condlist):
-        if cond.dtype.type is not dpnp.bool:
+        if not dpnp.issubdtype(cond, dpnp.bool):
             raise TypeError(
                 f"invalid entry {i} in condlist: should be boolean ndarray"
             )
@@ -1447,7 +1438,7 @@ def select(condlist, choicelist, default=0):
 
     result = dpnp.full(
         result_shape,
-        choicelist[-1],
+        default,
         dtype=dtype,
         usm_type=usm_type_alloc,
         sycl_queue=sycl_queue_alloc,
@@ -1456,10 +1447,10 @@ def select(condlist, choicelist, default=0):
     # Use np.copyto to burn each choicelist array onto result, using the
     # corresponding condlist as a boolean mask. This is done in reverse
     # order since the first choice should take precedence.
-    choicelist = choicelist[-2::-1]
+    choicelist = choicelist[::-1]
     condlist = condlist[::-1]
     for choice, cond in zip(choicelist, condlist):
-        dpnp.copyto(result, choice, where=cond)
+        dpnp.where(cond, choice, result, out=result)
 
     return result
 

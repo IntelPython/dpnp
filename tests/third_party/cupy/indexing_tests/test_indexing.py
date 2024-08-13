@@ -387,7 +387,7 @@ class TestSelect(unittest.TestCase):
         b = cupy.arange(20)
         condlist = [a < 3, b > 8]
         choicelist = [a, b]
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             cupy.select(condlist, choicelist, [dtype(2)])
 
     @pytest.mark.skip("as_strided() is not implemented yet")
