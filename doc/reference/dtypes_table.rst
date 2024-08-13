@@ -24,8 +24,6 @@ Table below shows a list of all supported data types (dtypes) and constants of t
         - :obj:`cdouble <numpy.cdouble>`
         - :obj:`csingle <numpy.csingle>`
         - :obj:`double <numpy.double>`
-        - :obj:`float <numpy.float>`
-        - :obj:`float_ <numpy.float_>`
         - :obj:`float16 <numpy.float16>`
         - :obj:`int <numpy.int>`
         - :obj:`int_ <numpy.int_>`

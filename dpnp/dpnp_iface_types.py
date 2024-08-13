@@ -50,8 +50,6 @@ __all__ = [
     "e",
     "euler_gamma",
     "finfo",
-    "float",
-    "float_",
     "float16",
     "float32",
     "float64",
@@ -101,8 +99,6 @@ complexfloating = numpy.complexfloating
 csingle = numpy.csingle
 double = numpy.double
 dtype = numpy.dtype
-float = numpy.float_
-float_ = numpy.float_
 float16 = numpy.float16
 float32 = numpy.float32
 float64 = numpy.float64
