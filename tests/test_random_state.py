@@ -40,8 +40,8 @@ class TestNormal:
     @pytest.mark.skipif(is_cpu_device(), reason="SAT-7080")
     @pytest.mark.parametrize(
         "dtype",
-        [dpnp.float32, dpnp.float64, dpnp.float, None],
-        ids=["float32", "float64", "float", "None"],
+        [dpnp.float32, dpnp.float64, None],
+        ids=["float32", "float64", "None"],
     )
     @pytest.mark.parametrize(
         "usm_type",
@@ -1006,8 +1006,8 @@ class TestUniform:
     )
     @pytest.mark.parametrize(
         "dtype",
-        [dpnp.float32, dpnp.float64, dpnp.float, dpnp.int32, None],
-        ids=["float32", "float64", "float", "int32", "None"],
+        [dpnp.float32, dpnp.float64, dpnp.int32, None],
+        ids=["float32", "float64", "int32", "None"],
     )
     @pytest.mark.parametrize(
         "usm_type",
