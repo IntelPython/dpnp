@@ -82,7 +82,6 @@ __all__ = [
     "PZERO",
     "signedinteger",
     "single",
-    "singlecomplex",
 ]
 
 
@@ -114,7 +113,6 @@ intp = numpy.intp
 number = numpy.number
 signedinteger = numpy.signedinteger
 single = numpy.single
-singlecomplex = numpy.singlecomplex
 
 
 # =============================================================================

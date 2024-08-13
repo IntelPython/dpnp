@@ -29,7 +29,6 @@ Table below shows a list of all supported data types (dtypes) and constants of t
         - :obj:`int_ <numpy.int_>`
         - :obj:`intc <numpy.intc>`
         - :obj:`single <numpy.single>`
-        - :obj:`singlecomplex <numpy.singlecomplex>`
       -
         - :obj:`e <numpy.e>`
         - :obj:`euler_gamma <numpy.euler_gamma>`
