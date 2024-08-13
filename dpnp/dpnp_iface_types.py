@@ -41,7 +41,6 @@ __all__ = [
     "bool",
     "bool_",
     "cdouble",
-    "complex_",
     "complex128",
     "complex64",
     "complexfloating",
@@ -97,7 +96,6 @@ __all__ = [
 bool = numpy.bool_
 bool_ = numpy.bool_
 cdouble = numpy.cdouble
-complex_ = numpy.complex_
 complex128 = numpy.complex128
 complex64 = numpy.complex64
 complexfloating = numpy.complexfloating

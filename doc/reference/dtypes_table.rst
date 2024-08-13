@@ -15,12 +15,13 @@ Table below shows a list of all supported data types (dtypes) and constants of t
         - :obj:`bool <numpy.bool_>`
         - :obj:`int32 <numpy.int32>`
         - :obj:`int64 <numpy.int64>`
+        - :obj:`float32 <numpy.float32>`
+        - :obj:`float64 <numpy.float64>`
         - :obj:`complex64 <numpy.complex64>`
         - :obj:`complex128 <numpy.complex128>`
       -
         - :obj:`bool_ <numpy.bool_>`
         - :obj:`cdouble <numpy.cdouble>`
-        - :obj:`complex <numpy.complex_>`
         - :obj:`cfloat <numpy.cfloat>`
         - :obj:`csingle <numpy.csingle>`
         - :obj:`double <numpy.double>`
