@@ -182,6 +182,8 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
                 << e.what();
         }
 
+        gesvd_event.wait();
+
         // Update the event dependencies for the current stream
         comp_evs[stream_id] = {gesvd_event};
     }
