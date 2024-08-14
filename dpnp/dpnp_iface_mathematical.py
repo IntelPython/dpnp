@@ -56,7 +56,6 @@ from dpctl.tensor._type_utils import _acceptance_fn_divide
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
-from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
@@ -3529,61 +3528,6 @@ def sum(
     """
 
     dpnp.check_limitations(initial=initial, where=where)
-
-    sycl_sum_call = False
-    if len(a.shape) == 2 and a.itemsize == 4:
-        c_contiguous_rules = (
-            axis == (0,)
-            and a.flags.c_contiguous
-            and 32 <= a.shape[1] <= 1024
-            and a.shape[0] > a.shape[1]
-        )
-        f_contiguous_rules = (
-            axis == (1,)
-            and a.flags.f_contiguous
-            and 32 <= a.shape[0] <= 1024
-            and a.shape[1] > a.shape[0]
-        )
-        sycl_sum_call = c_contiguous_rules or f_contiguous_rules
-
-    if sycl_sum_call:
-        if axis is not None:
-            if not isinstance(axis, (tuple, list)):
-                axis = (axis,)
-
-            axis = normalize_axis_tuple(axis, a.ndim, "axis")
-
-        input = a
-        if axis == (1,):
-            input = input.T
-        input = dpnp.get_usm_ndarray(input)
-
-        queue = input.sycl_queue
-        out_dtype = (
-            dtu._default_accumulation_dtype(input.dtype, queue)
-            if dtype is None
-            else dtype
-        )
-        output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
-
-        get_sum = _sycl_ext_impl._get_sum_over_axis_0
-        sycl_sum = get_sum(input, output)
-
-        if sycl_sum:
-            # TODO: pass dep events into _get_sum_over_axis_0 to remove sync
-            dpnp.synchronize_array_data(input)
-
-            sycl_sum(input, output, []).wait()
-            result = dpnp_array._create_from_usm_ndarray(output)
-
-            if keepdims:
-                if axis == (0,):
-                    res_sh = (1,) + output.shape
-                else:
-                    res_sh = output.shape + (1,)
-                result = result.reshape(res_sh)
-
-            return result
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
