@@ -51,7 +51,6 @@ typedef sycl::event (*gesvd_impl_fn_ptr_t)(sycl::queue &,
                                            const std::int64_t,
                                            char *,
                                            const std::int64_t,
-                                           std::vector<sycl::event> &,
                                            const std::vector<sycl::event> &);
 
 static gesvd_impl_fn_ptr_t gesvd_dispatch_table[dpctl_td_ns::num_types]
@@ -70,7 +69,6 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
                               const std::int64_t ldu,
                               char *out_vt,
                               const std::int64_t ldvt,
-                              std::vector<sycl::event> &host_task_events,
                               const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<T>(exec_q);
@@ -132,13 +130,13 @@ static sycl::event gesvd_impl(sycl::queue &exec_q,
         throw std::runtime_error(error_msg.str());
     }
 
-    sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
+    sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(gesvd_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
     });
-    host_task_events.push_back(clean_up_event);
-    return gesvd_event;
+
+    return ht_ev;
 }
 
 std::pair<sycl::event, sycl::event>
@@ -197,15 +195,14 @@ std::pair<sycl::event, sycl::event>
     const oneapi::mkl::jobsvd jobu = gesvd_utils::process_job(jobu_val);
     const oneapi::mkl::jobsvd jobvt = gesvd_utils::process_job(jobvt_val);
 
-    std::vector<sycl::event> host_task_events;
     sycl::event gesvd_ev =
         gesvd_fn(exec_q, jobu, jobvt, m, n, a_array_data, lda, out_s_data,
-                 out_u_data, ldu, out_vt_data, ldvt, host_task_events, depends);
+                 out_u_data, ldu, out_vt_data, ldvt, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(
-        exec_q, {a_array, out_s, out_u, out_vt}, host_task_events);
+    sycl::event ht_ev = dpctl::utils::keep_args_alive(
+        exec_q, {a_array, out_s, out_u, out_vt}, {gesvd_ev});
 
-    return std::make_pair(args_ev, gesvd_ev);
+    return std::make_pair(ht_ev, gesvd_ev);
 }
 
 template <typename fnT, typename T, typename RealT>
