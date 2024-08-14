@@ -250,13 +250,13 @@ class TestSVD(unittest.TestCase):
         assert (a == a_copy).all()
         return result
 
-    # @_condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_svd_rank2(self):
         self.check_usv((3, 7))
         self.check_usv((2, 2))
         self.check_usv((7, 3))
 
-    # @_condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_svd_rank2_no_uv(self):
         self.check_singular((3, 7))
         self.check_singular((2, 2))
@@ -276,7 +276,13 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
-    # @_condition.repeat(3, 10)
+    # The issue was expected to be resolved once CMPLRLLVM-53771 is available,
+    # which has to be included in DPC++ 2024.1.0, but problem still exists
+    # on Windows
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
+    @_condition.repeat(3, 10)
     def test_svd_rank3(self):
         self.check_usv((2, 3, 4))
         self.check_usv((2, 3, 7))
@@ -285,14 +291,17 @@ class TestSVD(unittest.TestCase):
         self.check_usv((2, 4, 3))
         self.check_usv((2, 32, 32))
 
-    # @_condition.repeat(3, 10)
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
+    @_condition.repeat(3, 10)
     def test_svd_rank3_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_usv((2, 64, 64))
         self.check_usv((2, 64, 32))
         self.check_usv((2, 32, 64))
 
-    # @_condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_svd_rank3_no_uv(self):
         self.check_singular((2, 3, 4))
         self.check_singular((2, 3, 7))
@@ -300,7 +309,7 @@ class TestSVD(unittest.TestCase):
         self.check_singular((2, 7, 3))
         self.check_singular((2, 4, 3))
 
-    # @_condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_svd_rank3_no_uv_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_singular((2, 64, 64))
@@ -332,7 +341,10 @@ class TestSVD(unittest.TestCase):
             array, full_matrices=self.full_matrices, compute_uv=False
         )
 
-    # @_condition.repeat(3, 10)
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
+    @_condition.repeat(3, 10)
     def test_svd_rank4(self):
         self.check_usv((2, 2, 3, 4))
         self.check_usv((2, 2, 3, 7))
@@ -341,14 +353,17 @@ class TestSVD(unittest.TestCase):
         self.check_usv((2, 2, 4, 3))
         self.check_usv((2, 2, 32, 32))
 
-    # @_condition.repeat(3, 10)
+    @pytest.mark.skipif(
+        is_cpu_device() and is_win_platform(), reason="SAT-7145"
+    )
+    @_condition.repeat(3, 10)
     def test_svd_rank4_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_usv((3, 2, 64, 64))
         self.check_usv((3, 2, 64, 32))
         self.check_usv((3, 2, 32, 64))
 
-    # @_condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_svd_rank4_no_uv(self):
         self.check_singular((2, 2, 3, 4))
         self.check_singular((2, 2, 3, 7))
@@ -356,7 +371,7 @@ class TestSVD(unittest.TestCase):
         self.check_singular((2, 2, 7, 3))
         self.check_singular((2, 2, 4, 3))
 
-    # @_condition.repeat(3, 10)
+    @_condition.repeat(3, 10)
     def test_svd_rank4_no_uv_loop(self):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_singular((3, 2, 64, 64))
