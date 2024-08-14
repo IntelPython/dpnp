@@ -2823,8 +2823,10 @@ def dpnp_svd(
     )
     _manager.add_event_pair(ht_ev, gesvd_ev)
 
-    # TODO: Need to return C-contiguous array to match the output of
-    # numpy.linalg.svd
     if compute_uv:
+        # gesvd call writes `u_h` and `vt_h` in Fortran order;
+        # Convert to contiguous to align with NumPy
+        u_h = dpnp.ascontiguousarray(u_h)
+        vt_h = dpnp.ascontiguousarray(vt_h)
         return u_h, s_h, vt_h
     return s_h
