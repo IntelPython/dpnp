@@ -8,7 +8,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_count_nonzero_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga720e05039ce0f0784c8a2e04f7f1c682", null ],
     [ "dpnp_cov_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga49f8dd90da75b44e6b733e944c6e7b33", null ],
     [ "dpnp_dot_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaddbabf7c091b81ba8ce90ebc54cdffc8", null ],
-    [ "dpnp_ediff1d_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga65cea3f2936cb7bed613b51cebb74526", null ],
     [ "dpnp_initval_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2c1f63f22354673088112c4f248c98a2", null ],
     [ "dpnp_max_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga82436cd570953d8e730b2f963db327de", null ],
     [ "dpnp_mean_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga9ffb57d8d58fc2d3bc4c76fce7dd4fb4", null ],

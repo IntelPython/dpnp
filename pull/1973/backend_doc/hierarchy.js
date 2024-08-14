@@ -43,6 +43,7 @@ var hierarchy =
     [ "dpnp::backend::ext::sycl_ext::extend_tuple_type< Tuple, T >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1extend__tuple__type.html", null ],
     [ "dpnp::backend::ext::sycl_ext::extend_tuple_type< std::tuple< Args... >, T >", "structdpnp_1_1backend_1_1ext_1_1sycl__ext_1_1extend__tuple__type_3_01std_1_1tuple_3_01_args_8_8_8_01_4_00_01_t_01_4.html", null ],
     [ "dpnp::kernels::fabs::FabsFunctor< argT, resT >", "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html", null ],
+    [ "dpnp::kernels::fix::FixFunctor< argT, resT >", "structdpnp_1_1kernels_1_1fix_1_1_fix_functor.html", null ],
     [ "dpnp::kernels::fmax::FmaxFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ],
     [ "dpnp::kernels::fmin::FminFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ],
     [ "dpnp::kernels::fmod::FmodFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ],
