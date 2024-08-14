@@ -1146,7 +1146,7 @@ def solve(a, b):
     return dpnp_solve(a, b)
 
 
-def svd(a, full_matrices=True, compute_uv=True, hermitian=False, new=True):
+def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     """
     Singular Value Decomposition.
 
@@ -1241,7 +1241,7 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False, new=True):
     dpnp.check_supported_arrays_type(a)
     assert_stacked_2d(a)
 
-    return dpnp_svd(a, full_matrices, compute_uv, hermitian, new=new)
+    return dpnp_svd(a, full_matrices, compute_uv, hermitian)
 
 
 def slogdet(a):
