@@ -172,7 +172,7 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
     }
 }
 
-// Checks if the shape of input arrays for gesvd has any non-zero dimension.
+// Check if the shape of input arrays for gesvd has any non-zero dimension.
 inline bool check_zeros_shape_gesvd(dpctl::tensor::usm_ndarray a_array,
                                     dpctl::tensor::usm_ndarray out_s,
                                     dpctl::tensor::usm_ndarray out_u,
@@ -199,8 +199,8 @@ inline bool check_zeros_shape_gesvd(dpctl::tensor::usm_ndarray a_array,
     else {
         is_zeros_shape =
             is_zeros_shape ||
-            helper::check_zeros_shape(out_u_array_nd, s_out_shape) ||
-            helper::check_zeros_shape(out_s_array_nd, u_out_shape) ||
+            helper::check_zeros_shape(out_u_array_nd, u_out_shape) ||
+            helper::check_zeros_shape(out_s_array_nd, s_out_shape) ||
             helper::check_zeros_shape(out_vt_array_nd, vt_out_shape);
     }
 
