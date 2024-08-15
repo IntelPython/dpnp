@@ -1431,4 +1431,4 @@ def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
 
     res = dp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 
-    assert res.usm_type == x.usm_type
+    assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_args])

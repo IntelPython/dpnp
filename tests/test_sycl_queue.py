@@ -2407,12 +2407,7 @@ def test_nan_to_num(copy, device):
 
 
 @pytest.mark.parametrize(
-    "device_x",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-@pytest.mark.parametrize(
-    "device_args",
+    "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
@@ -2424,15 +2419,15 @@ def test_nan_to_num(copy, device):
         (10, -10),
     ],
 )
-def test_ediff1d(device_x, device_args, to_end, to_begin):
+def test_ediff1d(device, to_end, to_begin):
     data = [1, 3, 5, 7]
 
-    x = dpnp.array(data, device=device_x)
+    x = dpnp.array(data, device=device)
     if to_end:
-        to_end = dpnp.array(to_end, device=device_args)
+        to_end = dpnp.array(to_end, device=device)
 
     if to_begin:
-        to_begin = dpnp.array(to_begin, device=device_args)
+        to_begin = dpnp.array(to_begin, device=device)
 
     res = dpnp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 
