@@ -53,8 +53,8 @@ include(GNUInstallDirs)
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.1.tar.gz
-    URL_HASH SHA256=51631e88960a8856f9c497027f55c9f2f9115cafb08c0005439838a05ba17bfc
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.3.tar.gz
+    URL_HASH SHA256=6e7a84ec241544f2f5e30c7a82c09c81f0541dd14e9d9ef61051e07105f9c445
 )
 FetchContent_MakeAvailable(pybind11)
 
@@ -66,6 +66,62 @@ find_package(Cython REQUIRED)
 find_package(Dpctl REQUIRED)
 message(STATUS "Dpctl_INCLUDE_DIR=" ${Dpctl_INCLUDE_DIR})
 message(STATUS "Dpctl_TENSOR_INCLUDE_DIR=" ${Dpctl_TENSOR_INCLUDE_DIR})
+
+option(DPNP_TARGET_CUDA
+    "Build DPNP to target CUDA devices"
+    OFF
+)
+option(DPNP_USE_ONEMKL_INTERFACES
+    "Build DPNP with oneMKL Interfaces"
+    OFF
+)
+set(_dpnp_sycl_targets)
+set(_use_onemkl_interfaces_cuda OFF)
+if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
+   if(DPNP_TARGET_CUDA)
+      set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+      set(_use_onemkl_interfaces_cuda ON)
+   else()
+      if(DEFINED ENV{DPNP_TARGET_CUDA})
+          set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
+          set(_use_onemkl_interfaces_cuda ON)
+      endif()
+   endif()
+else()
+   set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
+endif()
+
+if(_dpnp_sycl_targets)
+   message(STATUS "Compiling for -fsycl-targets=${_dpnp_sycl_targets}")
+endif()
+
+set(_use_onemkl_interfaces OFF)
+if(DPNP_USE_ONEMKL_INTERFACES)
+    set(_use_onemkl_interfaces ON)
+else()
+    if(DEFINED ENV{DPNP_USE_ONEMKL_INTERFACES})
+        set(_use_onemkl_interfaces ON)
+    endif()
+endif()
+
+if(_use_onemkl_interfaces)
+    set(BUILD_FUNCTIONAL_TESTS False)
+    set(BUILD_EXAMPLES False)
+    if(_use_onemkl_interfaces_cuda)
+        # set(ENABLE_CUBLAS_BACKEND True)
+        set(ENABLE_CUSOLVER_BACKEND True)
+        set(ENABLE_CUFFT_BACKEND True)
+        # set(ENABLE_CURAND_BACKEND True)
+        set(ENABLE_MKLGPU_BACKEND False)
+        set(ENABLE_MKLCPU_BACKEND False)
+    endif()
+    FetchContent_Declare(
+            onemkl_interfaces_library
+            GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
+            GIT_TAG f2d2dcb4213a435bb60fbb88320c5f24892423ce
+    )
+    FetchContent_MakeAvailable(onemkl_interfaces_library)
+endif()
 
 if(WIN32)
     string(CONCAT WARNING_FLAGS
