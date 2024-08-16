@@ -2423,6 +2423,20 @@ def test_astype(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
 
 
+@pytest.mark.parametrize("axis", [None, 0, -1])
+def test_unique(axis, device):
+    a = numpy.array([[1, 1], [2, 3]])
+    ia = dpnp.array(a, device=device)
+
+    result = dpnp.unique(ia, True, True, True, axis=axis)
+    expected = numpy.unique(a, True, True, True, axis=axis)
+    for iv, v in zip(result, expected):
+        assert_array_equal(iv, v)
+
+        iv_queue = iv.sycl_queue
+        assert_sycl_queue_equal(iv_queue, ia.sycl_queue)
+
+
 @pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
 @pytest.mark.parametrize(
     "device",
@@ -2438,12 +2452,7 @@ def test_nan_to_num(copy, device):
 
 
 @pytest.mark.parametrize(
-    "device_x",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-@pytest.mark.parametrize(
-    "device_args",
+    "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
@@ -2455,15 +2464,15 @@ def test_nan_to_num(copy, device):
         (10, -10),
     ],
 )
-def test_ediff1d(device_x, device_args, to_end, to_begin):
+def test_ediff1d(device, to_end, to_begin):
     data = [1, 3, 5, 7]
 
-    x = dpnp.array(data, device=device_x)
+    x = dpnp.array(data, device=device)
     if to_end:
-        to_end = dpnp.array(to_end, device=device_args)
+        to_end = dpnp.array(to_end, device=device)
 
     if to_begin:
-        to_begin = dpnp.array(to_begin, device=device_args)
+        to_begin = dpnp.array(to_begin, device=device)
 
     res = dpnp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 
