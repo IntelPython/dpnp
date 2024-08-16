@@ -112,8 +112,8 @@ def fft(a, n=None, axis=-1, norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype.
+        If provided, the result will be placed in this array. It should be of
+        the appropriate shape (consistent with the choice of `n`) and dtype.
         Default: ``None``.
 
     Returns
@@ -199,9 +199,8 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype (and hence is incompatible with
-        passing in all but the trivial `s`).
+        If provided, the result will be placed in this array. It should be of
+        the appropriate shape (consistent with the choice of `s`) and dtype.
         Default: ``None``.
 
     Returns
@@ -360,7 +359,7 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     )
     results[:m] = p1
     p2 = dpnp.arange(
-        -(n // 2),
+        m - n,
         0,
         dtype=dpnp.intp,
         device=device,
@@ -411,9 +410,8 @@ def fftn(a, s=None, axes=None, norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype (and hence is incompatible with
-        passing in all but the trivial `s`).
+        If provided, the result will be placed in this array. It should be of
+        the appropriate shape (consistent with the choice of `s`) and dtype.
         Default: ``None``.
 
     Returns
@@ -673,8 +671,8 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype.
+        If provided, the result will be placed in this array. It should be of
+        the appropriate shape (consistent with the choice of `n`) and dtype.
         Default: ``None``.
 
     Returns
@@ -763,9 +761,8 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype (and hence is incompatible with
-        passing in all but the trivial `s`).
+        If provided, the result will be placed in this array. It should be of
+        the appropriate shape (consistent with the choice of `s`) and dtype.
         Default: ``None``.
 
     Returns
@@ -863,9 +860,8 @@ def ifftn(a, s=None, axes=None, norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype (and hence is incompatible with
-        passing in all but the trivial `s`).
+        If provided, the result will be placed in this array. It should be of
+        the appropriate shape (consistent with the choice of `s`) and dtype.
         Default: ``None``.
 
     Returns
@@ -1184,10 +1180,10 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype for the last transformation (and
-        hence only the last axis can have `s` not equal to the shape at that
-        axis). Default: ``None``.
+        If provided, the result will be placed in this array. It should be of
+        the appropriate dtype and shape for the last transformation
+        (consistent with the choice of `s`).
+        Default: ``None``.
 
     Returns
     -------
@@ -1283,10 +1279,10 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype for the last transformation (and
-        hence only the last axis can have `s` not equal to the shape at that
-        axis). Default: ``None``.
+        If provided, the result will be placed in this array. It should be of
+        the appropriate dtype and shape for the last transformation
+        (consistent with the choice of `s`).
+         Default: ``None``.
 
     Returns
     -------
@@ -1477,9 +1473,9 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype for the last inverse transform
-        (and hence is incompatible with passing in all but the trivial ``s``).
+        If provided, the result will be placed in this array. It should be of
+        the appropriate dtype and shape for the last transformation
+        (consistent with the choice of `s`).
         Default: ``None``.
 
     Returns
@@ -1666,9 +1662,9 @@ def rfftn(a, s=None, axes=None, norm=None, out=None):
         the default option ``"backward"``.
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
-        If provided, the result will be placed in this array. It should be
-        of the appropriate shape and dtype for the last inverse transform
-        (and hence is incompatible with passing in all but the trivial ``s``).
+        If provided, the result will be placed in this array. It should be of
+        the appropriate dtype and shape for the last transformation
+        (consistent with the choice of `s`).
         Default: ``None``.
 
     Returns

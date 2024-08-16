@@ -49,7 +49,7 @@ std::pair<sycl::event, sycl::event>
                              const bool is_forward,
                              const std::vector<sycl::event> &depends)
 {
-    bool committed = descr.is_committed();
+    const bool committed = descr.is_committed();
     if (!committed) {
         throw py::value_error("Descriptor is not committed");
     }

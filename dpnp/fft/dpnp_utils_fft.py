@@ -103,7 +103,7 @@ def _commit_descriptor(a, forward, in_place, c2c, a_strides, index, batch_fft):
                 dsc.bwd_distance = dsc.fwd_distance
         else:
             dsc.bwd_distance = dsc.fwd_distance
-        dsc.number_of_transforms = numpy.prod(a_shape[0])  # batch_size
+        dsc.number_of_transforms = a_shape[0]  # batch_size
         out_strides.insert(0, dsc.bwd_distance)
 
     dsc.commit(a.sycl_queue)
@@ -623,28 +623,28 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
         a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
         a = _fft(
             a,
-            norm,
+            norm=norm,
             # if out is used in an intermediate step, it will have memory
             # overlap with input and cannot be used in the final step (a new
             # result array will be created for the final step), so there is no
             # benefit in using out in an intermediate step
-            None,
-            forward,
-            in_place and c2c,
-            c2c,
-            axes[-1],
-            a.ndim != 1,
+            out=None,
+            forward=forward,
+            in_place=in_place and c2c,
+            c2c=c2c,
+            axes=axes[-1],
+            batch_fft=a.ndim != 1,
         )
         return _complex_nd_fft(
             a,
-            s,
-            norm,
-            out,
-            forward,
-            in_place,
-            True,  # c2c
-            axes[:-1],
-            a.ndim != len_axes - 1,
+            s=s,
+            norm=norm,
+            out=out,
+            forward=forward,
+            in_place=in_place,
+            c2c=True,
+            axes=axes[:-1],
+            batch_fft=a.ndim != len_axes - 1,
         )
 
     if c2r:
@@ -652,14 +652,15 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
         # last one then a 1D complex-to-real FFT is performed on the last axis
         a = _complex_nd_fft(
             a,
-            s,
-            norm,
-            None,  # out has real dtype and cannot be used in intermediate steps
-            forward,
-            in_place,
-            True,  # c2c
-            axes[:-1],
-            a.ndim != len_axes - 1,
+            s=s,
+            norm=norm,
+            # out has real dtype and cannot be used in intermediate steps
+            out=None,
+            forward=forward,
+            in_place=in_place,
+            c2c=True,
+            axes=axes[:-1],
+            batch_fft=a.ndim != len_axes - 1,
         )
         a = _truncate_or_pad(a, (s[-1],), (axes[-1],))
         return _fft(
