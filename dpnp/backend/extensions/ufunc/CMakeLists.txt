@@ -64,6 +64,20 @@ target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIR})
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
 
+if(_dpnp_sycl_targets)
+  # make fat binary
+  target_compile_options(
+    ${python_module_name}
+    PRIVATE
+    -fsycl-targets=${_dpnp_sycl_targets}
+  )
+  target_link_options(
+    ${python_module_name}
+    PRIVATE
+    -fsycl-targets=${_dpnp_sycl_targets}
+  )
+endif()
+
 if (WIN32)
   target_compile_options(${python_module_name} PRIVATE
     /clang:-fno-approx-func
