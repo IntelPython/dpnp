@@ -2393,6 +2393,11 @@ def test_astype(device_x, device_y):
 
 
 @pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_unique(axis, device):
     a = numpy.array([[1, 1], [2, 3]])
     ia = dpnp.array(a, device=device)
