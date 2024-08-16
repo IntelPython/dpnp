@@ -214,6 +214,9 @@ def _unique_build_sort_indices(a, index_sh):
                     return False  # ar_cmp[idx1] goes to right
 
                 xor_nan_idx = dpnp.where(isnan1 ^ isnan2)[0]
+                if xor_nan_idx.size == 0:
+                    return False
+
                 if dpnp.isnan(ar_cmp[idx2][xor_nan_idx[0]]):
                     # first NaN in XOR mask is from ar_cmp[idx2]
                     return True  # ar_cmp[idx1] goes to left

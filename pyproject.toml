@@ -18,7 +18,7 @@ exclude-protected = ["_create_from_usm_ndarray"]
 max-args = 11
 max-locals = 30
 max-branches = 15
-max-returns = 7
+max-returns = 8
 
 [tool.pylint.format]
 max-line-length = 80
