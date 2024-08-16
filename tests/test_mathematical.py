@@ -2151,6 +2151,18 @@ class TestEdiff1d:
         to_end = dpnp.array([5], dtype="f4")
         assert_raises(TypeError, dpnp.ediff1d, a_dp, to_end=to_end)
 
+        # another `to_begin` sycl queue
+        to_begin = dpnp.array([-20, -15], sycl_queue=dpctl.SyclQueue())
+        assert_raises(
+            ExecutionPlacementError, dpnp.ediff1d, a_dp, to_begin=to_begin
+        )
+
+        # another `to_end` sycl queue
+        to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
+        assert_raises(
+            ExecutionPlacementError, dpnp.ediff1d, a_dp, to_end=to_end
+        )
+
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestTrapz:
