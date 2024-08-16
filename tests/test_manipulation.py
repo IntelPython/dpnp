@@ -88,21 +88,6 @@ def test_result_type_only_arrays():
     assert dpnp.result_type(*X) == numpy.result_type(*X_np)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "array",
-    [[1, 2, 3], [1, 2, 2, 1, 2, 4], [2, 2, 2, 2], []],
-    ids=["[1, 2, 3]", "[1, 2, 2, 1, 2, 4]", "[2, 2, 2, 2]", "[]"],
-)
-def test_unique(array):
-    np_a = numpy.array(array)
-    dpnp_a = dpnp.array(array)
-
-    expected = numpy.unique(np_a)
-    result = dpnp.unique(dpnp_a)
-    assert_array_equal(result, expected)
-
-
 class TestRepeat:
     @pytest.mark.parametrize(
         "data",

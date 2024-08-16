@@ -212,7 +212,7 @@ def _unique_build_sort_indices(a, index_sh):
                 # for complex all NaNs are considered equivalent
                 if (isnan1 & isnan2).all(): # NaNs at the same places
                     return False # ar_cmp[idx1] goes to right
-                
+
                 xor_nan_idx = dpnp.where(isnan1 ^ isnan2)[0]
                 if dpnp.isnan(ar_cmp[idx2][xor_nan_idx[0]]):
                     # first NaN in XOR mask is from ar_cmp[idx2]
