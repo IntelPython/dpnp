@@ -272,66 +272,185 @@ def _batched_solve(a, b, exec_q, res_usm_type, res_type):
 
     a = dpnp.reshape(a, (-1, a_shape[-2], a_shape[-1]))
 
-    # Reorder the elements by moving the last two axes of `a` to the front
-    # to match fortran-like array order which is assumed by gesv.
-    a = dpnp.moveaxis(a, (-2, -1), (0, 1))
-    # The same for `b` if it is 3D;
-    # if it is 2D, transpose it.
-    if b.ndim > 2:
-        b = dpnp.moveaxis(b, (-2, -1), (0, 1))
+    new = True
+
+    if new:
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
+
+        # oneMKL LAPACK getri_batch overwrites `a`
+        a_h = dpnp.empty_like(
+            a, order="C", dtype=res_type, usm_type=res_usm_type
+        )
+
+        # use DPCTL tensor function to fill the matrix array
+        # with content from the input array `a`
+        ht_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a.get_array(),
+            dst=a_h.get_array(),
+            sycl_queue=exec_q,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(ht_ev, copy_ev)
+
+        batch_size = a.shape[0]
+        n = a.shape[1]
+
+        ipiv_h = dpnp.empty(
+            (batch_size, n),
+            dtype=dpnp.int64,
+            usm_type=res_usm_type,
+            sycl_queue=exec_q,
+        )
+        dev_info = [0] * batch_size
+
+        a_stride = a_h.strides[0]
+        ipiv_stride = n
+
+        # Call the LAPACK extension function _getrf_batch
+        # to perform LU decomposition of a batch of general matrices
+        ht_ev, getrf_batch_ev = li._getrf_batch(
+            exec_q,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            dev_info,
+            n,
+            a_stride,
+            ipiv_stride,
+            batch_size,
+            depends=[copy_ev],
+        )
+        _manager.add_event_pair(ht_ev, getrf_batch_ev)
+
+        _check_lapack_dev_info(dev_info)
+
+        # The same for `b` if it is 3D;
+        # if it is 2D, transpose it.
+        if b.ndim > 2:
+            b = dpnp.moveaxis(b, (-2, -1), (0, 1))
+        else:
+            b = b.T
+        b_usm_arr = dpnp.get_usm_ndarray(b)
+
+        # oneMKL LAPACK getrs overwrites `b` and assumes fortran-like array as
+        # input.
+        # Allocate 'F' order memory for dpnp arrays to comply with
+        # these requirements.
+        b_f = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
+
+        # use DPCTL tensor function to fill the array of multiple dependent
+        # variables with content from the input array `b`
+        ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr,
+            dst=b_f.get_array(),
+            sycl_queue=b.sycl_queue,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(ht_ev, b_copy_ev)
+
+        nrhs = b_f.shape[1] if b_f.ndim > 2 else 1
+        b_stride = b_f.strides[-1]
+
+        # Call the LAPACK extension function _getrs_batch
+        # to solve the system of linear equations with a batch of LU-factored
+        # coefficient square matrix, with multiple right-hand sides.
+        ht_ev, getrs_batch_ev = li._getrs_batch(
+            exec_q,
+            a_h.get_array(),
+            ipiv_h.get_array(),
+            b_f.get_array(),
+            batch_size,
+            n,
+            nrhs,
+            a_stride,
+            ipiv_stride,
+            b_stride,
+            dev_info,
+            depends=[getrf_batch_ev, b_copy_ev],
+        )
+        _manager.add_event_pair(ht_ev, getrs_batch_ev)
+
+        _check_lapack_dev_info(dev_info)
+
+        # Getrs_batch call overwtires `b` in Fortran order, reorder the axes
+        # to match C order by moving the last axis to the front and
+        # reshape it back to the original shape of `b`.
+        v = dpnp.moveaxis(b_f, -1, 0).reshape(b_shape)
+
+        # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+        # Convert to contiguous to align with NumPy
+        if b.ndim > 2:
+            v = dpnp.ascontiguousarray(v)
+
+        return v
+
     else:
-        b = b.T
+        # Reorder the elements by moving the last two axes of `a` to the front
+        # to match fortran-like array order which is assumed by gesv.
+        a = dpnp.moveaxis(a, (-2, -1), (0, 1))
+        # The same for `b` if it is 3D;
+        # if it is 2D, transpose it.
+        if b.ndim > 2:
+            b = dpnp.moveaxis(b, (-2, -1), (0, 1))
+        else:
+            b = b.T
 
-    a_usm_arr = dpnp.get_usm_ndarray(a)
-    b_usm_arr = dpnp.get_usm_ndarray(b)
+        a_usm_arr = dpnp.get_usm_ndarray(a)
+        b_usm_arr = dpnp.get_usm_ndarray(b)
 
-    _manager = dpu.SequentialOrderManager[exec_q]
-    dep_evs = _manager.submitted_events
+        _manager = dpu.SequentialOrderManager[exec_q]
+        dep_evs = _manager.submitted_events
 
-    # oneMKL LAPACK gesv destroys `a` and assumes fortran-like array
-    # as input.
-    a_f = dpnp.empty_like(a, dtype=res_type, order="F", usm_type=res_usm_type)
+        # oneMKL LAPACK gesv destroys `a` and assumes fortran-like array
+        # as input.
+        a_f = dpnp.empty_like(
+            a, dtype=res_type, order="F", usm_type=res_usm_type
+        )
 
-    ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=a_usm_arr,
-        dst=a_f.get_array(),
-        sycl_queue=exec_q,
-        depends=dep_evs,
-    )
-    _manager.add_event_pair(ht_ev, a_copy_ev)
+        ht_ev, a_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=a_usm_arr,
+            dst=a_f.get_array(),
+            sycl_queue=exec_q,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(ht_ev, a_copy_ev)
 
-    # oneMKL LAPACK gesv overwrites `b` and assumes fortran-like array
-    # as input.
-    b_f = dpnp.empty_like(b, order="F", dtype=res_type, usm_type=res_usm_type)
+        # oneMKL LAPACK gesv overwrites `b` and assumes fortran-like array
+        # as input.
+        b_f = dpnp.empty_like(
+            b, order="F", dtype=res_type, usm_type=res_usm_type
+        )
 
-    ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-        src=b_usm_arr,
-        dst=b_f.get_array(),
-        sycl_queue=exec_q,
-        depends=dep_evs,
-    )
-    _manager.add_event_pair(ht_ev, b_copy_ev)
+        ht_ev, b_copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=b_usm_arr,
+            dst=b_f.get_array(),
+            sycl_queue=exec_q,
+            depends=dep_evs,
+        )
+        _manager.add_event_pair(ht_ev, b_copy_ev)
 
-    ht_ev, gesv_batch_ev = li._gesv_batch(
-        exec_q,
-        a_f.get_array(),
-        b_f.get_array(),
-        depends=[a_copy_ev, b_copy_ev],
-    )
+        ht_ev, gesv_batch_ev = li._gesv_batch(
+            exec_q,
+            a_f.get_array(),
+            b_f.get_array(),
+            depends=[a_copy_ev, b_copy_ev],
+        )
 
-    _manager.add_event_pair(ht_ev, gesv_batch_ev)
+        _manager.add_event_pair(ht_ev, gesv_batch_ev)
 
-    # Gesv call overwtires `b` in Fortran order, reorder the axes
-    # to match C order by moving the last axis to the front and
-    # reshape it back to the original shape of `b`.
-    v = dpnp.moveaxis(b_f, -1, 0).reshape(b_shape)
+        # Gesv call overwtires `b` in Fortran order, reorder the axes
+        # to match C order by moving the last axis to the front and
+        # reshape it back to the original shape of `b`.
+        v = dpnp.moveaxis(b_f, -1, 0).reshape(b_shape)
 
-    # dpnp.moveaxis can make the array non-contiguous if it is not 2D
-    # Convert to contiguous to align with NumPy
-    if b.ndim > 2:
-        v = dpnp.ascontiguousarray(v)
+        # dpnp.moveaxis can make the array non-contiguous if it is not 2D
+        # Convert to contiguous to align with NumPy
+        if b.ndim > 2:
+            v = dpnp.ascontiguousarray(v)
 
-    return v
+        return v
 
 
 def _batched_qr(a, mode="reduced"):
