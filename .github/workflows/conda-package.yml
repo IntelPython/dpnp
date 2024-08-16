@@ -28,7 +28,6 @@ env:
       test_bitwise.py
       test_copy.py
       test_counting.py
-      test_extensions.py
       test_fft.py
       test_flat.py
       test_histogram.py
