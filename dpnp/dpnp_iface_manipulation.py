@@ -202,21 +202,21 @@ def _unique_build_sort_indices(a, index_sh):
             diff = comp[0]
             if is_inexact and dpnp.isnan(diff):
                 isnan1 = dpnp.isnan(ar_cmp[idx1])
-                if not isnan1.any(): # no NaN in ar_cmp[idx1]
-                    return True # ar_cmp[idx1] goes to left
+                if not isnan1.any():  # no NaN in ar_cmp[idx1]
+                    return True  # ar_cmp[idx1] goes to left
 
                 isnan2 = dpnp.isnan(ar_cmp[idx2])
-                if not isnan2.any(): # no NaN in ar_cmp[idx2]
-                    return False # ar_cmp[idx1] goes to right
+                if not isnan2.any():  # no NaN in ar_cmp[idx2]
+                    return False  # ar_cmp[idx1] goes to right
 
                 # for complex all NaNs are considered equivalent
-                if (isnan1 & isnan2).all(): # NaNs at the same places
-                    return False # ar_cmp[idx1] goes to right
+                if (isnan1 & isnan2).all():  # NaNs at the same places
+                    return False  # ar_cmp[idx1] goes to right
 
                 xor_nan_idx = dpnp.where(isnan1 ^ isnan2)[0]
                 if dpnp.isnan(ar_cmp[idx2][xor_nan_idx[0]]):
                     # first NaN in XOR mask is from ar_cmp[idx2]
-                    return True # ar_cmp[idx1] goes to left
+                    return True  # ar_cmp[idx1] goes to left
                 return False
             return diff < 0
         return False
