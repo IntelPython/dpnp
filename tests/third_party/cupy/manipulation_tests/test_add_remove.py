@@ -300,7 +300,7 @@ class TestUnique:
                 [[2, xp.nan, 2], [xp.nan, 1, xp.nan], [xp.nan, 1, xp.nan]],
                 dtype=dtype,
             )
-        return xp.unique(a, axis=0, equal_nan=equal_nan)
+        return xp.unique(a, axis=1, equal_nan=equal_nan)
 
 
 @testing.parameterize(*testing.product({"trim": ["fb", "f", "b"]}))
