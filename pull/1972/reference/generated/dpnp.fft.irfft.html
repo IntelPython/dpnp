@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.irfft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+117.gd92103742e documentation</title>
+  <title>dpnp.fft.irfft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+134.g11ec91887 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c959f9c8"></script>
+        <script src="../../_static/documentation_options.js?v=a1e1927a"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+117.gd92103742e
+                0.16.0dev0+134.g11ec91887
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,7 +128,7 @@
 <dt class="sig sig-object py" id="dpnp.fft.irfft">
 <span class="sig-prename descclassname"><span class="pre">dpnp.fft.</span></span><span class="sig-name descname"><span class="pre">irfft</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">norm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/fft/dpnp_iface_fft.html#irfft"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.fft.irfft" title="Link to this definition"></a></dt>
 <dd><p>Computes the inverse of <a class="reference internal" href="dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a>.</p>
-<p>This function computes the inverse of the one-dimensional <cite>n</cite>-point
+<p>This function computes the inverse of the one-dimensional <em>n</em>-point
 discrete Fourier Transform of real input computed by <a class="reference internal" href="dpnp.fft.rfft.html#dpnp.fft.rfft" title="dpnp.fft.rfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.rfft</span></code></a>.
 In other words, <code class="docutils literal notranslate"><span class="pre">irfft(rfft(a),</span> <span class="pre">len(a))</span> <span class="pre">==</span> <span class="pre">a</span></code> to within numerical
 accuracy. (See Notes below for why <code class="docutils literal notranslate"><span class="pre">len(a)</span></code> is necessary here.)</p>
@@ -147,7 +147,7 @@ positive frequency terms.</p>
 For <cite>n</cite> output points, <code class="docutils literal notranslate"><span class="pre">n//2+1</span></code> input points are necessary. If the
 input is longer than this, it is cropped. If it is shorter than this,
 it is padded with zeros. If <cite>n</cite> is not given, it is taken to be
-<code class="docutils literal notranslate"><span class="pre">2*(m-1)</span></code> where <code class="docutils literal notranslate"><span class="pre">m</span></code> is the length of the input along the axis
+<code class="docutils literal notranslate"><span class="pre">2*(m-1)</span></code> where <cite>m</cite> is the length of the input along the axis
 specified by <cite>axis</cite>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Axis over which to compute the FFT. If not given, the last axis is
 used. Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p></li>
@@ -165,7 +165,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 <dd class="field-even"><p><strong>out</strong> -- The truncated or zero-padded input, transformed along the axis
 indicated by <cite>axis</cite>, or the last one if <cite>axis</cite> is not specified.
 The length of the transformed axis is <cite>n</cite>, or, if <cite>n</cite> is not given,
-<code class="docutils literal notranslate"><span class="pre">2*(m-1)</span></code> where <code class="docutils literal notranslate"><span class="pre">m</span></code> is the length of the transformed axis of the
+<code class="docutils literal notranslate"><span class="pre">2*(m-1)</span></code> where <cite>m</cite> is the length of the transformed axis of the
 input. To get an odd number of output points, <cite>n</cite> must be specified.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -183,12 +183,12 @@ input. To get an odd number of output points, <cite>n</cite> must be specified.<
 </dd>
 <dt><a class="reference internal" href="dpnp.fft.irfft2.html#dpnp.fft.irfft2" title="dpnp.fft.irfft2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.irfft2</span></code></a></dt><dd><p>The inverse of the two-dimensional FFT of real input.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.fft.irfftn.html#dpnp.fft.irfftn" title="dpnp.fft.irfftn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.irfftn</span></code></a></dt><dd><p>The inverse of the <cite>n</cite>-dimensional FFT of real input.</p>
+<dt><a class="reference internal" href="dpnp.fft.irfftn.html#dpnp.fft.irfftn" title="dpnp.fft.irfftn"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.irfftn</span></code></a></dt><dd><p>The inverse of the <em>N</em>-dimensional FFT of real input.</p>
 </dd>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>Returns the real valued <cite>n</cite>-point inverse discrete Fourier transform
+<p>Returns the real valued <em>n</em>-point inverse discrete Fourier transform
 of <cite>a</cite>, where <cite>a</cite> contains the non-negative frequency terms of a
 Hermitian-symmetric sequence. <cite>n</cite> is the length of the result, not the
 input.</p>
