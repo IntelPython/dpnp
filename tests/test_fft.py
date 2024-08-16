@@ -43,7 +43,9 @@ class TestFft:
     def setup_method(self):
         numpy.random.seed(42)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
     @pytest.mark.parametrize(
         "shape", [(64,), (8, 8), (4, 16), (4, 4, 4), (2, 4, 4, 2)]
     )
@@ -60,7 +62,9 @@ class TestFft:
         dpnp_res = dpnp.fft.ifft(dpnp_data, norm=norm)
         assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     def test_fft_1D(self, dtype, n, norm):
@@ -362,7 +366,9 @@ class TestFft2:
     def setup_method(self):
         numpy.random.seed(42)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     def test_fft2(self, dtype):
         x1 = numpy.random.uniform(-10, 10, 24)
         a_np = numpy.array(x1, dtype=dtype).reshape(2, 3, 4)
@@ -560,7 +566,7 @@ class TestFftn:
         expected = numpy.fft.fftn(a_np, axes=(0, 1, 2), s=(5, 2, 4))
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_fftn_0D(self, dtype):
         a = dpnp.array(3, dtype=dtype)  # 0-D input
 
@@ -583,7 +589,7 @@ class TestFftn:
         # IndexError, while Intel® NumPy raises ZeroDivisionError
         assert_raises(IndexError, dpnp.fft.fftn, a, axes=(0,))
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_fftn_empty_axes(self, dtype):
         a = dpnp.ones((2, 3, 4), dtype=dtype)
 
@@ -636,7 +642,9 @@ class TestHfft:
     def setup_method(self):
         numpy.random.seed(42)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     def test_hfft_1D(self, dtype, n, norm):
@@ -665,7 +673,7 @@ class TestHfft:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
     )
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
@@ -693,7 +701,9 @@ class TestIrfft:
     def setup_method(self):
         numpy.random.seed(42)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     def test_fft_1D(self, dtype, n, norm):
@@ -837,7 +847,7 @@ class TestRfft:
         numpy.random.seed(42)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
     )
     @pytest.mark.parametrize(
         "shape", [(64,), (8, 8), (4, 16), (4, 4, 4), (2, 4, 4, 2)]
@@ -852,7 +862,7 @@ class TestRfft:
         assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
     )
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
@@ -974,7 +984,9 @@ class TestRfft2:
         numpy.random.seed(42)
 
     # TODO: add other axes when mkl_fft gh-119 is addressed
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     @pytest.mark.parametrize("axes", [(0, 1)])  # (1, 2),(0, 2),(2, 1),(2, 0)
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
@@ -992,7 +1004,7 @@ class TestRfft2:
         expected = numpy.fft.irfft2(expected, s=s, axes=axes, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_irfft2(self, dtype):
         # x1 is Hermitian symmetric
         x1 = numpy.array([[0, 1, 2], [5, 4, 6], [5, 7, 6]])
