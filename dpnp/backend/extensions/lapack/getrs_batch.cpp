@@ -41,7 +41,7 @@ namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*getrs_batch_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     oneapi::mkl::transpose,
     std::int64_t,
     std::int64_t,
@@ -61,7 +61,7 @@ static getrs_batch_impl_fn_ptr_t
     getrs_batch_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event getrs_batch_impl(sycl::queue exec_q,
+static sycl::event getrs_batch_impl(sycl::queue &exec_q,
                                     oneapi::mkl::transpose trans,
                                     std::int64_t n,
                                     std::int64_t nrhs,
@@ -188,7 +188,7 @@ static sycl::event getrs_batch_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    getrs_batch(sycl::queue exec_q,
+    getrs_batch(sycl::queue &exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray ipiv_array,
                 dpctl::tensor::usm_ndarray b_array,
