@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+121.g72b0ce3890 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+139.gf6a36eb5a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=40602b0d"></script>
+        <script src="../../_static/documentation_options.js?v=0831c783"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+121.g72b0ce3890
+                0.16.0dev0+139.gf6a36eb5a
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -128,18 +128,15 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
+<span class="kn">import</span> <span class="nn">math</span>
+
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">AxisError</span><span class="p">,</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 <span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-
-<span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">call_origin</span><span class="p">,</span>
-<span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;asfarray&quot;</span><span class="p">,</span>
@@ -186,6 +183,169 @@
             <span class="s1">&#39;arrays to stack must be passed as a &quot;sequence&quot; type &#39;</span>
             <span class="s2">&quot;such as list or tuple.&quot;</span>
         <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_unique_1d</span><span class="p">(</span>
+    <span class="n">ar</span><span class="p">,</span>
+    <span class="n">return_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_counts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">equal_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the unique elements of a 1D array.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_first_nan_index</span><span class="p">(</span><span class="n">usm_a</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find the first index of NaN in the input array with at least two NaNs.</span>
+
+<span class="sd">        Assume the input array sorted where the NaNs are always at the end.</span>
+<span class="sd">        Return None if the input array does not have at least two NaN values or</span>
+<span class="sd">        data type of the array is not inexact.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">usm_a</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">2</span>
+            <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">usm_a</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+        <span class="p">):</span>
+            <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">usm_a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+                <span class="c1"># for complex all NaNs are considered equivalent</span>
+                <span class="n">true_val</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+                    <span class="kc">True</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span>
+                <span class="p">)</span>
+                <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">usm_a</span><span class="p">),</span> <span class="n">true_val</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="n">usm_ar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+
+    <span class="n">num_of_flags</span> <span class="o">=</span> <span class="p">(</span><span class="n">return_index</span><span class="p">,</span> <span class="n">return_inverse</span><span class="p">,</span> <span class="n">return_counts</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">num_of_flags</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">unique_values</span><span class="p">(</span><span class="n">usm_ar</span><span class="p">)</span>
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="p">(</span><span class="n">usm_res</span><span class="p">,)</span>  <span class="c1"># cast to a tuple to align with other cases</span>
+    <span class="k">elif</span> <span class="n">num_of_flags</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">return_inverse</span><span class="p">:</span>
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">unique_inverse</span><span class="p">(</span><span class="n">usm_ar</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">num_of_flags</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">return_counts</span><span class="p">:</span>
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">unique_counts</span><span class="p">(</span><span class="n">usm_ar</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">unique_all</span><span class="p">(</span><span class="n">usm_ar</span><span class="p">)</span>
+
+    <span class="n">first_nan</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">equal_nan</span><span class="p">:</span>
+        <span class="n">first_nan</span> <span class="o">=</span> <span class="n">_get_first_nan_index</span><span class="p">(</span><span class="n">usm_res</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># collapse multiple NaN values in an array into one NaN value if applicable</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">usm_res</span><span class="p">[</span><span class="mi">0</span><span class="p">][:</span> <span class="n">first_nan</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">first_nan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_index</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span>
+            <span class="p">(</span>
+                <span class="n">usm_res</span><span class="o">.</span><span class="n">indices</span><span class="p">[:</span> <span class="n">first_nan</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">first_nan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">usm_res</span><span class="o">.</span><span class="n">indices</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_inverse</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">first_nan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># all NaNs are collapsed, so need to replace the indices with</span>
+            <span class="c1"># the index of the first NaN value in result array of unique values</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">place</span><span class="p">(</span>
+                <span class="n">usm_res</span><span class="o">.</span><span class="n">inverse_indices</span><span class="p">,</span>
+                <span class="n">usm_res</span><span class="o">.</span><span class="n">inverse_indices</span> <span class="o">&gt;</span> <span class="n">first_nan</span><span class="p">,</span>
+                <span class="n">dpt</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">first_nan</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">usm_res</span><span class="o">.</span><span class="n">inverse_indices</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="n">return_counts</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">first_nan</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># all NaNs are collapsed, so need to put a count of all NaNs</span>
+            <span class="c1"># at the last index</span>
+            <span class="n">dpt</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[</span><span class="n">first_nan</span><span class="p">:],</span> <span class="n">out</span><span class="o">=</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[</span><span class="n">first_nan</span><span class="p">])</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">[:</span> <span class="n">first_nan</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">usm_res</span><span class="o">.</span><span class="n">counts</span><span class="p">,)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_unpack_tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_unique_build_sort_indices</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">index_sh</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Build the indices of an input array (when axis is provided) which result</span>
+<span class="sd">    in the unique array.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">is_inexact</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unsignedinteger</span><span class="p">):</span>
+        <span class="n">ar_cmp</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
+        <span class="n">ar_cmp</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">int8</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">ar_cmp</span> <span class="o">=</span> <span class="n">a</span>
+
+    <span class="k">def</span> <span class="nf">compare_axis_elems</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">):</span>
+        <span class="n">comp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">ar_cmp</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ar_cmp</span><span class="p">[</span><span class="n">idx2</span><span class="p">],</span> <span class="s2">&quot;f&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">comp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">is_inexact</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">diff</span><span class="p">):</span>
+                <span class="n">isnan1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ar_cmp</span><span class="p">[</span><span class="n">idx1</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">isnan1</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>  <span class="c1"># no NaN in ar_cmp[idx1]</span>
+                    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># ar_cmp[idx1] goes to left</span>
+
+                <span class="n">isnan2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ar_cmp</span><span class="p">[</span><span class="n">idx2</span><span class="p">])</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">isnan2</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>  <span class="c1"># no NaN in ar_cmp[idx2]</span>
+                    <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># ar_cmp[idx1] goes to right</span>
+
+                <span class="c1"># for complex all NaNs are considered equivalent</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">isnan1</span> <span class="o">&amp;</span> <span class="n">isnan2</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>  <span class="c1"># NaNs at the same places</span>
+                    <span class="k">return</span> <span class="kc">False</span>  <span class="c1"># ar_cmp[idx1] goes to right</span>
+
+                <span class="n">xor_nan_idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">isnan1</span> <span class="o">^</span> <span class="n">isnan2</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">xor_nan_idx</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">ar_cmp</span><span class="p">[</span><span class="n">idx2</span><span class="p">][</span><span class="n">xor_nan_idx</span><span class="p">[</span><span class="mi">0</span><span class="p">]]):</span>
+                    <span class="c1"># first NaN in XOR mask is from ar_cmp[idx2]</span>
+                    <span class="k">return</span> <span class="kc">True</span>  <span class="c1"># ar_cmp[idx1] goes to left</span>
+                <span class="k">return</span> <span class="kc">False</span>
+            <span class="k">return</span> <span class="n">diff</span> <span class="o">&lt;</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="c1"># sort the array `a` lexicographically using the first item</span>
+    <span class="c1"># of each element on the axis</span>
+    <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">index_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="p">[(</span><span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">index_sh</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)]</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">queue</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">current</span><span class="p">,</span> <span class="n">off</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">mid_elem</span> <span class="o">=</span> <span class="n">current</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">left</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">right</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">current</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">compare_axis_elems</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mid_elem</span><span class="p">):</span>
+                <span class="n">left</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">right</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="n">elem_pos</span> <span class="o">=</span> <span class="n">off</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">left</span><span class="p">)</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">left</span><span class="p">,</span> <span class="n">off</span><span class="p">))</span>
+        <span class="n">queue</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">right</span><span class="p">,</span> <span class="n">elem_pos</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="n">sorted_indices</span><span class="p">[</span><span class="n">elem_pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">mid_elem</span>
+    <span class="k">return</span> <span class="n">sorted_indices</span>
+
+
+<span class="k">def</span> <span class="nf">_unpack_tuple</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Unpacks one-element tuples for use as return values.&quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">a</span>
 
 
 <div class="viewcode-block" id="asfarray">
@@ -2179,23 +2339,178 @@
 
 <div class="viewcode-block" id="unique">
 <a class="viewcode-back" href="../../reference/generated/dpnp.unique.html#dpnp.unique">[docs]</a>
-<span class="k">def</span> <span class="nf">unique</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">unique</span><span class="p">(</span>
+    <span class="n">ar</span><span class="p">,</span>
+    <span class="n">return_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">return_counts</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">equal_nan</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the unique elements of an array.</span>
 
+<span class="sd">    Returns the sorted unique elements of an array. There are three optional</span>
+<span class="sd">    outputs in addition to the unique elements:</span>
+
+<span class="sd">    * the indices of the input array that give the unique values</span>
+<span class="sd">    * the indices of the unique array that reconstruct the input array</span>
+<span class="sd">    * the number of times each unique value comes up in the input array</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.unique`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ar : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array. Unless `axis` is specified, this will be flattened if it</span>
+<span class="sd">        is not already 1-D.</span>
+<span class="sd">    return_index : bool, optional</span>
+<span class="sd">        If ``True``, also return the indices of `ar` (along the specified axis,</span>
+<span class="sd">        if provided, or in the flattened array) that result in the unique array.</span>
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    return_inverse : bool, optional</span>
+<span class="sd">        If ``True``, also return the indices of the unique array (for the</span>
+<span class="sd">        specified axis, if provided) that can be used to reconstruct `ar`.</span>
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    return_counts : bool, optional</span>
+<span class="sd">        If ``True``, also return the number of times each unique item appears</span>
+<span class="sd">        in `ar`.</span>
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    axis : {int, None}, optional</span>
+<span class="sd">        The axis to operate on. If ``None``, `ar` will be flattened. If an</span>
+<span class="sd">        integer, the subarrays indexed by the given axis will be flattened and</span>
+<span class="sd">        treated as the elements of a 1-D array with the dimension of the given</span>
+<span class="sd">        axis, see the notes for more details.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    equal_nan : bool, optional</span>
+<span class="sd">        If ``True``, collapses multiple NaN values in the return array into one.</span>
+<span class="sd">        Default: ``True``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    unique : dpnp.ndarray</span>
+<span class="sd">        The sorted unique values.</span>
+<span class="sd">    unique_indices : dpnp.ndarray, optional</span>
+<span class="sd">        The indices of the first occurrences of the unique values in the</span>
+<span class="sd">        original array. Only provided if `return_index` is ``True``.</span>
+<span class="sd">    unique_inverse : dpnp.ndarray, optional</span>
+<span class="sd">        The indices to reconstruct the original array from the unique array.</span>
+<span class="sd">        Only provided if `return_inverse` is ``True``.</span>
+<span class="sd">    unique_counts : dpnp.ndarray, optional</span>
+<span class="sd">        The number of times each of the unique values comes up in the original</span>
+<span class="sd">        array. Only provided if `return_counts` is ``True``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.repeat` : Repeat elements of an array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When an axis is specified the subarrays indexed by the axis are sorted.</span>
+<span class="sd">    This is done by making the specified axis the first dimension of the array</span>
+<span class="sd">    (move the axis to the first dimension to keep the order of the other axes)</span>
+<span class="sd">    and then flattening the subarrays in C order.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([1, 1, 2, 2, 3, 3])</span>
-<span class="sd">    &gt;&gt;&gt; res = np.unique(x)</span>
-<span class="sd">    &gt;&gt;&gt; print(res)</span>
-<span class="sd">    [1, 2, 3]</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 1, 2, 2, 3, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.unique(a)</span>
+<span class="sd">    array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 1], [2, 3]])</span>
+<span class="sd">    &gt;&gt;&gt; np.unique(a)</span>
+<span class="sd">    array([1, 2, 3])</span>
+
+<span class="sd">    Return the unique rows of a 2D array</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0, 0], [1, 0, 0], [2, 3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.unique(a, axis=0)</span>
+<span class="sd">    array([[1, 0, 0],</span>
+<span class="sd">           [2, 3, 4]])</span>
+
+<span class="sd">    Reconstruct the input array from the unique values and inverse:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 6, 4, 2, 3, 2])</span>
+<span class="sd">    &gt;&gt;&gt; u, indices = np.unique(a, return_inverse=True)</span>
+<span class="sd">    &gt;&gt;&gt; u</span>
+<span class="sd">    array([1, 2, 3, 4, 6])</span>
+<span class="sd">    &gt;&gt;&gt; indices</span>
+<span class="sd">    array([0, 1, 4, 3, 1, 2, 1])</span>
+<span class="sd">    &gt;&gt;&gt; u[indices]</span>
+<span class="sd">    array([1, 2, 6, 4, 2, 3, 2])</span>
+
+<span class="sd">    Reconstruct the input values from the unique values and counts:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 6, 4, 2, 3, 2])</span>
+<span class="sd">    &gt;&gt;&gt; values, counts = np.unique(a, return_counts=True)</span>
+<span class="sd">    &gt;&gt;&gt; values</span>
+<span class="sd">    array([1, 2, 3, 4, 6])</span>
+<span class="sd">    &gt;&gt;&gt; counts</span>
+<span class="sd">    array([1, 3, 1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.repeat(values, counts)</span>
+<span class="sd">    array([1, 2, 2, 2, 3, 4, 6])    # original order not preserved</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">unique</span><span class="p">,</span> <span class="n">ar</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_unique_1d</span><span class="p">(</span>
+            <span class="n">ar</span><span class="p">,</span> <span class="n">return_index</span><span class="p">,</span> <span class="n">return_inverse</span><span class="p">,</span> <span class="n">return_counts</span><span class="p">,</span> <span class="n">equal_nan</span>
+        <span class="p">)</span>
+
+    <span class="c1"># axis was specified and not None</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">ar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">AxisError</span><span class="p">:</span>
+        <span class="c1"># this removes the &quot;axis1&quot; or &quot;axis2&quot; prefix from the error message</span>
+        <span class="k">raise</span> <span class="n">AxisError</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ar</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+
+    <span class="c1"># reshape input array into a contiguous 2D array</span>
+    <span class="n">orig_sh</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">orig_sh</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">math</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">orig_sh</span><span class="p">[</span><span class="mi">1</span><span class="p">:]))</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ascontiguousarray</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
+
+    <span class="c1"># build the indices for result array with unique values</span>
+    <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">_unique_build_sort_indices</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">orig_sh</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="n">sorted_indices</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">ar</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[:</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">mask</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">!=</span> <span class="n">ar</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># if the array is empty, then the mask should grab the first empty</span>
+        <span class="c1"># array as the unique one</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">ar</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="n">mask</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="c1"># index the input array with the unique elements and reshape it into the</span>
+    <span class="c1"># original size and dimension order</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">ar</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">mask</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(),</span> <span class="o">*</span><span class="n">orig_sh</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+    <span class="n">ar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="p">(</span><span class="n">ar</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="n">return_index</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">sorted_indices</span><span class="p">[</span><span class="n">mask</span><span class="p">],)</span>
+    <span class="k">if</span> <span class="n">return_inverse</span><span class="p">:</span>
+        <span class="n">imask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">inv_idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+        <span class="n">inv_idx</span><span class="p">[</span><span class="n">sorted_indices</span><span class="p">]</span> <span class="o">=</span> <span class="n">imask</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">inv_idx</span><span class="p">,)</span>
+    <span class="k">if</span> <span class="n">return_counts</span><span class="p">:</span>
+        <span class="n">nonzero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">mask</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span>
+            <span class="n">nonzero</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">nonzero</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">nonzero</span><span class="o">.</span><span class="n">dtype</span>
+        <span class="p">)</span>
+        <span class="n">idx</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">nonzero</span>
+        <span class="n">idx</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">size</span>
+        <span class="n">result</span> <span class="o">+=</span> <span class="p">(</span><span class="n">idx</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">idx</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],)</span>
+
+    <span class="k">return</span> <span class="n">_unpack_tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span></div>
 
 
 
