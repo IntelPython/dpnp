@@ -183,7 +183,7 @@ def _unique_1d(
 
 def _unique_build_sort_indices(a, index_sh):
     """
-    Build the indices of an input array (when axis are provided) which result
+    Build the indices of an input array (when axis is provided) which result
     in the unique array.
 
     """
@@ -2202,7 +2202,7 @@ def unique(
 
     See Also
     --------
-    :obj:`repeat` : Repeat elements of an array.
+    :obj:`dpnp.repeat` : Repeat elements of an array.
 
     Notes
     -----
