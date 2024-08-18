@@ -1,6 +1,5 @@
 import numpy
 import pytest
-from tests.third_party.cupy import testing
 from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import (
     assert_allclose,
@@ -10,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import get_all_dtypes, get_float_complex_dtypes
 
