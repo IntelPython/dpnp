@@ -65,7 +65,6 @@ __all__ = [
     "intc",
     "intp",
     "issubdtype",
-    "issubsctype",
     "is_type_supported",
     "nan",
     "newaxis",
@@ -210,17 +209,6 @@ def issubdtype(arg1, arg2):
     """
 
     return numpy.issubdtype(arg1, arg2)
-
-
-def issubsctype(arg1, arg2):
-    """
-    Determine if the first argument is a subclass of the second argument.
-
-    For full documentation refer to :obj:`numpy.issubsctype`.
-
-    """
-
-    return numpy.issubsctype(arg1, arg2)
 
 
 def is_type_supported(obj_type):
