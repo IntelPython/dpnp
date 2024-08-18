@@ -2229,6 +2229,14 @@ def unique(
     This is done by making the specified axis the first dimension of the array
     (move the axis to the first dimension to keep the order of the other axes)
     and then flattening the subarrays in C order.
+    If NaN values are in the input array, a single NaN is put to the end of the
+    sorted unique values.
+    Also for complex arrays all NaN values are considered equivalent (no matter
+    whether the NaN is in the real or imaginary part). As the representant for
+    the returned array the smallest one in the lexicographical order is chosen.
+    For multi-dimensional inputs, `unique_inverse` is reshaped such that the
+    input can be reconstructed using
+    ``dpnp.take(unique, unique_inverse, axis=axis)``.
 
     Examples
     --------
@@ -2272,7 +2280,6 @@ def unique(
     """
 
     if axis is None:
-        ar = dpnp.ravel(ar)
         return _unique_1d(
             ar, return_index, return_inverse, return_counts, equal_nan
         )

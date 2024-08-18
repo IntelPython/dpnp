@@ -184,7 +184,12 @@ class TestUnique:
     @testing.numpy_cupy_array_equal()
     def test_unique_inverse_no_axis(self, xp, dtype):
         a = testing.shaped_random((100, 100), xp, dtype)
-        return xp.unique(a, return_inverse=True)[1]
+        result = xp.unique(a, return_inverse=True)[1]
+        if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1":
+            # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
+            # returned flatten unique_inverse till 2.0.1 version
+            result = result.reshape(a.shape)
+        return result
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -208,9 +213,14 @@ class TestUnique:
     @testing.numpy_cupy_array_equal()
     def test_unique_return_all_no_axis(self, xp, dtype):
         a = testing.shaped_random((100, 100), xp, dtype)
-        return xp.unique(
+        result = xp.unique(
             a, return_index=True, return_inverse=True, return_counts=True
         )
+        if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1":
+            # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
+            # returned flatten unique_inverse till 2.0.1 version
+            result = result[:2] + (result[2].reshape(a.shape),) + result[3:]
+        return result
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -240,9 +250,14 @@ class TestUnique:
     @testing.numpy_cupy_array_equal()
     def test_unique_empty_return_all_no_axis(self, xp, dtype):
         a = xp.empty((3, 0, 2), dtype=dtype)
-        return xp.unique(
+        result = xp.unique(
             a, return_index=True, return_inverse=True, return_counts=True
         )
+        if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1":
+            # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
+            # returned flatten unique_inverse till 2.0.1 version
+            result = result[:2] + (result[2].reshape(a.shape),) + result[3:]
+        return result
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
