@@ -71,11 +71,32 @@ def get_id(val):
     return val.__str__()
 
 
+# SAT-7247: implement missing umaths and to remove the list
+new_umaths_numpy_20 = [
+    "acos",
+    "acosh",
+    "asin",
+    "asinh",
+    "atan",
+    "atan2",
+    "atanh",
+    "bitwise_count",
+    "bitwise_invert",
+    "bitwise_left_shift",
+    "bitwise_right_shift",
+    "pow",
+    "vecdot",
+]
+
+
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("test_cases", test_cases, ids=get_id)
 def test_umaths(test_cases):
     umath, args_str = test_cases
+    if umath in new_umaths_numpy_20:
+        pytest.skip("new umaths from numpy 2.0 are not supported yet")
+
     if umath == "matmul":
         sh = (4, 4)
     elif umath == "power":
