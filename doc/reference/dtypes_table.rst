@@ -33,8 +33,6 @@ Table below shows a list of all supported data types (dtypes) and constants of t
         - :obj:`e <numpy.e>`
         - :obj:`euler_gamma <numpy.euler_gamma>`
         - :obj:`inf <numpy.inf>`
-        - :obj:`NAN <numpy.NAN>`
-        - :obj:`NaN <numpy.NaN>`
         - :obj:`nan <numpy.nan>`
         - :obj:`NINF <numpy.NINF>`
         - :obj:`NZERO <numpy.NZERO>`

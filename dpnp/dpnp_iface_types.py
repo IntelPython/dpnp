@@ -67,8 +67,6 @@ __all__ = [
     "issubdtype",
     "issubsctype",
     "is_type_supported",
-    "NAN",
-    "NaN",
     "nan",
     "newaxis",
     "NINF",
@@ -118,8 +116,6 @@ single = numpy.single
 e = numpy.e
 euler_gamma = numpy.euler_gamma
 inf = numpy.inf
-NAN = numpy.NAN
-NaN = numpy.NaN
 nan = numpy.nan
 newaxis = None
 NINF = numpy.NINF
