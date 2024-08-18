@@ -69,10 +69,8 @@ __all__ = [
     "is_type_supported",
     "nan",
     "newaxis",
-    "NZERO",
     "number",
     "pi",
-    "PZERO",
     "signedinteger",
     "single",
 ]
@@ -116,9 +114,7 @@ euler_gamma = numpy.euler_gamma
 inf = numpy.inf
 nan = numpy.nan
 newaxis = None
-NZERO = numpy.NZERO
 pi = numpy.pi
-PZERO = numpy.PZERO
 
 
 # pylint: disable=redefined-outer-name
