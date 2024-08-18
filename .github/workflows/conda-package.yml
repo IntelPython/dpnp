@@ -156,11 +156,11 @@ jobs:
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   test_linux:
-    name: Test ['${{ matrix.os }}', python='${{ matrix.python }}']
+    name: Test ['ubuntu-latest', python='${{ matrix.python }}']
 
     needs: build
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -169,7 +169,6 @@ jobs:
     strategy:
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12']
-        os: [ubuntu-22.04, ubuntu-latest]
 
     continue-on-error: true
 
