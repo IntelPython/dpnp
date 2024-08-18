@@ -56,7 +56,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                              char *in_b,
                              const std::vector<sycl::event> &depends)
 {
-#if defined(USE_ONEMKL_INTERFACES)
     type_utils::validate_type_for_device<T>(exec_q);
 
     T *a = reinterpret_cast<T *>(in_a);
@@ -65,17 +64,25 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
+    std::int64_t scratchpad_size;
+    sycl::event comp_event;
+    std::int64_t *ipiv = nullptr;
+    T *scratchpad = nullptr;
+
+    std::stringstream error_msg;
+    bool is_exception_caught = false;
+
+#if defined(USE_ONEMKL_INTERFACES)
     // Use transpose::T if the LU-factorized array is passed as C-contiguous.
     // For F-contiguous we use transpose::N.
     oneapi::mkl::transpose trans = oneapi::mkl::transpose::N;
 
-    const std::int64_t scratchpad_size = std::max(
+    scratchpad_size = std::max(
         mkl_lapack::getrf_scratchpad_size<T>(exec_q, n, n, lda),
         mkl_lapack::getrs_scratchpad_size<T>(exec_q, trans, n, nrhs, lda, ldb));
 
-    T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
+    scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
-    std::int64_t *ipiv = nullptr;
     try {
         ipiv = helper::alloc_ipiv(n, exec_q);
     } catch (const std::exception &e) {
@@ -83,9 +90,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
             sycl::free(scratchpad, exec_q);
         throw;
     }
-
-    std::stringstream error_msg;
-    bool is_exception_caught = false;
 
     sycl::event getrf_event;
     try {
@@ -102,28 +106,8 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
             scratchpad, // Pointer to scratchpad memory to be used by MKL
                         // routine for storing intermediate results.
             scratchpad_size, depends);
-    } catch (mkl_lapack::exception const &e) {
-        is_exception_caught = true;
-        gesv_utils::handle_lapack_exc(exec_q, lda, a, scratchpad_size,
-                                      scratchpad, ipiv, e, error_msg);
-    } catch (sycl::exception const &e) {
-        is_exception_caught = true;
-        error_msg << "Unexpected SYCL exception caught during getrf() call:\n"
-                  << e.what();
-    }
 
-    if (is_exception_caught) // an unexpected error occurs
-    {
-        if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
-        if (ipiv != nullptr)
-            sycl::free(ipiv, exec_q);
-        throw std::runtime_error(error_msg.str());
-    }
-
-    sycl::event getrs_event;
-    try {
-        getrs_event = mkl_lapack::getrs(
+        comp_event = mkl_lapack::getrs(
             exec_q,
             trans, // Specifies the operation: whether or not to transpose
                    // matrix A. Can be 'N' for no transpose, 'T' for transpose,
@@ -150,45 +134,16 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                                       scratchpad, ipiv, e, error_msg);
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
-        error_msg << "Unexpected SYCL exception caught during getrs() call:\n"
+        error_msg << "Unexpected SYCL exception caught during getrf and "
+                     "getrs() call:\n"
                   << e.what();
     }
-
-    if (is_exception_caught) // an unexpected error occurs
-    {
-        if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
-        if (ipiv != nullptr)
-            sycl::free(ipiv, exec_q);
-        throw std::runtime_error(error_msg.str());
-    }
-
-    sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(getrs_event);
-        auto ctx = exec_q.get_context();
-        cgh.host_task([ctx, scratchpad, ipiv]() {
-            sycl::free(scratchpad, ctx);
-            sycl::free(ipiv, ctx);
-        });
-    });
-
-    return ht_ev;
-
 #else
-    type_utils::validate_type_for_device<T>(exec_q);
-
-    T *a = reinterpret_cast<T *>(in_a);
-    T *b = reinterpret_cast<T *>(in_b);
-
-    const std::int64_t lda = std::max<size_t>(1UL, n);
-    const std::int64_t ldb = std::max<size_t>(1UL, n);
-
-    const std::int64_t scratchpad_size =
+    scratchpad_size =
         mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
 
-    T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
+    scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
-    std::int64_t *ipiv = nullptr;
     try {
         ipiv = helper::alloc_ipiv(n, exec_q);
     } catch (const std::exception &e) {
@@ -197,12 +152,8 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         throw;
     }
 
-    std::stringstream error_msg;
-    bool is_exception_caught = false;
-
-    sycl::event gesv_event;
     try {
-        gesv_event = mkl_lapack::gesv(
+        comp_event = mkl_lapack::gesv(
             exec_q,
             n,    // The order of the square matrix A
                   // and the number of rows in matrix B (0 ≤ n).
@@ -228,7 +179,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         error_msg << "Unexpected SYCL exception caught during gesv() call:\n"
                   << e.what();
     }
-
+#endif
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr)
@@ -239,7 +190,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     }
 
     sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(gesv_event);
+        cgh.depends_on(comp_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad, ipiv]() {
             sycl::free(scratchpad, ctx);
@@ -248,7 +199,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     });
 
     return ht_ev;
-#endif // USE_ONEMKL_INTERFACES
 }
 
 std::pair<sycl::event, sycl::event>
