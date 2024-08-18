@@ -1,6 +1,10 @@
 import numpy
 import pytest
-from dpctl.tensor._numpy_helper import AxisError
+
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
+    from numpy.exceptions import AxisError, ComplexWarning
+else:
+    from numpy import AxisError, ComplexWarning
 
 import dpnp as cupy
 from tests.helper import has_support_aspect64
@@ -221,9 +225,7 @@ class TestJoin:
     @testing.with_requires("numpy>=1.20.0")
     @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_array_equal(
-        accept_error=(TypeError, numpy.ComplexWarning)
-    )
+    @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_concatenate_casting(self, xp, dtype1, dtype2, casting):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype1)
@@ -282,9 +284,7 @@ class TestJoin:
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_array_equal(
-        accept_error=(TypeError, numpy.ComplexWarning)
-    )
+    @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_hstack_casting(self, xp, dtype1, dtype2, casting):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype1)
@@ -319,9 +319,7 @@ class TestJoin:
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_array_equal(
-        accept_error=(TypeError, numpy.ComplexWarning)
-    )
+    @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_vstack_casting(self, xp, dtype1, dtype2, casting):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype1)
@@ -457,9 +455,7 @@ class TestJoin:
     @testing.with_requires("numpy>=1.24.0")
     @testing.for_castings()
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_array_equal(
-        accept_error=(TypeError, numpy.ComplexWarning)
-    )
+    @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_stack_casting(self, xp, dtype1, dtype2, casting):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype1)
