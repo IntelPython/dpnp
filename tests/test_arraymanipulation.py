@@ -1,5 +1,6 @@
 import numpy
 import pytest
+from tests.third_party.cupy import testing
 from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import (
     assert_allclose,
@@ -832,6 +833,7 @@ class TestVstack:
             dpnp.vstack(map(lambda x: x, dpnp.ones((3, 2))))
 
 
+@testing.with_requires("numpy<2.0")
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize(
     "data", [[1, 2, 3], [1.0, 2.0, 3.0]], ids=["[1, 2, 3]", "[1., 2., 3.]"]
