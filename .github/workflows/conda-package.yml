@@ -72,7 +72,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-22.04, windows-2019]
 
     permissions:
@@ -168,7 +168,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-22.04, ubuntu-latest]
 
     continue-on-error: true
@@ -290,7 +290,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
 
     continue-on-error: true
 
@@ -439,7 +439,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-22.04, windows-2019]
 
     runs-on: ${{ matrix.os }}
@@ -509,7 +509,7 @@ jobs:
           use-mamba: true
           channels: conda-forge
           run-post: false
-          python-version: '3.11'
+          python-version: '3.12'
           activate-environment: 'cleanup'
 
       - name: Remove defaults channel
