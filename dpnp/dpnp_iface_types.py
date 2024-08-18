@@ -69,11 +69,9 @@ __all__ = [
     "is_type_supported",
     "nan",
     "newaxis",
-    "NINF",
     "NZERO",
     "number",
     "pi",
-    "PINF",
     "PZERO",
     "signedinteger",
     "single",
@@ -118,10 +116,8 @@ euler_gamma = numpy.euler_gamma
 inf = numpy.inf
 nan = numpy.nan
 newaxis = None
-NINF = numpy.NINF
 NZERO = numpy.NZERO
 pi = numpy.pi
-PINF = numpy.PINF
 PZERO = numpy.PZERO
 
 
