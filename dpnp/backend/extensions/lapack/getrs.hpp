@@ -39,20 +39,5 @@ extern std::pair<sycl::event, sycl::event>
           dpctl::tensor::usm_ndarray b_array,
           const std::vector<sycl::event> &depends = {});
 
-extern std::pair<sycl::event, sycl::event>
-    getrs_batch(sycl::queue &exec_q,
-                dpctl::tensor::usm_ndarray a_array,
-                dpctl::tensor::usm_ndarray ipiv_array,
-                dpctl::tensor::usm_ndarray b_array,
-                std::int64_t batch_size,
-                std::int64_t n,
-                std::int64_t nrhs,
-                std::int64_t stride_a,
-                std::int64_t stride_ipiv,
-                std::int64_t stride_b,
-                py::list dev_info,
-                const std::vector<sycl::event> &depends = {});
-
 extern void init_getrs_dispatch_vector(void);
-extern void init_getrs_batch_dispatch_vector(void);
 } // namespace dpnp::extensions::lapack
