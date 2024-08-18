@@ -141,7 +141,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.26 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
         uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
