@@ -57,9 +57,123 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                              const std::vector<sycl::event> &depends)
 {
 #if defined(USE_ONEMKL_INTERFACES)
-    // Temporary flag for build only
-    // FIXME: Need to implement by using lapack::getrf and lapack::getrs
-    std::logic_error("Not Implemented");
+    type_utils::validate_type_for_device<T>(exec_q);
+
+    T *a = reinterpret_cast<T *>(in_a);
+    T *b = reinterpret_cast<T *>(in_b);
+
+    const std::int64_t lda = std::max<size_t>(1UL, n);
+    const std::int64_t ldb = std::max<size_t>(1UL, n);
+
+    // Use transpose::T if the LU-factorized array is passed as C-contiguous.
+    // For F-contiguous we use transpose::N.
+    oneapi::mkl::transpose trans = oneapi::mkl::transpose::N;
+
+    const std::int64_t scratchpad_size = std::max(
+        mkl_lapack::getrf_scratchpad_size<T>(exec_q, n, n, lda),
+        mkl_lapack::getrs_scratchpad_size<T>(exec_q, trans, n, nrhs, lda, ldb));
+
+    T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
+
+    std::int64_t *ipiv = nullptr;
+    try {
+        ipiv = helper::alloc_ipiv(n, exec_q);
+    } catch (const std::exception &e) {
+        if (scratchpad != nullptr)
+            sycl::free(scratchpad, exec_q);
+        throw;
+    }
+
+    std::stringstream error_msg;
+    bool is_exception_caught = false;
+
+    sycl::event getrf_event;
+    try {
+        getrf_event = mkl_lapack::getrf(
+            exec_q,
+            n,    // The order of the square matrix A (0 ≤ n).
+                  // It must be a non-negative integer.
+            n,    // The number of columns in the square matrix A (0 ≤ n).
+                  // It must be a non-negative integer.
+            a,    // Pointer to the square matrix A (n x n).
+            lda,  // The leading dimension of matrix A.
+                  // It must be at least max(1, n).
+            ipiv, // Pointer to the output array of pivot indices.
+            scratchpad, // Pointer to scratchpad memory to be used by MKL
+                        // routine for storing intermediate results.
+            scratchpad_size, depends);
+    } catch (mkl_lapack::exception const &e) {
+        is_exception_caught = true;
+        gesv_utils::handle_lapack_exc(exec_q, lda, a, scratchpad_size,
+                                      scratchpad, ipiv, e, error_msg);
+    } catch (sycl::exception const &e) {
+        is_exception_caught = true;
+        error_msg << "Unexpected SYCL exception caught during getrf() call:\n"
+                  << e.what();
+    }
+
+    if (is_exception_caught) // an unexpected error occurs
+    {
+        if (scratchpad != nullptr)
+            sycl::free(scratchpad, exec_q);
+        if (ipiv != nullptr)
+            sycl::free(ipiv, exec_q);
+        throw std::runtime_error(error_msg.str());
+    }
+
+    sycl::event getrs_event;
+    try {
+        getrs_event = mkl_lapack::getrs(
+            exec_q,
+            trans, // Specifies the operation: whether or not to transpose
+                   // matrix A. Can be 'N' for no transpose, 'T' for transpose,
+                   // and 'C' for conjugate transpose.
+            n,     // The order of the square matrix A
+                   // and the number of rows in matrix B (0 ≤ n).
+                   // It must be a non-negative integer.
+            nrhs,  // The number of right-hand sides,
+                   // i.e., the number of columns in matrix B (0 ≤ nrhs).
+            a,     // Pointer to the square matrix A (n x n).
+            lda,   // The leading dimension of matrix A, must be at least max(1,
+                   // n). It must be at least max(1, n).
+            ipiv, // Pointer to the output array of pivot indices that were used
+                  // during factorization (n, ).
+            b,    // Pointer to the matrix B of right-hand sides (ldb, nrhs).
+            ldb,  // The leading dimension of matrix B, must be at least max(1,
+                  // n).
+            scratchpad, // Pointer to scratchpad memory to be used by MKL
+                        // routine for storing intermediate results.
+            scratchpad_size, {getrf_event});
+    } catch (mkl_lapack::exception const &e) {
+        is_exception_caught = true;
+        gesv_utils::handle_lapack_exc(exec_q, lda, a, scratchpad_size,
+                                      scratchpad, ipiv, e, error_msg);
+    } catch (sycl::exception const &e) {
+        is_exception_caught = true;
+        error_msg << "Unexpected SYCL exception caught during getrs() call:\n"
+                  << e.what();
+    }
+
+    if (is_exception_caught) // an unexpected error occurs
+    {
+        if (scratchpad != nullptr)
+            sycl::free(scratchpad, exec_q);
+        if (ipiv != nullptr)
+            sycl::free(ipiv, exec_q);
+        throw std::runtime_error(error_msg.str());
+    }
+
+    sycl::event ht_ev = exec_q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(getrs_event);
+        auto ctx = exec_q.get_context();
+        cgh.host_task([ctx, scratchpad, ipiv]() {
+            sycl::free(scratchpad, ctx);
+            sycl::free(ipiv, ctx);
+        });
+    });
+
+    return ht_ev;
+
 #else
     type_utils::validate_type_for_device<T>(exec_q);
 
