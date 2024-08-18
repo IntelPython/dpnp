@@ -1397,6 +1397,15 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
+@pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_unique(axis, usm_type):
+    a = dp.array([[1, 1], [2, 3]], usm_type=usm_type)
+    res = dp.unique(a, True, True, True, axis=axis)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
 @pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
 @pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
 def test_nan_to_num(copy, usm_type_a):
@@ -1431,4 +1440,4 @@ def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
 
     res = dp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 
-    assert res.usm_type == x.usm_type
+    assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_args])
