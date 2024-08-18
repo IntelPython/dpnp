@@ -1796,6 +1796,9 @@ def test_to_device(device_from, device_to):
     "queue_param", ["", "None", "sycl_queue"], ids=["Empty", "None", "queue"]
 )
 def test_array_copy(device, func, device_param, queue_param):
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("numpy.asfarray was removed")
+
     data = numpy.ones(100)
     dpnp_data = getattr(dpnp, func)(data, device=device)
 
