@@ -274,7 +274,7 @@ def argwhere(a):
     ``dpnp.transpose(dpnp.nonzero(a))``, but produces a result of the correct
     shape for a 0D array.
     The output of :obj:`dpnp.argwhere` is not suitable for indexing arrays.
-    For this purpose use :obj:`dpnp.nonzero(a)` instead.
+    For this purpose use :obj:`dpnp.nonzero` instead.
 
     Examples
     --------
