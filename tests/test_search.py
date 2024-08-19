@@ -1,7 +1,7 @@
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal, assert_raises
+from numpy.testing import assert_allclose, assert_array_equal, assert_equal, assert_raises
 
 import dpnp
 
@@ -97,6 +97,64 @@ class TestArgmaxArgmin:
         np_res = a.argmin(axis=axis, keepdims=keepdims)
         dpnp_res = ia.argmin(axis=axis, keepdims=keepdims)
         assert_dtype_allclose(dpnp_res, np_res)
+
+
+class TestArgwhere:
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_basic(self, dt):
+        a = numpy.array([4, 0, 2, 1, 3], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.argwhere(ia)
+        expected = numpy.argwhere(a)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize('ndim', [0, 1, 2])
+    def test_ndim(self, ndim):
+        # get an nd array with multiple elements in every dimension
+        a = numpy.empty((2,)*ndim)
+
+        # none
+        a[...] = False
+        ia = dpnp.array(a)
+
+        result = dpnp.argwhere(ia)
+        expected = numpy.argwhere(a)
+        assert_equal(result, expected)
+
+        # only one
+        a[...] = False
+        a.flat[0] = True
+        ia = dpnp.array(a)
+
+        result = dpnp.argwhere(ia)
+        expected = numpy.argwhere(a)
+        assert_equal(result, expected)
+
+        # all but one
+        a[...] = True
+        a.flat[0] = False
+        ia = dpnp.array(a)
+
+        result = dpnp.argwhere(ia)
+        expected = numpy.argwhere(a)
+        assert_equal(result, expected)
+
+        # all
+        a[...] = True
+        ia = dpnp.array(a)
+
+        result = dpnp.argwhere(ia)
+        expected = numpy.argwhere(a)
+        assert_equal(result, expected)
+
+    def test_2d(self):
+        a = numpy.arange(6).reshape((2, 3))
+        ia = dpnp.array(a)
+
+        result = dpnp.argwhere(ia > 1)
+        expected = numpy.argwhere(a > 1)
+        assert_array_equal(result, expected)
 
 
 class TestWhere:
