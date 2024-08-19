@@ -1289,22 +1289,53 @@ def test_fft(func, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("func", ["fftn", "ifftn"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_fftn(func, device):
-    data = numpy.arange(24, dtype=numpy.complex128).reshape(2, 3, 4)
+def test_fftn(device):
+    data = numpy.arange(24, dtype=numpy.complex64).reshape(2, 3, 4)
     dpnp_data = dpnp.array(data, device=device)
 
-    expected = getattr(numpy.fft, func)(data)
-    result = getattr(dpnp.fft, func)(dpnp_data)
-    assert_dtype_allclose(result, expected)
+    expected = numpy.fft.fftn(data)
+    result = dpnp.fft.fftn(dpnp_data)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+    expected = numpy.fft.ifftn(expected)
+    result = dpnp.fft.ifftn(result)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_rfftn(device):
+    data = numpy.arange(24, dtype=numpy.float32).reshape(2, 3, 4)
+    dpnp_data = dpnp.array(data, device=device)
+
+    expected = numpy.fft.rfftn(data)
+    result = dpnp.fft.rfftn(dpnp_data)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+    expected = numpy.fft.irfftn(expected)
+    result = dpnp.fft.irfftn(result)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
