@@ -1,7 +1,12 @@
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal, assert_equal, assert_raises
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_equal,
+    assert_raises,
+)
 
 import dpnp
 
@@ -109,10 +114,10 @@ class TestArgwhere:
         expected = numpy.argwhere(a)
         assert_equal(result, expected)
 
-    @pytest.mark.parametrize('ndim', [0, 1, 2])
+    @pytest.mark.parametrize("ndim", [0, 1, 2])
     def test_ndim(self, ndim):
         # get an nd array with multiple elements in every dimension
-        a = numpy.empty((2,)*ndim)
+        a = numpy.empty((2,) * ndim)
 
         # none
         a[...] = False
