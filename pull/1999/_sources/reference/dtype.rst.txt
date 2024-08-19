@@ -50,6 +50,4 @@ Miscellaneous
    :nosignatures:
 
    dpnp.typename
-   dpnp.sctype2char
    dpnp.mintypecode
-   dpnp.maximum_sctype
