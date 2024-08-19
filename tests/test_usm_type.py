@@ -331,6 +331,9 @@ def test_logspace_base(usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_array_copy(func, usm_type_x, usm_type_y):
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("numpy.asfarray was removed")
+
     sh = (3, 7, 5)
     x = dp.arange(1, prod(sh) + 1, 1, usm_type=usm_type_x).reshape(sh)
 
@@ -557,6 +560,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("argwhere", [[0, 3], [1, 4], [2, 5]]),
         pytest.param("cbrt", [1, 8, 27]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),

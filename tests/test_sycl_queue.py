@@ -437,6 +437,7 @@ def test_meshgrid(device):
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("argwhere", [[0, 3], [1, 4], [2, 5]]),
         pytest.param("cbrt", [1.0, 8.0, 27.0]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
@@ -1827,6 +1828,9 @@ def test_to_device(device_from, device_to):
     "queue_param", ["", "None", "sycl_queue"], ids=["Empty", "None", "queue"]
 )
 def test_array_copy(device, func, device_param, queue_param):
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("numpy.asfarray was removed")
+
     data = numpy.ones(100)
     dpnp_data = getattr(dpnp, func)(data, device=device)
 
@@ -2435,6 +2439,10 @@ def test_unique(axis, device):
 
     result = dpnp.unique(ia, True, True, True, axis=axis)
     expected = numpy.unique(a, True, True, True, axis=axis)
+    if axis is None and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1":
+        # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
+        # returned flatten unique_inverse till 2.0.1 version
+        expected = expected[:2] + (expected[2].reshape(a.shape),) + expected[3:]
     for iv, v in zip(result, expected):
         assert_array_equal(iv, v)
 
