@@ -399,7 +399,6 @@ class TestFlatNonzero:
     {"array": numpy.empty((0, 2, 0))},
     _ids=False,  # Do not generate ids from randomly generated params
 )
-@pytest.mark.skip("argwhere isn't implemented yet")
 class TestArgwhere:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -412,7 +411,6 @@ class TestArgwhere:
     {"value": 0},
     {"value": 3},
 )
-@pytest.mark.skip("argwhere isn't implemented yet")
 @testing.with_requires("numpy>=1.18")
 class TestArgwhereZeroDimension:
     @testing.for_all_dtypes()

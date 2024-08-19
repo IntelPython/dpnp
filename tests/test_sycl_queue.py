@@ -437,6 +437,7 @@ def test_meshgrid(device):
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("argwhere", [[0, 3], [1, 4], [2, 5]]),
         pytest.param("cbrt", [1.0, 8.0, 27.0]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
