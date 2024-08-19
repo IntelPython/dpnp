@@ -331,6 +331,9 @@ def test_logspace_base(usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_array_copy(func, usm_type_x, usm_type_y):
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("numpy.asfarray was removed")
+
     sh = (3, 7, 5)
     x = dp.arange(1, prod(sh) + 1, 1, usm_type=usm_type_x).reshape(sh)
 

@@ -1,5 +1,3 @@
-from ast import Raise
-
 import dpctl
 import dpctl.tensor as dpt
 import numpy
