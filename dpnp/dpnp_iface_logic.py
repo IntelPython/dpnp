@@ -839,7 +839,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     _b += atol
     result = less_equal(dpnp.abs(a - b), _b)
 
-    # Handle "Inf" values: they are treated as equal if they are in the same
+    # Handle "inf" values: they are treated as equal if they are in the same
     # place and of the same sign in both arrays
     result &= isfinite(b)
     result |= a == b

@@ -2295,7 +2295,7 @@ array([[1. , 2. ],
 >>> np.maximum(x1, x2)
 array([nan, nan, nan])
 
->>> np.maximum(np.array(np.Inf), 1)
+>>> np.maximum(np.array(np.inf), 1)
 array(inf)
 """
 
@@ -2375,7 +2375,7 @@ array([[0.5, 0. ],
 >>> np.minimum(x1, x2)
 array([nan, nan, nan])
 
->>> np.minimum(np.array(-np.Inf), 1)
+>>> np.minimum(np.array(-np.inf), 1)
 array(-inf)
 """
 

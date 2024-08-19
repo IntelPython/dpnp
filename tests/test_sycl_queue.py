@@ -1381,8 +1381,8 @@ def test_cholesky(data, is_empty, device):
 )
 @pytest.mark.parametrize(
     "p",
-    [None, -dpnp.Inf, -2, -1, 1, 2, dpnp.Inf, "fro"],
-    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"],
+    ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
 )
 def test_cond(device, p):
     numpy.random.seed(42)
@@ -1605,16 +1605,16 @@ def test_matrix_rank(data, tol, device):
 )
 @pytest.mark.parametrize(
     "ord",
-    [None, -dpnp.Inf, -2, -1, 1, 2, 3, dpnp.Inf, "fro", "nuc"],
+    [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"],
     ids=[
         "None",
-        "-dpnp.Inf",
+        "-dpnp.inf",
         "-2",
         "-1",
         "1",
         "2",
         "3",
-        "dpnp.Inf",
+        "dpnp.inf",
         '"fro"',
         '"nuc"',
     ],

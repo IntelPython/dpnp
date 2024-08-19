@@ -41,29 +41,22 @@ __all__ = [
     "bool",
     "bool_",
     "cdouble",
-    "complex_",
     "complex128",
     "complex64",
     "complexfloating",
-    "cfloat",
     "csingle",
     "double",
     "dtype",
     "e",
     "euler_gamma",
     "finfo",
-    "float",
-    "float_",
     "float16",
     "float32",
     "float64",
     "floating",
     "iinfo",
     "inexact",
-    "Inf",
     "inf",
-    "Infinity",
-    "infty",
     "int",
     "int_",
     "int32",
@@ -74,19 +67,12 @@ __all__ = [
     "issubdtype",
     "issubsctype",
     "is_type_supported",
-    "NAN",
-    "NaN",
     "nan",
     "newaxis",
-    "NINF",
-    "NZERO",
     "number",
     "pi",
-    "PINF",
-    "PZERO",
     "signedinteger",
     "single",
-    "singlecomplex",
 ]
 
 
@@ -97,16 +83,12 @@ __all__ = [
 bool = numpy.bool_
 bool_ = numpy.bool_
 cdouble = numpy.cdouble
-complex_ = numpy.complex_
 complex128 = numpy.complex128
 complex64 = numpy.complex64
 complexfloating = numpy.complexfloating
-cfloat = numpy.cfloat
 csingle = numpy.csingle
 double = numpy.double
 dtype = numpy.dtype
-float = numpy.float_
-float_ = numpy.float_
 float16 = numpy.float16
 float32 = numpy.float32
 float64 = numpy.float64
@@ -122,7 +104,6 @@ intp = numpy.intp
 number = numpy.number
 signedinteger = numpy.signedinteger
 single = numpy.single
-singlecomplex = numpy.singlecomplex
 
 
 # =============================================================================
@@ -130,19 +111,10 @@ singlecomplex = numpy.singlecomplex
 # =============================================================================
 e = numpy.e
 euler_gamma = numpy.euler_gamma
-Inf = numpy.Inf
 inf = numpy.inf
-Infinity = numpy.Infinity
-infty = numpy.infty
-NAN = numpy.NAN
-NaN = numpy.NaN
 nan = numpy.nan
 newaxis = None
-NINF = numpy.NINF
-NZERO = numpy.NZERO
 pi = numpy.pi
-PINF = numpy.PINF
-PZERO = numpy.PZERO
 
 
 # pylint: disable=redefined-outer-name
