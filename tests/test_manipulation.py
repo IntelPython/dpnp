@@ -9,6 +9,7 @@ import dpnp
 from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
+    get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
@@ -86,21 +87,6 @@ def test_result_type_only_arrays():
     ]
 
     assert dpnp.result_type(*X) == numpy.result_type(*X_np)
-
-
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-@pytest.mark.parametrize(
-    "array",
-    [[1, 2, 3], [1, 2, 2, 1, 2, 4], [2, 2, 2, 2], []],
-    ids=["[1, 2, 3]", "[1, 2, 2, 1, 2, 4]", "[2, 2, 2, 2]", "[]"],
-)
-def test_unique(array):
-    np_a = numpy.array(array)
-    dpnp_a = dpnp.array(array)
-
-    expected = numpy.unique(np_a)
-    result = dpnp.unique(dpnp_a)
-    assert_array_equal(result, expected)
 
 
 class TestRepeat:
@@ -748,3 +734,47 @@ class TestUnique:
         result = dpnp.unique(ia, **eq_nan_kwd)
         expected = numpy.unique(a, **eq_nan_kwd)
         assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    @pytest.mark.parametrize(
+        "axis_kwd",
+        [
+            {},
+            {"axis": 0},
+            {"axis": 1},
+        ],
+    )
+    @pytest.mark.parametrize(
+        "return_kwds",
+        [
+            {},
+            {
+                "return_index": True,
+                "return_inverse": True,
+                "return_counts": True,
+            },
+        ],
+    )
+    @pytest.mark.parametrize(
+        "row", [[2, 3, 4], [2, numpy.nan, 4], [numpy.nan, 3, 4]]
+    )
+    def test_2d_axis_nans(self, dt, axis_kwd, return_kwds, row):
+        a = numpy.array(
+            [
+                [1, 0, 0],
+                [1, 0, 0],
+                [numpy.nan, numpy.nan, numpy.nan],
+                row,
+                [1, 0, 1],
+                [numpy.nan, numpy.nan, numpy.nan],
+            ]
+        ).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.unique(ia, **axis_kwd, **return_kwds)
+        expected = numpy.unique(a, **axis_kwd, **return_kwds)
+        if len(return_kwds) == 0:
+            assert_array_equal(result, expected)
+        else:
+            for iv, v in zip(result, expected):
+                assert_array_equal(iv, v)

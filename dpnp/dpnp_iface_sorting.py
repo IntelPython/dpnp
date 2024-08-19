@@ -284,7 +284,7 @@ def sort_complex(a):
     """
 
     b = dpnp.sort(a)
-    if not dpnp.issubsctype(b.dtype, dpnp.complexfloating):
+    if not dpnp.issubdtype(b.dtype, dpnp.complexfloating):
         if b.dtype.char in "bhBH":
             b_dt = dpnp.complex64
         else:

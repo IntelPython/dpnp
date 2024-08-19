@@ -1412,8 +1412,8 @@ def test_cholesky(data, is_empty, device):
 )
 @pytest.mark.parametrize(
     "p",
-    [None, -dpnp.Inf, -2, -1, 1, 2, dpnp.Inf, "fro"],
-    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"],
+    ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
 )
 def test_cond(device, p):
     numpy.random.seed(42)
@@ -1636,16 +1636,16 @@ def test_matrix_rank(data, tol, device):
 )
 @pytest.mark.parametrize(
     "ord",
-    [None, -dpnp.Inf, -2, -1, 1, 2, 3, dpnp.Inf, "fro", "nuc"],
+    [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"],
     ids=[
         "None",
-        "-dpnp.Inf",
+        "-dpnp.inf",
         "-2",
         "-1",
         "1",
         "2",
         "3",
-        "dpnp.Inf",
+        "dpnp.inf",
         '"fro"',
         '"nuc"',
     ],
@@ -2424,6 +2424,11 @@ def test_astype(device_x, device_y):
 
 
 @pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_unique(axis, device):
     a = numpy.array([[1, 1], [2, 3]])
     ia = dpnp.array(a, device=device)
