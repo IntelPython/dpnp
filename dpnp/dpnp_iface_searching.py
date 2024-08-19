@@ -45,7 +45,7 @@ import dpnp
 from .dpnp_array import dpnp_array
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 
-__all__ = ["argmax", "argmin", "searchsorted", "where"]
+__all__ = ["argmax", "argmin", "argwhere", "searchsorted", "where"]
 
 
 def _get_search_res_dt(a, _dtype, out):
@@ -242,6 +242,62 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
         axis=axis,
         keepdims=keepdims,
     )
+
+
+def argwhere(a):
+    """
+    Find the indices of array elements that are non-zero, grouped by element.
+
+    For full documentation refer to :obj:`numpy.argwhere`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Indices of elements that are non-zero. Indices are grouped by element.
+        This array will have shape ``(N, a.ndim)`` where ``N`` is the number of
+        non-zero items.
+
+    See Also
+    --------
+    :obj:`dpnp.where` : Returns elements chosen from input arrays depending on
+                        a condition.
+    :obj:`dpnp.nonzero` : Return the indices of the elements that are non-zero.
+
+    Notes
+    -----
+    ``dpnp.argwhere(a)`` is almost the same as
+    ``dpnp.transpose(dpnp.nonzero(a))``, but produces a result of the correct
+    shape for a 0D array.
+    The output of :obj:`dpnp.argwhere` is not suitable for indexing arrays.
+    For this purpose use :obj:`dpnp.nonzero(a)` instead.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2, 3)
+    >>> x
+    array([[0, 1, 2],
+           [3, 4, 5]])
+    >>> np.argwhere(x > 1)
+    array([[0, 2],
+           [1, 0],
+           [1, 1],
+           [1, 2]])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    if a.ndim == 0:
+        # nonzero does not behave well on 0d, so promote to 1d
+        a = dpnp.atleast_1d(a)
+        # and then remove the added dimension
+        return dpnp.argwhere(a)[:, :0]
+    return dpnp.stack(dpnp.nonzero(a)).T
 
 
 def searchsorted(a, v, side="left", sorter=None):
