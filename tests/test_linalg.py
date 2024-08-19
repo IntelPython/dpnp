@@ -303,8 +303,8 @@ class TestCond:
     )
     @pytest.mark.parametrize(
         "p",
-        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
+        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
     def test_cond_empty(self, shape, p):
         a = numpy.empty(shape)
@@ -322,8 +322,8 @@ class TestCond:
     )
     @pytest.mark.parametrize(
         "p",
-        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
+        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
     def test_cond(self, dtype, shape, p):
         a = numpy.array(
@@ -337,8 +337,8 @@ class TestCond:
 
     @pytest.mark.parametrize(
         "p",
-        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
+        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
     def test_cond_bool(self, p):
         a = numpy.array([[True, True], [True, False]])
@@ -354,8 +354,8 @@ class TestCond:
     )
     @pytest.mark.parametrize(
         "p",
-        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
+        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
     def test_cond_complex(self, dtype, shape, p):
         x1 = numpy.random.uniform(-5, 5, numpy.prod(shape))
@@ -369,8 +369,8 @@ class TestCond:
 
     @pytest.mark.parametrize(
         "p",
-        [-inp.Inf, -1, 1, inp.Inf, "fro"],
-        ids=["-dpnp.Inf", "-1", "1", "dpnp.Inf", "fro"],
+        [-inp.inf, -1, 1, inp.inf, "fro"],
+        ids=["-dpnp.inf", "-1", "1", "dpnp.inf", "fro"],
     )
     def test_cond_nan_input(self, p):
         a = numpy.array(numpy.random.uniform(-10, 10, 9)).reshape(3, 3)
@@ -383,8 +383,8 @@ class TestCond:
 
     @pytest.mark.parametrize(
         "p",
-        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
+        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
     def test_cond_nan(self, p):
         a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(2, 2, 2, 2)
@@ -398,8 +398,8 @@ class TestCond:
 
     @pytest.mark.parametrize(
         "p",
-        [None, -inp.Inf, -2, -1, 1, 2, inp.Inf, "fro"],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
+        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
     @pytest.mark.parametrize(
         "stride",
@@ -1145,8 +1145,8 @@ class TestNorm:
 
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 0, 1, 2, 3, inp.Inf],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "0", "1", "2", "3", "dpnp.Inf"],
+        [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf],
+        ids=["None", "-dpnp.inf", "-2", "-1", "0", "1", "2", "3", "dpnp.inf"],
     )
     @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
     def test_norm_0D(self, ord, axis):
@@ -1168,8 +1168,8 @@ class TestNorm:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 0, 1, 2, 3, inp.Inf],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "0", "1", "2", "3", "dpnp.Inf"],
+        [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf],
+        ids=["None", "-dpnp.inf", "-2", "-1", "0", "1", "2", "3", "dpnp.inf"],
     )
     @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
@@ -1185,8 +1185,8 @@ class TestNorm:
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 0, 1, 2, 3, inp.Inf],
-        ids=["None", "-dpnp.Inf", "-2", "-1", "0", "1", "2", "3", "dpnp.Inf"],
+        [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf],
+        ids=["None", "-dpnp.inf", "-2", "-1", "0", "1", "2", "3", "dpnp.inf"],
     )
     @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
     @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
@@ -1204,16 +1204,16 @@ class TestNorm:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 1, 2, 3, inp.Inf, "fro", "nuc"],
+        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
         ids=[
             "None",
-            "-dpnp.Inf",
+            "-dpnp.inf",
             "-2",
             "-1",
             "1",
             "2",
             "3",
-            "dpnp.Inf",
+            "dpnp.inf",
             '"fro"',
             '"nuc"',
         ],
@@ -1244,16 +1244,16 @@ class TestNorm:
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 1, 2, 3, inp.Inf, "fro", "nuc"],
+        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
         ids=[
             "None",
-            "-dpnp.Inf",
+            "-dpnp.inf",
             "-2",
             "-1",
             "1",
             "2",
             "3",
-            "dpnp.Inf",
+            "dpnp.inf",
             '"fro"',
             '"nuc"',
         ],
@@ -1284,16 +1284,16 @@ class TestNorm:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 1, 2, 3, inp.Inf, "fro", "nuc"],
+        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
         ids=[
             "None",
-            "-dpnp.Inf",
+            "-dpnp.inf",
             "-2",
             "-1",
             "1",
             "2",
             "3",
-            "dpnp.Inf",
+            "dpnp.inf",
             '"fro"',
             '"nuc"',
         ],
@@ -1330,16 +1330,16 @@ class TestNorm:
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 1, 2, 3, inp.Inf, "fro", "nuc"],
+        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
         ids=[
             "None",
-            "-dpnp.Inf",
+            "-dpnp.inf",
             "-2",
             "-1",
             "1",
             "2",
             "3",
-            "dpnp.Inf",
+            "dpnp.inf",
             '"fro"',
             '"nuc"',
         ],
@@ -1376,16 +1376,16 @@ class TestNorm:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.Inf, -2, -1, 1, 2, 3, inp.Inf, "fro", "nuc"],
+        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
         ids=[
             "None",
-            "-dpnp.Inf",
+            "-dpnp.inf",
             "-2",
             "-1",
             "1",
             "2",
             "3",
-            "dpnp.Inf",
+            "dpnp.inf",
             '"fro"',
             '"nuc"',
         ],

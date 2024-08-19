@@ -507,16 +507,16 @@ def test_meshgrid(usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
     "ord",
-    [None, -dp.Inf, -2, -1, 1, 2, 3, dp.Inf, "fro", "nuc"],
+    [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"],
     ids=[
         "None",
-        "-dpnp.Inf",
+        "-dpnp.inf",
         "-2",
         "-1",
         "1",
         "2",
         "3",
-        "dpnp.Inf",
+        "dpnp.inf",
         '"fro"',
         '"nuc"',
     ],
@@ -762,8 +762,8 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
     "p",
-    [None, -dp.Inf, -2, -1, 1, 2, dp.Inf, "fro"],
-    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    [None, -dp.inf, -2, -1, 1, 2, dp.inf, "fro"],
+    ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
 )
 def test_cond(usm_type, p):
     ia = dp.arange(32, usm_type=usm_type).reshape(2, 4, 4)
@@ -1395,6 +1395,15 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_unique(axis, usm_type):
+    a = dp.array([[1, 1], [2, 3]], usm_type=usm_type)
+    res = dp.unique(a, True, True, True, axis=axis)
+    for x in res:
+        assert x.usm_type == usm_type
 
 
 @pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
