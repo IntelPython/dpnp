@@ -57,7 +57,6 @@ Return:
 
 
 cpdef tuple _object_to_tuple(object obj)
-cdef int _normalize_order(order, cpp_bool allow_k=*) except? 0
 
 
 cpdef tuple get_axis_offsets(shape)

@@ -382,31 +382,6 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
 
 
 @cython.profile(False)
-cdef inline int _normalize_order(order, cpp_bool allow_k=True) except? 0:
-    """ Converts memory order letters to some common view
-
-    """
-
-    cdef int order_type
-    order_type = b'C' if len(order) == 0 else ord(order[0])
-
-    if order_type == b'K' or order_type == b'k':
-        if not allow_k:
-            raise ValueError("DPNP _normalize_order(): order \'K\' is not permitted")
-        order_type = b'K'
-    elif order_type == b'A' or order_type == b'a':
-        order_type = b'A'
-    elif order_type == b'C' or order_type == b'c':
-        order_type = b'C'
-    elif order_type == b'F' or order_type == b'f':
-        order_type = b'F'
-    else:
-        raise TypeError("DPNP _normalize_order(): order is not understood")
-
-    return order_type
-
-
-@cython.profile(False)
 cpdef inline tuple _object_to_tuple(object obj):
     """ Converts Python object into tuple
 
