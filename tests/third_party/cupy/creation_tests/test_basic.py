@@ -6,6 +6,11 @@ import pytest
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
+    from numpy.exceptions import ComplexWarning
+else:
+    from numpy import ComplexWarning
+
 
 class TestBasic:
     @testing.for_CF_orders()
@@ -268,7 +273,7 @@ class TestBasic:
     @testing.numpy_cupy_array_equal()
     def test_full_dtypes_cpu_input(self, xp, dtype1, dtype2):
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", numpy.ComplexWarning)
+            warnings.simplefilter("ignore", ComplexWarning)
             return xp.full(
                 (2, 3, 4), numpy.array(1, dtype=dtype1), dtype=dtype2
             )
@@ -285,7 +290,7 @@ class TestBasic:
     def test_full_like_dtypes_cpu_input(self, xp, dtype1, dtype2):
         a = xp.ndarray((2, 3, 4), dtype=dtype1)
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", numpy.ComplexWarning)
+            warnings.simplefilter("ignore", ComplexWarning)
             return xp.full_like(a, numpy.array(1, dtype=dtype1))
 
     @pytest.mark.skip("subok keyword is not supported")
