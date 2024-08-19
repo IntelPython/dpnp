@@ -1,6 +1,0 @@
-﻿dpnp.ediff1d
-============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: ediff1d
