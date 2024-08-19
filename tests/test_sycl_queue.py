@@ -2408,6 +2408,10 @@ def test_unique(axis, device):
 
     result = dpnp.unique(ia, True, True, True, axis=axis)
     expected = numpy.unique(a, True, True, True, axis=axis)
+    if axis is None and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1":
+        # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
+        # returned flatten unique_inverse till 2.0.1 version
+        expected = expected[:2] + (expected[2].reshape(a.shape),) + expected[3:]
     for iv, v in zip(result, expected):
         assert_array_equal(iv, v)
 
