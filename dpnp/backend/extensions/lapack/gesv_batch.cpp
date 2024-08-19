@@ -381,8 +381,9 @@ std::pair<sycl::event, sycl::event>
         dependent_vals_strides.back();
 
     sycl::event gesv_ev =
-        gesv_batch_fn(exec_q, n, nrhs, batch_size, stride_a, stride_b,
-                      coeff_matrix_data, dependent_vals_data, depends);
+        gesv_batch_fn(exec_q, n, nrhs, batch_size, coeff_matrix_batch_stride,
+                      dependent_vals_batch_stride, coeff_matrix_data,
+                      dependent_vals_data, depends);
 
     sycl::event ht_ev = dpctl::utils::keep_args_alive(
         exec_q, {coeff_matrix, dependent_vals}, {gesv_ev});
