@@ -87,6 +87,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
 #if defined(USE_ONEMKL_INTERFACES)
     // Use transpose::T if the LU-factorized array is passed as C-contiguous.
     // For F-contiguous we use transpose::N.
+    // Since gesv_batch takes F-contiguous as input, we use transpose::N.
     oneapi::mkl::transpose trans = oneapi::mkl::transpose::N;
     const std::int64_t stride_ipiv = n;
 
