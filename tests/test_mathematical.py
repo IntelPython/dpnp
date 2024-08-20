@@ -1688,55 +1688,63 @@ class TestProd:
             dpnp.prod(ia, initial=6)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestTrapz:
+class TestTrapezoid:
+    def get_numpy_func(self):
+        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            # `trapz` is deprecated in NumPy 2.0
+            return numpy.trapz
+        return numpy.trapezoid
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
-        "data_type", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize(
-        "array",
+        "data",
         [[1, 2, 3], [[1, 2, 3], [4, 5, 6]], [1, 4, 6, 9, 10, 12], [], [1]],
     )
-    def test_trapz_default(self, array, data_type):
-        np_a = numpy.array(array, dtype=data_type)
-        dpnp_a = dpnp.array(array, dtype=data_type)
+    def test_basic(self, data, dt):
+        a = numpy.array(data, dtype=dt)
+        ia = dpnp.array(a)
 
-        result = dpnp.trapz(dpnp_a)
-        expected = numpy.trapz(np_a)
+        result = dpnp.trapezoid(ia)
+        expected = self.get_numpy_func()(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_simple(self, dt):
+        x = numpy.arange(-10, 10, 0.1, dtype=dt)
+        ix = dpnp.array(x)
+
+        # integral of normal equals 1
+        sqrt_2pi = numpy.sqrt(2 * numpy.pi)
+        result = dpnp.trapezoid(dpnp.exp(-0.5 * ix**2) / sqrt_2pi, dx=0.1)
+        expected = self.get_numpy_func()(
+            numpy.exp(-0.5 * x**2) / sqrt_2pi, dx=0.1
+        )
+        assert_almost_equal(result, expected, 7)
+
+    @pytest.mark.parametrize("y_dt", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("x_dt", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("y_arr", [[1, 2, 4, 5], [1.0, 2.5, 6.0, 7.0]])
+    @pytest.mark.parametrize("x_arr", [[2, 5, 6, 9]])
+    def test_x_samples(self, y_arr, x_arr, y_dt, x_dt):
+        y = numpy.array(y_arr, dtype=y_dt)
+        x = numpy.array(x_arr, dtype=x_dt)
+        iy, ix = dpnp.array(y), dpnp.array(x)
+
+        result = dpnp.trapezoid(iy, ix)
+        expected = self.get_numpy_func()(y, x)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("data", [[1, 2, 3], [4, 5, 6]])
+    def test_2d_with_x_samples(self, data):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+
+        result = dpnp.trapezoid(ia, ia)
+        expected = self.get_numpy_func()(a, a)
         assert_array_equal(expected, result)
 
     @pytest.mark.parametrize(
-        "data_type_y", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize(
-        "data_type_x", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize("y_array", [[1, 2, 4, 5], [1.0, 2.5, 6.0, 7.0]])
-    @pytest.mark.parametrize("x_array", [[2, 5, 6, 9]])
-    def test_trapz_with_x_params(
-        self, y_array, x_array, data_type_y, data_type_x
-    ):
-        np_y = numpy.array(y_array, dtype=data_type_y)
-        dpnp_y = dpnp.array(y_array, dtype=data_type_y)
-
-        np_x = numpy.array(x_array, dtype=data_type_x)
-        dpnp_x = dpnp.array(x_array, dtype=data_type_x)
-
-        result = dpnp.trapz(dpnp_y, dpnp_x)
-        expected = numpy.trapz(np_y, np_x)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize("array", [[1, 2, 3], [4, 5, 6]])
-    def test_trapz_with_x_param_2ndim(self, array):
-        np_a = numpy.array(array)
-        dpnp_a = dpnp.array(array)
-
-        result = dpnp.trapz(dpnp_a, dpnp_a)
-        expected = numpy.trapz(np_a, np_a)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize(
-        "y_array",
+        "data",
         [
             [1, 2, 4, 5],
             [
@@ -1748,13 +1756,48 @@ class TestTrapz:
         ],
     )
     @pytest.mark.parametrize("dx", [2, 3, 4])
-    def test_trapz_with_dx_params(self, y_array, dx):
-        np_y = numpy.array(y_array)
-        dpnp_y = dpnp.array(y_array)
+    def test_dx_samples(self, data, dx):
+        y = numpy.array(data)
+        iy = dpnp.array(y)
 
-        result = dpnp.trapz(dpnp_y, dx=dx)
-        expected = numpy.trapz(np_y, dx=dx)
+        result = dpnp.trapezoid(iy, dx=dx)
+        expected = self.get_numpy_func()(y, dx=dx)
         assert_array_equal(expected, result)
+
+    def test_ndim(self):
+        x = numpy.linspace(0, 1, 3)
+        y = numpy.linspace(0, 2, 8)
+        z = numpy.linspace(0, 3, 13)
+        ix, iy, iz = dpnp.array(x), dpnp.array(y), dpnp.array(z)
+
+        q = x[:, None, None] + y[None, :, None] + z[None, None, :]
+        iq = ix[:, None, None] + iy[None, :, None] + iz[None, None, :]
+
+        # n-d `x`
+        result = dpnp.trapezoid(iq, x=ix[:, None, None], axis=0)
+        expected = self.get_numpy_func()(q, x=x[:, None, None], axis=0)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iy[None, :, None], axis=1)
+        expected = self.get_numpy_func()(q, x=y[None, :, None], axis=1)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iz[None, None, :], axis=2)
+        expected = self.get_numpy_func()(q, x=z[None, None, :], axis=2)
+        assert_dtype_allclose(result, expected)
+
+        # 1-d `x`
+        result = dpnp.trapezoid(iq, x=ix, axis=0)
+        expected = self.get_numpy_func()(q, x=x, axis=0)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iy, axis=1)
+        expected = self.get_numpy_func()(q, x=y, axis=1)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iz, axis=2)
+        expected = self.get_numpy_func()(q, x=z, axis=2)
+        assert_dtype_allclose(result, expected)
 
 
 class TestUnwrap:
