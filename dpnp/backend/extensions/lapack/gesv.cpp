@@ -64,7 +64,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
-    std::int64_t scratchpad_size;
+    std::int64_t scratchpad_size = 0;
     sycl::event comp_event;
     std::int64_t *ipiv = nullptr;
     T *scratchpad = nullptr;
@@ -81,6 +81,12 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         mkl_lapack::getrf_scratchpad_size<T>(exec_q, n, n, lda),
         mkl_lapack::getrs_scratchpad_size<T>(exec_q, trans, n, nrhs, lda, ldb));
 
+#else
+    scratchpad_size =
+        mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
+
+#endif // USE_ONEMKL_INTERFACES
+
     scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
     try {
@@ -91,6 +97,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         throw;
     }
 
+#if defined(USE_ONEMKL_INTERFACES)
     sycl::event getrf_event;
     try {
         getrf_event = mkl_lapack::getrf(
@@ -139,19 +146,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                   << e.what();
     }
 #else
-    scratchpad_size =
-        mkl_lapack::gesv_scratchpad_size<T>(exec_q, n, nrhs, lda, ldb);
-
-    scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
-
-    try {
-        ipiv = helper::alloc_ipiv(n, exec_q);
-    } catch (const std::exception &e) {
-        if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
-        throw;
-    }
-
     try {
         comp_event = mkl_lapack::gesv(
             exec_q,
