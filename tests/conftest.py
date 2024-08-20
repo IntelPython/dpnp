@@ -32,6 +32,11 @@ import dpctl
 import numpy
 import pytest
 
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
+    from numpy.exceptions import ComplexWarning
+else:
+    from numpy import ComplexWarning
+
 import dpnp
 
 skip_mark = pytest.mark.skip(reason="Skipping test.")
@@ -101,7 +106,7 @@ def allow_fall_back_on_numpy(monkeypatch):
 @pytest.fixture
 def suppress_complex_warning():
     sup = numpy.testing.suppress_warnings("always")
-    sup.filter(numpy.ComplexWarning)
+    sup.filter(ComplexWarning)
     with sup:
         yield
 

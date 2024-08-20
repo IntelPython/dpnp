@@ -9,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import get_all_dtypes, get_float_complex_dtypes
 
@@ -832,6 +833,7 @@ class TestVstack:
             dpnp.vstack(map(lambda x: x, dpnp.ones((3, 2))))
 
 
+@testing.with_requires("numpy<2.0")
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize(
     "data", [[1, 2, 3], [1.0, 2.0, 3.0]], ids=["[1, 2, 3]", "[1., 2., 3.]"]
@@ -843,6 +845,7 @@ def test_asfarray(dtype, data):
     assert_array_equal(result, expected)
 
 
+@testing.with_requires("numpy<2.0")
 @pytest.mark.usefixtures("suppress_complex_warning")
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 @pytest.mark.parametrize("data", [[1.0, 2.0, 3.0]], ids=["[1., 2., 3.]"])
