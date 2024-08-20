@@ -3081,6 +3081,7 @@ def real_if_close(a, tol=100):
     tol : scalar, optional
         Tolerance in machine epsilons for the complex part of the elements in
         the array. If the tolerance is <=1, then the absolute tolerance is used.
+        Default: ``100``.
 
     Returns
     -------
