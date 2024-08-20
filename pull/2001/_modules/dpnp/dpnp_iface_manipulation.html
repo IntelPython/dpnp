@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+151.g5b751c944c documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+163.gcac9948868 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=cda45be8"></script>
+        <script src="../../_static/documentation_options.js?v=d393a714"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+151.g5b751c944c
+                0.16.0dev0+163.gcac9948868
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -2411,6 +2411,12 @@
 <span class="sd">    This is done by making the specified axis the first dimension of the array</span>
 <span class="sd">    (move the axis to the first dimension to keep the order of the other axes)</span>
 <span class="sd">    and then flattening the subarrays in C order.</span>
+<span class="sd">    For complex arrays all NaN values are considered equivalent (no matter</span>
+<span class="sd">    whether the NaN is in the real or imaginary part). As the representant for</span>
+<span class="sd">    the returned array the smallest one in the lexicographical order is chosen.</span>
+<span class="sd">    For multi-dimensional inputs, `unique_inverse` is reshaped such that the</span>
+<span class="sd">    input can be reconstructed using</span>
+<span class="sd">    ``dpnp.take(unique, unique_inverse, axis=axis)``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2454,7 +2460,6 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">ar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">ar</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_unique_1d</span><span class="p">(</span>
             <span class="n">ar</span><span class="p">,</span> <span class="n">return_index</span><span class="p">,</span> <span class="n">return_inverse</span><span class="p">,</span> <span class="n">return_counts</span><span class="p">,</span> <span class="n">equal_nan</span>
         <span class="p">)</span>
