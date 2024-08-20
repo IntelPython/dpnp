@@ -1,6 +1,0 @@
-﻿dpnp.less\_equal
-================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: less_equal
