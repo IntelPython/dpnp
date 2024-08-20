@@ -142,8 +142,8 @@ class TestFftOrder:
                 # {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
                 # {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
                 # {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
-                {"shape": (3, 4), "s": (0, 5), "axes": None},
-                {"shape": (3, 4), "s": (1, 0), "axes": None},
+                {"shape": (3, 4), "s": (0, 5), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 0), "axes": (0, 1)},
             ],
             testing.product(
                 {"norm": [None, "backward", "ortho", "forward", ""]}
