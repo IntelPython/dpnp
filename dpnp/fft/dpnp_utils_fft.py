@@ -268,7 +268,7 @@ def _copy_array(x, complex_input):
     elif complex_input and not dpnp.issubdtype(dtype, dpnp.complexfloating):
         # c2c/c2r FFT, if input is not complex, convert to complex
         copy_flag = True
-        if dtype == dpnp.float32:
+        if dtype in [dpnp.float16, dpnp.float32]:
             dtype = dpnp.complex64
         else:
             dtype = map_dtype_to_device(dpnp.complex128, x.sycl_device)

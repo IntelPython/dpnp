@@ -69,15 +69,33 @@ class TestFft:
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     def test_fft_1D(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11, dtype=dtype)
-        a = dpnp.sin(x)
+        a = dpnp.sin(x)  # a.dtype is float16 if a.dtype is bool
         a_np = dpnp.asnumpy(a)
 
+        factor = 140 if dtype == dpnp.bool else 8
         result = dpnp.fft.fft(a, n=n, norm=norm)
         expected = numpy.fft.fft(a_np, n=n, norm=norm)
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        assert_dtype_allclose(
+            result, expected, factor=factor, check_only_type_kind=True
+        )
 
         iresult = dpnp.fft.ifft(result, n=n, norm=norm)
         iexpected = numpy.fft.ifft(expected, n=n, norm=norm)
+        assert_dtype_allclose(
+            iresult, iexpected, factor=factor, check_only_type_kind=True
+        )
+
+    @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
+    def test_fft_1D_bool(self, norm):
+        a = dpnp.linspace(-1, 1, 11, dtype=dpnp.bool)
+        a_np = dpnp.asnumpy(a)
+
+        result = dpnp.fft.fft(a, norm=norm)
+        expected = numpy.fft.fft(a_np, norm=norm)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+        iresult = dpnp.fft.ifft(result, norm=norm)
+        iexpected = numpy.fft.ifft(expected, norm=norm)
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())

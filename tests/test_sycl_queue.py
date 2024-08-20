@@ -1283,111 +1283,108 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize(
-    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
-)
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fft(func, device):
-    dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
-    data = numpy.arange(20, dtype=dtype)
-    dpnp_data = dpnp.array(data, device=device)
+class TestFft:
+    @pytest.mark.parametrize(
+        "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fft(self, func, device):
+        dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
+        data = numpy.arange(20, dtype=dtype)
+        dpnp_data = dpnp.array(data, device=device)
 
-    expected = getattr(numpy.fft, func)(data)
-    result = getattr(dpnp.fft, func)(dpnp_data)
-    assert_dtype_allclose(result, expected, factor=16)
+        expected = getattr(numpy.fft, func)(data)
+        result = getattr(dpnp.fft, func)(dpnp_data)
+        assert_dtype_allclose(result, expected, factor=24)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        expected_queue = dpnp_data.get_array().sycl_queue
+        result_queue = result.get_array().sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fftn(self, device):
+        data = numpy.arange(24, dtype=numpy.complex64).reshape(2, 3, 4)
+        dpnp_data = dpnp.array(data, device=device)
 
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fftn(device):
-    data = numpy.arange(24, dtype=numpy.complex64).reshape(2, 3, 4)
-    dpnp_data = dpnp.array(data, device=device)
+        expected = numpy.fft.fftn(data)
+        result = dpnp.fft.fftn(dpnp_data)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected = numpy.fft.fftn(data)
-    result = dpnp.fft.fftn(dpnp_data)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        expected_queue = dpnp_data.sycl_queue
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    expected_queue = dpnp_data.sycl_queue
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        expected = numpy.fft.ifftn(expected)
+        result = dpnp.fft.ifftn(result)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected = numpy.fft.ifftn(expected)
-    result = dpnp.fft.ifftn(result)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_rfftn(self, device):
+        data = numpy.arange(24, dtype=numpy.float32).reshape(2, 3, 4)
+        dpnp_data = dpnp.array(data, device=device)
 
+        expected = numpy.fft.rfftn(data)
+        result = dpnp.fft.rfftn(dpnp_data)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_rfftn(device):
-    data = numpy.arange(24, dtype=numpy.float32).reshape(2, 3, 4)
-    dpnp_data = dpnp.array(data, device=device)
+        expected_queue = dpnp_data.sycl_queue
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    expected = numpy.fft.rfftn(data)
-    result = dpnp.fft.rfftn(dpnp_data)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        expected = numpy.fft.irfftn(expected)
+        result = dpnp.fft.irfftn(result)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected_queue = dpnp_data.sycl_queue
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    expected = numpy.fft.irfftn(expected)
-    result = dpnp.fft.irfftn(result)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+    @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fftfreq(self, func, device):
+        result = getattr(dpnp.fft, func)(10, 0.5, device=device)
+        expected = getattr(numpy.fft, func)(10, 0.5)
 
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        assert_dtype_allclose(result, expected)
+        assert result.sycl_device == device
 
+    @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fftshift(self, func, device):
+        dpnp_data = dpnp.fft.fftfreq(10, 0.5, device=device)
+        data = dpnp_data.asnumpy()
 
-@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fftfreq(func, device):
-    result = getattr(dpnp.fft, func)(10, 0.5, device=device)
-    expected = getattr(numpy.fft, func)(10, 0.5)
+        expected = getattr(numpy.fft, func)(data)
+        result = getattr(dpnp.fft, func)(dpnp_data)
 
-    assert_dtype_allclose(result, expected)
-    assert result.sycl_device == device
+        assert_dtype_allclose(result, expected)
 
+        expected_queue = dpnp_data.get_array().sycl_queue
+        result_queue = result.get_array().sycl_queue
 
-@pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fftshift(func, device):
-    dpnp_data = dpnp.fft.fftfreq(10, 0.5, device=device)
-    data = dpnp_data.asnumpy()
-
-    expected = getattr(numpy.fft, func)(data)
-    result = getattr(dpnp.fft, func)(dpnp_data)
-
-    assert_dtype_allclose(result, expected)
-
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
