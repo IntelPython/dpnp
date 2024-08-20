@@ -246,7 +246,7 @@ def test_strides_2args(func_name, dtype, shape):
     numpy_func = _getattr(numpy, func_name)
     expected = numpy_func(a, b)
 
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(

@@ -56,7 +56,6 @@ from dpctl.tensor._type_utils import _acceptance_fn_divide
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
-from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
@@ -306,6 +305,30 @@ def _gradient_num_diff_edges(
         out[tuple(slice1)] = (
             a * f[tuple(slice2)] + b * f[tuple(slice3)] + c * f[tuple(slice4)]
         )
+
+
+def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
+    """Process the argument for ediff1d."""
+    if not dpnp.is_supported_array_type(arg):
+        arg = dpnp.asarray(arg, usm_type=usm_type, sycl_queue=ary_sycl_queue)
+    else:
+        usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
+        # check that arrays have the same allocation queue
+        if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
+            raise dpu.ExecutionPlacementError(
+                f"ary and {arg_name} must be allocated on the same SYCL queue"
+            )
+
+    if not dpnp.can_cast(arg, ary_dtype, casting="same_kind"):
+        raise TypeError(
+            f"dtype of {arg_name} must be compatible "
+            "with input ary under the `same_kind` rule."
+        )
+
+    if arg.ndim > 1:
+        arg = dpnp.ravel(arg)
+
+    return arg, usm_type
 
 
 _ABS_DOCSTRING = """
@@ -1332,52 +1355,30 @@ def ediff1d(ary, to_end=None, to_begin=None):
         return ary[1:] - ary[:-1]
 
     ary_dtype = ary.dtype
-    ary_usm_type = ary.usm_type
     ary_sycl_queue = ary.sycl_queue
+    usm_type = ary.usm_type
 
     if to_begin is None:
         l_begin = 0
     else:
-        if not dpnp.is_supported_array_type(to_begin):
-            to_begin = dpnp.asarray(
-                to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
-            )
-        if not dpnp.can_cast(to_begin, ary_dtype, casting="same_kind"):
-            raise TypeError(
-                "dtype of `to_begin` must be compatible "
-                "with input `ary` under the `same_kind` rule."
-            )
-
-        to_begin_ndim = to_begin.ndim
-
-        if to_begin_ndim > 1:
-            to_begin = dpnp.ravel(to_begin)
-
+        to_begin, usm_type = _process_ediff1d_args(
+            to_begin, "to_begin", ary_dtype, ary_sycl_queue, usm_type
+        )
         l_begin = to_begin.size
 
     if to_end is None:
         l_end = 0
     else:
-        if not dpnp.is_supported_array_type(to_end):
-            to_end = dpnp.asarray(
-                to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
-            )
-        if not dpnp.can_cast(to_end, ary_dtype, casting="same_kind"):
-            raise TypeError(
-                "dtype of `to_end` must be compatible "
-                "with input `ary` under the `same_kind` rule."
-            )
-
-        to_end_ndim = to_end.ndim
-
-        if to_end_ndim > 1:
-            to_end = dpnp.ravel(to_end)
-
+        to_end, usm_type = _process_ediff1d_args(
+            to_end, "to_end", ary_dtype, ary_sycl_queue, usm_type
+        )
         l_end = to_end.size
 
     # calculating using in place operation
     l_diff = max(len(ary) - 1, 0)
-    result = dpnp.empty_like(ary, shape=l_diff + l_begin + l_end)
+    result = dpnp.empty_like(
+        ary, shape=l_diff + l_begin + l_end, usm_type=usm_type
+    )
 
     if l_begin > 0:
         result[:l_begin] = to_begin
@@ -2294,7 +2295,7 @@ array([[1. , 2. ],
 >>> np.maximum(x1, x2)
 array([nan, nan, nan])
 
->>> np.maximum(np.array(np.Inf), 1)
+>>> np.maximum(np.array(np.inf), 1)
 array(inf)
 """
 
@@ -2374,7 +2375,7 @@ array([[0.5, 0. ],
 >>> np.minimum(x1, x2)
 array([nan, nan, nan])
 
->>> np.minimum(np.array(-np.Inf), 1)
+>>> np.minimum(np.array(-np.inf), 1)
 array(-inf)
 """
 
@@ -3529,61 +3530,6 @@ def sum(
     """
 
     dpnp.check_limitations(initial=initial, where=where)
-
-    sycl_sum_call = False
-    if len(a.shape) == 2 and a.itemsize == 4:
-        c_contiguous_rules = (
-            axis == (0,)
-            and a.flags.c_contiguous
-            and 32 <= a.shape[1] <= 1024
-            and a.shape[0] > a.shape[1]
-        )
-        f_contiguous_rules = (
-            axis == (1,)
-            and a.flags.f_contiguous
-            and 32 <= a.shape[0] <= 1024
-            and a.shape[1] > a.shape[0]
-        )
-        sycl_sum_call = c_contiguous_rules or f_contiguous_rules
-
-    if sycl_sum_call:
-        if axis is not None:
-            if not isinstance(axis, (tuple, list)):
-                axis = (axis,)
-
-            axis = normalize_axis_tuple(axis, a.ndim, "axis")
-
-        input = a
-        if axis == (1,):
-            input = input.T
-        input = dpnp.get_usm_ndarray(input)
-
-        queue = input.sycl_queue
-        out_dtype = (
-            dtu._default_accumulation_dtype(input.dtype, queue)
-            if dtype is None
-            else dtype
-        )
-        output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
-
-        get_sum = _sycl_ext_impl._get_sum_over_axis_0
-        sycl_sum = get_sum(input, output)
-
-        if sycl_sum:
-            # TODO: pass dep events into _get_sum_over_axis_0 to remove sync
-            dpnp.synchronize_array_data(input)
-
-            sycl_sum(input, output, []).wait()
-            result = dpnp_array._create_from_usm_ndarray(output)
-
-            if keepdims:
-                if axis == (0,):
-                    res_sh = (1,) + output.shape
-                else:
-                    res_sh = output.shape + (1,)
-                result = result.reshape(res_sh)
-
-            return result
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
