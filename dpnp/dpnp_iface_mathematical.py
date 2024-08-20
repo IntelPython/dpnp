@@ -122,7 +122,7 @@ __all__ = [
     "signbit",
     "subtract",
     "sum",
-    "trapz",
+    "trapezoid",
     "true_divide",
     "trunc",
 ]
@@ -1111,6 +1111,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
     See Also
     --------
     :obj:`dpnp.sum` : Sum array elements.
+    :obj:`dpnp.trapezoid` : Integration of array values using composite
+                            trapezoidal rule.
     :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.
 
     Examples
@@ -3600,8 +3602,8 @@ def sum(
     --------
     :obj:`dpnp.ndarray.sum` : Equivalent method.
     :obj:`dpnp.cumsum` : Cumulative sum of array elements.
-    :obj:`dpnp.trapz` : Integration of array values using the composite
-                        trapezoidal rule.
+    :obj:`dpnp.trapezoid` : Integration of array values using the composite
+                            trapezoidal rule.
     :obj:`dpnp.mean` : Compute the arithmetic mean.
     :obj:`dpnp.average` : Compute the weighted average.
 
@@ -3637,34 +3639,126 @@ def sum(
     )
 
 
-def trapz(y1, x1=None, dx=1.0, axis=-1):
-    """
+def trapezoid(y, x=None, dx=1.0, axis=-1):
+    r"""
     Integrate along the given axis using the composite trapezoidal rule.
 
-    For full documentation refer to :obj:`numpy.trapz`.
+    If `x` is provided, the integration happens in sequence along its elements -
+    they are not sorted.
 
-    Limitations
-    -----------
-    Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Integrate `y` (`x`) along each 1d slice on the given axis, compute
+    :math:`\int y(x) dx`.
+    When `x` is specified, this integrates along the parametric curve,
+    computing :math:`\int_t y(t) dt =
+    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.
+
+    For full documentation refer to :obj:`numpy.trapezoid`.
+
+    Parameters
+    ----------
+    y : {dpnp.ndarray, usm_ndarray}
+        Input array to integrate.
+    x : {dpnp.ndarray, usm_ndarray, None}, optional
+        The sample points corresponding to the `y` values. If `x` is ``None``,
+        the sample points are assumed to be evenly spaced `dx` apart.
+        Default: ``None``.
+    dx : scalar, optional
+        The spacing between sample points when `x` is ``None``.
+        Default: ``1``.
+    axis : int, optional
+        The axis along which to integrate.
+        Default: ``-1``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Definite integral of `y` = n-dimensional array as approximated along
+        a single axis by the trapezoidal rule. The result is an `n`-1
+        dimensional array.
+
+    See Also
+    --------
+    :obj:`dpnp.sum` : Sum of array elements over a given axis.
+    :obj:`dpnp.cumsum` : Cumulative sum of the elements along a given axis.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 3])
-    >>> b = np.array([4, 6, 8])
-    >>> np.trapz(a)
-    4.0
-    >>> np.trapz(a, x=b)
-    8.0
-    >>> np.trapz(a, dx=2)
-    8.0
+
+    Use the trapezoidal rule on evenly spaced points:
+
+    >>> y = np.array([1, 2, 3])
+    >>> np.trapezoid(y)
+    array(4.)
+
+    The spacing between sample points can be selected by either the `x` or `dx`
+    arguments:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([4, 6, 8])
+    >>> np.trapezoid(y, x=x)
+    array(8.)
+    >>> np.trapezoid(y, dx=2)
+    array(8.)
+
+    Using a decreasing `x` corresponds to integrating in reverse:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([8, 6, 4])
+    >>> np.trapezoid(y, x=x)
+    array(-8.)
+
+    More generally `x` is used to integrate along a parametric curve. We can
+    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:
+
+    >>> x = np.linspace(0, 1, num=50)
+    >>> y = x**2
+    >>> np.trapezoid(y, x)
+    array(0.33340275)
+
+    Or estimate the area of a circle, noting we repeat the sample which closes
+    the curve:
+
+    >>> theta = np.linspace(0, 2 * np.pi, num=1000, endpoint=True)
+    >>> np.trapezoid(np.cos(theta), x=np.sin(theta))
+    array(3.14157194)
+
+    :obj:`dpnp.trapezoid` can be applied along a specified axis to do multiple
+    computations in one call:
+
+    >>> a = np.arange(6).reshape(2, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5]])
+    >>> np.trapezoid(a, axis=0)
+    array([1.5, 2.5, 3.5])
+    >>> np.trapezoid(a, axis=1)
+    array([2., 8.])
 
     """
 
-    return call_origin(numpy.trapz, y1, x1, dx, axis)
+    dpnp.check_supported_arrays_type(y)
+    nd = y.ndim
+
+    if x is None:
+        d = dx
+    else:
+        dpnp.check_supported_arrays_type(x)
+        if x.ndim == 1:
+            d = dpnp.diff(x)
+
+            # reshape to correct shape
+            shape = [1] * nd
+            shape[axis] = d.shape[0]
+            d = d.reshape(shape)
+        else:
+            d = dpnp.diff(x, axis=axis)
+
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+    return (d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0).sum(axis)
 
 
 true_divide = divide

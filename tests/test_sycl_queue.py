@@ -514,7 +514,7 @@ def test_meshgrid(device):
         pytest.param(
             "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         ),
-        pytest.param("trapz", [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]]),
+        pytest.param("trapezoid", [1, 2, 3]),
         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
@@ -529,6 +529,13 @@ def test_meshgrid(device):
 def test_1in_1out(func, data, device):
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
+
+    if (
+        func == "trapezoid"
+        and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+    ):
+        # `trapezoid` is available from NumPy 2.0
+        func = "trapz"
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
@@ -759,6 +766,7 @@ def test_reduce_hypot(device):
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
             [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
         ),
+        pytest.param("trapezoid", [1, 2, 3], [4, 6, 8]),
         # dpnp.vdot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
@@ -772,13 +780,20 @@ def test_reduce_hypot(device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_2in_1out(func, data1, data2, device):
-    x1_orig = numpy.array(data1)
-    x2_orig = numpy.array(data2)
-    expected = getattr(numpy, func)(x1_orig, x2_orig)
-
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
     result = getattr(dpnp, func)(x1, x2)
+
+    if (
+        func == "trapezoid"
+        and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+    ):
+        # `trapezoid` is available from NumPy 2.0
+        func = "trapz"
+
+    x1_orig = numpy.array(data1)
+    x2_orig = numpy.array(data2)
+    expected = getattr(numpy, func)(x1_orig, x2_orig)
 
     assert_dtype_allclose(result, expected)
 
