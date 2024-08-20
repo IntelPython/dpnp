@@ -134,7 +134,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
                                       scratchpad, ipiv, e, error_msg);
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
-        error_msg << "Unexpected SYCL exception caught during getrf and "
+        error_msg << "Unexpected SYCL exception caught during getrf() or "
                      "getrs() call:\n"
                   << e.what();
     }
@@ -179,7 +179,8 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         error_msg << "Unexpected SYCL exception caught during gesv() call:\n"
                   << e.what();
     }
-#endif
+#endif // USE_ONEMKL_INTERFACES
+
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr)

@@ -186,12 +186,12 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         }
         else {
             error_msg << "Unexpected MKL exception caught during getrf_batch() "
-                         "and getrs_batch() call:\nreason: "
+                         "or getrs_batch() call:\nreason: "
                       << e.what() << "\ninfo: " << e.info();
         }
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
-        error_msg << "Unexpected SYCL exception caught during getrf and "
+        error_msg << "Unexpected SYCL exception caught during getrf() or "
                      "getrs() call:\n"
                   << e.what();
     }
@@ -271,7 +271,8 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         // Update the event dependencies for the current stream
         comp_evs[stream_id] = {gesv_event};
     }
-#endif
+#endif // USE_ONEMKL_INTERFACES
+
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr)
@@ -288,7 +289,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         for (const auto &ev : comp_evs) {
             cgh.depends_on(ev);
         }
-#endif
+#endif // USE_ONEMKL_INTERFACES
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad, ipiv]() {
             sycl::free(scratchpad, ctx);
