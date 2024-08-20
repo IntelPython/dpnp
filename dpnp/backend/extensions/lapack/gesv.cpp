@@ -67,7 +67,6 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     std::int64_t scratchpad_size = 0;
     sycl::event comp_event;
     std::int64_t *ipiv = nullptr;
-    T *scratchpad = nullptr;
 
     std::stringstream error_msg;
     bool is_exception_caught = false;
@@ -88,7 +87,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
 
 #endif // USE_ONEMKL_INTERFACES
 
-    scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
+    T *scratchpad = helper::alloc_scratchpad<T>(scratchpad_size, exec_q);
 
     try {
         ipiv = helper::alloc_ipiv(n, exec_q);

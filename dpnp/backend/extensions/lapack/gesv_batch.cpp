@@ -376,12 +376,12 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t nrhs =
         (dependent_vals_nd > 2) ? dependent_vals_shape[1] : 1;
 
-    auto const &coeff_matrix_strides = coeff_matrix.get_strides_vector();
-    auto const &dependent_vals_strides = dependent_vals.get_strides_vector();
-
     sycl::event gesv_ev;
 
 #if defined(USE_ONEMKL_INTERFACES)
+    auto const &coeff_matrix_strides = coeff_matrix.get_strides_vector();
+    auto const &dependent_vals_strides = dependent_vals.get_strides_vector();
+
     // Get the strides for the batch matrices.
     // Since the matrices are stored in F-contiguous order,
     // the stride between batches is the last element in the strides vector.
