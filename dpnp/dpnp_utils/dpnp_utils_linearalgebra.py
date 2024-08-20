@@ -435,12 +435,6 @@ def _gemm_matmul(exec_q, x1, x2, res):
         if res.flags.c_contiguous is True:
             # read data in "C" order and write it in "F" order
             res = dpnp.ravel(res, order="C").reshape(res.shape, order="F")
-        elif (
-            not bi._row_major_is_available() and res.flags.f_contiguous is True
-        ):
-            # read data in "C" order and write it in "C" order
-            # make result similar for row_major call
-            res = dpnp.ravel(res, order="C").reshape(res.shape, order="C")
 
     return res
 
@@ -830,11 +824,6 @@ def dpnp_matmul(
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x1_shape[-2], x2_shape[-1])
-        if not bi._row_major_is_available():
-            if x1.flags.c_contiguous:
-                x1 = dpnp.asarray(x1, order="F")
-            if x2.flags.c_contiguous:
-                x2 = dpnp.asarray(x2, order="F")
     elif x1_base_is_1D:
         # TODO: implement gemv_batch to use it here with transpose
         call_flag = "gemm_batch"
@@ -873,10 +862,10 @@ def dpnp_matmul(
 
         if bi._row_major_is_available():
             array_order = res_order
-        elif (call_flag == "gemm") or (call_flag == "gemv"):
+        elif call_flag == "gemv":
             array_order = "F"
         else:
-            array_order = "C"
+            array_order = res_order
 
         result = _create_result_array(
             x1,

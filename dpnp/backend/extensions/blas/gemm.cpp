@@ -94,20 +94,22 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                 const Tab *a, const std::int64_t lda, const Tab *b,
                 const std::int64_t ldb, Tab beta, Tc *c, const std::int64_t ldc,
                 const std::vector<sycl::event> &deps) -> sycl::event {
-            if (is_row_major) {
 #if defined(USE_ONEMKL_CUBLAS)
-                throw py::value_error("Input matrices are not f-contiguous");
+            return mkl_blas::column_major::gemm(q, transA, transB, m, n, k,
+                                                alpha, a, lda, b, ldb, beta, c,
+                                                ldc, deps);
 #else
+            if (is_row_major) {
                 return mkl_blas::row_major::gemm(q, transA, transB, m, n, k,
                                                  alpha, a, lda, b, ldb, beta, c,
                                                  ldc, deps);
-#endif // USE_ONEMKL_CUBLAS
             }
             else {
                 return mkl_blas::column_major::gemm(q, transA, transB, m, n, k,
                                                     alpha, a, lda, b, ldb, beta,
                                                     c, ldc, deps);
             }
+#endif // USE_ONEMKL_CUBLAS
         };
         gemm_event = gemm_func(
             exec_q,
@@ -226,26 +228,43 @@ std::tuple<sycl::event, sycl::event, bool>
         throw py::value_error(
             "Result array is not c-contiguous nor f-contiguous.");
     }
+
+    oneapi::mkl::transpose transA;
+    oneapi::mkl::transpose transB;
+    std::int64_t lda;
+    std::int64_t ldb;
+
+#if defined(USE_ONEMKL_CUBLAS)
+    bool is_row_major = false;
+
+    transA = is_matrixA_c_contig ? oneapi::mkl::transpose::T
+                                 : oneapi::mkl::transpose::N;
+    transB = is_matrixB_c_contig ? oneapi::mkl::transpose::T
+                                 : oneapi::mkl::transpose::N;
+
+    if (transA == oneapi::mkl::transpose::N) {
+        lda = m;
+    }
+    else {
+        lda = k;
+    }
+    if (transB == oneapi::mkl::transpose::N) {
+        ldb = k;
+    }
+    else {
+        ldb = n;
+    }
+#else
     bool is_row_major = true;
     if (is_matrixA_f_contig && is_matrixB_f_contig) {
         is_row_major = false;
     }
-    oneapi::mkl::transpose transA;
-    oneapi::mkl::transpose transB;
+
     if (is_row_major) {
         transA = is_matrixA_f_contig ? oneapi::mkl::transpose::T
                                      : oneapi::mkl::transpose::N;
         transB = is_matrixB_f_contig ? oneapi::mkl::transpose::T
                                      : oneapi::mkl::transpose::N;
-    }
-    else {
-        transA = oneapi::mkl::transpose::N;
-        transB = oneapi::mkl::transpose::N;
-    }
-
-    std::int64_t lda;
-    std::int64_t ldb;
-    if (is_row_major) {
         if (transA == oneapi::mkl::transpose::N) {
             lda = k;
         }
@@ -260,9 +279,13 @@ std::tuple<sycl::event, sycl::event, bool>
         }
     }
     else {
+        transA = oneapi::mkl::transpose::N;
+        transB = oneapi::mkl::transpose::N;
         lda = m;
         ldb = k;
     }
+#endif // USE_ONEMKL_CUBLAS
+
     const std::int64_t ldc = is_row_major ? n : m;
 
     const int matrixA_typenum = matrixA.get_typenum();
