@@ -4,6 +4,11 @@ import dpctl
 import numpy
 import pytest
 
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
+    from numpy.exceptions import ComplexWarning
+else:
+    from numpy import ComplexWarning
+
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
@@ -174,7 +179,7 @@ class TestCopytoFromNumpyScalar:
         dst = xp.zeros((2, 3, 4), dtype=dtype1)
         src = numpy.array(1, dtype=dtype2)
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", numpy.ComplexWarning)
+            warnings.simplefilter("ignore", ComplexWarning)
             xp.copyto(dst, src, casting)
         return dst
 
@@ -189,7 +194,7 @@ class TestCopytoFromNumpyScalar:
         src = make_src(dtype)
 
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", numpy.ComplexWarning)
+            warnings.simplefilter("ignore", ComplexWarning)
             xp.copyto(dst, src, casting)
         return dst
 
@@ -206,7 +211,7 @@ class TestCopytoFromNumpyScalar:
         src = numpy.array(1, dtype=dtype2)
         mask = (testing.shaped_arange(shape, xp, dtype1) % 2).astype(xp.bool_)
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", numpy.ComplexWarning)
+            warnings.simplefilter("ignore", ComplexWarning)
             xp.copyto(dst, src, casting=casting, where=mask)
         return dst
 

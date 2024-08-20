@@ -437,6 +437,7 @@ def test_meshgrid(device):
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("argwhere", [[0, 3], [1, 4], [2, 5]]),
         pytest.param("cbrt", [1.0, 8.0, 27.0]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
@@ -1288,22 +1289,53 @@ def test_fft(func, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize("func", ["fftn", "ifftn"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_fftn(func, device):
-    data = numpy.arange(24, dtype=numpy.complex128).reshape(2, 3, 4)
+def test_fftn(device):
+    data = numpy.arange(24, dtype=numpy.complex64).reshape(2, 3, 4)
     dpnp_data = dpnp.array(data, device=device)
 
-    expected = getattr(numpy.fft, func)(data)
-    result = getattr(dpnp.fft, func)(dpnp_data)
-    assert_dtype_allclose(result, expected)
+    expected = numpy.fft.fftn(data)
+    result = dpnp.fft.fftn(dpnp_data)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+    expected = numpy.fft.ifftn(expected)
+    result = dpnp.fft.ifftn(result)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_rfftn(device):
+    data = numpy.arange(24, dtype=numpy.float32).reshape(2, 3, 4)
+    dpnp_data = dpnp.array(data, device=device)
+
+    expected = numpy.fft.rfftn(data)
+    result = dpnp.fft.rfftn(dpnp_data)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+    expected = numpy.fft.irfftn(expected)
+    result = dpnp.fft.irfftn(result)
+    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -1381,8 +1413,8 @@ def test_cholesky(data, is_empty, device):
 )
 @pytest.mark.parametrize(
     "p",
-    [None, -dpnp.Inf, -2, -1, 1, 2, dpnp.Inf, "fro"],
-    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"],
+    ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
 )
 def test_cond(device, p):
     numpy.random.seed(42)
@@ -1605,16 +1637,16 @@ def test_matrix_rank(data, tol, device):
 )
 @pytest.mark.parametrize(
     "ord",
-    [None, -dpnp.Inf, -2, -1, 1, 2, 3, dpnp.Inf, "fro", "nuc"],
+    [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"],
     ids=[
         "None",
-        "-dpnp.Inf",
+        "-dpnp.inf",
         "-2",
         "-1",
         "1",
         "2",
         "3",
-        "dpnp.Inf",
+        "dpnp.inf",
         '"fro"',
         '"nuc"',
     ],
@@ -1796,6 +1828,9 @@ def test_to_device(device_from, device_to):
     "queue_param", ["", "None", "sycl_queue"], ids=["Empty", "None", "queue"]
 )
 def test_array_copy(device, func, device_param, queue_param):
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("numpy.asfarray was removed")
+
     data = numpy.ones(100)
     dpnp_data = getattr(dpnp, func)(data, device=device)
 
@@ -2392,6 +2427,29 @@ def test_astype(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
 
 
+@pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_unique(axis, device):
+    a = numpy.array([[1, 1], [2, 3]])
+    ia = dpnp.array(a, device=device)
+
+    result = dpnp.unique(ia, True, True, True, axis=axis)
+    expected = numpy.unique(a, True, True, True, axis=axis)
+    if axis is None and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1":
+        # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
+        # returned flatten unique_inverse till 2.0.1 version
+        expected = expected[:2] + (expected[2].reshape(a.shape),) + expected[3:]
+    for iv, v in zip(result, expected):
+        assert_array_equal(iv, v)
+
+        iv_queue = iv.sycl_queue
+        assert_sycl_queue_equal(iv_queue, ia.sycl_queue)
+
+
 @pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
 @pytest.mark.parametrize(
     "device",
@@ -2407,12 +2465,7 @@ def test_nan_to_num(copy, device):
 
 
 @pytest.mark.parametrize(
-    "device_x",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-@pytest.mark.parametrize(
-    "device_args",
+    "device",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
@@ -2424,15 +2477,15 @@ def test_nan_to_num(copy, device):
         (10, -10),
     ],
 )
-def test_ediff1d(device_x, device_args, to_end, to_begin):
+def test_ediff1d(device, to_end, to_begin):
     data = [1, 3, 5, 7]
 
-    x = dpnp.array(data, device=device_x)
+    x = dpnp.array(data, device=device)
     if to_end:
-        to_end = dpnp.array(to_end, device=device_args)
+        to_end = dpnp.array(to_end, device=device)
 
     if to_begin:
-        to_begin = dpnp.array(to_begin, device=device_args)
+        to_begin = dpnp.array(to_begin, device=device)
 
     res = dpnp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 

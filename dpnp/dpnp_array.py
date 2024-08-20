@@ -712,7 +712,7 @@ class dpnp_array:
 
         """
 
-        if not dpnp.issubsctype(self.dtype, dpnp.complexfloating):
+        if not dpnp.issubdtype(self.dtype, dpnp.complexfloating):
             return self
         else:
             return dpnp.conjugate(self)
@@ -725,7 +725,7 @@ class dpnp_array:
 
         """
 
-        if not dpnp.issubsctype(self.dtype, dpnp.complexfloating):
+        if not dpnp.issubdtype(self.dtype, dpnp.complexfloating):
             return self
         else:
             return dpnp.conjugate(self)
@@ -999,7 +999,7 @@ class dpnp_array:
         array([1.+9.j, 3.+9.j, 5.+9.j])
 
         """
-        if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
+        if dpnp.issubdtype(self.dtype, dpnp.complexfloating):
             dpnp.copyto(self._array_obj.imag, value)
         else:
             raise TypeError("array does not have imaginary part to set")
@@ -1225,7 +1225,7 @@ class dpnp_array:
 
         """
 
-        if dpnp.issubsctype(self.dtype, dpnp.complexfloating):
+        if dpnp.issubdtype(self.dtype, dpnp.complexfloating):
             return dpnp_array._create_from_usm_ndarray(
                 dpnp.get_usm_ndarray(self).real
             )
