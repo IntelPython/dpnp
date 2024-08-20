@@ -1377,6 +1377,41 @@ class TestNextafter:
         assert_equal(result, expected)
 
 
+class TestRealIfClose:
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_basic(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-15j)
+        expected = numpy.real_if_close(a + 1e-15j)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_singlecomplex(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-7j)
+        expected = numpy.real_if_close(a + 1e-7j)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_tol(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-7j, tol=1e-6)
+        expected = numpy.real_if_close(a + 1e-7j, tol=1e-6)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("tol_val", [[10], (1, 2)], ids=["list", "tuple"])
+    def test_wrong_tol_type(self, xp, tol_val):
+        a = xp.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+        assert_raises(TypeError, xp.real_if_close, a, tol=tol_val)
+
+
 class TestUnwrap:
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_basic(self, dt):
