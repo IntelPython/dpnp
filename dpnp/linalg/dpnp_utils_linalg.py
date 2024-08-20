@@ -997,7 +997,7 @@ def _multi_dot_matrix_chain_order(n, arrays, return_costs=False):
     for ll in range(1, n):
         for i in range(n - ll):
             j = i + ll
-            m[i, j] = dpnp.Inf
+            m[i, j] = dpnp.inf
             for k in range(i, j):
                 q = m[i, k] + m[k + 1, j] + p[i] * p[k + 1] * p[j + 1]
                 if q < m[i, j]:
@@ -1208,7 +1208,11 @@ def _stacked_identity(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------

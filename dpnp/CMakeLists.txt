@@ -57,7 +57,6 @@ add_subdirectory(backend/extensions/blas)
 add_subdirectory(backend/extensions/fft)
 add_subdirectory(backend/extensions/lapack)
 add_subdirectory(backend/extensions/vm)
-add_subdirectory(backend/extensions/sycl_ext)
 add_subdirectory(backend/extensions/ufunc)
 
 add_subdirectory(dpnp_algo)

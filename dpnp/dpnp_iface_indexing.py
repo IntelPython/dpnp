@@ -207,7 +207,11 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -797,7 +801,11 @@ def indices(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -928,7 +936,11 @@ def mask_indices(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1161,7 +1173,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     v : {scalar, array_like}
          Values to be put into `a`. Must be broadcastable to the result shape
          ``a.shape[:axis] + ind.shape + a.shape[axis+1:]``.
-    axis {None, int}, optional
+    axis : {None, int}, optional
         The axis along which the values will be placed. If `a` is 1-D array,
         this argument is optional.
         Default: ``None``.
@@ -1574,7 +1586,7 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     return dpnp.get_result_array(result, out)
 
 
-def take_along_axis(a, indices, axis):
+def take_along_axis(a, indices, axis, mode="wrap"):
     """
     Take values from the input array by matching 1d index and data slices.
 
@@ -1595,15 +1607,24 @@ def take_along_axis(a, indices, axis):
         Indices to take along each 1d slice of `a`. This must match the
         dimension of the input array, but dimensions ``Ni`` and ``Nj``
         only need to broadcast against `a`.
-    axis : int
+    axis : {None, int}
         The axis to take 1d slices along. If axis is ``None``, the input
         array is treated as if it had first been flattened to 1d,
         for consistency with :obj:`dpnp.sort` and :obj:`dpnp.argsort`.
+    mode : {"wrap", "clip"}, optional
+        Specifies how out-of-bounds indices will be handled. Possible values
+        are:
+
+        - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+          negative indices.
+        - ``"clip"``: clips indices to (``0 <= i < n``).
+
+        Default: ``"wrap"``.
 
     Returns
     -------
     out : dpnp.ndarray
-        The indexed result.
+        The indexed result of the same data type as `a`.
 
     See Also
     --------
@@ -1663,12 +1684,21 @@ def take_along_axis(a, indices, axis):
 
     """
 
-    dpnp.check_supported_arrays_type(a, indices)
-
     if axis is None:
-        a = a.ravel()
+        dpnp.check_supported_arrays_type(indices)
+        if indices.ndim != 1:
+            raise ValueError(
+                "when axis=None, `indices` must have a single dimension."
+            )
 
-    return a[_build_along_axis_index(a, indices, axis)]
+        a = dpnp.ravel(a)
+        axis = 0
+
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_ind = dpnp.get_usm_ndarray(indices)
+
+    usm_res = dpt.take_along_axis(usm_a, usm_ind, axis=axis, mode=mode)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def tril_indices(
@@ -1705,7 +1735,11 @@ def tril_indices(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------
@@ -1899,7 +1933,11 @@ def triu_indices(
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
     sycl_queue : {None, SyclQueue}, optional
-        A SYCL queue to use for output array allocation and copying.
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
 
     Returns
     -------

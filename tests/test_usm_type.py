@@ -1,3 +1,4 @@
+import copy
 import tempfile
 from math import prod
 
@@ -287,6 +288,25 @@ def test_array_creation_load_txt(usm_type):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_method(usm_type_x, usm_type_y):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type_x)
+
+    y = x.copy()
+    assert x.usm_type == y.usm_type == usm_type_x
+
+    y = x.copy(usm_type=usm_type_y)
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_operation(usm_type):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type)
+    y = copy.copy(x)
+    assert x.usm_type == y.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_logspace_base(usm_type_x, usm_type_y):
     x0 = dp.full(10, 2, usm_type=usm_type_x)
 
@@ -311,6 +331,9 @@ def test_logspace_base(usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_array_copy(func, usm_type_x, usm_type_y):
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("numpy.asfarray was removed")
+
     sh = (3, 7, 5)
     x = dp.arange(1, prod(sh) + 1, 1, usm_type=usm_type_x).reshape(sh)
 
@@ -487,16 +510,16 @@ def test_meshgrid(usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
     "ord",
-    [None, -dp.Inf, -2, -1, 1, 2, 3, dp.Inf, "fro", "nuc"],
+    [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"],
     ids=[
         "None",
-        "-dpnp.Inf",
+        "-dpnp.inf",
         "-2",
         "-1",
         "1",
         "2",
         "3",
-        "dpnp.Inf",
+        "dpnp.inf",
         '"fro"',
         '"nuc"',
     ],
@@ -537,6 +560,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("argwhere", [[0, 3], [1, 4], [2, 5]]),
         pytest.param("cbrt", [1, 8, 27]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
@@ -551,10 +575,12 @@ def test_norm(usm_type, ord, axis):
         pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("exp2", [0.0, 1.0, 2.0]),
         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
         pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
@@ -592,6 +618,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("real_if_close", [2.1 + 4e-15j, 5.2 + 3e-16j]),
         pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("rsqrt", [1, 8, 27]),
@@ -614,6 +641,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         ),
+        pytest.param("trapezoid", [1, 2, 3]),
         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
@@ -674,6 +702,7 @@ def test_1in_1out(func, data, usm_type):
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
             [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
         ),
+        pytest.param("trapezoid", [1, 2, 3], [4, 6, 8]),
         # dpnp.vdot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
@@ -740,8 +769,8 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
     "p",
-    [None, -dp.Inf, -2, -1, 1, 2, dp.Inf, "fro"],
-    ids=["None", "-dpnp.Inf", "-2", "-1", "1", "2", "dpnp.Inf", "fro"],
+    [None, -dp.inf, -2, -1, 1, 2, dp.inf, "fro"],
+    ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
 )
 def test_cond(usm_type, p):
     ia = dp.arange(32, usm_type=usm_type).reshape(2, 4, 4)
@@ -956,6 +985,30 @@ def test_fft(func, usm_type):
     result = getattr(dp.fft, func)(dpnp_data)
 
     assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_fftn(usm_type):
+    dpnp_data = dp.arange(24, usm_type=usm_type).reshape(2, 3, 4)
+    assert dpnp_data.usm_type == usm_type
+
+    result = dp.fft.fftn(dpnp_data)
+    assert result.usm_type == usm_type
+
+    result = dp.fft.ifftn(result)
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_rfftn(usm_type):
+    dpnp_data = dp.arange(24, usm_type=usm_type).reshape(2, 3, 4)
+    assert dpnp_data.usm_type == usm_type
+
+    result = dp.fft.rfftn(dpnp_data)
+    assert result.usm_type == usm_type
+
+    result = dp.fft.irfftn(result)
     assert result.usm_type == usm_type
 
 
@@ -1370,7 +1423,16 @@ def test_select(usm_type):
     res = dp.select(condlist, choicelist)
     assert res.usm_type == usm_type
 
-    
+
+@pytest.mark.parametrize("axis", [None, 0, -1])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_unique(axis, usm_type):
+    a = dp.array([[1, 1], [2, 3]], usm_type=usm_type)
+    res = dp.unique(a, True, True, True, axis=axis)
+    for x in res:
+        assert x.usm_type == usm_type
+
+
 @pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
 @pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
 def test_nan_to_num(copy, usm_type_a):
@@ -1379,3 +1441,30 @@ def test_nan_to_num(copy, usm_type_a):
 
     assert result.usm_type == usm_type_a
     assert copy == (result is not a)
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "usm_type_args", list_of_usm_types, ids=list_of_usm_types
+)
+@pytest.mark.parametrize(
+    ["to_end", "to_begin"],
+    [
+        (10, None),
+        (None, -10),
+        (10, -10),
+    ],
+)
+def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
+    data = [1, 3, 5, 7]
+
+    x = dp.array(data, usm_type=usm_type_x)
+    if to_end:
+        to_end = dp.array(to_end, usm_type=usm_type_args)
+
+    if to_begin:
+        to_begin = dp.array(to_begin, usm_type=usm_type_args)
+
+    res = dp.ediff1d(x, to_end=to_end, to_begin=to_begin)
+
+    assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_args])
