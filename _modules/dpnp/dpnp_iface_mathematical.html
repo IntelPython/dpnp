@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+149.gdea8ada1b3 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+150.gfbc798a486 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c7756af5"></script>
+        <script src="../../_static/documentation_options.js?v=c4bbfeb1"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+149.gdea8ada1b3
+                0.16.0dev0+150.gfbc798a486
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -204,6 +204,7 @@
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
     <span class="s2">&quot;real&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;real_if_close&quot;</span><span class="p">,</span>
     <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rint&quot;</span><span class="p">,</span>
     <span class="s2">&quot;round&quot;</span><span class="p">,</span>
@@ -595,6 +596,10 @@
 <span class="s2">:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.absolute` : Calculate the absolute value element-wise.</span>
+<span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2318,6 +2323,9 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
 <span class="s2">:obj:`dpnp.conj` : Return the complex conjugate, element-wise.</span>
 <span class="s2">:obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.</span>
 
@@ -3180,6 +3188,28 @@
 <span class="s2">    the same data type. If the input is a complex floating-point</span>
 <span class="s2">    data type, the returned array has a floating-point data type</span>
 <span class="s2">    with the same floating-point precision as complex input.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
+<span class="s2">:obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([1+2j, 3+4j, 5+6j])</span>
+<span class="s2">&gt;&gt;&gt; a.real</span>
+<span class="s2">array([1., 3., 5.])</span>
+<span class="s2">&gt;&gt;&gt; a.real = 9</span>
+<span class="s2">&gt;&gt;&gt; a</span>
+<span class="s2">array([9.+2.j, 9.+4.j, 9.+6.j])</span>
+<span class="s2">&gt;&gt;&gt; a.real = np.array([9, 8, 7])</span>
+<span class="s2">&gt;&gt;&gt; a</span>
+<span class="s2">array([9.+2.j, 8.+4.j, 7.+6.j])</span>
+<span class="s2">&gt;&gt;&gt; np.real(np.array(1 + 1j))</span>
+<span class="s2">array(1.)</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">real</span> <span class="o">=</span> <span class="n">DPNPReal</span><span class="p">(</span>
@@ -3188,6 +3218,72 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_real</span><span class="p">,</span>
     <span class="n">_REAL_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<div class="viewcode-block" id="real_if_close">
+<a class="viewcode-back" href="../../reference/generated/dpnp.real_if_close.html#dpnp.real_if_close">[docs]</a>
+<span class="k">def</span> <span class="nf">real_if_close</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If input is complex with all imaginary parts close to zero, return real</span>
+<span class="sd">    parts.</span>
+
+<span class="sd">    &quot;Close to zero&quot; is defined as `tol` * (machine epsilon of the type for `a`).</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.real_if_close`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    tol : scalar, optional</span>
+<span class="sd">        Tolerance in machine epsilons for the complex part of the elements in</span>
+<span class="sd">        the array. If the tolerance is &lt;=1, then the absolute tolerance is used.</span>
+<span class="sd">        Default: ``100``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        If `a` is real, the type of `a` is used for the output. If `a` has</span>
+<span class="sd">        complex elements, the returned type is float.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="sd">    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="sd">    :obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.finfo(np.float64).eps</span>
+<span class="sd">    2.220446049250313e-16 # may vary</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([2.1 + 4e-14j, 5.2 + 3e-15j])</span>
+<span class="sd">    &gt;&gt;&gt; np.real_if_close(a, tol=1000)</span>
+<span class="sd">    array([2.1, 5.2])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([2.1 + 4e-13j, 5.2 + 3e-15j])</span>
+<span class="sd">    &gt;&gt;&gt; np.real_if_close(a, tol=1000)</span>
+<span class="sd">    array([2.1+4.e-13j, 5.2+3.e-15j])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tol</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tolerance must be a scalar, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tol</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tol</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="n">tol</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="n">a</span></div>
+
 
 
 <span class="n">_REMAINDER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
