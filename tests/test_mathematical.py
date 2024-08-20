@@ -1377,6 +1377,35 @@ class TestNextafter:
         assert_equal(result, expected)
 
 
+class TestRealIfClose:
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_basic(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-15j)
+        expected = numpy.real_if_close(a + 1e-15j)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_singlecomplex(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-7j)
+        expected = numpy.real_if_close(a + 1e-7j)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_tol(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-7j, tol=1e-6)
+        expected = numpy.real_if_close(a + 1e-7j, tol=1e-6)
+        assert_equal(result, expected)
+
+
 class TestUnwrap:
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_basic(self, dt):
