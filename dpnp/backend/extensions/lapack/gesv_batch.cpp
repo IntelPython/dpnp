@@ -44,8 +44,10 @@ typedef sycl::event (*gesv_batch_impl_fn_ptr_t)(
     const std::int64_t,
     const std::int64_t,
     const std::int64_t,
+#if defined(USE_ONEMKL_INTERFACES)
     const std::int64_t,
     const std::int64_t,
+#endif // USE_ONEMKL_INTERFACES
     char *,
     char *,
     const std::vector<sycl::event> &);
@@ -58,8 +60,10 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
                                    const std::int64_t n,
                                    const std::int64_t nrhs,
                                    const std::int64_t batch_size,
-                                   [[maybe_unused]] const std::int64_t stride_a,
-                                   [[maybe_unused]] const std::int64_t stride_b,
+#if defined(USE_ONEMKL_INTERFACES)
+                                   const std::int64_t stride_a,
+                                   const std::int64_t stride_b,
+#endif // USE_ONEMKL_INTERFACES
                                    char *in_a,
                                    char *in_b,
                                    const std::vector<sycl::event> &depends)
@@ -72,7 +76,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
     const std::int64_t lda = std::max<size_t>(1UL, n);
     const std::int64_t ldb = std::max<size_t>(1UL, n);
 
-    std::int64_t scratchpad_size;
+    std::int64_t scratchpad_size = 0;
     sycl::event comp_event;
     std::int64_t *ipiv = nullptr;
     T *scratchpad = nullptr;
@@ -374,6 +378,9 @@ std::pair<sycl::event, sycl::event>
     auto const &coeff_matrix_strides = coeff_matrix.get_strides_vector();
     auto const &dependent_vals_strides = dependent_vals.get_strides_vector();
 
+    sycl::event gesv_ev;
+
+#if defined(USE_ONEMKL_INTERFACES)
     // Get the strides for the batch matrices.
     // Since the matrices are stored in F-contiguous order,
     // the stride between batches is the last element in the strides vector.
@@ -381,10 +388,14 @@ std::pair<sycl::event, sycl::event>
     const std::int64_t dependent_vals_batch_stride =
         dependent_vals_strides.back();
 
-    sycl::event gesv_ev =
+    gesv_ev =
         gesv_batch_fn(exec_q, n, nrhs, batch_size, coeff_matrix_batch_stride,
                       dependent_vals_batch_stride, coeff_matrix_data,
                       dependent_vals_data, depends);
+#else
+    gesv_ev = gesv_batch_fn(exec_q, n, nrhs, batch_size, coeff_matrix_data,
+                            dependent_vals_data, depends);
+#endif // USE_ONEMKL_INTERFACES
 
     sycl::event ht_ev = dpctl::utils::keep_args_alive(
         exec_q, {coeff_matrix, dependent_vals}, {gesv_ev});
