@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+156.gd70a07b1c9 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.gdc06815ee2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=6fcc8be4"></script>
+        <script src="../../_static/documentation_options.js?v=53edf5e3"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+156.gd70a07b1c9
+                0.16.0dev0+157.gdc06815ee2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -596,6 +596,10 @@
 <span class="s2">:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.absolute` : Calculate the absolute value element-wise.</span>
+<span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2319,6 +2323,9 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
 <span class="s2">:obj:`dpnp.conj` : Return the complex conjugate, element-wise.</span>
 <span class="s2">:obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.</span>
 
@@ -3181,6 +3188,28 @@
 <span class="s2">    the same data type. If the input is a complex floating-point</span>
 <span class="s2">    data type, the returned array has a floating-point data type</span>
 <span class="s2">    with the same floating-point precision as complex input.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
+<span class="s2">:obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([1+2j, 3+4j, 5+6j])</span>
+<span class="s2">&gt;&gt;&gt; a.real</span>
+<span class="s2">array([1., 3., 5.])</span>
+<span class="s2">&gt;&gt;&gt; a.real = 9</span>
+<span class="s2">&gt;&gt;&gt; a</span>
+<span class="s2">array([9.+2.j, 9.+4.j, 9.+6.j])</span>
+<span class="s2">&gt;&gt;&gt; a.real = np.array([9, 8, 7])</span>
+<span class="s2">&gt;&gt;&gt; a</span>
+<span class="s2">array([9.+2.j, 8.+4.j, 7.+6.j])</span>
+<span class="s2">&gt;&gt;&gt; np.real(np.array(1 + 1j))</span>
+<span class="s2">array(1.)</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">real</span> <span class="o">=</span> <span class="n">DPNPReal</span><span class="p">(</span>
@@ -3219,7 +3248,9 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    real, imag, angle</span>
+<span class="sd">    :obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="sd">    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="sd">    :obj:`dpnp.angle` : Return the angle of the complex argument.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
