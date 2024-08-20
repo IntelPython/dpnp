@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+150.gfbc798a486 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+151.g20cfa81237 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=c4bbfeb1"></script>
+        <script src="../../_static/documentation_options.js?v=48740319"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+150.gfbc798a486
+                0.16.0dev0+151.g20cfa81237
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -212,7 +212,7 @@
     <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
     <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trapz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
     <span class="s2">&quot;true_divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -1218,6 +1218,8 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.sum` : Sum array elements.</span>
+<span class="sd">    :obj:`dpnp.trapezoid` : Integration of array values using composite</span>
+<span class="sd">                            trapezoidal rule.</span>
 <span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.</span>
 
 <span class="sd">    Examples</span>
@@ -3731,8 +3733,8 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.ndarray.sum` : Equivalent method.</span>
 <span class="sd">    :obj:`dpnp.cumsum` : Cumulative sum of array elements.</span>
-<span class="sd">    :obj:`dpnp.trapz` : Integration of array values using the composite</span>
-<span class="sd">                        trapezoidal rule.</span>
+<span class="sd">    :obj:`dpnp.trapezoid` : Integration of array values using the composite</span>
+<span class="sd">                            trapezoidal rule.</span>
 <span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean.</span>
 <span class="sd">    :obj:`dpnp.average` : Compute the weighted average.</span>
 
@@ -3769,34 +3771,129 @@
 
 
 
-<span class="k">def</span> <span class="nf">trapz</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="trapezoid">
+<a class="viewcode-back" href="../../reference/generated/dpnp.trapezoid.html#dpnp.trapezoid">[docs]</a>
+<span class="k">def</span> <span class="nf">trapezoid</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrate along the given axis using the composite trapezoidal rule.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.trapz`.</span>
+<span class="sd">    If `x` is provided, the integration happens in sequence along its elements -</span>
+<span class="sd">    they are not sorted.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Integrate `y` (`x`) along each 1d slice on the given axis, compute</span>
+<span class="sd">    :math:`\int y(x) dx`.</span>
+<span class="sd">    When `x` is specified, this integrates along the parametric curve,</span>
+<span class="sd">    computing :math:`\int_t y(t) dt =</span>
+<span class="sd">    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.trapezoid`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array to integrate.</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray, None}, optional</span>
+<span class="sd">        The sample points corresponding to the `y` values. If `x` is ``None``,</span>
+<span class="sd">        the sample points are assumed to be evenly spaced `dx` apart.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dx : scalar, optional</span>
+<span class="sd">        The spacing between sample points when `x` is ``None``.</span>
+<span class="sd">        Default: ``1``.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis along which to integrate.</span>
+<span class="sd">        Default: ``-1``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Definite integral of `y` = n-dimensional array as approximated along</span>
+<span class="sd">        a single axis by the trapezoidal rule. The result is an `n`-1</span>
+<span class="sd">        dimensional array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sum` : Sum of array elements over a given axis.</span>
+<span class="sd">    :obj:`dpnp.cumsum` : Cumulative sum of the elements along a given axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([4, 6, 8])</span>
-<span class="sd">    &gt;&gt;&gt; np.trapz(a)</span>
-<span class="sd">    4.0</span>
-<span class="sd">    &gt;&gt;&gt; np.trapz(a, x=b)</span>
-<span class="sd">    8.0</span>
-<span class="sd">    &gt;&gt;&gt; np.trapz(a, dx=2)</span>
-<span class="sd">    8.0</span>
+
+<span class="sd">    Use the trapezoidal rule on evenly spaced points:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y)</span>
+<span class="sd">    array(4.)</span>
+
+<span class="sd">    The spacing between sample points can be selected by either the `x` or `dx`</span>
+<span class="sd">    arguments:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([4, 6, 8])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, x=x)</span>
+<span class="sd">    array(8.)</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, dx=2)</span>
+<span class="sd">    array(8.)</span>
+
+<span class="sd">    Using a decreasing `x` corresponds to integrating in reverse:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([8, 6, 4])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, x=x)</span>
+<span class="sd">    array(-8.)</span>
+
+<span class="sd">    More generally `x` is used to integrate along a parametric curve. We can</span>
+<span class="sd">    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.linspace(0, 1, num=50)</span>
+<span class="sd">    &gt;&gt;&gt; y = x**2</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, x)</span>
+<span class="sd">    array(0.33340275)</span>
+
+<span class="sd">    Or estimate the area of a circle, noting we repeat the sample which closes</span>
+<span class="sd">    the curve:</span>
+
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(0, 2 * np.pi, num=1000, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(np.cos(theta), x=np.sin(theta))</span>
+<span class="sd">    array(3.14157194)</span>
+
+<span class="sd">    :obj:`dpnp.trapezoid` can be applied along a specified axis to do multiple</span>
+<span class="sd">    computations in one call:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(6).reshape(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 1, 2],</span>
+<span class="sd">           [3, 4, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(a, axis=0)</span>
+<span class="sd">    array([1.5, 2.5, 3.5])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(a, axis=1)</span>
+<span class="sd">    array([2., 8.])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">trapz</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">dx</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="c1"># reshape to correct shape</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nd</span>
+            <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
+    <span class="n">slice2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
+    <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span></div>
+
 
 
 <span class="n">true_divide</span> <span class="o">=</span> <span class="n">divide</span>
