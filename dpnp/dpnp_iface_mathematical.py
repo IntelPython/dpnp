@@ -114,6 +114,7 @@ __all__ = [
     "prod",
     "proj",
     "real",
+    "real_if_close",
     "remainder",
     "rint",
     "round",
@@ -3062,6 +3063,66 @@ real = DPNPReal(
     ti._real,
     _REAL_DOCSTRING,
 )
+
+
+def real_if_close(a, tol=100):
+    """
+    If input is complex with all imaginary parts close to zero, return real
+    parts.
+
+    "Close to zero" is defined as `tol` * (machine epsilon of the type for `a`).
+
+    For full documentation refer to :obj:`numpy.real_if_close`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    tol : scalar, optional
+        Tolerance in machine epsilons for the complex part of the elements in
+        the array. If the tolerance is <=1, then the absolute tolerance is used.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `a` is real, the type of `a` is used for the output. If `a` has
+        complex elements, the returned type is float.
+
+    See Also
+    --------
+    real, imag, angle
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.finfo(np.float64).eps
+    2.220446049250313e-16 # may vary
+
+    >>> a = np.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1, 5.2])
+
+    >>> a = np.array([2.1 + 4e-13j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1+4.e-13j, 5.2+3.e-15j])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if not dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        return a
+
+    if not dpnp.isscalar(tol):
+        raise TypeError(f"Tolerance must be a scalar, but got {type(tol)}")
+
+    if tol > 1:
+        f = dpnp.finfo(a.dtype.type)
+        tol = f.eps * tol
+
+    if dpnp.all(dpnp.abs(a.imag) < tol):
+        return a.real
+    return a
 
 
 _REMAINDER_DOCSTRING = """
