@@ -506,6 +506,10 @@ See Also
 :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
 :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+:obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 
 Examples
 --------
@@ -2202,6 +2206,9 @@ out : dpnp.ndarray
 See Also
 --------
 :obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
 :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
 
@@ -3055,6 +3062,28 @@ out : dpnp.ndarray
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
+
+See Also
+--------
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1+2j, 3+4j, 5+6j])
+>>> a.real
+array([1., 3., 5.])
+>>> a.real = 9
+>>> a
+array([9.+2.j, 9.+4.j, 9.+6.j])
+>>> a.real = np.array([9, 8, 7])
+>>> a
+array([9.+2.j, 8.+4.j, 7.+6.j])
+>>> np.real(np.array(1 + 1j))
+array(1.)
 """
 
 real = DPNPReal(
@@ -3091,7 +3120,9 @@ def real_if_close(a, tol=100):
 
     See Also
     --------
-    real, imag, angle
+    :obj:`dpnp.real` : Return the real part of the complex argument.
+    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+    :obj:`dpnp.angle` : Return the angle of the complex argument.
 
     Examples
     --------
