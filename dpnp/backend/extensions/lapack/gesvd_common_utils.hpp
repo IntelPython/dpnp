@@ -41,7 +41,7 @@ namespace py = pybind11;
 
 // Converts a given character code (ord) to the corresponding
 // oneapi::mkl::jobsvd enumeration value
-inline oneapi::mkl::jobsvd process_job(std::int8_t job_val)
+inline oneapi::mkl::jobsvd process_job(const std::int8_t job_val)
 {
     switch (job_val) {
     case 'A':
@@ -138,20 +138,20 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out_u);
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out_vt);
 
-    bool is_a_array_f_contig = a_array.is_f_contiguous();
+    const bool is_a_array_f_contig = a_array.is_f_contiguous();
     if (!is_a_array_f_contig) {
         throw py::value_error("The input array must be F-contiguous");
     }
 
-    bool is_out_u_array_f_contig = out_u.is_f_contiguous();
-    bool is_out_vt_array_f_contig = out_vt.is_f_contiguous();
+    const bool is_out_u_array_f_contig = out_u.is_f_contiguous();
+    const bool is_out_vt_array_f_contig = out_vt.is_f_contiguous();
 
     if (!is_out_u_array_f_contig || !is_out_vt_array_f_contig) {
         throw py::value_error("The output arrays of the left and right "
                               "singular vectors must be F-contiguous");
     }
 
-    bool is_out_s_array_c_contig = out_s.is_c_contiguous();
+    const bool is_out_s_array_c_contig = out_s.is_c_contiguous();
 
     if (!is_out_s_array_c_contig) {
         throw py::value_error("The output array of singular values "
@@ -159,10 +159,12 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int a_array_type_id =
+    const int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
-    int out_u_type_id = array_types.typenum_to_lookup_id(out_u.get_typenum());
-    int out_vt_type_id = array_types.typenum_to_lookup_id(out_vt.get_typenum());
+    const int out_u_type_id =
+        array_types.typenum_to_lookup_id(out_u.get_typenum());
+    const int out_vt_type_id =
+        array_types.typenum_to_lookup_id(out_vt.get_typenum());
 
     if (a_array_type_id != out_u_type_id || a_array_type_id != out_vt_type_id) {
         throw py::type_error(
@@ -207,11 +209,11 @@ inline bool check_zeros_shape_gesvd(const dpctl::tensor::usm_ndarray &a_array,
     return is_zeros_shape;
 }
 
-inline void handle_lapack_exc(std::int64_t scratchpad_size,
+inline void handle_lapack_exc(const std::int64_t scratchpad_size,
                               const oneapi::mkl::lapack::exception &e,
                               std::stringstream &error_msg)
 {
-    std::int64_t info = e.info();
+    const std::int64_t info = e.info();
     if (info < 0) {
         error_msg << "Parameter number " << -info << " had an illegal value.";
     }

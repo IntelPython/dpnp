@@ -232,9 +232,10 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int a_array_type_id =
+    const int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
-    int out_s_type_id = array_types.typenum_to_lookup_id(out_s.get_typenum());
+    const int out_s_type_id =
+        array_types.typenum_to_lookup_id(out_s.get_typenum());
 
     gesvd_batch_impl_fn_ptr_t gesvd_batch_fn =
         gesvd_batch_dispatch_table[a_array_type_id][out_s_type_id];
