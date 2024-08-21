@@ -504,7 +504,7 @@ def _batched_svd(
     a_ndim = a.ndim
     batch_shape_orig = a_shape[:-2]
 
-    a = dpnp.reshape(a, (prod(a_shape[:-2]), a_shape[-2], a_shape[-1]))
+    a = dpnp.reshape(a, (prod(batch_shape_orig), a_shape[-2], a_shape[-1]))
 
     batch_size = a.shape[0]
     if batch_size == 0:
