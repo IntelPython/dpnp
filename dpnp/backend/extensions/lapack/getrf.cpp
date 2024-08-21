@@ -40,7 +40,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*getrf_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*getrf_impl_fn_ptr_t)(sycl::queue &,
                                            const std::int64_t,
                                            char *,
                                            std::int64_t,
@@ -52,7 +52,7 @@ typedef sycl::event (*getrf_impl_fn_ptr_t)(sycl::queue,
 static getrf_impl_fn_ptr_t getrf_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event getrf_impl(sycl::queue exec_q,
+static sycl::event getrf_impl(sycl::queue &exec_q,
                               const std::int64_t n,
                               char *in_a,
                               std::int64_t lda,
@@ -142,9 +142,9 @@ static sycl::event getrf_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    getrf(sycl::queue exec_q,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray ipiv_array,
+    getrf(sycl::queue &exec_q,
+          const dpctl::tensor::usm_ndarray &a_array,
+          const dpctl::tensor::usm_ndarray &ipiv_array,
           py::list dev_info,
           const std::vector<sycl::event> &depends)
 {

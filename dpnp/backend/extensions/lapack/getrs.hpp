@@ -34,9 +34,9 @@ namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     getrs(sycl::queue &exec_q,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray ipiv_array,
-          dpctl::tensor::usm_ndarray b_array,
+          const dpctl::tensor::usm_ndarray &a_array,
+          const dpctl::tensor::usm_ndarray &ipiv_array,
+          const dpctl::tensor::usm_ndarray &b_array,
           const std::vector<sycl::event> &depends = {});
 
 extern void init_getrs_dispatch_vector(void);

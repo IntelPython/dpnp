@@ -55,8 +55,8 @@ std::pair<sycl::event, sycl::event>
     evd_batch_func(sycl::queue &exec_q,
                    const std::int8_t jobz,
                    const std::int8_t upper_lower,
-                   dpctl::tensor::usm_ndarray &eig_vecs,
-                   dpctl::tensor::usm_ndarray &eig_vals,
+                   const dpctl::tensor::usm_ndarray &eig_vecs,
+                   const dpctl::tensor::usm_ndarray &eig_vals,
                    const std::vector<sycl::event> &depends,
                    const dispatchT &evd_batch_dispatch_table)
 {
