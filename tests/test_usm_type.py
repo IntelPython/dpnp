@@ -618,6 +618,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
+        pytest.param("real_if_close", [2.1 + 4e-15j, 5.2 + 3e-16j]),
         pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("rsqrt", [1, 8, 27]),
@@ -640,6 +641,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
         ),
+        pytest.param("trapezoid", [1, 2, 3]),
         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
@@ -700,6 +702,7 @@ def test_1in_1out(func, data, usm_type):
             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
             [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
         ),
+        pytest.param("trapezoid", [1, 2, 3], [4, 6, 8]),
         # dpnp.vdot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
