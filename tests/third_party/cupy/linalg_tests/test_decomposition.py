@@ -283,13 +283,33 @@ class TestSVD(unittest.TestCase):
     #     is_cpu_device() and is_win_platform(), reason="SAT-7145"
     # )
     @_condition.repeat(3, 10)
-    def test_svd_rank3(self):
+    def test_svd_rank3_234(self):
         self.check_usv((2, 3, 4))
         # self.check_usv((2, 3, 7))
         # self.check_usv((2, 4, 4))
         # self.check_usv((2, 7, 3))
         # self.check_usv((2, 4, 3))
         # self.check_usv((2, 32, 32))
+
+    @_condition.repeat(3, 10)
+    def test_svd_rank3_237(self):
+        self.check_usv((2, 3, 7))
+
+    @_condition.repeat(3, 10)
+    def test_svd_rank3_244(self):
+        self.check_usv((2, 4, 4))
+
+    @_condition.repeat(3, 10)
+    def test_svd_rank3_273(self):
+        self.check_usv((2, 7, 3))
+
+    @_condition.repeat(3, 10)
+    def test_svd_rank3_243(self):
+        self.check_usv((2, 4, 3))
+
+    @_condition.repeat(3, 10)
+    def test_svd_rank3_23232(self):
+        self.check_usv((2, 32, 32))
 
     # # @pytest.mark.skipif(
     # #     is_cpu_device() and is_win_platform(), reason="SAT-7145"
