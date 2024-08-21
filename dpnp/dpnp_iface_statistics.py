@@ -522,7 +522,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     array([1, 3])
 
     >>> b = np.arange(5, dtype=float)
-    >>> b[2] = np.NaN
+    >>> b[2] = np.nan
     >>> np.max(b)
     array(nan)
 
@@ -736,7 +736,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     array([0, 2])
 
     >>> b = np.arange(5, dtype=float)
-    >>> b[2] = np.NaN
+    >>> b[2] = np.nan
     >>> np.min(b)
     array(nan)
 

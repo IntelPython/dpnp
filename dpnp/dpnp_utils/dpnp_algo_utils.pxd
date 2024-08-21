@@ -37,20 +37,8 @@ cpdef checker_throw_value_error(function_name, param_name, param, expected)
 """
 
 
-cpdef checker_throw_axis_error(function_name, param_name, param, expected)
-""" Throw exception AxisError if 'param' is not 'expected'
-
-"""
-
-
 cpdef checker_throw_type_error(function_name, given_type)
 """ Throw exception TypeError if 'given_type' type is not supported
-
-"""
-
-
-cpdef checker_throw_index_error(function_name, index, size)
-""" Throw exception IndexError if 'index' is out of bounds
 
 """
 
@@ -69,17 +57,7 @@ Return:
 
 
 cpdef tuple _object_to_tuple(object obj)
-cdef int _normalize_order(order, cpp_bool allow_k=*) except? 0
 
-cpdef shape_type_c normalize_axis(object axis, size_t shape_size)
-"""
-Conversion of the transformation shape axis [-1, 0, 1] into [2, 0, 1] where numbers are `id`s of array shape axis
-"""
-
-cpdef long _get_linear_index(key, tuple shape, int ndim)
-"""
-Compute linear index of an element in memory from array indices
-"""
 
 cpdef tuple get_axis_offsets(shape)
 """

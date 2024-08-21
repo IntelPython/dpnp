@@ -25,19 +25,11 @@
 
 #pragma once
 
-#include <oneapi/mkl.hpp>
-#include <sycl/sycl.hpp>
+#include <pybind11/pybind11.h>
 
-#include <dpctl4pybind11.hpp>
+namespace py = pybind11;
 
-namespace dpnp::extensions::lapack
+namespace dpnp::extensions::ufunc
 {
-extern std::pair<sycl::event, sycl::event>
-    getrs(sycl::queue &exec_q,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray ipiv_array,
-          dpctl::tensor::usm_ndarray b_array,
-          const std::vector<sycl::event> &depends = {});
-
-extern void init_getrs_dispatch_vector(void);
-} // namespace dpnp::extensions::lapack
+void init_fix(py::module_ m);
+} // namespace dpnp::extensions::ufunc

@@ -56,11 +56,7 @@ from dpctl.tensor._type_utils import _acceptance_fn_divide
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
-from .backend.extensions.sycl_ext import _sycl_ext_impl
-from .dpnp_algo import (
-    dpnp_ediff1d,
-    dpnp_modf,
-)
+from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
@@ -96,6 +92,7 @@ __all__ = [
     "divide",
     "ediff1d",
     "fabs",
+    "fix",
     "float_power",
     "floor",
     "floor_divide",
@@ -117,6 +114,7 @@ __all__ = [
     "prod",
     "proj",
     "real",
+    "real_if_close",
     "remainder",
     "rint",
     "round",
@@ -124,7 +122,7 @@ __all__ = [
     "signbit",
     "subtract",
     "sum",
-    "trapz",
+    "trapezoid",
     "true_divide",
     "trunc",
 ]
@@ -310,6 +308,30 @@ def _gradient_num_diff_edges(
         )
 
 
+def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
+    """Process the argument for ediff1d."""
+    if not dpnp.is_supported_array_type(arg):
+        arg = dpnp.asarray(arg, usm_type=usm_type, sycl_queue=ary_sycl_queue)
+    else:
+        usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
+        # check that arrays have the same allocation queue
+        if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
+            raise dpu.ExecutionPlacementError(
+                f"ary and {arg_name} must be allocated on the same SYCL queue"
+            )
+
+    if not dpnp.can_cast(arg, ary_dtype, casting="same_kind"):
+        raise TypeError(
+            f"dtype of {arg_name} must be compatible "
+            "with input ary under the `same_kind` rule."
+        )
+
+    if arg.ndim > 1:
+        arg = dpnp.ravel(arg)
+
+    return arg, usm_type
+
+
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element `x_i` of input array `x`.
 
@@ -484,6 +506,10 @@ See Also
 :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
 :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+:obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 
 Examples
 --------
@@ -533,6 +559,7 @@ def around(x, /, decimals=0, out=None):
     :obj:`dpnp.round` : Equivalent function; see for details.
     :obj:`dpnp.ndarray.round` : Equivalent function.
     :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+    :obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
     :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
     :obj:`dpnp.floor` : Return the floor of the input, element-wise.
     :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -578,6 +605,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------
@@ -1082,6 +1111,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
     See Also
     --------
     :obj:`dpnp.sum` : Sum array elements.
+    :obj:`dpnp.trapezoid` : Integration of array values using composite
+                            trapezoidal rule.
     :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.
 
     Examples
@@ -1275,49 +1306,94 @@ divide = DPNPBinaryFunc(
 )
 
 
-def ediff1d(x1, to_end=None, to_begin=None):
+def ediff1d(ary, to_end=None, to_begin=None):
     """
     The differences between consecutive elements of an array.
 
     For full documentation refer to :obj:`numpy.ediff1d`.
 
-    Limitations
-    -----------
-    Parameter `x1`is supported as :class:`dpnp.ndarray`.
-    Keyword arguments `to_end` and `to_begin` are currently supported only
-    with default values `None`.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        If necessary, will be flattened before the differences are taken.
+    to_end : array_like, optional
+        Number(s) to append at the end of the returned differences.
+        Default: ``None``.
+    to_begin : array_like, optional
+        Number(s) to prepend at the beginning of the returned differences.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        New array consisting differences among succeeding elements.
+        Loosely, this is ``ary.flat[1:] - ary.flat[:-1]``.
 
     See Also
     --------
     :obj:`dpnp.diff` : Calculate the n-th discrete difference along the given
                        axis.
+    :obj:`dpnp.gradient` : Return the gradient of an N-dimensional array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 4, 7, 0])
-    >>> result = np.ediff1d(a)
-    >>> [x for x in result]
-    [1, 2, 3, -7]
-    >>> b = np.array([[1, 2, 4], [1, 6, 24]])
-    >>> result = np.ediff1d(b)
-    >>> [x for x in result]
-    [1, 2, -3, 5, 18]
+    >>> x = np.array([1, 2, 4, 7, 0])
+    >>> np.ediff1d(x)
+    array([ 1,  2,  3, -7])
+
+    >>> np.ediff1d(x, to_begin=-99, to_end=np.array([88, 99]))
+    array([-99,   1,   2,   3,  -7,  88,  99])
+
+    The returned array is always 1D.
+
+    >>> y = np.array([[1, 2, 4], [1, 6, 24]])
+    >>> np.ediff1d(y)
+    array([ 1,  2, -3,  5, 18])
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if to_begin is not None:
-            pass
-        elif to_end is not None:
-            pass
-        else:
-            return dpnp_ediff1d(x1_desc).get_pyobj()
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim > 1:
+        ary = dpnp.ravel(ary)
 
-    return call_origin(numpy.ediff1d, x1, to_end=to_end, to_begin=to_begin)
+    # fast track default case
+    if to_begin is None and to_end is None:
+        return ary[1:] - ary[:-1]
+
+    ary_dtype = ary.dtype
+    ary_sycl_queue = ary.sycl_queue
+    usm_type = ary.usm_type
+
+    if to_begin is None:
+        l_begin = 0
+    else:
+        to_begin, usm_type = _process_ediff1d_args(
+            to_begin, "to_begin", ary_dtype, ary_sycl_queue, usm_type
+        )
+        l_begin = to_begin.size
+
+    if to_end is None:
+        l_end = 0
+    else:
+        to_end, usm_type = _process_ediff1d_args(
+            to_end, "to_end", ary_dtype, ary_sycl_queue, usm_type
+        )
+        l_end = to_end.size
+
+    # calculating using in place operation
+    l_diff = max(len(ary) - 1, 0)
+    result = dpnp.empty_like(
+        ary, shape=l_diff + l_begin + l_end, usm_type=usm_type
+    )
+
+    if l_begin > 0:
+        result[:l_begin] = to_begin
+    if l_end > 0:
+        result[l_begin + l_diff :] = to_end
+    dpnp.subtract(ary[1:], ary[:-1], out=result[l_begin : l_begin + l_diff])
+
+    return result
 
 
 _FABS_DOCSTRING = """
@@ -1368,6 +1444,64 @@ fabs = DPNPUnaryFunc(
     _FABS_DOCSTRING,
     mkl_fn_to_call="_mkl_abs_to_call",
     mkl_impl_fn="_abs",
+)
+
+
+_FIX_DOCSTRING = """
+Round to nearest integer towards zero.
+
+Round an array of floats element-wise to nearest integer towards zero.
+The rounded values are returned as floats.
+
+For full documentation refer to :obj:`numpy.fix`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    An array of floats to be rounded.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array with the rounded values and with the same dimensions as the input.
+    The returned array will have the default floating point data type for the
+    device where `a` is allocated.
+    If `out` is ``None`` then a float array is returned with the rounded values.
+    Otherwise the result is stored there and the return value `out` is
+    a reference to that array.
+
+See Also
+--------
+:obj:`dpnp.round` : Round to given number of decimals.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.floor` : Return the floor of the input, element-wise.
+:obj:`dpnp.ceil` : Return the ceiling of the input, element-wise.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.fix(np.array(3.14))
+array(3.)
+>>> np.fix(np.array(3))
+array(3.)
+>>> a = np.array([2.1, 2.9, -2.1, -2.9])
+>>> np.fix(a)
+array([ 2.,  2., -2., -2.])
+"""
+
+fix = DPNPUnaryFunc(
+    "fix",
+    ufi._fix_result_type,
+    ufi._fix,
+    _FIX_DOCSTRING,
 )
 
 
@@ -1504,6 +1638,8 @@ See Also
 --------
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Notes
 -----
@@ -2072,6 +2208,9 @@ out : dpnp.ndarray
 See Also
 --------
 :obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
 :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
 
@@ -2166,7 +2305,7 @@ array([[1. , 2. ],
 >>> np.maximum(x1, x2)
 array([nan, nan, nan])
 
->>> np.maximum(np.array(np.Inf), 1)
+>>> np.maximum(np.array(np.inf), 1)
 array(inf)
 """
 
@@ -2246,7 +2385,7 @@ array([[0.5, 0. ],
 >>> np.minimum(x1, x2)
 array([nan, nan, nan])
 
->>> np.minimum(np.array(-np.Inf), 1)
+>>> np.minimum(np.array(-np.inf), 1)
 array(-inf)
 """
 
@@ -2925,6 +3064,28 @@ out : dpnp.ndarray
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
+
+See Also
+--------
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1+2j, 3+4j, 5+6j])
+>>> a.real
+array([1., 3., 5.])
+>>> a.real = 9
+>>> a
+array([9.+2.j, 9.+4.j, 9.+6.j])
+>>> a.real = np.array([9, 8, 7])
+>>> a
+array([9.+2.j, 8.+4.j, 7.+6.j])
+>>> np.real(np.array(1 + 1j))
+array(1.)
 """
 
 real = DPNPReal(
@@ -2933,6 +3094,69 @@ real = DPNPReal(
     ti._real,
     _REAL_DOCSTRING,
 )
+
+
+def real_if_close(a, tol=100):
+    """
+    If input is complex with all imaginary parts close to zero, return real
+    parts.
+
+    "Close to zero" is defined as `tol` * (machine epsilon of the type for `a`).
+
+    For full documentation refer to :obj:`numpy.real_if_close`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    tol : scalar, optional
+        Tolerance in machine epsilons for the complex part of the elements in
+        the array. If the tolerance is <=1, then the absolute tolerance is used.
+        Default: ``100``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `a` is real, the type of `a` is used for the output. If `a` has
+        complex elements, the returned type is float.
+
+    See Also
+    --------
+    :obj:`dpnp.real` : Return the real part of the complex argument.
+    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+    :obj:`dpnp.angle` : Return the angle of the complex argument.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.finfo(np.float64).eps
+    2.220446049250313e-16 # may vary
+
+    >>> a = np.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1, 5.2])
+
+    >>> a = np.array([2.1 + 4e-13j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1+4.e-13j, 5.2+3.e-15j])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if not dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        return a
+
+    if not dpnp.isscalar(tol):
+        raise TypeError(f"Tolerance must be a scalar, but got {type(tol)}")
+
+    if tol > 1:
+        f = dpnp.finfo(a.dtype.type)
+        tol = f.eps * tol
+
+    if dpnp.all(dpnp.abs(a.imag) < tol):
+        return a.real
+    return a
 
 
 _REMAINDER_DOCSTRING = """
@@ -3048,6 +3272,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.round` : Evenly round to the given number of decimals.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
@@ -3103,6 +3328,7 @@ See Also
 :obj:`dpnp.ndarray.round` : Equivalent function.
 :obj:`dpnp.rint` : Round elements of the array to the nearest integer.
 :obj:`dpnp.ceil` : Compute the ceiling of the input, element-wise.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 :obj:`dpnp.floor` : Return the floor of the input, element-wise.
 :obj:`dpnp.trunc` : Return the truncated value of the input, element-wise.
 
@@ -3376,8 +3602,8 @@ def sum(
     --------
     :obj:`dpnp.ndarray.sum` : Equivalent method.
     :obj:`dpnp.cumsum` : Cumulative sum of array elements.
-    :obj:`dpnp.trapz` : Integration of array values using the composite
-                        trapezoidal rule.
+    :obj:`dpnp.trapezoid` : Integration of array values using the composite
+                            trapezoidal rule.
     :obj:`dpnp.mean` : Compute the arithmetic mean.
     :obj:`dpnp.average` : Compute the weighted average.
 
@@ -3400,61 +3626,6 @@ def sum(
 
     dpnp.check_limitations(initial=initial, where=where)
 
-    sycl_sum_call = False
-    if len(a.shape) == 2 and a.itemsize == 4:
-        c_contiguous_rules = (
-            axis == (0,)
-            and a.flags.c_contiguous
-            and 32 <= a.shape[1] <= 1024
-            and a.shape[0] > a.shape[1]
-        )
-        f_contiguous_rules = (
-            axis == (1,)
-            and a.flags.f_contiguous
-            and 32 <= a.shape[0] <= 1024
-            and a.shape[1] > a.shape[0]
-        )
-        sycl_sum_call = c_contiguous_rules or f_contiguous_rules
-
-    if sycl_sum_call:
-        if axis is not None:
-            if not isinstance(axis, (tuple, list)):
-                axis = (axis,)
-
-            axis = normalize_axis_tuple(axis, a.ndim, "axis")
-
-        input = a
-        if axis == (1,):
-            input = input.T
-        input = dpnp.get_usm_ndarray(input)
-
-        queue = input.sycl_queue
-        out_dtype = (
-            dtu._default_accumulation_dtype(input.dtype, queue)
-            if dtype is None
-            else dtype
-        )
-        output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
-
-        get_sum = _sycl_ext_impl._get_sum_over_axis_0
-        sycl_sum = get_sum(input, output)
-
-        if sycl_sum:
-            # TODO: pass dep events into _get_sum_over_axis_0 to remove sync
-            dpnp.synchronize_array_data(input)
-
-            sycl_sum(input, output, []).wait()
-            result = dpnp_array._create_from_usm_ndarray(output)
-
-            if keepdims:
-                if axis == (0,):
-                    res_sh = (1,) + output.shape
-                else:
-                    res_sh = output.shape + (1,)
-                result = result.reshape(res_sh)
-
-            return result
-
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
         a,
@@ -3468,34 +3639,126 @@ def sum(
     )
 
 
-def trapz(y1, x1=None, dx=1.0, axis=-1):
-    """
+def trapezoid(y, x=None, dx=1.0, axis=-1):
+    r"""
     Integrate along the given axis using the composite trapezoidal rule.
 
-    For full documentation refer to :obj:`numpy.trapz`.
+    If `x` is provided, the integration happens in sequence along its elements -
+    they are not sorted.
 
-    Limitations
-    -----------
-    Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Integrate `y` (`x`) along each 1d slice on the given axis, compute
+    :math:`\int y(x) dx`.
+    When `x` is specified, this integrates along the parametric curve,
+    computing :math:`\int_t y(t) dt =
+    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.
+
+    For full documentation refer to :obj:`numpy.trapezoid`.
+
+    Parameters
+    ----------
+    y : {dpnp.ndarray, usm_ndarray}
+        Input array to integrate.
+    x : {dpnp.ndarray, usm_ndarray, None}, optional
+        The sample points corresponding to the `y` values. If `x` is ``None``,
+        the sample points are assumed to be evenly spaced `dx` apart.
+        Default: ``None``.
+    dx : scalar, optional
+        The spacing between sample points when `x` is ``None``.
+        Default: ``1``.
+    axis : int, optional
+        The axis along which to integrate.
+        Default: ``-1``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Definite integral of `y` = n-dimensional array as approximated along
+        a single axis by the trapezoidal rule. The result is an `n`-1
+        dimensional array.
+
+    See Also
+    --------
+    :obj:`dpnp.sum` : Sum of array elements over a given axis.
+    :obj:`dpnp.cumsum` : Cumulative sum of the elements along a given axis.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 3])
-    >>> b = np.array([4, 6, 8])
-    >>> np.trapz(a)
-    4.0
-    >>> np.trapz(a, x=b)
-    8.0
-    >>> np.trapz(a, dx=2)
-    8.0
+
+    Use the trapezoidal rule on evenly spaced points:
+
+    >>> y = np.array([1, 2, 3])
+    >>> np.trapezoid(y)
+    array(4.)
+
+    The spacing between sample points can be selected by either the `x` or `dx`
+    arguments:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([4, 6, 8])
+    >>> np.trapezoid(y, x=x)
+    array(8.)
+    >>> np.trapezoid(y, dx=2)
+    array(8.)
+
+    Using a decreasing `x` corresponds to integrating in reverse:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([8, 6, 4])
+    >>> np.trapezoid(y, x=x)
+    array(-8.)
+
+    More generally `x` is used to integrate along a parametric curve. We can
+    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:
+
+    >>> x = np.linspace(0, 1, num=50)
+    >>> y = x**2
+    >>> np.trapezoid(y, x)
+    array(0.33340275)
+
+    Or estimate the area of a circle, noting we repeat the sample which closes
+    the curve:
+
+    >>> theta = np.linspace(0, 2 * np.pi, num=1000, endpoint=True)
+    >>> np.trapezoid(np.cos(theta), x=np.sin(theta))
+    array(3.14157194)
+
+    :obj:`dpnp.trapezoid` can be applied along a specified axis to do multiple
+    computations in one call:
+
+    >>> a = np.arange(6).reshape(2, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5]])
+    >>> np.trapezoid(a, axis=0)
+    array([1.5, 2.5, 3.5])
+    >>> np.trapezoid(a, axis=1)
+    array([2., 8.])
 
     """
 
-    return call_origin(numpy.trapz, y1, x1, dx, axis)
+    dpnp.check_supported_arrays_type(y)
+    nd = y.ndim
+
+    if x is None:
+        d = dx
+    else:
+        dpnp.check_supported_arrays_type(x)
+        if x.ndim == 1:
+            d = dpnp.diff(x)
+
+            # reshape to correct shape
+            shape = [1] * nd
+            shape[axis] = d.shape[0]
+            d = d.reshape(shape)
+        else:
+            d = dpnp.diff(x, axis=axis)
+
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+    return (d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0).sum(axis)
 
 
 true_divide = divide
@@ -3536,6 +3799,8 @@ See Also
 --------
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
 :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
+:obj:`dpnp.rint` : Round elements of the array to the nearest integer.
+:obj:`dpnp.fix` : Round to nearest integer towards zero, element-wise.
 
 Examples
 --------

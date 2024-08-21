@@ -27,6 +27,7 @@
 
 #include "degrees.hpp"
 #include "fabs.hpp"
+#include "fix.hpp"
 #include "float_power.hpp"
 #include "fmax.hpp"
 #include "fmin.hpp"
@@ -45,6 +46,7 @@ void init_elementwise_functions(py::module_ m)
 {
     init_degrees(m);
     init_fabs(m);
+    init_fix(m);
     init_float_power(m);
     init_fmax(m);
     init_fmin(m);

@@ -28,7 +28,6 @@ env:
       test_bitwise.py
       test_copy.py
       test_counting.py
-      test_extensions.py
       test_fft.py
       test_flat.py
       test_histogram.py
@@ -52,6 +51,7 @@ env:
       test_umath.py
       test_usm_type.py
       third_party/cupy/core_tests
+      third_party/cupy/fft_tests
       third_party/cupy/creation_tests
       third_party/cupy/indexing_tests/test_indexing.py
       third_party/cupy/lib_tests
@@ -72,7 +72,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-22.04, windows-2019]
 
     permissions:
@@ -141,26 +141,26 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.24 ${{ env.CHANNELS }} conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 1.26 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 # v4.3.5
+        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@89ef406dd8d7e03cfd12d9e0a4a378f454709029 # v4.3.5
+        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   test_linux:
-    name: Test ['${{ matrix.os }}', python='${{ matrix.python }}']
+    name: Test ['ubuntu-latest', python='${{ matrix.python }}']
 
     needs: build
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
 
     defaults:
       run:
@@ -168,8 +168,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
-        os: [ubuntu-22.04, ubuntu-latest]
+        python: ['3.9', '3.10', '3.11', '3.12']
 
     continue-on-error: true
 
@@ -290,7 +289,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
 
     continue-on-error: true
 
@@ -439,7 +438,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-22.04, windows-2019]
 
     runs-on: ${{ matrix.os }}
@@ -509,7 +508,7 @@ jobs:
           use-mamba: true
           channels: conda-forge
           run-post: false
-          python-version: '3.11'
+          python-version: '3.12'
           activate-environment: 'cleanup'
 
       - name: Remove defaults channel

@@ -30,6 +30,7 @@ class TestKind(unittest.TestCase):
             with pytest.raises(error):
                 xp.asarray_chkfinite(a, dtype=dtype, order=order)
 
+    @testing.with_requires("numpy<2.0")
     @testing.for_all_dtypes()
     def test_asfarray(self, dtype):
         a = cupy.asarray([1, 2, 3])

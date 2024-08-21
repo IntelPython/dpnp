@@ -53,8 +53,8 @@ include(GNUInstallDirs)
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.1.tar.gz
-    URL_HASH SHA256=51631e88960a8856f9c497027f55c9f2f9115cafb08c0005439838a05ba17bfc
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.3.tar.gz
+    URL_HASH SHA256=6e7a84ec241544f2f5e30c7a82c09c81f0541dd14e9d9ef61051e07105f9c445
 )
 FetchContent_MakeAvailable(pybind11)
 
