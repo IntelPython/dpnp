@@ -84,7 +84,7 @@ jobs:
         if: env.INSTALL_ONE_API == 'yes'
         run: |
           mamba install cython llvm cmake">=3.21" scikit-build ninja pytest pytest-cov coverage[toml] \
-              dpctl">=0.18.0dev0" numpy"<2.0a" ${{ env.NO_INTEL_CHANNELS }}
+              dpctl">=0.18.0dev0" ${{ env.NO_INTEL_CHANNELS }}
 
       - name: Install dpnp dependencies
         if: env.INSTALL_ONE_API != 'yes'

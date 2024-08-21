@@ -242,7 +242,7 @@ jobs:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
-        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest numpy"<2.0a" python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -389,7 +389,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest numpy"<2.0a" python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
