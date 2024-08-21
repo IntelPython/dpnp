@@ -686,6 +686,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param(
             "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
         ),
+        pytest.param("heaviside", [-1.5, 0, 2.0], [1]),
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
