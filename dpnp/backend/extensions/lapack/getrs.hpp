@@ -33,7 +33,7 @@
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    getrs(sycl::queue exec_q,
+    getrs(sycl::queue &exec_q,
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray ipiv_array,
           dpctl::tensor::usm_ndarray b_array,

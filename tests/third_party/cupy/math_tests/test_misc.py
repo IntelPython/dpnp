@@ -95,10 +95,10 @@ class TestMisc:
     @testing.numpy_cupy_array_equal()
     def check_binary_nan(self, name, xp, dtype):
         a = xp.array(
-            [-3, numpy.NAN, -1, numpy.NAN, 0, numpy.NAN, 2], dtype=dtype
+            [-3, numpy.nan, -1, numpy.nan, 0, numpy.nan, 2], dtype=dtype
         )
         b = xp.array(
-            [numpy.NAN, numpy.NAN, 1, 0, numpy.NAN, -1, -2], dtype=dtype
+            [numpy.nan, numpy.nan, 1, 0, numpy.nan, -1, -2], dtype=dtype
         )
         return getattr(xp, name)(a, b)
 
@@ -245,7 +245,7 @@ class TestMisc:
     def test_nan_to_num_nan(self):
         self.check_unary_nan("nan_to_num")
 
-    @pytest.mark.skip(reason="Scalar input is not supported")
+    @pytest.mark.skip(reason="scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_nan_to_num_scalar_nan(self, xp):
         return xp.nan_to_num(xp.nan)
@@ -301,7 +301,8 @@ class TestMisc:
     def test_real_if_close_true(self, xp, dtype):
         dtype = numpy.dtype(dtype).char.lower()
         tol = numpy.finfo(dtype).eps * 90
-        x = testing.shaped_random((10,), xp, dtype) + tol * 1j
+        x = testing.shaped_random((10,), xp, dtype)
+        x = xp.add(x, tol * 1j, dtype=xp.result_type(x, 1j))
         out = xp.real_if_close(x)
         assert x.dtype != out.dtype
         return out
@@ -311,7 +312,8 @@ class TestMisc:
     def test_real_if_close_false(self, xp, dtype):
         dtype = numpy.dtype(dtype).char.lower()
         tol = numpy.finfo(dtype).eps * 110
-        x = testing.shaped_random((10,), xp, dtype) + tol * 1j
+        x = testing.shaped_random((10,), xp, dtype)
+        x = xp.add(x, tol * 1j, dtype=xp.result_type(x, 1j))
         out = xp.real_if_close(x)
         assert x.dtype == out.dtype
         return out
@@ -321,7 +323,8 @@ class TestMisc:
     def test_real_if_close_with_integer_tol_true(self, xp, dtype):
         dtype = numpy.dtype(dtype).char.lower()
         tol = numpy.finfo(dtype).eps * 140
-        x = testing.shaped_random((10,), xp, dtype) + tol * 1j
+        x = testing.shaped_random((10,), xp, dtype)
+        x = xp.add(x, tol * 1j, dtype=xp.result_type(x, 1j))
         out = xp.real_if_close(x, tol=150)
         assert x.dtype != out.dtype
         return out
@@ -331,7 +334,8 @@ class TestMisc:
     def test_real_if_close_with_integer_tol_false(self, xp, dtype):
         dtype = numpy.dtype(dtype).char.lower()
         tol = numpy.finfo(dtype).eps * 50
-        x = testing.shaped_random((10,), xp, dtype) + tol * 1j
+        x = testing.shaped_random((10,), xp, dtype)
+        x = xp.add(x, tol * 1j, dtype=xp.result_type(x, 1j))
         out = xp.real_if_close(x, tol=30)
         assert x.dtype == out.dtype
         return out

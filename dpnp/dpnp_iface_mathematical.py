@@ -56,7 +56,6 @@ from dpctl.tensor._type_utils import _acceptance_fn_divide
 import dpnp
 import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
-from .backend.extensions.sycl_ext import _sycl_ext_impl
 from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
@@ -115,6 +114,7 @@ __all__ = [
     "prod",
     "proj",
     "real",
+    "real_if_close",
     "remainder",
     "rint",
     "round",
@@ -122,7 +122,7 @@ __all__ = [
     "signbit",
     "subtract",
     "sum",
-    "trapz",
+    "trapezoid",
     "true_divide",
     "trunc",
 ]
@@ -308,6 +308,30 @@ def _gradient_num_diff_edges(
         )
 
 
+def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
+    """Process the argument for ediff1d."""
+    if not dpnp.is_supported_array_type(arg):
+        arg = dpnp.asarray(arg, usm_type=usm_type, sycl_queue=ary_sycl_queue)
+    else:
+        usm_type = dpu.get_coerced_usm_type([usm_type, arg.usm_type])
+        # check that arrays have the same allocation queue
+        if dpu.get_execution_queue([ary_sycl_queue, arg.sycl_queue]) is None:
+            raise dpu.ExecutionPlacementError(
+                f"ary and {arg_name} must be allocated on the same SYCL queue"
+            )
+
+    if not dpnp.can_cast(arg, ary_dtype, casting="same_kind"):
+        raise TypeError(
+            f"dtype of {arg_name} must be compatible "
+            "with input ary under the `same_kind` rule."
+        )
+
+    if arg.ndim > 1:
+        arg = dpnp.ravel(arg)
+
+    return arg, usm_type
+
+
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element `x_i` of input array `x`.
 
@@ -482,6 +506,10 @@ See Also
 :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
 :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+:obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 
 Examples
 --------
@@ -1083,6 +1111,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
     See Also
     --------
     :obj:`dpnp.sum` : Sum array elements.
+    :obj:`dpnp.trapezoid` : Integration of array values using composite
+                            trapezoidal rule.
     :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.
 
     Examples
@@ -1332,52 +1362,30 @@ def ediff1d(ary, to_end=None, to_begin=None):
         return ary[1:] - ary[:-1]
 
     ary_dtype = ary.dtype
-    ary_usm_type = ary.usm_type
     ary_sycl_queue = ary.sycl_queue
+    usm_type = ary.usm_type
 
     if to_begin is None:
         l_begin = 0
     else:
-        if not dpnp.is_supported_array_type(to_begin):
-            to_begin = dpnp.asarray(
-                to_begin, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
-            )
-        if not dpnp.can_cast(to_begin, ary_dtype, casting="same_kind"):
-            raise TypeError(
-                "dtype of `to_begin` must be compatible "
-                "with input `ary` under the `same_kind` rule."
-            )
-
-        to_begin_ndim = to_begin.ndim
-
-        if to_begin_ndim > 1:
-            to_begin = dpnp.ravel(to_begin)
-
+        to_begin, usm_type = _process_ediff1d_args(
+            to_begin, "to_begin", ary_dtype, ary_sycl_queue, usm_type
+        )
         l_begin = to_begin.size
 
     if to_end is None:
         l_end = 0
     else:
-        if not dpnp.is_supported_array_type(to_end):
-            to_end = dpnp.asarray(
-                to_end, usm_type=ary_usm_type, sycl_queue=ary_sycl_queue
-            )
-        if not dpnp.can_cast(to_end, ary_dtype, casting="same_kind"):
-            raise TypeError(
-                "dtype of `to_end` must be compatible "
-                "with input `ary` under the `same_kind` rule."
-            )
-
-        to_end_ndim = to_end.ndim
-
-        if to_end_ndim > 1:
-            to_end = dpnp.ravel(to_end)
-
+        to_end, usm_type = _process_ediff1d_args(
+            to_end, "to_end", ary_dtype, ary_sycl_queue, usm_type
+        )
         l_end = to_end.size
 
     # calculating using in place operation
     l_diff = max(len(ary) - 1, 0)
-    result = dpnp.empty_like(ary, shape=l_diff + l_begin + l_end)
+    result = dpnp.empty_like(
+        ary, shape=l_diff + l_begin + l_end, usm_type=usm_type
+    )
 
     if l_begin > 0:
         result[:l_begin] = to_begin
@@ -2200,6 +2208,9 @@ out : dpnp.ndarray
 See Also
 --------
 :obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
 :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
 
@@ -2294,7 +2305,7 @@ array([[1. , 2. ],
 >>> np.maximum(x1, x2)
 array([nan, nan, nan])
 
->>> np.maximum(np.array(np.Inf), 1)
+>>> np.maximum(np.array(np.inf), 1)
 array(inf)
 """
 
@@ -2374,7 +2385,7 @@ array([[0.5, 0. ],
 >>> np.minimum(x1, x2)
 array([nan, nan, nan])
 
->>> np.minimum(np.array(-np.Inf), 1)
+>>> np.minimum(np.array(-np.inf), 1)
 array(-inf)
 """
 
@@ -3053,6 +3064,28 @@ out : dpnp.ndarray
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
+
+See Also
+--------
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1+2j, 3+4j, 5+6j])
+>>> a.real
+array([1., 3., 5.])
+>>> a.real = 9
+>>> a
+array([9.+2.j, 9.+4.j, 9.+6.j])
+>>> a.real = np.array([9, 8, 7])
+>>> a
+array([9.+2.j, 8.+4.j, 7.+6.j])
+>>> np.real(np.array(1 + 1j))
+array(1.)
 """
 
 real = DPNPReal(
@@ -3061,6 +3094,69 @@ real = DPNPReal(
     ti._real,
     _REAL_DOCSTRING,
 )
+
+
+def real_if_close(a, tol=100):
+    """
+    If input is complex with all imaginary parts close to zero, return real
+    parts.
+
+    "Close to zero" is defined as `tol` * (machine epsilon of the type for `a`).
+
+    For full documentation refer to :obj:`numpy.real_if_close`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    tol : scalar, optional
+        Tolerance in machine epsilons for the complex part of the elements in
+        the array. If the tolerance is <=1, then the absolute tolerance is used.
+        Default: ``100``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `a` is real, the type of `a` is used for the output. If `a` has
+        complex elements, the returned type is float.
+
+    See Also
+    --------
+    :obj:`dpnp.real` : Return the real part of the complex argument.
+    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+    :obj:`dpnp.angle` : Return the angle of the complex argument.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.finfo(np.float64).eps
+    2.220446049250313e-16 # may vary
+
+    >>> a = np.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1, 5.2])
+
+    >>> a = np.array([2.1 + 4e-13j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1+4.e-13j, 5.2+3.e-15j])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if not dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        return a
+
+    if not dpnp.isscalar(tol):
+        raise TypeError(f"Tolerance must be a scalar, but got {type(tol)}")
+
+    if tol > 1:
+        f = dpnp.finfo(a.dtype.type)
+        tol = f.eps * tol
+
+    if dpnp.all(dpnp.abs(a.imag) < tol):
+        return a.real
+    return a
 
 
 _REMAINDER_DOCSTRING = """
@@ -3506,8 +3602,8 @@ def sum(
     --------
     :obj:`dpnp.ndarray.sum` : Equivalent method.
     :obj:`dpnp.cumsum` : Cumulative sum of array elements.
-    :obj:`dpnp.trapz` : Integration of array values using the composite
-                        trapezoidal rule.
+    :obj:`dpnp.trapezoid` : Integration of array values using the composite
+                            trapezoidal rule.
     :obj:`dpnp.mean` : Compute the arithmetic mean.
     :obj:`dpnp.average` : Compute the weighted average.
 
@@ -3530,61 +3626,6 @@ def sum(
 
     dpnp.check_limitations(initial=initial, where=where)
 
-    sycl_sum_call = False
-    if len(a.shape) == 2 and a.itemsize == 4:
-        c_contiguous_rules = (
-            axis == (0,)
-            and a.flags.c_contiguous
-            and 32 <= a.shape[1] <= 1024
-            and a.shape[0] > a.shape[1]
-        )
-        f_contiguous_rules = (
-            axis == (1,)
-            and a.flags.f_contiguous
-            and 32 <= a.shape[0] <= 1024
-            and a.shape[1] > a.shape[0]
-        )
-        sycl_sum_call = c_contiguous_rules or f_contiguous_rules
-
-    if sycl_sum_call:
-        if axis is not None:
-            if not isinstance(axis, (tuple, list)):
-                axis = (axis,)
-
-            axis = normalize_axis_tuple(axis, a.ndim, "axis")
-
-        input = a
-        if axis == (1,):
-            input = input.T
-        input = dpnp.get_usm_ndarray(input)
-
-        queue = input.sycl_queue
-        out_dtype = (
-            dtu._default_accumulation_dtype(input.dtype, queue)
-            if dtype is None
-            else dtype
-        )
-        output = dpt.empty(input.shape[1], dtype=out_dtype, sycl_queue=queue)
-
-        get_sum = _sycl_ext_impl._get_sum_over_axis_0
-        sycl_sum = get_sum(input, output)
-
-        if sycl_sum:
-            # TODO: pass dep events into _get_sum_over_axis_0 to remove sync
-            dpnp.synchronize_array_data(input)
-
-            sycl_sum(input, output, []).wait()
-            result = dpnp_array._create_from_usm_ndarray(output)
-
-            if keepdims:
-                if axis == (0,):
-                    res_sh = (1,) + output.shape
-                else:
-                    res_sh = output.shape + (1,)
-                result = result.reshape(res_sh)
-
-            return result
-
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
         a,
@@ -3598,34 +3639,126 @@ def sum(
     )
 
 
-def trapz(y1, x1=None, dx=1.0, axis=-1):
-    """
+def trapezoid(y, x=None, dx=1.0, axis=-1):
+    r"""
     Integrate along the given axis using the composite trapezoidal rule.
 
-    For full documentation refer to :obj:`numpy.trapz`.
+    If `x` is provided, the integration happens in sequence along its elements -
+    they are not sorted.
 
-    Limitations
-    -----------
-    Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Integrate `y` (`x`) along each 1d slice on the given axis, compute
+    :math:`\int y(x) dx`.
+    When `x` is specified, this integrates along the parametric curve,
+    computing :math:`\int_t y(t) dt =
+    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.
+
+    For full documentation refer to :obj:`numpy.trapezoid`.
+
+    Parameters
+    ----------
+    y : {dpnp.ndarray, usm_ndarray}
+        Input array to integrate.
+    x : {dpnp.ndarray, usm_ndarray, None}, optional
+        The sample points corresponding to the `y` values. If `x` is ``None``,
+        the sample points are assumed to be evenly spaced `dx` apart.
+        Default: ``None``.
+    dx : scalar, optional
+        The spacing between sample points when `x` is ``None``.
+        Default: ``1``.
+    axis : int, optional
+        The axis along which to integrate.
+        Default: ``-1``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Definite integral of `y` = n-dimensional array as approximated along
+        a single axis by the trapezoidal rule. The result is an `n`-1
+        dimensional array.
+
+    See Also
+    --------
+    :obj:`dpnp.sum` : Sum of array elements over a given axis.
+    :obj:`dpnp.cumsum` : Cumulative sum of the elements along a given axis.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 3])
-    >>> b = np.array([4, 6, 8])
-    >>> np.trapz(a)
-    4.0
-    >>> np.trapz(a, x=b)
-    8.0
-    >>> np.trapz(a, dx=2)
-    8.0
+
+    Use the trapezoidal rule on evenly spaced points:
+
+    >>> y = np.array([1, 2, 3])
+    >>> np.trapezoid(y)
+    array(4.)
+
+    The spacing between sample points can be selected by either the `x` or `dx`
+    arguments:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([4, 6, 8])
+    >>> np.trapezoid(y, x=x)
+    array(8.)
+    >>> np.trapezoid(y, dx=2)
+    array(8.)
+
+    Using a decreasing `x` corresponds to integrating in reverse:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([8, 6, 4])
+    >>> np.trapezoid(y, x=x)
+    array(-8.)
+
+    More generally `x` is used to integrate along a parametric curve. We can
+    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:
+
+    >>> x = np.linspace(0, 1, num=50)
+    >>> y = x**2
+    >>> np.trapezoid(y, x)
+    array(0.33340275)
+
+    Or estimate the area of a circle, noting we repeat the sample which closes
+    the curve:
+
+    >>> theta = np.linspace(0, 2 * np.pi, num=1000, endpoint=True)
+    >>> np.trapezoid(np.cos(theta), x=np.sin(theta))
+    array(3.14157194)
+
+    :obj:`dpnp.trapezoid` can be applied along a specified axis to do multiple
+    computations in one call:
+
+    >>> a = np.arange(6).reshape(2, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5]])
+    >>> np.trapezoid(a, axis=0)
+    array([1.5, 2.5, 3.5])
+    >>> np.trapezoid(a, axis=1)
+    array([2., 8.])
 
     """
 
-    return call_origin(numpy.trapz, y1, x1, dx, axis)
+    dpnp.check_supported_arrays_type(y)
+    nd = y.ndim
+
+    if x is None:
+        d = dx
+    else:
+        dpnp.check_supported_arrays_type(x)
+        if x.ndim == 1:
+            d = dpnp.diff(x)
+
+            # reshape to correct shape
+            shape = [1] * nd
+            shape[axis] = d.shape[0]
+            d = d.reshape(shape)
+        else:
+            d = dpnp.diff(x, axis=axis)
+
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+    return (d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0).sum(axis)
 
 
 true_divide = divide

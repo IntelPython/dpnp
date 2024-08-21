@@ -41,7 +41,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*getrs_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*getrs_impl_fn_ptr_t)(sycl::queue &,
                                            oneapi::mkl::transpose,
                                            const std::int64_t,
                                            const std::int64_t,
@@ -56,7 +56,7 @@ typedef sycl::event (*getrs_impl_fn_ptr_t)(sycl::queue,
 static getrs_impl_fn_ptr_t getrs_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event getrs_impl(sycl::queue exec_q,
+static sycl::event getrs_impl(sycl::queue &exec_q,
                               oneapi::mkl::transpose trans,
                               const std::int64_t n,
                               const std::int64_t nrhs,
@@ -156,7 +156,7 @@ static sycl::event getrs_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    getrs(sycl::queue exec_q,
+    getrs(sycl::queue &exec_q,
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray ipiv_array,
           dpctl::tensor::usm_ndarray b_array,

@@ -143,10 +143,10 @@ std::pair<sycl::event, sycl::event>
     gesvd(sycl::queue &exec_q,
           const std::int8_t jobu_val,
           const std::int8_t jobvt_val,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray out_s,
-          dpctl::tensor::usm_ndarray out_u,
-          dpctl::tensor::usm_ndarray out_vt,
+          const dpctl::tensor::usm_ndarray &a_array,
+          const dpctl::tensor::usm_ndarray &out_s,
+          const dpctl::tensor::usm_ndarray &out_u,
+          const dpctl::tensor::usm_ndarray &out_vt,
           const std::vector<sycl::event> &depends)
 {
     constexpr int expected_a_u_vt_ndim = 2;
@@ -166,9 +166,10 @@ std::pair<sycl::event, sycl::event>
     }
 
     auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int a_array_type_id =
+    const int a_array_type_id =
         array_types.typenum_to_lookup_id(a_array.get_typenum());
-    int out_s_type_id = array_types.typenum_to_lookup_id(out_s.get_typenum());
+    const int out_s_type_id =
+        array_types.typenum_to_lookup_id(out_s.get_typenum());
 
     gesvd_impl_fn_ptr_t gesvd_fn =
         gesvd_dispatch_table[a_array_type_id][out_s_type_id];

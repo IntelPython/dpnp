@@ -3266,7 +3266,7 @@ def tri(
     /,
     M=None,
     k=0,
-    dtype=dpnp.float,
+    dtype=float,
     *,
     device=None,
     usm_type="device",
@@ -3376,7 +3376,10 @@ def tri(
     if _k is None:
         raise TypeError(f"`k` must be a integer data type, but got {type(k)}")
 
-    _dtype = dpnp.default_float_type() if dtype in (dpnp.float, None) else dtype
+    sycl_dev = dpnp.get_normalized_queue_device(
+        sycl_queue=sycl_queue, device=device
+    ).sycl_device
+    _dtype = map_dtype_to_device(dtype, sycl_dev)
 
     if usm_type is None:
         usm_type = "device"
