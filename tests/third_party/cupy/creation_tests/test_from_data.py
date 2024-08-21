@@ -304,7 +304,12 @@ class TestFromData(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_array_no_copy(self, xp, dtype, order):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        b = xp.array(a, copy=False, order=order)
+        if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            # copy keyword behavior changes in asarray, array since numpy 2.0
+            copy_flag = False
+        else:
+            copy_flag = None
+        b = xp.array(a, copy=copy_flag, order=order)
         a.fill(0)
         return b
 
@@ -313,14 +318,24 @@ class TestFromData(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_array_f_contiguous_input(self, xp, dtype, order):
         a = testing.shaped_arange((2, 3, 4), xp, dtype, order="F")
-        b = xp.array(a, copy=False, order=order)
+        if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            # copy keyword behavior changes in asarray, array since numpy 2.0
+            copy_flag = False
+        else:
+            copy_flag = None
+        b = xp.array(a, copy=copy_flag, order=order)
         return b
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_array_f_contiguous_output(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
-        b = xp.array(a, copy=False, order="F")
+        if xp is numpy and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            # copy keyword behavior changes in asarray, array since numpy 2.0
+            copy_flag = False
+        else:
+            copy_flag = None
+        b = xp.array(a, copy=copy_flag, order="F")
         assert b.flags.f_contiguous
         return b
 
