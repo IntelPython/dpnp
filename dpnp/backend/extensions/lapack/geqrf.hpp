@@ -33,13 +33,13 @@
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    geqrf(sycl::queue exec_q,
+    geqrf(sycl::queue &exec_q,
           dpctl::tensor::usm_ndarray a_array,
           dpctl::tensor::usm_ndarray tau_array,
           const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
-    geqrf_batch(sycl::queue exec_q,
+    geqrf_batch(sycl::queue &exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray tau_array,
                 std::int64_t m,

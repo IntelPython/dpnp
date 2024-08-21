@@ -33,7 +33,7 @@
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    getri_batch(sycl::queue exec_q,
+    getri_batch(sycl::queue &exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray ipiv_array,
                 py::list dev_info,

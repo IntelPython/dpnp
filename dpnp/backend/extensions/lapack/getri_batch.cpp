@@ -41,7 +41,7 @@ namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*getri_batch_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     std::int64_t,
     char *,
     std::int64_t,
@@ -57,7 +57,7 @@ static getri_batch_impl_fn_ptr_t
     getri_batch_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event getri_batch_impl(sycl::queue exec_q,
+static sycl::event getri_batch_impl(sycl::queue &exec_q,
                                     std::int64_t n,
                                     char *in_a,
                                     std::int64_t lda,
@@ -166,7 +166,7 @@ static sycl::event getri_batch_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    getri_batch(sycl::queue exec_q,
+    getri_batch(sycl::queue &exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray ipiv_array,
                 py::list dev_info,

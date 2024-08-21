@@ -41,7 +41,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*potrf_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*potrf_impl_fn_ptr_t)(sycl::queue &,
                                            const oneapi::mkl::uplo,
                                            const std::int64_t,
                                            char *,
@@ -52,7 +52,7 @@ typedef sycl::event (*potrf_impl_fn_ptr_t)(sycl::queue,
 static potrf_impl_fn_ptr_t potrf_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event potrf_impl(sycl::queue exec_q,
+static sycl::event potrf_impl(sycl::queue &exec_q,
                               const oneapi::mkl::uplo upper_lower,
                               const std::int64_t n,
                               char *in_a,
@@ -133,7 +133,7 @@ static sycl::event potrf_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    potrf(sycl::queue q,
+    potrf(sycl::queue &exec_q,
           dpctl::tensor::usm_ndarray a_array,
           const std::int8_t upper_lower,
           const std::vector<sycl::event> &depends)
@@ -179,11 +179,11 @@ std::pair<sycl::event, sycl::event>
         static_cast<oneapi::mkl::uplo>(upper_lower);
 
     std::vector<sycl::event> host_task_events;
-    sycl::event potrf_ev =
-        potrf_fn(q, uplo_val, n, a_array_data, lda, host_task_events, depends);
+    sycl::event potrf_ev = potrf_fn(exec_q, uplo_val, n, a_array_data, lda,
+                                    host_task_events, depends);
 
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(q, {a_array}, host_task_events);
+        dpctl::utils::keep_args_alive(exec_q, {a_array}, host_task_events);
 
     return std::make_pair(args_ev, potrf_ev);
 }

@@ -33,7 +33,7 @@
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    ungqr(sycl::queue exec_q,
+    ungqr(sycl::queue &exec_q,
           const std::int64_t m,
           const std::int64_t n,
           const std::int64_t k,
@@ -42,7 +42,7 @@ extern std::pair<sycl::event, sycl::event>
           const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
-    ungqr_batch(sycl::queue exec_q,
+    ungqr_batch(sycl::queue &exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 dpctl::tensor::usm_ndarray tau_array,
                 std::int64_t m,

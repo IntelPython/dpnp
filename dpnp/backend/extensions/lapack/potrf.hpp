@@ -33,13 +33,13 @@
 namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
-    potrf(sycl::queue exec_q,
+    potrf(sycl::queue &exec_q,
           dpctl::tensor::usm_ndarray a_array,
           const std::int8_t upper_lower,
           const std::vector<sycl::event> &depends = {});
 
 extern std::pair<sycl::event, sycl::event>
-    potrf_batch(sycl::queue exec_q,
+    potrf_batch(sycl::queue &exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 const std::int8_t upper_lower,
                 const std::int64_t n,

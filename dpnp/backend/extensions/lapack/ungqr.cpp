@@ -40,7 +40,7 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
-typedef sycl::event (*ungqr_impl_fn_ptr_t)(sycl::queue,
+typedef sycl::event (*ungqr_impl_fn_ptr_t)(sycl::queue &,
                                            const std::int64_t,
                                            const std::int64_t,
                                            const std::int64_t,
@@ -53,7 +53,7 @@ typedef sycl::event (*ungqr_impl_fn_ptr_t)(sycl::queue,
 static ungqr_impl_fn_ptr_t ungqr_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event ungqr_impl(sycl::queue exec_q,
+static sycl::event ungqr_impl(sycl::queue &exec_q,
                               const std::int64_t m,
                               const std::int64_t n,
                               const std::int64_t k,
@@ -137,7 +137,7 @@ static sycl::event ungqr_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    ungqr(sycl::queue q,
+    ungqr(sycl::queue &exec_q,
           const std::int64_t m,
           const std::int64_t n,
           const std::int64_t k,
@@ -161,7 +161,7 @@ std::pair<sycl::event, sycl::event>
     }
 
     // check compatibility of execution queue and allocation queue
-    if (!dpctl::utils::queues_are_compatible(q, {a_array, tau_array})) {
+    if (!dpctl::utils::queues_are_compatible(exec_q, {a_array, tau_array})) {
         throw py::value_error(
             "Execution queue is not compatible with allocation queues");
     }
@@ -221,11 +221,11 @@ std::pair<sycl::event, sycl::event>
     char *tau_array_data = tau_array.get_data();
 
     std::vector<sycl::event> host_task_events;
-    sycl::event ungqr_ev = ungqr_fn(q, m, n, k, a_array_data, lda,
+    sycl::event ungqr_ev = ungqr_fn(exec_q, m, n, k, a_array_data, lda,
                                     tau_array_data, host_task_events, depends);
 
-    sycl::event args_ev = dpctl::utils::keep_args_alive(q, {a_array, tau_array},
-                                                        host_task_events);
+    sycl::event args_ev = dpctl::utils::keep_args_alive(
+        exec_q, {a_array, tau_array}, host_task_events);
 
     return std::make_pair(args_ev, ungqr_ev);
 }

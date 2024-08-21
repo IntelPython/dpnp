@@ -42,7 +42,7 @@ namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
 typedef sycl::event (*potrf_batch_impl_fn_ptr_t)(
-    sycl::queue,
+    sycl::queue &,
     const oneapi::mkl::uplo,
     const std::int64_t,
     char *,
@@ -56,7 +56,7 @@ static potrf_batch_impl_fn_ptr_t
     potrf_batch_dispatch_vector[dpctl_td_ns::num_types];
 
 template <typename T>
-static sycl::event potrf_batch_impl(sycl::queue exec_q,
+static sycl::event potrf_batch_impl(sycl::queue &exec_q,
                                     const oneapi::mkl::uplo upper_lower,
                                     const std::int64_t n,
                                     char *in_a,
@@ -163,7 +163,7 @@ static sycl::event potrf_batch_impl(sycl::queue exec_q,
 }
 
 std::pair<sycl::event, sycl::event>
-    potrf_batch(sycl::queue q,
+    potrf_batch(sycl::queue &exec_q,
                 dpctl::tensor::usm_ndarray a_array,
                 const std::int8_t upper_lower,
                 const std::int64_t n,
@@ -214,11 +214,11 @@ std::pair<sycl::event, sycl::event>
 
     std::vector<sycl::event> host_task_events;
     sycl::event potrf_batch_ev =
-        potrf_batch_fn(q, uplo_val, n, a_array_data, lda, stride_a, batch_size,
-                       host_task_events, depends);
+        potrf_batch_fn(exec_q, uplo_val, n, a_array_data, lda, stride_a,
+                       batch_size, host_task_events, depends);
 
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(q, {a_array}, host_task_events);
+        dpctl::utils::keep_args_alive(exec_q, {a_array}, host_task_events);
 
     return std::make_pair(args_ev, potrf_batch_ev);
 }
