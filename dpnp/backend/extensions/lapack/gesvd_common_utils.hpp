@@ -58,10 +58,10 @@ inline oneapi::mkl::jobsvd process_job(std::int8_t job_val)
 }
 
 inline void common_gesvd_checks(sycl::queue &exec_q,
-                                dpctl::tensor::usm_ndarray a_array,
-                                dpctl::tensor::usm_ndarray out_s,
-                                dpctl::tensor::usm_ndarray out_u,
-                                dpctl::tensor::usm_ndarray out_vt,
+                                const dpctl::tensor::usm_ndarray &a_array,
+                                const dpctl::tensor::usm_ndarray &out_s,
+                                const dpctl::tensor::usm_ndarray &out_u,
+                                const dpctl::tensor::usm_ndarray &out_vt,
                                 const std::int8_t jobu_val,
                                 const std::int8_t jobvt_val,
                                 const int expected_a_u_vt_ndim,
@@ -173,10 +173,10 @@ inline void common_gesvd_checks(sycl::queue &exec_q,
 }
 
 // Check if the shape of input arrays for gesvd has any non-zero dimension.
-inline bool check_zeros_shape_gesvd(dpctl::tensor::usm_ndarray a_array,
-                                    dpctl::tensor::usm_ndarray out_s,
-                                    dpctl::tensor::usm_ndarray out_u,
-                                    dpctl::tensor::usm_ndarray out_vt,
+inline bool check_zeros_shape_gesvd(const dpctl::tensor::usm_ndarray &a_array,
+                                    const dpctl::tensor::usm_ndarray &out_s,
+                                    const dpctl::tensor::usm_ndarray &out_u,
+                                    const dpctl::tensor::usm_ndarray &out_vt,
                                     const std::int8_t jobu_val,
                                     const std::int8_t jobvt_val)
 {

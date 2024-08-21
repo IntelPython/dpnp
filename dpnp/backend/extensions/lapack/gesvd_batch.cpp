@@ -209,10 +209,10 @@ std::pair<sycl::event, sycl::event>
     gesvd_batch(sycl::queue &exec_q,
                 const std::int8_t jobu_val,
                 const std::int8_t jobvt_val,
-                dpctl::tensor::usm_ndarray a_array,
-                dpctl::tensor::usm_ndarray out_s,
-                dpctl::tensor::usm_ndarray out_u,
-                dpctl::tensor::usm_ndarray out_vt,
+                const dpctl::tensor::usm_ndarray &a_array,
+                const dpctl::tensor::usm_ndarray &out_s,
+                const dpctl::tensor::usm_ndarray &out_u,
+                const dpctl::tensor::usm_ndarray &out_vt,
                 const std::vector<sycl::event> &depends)
 {
     constexpr int expected_a_u_vt_ndim = 3;
