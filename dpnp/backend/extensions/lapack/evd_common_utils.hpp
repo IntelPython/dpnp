@@ -50,8 +50,8 @@ void init_evd_dispatch_table(
 }
 
 inline void common_evd_checks(sycl::queue &exec_q,
-                              dpctl::tensor::usm_ndarray &eig_vecs,
-                              dpctl::tensor::usm_ndarray &eig_vals,
+                              const dpctl::tensor::usm_ndarray &eig_vecs,
+                              const dpctl::tensor::usm_ndarray &eig_vals,
                               const py::ssize_t *eig_vecs_shape,
                               const int expected_eig_vecs_nd,
                               const int expected_eig_vals_nd)

@@ -34,19 +34,19 @@ namespace dpnp::extensions::lapack
 {
 extern std::pair<sycl::event, sycl::event>
     gesv(sycl::queue &exec_q,
-         dpctl::tensor::usm_ndarray coeff_matrix,
-         dpctl::tensor::usm_ndarray dependent_vals,
+         const dpctl::tensor::usm_ndarray &coeff_matrix,
+         const dpctl::tensor::usm_ndarray &dependent_vals,
          const std::vector<sycl::event> &depends);
 
 extern std::pair<sycl::event, sycl::event>
     gesv_batch(sycl::queue &exec_q,
-               dpctl::tensor::usm_ndarray coeff_matrix,
-               dpctl::tensor::usm_ndarray dependent_vals,
+               const dpctl::tensor::usm_ndarray &coeff_matrix,
+               const dpctl::tensor::usm_ndarray &dependent_vals,
                const std::vector<sycl::event> &depends);
 
 extern void common_gesv_checks(sycl::queue &exec_q,
-                               dpctl::tensor::usm_ndarray coeff_matrix,
-                               dpctl::tensor::usm_ndarray dependent_vals,
+                               const dpctl::tensor::usm_ndarray &coeff_matrix,
+                               const dpctl::tensor::usm_ndarray &dependent_vals,
                                const py::ssize_t *coeff_matrix_shape,
                                const py::ssize_t *dependent_vals_shape,
                                const int expected_coeff_matrix_ndim,
