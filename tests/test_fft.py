@@ -69,7 +69,7 @@ class TestFft:
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     def test_fft_1D(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11, dtype=dtype)
-        a = dpnp.sin(x)  # a.dtype is float16 if a.dtype is bool
+        a = dpnp.sin(x)  # a.dtype is float16 if x.dtype is bool
         a_np = dpnp.asnumpy(a)
 
         factor = 140 if dtype == dpnp.bool else 8
