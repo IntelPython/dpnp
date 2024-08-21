@@ -36,7 +36,7 @@ requirements:
       - {{ pin_compatible('onemkl-sycl-rng', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-stats', min_pin='x.x', max_pin='x') }}
       - {{ pin_compatible('onemkl-sycl-vm', min_pin='x.x', max_pin='x') }}
-      - {{ pin_compatible('numpy', min_pin='x.x', max_pin='x') }}
+      - numpy
 
 build:
     number: {{ GIT_DESCRIBE_NUMBER }}
