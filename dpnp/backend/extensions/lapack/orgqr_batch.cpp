@@ -159,8 +159,8 @@ static sycl::event orgqr_batch_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     orgqr_batch(sycl::queue &exec_q,
-                dpctl::tensor::usm_ndarray a_array,
-                dpctl::tensor::usm_ndarray tau_array,
+                const dpctl::tensor::usm_ndarray &a_array,
+                const dpctl::tensor::usm_ndarray &tau_array,
                 std::int64_t m,
                 std::int64_t n,
                 std::int64_t k,

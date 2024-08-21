@@ -141,8 +141,8 @@ std::pair<sycl::event, sycl::event>
           const std::int64_t m,
           const std::int64_t n,
           const std::int64_t k,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray tau_array,
+          const dpctl::tensor::usm_ndarray &a_array,
+          const dpctl::tensor::usm_ndarray &tau_array,
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();

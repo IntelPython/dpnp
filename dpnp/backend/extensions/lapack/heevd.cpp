@@ -137,8 +137,8 @@ void init_heevd(py::module_ m)
             heevd_dispatch_table);
 
         auto heevd_pyapi = [&](sycl::queue &exec_q, const std::int8_t jobz,
-                               const std::int8_t upper_lower, arrayT &eig_vecs,
-                               arrayT &eig_vals,
+                               const std::int8_t upper_lower,
+                               const arrayT &eig_vecs, const arrayT &eig_vals,
                                const event_vecT &depends = {}) {
             return evd::evd_func(exec_q, jobz, upper_lower, eig_vecs, eig_vals,
                                  depends, heevd_dispatch_table);

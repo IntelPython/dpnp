@@ -134,8 +134,8 @@ static sycl::event geqrf_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     geqrf(sycl::queue &exec_q,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray tau_array,
+          const dpctl::tensor::usm_ndarray &a_array,
+          const dpctl::tensor::usm_ndarray &tau_array,
           const std::vector<sycl::event> &depends)
 {
     const int a_array_nd = a_array.get_ndim();

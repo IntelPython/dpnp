@@ -143,8 +143,8 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     getrf(sycl::queue &exec_q,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray ipiv_array,
+          const dpctl::tensor::usm_ndarray &a_array,
+          const dpctl::tensor::usm_ndarray &ipiv_array,
           py::list dev_info,
           const std::vector<sycl::event> &depends)
 {

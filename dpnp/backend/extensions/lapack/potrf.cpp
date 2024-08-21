@@ -134,7 +134,7 @@ static sycl::event potrf_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     potrf(sycl::queue &exec_q,
-          dpctl::tensor::usm_ndarray a_array,
+          const dpctl::tensor::usm_ndarray &a_array,
           const std::int8_t upper_lower,
           const std::vector<sycl::event> &depends)
 {

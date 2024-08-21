@@ -164,7 +164,7 @@ static sycl::event potrf_batch_impl(sycl::queue &exec_q,
 
 std::pair<sycl::event, sycl::event>
     potrf_batch(sycl::queue &exec_q,
-                dpctl::tensor::usm_ndarray a_array,
+                const dpctl::tensor::usm_ndarray &a_array,
                 const std::int8_t upper_lower,
                 const std::int64_t n,
                 const std::int64_t stride_a,
