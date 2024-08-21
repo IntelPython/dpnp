@@ -925,7 +925,7 @@ def dpnp_matmul(
         # If `order` was not passed as default
         # we need to update it to match the passed `order`.
         if order not in ["k", "K"]:
-            return dpnp.array(result, copy=None, order=order)
+            return dpnp.asarray(result, order=order)
         # dpnp.ascontiguousarray changes 0-D array to 1-D array
         if result.ndim == 0:
             return result
