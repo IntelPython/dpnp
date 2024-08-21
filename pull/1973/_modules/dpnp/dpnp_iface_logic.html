@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+150.g072a22113a documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.16.0dev0+189.g72c89c5928 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5169df89"></script>
+        <script src="../../_static/documentation_options.js?v=c8b95539"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+150.g072a22113a
+                0.16.0dev0+189.g72c89c5928
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -946,7 +946,7 @@
     <span class="n">_b</span> <span class="o">+=</span> <span class="n">atol</span>
     <span class="n">result</span> <span class="o">=</span> <span class="n">less_equal</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">),</span> <span class="n">_b</span><span class="p">)</span>
 
-    <span class="c1"># Handle &quot;Inf&quot; values: they are treated as equal if they are in the same</span>
+    <span class="c1"># Handle &quot;inf&quot; values: they are treated as equal if they are in the same</span>
     <span class="c1"># place and of the same sign in both arrays</span>
     <span class="n">result</span> <span class="o">&amp;=</span> <span class="n">isfinite</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
     <span class="n">result</span> <span class="o">|=</span> <span class="n">a</span> <span class="o">==</span> <span class="n">b</span>

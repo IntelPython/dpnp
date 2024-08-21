@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+150.g072a22113a documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+189.g72c89c5928 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=5169df89"></script>
+        <script src="../../_static/documentation_options.js?v=c8b95539"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+150.g072a22113a
+                0.16.0dev0+189.g72c89c5928
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -146,7 +146,6 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 <span class="kn">import</span> <span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span> <span class="k">as</span> <span class="nn">ufi</span>
 
-<span class="kn">from</span> <span class="nn">.backend.extensions.sycl_ext</span> <span class="kn">import</span> <span class="n">_sycl_ext_impl</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="n">dpnp_modf</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
@@ -205,6 +204,7 @@
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
     <span class="s2">&quot;real&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;real_if_close&quot;</span><span class="p">,</span>
     <span class="s2">&quot;remainder&quot;</span><span class="p">,</span>
     <span class="s2">&quot;rint&quot;</span><span class="p">,</span>
     <span class="s2">&quot;round&quot;</span><span class="p">,</span>
@@ -212,7 +212,7 @@
     <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
     <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;trapz&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
     <span class="s2">&quot;true_divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trunc&quot;</span><span class="p">,</span>
 <span class="p">]</span>
@@ -398,6 +398,30 @@
         <span class="p">)</span>
 
 
+<span class="k">def</span> <span class="nf">_process_ediff1d_args</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg_name</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Process the argument for ediff1d.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary_sycl_queue</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
+        <span class="c1"># check that arrays have the same allocation queue</span>
+        <span class="k">if</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">([</span><span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">arg</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">])</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">dpu</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;ary and </span><span class="si">{</span><span class="n">arg_name</span><span class="si">}</span><span class="s2"> must be allocated on the same SYCL queue&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;dtype of </span><span class="si">{</span><span class="n">arg_name</span><span class="si">}</span><span class="s2"> must be compatible &quot;</span>
+            <span class="s2">&quot;with input ary under the `same_kind` rule.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">arg</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">arg</span><span class="p">,</span> <span class="n">usm_type</span>
+
+
 <span class="n">_ABS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the absolute value for each element `x_i` of input array `x`.</span>
 
@@ -572,6 +596,10 @@
 <span class="s2">:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.absolute` : Calculate the absolute value element-wise.</span>
+<span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1190,6 +1218,8 @@
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.sum` : Sum array elements.</span>
+<span class="sd">    :obj:`dpnp.trapezoid` : Integration of array values using composite</span>
+<span class="sd">                            trapezoidal rule.</span>
 <span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.</span>
 
 <span class="sd">    Examples</span>
@@ -1445,52 +1475,30 @@
         <span class="k">return</span> <span class="n">ary</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">-</span> <span class="n">ary</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="n">ary_dtype</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">dtype</span>
-    <span class="n">ary_usm_type</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span>
     <span class="n">ary_sycl_queue</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">usm_type</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span>
 
     <span class="k">if</span> <span class="n">to_begin</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">l_begin</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">to_begin</span><span class="p">):</span>
-            <span class="n">to_begin</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-                <span class="n">to_begin</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ary_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary_sycl_queue</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">to_begin</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;dtype of `to_begin` must be compatible &quot;</span>
-                <span class="s2">&quot;with input `ary` under the `same_kind` rule.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="n">to_begin_ndim</span> <span class="o">=</span> <span class="n">to_begin</span><span class="o">.</span><span class="n">ndim</span>
-
-        <span class="k">if</span> <span class="n">to_begin_ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">to_begin</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">to_begin</span><span class="p">)</span>
-
+        <span class="n">to_begin</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">_process_ediff1d_args</span><span class="p">(</span>
+            <span class="n">to_begin</span><span class="p">,</span> <span class="s2">&quot;to_begin&quot;</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span>
+        <span class="p">)</span>
         <span class="n">l_begin</span> <span class="o">=</span> <span class="n">to_begin</span><span class="o">.</span><span class="n">size</span>
 
     <span class="k">if</span> <span class="n">to_end</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">l_end</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">to_end</span><span class="p">):</span>
-            <span class="n">to_end</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
-                <span class="n">to_end</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">ary_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary_sycl_queue</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">to_end</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-                <span class="s2">&quot;dtype of `to_end` must be compatible &quot;</span>
-                <span class="s2">&quot;with input `ary` under the `same_kind` rule.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="n">to_end_ndim</span> <span class="o">=</span> <span class="n">to_end</span><span class="o">.</span><span class="n">ndim</span>
-
-        <span class="k">if</span> <span class="n">to_end_ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">to_end</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">to_end</span><span class="p">)</span>
-
+        <span class="n">to_end</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">_process_ediff1d_args</span><span class="p">(</span>
+            <span class="n">to_end</span><span class="p">,</span> <span class="s2">&quot;to_end&quot;</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span>
+        <span class="p">)</span>
         <span class="n">l_end</span> <span class="o">=</span> <span class="n">to_end</span><span class="o">.</span><span class="n">size</span>
 
     <span class="c1"># calculating using in place operation</span>
     <span class="n">l_diff</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">l_diff</span> <span class="o">+</span> <span class="n">l_begin</span> <span class="o">+</span> <span class="n">l_end</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span>
+        <span class="n">ary</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">l_diff</span> <span class="o">+</span> <span class="n">l_begin</span> <span class="o">+</span> <span class="n">l_end</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+    <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">l_begin</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">result</span><span class="p">[:</span><span class="n">l_begin</span><span class="p">]</span> <span class="o">=</span> <span class="n">to_begin</span>
@@ -2317,6 +2325,9 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
 <span class="s2">:obj:`dpnp.conj` : Return the complex conjugate, element-wise.</span>
 <span class="s2">:obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.</span>
 
@@ -2411,7 +2422,7 @@
 <span class="s2">&gt;&gt;&gt; np.maximum(x1, x2)</span>
 <span class="s2">array([nan, nan, nan])</span>
 
-<span class="s2">&gt;&gt;&gt; np.maximum(np.array(np.Inf), 1)</span>
+<span class="s2">&gt;&gt;&gt; np.maximum(np.array(np.inf), 1)</span>
 <span class="s2">array(inf)</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
@@ -2491,7 +2502,7 @@
 <span class="s2">&gt;&gt;&gt; np.minimum(x1, x2)</span>
 <span class="s2">array([nan, nan, nan])</span>
 
-<span class="s2">&gt;&gt;&gt; np.minimum(np.array(-np.Inf), 1)</span>
+<span class="s2">&gt;&gt;&gt; np.minimum(np.array(-np.inf), 1)</span>
 <span class="s2">array(-inf)</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
@@ -3179,6 +3190,28 @@
 <span class="s2">    the same data type. If the input is a complex floating-point</span>
 <span class="s2">    data type, the returned array has a floating-point data type</span>
 <span class="s2">    with the same floating-point precision as complex input.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
+<span class="s2">                            with all imaginary parts close to zero.</span>
+<span class="s2">:obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([1+2j, 3+4j, 5+6j])</span>
+<span class="s2">&gt;&gt;&gt; a.real</span>
+<span class="s2">array([1., 3., 5.])</span>
+<span class="s2">&gt;&gt;&gt; a.real = 9</span>
+<span class="s2">&gt;&gt;&gt; a</span>
+<span class="s2">array([9.+2.j, 9.+4.j, 9.+6.j])</span>
+<span class="s2">&gt;&gt;&gt; a.real = np.array([9, 8, 7])</span>
+<span class="s2">&gt;&gt;&gt; a</span>
+<span class="s2">array([9.+2.j, 8.+4.j, 7.+6.j])</span>
+<span class="s2">&gt;&gt;&gt; np.real(np.array(1 + 1j))</span>
+<span class="s2">array(1.)</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">real</span> <span class="o">=</span> <span class="n">DPNPReal</span><span class="p">(</span>
@@ -3187,6 +3220,72 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_real</span><span class="p">,</span>
     <span class="n">_REAL_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<div class="viewcode-block" id="real_if_close">
+<a class="viewcode-back" href="../../reference/generated/dpnp.real_if_close.html#dpnp.real_if_close">[docs]</a>
+<span class="k">def</span> <span class="nf">real_if_close</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    If input is complex with all imaginary parts close to zero, return real</span>
+<span class="sd">    parts.</span>
+
+<span class="sd">    &quot;Close to zero&quot; is defined as `tol` * (machine epsilon of the type for `a`).</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.real_if_close`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    tol : scalar, optional</span>
+<span class="sd">        Tolerance in machine epsilons for the complex part of the elements in</span>
+<span class="sd">        the array. If the tolerance is &lt;=1, then the absolute tolerance is used.</span>
+<span class="sd">        Default: ``100``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        If `a` is real, the type of `a` is used for the output. If `a` has</span>
+<span class="sd">        complex elements, the returned type is float.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.real` : Return the real part of the complex argument.</span>
+<span class="sd">    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
+<span class="sd">    :obj:`dpnp.angle` : Return the angle of the complex argument.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.finfo(np.float64).eps</span>
+<span class="sd">    2.220446049250313e-16 # may vary</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([2.1 + 4e-14j, 5.2 + 3e-15j])</span>
+<span class="sd">    &gt;&gt;&gt; np.real_if_close(a, tol=1000)</span>
+<span class="sd">    array([2.1, 5.2])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([2.1 + 4e-13j, 5.2 + 3e-15j])</span>
+<span class="sd">    &gt;&gt;&gt; np.real_if_close(a, tol=1000)</span>
+<span class="sd">    array([2.1+4.e-13j, 5.2+3.e-15j])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">tol</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Tolerance must be a scalar, but got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">tol</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">tol</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+        <span class="n">tol</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">eps</span> <span class="o">*</span> <span class="n">tol</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">real</span>
+    <span class="k">return</span> <span class="n">a</span></div>
+
 
 
 <span class="n">_REMAINDER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -3634,8 +3733,8 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.ndarray.sum` : Equivalent method.</span>
 <span class="sd">    :obj:`dpnp.cumsum` : Cumulative sum of array elements.</span>
-<span class="sd">    :obj:`dpnp.trapz` : Integration of array values using the composite</span>
-<span class="sd">                        trapezoidal rule.</span>
+<span class="sd">    :obj:`dpnp.trapezoid` : Integration of array values using the composite</span>
+<span class="sd">                            trapezoidal rule.</span>
 <span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean.</span>
 <span class="sd">    :obj:`dpnp.average` : Compute the weighted average.</span>
 
@@ -3658,61 +3757,6 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">initial</span><span class="o">=</span><span class="n">initial</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">)</span>
 
-    <span class="n">sycl_sum_call</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">itemsize</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-        <span class="n">c_contiguous_rules</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,)</span>
-            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span>
-            <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
-            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">f_contiguous_rules</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
-            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span>
-            <span class="ow">and</span> <span class="mi">32</span> <span class="o">&lt;=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">1024</span>
-            <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">sycl_sum_call</span> <span class="o">=</span> <span class="n">c_contiguous_rules</span> <span class="ow">or</span> <span class="n">f_contiguous_rules</span>
-
-    <span class="k">if</span> <span class="n">sycl_sum_call</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-                <span class="n">axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">axis</span><span class="p">,)</span>
-
-            <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="s2">&quot;axis&quot;</span><span class="p">)</span>
-
-        <span class="nb">input</span> <span class="o">=</span> <span class="n">a</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,):</span>
-            <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">T</span>
-        <span class="nb">input</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-
-        <span class="n">queue</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">sycl_queue</span>
-        <span class="n">out_dtype</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">dtu</span><span class="o">.</span><span class="n">_default_accumulation_dtype</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span>
-            <span class="k">else</span> <span class="n">dtype</span>
-        <span class="p">)</span>
-        <span class="n">output</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">input</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">out_dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
-
-        <span class="n">get_sum</span> <span class="o">=</span> <span class="n">_sycl_ext_impl</span><span class="o">.</span><span class="n">_get_sum_over_axis_0</span>
-        <span class="n">sycl_sum</span> <span class="o">=</span> <span class="n">get_sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">sycl_sum</span><span class="p">:</span>
-            <span class="c1"># TODO: pass dep events into _get_sum_over_axis_0 to remove sync</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">synchronize_array_data</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-
-            <span class="n">sycl_sum</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
-                    <span class="n">res_sh</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">res_sh</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">res_sh</span><span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">result</span>
-
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
@@ -3727,34 +3771,129 @@
 
 
 
-<span class="k">def</span> <span class="nf">trapz</span><span class="p">(</span><span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="trapezoid">
+<a class="viewcode-back" href="../../reference/generated/dpnp.trapezoid.html#dpnp.trapezoid">[docs]</a>
+<span class="k">def</span> <span class="nf">trapezoid</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrate along the given axis using the composite trapezoidal rule.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.trapz`.</span>
+<span class="sd">    If `x` is provided, the integration happens in sequence along its elements -</span>
+<span class="sd">    they are not sorted.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Integrate `y` (`x`) along each 1d slice on the given axis, compute</span>
+<span class="sd">    :math:`\int y(x) dx`.</span>
+<span class="sd">    When `x` is specified, this integrates along the parametric curve,</span>
+<span class="sd">    computing :math:`\int_t y(t) dt =</span>
+<span class="sd">    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.trapezoid`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array to integrate.</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray, None}, optional</span>
+<span class="sd">        The sample points corresponding to the `y` values. If `x` is ``None``,</span>
+<span class="sd">        the sample points are assumed to be evenly spaced `dx` apart.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dx : scalar, optional</span>
+<span class="sd">        The spacing between sample points when `x` is ``None``.</span>
+<span class="sd">        Default: ``1``.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis along which to integrate.</span>
+<span class="sd">        Default: ``-1``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Definite integral of `y` = n-dimensional array as approximated along</span>
+<span class="sd">        a single axis by the trapezoidal rule. The result is an `n`-1</span>
+<span class="sd">        dimensional array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sum` : Sum of array elements over a given axis.</span>
+<span class="sd">    :obj:`dpnp.cumsum` : Cumulative sum of the elements along a given axis.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([4, 6, 8])</span>
-<span class="sd">    &gt;&gt;&gt; np.trapz(a)</span>
-<span class="sd">    4.0</span>
-<span class="sd">    &gt;&gt;&gt; np.trapz(a, x=b)</span>
-<span class="sd">    8.0</span>
-<span class="sd">    &gt;&gt;&gt; np.trapz(a, dx=2)</span>
-<span class="sd">    8.0</span>
+
+<span class="sd">    Use the trapezoidal rule on evenly spaced points:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y)</span>
+<span class="sd">    array(4.)</span>
+
+<span class="sd">    The spacing between sample points can be selected by either the `x` or `dx`</span>
+<span class="sd">    arguments:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([4, 6, 8])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, x=x)</span>
+<span class="sd">    array(8.)</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, dx=2)</span>
+<span class="sd">    array(8.)</span>
+
+<span class="sd">    Using a decreasing `x` corresponds to integrating in reverse:</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([8, 6, 4])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, x=x)</span>
+<span class="sd">    array(-8.)</span>
+
+<span class="sd">    More generally `x` is used to integrate along a parametric curve. We can</span>
+<span class="sd">    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.linspace(0, 1, num=50)</span>
+<span class="sd">    &gt;&gt;&gt; y = x**2</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(y, x)</span>
+<span class="sd">    array(0.33340275)</span>
+
+<span class="sd">    Or estimate the area of a circle, noting we repeat the sample which closes</span>
+<span class="sd">    the curve:</span>
+
+<span class="sd">    &gt;&gt;&gt; theta = np.linspace(0, 2 * np.pi, num=1000, endpoint=True)</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(np.cos(theta), x=np.sin(theta))</span>
+<span class="sd">    array(3.14157194)</span>
+
+<span class="sd">    :obj:`dpnp.trapezoid` can be applied along a specified axis to do multiple</span>
+<span class="sd">    computations in one call:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.arange(6).reshape(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 1, 2],</span>
+<span class="sd">           [3, 4, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(a, axis=0)</span>
+<span class="sd">    array([1.5, 2.5, 3.5])</span>
+<span class="sd">    &gt;&gt;&gt; np.trapezoid(a, axis=1)</span>
+<span class="sd">    array([2., 8.])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">trapz</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span>
+
+    <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">dx</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+            <span class="c1"># reshape to correct shape</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">nd</span>
+            <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">d</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+    <span class="n">slice1</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
+    <span class="n">slice2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">nd</span>
+    <span class="n">slice1</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">slice2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">d</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice1</span><span class="p">)]</span> <span class="o">+</span> <span class="n">y</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slice2</span><span class="p">)])</span> <span class="o">/</span> <span class="mf">2.0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span></div>
+
 
 
 <span class="n">true_divide</span> <span class="o">=</span> <span class="n">divide</span>
