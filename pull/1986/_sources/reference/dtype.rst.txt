@@ -40,10 +40,8 @@ Data type testing
    :toctree: generated/
    :nosignatures:
 
-   dpnp.issctype
+   dpnp.isdtype
    dpnp.issubdtype
-   dpnp.issubsctype
-   dpnp.issubclass_
 
 Miscellaneous
 -------------
@@ -52,6 +50,4 @@ Miscellaneous
    :nosignatures:
 
    dpnp.typename
-   dpnp.sctype2char
    dpnp.mintypecode
-   dpnp.maximum_sctype

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+153.g87372cec43 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+194.g66d5ae4345 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=a50b894f"></script>
+        <script src="../../../_static/documentation_options.js?v=37e0cb4a"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+153.g87372cec43
+                0.16.0dev0+194.g66d5ae4345
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -126,17 +126,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="c1"># pylint: disable=invalid-name</span>
-
-<span class="kn">import</span> <span class="nn">numpy</span>
-
 <span class="kn">import</span> <span class="nn">dpnp</span>
-
-<span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">call_origin</span><span class="p">,</span>
-    <span class="n">checker_throw_axis_error</span><span class="p">,</span>
-<span class="p">)</span>
 
 <span class="kn">from</span> <span class="nn">.dpnp_utils_fft</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_fft</span><span class="p">,</span>
@@ -214,8 +204,8 @@
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
-<span class="sd">        If provided, the result will be placed in this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype.</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate shape (consistent with the choice of `n`) and dtype.</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -304,9 +294,8 @@
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
-<span class="sd">        If provided, the result will be placed in this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype (and hence is incompatible with</span>
-<span class="sd">        passing in all but the trivial `s`).</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -358,7 +347,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 
 
@@ -455,25 +446,25 @@
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">p1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
         <span class="mi">0</span><span class="p">,</span>
-        <span class="n">N</span><span class="p">,</span>
+        <span class="n">m</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">results</span><span class="p">[:</span><span class="n">N</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span>
+    <span class="n">results</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span>
     <span class="n">p2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-        <span class="o">-</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">m</span> <span class="o">-</span> <span class="n">n</span><span class="p">,</span>
         <span class="mi">0</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">results</span><span class="p">[</span><span class="n">N</span><span class="p">:]</span> <span class="o">=</span> <span class="n">p2</span>
+    <span class="n">results</span><span class="p">[</span><span class="n">m</span><span class="p">:]</span> <span class="o">=</span> <span class="n">p2</span>
     <span class="k">return</span> <span class="n">results</span> <span class="o">*</span> <span class="n">val</span></div>
 
 
@@ -520,9 +511,8 @@
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
-<span class="sd">        If provided, the result will be placed in this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype (and hence is incompatible with</span>
-<span class="sd">        passing in all but the trivial `s`).</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -577,7 +567,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 
 
@@ -789,8 +781,8 @@
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
-<span class="sd">        If provided, the result will be placed in this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype.</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate shape (consistent with the choice of `n`) and dtype.</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -882,9 +874,8 @@
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
-<span class="sd">        If provided, the result will be placed in this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype (and hence is incompatible with</span>
-<span class="sd">        passing in all but the trivial `s`).</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -928,7 +919,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 
 
@@ -983,9 +976,8 @@
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
-<span class="sd">        If provided, the result will be placed in this array. It should be</span>
-<span class="sd">        of the appropriate shape and dtype (and hence is incompatible with</span>
-<span class="sd">        passing in all but the trivial `s`).</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1028,7 +1020,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1275,98 +1269,212 @@
 
 <div class="viewcode-block" id="irfft2">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfft2.html#dpnp.fft.irfft2">[docs]</a>
-<span class="k">def</span> <span class="nf">irfft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">irfft2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the 2-dimensional inverse discrete Fourier Transform for real input.</span>
-
-<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays.</span>
+<span class="sd">    Computes the inverse of :obj:`dpnp.fft.rfft2`.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.irfft2`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported either as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter `norm` is unsupported.</span>
-<span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
-<span class="sd">    `dpnp.complex128` data types are supported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, can be complex.</span>
+<span class="sd">    s : {None, sequence of ints}, optional</span>
+<span class="sd">        Shape (length of each transformed axis) of the output</span>
+<span class="sd">        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.). `s` is also the</span>
+<span class="sd">        number of input points used along this axis, except for the last axis,</span>
+<span class="sd">        where ``s[-1]//2+1`` points of the input are used.</span>
+<span class="sd">        Along each axis, if the given shape is smaller than that of the input,</span>
+<span class="sd">        the input is cropped. If it is larger, the input is padded with zeros.</span>
+<span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
+<span class="sd">        If `s` is not given, the shape of the input along the axes</span>
+<span class="sd">        specified by `axes` is used. Except for the last axis which is taken to</span>
+<span class="sd">        be ``2*(m-1)`` where `m` is the length of the input along that axis.</span>
+<span class="sd">        If `s` is not ``None``, `axes` must not be ``None``</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    axes : {None, sequence of ints}, optional</span>
+<span class="sd">        Axes over which to compute the inverse FFT. If not given, the last</span>
+<span class="sd">        ``len(s)`` axes are used, or all axes if `s` is also not specified.</span>
+<span class="sd">        Repeated indices in `axes` means that the transform over that axis is</span>
+<span class="sd">        performed multiple times. If `s` is specified, the corresponding `axes`</span>
+<span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
+<span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
+<span class="sd">        sequence means that no FFT is performed.</span>
+<span class="sd">        Default: ``(-2, -1)``.</span>
+<span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
+<span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
+<span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
+<span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
+<span class="sd">        the default option ``&quot;backward&quot;``.</span>
+<span class="sd">        Default: ``&quot;backward&quot;``.</span>
+<span class="sd">    out : {None, dpnp.ndarray or usm_ndarray}, optional</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate dtype and shape for the last transformation</span>
+<span class="sd">        (consistent with the choice of `s`).</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The truncated or zero-padded input, transformed along the axes</span>
+<span class="sd">        indicated by `axes`, or the last two axes if `axes` is not given.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with</span>
+<span class="sd">        definitions and conventions used.</span>
+<span class="sd">    :obj:`dpnp.fft.rfft2` : The forward two-dimensional FFT of real input,</span>
+<span class="sd">                        of which :obj:`dpnp.fft.irfft2` is the inverse.</span>
+<span class="sd">    :obj:`dpnp.fft.rfft` : The one-dimensional FFT for real input.</span>
+<span class="sd">    :obj:`dpnp.fft.irfft` : The inverse of the one-dimensional FFT of</span>
+<span class="sd">                        real input.</span>
+<span class="sd">    :obj:`dpnp.fft.irfftn` : The inverse of the *N*-dimensional FFT of</span>
+<span class="sd">                        real input.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    :obj:`dpnp.fft.irfft2` is just :obj:`dpnp.fft.irfftn` with a different</span>
+<span class="sd">    default for `axes`. For more details see :obj:`dpnp.fft.irfftn`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.mgrid[:5, :5][0]</span>
+<span class="sd">    &gt;&gt;&gt; A = np.fft.rfft2(a)</span>
+<span class="sd">    &gt;&gt;&gt; np.fft.irfft2(A, s=a.shape)</span>
+<span class="sd">    array([[0., 0., 0., 0., 0.],</span>
+<span class="sd">           [1., 1., 1., 1., 1.],</span>
+<span class="sd">           [2., 2., 2., 2., 2.],</span>
+<span class="sd">           [3., 3., 3., 3., 3.],</span>
+<span class="sd">           [4., 4., 4., 4., 4.]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">irfftn</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfft2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="irfftn">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.irfftn.html#dpnp.fft.irfftn">[docs]</a>
-<span class="k">def</span> <span class="nf">irfftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">irfftn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the N-dimensional inverse discrete Fourier Transform for real input.</span>
+<span class="sd">    Computes the inverse of :obj:`dpnp.fft.rfftn`.</span>
 
-<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays.</span>
+<span class="sd">    This function computes the inverse of the *N*-dimensional discrete Fourier</span>
+<span class="sd">    Transform for real input over any number of axes in an *M*-dimensional</span>
+<span class="sd">    array by means of the Fast Fourier Transform (FFT). In other words,</span>
+<span class="sd">    ``irfftn(rfftn(a), a.shape) == a`` to within numerical accuracy. (The</span>
+<span class="sd">    ``a.shape`` is necessary like ``len(a)`` is for :obj:`dpnp.fft.irfft`,</span>
+<span class="sd">    and for the same reason.)</span>
+
+<span class="sd">    The input should be ordered in the same way as is returned by</span>
+<span class="sd">    :obj:`dpnp.fft.rfftn`, i.e. as for :obj:`dpnp.fft.irfft` for the final</span>
+<span class="sd">    transformation axis, and as for :obj:`dpnp.fft.irfftn` along all the other</span>
+<span class="sd">    axes.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.irfftn`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported either as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter `norm` is unsupported.</span>
-<span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
-<span class="sd">    `dpnp.complex128` data types are supported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, can be complex.</span>
+<span class="sd">    s : {None, sequence of ints}, optional</span>
+<span class="sd">        Shape (length of each transformed axis) of the output</span>
+<span class="sd">        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.). `s` is also the</span>
+<span class="sd">        number of input points used along this axis, except for the last axis,</span>
+<span class="sd">        where ``s[-1]//2+1`` points of the input are used.</span>
+<span class="sd">        Along each axis, if the given shape is smaller than that of the input,</span>
+<span class="sd">        the input is cropped. If it is larger, the input is padded with zeros.</span>
+<span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
+<span class="sd">        If `s` is not given, the shape of the input along the axes</span>
+<span class="sd">        specified by axes is used. Except for the last axis which is taken to</span>
+<span class="sd">        be ``2*(m-1)`` where `m` is the length of the input along that axis.</span>
+<span class="sd">        If `s` is not ``None``, `axes` must not be ``None``</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    axes : {None, sequence of ints}, optional</span>
+<span class="sd">        Axes over which to compute the inverse FFT. If not given, the last</span>
+<span class="sd">        ``len(s)`` axes are used, or all axes if `s` is also not specified.</span>
+<span class="sd">        Repeated indices in `axes` means that the transform over that axis is</span>
+<span class="sd">        performed multiple times. If `s` is specified, the corresponding `axes`</span>
+<span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
+<span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
+<span class="sd">        sequence means that no FFT is performed.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
+<span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
+<span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
+<span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
+<span class="sd">        the default option ``&quot;backward&quot;``.</span>
+<span class="sd">        Default: ``&quot;backward&quot;``.</span>
+<span class="sd">    out : {None, dpnp.ndarray or usm_ndarray}, optional</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate dtype and shape for the last transformation</span>
+<span class="sd">        (consistent with the choice of `s`).</span>
+<span class="sd">         Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The truncated or zero-padded input, transformed along the axes</span>
+<span class="sd">        indicated by `axes`, or by a combination of `s` and `a`,</span>
+<span class="sd">        as explained in the parameters section above.</span>
+<span class="sd">        The length of each transformed axis is as given by the corresponding</span>
+<span class="sd">        element of `s`, or the length of the input in every axis except for the</span>
+<span class="sd">        last one if `s` is not given. In the final transformed axis the length</span>
+<span class="sd">        of the output when `s` is not given is ``2*(m-1)`` where `m` is the</span>
+<span class="sd">        length of the final transformed axis of the input. To get an odd</span>
+<span class="sd">        number of output points in the final axis, `s` must be specified.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with</span>
+<span class="sd">        definitions and conventions used.</span>
+<span class="sd">    :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.</span>
+<span class="sd">    :obj:`dpnp.fft.fft` : The one-dimensional FFT, with definitions and</span>
+<span class="sd">                        conventions used.</span>
+<span class="sd">    :obj:`dpnp.fft.irfft` : The inverse of the one-dimensional FFT of</span>
+<span class="sd">                        real input.</span>
+<span class="sd">    :obj:`dpnp.fft.irfft2` : The inverse of the two-dimensional FFT of</span>
+<span class="sd">                        real input.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    See :obj:`dpnp.fft` for details, definitions and conventions used.</span>
+
+<span class="sd">    See :obj:`dpnp.fft.rfft` for definitions and conventions used for real</span>
+<span class="sd">    input.</span>
+
+<span class="sd">    The correct interpretation of the Hermitian input depends on the shape of</span>
+<span class="sd">    the original data, as given by `s`. This is because each input shape could</span>
+<span class="sd">    correspond to either an odd or even length signal. By default,</span>
+<span class="sd">    :obj:`dpnp.fft.irfftn` assumes an even output length which puts the last</span>
+<span class="sd">    entry at the Nyquist frequency; aliasing with its symmetric counterpart.</span>
+<span class="sd">    When performing the final complex to real transform, the last value is thus</span>
+<span class="sd">    treated as purely real. To avoid losing information, the correct shape of</span>
+<span class="sd">    the real input **must** be given.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((3, 2, 2))</span>
+<span class="sd">    &gt;&gt;&gt; a[0, 0, 0] = 3 * 2 * 2</span>
+<span class="sd">    &gt;&gt;&gt; np.fft.irfftn(a)</span>
+<span class="sd">    array([[[1.,  1.],</span>
+<span class="sd">            [1.,  1.]],</span>
+<span class="sd">           [[1.,  1.],</span>
+<span class="sd">            [1.,  1.]],</span>
+<span class="sd">           [[1.,  1.],</span>
+<span class="sd">            [1.,  1.]]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="c1"># TODO: enable implementation</span>
-    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
-    <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
-
-        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
-
-        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">x_iter</span> <span class="o">=</span> <span class="n">x</span>
-            <span class="n">iteration_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_param</span><span class="p">)))</span>
-            <span class="n">iteration_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># inplace operation</span>
-            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">iteration_list</span><span class="p">:</span>
-                <span class="n">param_axis</span> <span class="o">=</span> <span class="n">axes_param</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">checker_throw_axis_error</span><span class="p">(</span>
-                        <span class="s2">&quot;fft.irfftn&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span>
-                        <span class="n">param_axis</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                <span class="n">x_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x_iter</span><span class="p">)</span>
-                <span class="n">x_iter</span> <span class="o">=</span> <span class="n">irfft</span><span class="p">(</span>
-                    <span class="n">x_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span>
-                    <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span>
-                    <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span>
-                    <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">x_iter</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">irfftn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1385,7 +1493,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array.</span>
+<span class="sd">        Input array, taken to be real.</span>
 <span class="sd">    n : {None, int}, optional</span>
 <span class="sd">        Number of points along transformation axis in the input to use.</span>
 <span class="sd">        If `n` is smaller than the length of the input, the input is cropped.</span>
@@ -1466,32 +1574,83 @@
 
 <div class="viewcode-block" id="rfft2">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfft2.html#dpnp.fft.rfft2">[docs]</a>
-<span class="k">def</span> <span class="nf">rfft2</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">rfft2</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the 2-dimensional discrete Fourier Transform for real input.</span>
-
-<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays.</span>
+<span class="sd">    Compute the 2-dimensional FFT of a real array.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.rfft2`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported either as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter `norm` is unsupported.</span>
-<span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
-<span class="sd">    `dpnp.complex128` data types are supported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, taken to be real.</span>
+<span class="sd">    s : {None, sequence of ints}, optional</span>
+<span class="sd">        Shape (length of each transformed axis) to use from the input.</span>
+<span class="sd">        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.).</span>
+<span class="sd">        The final element of `s` corresponds to `n` for ``rfft(x, n)``, while</span>
+<span class="sd">        for the remaining axes, it corresponds to `n` for ``fft(x, n)``.</span>
+<span class="sd">        Along each axis, if the given shape is smaller than that of the input,</span>
+<span class="sd">        the input is cropped. If it is larger, the input is padded with zeros.</span>
+<span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
+<span class="sd">        If `s` is not given, the shape of the input along the axes specified</span>
+<span class="sd">        by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``</span>
+<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">    axes : {None, sequence of ints}, optional</span>
+<span class="sd">        Axes over which to compute the FFT. If not given, the last two axes are</span>
+<span class="sd">        used. A repeated index in `axes` means the transform over that axis is</span>
+<span class="sd">        performed multiple times. If `s` is specified, the corresponding `axes`</span>
+<span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
+<span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
+<span class="sd">        sequence means that no FFT is performed.</span>
+<span class="sd">        Default: ``(-2, -1)``.</span>
+<span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
+<span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
+<span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
+<span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
+<span class="sd">        the default option ``&quot;backward&quot;``.</span>
+<span class="sd">        Default: ``&quot;backward&quot;``.</span>
+<span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate dtype and shape for the last transformation</span>
+<span class="sd">        (consistent with the choice of `s`).</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of complex dtype</span>
+<span class="sd">        The truncated or zero-padded input, transformed along the axes</span>
+<span class="sd">        indicated by `axes`, or the last two axes if `axes` is not given.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with</span>
+<span class="sd">        definitions and conventions used.</span>
+<span class="sd">    :obj:`dpnp.fft.rfft` : The one-dimensional FFT of real input.</span>
+<span class="sd">    :obj:`dpnp.fft.rfftn` : The `n`-dimensional FFT of real input.</span>
+<span class="sd">    :obj:`dpnp.fft.irfft2` : The inverse two-dimensional real FFT.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is just :obj:`dpnp.fft.rfftn` with different default behavior.</span>
+<span class="sd">    For more details see :obj:`dpnp.fft.rfftn`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.mgrid[:5, :5][0]</span>
+<span class="sd">    &gt;&gt;&gt; np.fft.rfft2(a)</span>
+<span class="sd">    array([[ 50.  +0.j        ,   0.  +0.j        ,   0.  +0.j        ],</span>
+<span class="sd">           [-12.5+17.20477401j,   0.  +0.j        ,   0.  +0.j        ],</span>
+<span class="sd">           [-12.5 +4.0614962j ,   0.  +0.j        ,   0.  +0.j        ],</span>
+<span class="sd">           [-12.5 -4.0614962j ,   0.  +0.j        ,   0.  +0.j        ],</span>
+<span class="sd">           [-12.5-17.20477401j,   0.  +0.j        ,   0.  +0.j        ]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">rfftn</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft2</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 
 
@@ -1588,10 +1747,10 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`d` should be an scalar&quot;</span><span class="p">)</span>
     <span class="n">val</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
-    <span class="n">N</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
         <span class="mi">0</span><span class="p">,</span>
-        <span class="n">N</span><span class="p">,</span>
+        <span class="n">m</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
@@ -1603,71 +1762,107 @@
 
 <div class="viewcode-block" id="rfftn">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfftn.html#dpnp.fft.rfftn">[docs]</a>
-<span class="k">def</span> <span class="nf">rfftn</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">rfftn</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the N-dimensional discrete Fourier Transform for real input.</span>
+<span class="sd">    Compute the *N*-dimensional discrete Fourier Transform for real input.</span>
 
-<span class="sd">    Multi-dimensional arrays computed as batch of 1-D arrays.</span>
+<span class="sd">    This function computes the *N*-dimensional discrete Fourier Transform over</span>
+<span class="sd">    any number of axes in an *M*-dimensional real array by means of the Fast</span>
+<span class="sd">    Fourier Transform (FFT). By default, all axes are transformed, with the</span>
+<span class="sd">    real transform performed over the last axis, while the remaining</span>
+<span class="sd">    transforms are complex.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.fft.rfftn`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported either as :class:`dpnp.ndarray`.</span>
-<span class="sd">    Parameter `norm` is unsupported.</span>
-<span class="sd">    Only `dpnp.float64`, `dpnp.float32`, `dpnp.int64`, `dpnp.int32`,</span>
-<span class="sd">    `dpnp.complex128` data types are supported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array, taken to be real.</span>
+<span class="sd">    s : {None, sequence of ints}, optional</span>
+<span class="sd">        Shape (length of each transformed axis) to use from the input.</span>
+<span class="sd">        (``s[0]`` refers to axis 0, ``s[1]`` to axis 1, etc.).</span>
+<span class="sd">        The final element of `s` corresponds to `n` for ``rfft(x, n)``, while</span>
+<span class="sd">        for the remaining axes, it corresponds to `n` for ``fft(x, n)``.</span>
+<span class="sd">        Along each axis, if the given shape is smaller than that of the input,</span>
+<span class="sd">        the input is cropped. If it is larger, the input is padded with zeros.</span>
+<span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
+<span class="sd">        If `s` is not given, the shape of the input along the axes specified</span>
+<span class="sd">        by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``</span>
+<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">    axes : {None, sequence of ints}, optional</span>
+<span class="sd">        Axes over which to compute the FFT. If not given, the last ``len(s)``</span>
+<span class="sd">        axes are used, or all axes if `s` is also not specified.</span>
+<span class="sd">        Repeated indices in `axes` means that the transform over that axis is</span>
+<span class="sd">        performed multiple times. If `s` is specified, the corresponding `axes`</span>
+<span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
+<span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
+<span class="sd">        sequence means that no FFT is performed.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
+<span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
+<span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
+<span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
+<span class="sd">        the default option ``&quot;backward&quot;``.</span>
+<span class="sd">        Default: ``&quot;backward&quot;``.</span>
+<span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
+<span class="sd">        If provided, the result will be placed in this array. It should be of</span>
+<span class="sd">        the appropriate dtype and shape for the last transformation</span>
+<span class="sd">        (consistent with the choice of `s`).</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of complex dtype</span>
+<span class="sd">        The truncated or zero-padded input, transformed along the axes</span>
+<span class="sd">        indicated by `axes`, or by a combination of `s` and `a`,</span>
+<span class="sd">        as explained in the parameters section above.</span>
+<span class="sd">        The length of the last axis transformed will be ``s[-1]//2+1``,</span>
+<span class="sd">        while the remaining transformed axes will have lengths according to</span>
+<span class="sd">        `s`, or unchanged from the input.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.fft` : Overall view of discrete Fourier transforms, with</span>
+<span class="sd">        definitions and conventions used.</span>
+<span class="sd">    :obj:`dpnp.fft.irfftn` : The inverse of the *N*-dimensional FFT of</span>
+<span class="sd">                        real input.</span>
+<span class="sd">    :obj:`dpnp.fft.fft` : The one-dimensional FFT of general (complex) input.</span>
+<span class="sd">    :obj:`dpnp.fft.rfft` : The one-dimensional FFT of real input.</span>
+<span class="sd">    :obj:`dpnp.fft.fftn` : The *N*-dimensional FFT.</span>
+<span class="sd">    :obj:`dpnp.fft.fftn` : The two-dimensional FFT.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The transform for real input is performed over the last transformation</span>
+<span class="sd">    axis, as by :obj:`dpnp.fft.rfft`, then the transform over the remaining</span>
+<span class="sd">    axes is performed as by :obj:`dpnp.fft.fftn`. The order of the output</span>
+<span class="sd">    is as for :obj:`dpnp.fft.rfft` for the final transformation axis, and</span>
+<span class="sd">    as for :obj:`dpnp.fft.fftn` for the remaining transformation axes.</span>
+
+<span class="sd">    See :obj:`dpnp.fft` for details, definitions and conventions used.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.ones((2, 2, 2))</span>
+<span class="sd">    &gt;&gt;&gt; np.fft.rfftn(a)</span>
+<span class="sd">    array([[[8.+0.j,  0.+0.j], # may vary</span>
+<span class="sd">            [0.+0.j,  0.+0.j]],</span>
+<span class="sd">           [[0.+0.j,  0.+0.j],</span>
+<span class="sd">            [0.+0.j,  0.+0.j]]])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.fft.rfftn(a, axes=(2, 0))</span>
+<span class="sd">    array([[[4.+0.j,  0.+0.j], # may vary</span>
+<span class="sd">            [4.+0.j,  0.+0.j]],</span>
+<span class="sd">           [[0.+0.j,  0.+0.j],</span>
+<span class="sd">            [0.+0.j,  0.+0.j]]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="c1"># TODO: enable implementation</span>
-    <span class="c1"># pylint: disable=condition-evals-to-constant</span>
-    <span class="k">if</span> <span class="n">x_desc</span> <span class="ow">and</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">s</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">boundaries</span> <span class="o">=</span> <span class="n">s</span>
-
-        <span class="k">if</span> <span class="n">axes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">x_desc</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">axes_param</span> <span class="o">=</span> <span class="n">axes</span>
-
-        <span class="k">if</span> <span class="n">norm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">pass</span>  <span class="c1"># let fallback to handle exception</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">x_iter</span> <span class="o">=</span> <span class="n">x</span>
-            <span class="n">iteration_list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_param</span><span class="p">)))</span>
-            <span class="n">iteration_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>  <span class="c1"># inplace operation</span>
-            <span class="k">for</span> <span class="n">it</span> <span class="ow">in</span> <span class="n">iteration_list</span><span class="p">:</span>
-                <span class="n">param_axis</span> <span class="o">=</span> <span class="n">axes_param</span><span class="p">[</span><span class="n">it</span><span class="p">]</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="n">param_n</span> <span class="o">=</span> <span class="n">boundaries</span><span class="p">[</span><span class="n">param_axis</span><span class="p">]</span>
-                <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-                    <span class="n">checker_throw_axis_error</span><span class="p">(</span>
-                        <span class="s2">&quot;fft.rfftn&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;is out of bounds&quot;</span><span class="p">,</span>
-                        <span class="n">param_axis</span><span class="p">,</span>
-                        <span class="sa">f</span><span class="s2">&quot;&lt; </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">boundaries</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="p">)</span>
-
-                <span class="n">x_iter_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span>
-                    <span class="n">x_iter</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
-                <span class="p">)</span>
-                <span class="n">x_iter</span> <span class="o">=</span> <span class="n">rfft</span><span class="p">(</span>
-                    <span class="n">x_iter_desc</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">(),</span>
-                    <span class="n">n</span><span class="o">=</span><span class="n">param_n</span><span class="p">,</span>
-                    <span class="n">axis</span><span class="o">=</span><span class="n">param_axis</span><span class="p">,</span>
-                    <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span>
-                <span class="p">)</span>
-
-            <span class="k">return</span> <span class="n">x_iter</span>
-
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftn</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="p">)</span></div>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_fftn</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">forward</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="n">s</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
