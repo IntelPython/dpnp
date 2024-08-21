@@ -141,8 +141,8 @@ $(document).ready(function(){initNavTree('gesv__common__utils_8hpp_source.html',
 <div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">namespace </span>py = pybind11;</div>
 <div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
 <div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">inline</span> <span class="keywordtype">void</span> common_gesv_checks(sycl::queue &amp;exec_q,</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                               dpctl::tensor::usm_ndarray coeff_matrix,</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                               dpctl::tensor::usm_ndarray dependent_vals,</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>                               <span class="keyword">const</span> dpctl::tensor::usm_ndarray &amp;coeff_matrix,</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>                               <span class="keyword">const</span> dpctl::tensor::usm_ndarray &amp;dependent_vals,</div>
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                               <span class="keyword">const</span> py::ssize_t *coeff_matrix_shape,</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                               <span class="keyword">const</span> py::ssize_t *dependent_vals_shape,</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                               <span class="keyword">const</span> <span class="keywordtype">int</span> expected_coeff_matrix_ndim,</div>
