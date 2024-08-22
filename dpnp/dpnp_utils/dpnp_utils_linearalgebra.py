@@ -810,15 +810,11 @@ def dpnp_matmul(
         x1 = dpnp.reshape(x1, x1.size)
         x2 = dpnp.reshape(x2, x2_shape[-2:])
         res_shape = (x2_shape[-1],)
-        if not bi._row_major_is_available() and x2.flags.c_contiguous:
-            x2 = dpnp.asarray(x2, order="F")
     elif x1_is_2D and x2_is_1D:
         call_flag = "gemv"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
         x2 = dpnp.reshape(x2, x2.size)
         res_shape = (x1_shape[-2],)
-        if not bi._row_major_is_available() and x1.flags.c_contiguous:
-            x1 = dpnp.asarray(x1, order="F")
     elif x1_is_2D and x2_is_2D:
         call_flag = "gemm"
         x1 = dpnp.reshape(x1, x1_shape[-2:])
@@ -860,13 +856,6 @@ def dpnp_matmul(
 
         res_order = "F" if (x1_f and x2_f and call_flag == "gemm") else "C"
 
-        if bi._row_major_is_available():
-            array_order = res_order
-        elif call_flag == "gemv":
-            array_order = "F"
-        else:
-            array_order = res_order
-
         result = _create_result_array(
             x1,
             x2,
@@ -890,13 +879,13 @@ def dpnp_matmul(
                 x1,
                 copy_flag=not x1_contig_flag,
                 dtype=compute_dtype,
-                order=array_order,
+                order=res_order,
             )
             x2 = _copy_array(
                 x2,
                 copy_flag=not x2_contig_flag,
                 dtype=compute_dtype,
-                order=array_order,
+                order=res_order,
             )
 
             if call_flag == "gemv":
