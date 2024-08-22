@@ -1230,6 +1230,42 @@ class TestGradient:
         assert type(res) is tuple
 
 
+class TestHeavside:
+    @pytest.mark.parametrize("val", [0.5, 1.0])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_basic(self, val, dt):
+        a = numpy.array(
+            [[-30.0, -0.1, 0.0, 0.2], [7.5, numpy.nan, numpy.inf, -numpy.inf]],
+            dtype=dt,
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.heaviside(ia, val)
+        expected = numpy.heaviside(a, val)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "a_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "b_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_both_input_as_arrays(self, a_dt, b_dt):
+        a = numpy.array([-1.5, 0, 2.0], dtype=a_dt)
+        b = numpy.array([-0, 0.5, 1.0], dtype=b_dt)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.heaviside(ia, ib)
+        expected = numpy.heaviside(a, b)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex_dtype(self, xp, dt):
+        a = xp.array([-1.5, 0, 2.0], dtype=dt)
+        assert_raises((TypeError, ValueError), xp.heaviside, a, 0.5)
+
+
 @pytest.mark.parametrize("dtype1", get_all_dtypes())
 @pytest.mark.parametrize("dtype2", get_all_dtypes())
 @pytest.mark.parametrize(

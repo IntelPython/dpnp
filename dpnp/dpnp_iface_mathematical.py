@@ -100,6 +100,7 @@ __all__ = [
     "fmin",
     "fmod",
     "gradient",
+    "heaviside",
     "imag",
     "maximum",
     "minimum",
@@ -2177,6 +2178,62 @@ def gradient(f, *varargs, axis=None, edge_order=1):
     if len(axes) == 1:
         return outvals[0]
     return tuple(outvals)
+
+
+_HEAVISIDE_DOCSTRING = """
+Compute the Heaviside step function.
+
+The Heaviside step function is defined as::
+
+                          0   if x1 < 0
+    heaviside(x1, x2) =  x2   if x1 == 0
+                          1   if x1 > 0
+
+where `x2` is often taken to be 0.5, but 0 and 1 are also sometimes used.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Input values.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    The value of the function when `x1` is ``0``.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The output array, element-wise Heaviside step function of `x1`.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.5, 0, 2.0])
+>>> np.heaviside(a, 0.5)
+array([0. , 0.5, 1. ])
+>>> np.heaviside(a, 1)
+array([0., 1., 1.])
+"""
+
+heaviside = DPNPBinaryFunc(
+    "heaviside",
+    ufi._heaviside_result_type,
+    ufi._heaviside,
+    _HEAVISIDE_DOCSTRING,
+)
 
 
 _IMAG_DOCSTRING = """

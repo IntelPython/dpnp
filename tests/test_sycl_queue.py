@@ -719,6 +719,7 @@ def test_reduce_hypot(device):
             [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
             [0.0, 1.0, 1.5, 3.5, 4.0, 6.0],
         ),
+        pytest.param("heaviside", [-1.5, 0, 2.0], [0.5]),
         pytest.param(
             "histogram_bin_edges",
             [0, 0, 0, 1, 2, 3, 3, 4, 5],
