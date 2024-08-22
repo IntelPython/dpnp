@@ -100,6 +100,7 @@ __all__ = [
     "fmin",
     "fmod",
     "gradient",
+    "heaviside",
     "imag",
     "maximum",
     "minimum",
@@ -114,6 +115,7 @@ __all__ = [
     "prod",
     "proj",
     "real",
+    "real_if_close",
     "remainder",
     "rint",
     "round",
@@ -121,7 +123,7 @@ __all__ = [
     "signbit",
     "subtract",
     "sum",
-    "trapz",
+    "trapezoid",
     "true_divide",
     "trunc",
 ]
@@ -505,6 +507,10 @@ See Also
 :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
 :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+:obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 
 Examples
 --------
@@ -1106,6 +1112,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
     See Also
     --------
     :obj:`dpnp.sum` : Sum array elements.
+    :obj:`dpnp.trapezoid` : Integration of array values using composite
+                            trapezoidal rule.
     :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.
 
     Examples
@@ -2172,6 +2180,62 @@ def gradient(f, *varargs, axis=None, edge_order=1):
     return tuple(outvals)
 
 
+_HEAVISIDE_DOCSTRING = """
+Compute the Heaviside step function.
+
+The Heaviside step function is defined as::
+
+                          0   if x1 < 0
+    heaviside(x1, x2) =  x2   if x1 == 0
+                          1   if x1 > 0
+
+where `x2` is often taken to be 0.5, but 0 and 1 are also sometimes used.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Input values.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    The value of the function when `x1` is ``0``.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The output array, element-wise Heaviside step function of `x1`.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.5, 0, 2.0])
+>>> np.heaviside(a, 0.5)
+array([0. , 0.5, 1. ])
+>>> np.heaviside(a, 1)
+array([0., 1., 1.])
+"""
+
+heaviside = DPNPBinaryFunc(
+    "heaviside",
+    ufi._heaviside_result_type,
+    ufi._heaviside,
+    _HEAVISIDE_DOCSTRING,
+)
+
+
 _IMAG_DOCSTRING = """
 Computes imaginary part of each element `x_i` for input array `x`.
 
@@ -2201,6 +2265,9 @@ out : dpnp.ndarray
 See Also
 --------
 :obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
 :obj:`dpnp.conj` : Return the complex conjugate, element-wise.
 :obj:`dpnp.conjugate` : Return the complex conjugate, element-wise.
 
@@ -3054,6 +3121,28 @@ out : dpnp.ndarray
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
+
+See Also
+--------
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.angle` : Return the angle of the complex argument.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1+2j, 3+4j, 5+6j])
+>>> a.real
+array([1., 3., 5.])
+>>> a.real = 9
+>>> a
+array([9.+2.j, 9.+4.j, 9.+6.j])
+>>> a.real = np.array([9, 8, 7])
+>>> a
+array([9.+2.j, 8.+4.j, 7.+6.j])
+>>> np.real(np.array(1 + 1j))
+array(1.)
 """
 
 real = DPNPReal(
@@ -3062,6 +3151,69 @@ real = DPNPReal(
     ti._real,
     _REAL_DOCSTRING,
 )
+
+
+def real_if_close(a, tol=100):
+    """
+    If input is complex with all imaginary parts close to zero, return real
+    parts.
+
+    "Close to zero" is defined as `tol` * (machine epsilon of the type for `a`).
+
+    For full documentation refer to :obj:`numpy.real_if_close`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    tol : scalar, optional
+        Tolerance in machine epsilons for the complex part of the elements in
+        the array. If the tolerance is <=1, then the absolute tolerance is used.
+        Default: ``100``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `a` is real, the type of `a` is used for the output. If `a` has
+        complex elements, the returned type is float.
+
+    See Also
+    --------
+    :obj:`dpnp.real` : Return the real part of the complex argument.
+    :obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+    :obj:`dpnp.angle` : Return the angle of the complex argument.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.finfo(np.float64).eps
+    2.220446049250313e-16 # may vary
+
+    >>> a = np.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1, 5.2])
+
+    >>> a = np.array([2.1 + 4e-13j, 5.2 + 3e-15j])
+    >>> np.real_if_close(a, tol=1000)
+    array([2.1+4.e-13j, 5.2+3.e-15j])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+
+    if not dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+        return a
+
+    if not dpnp.isscalar(tol):
+        raise TypeError(f"Tolerance must be a scalar, but got {type(tol)}")
+
+    if tol > 1:
+        f = dpnp.finfo(a.dtype.type)
+        tol = f.eps * tol
+
+    if dpnp.all(dpnp.abs(a.imag) < tol):
+        return a.real
+    return a
 
 
 _REMAINDER_DOCSTRING = """
@@ -3507,8 +3659,8 @@ def sum(
     --------
     :obj:`dpnp.ndarray.sum` : Equivalent method.
     :obj:`dpnp.cumsum` : Cumulative sum of array elements.
-    :obj:`dpnp.trapz` : Integration of array values using the composite
-                        trapezoidal rule.
+    :obj:`dpnp.trapezoid` : Integration of array values using the composite
+                            trapezoidal rule.
     :obj:`dpnp.mean` : Compute the arithmetic mean.
     :obj:`dpnp.average` : Compute the weighted average.
 
@@ -3544,34 +3696,126 @@ def sum(
     )
 
 
-def trapz(y1, x1=None, dx=1.0, axis=-1):
-    """
+def trapezoid(y, x=None, dx=1.0, axis=-1):
+    r"""
     Integrate along the given axis using the composite trapezoidal rule.
 
-    For full documentation refer to :obj:`numpy.trapz`.
+    If `x` is provided, the integration happens in sequence along its elements -
+    they are not sorted.
 
-    Limitations
-    -----------
-    Parameters `y` and `x` are supported as :class:`dpnp.ndarray`.
-    Keyword argument `kwargs` is currently unsupported.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Integrate `y` (`x`) along each 1d slice on the given axis, compute
+    :math:`\int y(x) dx`.
+    When `x` is specified, this integrates along the parametric curve,
+    computing :math:`\int_t y(t) dt =
+    \int_t y(t) \left.\frac{dx}{dt}\right|_{x=x(t)} dt`.
+
+    For full documentation refer to :obj:`numpy.trapezoid`.
+
+    Parameters
+    ----------
+    y : {dpnp.ndarray, usm_ndarray}
+        Input array to integrate.
+    x : {dpnp.ndarray, usm_ndarray, None}, optional
+        The sample points corresponding to the `y` values. If `x` is ``None``,
+        the sample points are assumed to be evenly spaced `dx` apart.
+        Default: ``None``.
+    dx : scalar, optional
+        The spacing between sample points when `x` is ``None``.
+        Default: ``1``.
+    axis : int, optional
+        The axis along which to integrate.
+        Default: ``-1``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Definite integral of `y` = n-dimensional array as approximated along
+        a single axis by the trapezoidal rule. The result is an `n`-1
+        dimensional array.
+
+    See Also
+    --------
+    :obj:`dpnp.sum` : Sum of array elements over a given axis.
+    :obj:`dpnp.cumsum` : Cumulative sum of the elements along a given axis.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([1, 2, 3])
-    >>> b = np.array([4, 6, 8])
-    >>> np.trapz(a)
-    4.0
-    >>> np.trapz(a, x=b)
-    8.0
-    >>> np.trapz(a, dx=2)
-    8.0
+
+    Use the trapezoidal rule on evenly spaced points:
+
+    >>> y = np.array([1, 2, 3])
+    >>> np.trapezoid(y)
+    array(4.)
+
+    The spacing between sample points can be selected by either the `x` or `dx`
+    arguments:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([4, 6, 8])
+    >>> np.trapezoid(y, x=x)
+    array(8.)
+    >>> np.trapezoid(y, dx=2)
+    array(8.)
+
+    Using a decreasing `x` corresponds to integrating in reverse:
+
+    >>> y = np.array([1, 2, 3])
+    >>> x = np.array([8, 6, 4])
+    >>> np.trapezoid(y, x=x)
+    array(-8.)
+
+    More generally `x` is used to integrate along a parametric curve. We can
+    estimate the integral :math:`\int_0^1 x^2 = 1/3` using:
+
+    >>> x = np.linspace(0, 1, num=50)
+    >>> y = x**2
+    >>> np.trapezoid(y, x)
+    array(0.33340275)
+
+    Or estimate the area of a circle, noting we repeat the sample which closes
+    the curve:
+
+    >>> theta = np.linspace(0, 2 * np.pi, num=1000, endpoint=True)
+    >>> np.trapezoid(np.cos(theta), x=np.sin(theta))
+    array(3.14157194)
+
+    :obj:`dpnp.trapezoid` can be applied along a specified axis to do multiple
+    computations in one call:
+
+    >>> a = np.arange(6).reshape(2, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5]])
+    >>> np.trapezoid(a, axis=0)
+    array([1.5, 2.5, 3.5])
+    >>> np.trapezoid(a, axis=1)
+    array([2., 8.])
 
     """
 
-    return call_origin(numpy.trapz, y1, x1, dx, axis)
+    dpnp.check_supported_arrays_type(y)
+    nd = y.ndim
+
+    if x is None:
+        d = dx
+    else:
+        dpnp.check_supported_arrays_type(x)
+        if x.ndim == 1:
+            d = dpnp.diff(x)
+
+            # reshape to correct shape
+            shape = [1] * nd
+            shape[axis] = d.shape[0]
+            d = d.reshape(shape)
+        else:
+            d = dpnp.diff(x, axis=axis)
+
+    slice1 = [slice(None)] * nd
+    slice2 = [slice(None)] * nd
+    slice1[axis] = slice(1, None)
+    slice2[axis] = slice(None, -1)
+    return (d * (y[tuple(slice1)] + y[tuple(slice2)]) / 2.0).sum(axis)
 
 
 true_divide = divide
