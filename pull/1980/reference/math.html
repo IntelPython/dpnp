@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.16.0dev0+155.g78b0bee505 documentation</title>
+  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.16.0dev0+165.g39109869f0f documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=e1b9974c"></script>
+        <script src="../_static/documentation_options.js?v=f22b0320"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -47,7 +47,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+155.g78b0bee505
+                0.16.0dev0+165.g39109869f0f
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -274,6 +274,9 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cross.html#dpnp.cross" title="dpnp.cross"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cross</span></code></a></p></td>
 <td><p>Return the cross product of two (arrays of) vectors.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.trapezoid.html#dpnp.trapezoid" title="dpnp.trapezoid"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.trapezoid</span></code></a></p></td>
+<td><p>Integrate along the given axis using the composite trapezoidal rule.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -495,8 +498,14 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.sign.html#dpnp.sign" title="dpnp.sign"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sign</span></code></a></p></td>
 <td><p>Computes an indication of the sign of each element <cite>x_i</cite> of input array <cite>x</cite> using the signum function.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.nan_to_num.html#dpnp.nan_to_num" title="dpnp.nan_to_num"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nan_to_num</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.heaviside.html#dpnp.heaviside" title="dpnp.heaviside"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.heaviside</span></code></a></p></td>
+<td><p>Compute the Heaviside step function.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.nan_to_num.html#dpnp.nan_to_num" title="dpnp.nan_to_num"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nan_to_num</span></code></a></p></td>
 <td><p>Replace <code class="docutils literal notranslate"><span class="pre">NaN</span></code> with zero and infinity with large finite numbers (default behaviour) or with the numbers defined by the user using the <cite>nan</cite>, <cite>posinf</cite> and/or <cite>neginf</cite> keywords.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.real_if_close.html#dpnp.real_if_close" title="dpnp.real_if_close"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.real_if_close</span></code></a></p></td>
+<td><p>If input is complex with all imaginary parts close to zero, return real parts.</p></td>
 </tr>
 </tbody>
 </table>
