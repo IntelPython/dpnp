@@ -325,28 +325,12 @@ def _get_result_shape(x1, x2, out, np_flag):
 
 def _gemm_batch_matmul(exec_q, x1, x2, res):
     # arrays here are already at least 3D, make them 3D
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+    x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
+    x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
     orig_shape = res.shape
-    if not bi._row_major_is_available():
-        tmp = x1
-        x1 = x2
-        x2 = tmp
-        x1_shape = x1.shape
-        x2_shape = x2.shape
-        if not x1.flags.c_contiguous:
-            x1 = dpnp.asarray(x1, order="C")
-        if not x2.flags.c_contiguous:
-            x2 = dpnp.asarray(x2, order="C")
-        x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
-        x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
-        res = dpnp.reshape(res, (-1, orig_shape[-1], orig_shape[-2]))
-        x1 = x1.transpose(0, 2, 1)
-        x2 = x2.transpose(0, 2, 1)
-    else:
-        x1_shape = x1.shape
-        x2_shape = x2.shape
-        x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
-        x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
-        res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
+    res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
     res_shape = res.shape
 
     # gemm_batch does not handle negative strides, make a copy if needed
@@ -399,7 +383,7 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
                 .reshape(res_shape[1], res_shape[2], batch_size)
                 .transpose(2, 0, 1)
             )
-    elif bi._row_major_is_available():
+    else:
         if res_is_c_contig:
             # read data of each 2D array in the batch in "C" order and
             # write it in "F" order
