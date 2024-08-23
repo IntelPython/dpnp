@@ -303,8 +303,7 @@ std::pair<sycl::event, sycl::event>
     const int vectorY_typenum = vectorY.get_typenum();
 
     if (matrixA_typenum != vectorX_typenum ||
-        matrixA_typenum != vectorY_typenum)
-    {
+        matrixA_typenum != vectorY_typenum) {
         throw py::value_error("Given arrays must be of the same type.");
     }
 

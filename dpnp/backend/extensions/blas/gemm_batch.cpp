@@ -279,12 +279,11 @@ std::tuple<sycl::event, sycl::event, bool>
     standardize_strides_to_nonzero(b_stride, b_shape);
     standardize_strides_to_nonzero(c_stride, c_shape);
     const bool A_base_is_f_contig =
-        (a_stride[1] == 1 || a_stride[1] == a_shape[2]) &&
-        a_stride[2] == a_shape[1];
+        a_stride[1] == 1 && a_stride[2] == a_shape[1];
     const bool A_base_is_c_contig =
         a_stride[1] == a_shape[2] && a_stride[2] == 1;
     const bool B_base_is_f_contig =
-        b_stride[1] == 1 && (b_stride[2] == b_shape[1] || b_stride[2] == 1);
+        b_stride[1] == 1 && b_stride[2] == b_shape[1];
     const bool B_base_is_c_contig =
         b_stride[1] == b_shape[2] && b_stride[2] == 1;
     const bool C_base_is_f_contig =
@@ -409,8 +408,7 @@ struct GemmBatchContigFactory
     fnT get()
     {
         if constexpr (types::GemmBatchTypePairSupportFactory<Tab,
-                                                             Tc>::is_defined)
-        {
+                                                             Tc>::is_defined) {
             return gemm_batch_impl<Tab, Tc>;
         }
         else {
