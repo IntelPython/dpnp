@@ -79,6 +79,57 @@ class TestAngle:
         assert_dtype_allclose(result, expected)
 
 
+class TestConj:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_conj(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.conj(ia)
+        expected = numpy.conj(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_conj_complex(self, dtype):
+        x1 = numpy.random.uniform(-5, 5, 20)
+        x2 = numpy.random.uniform(-5, 5, 20)
+        a = numpy.array(x1 + 1j * x2, dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = dpnp.conj(ia)
+        expected = numpy.conj(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    def test_conj_ndarray(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
+
+        result = ia.conj()
+        assert result is ia
+        assert_dtype_allclose(result, a.conj())
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_conj_complex_ndarray(self, dtype):
+        x1 = numpy.random.uniform(-5, 5, 20)
+        x2 = numpy.random.uniform(-5, 5, 20)
+        a = numpy.array(x1 + 1j * x2, dtype=dtype)
+        ia = dpnp.array(a)
+
+        assert_dtype_allclose(ia.conj(), a.conj())
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_conj_out(self, dtype):
+        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        ia = dpnp.array(a)
+
+        expected = numpy.conj(a)
+        dp_out = dpnp.empty(ia.shape, dtype=dtype)
+        result = dpnp.conj(ia, out=dp_out)
+        assert dp_out is result
+        assert_dtype_allclose(result, expected)
+
+
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestConvolve:
     def test_object(self):
@@ -613,6 +664,227 @@ class TestDiff:
         a = xp.arange(4).reshape(2, 2)
         assert_raises(AxisError, xp.diff, a, axis=3, prepend=0)
         assert_raises(AxisError, xp.diff, a, axis=3, append=0)
+
+
+class TestEdiff1d:
+    @pytest.mark.parametrize("data_type", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [1, 2, 4, 7, 0],
+            [],
+            [1],
+            [[1, 2, 3], [5, 2, 8], [7, 3, 4]],
+        ],
+    )
+    def test_ediff1d(self, array, data_type):
+        np_a = numpy.array(array, dtype=data_type)
+        dpnp_a = dpnp.array(array, dtype=data_type)
+
+        result = dpnp.ediff1d(dpnp_a)
+        expected = numpy.ediff1d(np_a)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "to_begin",
+        [
+            -20,
+            numpy.array([-20, -30]),
+            dpnp.array([-20, -30]),
+            dpnp.array([[-20], [-30]]),
+            [1, 2],
+            (1, 2),
+        ],
+    )
+    def test_ediff1d_to_begin(self, to_begin):
+        np_a = numpy.array([1, 2, 4, 7, 0])
+        dpnp_a = dpnp.array([1, 2, 4, 7, 0])
+
+        if isinstance(to_begin, dpnp.ndarray):
+            np_to_begin = dpnp.asnumpy(to_begin)
+        else:
+            np_to_begin = to_begin
+
+        result = dpnp.ediff1d(dpnp_a, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_begin=np_to_begin)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "to_end",
+        [
+            20,
+            numpy.array([20, 15]),
+            dpnp.array([20, 15]),
+            dpnp.array([[-20], [-30]]),
+            [3, 4],
+            (3, 4),
+        ],
+    )
+    def test_ediff1d_to_end(self, to_end):
+        np_a = numpy.array([1, 2, 4, 7, 0])
+        dpnp_a = dpnp.array([1, 2, 4, 7, 0])
+
+        if isinstance(to_end, dpnp.ndarray):
+            np_to_end = dpnp.asnumpy(to_end)
+        else:
+            np_to_end = to_end
+
+        result = dpnp.ediff1d(dpnp_a, to_end=to_end)
+        expected = numpy.ediff1d(np_a, to_end=np_to_end)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "to_begin, to_end",
+        [
+            (-20, 20),
+            (numpy.array([-20, -30]), numpy.array([20, 15])),
+            (dpnp.array([-20, -30]), dpnp.array([20, 15])),
+            (dpnp.array([[-20], [-30]]), dpnp.array([[20], [15]])),
+            ([1, 2], [3, 4]),
+            ((1, 2), (3, 4)),
+        ],
+    )
+    def test_ediff1d_to_begin_to_end(self, to_begin, to_end):
+        np_a = numpy.array([1, 2, 4, 7, 0])
+        dpnp_a = dpnp.array([1, 2, 4, 7, 0])
+
+        if isinstance(to_begin, dpnp.ndarray):
+            np_to_begin = dpnp.asnumpy(to_begin)
+        else:
+            np_to_begin = to_begin
+
+        if isinstance(to_end, dpnp.ndarray):
+            np_to_end = dpnp.asnumpy(to_end)
+        else:
+            np_to_end = to_end
+
+        result = dpnp.ediff1d(dpnp_a, to_end=to_end, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_end=np_to_end, to_begin=np_to_begin)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "to_begin, to_end",
+        [
+            (-20, 20),
+            (dpt.asarray([-20, -30]), dpt.asarray([20, 15])),
+            (dpt.asarray([[-20, -30]]), dpt.asarray([[20, 15]])),
+            ([1, 2], [3, 4]),
+            ((1, 2), (3, 4)),
+        ],
+    )
+    def test_ediff1d_usm_ndarray(self, to_begin, to_end):
+        np_a = numpy.array([[1, 2, 0]])
+        dpt_a = dpt.asarray(np_a)
+
+        if isinstance(to_begin, dpt.usm_ndarray):
+            np_to_begin = dpt.asnumpy(to_begin)
+        else:
+            np_to_begin = to_begin
+
+        if isinstance(to_end, dpt.usm_ndarray):
+            np_to_end = dpt.asnumpy(to_end)
+        else:
+            np_to_end = to_end
+
+        result = dpnp.ediff1d(dpt_a, to_end=to_end, to_begin=to_begin)
+        expected = numpy.ediff1d(np_a, to_end=np_to_end, to_begin=np_to_begin)
+
+        assert_array_equal(expected, result)
+        assert isinstance(result, dpnp.ndarray)
+
+    def test_ediff1d_errors(self):
+        a_dp = dpnp.array([[1, 2], [2, 5]])
+
+        # unsupported type
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.ediff1d, a_np)
+
+        # unsupported `to_begin` type according to the `same_kind` rules
+        to_begin = dpnp.array([-5], dtype="f4")
+        assert_raises(TypeError, dpnp.ediff1d, a_dp, to_begin=to_begin)
+
+        # unsupported `to_end` type according to the `same_kind` rules
+        to_end = dpnp.array([5], dtype="f4")
+        assert_raises(TypeError, dpnp.ediff1d, a_dp, to_end=to_end)
+
+        # another `to_begin` sycl queue
+        to_begin = dpnp.array([-20, -15], sycl_queue=dpctl.SyclQueue())
+        assert_raises(
+            ExecutionPlacementError, dpnp.ediff1d, a_dp, to_begin=to_begin
+        )
+
+        # another `to_end` sycl queue
+        to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
+        assert_raises(
+            ExecutionPlacementError, dpnp.ediff1d, a_dp, to_end=to_end
+        )
+
+
+class TestFix:
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_basic(self, dt):
+        a = numpy.array(
+            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=dt
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.fix(ia)
+        expected = numpy.fix(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex(self, xp, dt):
+        a = xp.array([1.1, -1.1], dtype=dt)
+        with pytest.raises((ValueError, TypeError)):
+            xp.fix(a)
+
+    @pytest.mark.parametrize(
+        "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    )
+    def test_out(self, a_dt):
+        a = numpy.array(
+            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=a_dt
+        )
+        ia = dpnp.array(a)
+
+        if a.dtype != numpy.float32 and has_support_aspect64():
+            out_dt = numpy.float64
+        else:
+            out_dt = numpy.float32
+        out = numpy.zeros_like(a, dtype=out_dt)
+        iout = dpnp.array(out)
+
+        result = dpnp.fix(ia, out=iout)
+        expected = numpy.fix(a, out=out)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    @pytest.mark.parametrize("dt", [bool, numpy.float16])
+    def test_out_float16(self, dt):
+        a = numpy.array(
+            [[1.0, 1.1], [1.5, 1.8], [-1.0, -1.1], [-1.5, -1.8]], dtype=dt
+        )
+        out = numpy.zeros_like(a, dtype=numpy.float16)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        result = dpnp.fix(ia, out=iout)
+        expected = numpy.fix(a, out=out)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", [bool] + get_integer_dtypes())
+    def test_out_invalid_dtype(self, xp, dt):
+        a = xp.array([[1.5, 1.8], [-1.0, -1.1]])
+        out = xp.zeros_like(a, dtype=dt)
+
+        with pytest.raises((ValueError, TypeError)):
+            xp.fix(a, out=out)
+
+    def test_scalar(self):
+        assert_raises(TypeError, dpnp.fix, -3.4)
 
 
 class TestGradient:
@@ -1310,6 +1582,259 @@ class TestNextafter:
         assert_equal(result, expected)
 
 
+class TestProd:
+    @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
+    @pytest.mark.parametrize("keepdims", [False, True])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_prod(self, axis, keepdims, dtype):
+        a = numpy.arange(1, 13, dtype=dtype).reshape((2, 2, 3))
+        ia = dpnp.array(a)
+
+        np_res = numpy.prod(a, axis=axis, keepdims=keepdims)
+        dpnp_res = dpnp.prod(ia, axis=axis, keepdims=keepdims)
+
+        assert dpnp_res.shape == np_res.shape
+        assert_allclose(dpnp_res, np_res)
+
+    @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
+    def test_prod_zero_size(self, axis):
+        a = numpy.empty((2, 3, 0))
+        ia = dpnp.array(a)
+
+        np_res = numpy.prod(a, axis=axis)
+        dpnp_res = dpnp.prod(ia, axis=axis)
+        assert_dtype_allclose(dpnp_res, np_res)
+
+    @pytest.mark.parametrize("axis", [None, 0, 1, -1])
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_prod_bool(self, axis, keepdims):
+        a = numpy.arange(2, dtype=numpy.bool_)
+        a = numpy.tile(a, (2, 2))
+        ia = dpnp.array(a)
+
+        np_res = numpy.prod(a, axis=axis, keepdims=keepdims)
+        dpnp_res = dpnp.prod(ia, axis=axis, keepdims=keepdims)
+        assert_dtype_allclose(dpnp_res, np_res)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    @pytest.mark.parametrize("in_dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "out_dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
+    def test_prod_dtype(self, in_dtype, out_dtype):
+        a = numpy.arange(1, 13, dtype=in_dtype).reshape((2, 2, 3))
+        ia = dpnp.array(a)
+
+        np_res = numpy.prod(a, dtype=out_dtype)
+        dpnp_res = dpnp.prod(ia, dtype=out_dtype)
+        assert_dtype_allclose(dpnp_res, np_res)
+
+    @pytest.mark.usefixtures(
+        "suppress_overflow_encountered_in_cast_numpy_warnings"
+    )
+    def test_prod_out(self):
+        ia = dpnp.arange(1, 7).reshape((2, 3))
+        ia = ia.astype(dpnp.default_float_type(ia.device))
+        a = dpnp.asnumpy(ia)
+
+        # output is dpnp_array
+        np_res = numpy.prod(a, axis=0)
+        dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
+        dpnp_res = dpnp.prod(ia, axis=0, out=dpnp_out)
+        assert dpnp_out is dpnp_res
+        assert_allclose(dpnp_res, np_res)
+
+        # output is usm_ndarray
+        dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
+        dpnp_res = dpnp.prod(ia, axis=0, out=dpt_out)
+        assert dpt_out is dpnp_res.get_array()
+        assert_allclose(dpnp_res, np_res)
+
+        # out is a numpy array -> TypeError
+        dpnp_res = numpy.empty_like(np_res)
+        with pytest.raises(TypeError):
+            dpnp.prod(ia, axis=0, out=dpnp_res)
+
+        # incorrect shape for out
+        dpnp_res = dpnp.array(numpy.empty((2, 3)))
+        with pytest.raises(ValueError):
+            dpnp.prod(ia, axis=0, out=dpnp_res)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_prod_out_dtype(self, arr_dt, out_dt, dtype):
+        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = dpnp.prod(ia, out=iout, dtype=dtype, axis=1)
+        expected = numpy.prod(a, out=out, dtype=dtype, axis=1)
+        assert_array_equal(expected, result)
+        assert result is iout
+
+    def test_prod_Error(self):
+        ia = dpnp.arange(5)
+
+        with pytest.raises(TypeError):
+            dpnp.prod(dpnp.asnumpy(ia))
+        with pytest.raises(NotImplementedError):
+            dpnp.prod(ia, where=False)
+        with pytest.raises(NotImplementedError):
+            dpnp.prod(ia, initial=6)
+
+
+class TestRealIfClose:
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_basic(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-15j)
+        expected = numpy.real_if_close(a + 1e-15j)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_singlecomplex(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-7j)
+        expected = numpy.real_if_close(a + 1e-7j)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_tol(self, dt):
+        a = numpy.random.rand(10).astype(dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.real_if_close(ia + 1e-7j, tol=1e-6)
+        expected = numpy.real_if_close(a + 1e-7j, tol=1e-6)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("tol_val", [[10], (1, 2)], ids=["list", "tuple"])
+    def test_wrong_tol_type(self, xp, tol_val):
+        a = xp.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+        assert_raises(TypeError, xp.real_if_close, a, tol=tol_val)
+
+
+class TestTrapezoid:
+    def get_numpy_func(self):
+        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            # `trapz` is deprecated in NumPy 2.0
+            return numpy.trapz
+        return numpy.trapezoid
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "data",
+        [[1, 2, 3], [[1, 2, 3], [4, 5, 6]], [1, 4, 6, 9, 10, 12], [], [1]],
+    )
+    def test_basic(self, data, dt):
+        a = numpy.array(data, dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.trapezoid(ia)
+        expected = self.get_numpy_func()(a)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_simple(self, dt):
+        x = numpy.arange(-10, 10, 0.1, dtype=dt)
+        ix = dpnp.array(x)
+
+        # integral of normal equals 1
+        sqrt_2pi = numpy.sqrt(2 * numpy.pi)
+        result = dpnp.trapezoid(dpnp.exp(-0.5 * ix**2) / sqrt_2pi, dx=0.1)
+        expected = self.get_numpy_func()(
+            numpy.exp(-0.5 * x**2) / sqrt_2pi, dx=0.1
+        )
+        assert_almost_equal(result, expected, 7)
+
+    @pytest.mark.parametrize("y_dt", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("x_dt", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("y_arr", [[1, 2, 4, 5], [1.0, 2.5, 6.0, 7.0]])
+    @pytest.mark.parametrize("x_arr", [[2, 5, 6, 9]])
+    def test_x_samples(self, y_arr, x_arr, y_dt, x_dt):
+        y = numpy.array(y_arr, dtype=y_dt)
+        x = numpy.array(x_arr, dtype=x_dt)
+        iy, ix = dpnp.array(y), dpnp.array(x)
+
+        result = dpnp.trapezoid(iy, ix)
+        expected = self.get_numpy_func()(y, x)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("data", [[1, 2, 3], [4, 5, 6]])
+    def test_2d_with_x_samples(self, data):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+
+        result = dpnp.trapezoid(ia, ia)
+        expected = self.get_numpy_func()(a, a)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize(
+        "data",
+        [
+            [1, 2, 4, 5],
+            [
+                1.0,
+                2.5,
+                6.0,
+                7.0,
+            ],
+        ],
+    )
+    @pytest.mark.parametrize("dx", [2, 3, 4])
+    def test_dx_samples(self, data, dx):
+        y = numpy.array(data)
+        iy = dpnp.array(y)
+
+        result = dpnp.trapezoid(iy, dx=dx)
+        expected = self.get_numpy_func()(y, dx=dx)
+        assert_array_equal(expected, result)
+
+    def test_ndim(self):
+        x = numpy.linspace(0, 1, 3)
+        y = numpy.linspace(0, 2, 8)
+        z = numpy.linspace(0, 3, 13)
+        ix, iy, iz = dpnp.array(x), dpnp.array(y), dpnp.array(z)
+
+        q = x[:, None, None] + y[None, :, None] + z[None, None, :]
+        iq = ix[:, None, None] + iy[None, :, None] + iz[None, None, :]
+
+        # n-d `x`
+        result = dpnp.trapezoid(iq, x=ix[:, None, None], axis=0)
+        expected = self.get_numpy_func()(q, x=x[:, None, None], axis=0)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iy[None, :, None], axis=1)
+        expected = self.get_numpy_func()(q, x=y[None, :, None], axis=1)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iz[None, None, :], axis=2)
+        expected = self.get_numpy_func()(q, x=z[None, None, :], axis=2)
+        assert_dtype_allclose(result, expected)
+
+        # 1-d `x`
+        result = dpnp.trapezoid(iq, x=ix, axis=0)
+        expected = self.get_numpy_func()(q, x=x, axis=0)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iy, axis=1)
+        expected = self.get_numpy_func()(q, x=y, axis=1)
+        assert_dtype_allclose(result, expected)
+
+        result = dpnp.trapezoid(iq, x=iz, axis=2)
+        expected = self.get_numpy_func()(q, x=z, axis=2)
+        assert_dtype_allclose(result, expected)
+
+
 class TestUnwrap:
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_basic(self, dt):
@@ -1617,112 +2142,6 @@ def test_float_remainder_fmod_nans_inf(func, dtype, lhs, rhs):
     assert_equal(result, expected)
 
 
-class TestProd:
-    @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
-    @pytest.mark.parametrize("keepdims", [False, True])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_prod(self, axis, keepdims, dtype):
-        a = numpy.arange(1, 13, dtype=dtype).reshape((2, 2, 3))
-        ia = dpnp.array(a)
-
-        np_res = numpy.prod(a, axis=axis, keepdims=keepdims)
-        dpnp_res = dpnp.prod(ia, axis=axis, keepdims=keepdims)
-
-        assert dpnp_res.shape == np_res.shape
-        assert_allclose(dpnp_res, np_res)
-
-    @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
-    def test_prod_zero_size(self, axis):
-        a = numpy.empty((2, 3, 0))
-        ia = dpnp.array(a)
-
-        np_res = numpy.prod(a, axis=axis)
-        dpnp_res = dpnp.prod(ia, axis=axis)
-        assert_dtype_allclose(dpnp_res, np_res)
-
-    @pytest.mark.parametrize("axis", [None, 0, 1, -1])
-    @pytest.mark.parametrize("keepdims", [False, True])
-    def test_prod_bool(self, axis, keepdims):
-        a = numpy.arange(2, dtype=numpy.bool_)
-        a = numpy.tile(a, (2, 2))
-        ia = dpnp.array(a)
-
-        np_res = numpy.prod(a, axis=axis, keepdims=keepdims)
-        dpnp_res = dpnp.prod(ia, axis=axis, keepdims=keepdims)
-        assert_dtype_allclose(dpnp_res, np_res)
-
-    @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
-    @pytest.mark.parametrize("in_dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize(
-        "out_dtype", get_all_dtypes(no_bool=True, no_none=True)
-    )
-    def test_prod_dtype(self, in_dtype, out_dtype):
-        a = numpy.arange(1, 13, dtype=in_dtype).reshape((2, 2, 3))
-        ia = dpnp.array(a)
-
-        np_res = numpy.prod(a, dtype=out_dtype)
-        dpnp_res = dpnp.prod(ia, dtype=out_dtype)
-        assert_dtype_allclose(dpnp_res, np_res)
-
-    @pytest.mark.usefixtures(
-        "suppress_overflow_encountered_in_cast_numpy_warnings"
-    )
-    def test_prod_out(self):
-        ia = dpnp.arange(1, 7).reshape((2, 3))
-        ia = ia.astype(dpnp.default_float_type(ia.device))
-        a = dpnp.asnumpy(ia)
-
-        # output is dpnp_array
-        np_res = numpy.prod(a, axis=0)
-        dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
-        dpnp_res = dpnp.prod(ia, axis=0, out=dpnp_out)
-        assert dpnp_out is dpnp_res
-        assert_allclose(dpnp_res, np_res)
-
-        # output is usm_ndarray
-        dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
-        dpnp_res = dpnp.prod(ia, axis=0, out=dpt_out)
-        assert dpt_out is dpnp_res.get_array()
-        assert_allclose(dpnp_res, np_res)
-
-        # out is a numpy array -> TypeError
-        dpnp_res = numpy.empty_like(np_res)
-        with pytest.raises(TypeError):
-            dpnp.prod(ia, axis=0, out=dpnp_res)
-
-        # incorrect shape for out
-        dpnp_res = dpnp.array(numpy.empty((2, 3)))
-        with pytest.raises(ValueError):
-            dpnp.prod(ia, axis=0, out=dpnp_res)
-
-    @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
-    def test_prod_out_dtype(self, arr_dt, out_dt, dtype):
-        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
-        out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
-
-        ia = dpnp.array(a)
-        iout = dpnp.array(out)
-
-        result = dpnp.prod(ia, out=iout, dtype=dtype, axis=1)
-        expected = numpy.prod(a, out=out, dtype=dtype, axis=1)
-        assert_array_equal(expected, result)
-        assert result is iout
-
-    def test_prod_Error(self):
-        ia = dpnp.arange(5)
-
-        with pytest.raises(TypeError):
-            dpnp.prod(dpnp.asnumpy(ia))
-        with pytest.raises(NotImplementedError):
-            dpnp.prod(ia, where=False)
-        with pytest.raises(NotImplementedError):
-            dpnp.prod(ia, initial=6)
-
-
 @pytest.mark.parametrize(
     "data",
     [[2, 0, -2], [1.1, -1.1]],
@@ -1771,57 +2190,6 @@ def test_signbit(data, dtype):
     result = dpnp.signbit(dpnp_a, out=dp_out)
     assert dp_out is result
     assert_dtype_allclose(result, expected)
-
-
-class TestConj:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    def test_conj(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
-        ia = dpnp.array(a)
-
-        result = dpnp.conj(ia)
-        expected = numpy.conj(a)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_conj_complex(self, dtype):
-        x1 = numpy.random.uniform(-5, 5, 20)
-        x2 = numpy.random.uniform(-5, 5, 20)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        result = dpnp.conj(ia)
-        expected = numpy.conj(a)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    def test_conj_ndarray(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
-        ia = dpnp.array(a)
-
-        result = ia.conj()
-        assert result is ia
-        assert_dtype_allclose(result, a.conj())
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_conj_complex_ndarray(self, dtype):
-        x1 = numpy.random.uniform(-5, 5, 20)
-        x2 = numpy.random.uniform(-5, 5, 20)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        assert_dtype_allclose(ia.conj(), a.conj())
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_conj_out(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
-        ia = dpnp.array(a)
-
-        expected = numpy.conj(a)
-        dp_out = dpnp.empty(ia.shape, dtype=dtype)
-        result = dpnp.conj(ia, out=dp_out)
-        assert dp_out is result
-        assert_dtype_allclose(result, expected)
 
 
 class TestRealImag:
@@ -1941,108 +2309,6 @@ def test_power(array, val, data_type, val_type):
     result = dpnp.power(dpnp_a, val_)
     expected = numpy.power(np_a, val_)
     assert_allclose(expected, result, rtol=1e-6)
-
-
-class TestEdiff1d:
-    @pytest.mark.parametrize(
-        "data_type", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize(
-        "array",
-        [
-            [1, 2, 4, 7, 0],
-            [],
-            [1],
-            [[1, 2, 3], [5, 2, 8], [7, 3, 4]],
-        ],
-    )
-    def test_ediff1d_int(self, array, data_type):
-        np_a = numpy.array(array, dtype=data_type)
-        dpnp_a = dpnp.array(array, dtype=data_type)
-
-        result = dpnp.ediff1d(dpnp_a)
-        expected = numpy.ediff1d(np_a)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    def test_ediff1d_args(self):
-        np_a = numpy.array([1, 2, 4, 7, 0])
-
-        to_begin = numpy.array([-20, -30])
-        to_end = numpy.array([20, 15])
-
-        result = dpnp.ediff1d(np_a, to_end=to_end, to_begin=to_begin)
-        expected = numpy.ediff1d(np_a, to_end=to_end, to_begin=to_begin)
-        assert_array_equal(expected, result)
-
-
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestTrapz:
-    @pytest.mark.parametrize(
-        "data_type", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize(
-        "array",
-        [[1, 2, 3], [[1, 2, 3], [4, 5, 6]], [1, 4, 6, 9, 10, 12], [], [1]],
-    )
-    def test_trapz_default(self, array, data_type):
-        np_a = numpy.array(array, dtype=data_type)
-        dpnp_a = dpnp.array(array, dtype=data_type)
-
-        result = dpnp.trapz(dpnp_a)
-        expected = numpy.trapz(np_a)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize(
-        "data_type_y", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize(
-        "data_type_x", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize("y_array", [[1, 2, 4, 5], [1.0, 2.5, 6.0, 7.0]])
-    @pytest.mark.parametrize("x_array", [[2, 5, 6, 9]])
-    def test_trapz_with_x_params(
-        self, y_array, x_array, data_type_y, data_type_x
-    ):
-        np_y = numpy.array(y_array, dtype=data_type_y)
-        dpnp_y = dpnp.array(y_array, dtype=data_type_y)
-
-        np_x = numpy.array(x_array, dtype=data_type_x)
-        dpnp_x = dpnp.array(x_array, dtype=data_type_x)
-
-        result = dpnp.trapz(dpnp_y, dpnp_x)
-        expected = numpy.trapz(np_y, np_x)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize("array", [[1, 2, 3], [4, 5, 6]])
-    def test_trapz_with_x_param_2ndim(self, array):
-        np_a = numpy.array(array)
-        dpnp_a = dpnp.array(array)
-
-        result = dpnp.trapz(dpnp_a, dpnp_a)
-        expected = numpy.trapz(np_a, np_a)
-        assert_array_equal(expected, result)
-
-    @pytest.mark.parametrize(
-        "y_array",
-        [
-            [1, 2, 4, 5],
-            [
-                1.0,
-                2.5,
-                6.0,
-                7.0,
-            ],
-        ],
-    )
-    @pytest.mark.parametrize("dx", [2, 3, 4])
-    def test_trapz_with_dx_params(self, y_array, dx):
-        np_y = numpy.array(y_array)
-        dpnp_y = dpnp.array(y_array)
-
-        result = dpnp.trapz(dpnp_y, dx=dx)
-        expected = numpy.trapz(np_y, dx=dx)
-        assert_array_equal(expected, result)
 
 
 class TestRoundingFuncs:

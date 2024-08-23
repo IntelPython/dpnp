@@ -437,7 +437,7 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     When positive infinity and negative infinity are present:
 
-    >>> np.nanmax(np.array([1, 2, np.nan, np.NINF]))
+    >>> np.nanmax(np.array([1, 2, np.nan, -np.inf]))
     array(2.)
     >>> np.nanmax(np.array([1, 2, np.nan, np.inf]))
     array(inf)
@@ -551,7 +551,6 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
             raise TypeError("If input is inexact, then out must be inexact.")
 
     cnt_dtype = a.real.dtype if dtype is None else dtype
-    # pylint: disable=invalid-unary-operand-type
     cnt = dpnp.sum(
         ~mask, axis=axis, dtype=cnt_dtype, keepdims=keepdims, where=where
     )
@@ -640,7 +639,7 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
 
     >>> np.nanmin(np.array([1, 2, np.nan, np.inf]))
     array(1.)
-    >>> np.nanmin(np.array([1, 2, np.nan, np.NINF]))
+    >>> np.nanmin(np.array([1, 2, np.nan, -np.inf]))
     array(-inf)
 
     """
@@ -832,7 +831,7 @@ def nansum(
     array([2.,  1.])
     >>> np.nansum(np.array([1, np.nan, np.inf]))
     array(inf)
-    >>> np.nansum(np.array([1, np.nan, np.NINF]))
+    >>> np.nansum(np.array([1, np.nan, -np.inf]))
     array(-inf)
     >>> # both +/- infinity present
     >>> np.nansum(np.array([1, np.nan, np.inf, -np.inf]))
@@ -1062,7 +1061,6 @@ def nanvar(
 
     # Compute mean
     var_dtype = a.real.dtype if dtype is None else dtype
-    # pylint: disable=invalid-unary-operand-type
     cnt = dpnp.sum(
         ~mask, axis=axis, dtype=var_dtype, keepdims=True, where=where
     )

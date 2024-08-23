@@ -4,6 +4,11 @@ import warnings
 import numpy
 import pytest
 
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
+    from numpy.exceptions import ComplexWarning
+else:
+    from numpy import ComplexWarning
+
 import dpnp as cupy
 from tests.helper import has_support_aspect16, has_support_aspect64
 from tests.third_party.cupy import testing
@@ -488,7 +493,7 @@ class UfuncTestBase:
             warnings.simplefilter("always")
             ret = xp.add(a, b, out=c, casting=casting)
         ws = [w.category for w in ws]
-        assert all([w == numpy.ComplexWarning for w in ws]), str(ws)
+        assert all([w == ComplexWarning for w in ws]), str(ws)
         return ret, xp.array(len(ws))
 
     @testing.numpy_cupy_allclose(accept_error=TypeError)
@@ -503,7 +508,7 @@ class UfuncTestBase:
             warnings.simplefilter("always")
             ret = xp.add(a, b, dtype=dtype, casting="unsafe")
         ws = [w.category for w in ws]
-        assert all([w == numpy.ComplexWarning for w in ws]), str(ws)
+        assert all([w == ComplexWarning for w in ws]), str(ws)
         return ret, xp.array(len(ws))
 
     # delete this, once check_casting_dtype passes

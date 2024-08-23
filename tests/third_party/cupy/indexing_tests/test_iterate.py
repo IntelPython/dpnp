@@ -4,6 +4,11 @@ import warnings
 import numpy
 import pytest
 
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
+    from numpy.exceptions import ComplexWarning
+else:
+    from numpy import ComplexWarning
+
 import dpnp as cupy
 from tests.third_party.cupy import testing
 
@@ -107,7 +112,7 @@ class TestFlatiterSubscript(unittest.TestCase):
         a = xp.zeros(self.shape, dtype=a_dtype, order=order)
         v = testing.shaped_arange((3,), xp, v_dtype, order)
         with warnings.catch_warnings():
-            warnings.simplefilter("ignore", numpy.ComplexWarning)
+            warnings.simplefilter("ignore", ComplexWarning)
             a.flat[self.index] = v
         return a
 

@@ -25,19 +25,25 @@
 
 #pragma once
 
-#include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
-
-namespace dpnp::extensions::lapack
+namespace dpnp::kernels::fix
 {
-extern std::pair<sycl::event, sycl::event>
-    getrs(sycl::queue &exec_q,
-          dpctl::tensor::usm_ndarray a_array,
-          dpctl::tensor::usm_ndarray ipiv_array,
-          dpctl::tensor::usm_ndarray b_array,
-          const std::vector<sycl::event> &depends = {});
+template <typename argT, typename resT>
+struct FixFunctor
+{
+    // is function constant for given argT
+    using is_constant = typename std::false_type;
+    // constant value, if constant
+    // constexpr resT constant_value = resT{};
+    // is function defined for sycl::vec
+    using supports_vec = typename std::false_type;
+    // do both argT and resT support subgroup store/load operation
+    using supports_sg_loadstore = typename std::true_type;
 
-extern void init_getrs_dispatch_vector(void);
-} // namespace dpnp::extensions::lapack
+    resT operator()(const argT &x) const
+    {
+        return (x >= 0.0) ? sycl::floor(x) : sycl::ceil(x);
+    }
+};
+} // namespace dpnp::kernels::fix
