@@ -87,19 +87,20 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                 const std::int64_t lda, const T *x, const std::int64_t incx,
                 T beta, T *y, const std::int64_t incy,
                 const std::vector<sycl::event> &deps) -> sycl::event {
-            if (is_row_major) {
 #if defined(USE_ONEMKL_CUBLAS)
-                throw py::value_error("Input matrix is not f-contiguous");
+            return mkl_blas::column_major::gemv(q, transA, m, n, alpha, a, lda,
+                                                x, incx, beta, y, incy, deps);
 #else
+            if (is_row_major) {
                 return mkl_blas::row_major::gemv(q, transA, m, n, alpha, a, lda,
                                                  x, incx, beta, y, incy, deps);
-#endif // USE_ONEMKL_CUBLAS
             }
             else {
                 return mkl_blas::column_major::gemv(q, transA, m, n, alpha, a,
                                                     lda, x, incx, beta, y, incy,
                                                     deps);
             }
+#endif // USE_ONEMKL_CUBLAS
         };
         gemv_event = gemv_func(
             exec_q,
