@@ -150,8 +150,8 @@ $(document).ready(function(){initNavTree('evd__common__utils_8hpp_source.html','
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>}</div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span><span class="keyword">inline</span> <span class="keywordtype">void</span> common_evd_checks(sycl::queue &amp;exec_q,</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                              dpctl::tensor::usm_ndarray &amp;eig_vecs,</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                              dpctl::tensor::usm_ndarray &amp;eig_vals,</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                              <span class="keyword">const</span> dpctl::tensor::usm_ndarray &amp;eig_vecs,</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                              <span class="keyword">const</span> dpctl::tensor::usm_ndarray &amp;eig_vals,</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                              <span class="keyword">const</span> py::ssize_t *eig_vecs_shape,</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                              <span class="keyword">const</span> <span class="keywordtype">int</span> expected_eig_vecs_nd,</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                              <span class="keyword">const</span> <span class="keywordtype">int</span> expected_eig_vals_nd)</div>
