@@ -189,7 +189,7 @@ std::pair<sycl::event, sycl::event>
     std::size_t src_nelems;
 
 #if defined(USE_ONEMKL_CUBLAS)
-    bool is_row_major = false;
+    const bool is_row_major = false;
     std::int64_t m;
     std::int64_t n;
 
@@ -199,30 +199,10 @@ std::pair<sycl::event, sycl::event>
         if (transpose) {
             transA = oneapi::mkl::transpose::T;
             src_nelems = n;
-            if (m != x_shape[0]) {
-                throw py::value_error(
-                    "The number of rows in A must be equal to "
-                    "the number of elements in X.");
-            }
-            if (n != y_shape[0]) {
-                throw py::value_error(
-                    "The number of columns in A must be equal to "
-                    "the number of elements in Y.");
-            }
         }
         else {
             transA = oneapi::mkl::transpose::N;
             src_nelems = m;
-            if (n != x_shape[0]) {
-                throw py::value_error(
-                    "The number of columns in A must be equal to "
-                    "the number of elements in X.");
-            }
-            if (m != y_shape[0]) {
-                throw py::value_error(
-                    "The number of rows in A must be equal to "
-                    "the number of elements in Y.");
-            }
         }
     }
     else {
@@ -231,30 +211,10 @@ std::pair<sycl::event, sycl::event>
         if (transpose) {
             transA = oneapi::mkl::transpose::N;
             src_nelems = m;
-            if (n != x_shape[0]) {
-                throw py::value_error(
-                    "The number of rows in A must be equal to "
-                    "the number of elements in X.");
-            }
-            if (m != y_shape[0]) {
-                throw py::value_error(
-                    "The number of columns in A must be equal to "
-                    "the number of elements in Y.");
-            }
         }
         else {
             transA = oneapi::mkl::transpose::T;
             src_nelems = n;
-            if (m != x_shape[0]) {
-                throw py::value_error(
-                    "The number of columns in A must be equal to "
-                    "the number of elements in X.");
-            }
-            if (n != y_shape[0]) {
-                throw py::value_error(
-                    "The number of rows in A must be equal to "
-                    "the number of elements in Y.");
-            }
         }
     }
 #else
@@ -269,31 +229,35 @@ std::pair<sycl::event, sycl::event>
     if (transpose) {
         transA = oneapi::mkl::transpose::T;
         src_nelems = n;
-        if (m != x_shape[0]) {
+    }
+    else {
+        transA = oneapi::mkl::transpose::N;
+        src_nelems = m;
+    }
+#endif // USE_ONEMKL_CUBLAS
+
+    if (transpose) {
+        if (a_shape[0] != x_shape[0]) {
             throw py::value_error("The number of rows in A must be equal to "
                                   "the number of elements in X.");
         }
-        if (n != y_shape[0]) {
+        if (a_shape[1] != y_shape[0]) {
             throw py::value_error("The number of columns in A must be equal to "
                                   "the number of elements in Y.");
         }
     }
     else {
-        transA = oneapi::mkl::transpose::N;
-        src_nelems = m;
-        if (n != x_shape[0]) {
+        if (a_shape[1] != x_shape[0]) {
             throw py::value_error("The number of columns in A must be equal to "
                                   "the number of elements in X.");
         }
-        if (m != y_shape[0]) {
+        if (a_shape[0] != y_shape[0]) {
             throw py::value_error("The number of rows in A must be equal to "
                                   "the number of elements in Y.");
         }
     }
-#endif // USE_ONEMKL_CUBLAS
 
     const std::int64_t lda = is_row_major ? n : m;
-
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vectorY);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vectorY,
                                                                src_nelems);

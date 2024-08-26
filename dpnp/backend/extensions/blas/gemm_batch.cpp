@@ -310,7 +310,8 @@ std::tuple<sycl::event, sycl::event, bool>
     std::int64_t ldb;
 
 #if defined(USE_ONEMKL_CUBLAS)
-    bool is_row_major = false;
+    const bool is_row_major = false;
+
     transA = A_base_is_c_contig ? oneapi::mkl::transpose::T
                                 : oneapi::mkl::transpose::N;
     transB = B_base_is_c_contig ? oneapi::mkl::transpose::T
@@ -339,13 +340,7 @@ std::tuple<sycl::event, sycl::event, bool>
                                     : oneapi::mkl::transpose::N;
         transB = B_base_is_f_contig ? oneapi::mkl::transpose::T
                                     : oneapi::mkl::transpose::N;
-    }
-    else {
-        transA = oneapi::mkl::transpose::N;
-        transB = oneapi::mkl::transpose::N;
-    }
 
-    if (is_row_major) {
         if (transA == oneapi::mkl::transpose::N) {
             lda = k;
         }
@@ -360,10 +355,13 @@ std::tuple<sycl::event, sycl::event, bool>
         }
     }
     else {
+        transA = oneapi::mkl::transpose::N;
+        transB = oneapi::mkl::transpose::N;
         lda = m;
         ldb = k;
     }
 #endif // USE_ONEMKL_CUBLAS
+
     const std::int64_t ldc = is_row_major ? n : m;
 
     const int matrixA_typenum = matrixA.get_typenum();

@@ -235,7 +235,7 @@ std::tuple<sycl::event, sycl::event, bool>
     std::int64_t ldb;
 
 #if defined(USE_ONEMKL_CUBLAS)
-    bool is_row_major = false;
+    const bool is_row_major = false;
 
     transA = is_matrixA_c_contig ? oneapi::mkl::transpose::T
                                  : oneapi::mkl::transpose::N;
