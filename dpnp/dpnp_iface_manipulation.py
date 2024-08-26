@@ -66,6 +66,7 @@ __all__ = [
     "flipud",
     "hstack",
     "moveaxis",
+    "ndim",
     "ravel",
     "repeat",
     "reshape",
@@ -1356,6 +1357,48 @@ def moveaxis(a, source, destination):
     )
 
 
+def ndim(a):
+    """
+    Return the number of dimensions of array-like input.
+
+    For full documentation refer to :obj:`numpy.ndim`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input array.
+
+    Returns
+    -------
+    number_of_dimensions : int
+        The number of dimensions in `a`. Scalars are zero-dimensional.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.ndim` : equivalent method for `dpnp.ndarray`
+                        or `usm_ndarray` input.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.ndim(a)
+    2
+    >>> a = np.asarray(a)
+    >>> np.ndim(a)
+    2
+    >>> np.ndim(1)
+    0
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        return a.ndim
+    return numpy.ndim(a)
+
+
 def ravel(a, order="C"):
     """
     Return a contiguous flattened array.
@@ -1738,14 +1781,14 @@ def shape(a):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> dp.shape(dp.eye(3))
+    >>> import dpnp as np
+    >>> np.shape(np.eye(3))
     (3, 3)
-    >>> dp.shape([[1, 3]])
+    >>> np.shape([[1, 3]])
     (1, 2)
-    >>> dp.shape([0])
+    >>> np.shape([0])
     (1,)
-    >>> dp.shape(0)
+    >>> np.shape(0)
     ()
 
     """

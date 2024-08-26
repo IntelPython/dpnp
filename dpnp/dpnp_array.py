@@ -1115,7 +1115,38 @@ class dpnp_array:
 
     @property
     def ndim(self):
-        """Number of array dimensions."""
+        """
+        Return the number of dimensions of an array.
+
+        For full documentation refer to :obj:`numpy.ndarray.ndim`.
+
+        Parameters
+        ----------
+        a : {dpnp.ndarray, usm_ndarray}
+            Input array.
+
+        Returns
+        -------
+        number_of_dimensions : int
+            The number of dimensions in `a`.
+
+        See Also
+        --------
+        :obj:`dpnp.ndim` : equivalent method for any array-like input.
+        :obj:`dpnp.shape` : Return the shape of an array.
+        :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([1, 2, 3])
+        >>> x.ndim
+        1
+        >>> y = np.zeros((2, 3, 4))
+        >>> y.ndim
+        3
+
+        """
 
         return self._array_obj.ndim
 
