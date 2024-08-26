@@ -184,27 +184,61 @@ class dpnp_array:
     # '__divmod__',
     # '__doc__',
 
-    def __dlpack__(self, stream=None):
+    def __dlpack__(
+        self, *, stream=None, max_version=None, dl_device=None, copy=None
+    ):
         """
         Produces DLPack capsule.
 
         Parameters
         ----------
         stream : {:class:`dpctl.SyclQueue`, None}, optional
-            Execution queue to synchronize with. If ``None``,
-            synchronization is not performed.
+            Execution queue to synchronize with. If ``None``, synchronization
+            is not performed.
+            Default: ``None``.
+        max_version {tuple of ints, None}, optional
+            The maximum DLPack version the consumer (caller of ``__dlpack__``)
+            supports. As ``__dlpack__`` may not always return a DLPack capsule
+            with version `max_version`, the consumer must verify the version
+            even if this argument is passed.
+            Default: ``None``.
+        dl_device {tuple, None}, optional:
+            The device the returned DLPack capsule will be placed on. The
+            device must be a 2-tuple matching the format of
+            ``__dlpack_device__`` method, an integer enumerator representing
+            the device type followed by an integer representing the index of
+            the device.
+            Default: ``None``.
+        copy {bool, None}, optional:
+            Boolean indicating whether or not to copy the input.
+
+            * If `copy` is ``True``, the input will always be copied.
+            * If ``False``, a ``BufferError`` will be raised if a copy is
+              deemed necessary.
+            * If ``None``, a copy will be made only if deemed necessary,
+              otherwise, the existing memory buffer will be reused.
+
+            Default: ``None``.
 
         Raises
         ------
-        MemoryError
+        MemoryError:
             when host memory can not be allocated.
-        DLPackCreationError
-            when array is allocated on a partitioned
-            SYCL device, or with a non-default context.
+        DLPackCreationError:
+            when array is allocated on a partitioned SYCL device, or with
+            a non-default context.
+        BufferError:
+            when a copy is deemed necessary but `copy` is ``False`` or when
+            the provided `dl_device` cannot be handled.
 
         """
 
-        return self._array_obj.__dlpack__(stream=stream)
+        return self._array_obj.__dlpack__(
+            stream=stream,
+            max_version=max_version,
+            dl_device=dl_device,
+            copy=copy,
+        )
 
     def __dlpack_device__(self):
         """

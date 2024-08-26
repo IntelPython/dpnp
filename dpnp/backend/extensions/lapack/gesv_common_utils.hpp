@@ -41,8 +41,8 @@ namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 namespace py = pybind11;
 
 inline void common_gesv_checks(sycl::queue &exec_q,
-                               dpctl::tensor::usm_ndarray coeff_matrix,
-                               dpctl::tensor::usm_ndarray dependent_vals,
+                               const dpctl::tensor::usm_ndarray &coeff_matrix,
+                               const dpctl::tensor::usm_ndarray &dependent_vals,
                                const py::ssize_t *coeff_matrix_shape,
                                const py::ssize_t *dependent_vals_shape,
                                const int expected_coeff_matrix_ndim,

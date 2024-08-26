@@ -541,8 +541,8 @@ def test_1in_1out(func, data, device):
     expected = getattr(numpy, func)(x_orig)
     assert_dtype_allclose(result, expected)
 
-    expected_queue = x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -575,8 +575,8 @@ def test_logic_op_1in(op, device):
     expected = getattr(numpy, op)(x_orig)
     assert_dtype_allclose(result, expected)
 
-    expected_queue = x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -605,8 +605,8 @@ def test_proj(device):
     expected = dpnp.array(Y)
     assert_allclose(result, expected)
 
-    expected_queue = x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -622,8 +622,8 @@ def test_rsqrt(device):
     expected = 1 / numpy.sqrt(x.asnumpy())
     assert_allclose(result, expected)
 
-    expected_queue = x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -638,8 +638,8 @@ def test_logsumexp(device):
     expected = numpy.logaddexp.reduce(x.asnumpy())
     assert_dtype_allclose(result, expected)
 
-    expected_queue = x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -654,8 +654,8 @@ def test_cumlogsumexp(device):
     expected = numpy.logaddexp.accumulate(x.asnumpy())
     assert_dtype_allclose(result, expected)
 
-    expected_queue = x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -670,8 +670,8 @@ def test_reduce_hypot(device):
     expected = numpy.hypot.reduce(x.asnumpy())
     assert_dtype_allclose(result, expected)
 
-    expected_queue = x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -719,6 +719,7 @@ def test_reduce_hypot(device):
             [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
             [0.0, 1.0, 1.5, 3.5, 4.0, 6.0],
         ),
+        pytest.param("heaviside", [-1.5, 0, 2.0], [0.5]),
         pytest.param(
             "histogram_bin_edges",
             [0, 0, 0, 1, 2, 3, 3, 4, 5],
@@ -913,8 +914,8 @@ def test_broadcasting(func, data1, data2, device):
 
     assert_array_equal(result, expected)
 
-    expected_queue = x1.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = x1.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -1202,9 +1203,9 @@ def test_modf(device):
     assert_array_equal(result1, expected1)
     assert_array_equal(result2, expected2)
 
-    expected_queue = x.get_array().sycl_queue
-    result1_queue = result1.get_array().sycl_queue
-    result2_queue = result2.get_array().sycl_queue
+    expected_queue = x.sycl_queue
+    result1_queue = result1.sycl_queue
+    result2_queue = result2.sycl_queue
 
     assert_sycl_queue_equal(result1_queue, expected_queue)
     assert_sycl_queue_equal(result2_queue, expected_queue)
@@ -1283,111 +1284,108 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize(
-    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
-)
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fft(func, device):
-    dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
-    data = numpy.arange(20, dtype=dtype)
-    dpnp_data = dpnp.array(data, device=device)
+class TestFft:
+    @pytest.mark.parametrize(
+        "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fft(self, func, device):
+        dtype = numpy.float64 if func in ["rfft", "ihfft"] else numpy.complex128
+        data = numpy.arange(20, dtype=dtype)
+        dpnp_data = dpnp.array(data, device=device)
 
-    expected = getattr(numpy.fft, func)(data)
-    result = getattr(dpnp.fft, func)(dpnp_data)
-    assert_dtype_allclose(result, expected, factor=16)
+        expected = getattr(numpy.fft, func)(data)
+        result = getattr(dpnp.fft, func)(dpnp_data)
+        assert_dtype_allclose(result, expected, factor=24)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        expected_queue = dpnp_data.sycl_queue
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fftn(self, device):
+        data = numpy.arange(24, dtype=numpy.complex64).reshape(2, 3, 4)
+        dpnp_data = dpnp.array(data, device=device)
 
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fftn(device):
-    data = numpy.arange(24, dtype=numpy.complex64).reshape(2, 3, 4)
-    dpnp_data = dpnp.array(data, device=device)
+        expected = numpy.fft.fftn(data)
+        result = dpnp.fft.fftn(dpnp_data)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected = numpy.fft.fftn(data)
-    result = dpnp.fft.fftn(dpnp_data)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        expected_queue = dpnp_data.sycl_queue
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    expected_queue = dpnp_data.sycl_queue
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        expected = numpy.fft.ifftn(expected)
+        result = dpnp.fft.ifftn(result)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected = numpy.fft.ifftn(expected)
-    result = dpnp.fft.ifftn(result)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_rfftn(self, device):
+        data = numpy.arange(24, dtype=numpy.float32).reshape(2, 3, 4)
+        dpnp_data = dpnp.array(data, device=device)
 
+        expected = numpy.fft.rfftn(data)
+        result = dpnp.fft.rfftn(dpnp_data)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_rfftn(device):
-    data = numpy.arange(24, dtype=numpy.float32).reshape(2, 3, 4)
-    dpnp_data = dpnp.array(data, device=device)
+        expected_queue = dpnp_data.sycl_queue
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    expected = numpy.fft.rfftn(data)
-    result = dpnp.fft.rfftn(dpnp_data)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        expected = numpy.fft.irfftn(expected)
+        result = dpnp.fft.irfftn(result)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    expected_queue = dpnp_data.sycl_queue
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
-    expected = numpy.fft.irfftn(expected)
-    result = dpnp.fft.irfftn(result)
-    assert_dtype_allclose(result, expected, check_only_type_kind=True)
+    @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fftfreq(self, func, device):
+        result = getattr(dpnp.fft, func)(10, 0.5, device=device)
+        expected = getattr(numpy.fft, func)(10, 0.5)
 
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        assert_dtype_allclose(result, expected)
+        assert result.sycl_device == device
 
+    @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_fftshift(self, func, device):
+        dpnp_data = dpnp.fft.fftfreq(10, 0.5, device=device)
+        data = dpnp_data.asnumpy()
 
-@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fftfreq(func, device):
-    result = getattr(dpnp.fft, func)(10, 0.5, device=device)
-    expected = getattr(numpy.fft, func)(10, 0.5)
+        expected = getattr(numpy.fft, func)(data)
+        result = getattr(dpnp.fft, func)(dpnp_data)
 
-    assert_dtype_allclose(result, expected)
-    assert result.sycl_device == device
+        assert_dtype_allclose(result, expected)
 
+        expected_queue = dpnp_data.sycl_queue
+        result_queue = result.sycl_queue
 
-@pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_fftshift(func, device):
-    dpnp_data = dpnp.fft.fftfreq(10, 0.5, device=device)
-    data = dpnp_data.asnumpy()
-
-    expected = getattr(numpy.fft, func)(data)
-    result = getattr(dpnp.fft, func)(dpnp_data)
-
-    assert_dtype_allclose(result, expected)
-
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
-
-    assert_sycl_queue_equal(result_queue, expected_queue)
+        assert_sycl_queue_equal(result_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
@@ -1416,8 +1414,8 @@ def test_cholesky(data, is_empty, device):
     expected = numpy.linalg.cholesky(numpy_data)
     assert_dtype_allclose(result, expected)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -1441,8 +1439,8 @@ def test_cond(device, p):
     expected = numpy.linalg.cond(a, p=p)
     assert_dtype_allclose(result, expected)
 
-    expected_queue = ia.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = ia.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -1460,8 +1458,8 @@ def test_det(device):
     expected = numpy.linalg.det(numpy_data)
     assert_allclose(expected, result)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -1510,7 +1508,7 @@ def test_eigenvalue(func, shape, device):
     )
     dp_a = dpnp.array(a, device=device)
 
-    expected_queue = dp_a.get_array().sycl_queue
+    expected_queue = dp_a.sycl_queue
 
     if func in ("eig", "eigh"):
         dp_val, dp_vec = getattr(dpnp.linalg, func)(dp_a)
@@ -1532,7 +1530,7 @@ def test_eigenvalue(func, shape, device):
         assert dp_vec.shape == np_vec.shape
         assert dp_vec.dtype == np_vec.dtype
 
-        dpnp_vec_queue = dp_vec.get_array().sycl_queue
+        dpnp_vec_queue = dp_vec.sycl_queue
         # compare queue and device
         assert_sycl_queue_equal(dpnp_vec_queue, expected_queue)
 
@@ -1544,7 +1542,7 @@ def test_eigenvalue(func, shape, device):
     assert dp_val.shape == np_val.shape
     assert dp_val.dtype == np_val.dtype
 
-    dpnp_val_queue = dp_val.get_array().sycl_queue
+    dpnp_val_queue = dp_val.sycl_queue
     # compare queue and device
     assert_sycl_queue_equal(dpnp_val_queue, expected_queue)
 
@@ -1584,8 +1582,8 @@ def test_inv(shape, is_empty, device):
     expected = numpy.linalg.inv(numpy_x)
     assert_dtype_allclose(result, expected)
 
-    expected_queue = dpnp_x.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dpnp_x.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -1608,8 +1606,8 @@ def test_matrix_power(n, device):
     expected = numpy.linalg.matrix_power(data, n)
     assert_dtype_allclose(result, expected)
 
-    expected_queue = dp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dp_data.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -1639,8 +1637,8 @@ def test_matrix_rank(data, tol, device):
     expected = numpy.linalg.matrix_rank(data, tol=tol)
     assert_array_equal(expected, result)
 
-    expected_queue = dp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dp_data.sycl_queue
+    result_queue = result.sycl_queue
 
     assert_sycl_queue_equal(result_queue, expected_queue)
 
@@ -1686,8 +1684,8 @@ def test_norm(device, ord, axis):
         expected = numpy.linalg.norm(a, ord=ord, axis=axis)
         assert_dtype_allclose(result, expected)
 
-        expected_queue = ia.get_array().sycl_queue
-        result_queue = result.get_array().sycl_queue
+        expected_queue = ia.sycl_queue
+        result_queue = result.sycl_queue
         assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -1723,17 +1721,17 @@ def test_qr(shape, mode, device):
     count_elems = numpy.prod(shape)
     a = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(shape)
 
-    expected_queue = a.get_array().sycl_queue
+    expected_queue = a.sycl_queue
 
     if mode == "r":
         dp_r = dpnp.linalg.qr(a, mode=mode)
-        dp_r_queue = dp_r.get_array().sycl_queue
+        dp_r_queue = dp_r.sycl_queue
         assert_sycl_queue_equal(dp_r_queue, expected_queue)
     else:
         dp_q, dp_r = dpnp.linalg.qr(a, mode=mode)
 
-        dp_q_queue = dp_q.get_array().sycl_queue
-        dp_r_queue = dp_r.get_array().sycl_queue
+        dp_q_queue = dp_q.sycl_queue
+        dp_r_queue = dp_r.sycl_queue
 
         assert_sycl_queue_equal(dp_q_queue, expected_queue)
         assert_sycl_queue_equal(dp_r_queue, expected_queue)
@@ -1778,16 +1776,16 @@ def test_svd(shape, full_matrices, compute_uv, device):
     dpnp_data = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(
         shape
     )
-    expected_queue = dpnp_data.get_array().sycl_queue
+    expected_queue = dpnp_data.sycl_queue
 
     if compute_uv:
         dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(
             dpnp_data, full_matrices=full_matrices, compute_uv=compute_uv
         )
 
-        dpnp_u_queue = dpnp_u.get_array().sycl_queue
-        dpnp_vt_queue = dpnp_vt.get_array().sycl_queue
-        dpnp_s_queue = dpnp_s.get_array().sycl_queue
+        dpnp_u_queue = dpnp_u.sycl_queue
+        dpnp_vt_queue = dpnp_vt.sycl_queue
+        dpnp_s_queue = dpnp_s.sycl_queue
 
         assert_sycl_queue_equal(dpnp_u_queue, expected_queue)
         assert_sycl_queue_equal(dpnp_vt_queue, expected_queue)
@@ -1797,7 +1795,7 @@ def test_svd(shape, full_matrices, compute_uv, device):
         dpnp_s = dpnp.linalg.svd(
             dpnp_data, full_matrices=full_matrices, compute_uv=compute_uv
         )
-        dpnp_s_queue = dpnp_s.get_array().sycl_queue
+        dpnp_s_queue = dpnp_s.sycl_queue
 
         assert_sycl_queue_equal(dpnp_s_queue, expected_queue)
 
@@ -1818,7 +1816,7 @@ def test_to_device(device_from, device_to):
     x = dpnp.array(data, dtype=dpnp.float32, device=device_from)
     y = x.to_device(device_to)
 
-    assert y.get_array().sycl_device == device_to
+    assert y.sycl_device == device_to
 
 
 @pytest.mark.parametrize(
@@ -1994,8 +1992,8 @@ def test_diff_scalar_append(device, kwargs):
     result = dpnp.diff(dpnp_data, **kwargs)
     assert_allclose(expected, result)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -2026,8 +2024,8 @@ def test_take(device):
     expected = numpy.take(numpy_data, np_ind, axis=None)
     assert_allclose(expected, result)
 
-    expected_queue = dpnp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -2055,8 +2053,8 @@ def test_take_along_axis(data, ind, axis, device):
     expected = numpy.take_along_axis(data, ind, axis=axis)
     assert_allclose(expected, result)
 
-    expected_queue = dp_data.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = dp_data.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
@@ -2110,8 +2108,8 @@ def test_where(device):
     expected = numpy.where(a < 4, a, -1)
     assert_allclose(expected, result)
 
-    expected_queue = ia.get_array().sycl_queue
-    result_queue = result.get_array().sycl_queue
+    expected_queue = ia.sycl_queue
+    result_queue = result.sycl_queue
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 

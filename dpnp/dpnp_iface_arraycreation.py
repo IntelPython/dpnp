@@ -233,10 +233,16 @@ def array(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    copy : bool, optional
-        If ``True`` (default), then the object is copied.
+        Default: ``None``.
+    copy : {None, bool}, optional
+        If ``True``, then the array data is copied. If ``None``, a copy will
+        only be made if a copy is needed to satisfy any of the requirements
+        (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``
+        exception if a copy can not be avoided.
+        Default: ``True``.
     order : {"C", "F", "A", "K"}, optional
-        Memory layout of the newly output array. Default: "K".
+        Memory layout of the newly output array.
+        Default: "K".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -244,6 +250,7 @@ def array(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -321,11 +328,6 @@ def array(
             "Keyword argument `ndmin` is supported only with "
             f"default value ``0``, but got {ndmin}"
         )
-
-    # `False`` in numpy means exactly the same like `None` in python array API:
-    # that is to reuse existing memory buffer if possible or to copy otherwise.
-    if copy is False:
-        copy = None
 
     return dpnp_container.asarray(
         a,
@@ -443,10 +445,12 @@ def asarray(
     a,
     dtype=None,
     order=None,
-    like=None,
+    *,
     device=None,
     usm_type=None,
     sycl_queue=None,
+    copy=None,
+    like=None,
 ):
     """
     Converts an input object into array.
@@ -463,8 +467,10 @@ def asarray(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
+        Default: ``None``.
     order : {None, "C", "F", "A", "K"}, optional
-        Memory layout of the newly output array. Default: "K".
+        Memory layout of the newly output array.
+        Default: "K".
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -472,6 +478,7 @@ def asarray(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -481,6 +488,12 @@ def asarray(
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
         Default: ``None``.
+    copy : {None, bool}, optional
+        If ``True``, then the array data is copied. If ``None``, a copy will
+        only be made if a copy is needed to satisfy any of the requirements
+        (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``
+        exception if a copy can not be avoided.
+        Default: ``True``.
 
     Returns
     -------
@@ -533,6 +546,7 @@ def asarray(
     return dpnp_container.asarray(
         a,
         dtype=dtype,
+        copy=copy,
         order=order,
         device=device,
         usm_type=usm_type,
