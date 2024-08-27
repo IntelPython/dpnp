@@ -75,6 +75,7 @@ __all__ = [
     "rollaxis",
     "row_stack",
     "shape",
+    "size",
     "squeeze",
     "stack",
     "swapaxes",
@@ -1366,7 +1367,7 @@ def ndim(a):
     Parameters
     ----------
     a : array_like
-        Input array.
+        Input data.
 
     Returns
     -------
@@ -1375,7 +1376,7 @@ def ndim(a):
 
     See Also
     --------
-    :obj:`dpnp.ndarray.ndim` : equivalent method for `dpnp.ndarray`
+    :obj:`dpnp.ndarray.ndim` : Equivalent method for `dpnp.ndarray`
                         or `usm_ndarray` input.
     :obj:`dpnp.shape` : Return the shape of an array.
     :obj:`dpnp.ndarray.shape` : Return the shape of an array.
@@ -1796,6 +1797,59 @@ def shape(a):
     if dpnp.is_supported_array_type(a):
         return a.shape
     return numpy.shape(a)
+
+
+def size(a, axis=None):
+    """
+    Return the number of elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.size`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+    axis : {None, int}, optional
+        Axis along which the elements are counted.
+        By default, give the total number of elements.
+        Default: ``None``.
+
+    Returns
+    -------
+    element_count : int
+        Number of elements along the specified axis.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.size` : number of elements in array.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+    >>> np.size(a, 0)
+    2
+
+    >>> a = np.asarray(a)
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        if axis is None:
+            return a.size
+        return a.shape[axis]
+
+    return numpy.size(a, axis)
 
 
 def squeeze(a, /, axis=None):

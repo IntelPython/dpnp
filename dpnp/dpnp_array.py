@@ -1132,7 +1132,7 @@ class dpnp_array:
 
         See Also
         --------
-        :obj:`dpnp.ndim` : equivalent method for any array-like input.
+        :obj:`dpnp.ndim` : Equivalent method for any array-like input.
         :obj:`dpnp.shape` : Return the shape of an array.
         :obj:`dpnp.ndarray.shape` : Return the shape of an array.
 
@@ -1420,7 +1420,34 @@ class dpnp_array:
 
     @property
     def size(self):
-        """Number of elements in the array."""
+        """
+        Number of elements in the array.
+
+        Parameters
+        ----------
+        a : {dpnp.ndarray, usm_ndarray}
+            Input array.
+
+        Returns
+        -------
+        element_count : int
+            Number of elements in the array.
+
+        See Also
+        --------
+        :obj:`dpnp.size` : Return the number of elements along a given axis.
+        :obj:`dpnp.shape` : Return the shape of an array.
+        :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.zeros((3, 5, 2), dtype=np.complex64)
+        >>> x.size
+        30
+
+        """
+
         return self._array_obj.size
 
     def sort(self, axis=-1, kind=None, order=None):
