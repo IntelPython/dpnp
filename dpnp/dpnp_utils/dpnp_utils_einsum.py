@@ -804,7 +804,7 @@ def _parse_int_subscript(list_subscript):
         list_subscript, (list, tuple, numpy.ndarray, dpnp.ndarray)
     ):
         raise TypeError(
-            "subscripts for each operand must be a list or a tuple."
+            "subscripts for each operand must be a list, tuple or ndarray."
         )
     str_subscript = ""
     for s in list_subscript:
