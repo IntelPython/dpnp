@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+162.g6f3d5f543a4 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+163.g75bb4e78273 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=ceb1d658"></script>
+        <script src="../../_static/documentation_options.js?v=c1fca69c"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+162.g6f3d5f543a4
+                0.16.0dev0+163.g75bb4e78273
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -337,7 +337,7 @@
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
-<span class="sd">        Default: &quot;K&quot;.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -464,7 +464,8 @@
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
 <span class="sd">        and device capabilities when necessary).</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;K&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -571,7 +572,7 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
-<span class="sd">        Default: &quot;K&quot;.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -1029,8 +1030,9 @@
 <span class="sd">            default values, returns a read/write view of its k-th diagonal.</span>
 <span class="sd">          - Otherwise, returns a copy of its k-th diagonal.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal in question. The default is 0. Use k &gt; 0 for diagonals above</span>
+<span class="sd">        Diagonal in question. Use k &gt; 0 for diagonals above</span>
 <span class="sd">        the main diagonal, and k &lt; 0 for diagonals below the main diagonal.</span>
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -1242,7 +1244,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -1347,7 +1350,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -1467,7 +1471,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -1581,7 +1586,8 @@
 <span class="sd">    count : int, optional</span>
 <span class="sd">        Number of items to read. ``-1`` means all data in the buffer.</span>
 <span class="sd">    offset : int, optional</span>
-<span class="sd">        Start reading the buffer from this offset (in bytes); default: 0.</span>
+<span class="sd">        Start reading the buffer from this offset (in bytes).</span>
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -2124,7 +2130,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -2232,7 +2239,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -2351,7 +2359,8 @@
 <span class="sd">        ``num + 1`` values are spaced over the interval in log-space, of which</span>
 <span class="sd">        all but the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
-<span class="sd">        Number of samples to generate. Default is 50.</span>
+<span class="sd">        Number of samples to generate.</span>
+<span class="sd">        Default: ``50``.</span>
 <span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
@@ -2370,7 +2379,7 @@
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
 <span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
-<span class="sd">        Default is ``True``.</span>
+<span class="sd">        Default: ``True``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result to store the samples. Relevant only if start or</span>
 <span class="sd">        stop are array-like. By default (0), the samples will be along a new</span>
@@ -2601,7 +2610,7 @@
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : bool, optional</span>
 <span class="sd">        If ``True``, `stop` is the last sample. Otherwise, it is not included.</span>
-<span class="sd">        Default is ``True``.</span>
+<span class="sd">        Default: ``True``.</span>
 <span class="sd">    retstep : bool, optional</span>
 <span class="sd">        If ``True``, return (samples, step), where step is the spacing between</span>
 <span class="sd">        samples.</span>
@@ -2814,7 +2823,8 @@
 <span class="sd">        values are spaced over the interval in log-space, of which all but</span>
 <span class="sd">        the last (a sequence of length `num`) are returned.</span>
 <span class="sd">    num : int, optional</span>
-<span class="sd">        Number of samples to generate. Default is 50.</span>
+<span class="sd">        Number of samples to generate.</span>
+<span class="sd">        Default: ``50``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -2829,7 +2839,7 @@
 <span class="sd">        A SYCL queue to use for output array allocation and copying.</span>
 <span class="sd">    endpoint : {bool}, optional</span>
 <span class="sd">        If ``True``, stop is the last sample. Otherwise, it is not included.</span>
-<span class="sd">        Default is ``True``.</span>
+<span class="sd">        Default: ``True``.</span>
 <span class="sd">    base : {array_like}, optional</span>
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
@@ -2837,7 +2847,8 @@
 <span class="sd">        that can be converted to an array.This includes scalars, lists, lists</span>
 <span class="sd">        of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.</span>
 <span class="sd">        The `step` size between the elements in ``ln(samples) / ln(base)``</span>
-<span class="sd">        (or log_base(samples)) is uniform. Default is 10.0.</span>
+<span class="sd">        (or log_base(samples)) is uniform.</span>
+<span class="sd">        Default: ``10.0``.</span>
 <span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array. If not given, a default dtype will be</span>
 <span class="sd">        used that can represent the values (by considering Promotion Type Rule</span>
@@ -3187,7 +3198,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -3298,7 +3310,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -3476,7 +3489,7 @@
 <span class="sd">    k : int, optional</span>
 <span class="sd">        The sub-diagonal at and below which the array is filled. k = 0 is</span>
 <span class="sd">        the main diagonal, while k &lt; 0 is below it, and k &gt; 0 is above.</span>
-<span class="sd">        The default is 0.</span>
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
@@ -3851,11 +3864,12 @@
 <span class="sd">    shape : {int, sequence of ints}</span>
 <span class="sd">        Shape of the new array, e.g., (2, 3) or 2.</span>
 <span class="sd">    dtype : {None, dtype}, optional</span>
-<span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
+<span class="sd">        The desired dtype for the array, e.g., `dpnp.int32`.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -3966,7 +3980,8 @@
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
-<span class="sd">        Memory layout of the newly output array. Default: &quot;C&quot;.</span>
+<span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
