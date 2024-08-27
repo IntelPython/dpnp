@@ -1956,6 +1956,25 @@ def test_concat_stack(func, data1, data2, device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_append(device):
+    x1_orig = numpy.array([1, 2, 3])
+    x2_orig = numpy.array([4, 5, 6])
+    expected = numpy.append(x1_orig, x2_orig)
+
+    x1 = dpnp.array(x1_orig, device=device)
+    x2 = dpnp.array(x2_orig, device=device)
+    result = dpnp.append(x1, x2)
+
+    assert_allclose(result, expected)
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "device_x",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],

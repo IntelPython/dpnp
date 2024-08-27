@@ -49,6 +49,7 @@ import dpnp
 from .dpnp_array import dpnp_array
 
 __all__ = [
+    "append",
     "asfarray",
     "atleast_1d",
     "atleast_2d",
@@ -258,6 +259,79 @@ def _unpack_tuple(a):
     if len(a) == 1:
         return a[0]
     return a
+
+
+def append(arr, values, axis=None):
+    """
+    Append values to the end of an array.
+
+    For full documentation refer to :obj:`numpy.append`.
+
+    Parameters
+    ----------
+    arr : {dpnp.ndarray, usm_ndarray}
+        Values are appended to a copy of this array.
+    values : {scalar, array_like}
+        These values are appended to a copy of `arr`. It must be of the
+        correct shape (the same shape as `arr`, excluding `axis`). If
+        `axis` is not specified, `values` can be any shape and will be
+        flattened before use.
+        These values can be in any form that can be converted to an array.
+        This includes scalars, lists, lists of tuples, tuples,
+        tuples of tuples, tuples of lists, and ndarrays.
+    axis : {None, int}, optional
+        The axis along which `values` are appended. If `axis` is not
+        given, both `arr` and `values` are flattened before use.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of `arr` with `values` appended to `axis`. Note that
+        `append` does not occur in-place: a new array is allocated and
+        filled. If `axis` is None, `out` is a flattened array.
+
+    See Also
+    --------
+    :obj:`dpnp.insert` : Insert elements into an array.
+    :obj:`dpnp.delete` : Delete elements from an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> np.append(a, [[4, 5, 6], [7, 8, 9]])
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    When `axis` is specified, `values` must have the correct shape.
+
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.append(b, [[7, 8, 9]], axis=0)
+    array([[1, 2, 3],
+           [4, 5, 6],
+           [7, 8, 9]])
+    >>> np.append(b, [7, 8, 9], axis=0)
+    Traceback (most recent call last):
+        ...
+    ValueError: all the input arrays must have same number of dimensions, but
+    the array at index 0 has 2 dimension(s) and the array at index 1 has 1
+    dimension(s)
+
+    """
+
+    dpnp.check_supported_arrays_type(arr)
+    if not dpnp.is_supported_array_type(values):
+        values = dpnp.array(
+            values, usm_type=arr.usm_type, sycl_queue=arr.sycl_queue
+        )
+
+    if axis is None:
+        if arr.ndim != 1:
+            arr = dpnp.ravel(arr)
+        if values.ndim != 1:
+            values = dpnp.ravel(values)
+        axis = 0
+    return dpnp.concatenate((arr, values), axis=axis)
 
 
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
