@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.16.0dev0+167.ga562f736126 documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.16.0dev0+169.g335290fbe91 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b7cc48fd"></script>
+        <script src="../../_static/documentation_options.js?v=722b8cbb"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+167.ga562f736126
+                0.16.0dev0+169.g335290fbe91
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -415,17 +415,17 @@
 <span class="sd">        sort it.</span>
 <span class="sd">    v : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Values to insert into `a`.</span>
-<span class="sd">    side : {&#39;left&#39;, &#39;right&#39;}, optional</span>
-<span class="sd">        If ``&#39;left&#39;``, the index of the first suitable location found is given.</span>
-<span class="sd">        If ``&#39;right&#39;``, return the last such index. If there is no suitable</span>
+<span class="sd">    side : {&quot;left&quot;, &quot;right&quot;}, optional</span>
+<span class="sd">        If ``&quot;left&quot;``, the index of the first suitable location found is given.</span>
+<span class="sd">        If ``&quot;right&quot;``, return the last such index. If there is no suitable</span>
 <span class="sd">        index, return either 0 or N (where N is the length of `a`).</span>
-<span class="sd">        Default is ``&#39;left&#39;``.</span>
+<span class="sd">        Default: ``&quot;left&quot;``.</span>
 <span class="sd">    sorter : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Optional 1-D array of integer indices that sort array a into ascending</span>
 <span class="sd">        order. They are typically the result of :obj:`dpnp.argsort`.</span>
-<span class="sd">        Out of bound index values of `sorter` array are treated using `&quot;wrap&quot;`</span>
-<span class="sd">        mode documented in :py:func:`dpnp.take`.</span>
-<span class="sd">        Default is ``None``.</span>
+<span class="sd">        Out of bound index values of `sorter` array are treated using</span>
+<span class="sd">        ``&quot;wrap&quot;`` mode documented in :py:func:`dpnp.take`.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
