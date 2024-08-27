@@ -1120,11 +1120,6 @@ class dpnp_array:
 
         For full documentation refer to :obj:`numpy.ndarray.ndim`.
 
-        Parameters
-        ----------
-        a : {dpnp.ndarray, usm_ndarray}
-            Input array.
-
         Returns
         -------
         number_of_dimensions : int
@@ -1422,11 +1417,6 @@ class dpnp_array:
     def size(self):
         """
         Number of elements in the array.
-
-        Parameters
-        ----------
-        a : {dpnp.ndarray, usm_ndarray}
-            Input array.
 
         Returns
         -------
