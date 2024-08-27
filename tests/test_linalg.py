@@ -1135,15 +1135,31 @@ class TestEinsum:
         result = inp.einsum(*args, dtype="?", casting="unsafe", optimize=do_opt)
         assert_dtype_allclose(result, expected)
 
+        # with an scalar, NumPy < 2.0.0 uses the other input arrays to
+        # determine the output type while for NumPy > 2.0.0 the scalar
+        # with default machine dtype is used to determine the output
+        # data type
+        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            check_type = False
+        else:
+            check_type = True
         a = numpy.arange(9, dtype=dtype)
         a_dp = inp.array(a)
         expected = numpy.einsum(",i->", 3, a)
-        assert_dtype_allclose(inp.einsum(",i->", 3, a_dp), expected)
-        assert_dtype_allclose(inp.einsum(3, [], a_dp, [0], []), expected)
+        assert_dtype_allclose(
+            inp.einsum(",i->", 3, a_dp), expected, check_type=check_type
+        )
+        assert_dtype_allclose(
+            inp.einsum(3, [], a_dp, [0], []), expected, check_type=check_type
+        )
 
         expected = numpy.einsum("i,->", a, 3)
-        assert_dtype_allclose(inp.einsum("i,->", a_dp, 3), expected)
-        assert_dtype_allclose(inp.einsum(a_dp, [0], 3, [], []), expected)
+        assert_dtype_allclose(
+            inp.einsum("i,->", a_dp, 3), expected, check_type=check_type
+        )
+        assert_dtype_allclose(
+            inp.einsum(a_dp, [0], 3, [], []), expected, check_type=check_type
+        )
 
         # Various stride0, contiguous, and SSE aligned variants
         for n in range(1, 25):
@@ -1160,18 +1176,22 @@ class TestEinsum:
             assert_dtype_allclose(
                 inp.einsum("i,->i", a_dp, 2, optimize=do_opt),
                 numpy.einsum("i,->i", a, 2, optimize=do_opt),
+                check_type=check_type,
             )
             assert_dtype_allclose(
                 inp.einsum(",i->i", 2, a_dp, optimize=do_opt),
                 numpy.einsum(",i->i", 2, a, optimize=do_opt),
+                check_type=check_type,
             )
             assert_dtype_allclose(
                 inp.einsum("i,->", a_dp, 2, optimize=do_opt),
                 numpy.einsum("i,->", a, 2, optimize=do_opt),
+                check_type=check_type,
             )
             assert_dtype_allclose(
                 inp.einsum(",i->", 2, a_dp, optimize=do_opt),
                 numpy.einsum(",i->", 2, a, optimize=do_opt),
+                check_type=check_type,
             )
 
             assert_dtype_allclose(
@@ -1185,18 +1205,22 @@ class TestEinsum:
             assert_dtype_allclose(
                 inp.einsum("i,->i", a_dp[1:], 2, optimize=do_opt),
                 numpy.einsum("i,->i", a[1:], 2, optimize=do_opt),
+                check_type=check_type,
             )
             assert_dtype_allclose(
                 inp.einsum(",i->i", 2, a_dp[1:], optimize=do_opt),
                 numpy.einsum(",i->i", 2, a[1:], optimize=do_opt),
+                check_type=check_type,
             )
             assert_dtype_allclose(
                 inp.einsum("i,->", a_dp[1:], 2, optimize=do_opt),
                 numpy.einsum("i,->", a[1:], 2, optimize=do_opt),
+                check_type=check_type,
             )
             assert_dtype_allclose(
                 inp.einsum(",i->", 2, a_dp[1:], optimize=do_opt),
                 numpy.einsum(",i->", 2, a[1:], optimize=do_opt),
+                check_type=check_type,
             )
 
         # special case

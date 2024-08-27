@@ -476,8 +476,8 @@ class TestEinSumBinaryOperation:
 
 class TestEinSumBinaryOperationWithScalar:
     # with an scalar, NumPy < 2.0.0 uses the other input arrays to determine
-    # the output type while for NumPy > 2.0.0 the scalar (with default machine
-    # dtypeis used to determine the output type
+    # the output type while for NumPy > 2.0.0 the scalar with default machine
+    # dtype is used to determine the output type
     if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
         type_check = False
     else:
