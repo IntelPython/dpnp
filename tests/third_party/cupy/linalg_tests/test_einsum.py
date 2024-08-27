@@ -479,9 +479,9 @@ class TestEinSumBinaryOperationWithScalar:
     # the output type while for NumPy > 2.0.0 the scalar with default machine
     # dtype is used to determine the output type
     if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-        type_check = False
-    else:
         type_check = has_support_aspect64()
+    else:
+        type_check = False
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False, type_check=type_check)

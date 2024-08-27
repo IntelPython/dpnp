@@ -1050,12 +1050,12 @@ def dpnp_einsum(
                 "Input and output allocation queues are not compatible"
             )
 
+    result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
     for id, a in enumerate(operands):
         if dpnp.isscalar(a):
             operands[id] = dpnp.array(
-                a, dtype=type(a), usm_type=res_usm_type, sycl_queue=exec_q
+                a, dtype=result_dtype, usm_type=res_usm_type, sycl_queue=exec_q
             )
-            arrays.append(operands[id])
     result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
     if order in ["a", "A"]:
         order = (

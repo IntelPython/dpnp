@@ -1140,9 +1140,9 @@ class TestEinsum:
         # with default machine dtype is used to determine the output
         # data type
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-            check_type = False
-        else:
             check_type = True
+        else:
+            check_type = False
         a = numpy.arange(9, dtype=dtype)
         a_dp = inp.array(a)
         expected = numpy.einsum(",i->", 3, a)
