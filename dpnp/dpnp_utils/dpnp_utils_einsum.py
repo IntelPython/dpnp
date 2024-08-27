@@ -821,7 +821,7 @@ def _parse_int_subscript(list_subscript):
             if isinstance(s, int):
                 if not 0 <= s < len(_einsum_symbols):
                     raise ValueError(
-                        "subscript is not within the valid range [0, 52)."
+                        f"subscript is not within the valid range [0, {len(_einsum_symbols)})."
                     )
             str_subscript += _einsum_symbols[s]
     return str_subscript
