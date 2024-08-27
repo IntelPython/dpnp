@@ -163,11 +163,16 @@ def dot(a, b, out=None):
 
 
 def einsum(
-    *operands, out=None, dtype=None, order="K", casting="safe", optimize=False
+    *operands,
+    out=None,
+    dtype=None,
+    order="K",
+    casting="same_kind",
+    optimize=False,
 ):
     """
     einsum(subscripts, *operands, out=None, dtype=None, order="K", \
-        casting="safe", optimize=False)
+        casting="same_kind", optimize=False)
 
     Evaluates the Einstein summation convention on the operands.
 
@@ -186,14 +191,14 @@ def einsum(
         If provided, the calculation is done into this array.
     dtype : {dtype, None}, optional
         If provided, forces the calculation to use the data type specified.
-        Default is ``None``.
+        Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Controls the memory layout of the output. ``"C"`` means it should be
         C-contiguous. ``"F"`` means it should be F-contiguous, ``"A"`` means
         it should be ``"F"`` if the inputs are all ``"F"``, ``"C"`` otherwise.
         ``"K"`` means it should be as close to the layout as the inputs as
         is possible, including arbitrarily permuted axes.
-        Default is ``"K"``.
+        Default: ``"K"``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur. Setting this to
         ``"unsafe"`` is not recommended, as it can adversely affect
@@ -206,12 +211,17 @@ def einsum(
             like float64 to float32, are allowed.
           * ``"unsafe"`` means any data conversions may be done.
 
-        Default is ``"safe"``.
+        Please note that, in contrast to NumPy, the default setting here is
+        ``"same_kind"``. This is to prevent errors that may occur when data
+        needs to be converted to `float64`, but the device does not support it.
+        In such cases, the data is instead converted to `float32`.
+        Default: ``"same_kind"``.
     optimize : {False, True, "greedy", "optimal"}, optional
         Controls if intermediate optimization should occur. No optimization
         will occur if ``False`` and ``True`` will default to the ``"greedy"``
         algorithm. Also accepts an explicit contraction list from the
-        :obj:`dpnp.einsum_path` function. Default is ``False``.
+        :obj:`dpnp.einsum_path` function.
+        Default: ``False``.
 
     Returns
     -------
@@ -453,7 +463,7 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
           the number of terms in the contraction. Equivalent to the
           ``"optimal"`` path for most contractions.
 
-        Default is ``"greedy"``.
+        Default: ``"greedy"``.
 
     Returns
     -------
@@ -736,16 +746,18 @@ def matmul(
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         a shape that matches the signature `(n,k),(k,m)->(n,m)` but the type
-        (of the calculated values) will be cast if necessary. Default: ``None``.
+        (of the calculated values) will be cast if necessary.
+        Default: ``None``.
     dtype : {None, dtype}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
-        Controls what kind of data casting may occur. Default: ``"same_kind"``.
+        Controls what kind of data casting may occur.
+        Default: ``"same_kind"``.
     order : {"C", "F", "A", "K", None}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
-        Default: "K".
+        Default: ``"K"``.
     axes : {list of tuples}, optional
         A list of tuples with indices of axes the matrix product should operate
         on. For instance, for the signature of ``(i,j),(j,k)->(i,k)``, the base

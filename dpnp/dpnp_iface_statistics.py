@@ -188,16 +188,18 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
 
         The only constraint on `weights` is that `sum(weights)` must not be 0.
     returned : {bool}, optional
-        Default is ``False``. If ``True``, the tuple (`average`,
-        `sum_of_weights`) is returned, otherwise only the average is returned.
-        If `weights=None`, `sum_of_weights` is equivalent to the number of
-        elements over which the average is taken.
+        If ``True``, the tuple (`average`, `sum_of_weights`) is returned,
+        otherwise only the average is returned. If `weights=None`,
+        `sum_of_weights` is equivalent to the number of elements over which
+        the average is taken.
+        Default: ``False``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        the returned array.
+        Default: ``False``.
 
     Returns
     -------

@@ -772,7 +772,8 @@ def concatenate(
         corresponding to axis (the first, by default).
     axis : int, optional
         The axis along which the arrays will be joined. If axis is ``None``,
-        arrays are flattened before use. Default is 0.
+        arrays are flattened before use.
+        Default: ``0``.
     out : dpnp.ndarray, optional
         If provided, the destination to place the result. The shape must be
         correct, matching that of what concatenate would have returned

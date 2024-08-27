@@ -94,7 +94,7 @@ def argsort(a, axis=-1, kind=None, order=None):
         sorting. The default is -1, which sorts along the last axis.
     kind : {None, "stable"}, optional
         Default is ``None``, which is equivalent to `"stable"`.
-        Unlike in NumPy any other options are not accepted here.
+        Unlike NumPy, no other option is accepted here.
 
     Returns
     -------
