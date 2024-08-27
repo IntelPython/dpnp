@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+165.gcba1d0bb4c1 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+166.gb30c9c49659 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3ee60cc3"></script>
+        <script src="../../_static/documentation_options.js?v=8dd64d2e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+165.gcba1d0bb4c1
+                0.16.0dev0+166.gb30c9c49659
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -165,6 +165,7 @@
     <span class="s2">&quot;rollaxis&quot;</span><span class="p">,</span>
     <span class="s2">&quot;row_stack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;shape&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;size&quot;</span><span class="p">,</span>
     <span class="s2">&quot;squeeze&quot;</span><span class="p">,</span>
     <span class="s2">&quot;stack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;swapaxes&quot;</span><span class="p">,</span>
@@ -1507,7 +1508,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : array_like</span>
-<span class="sd">        Input array.</span>
+<span class="sd">        Input data.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1516,7 +1517,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.ndarray.ndim` : equivalent method for `dpnp.ndarray`</span>
+<span class="sd">    :obj:`dpnp.ndarray.ndim` : Equivalent method for `dpnp.ndarray`</span>
 <span class="sd">                        or `usm_ndarray` input.</span>
 <span class="sd">    :obj:`dpnp.shape` : Return the shape of an array.</span>
 <span class="sd">    :obj:`dpnp.ndarray.shape` : Return the shape of an array.</span>
@@ -1958,6 +1959,59 @@
         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
 
+
+
+<span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the number of elements along a given axis.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.size`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array_like</span>
+<span class="sd">        Input data.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis along which the elements are counted.</span>
+<span class="sd">        By default, give the total number of elements.</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    element_count : int</span>
+<span class="sd">        Number of elements along the specified axis.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.ndarray.size` : number of elements in array.</span>
+<span class="sd">    :obj:`dpnp.shape` : Return the shape of an array.</span>
+<span class="sd">    :obj:`dpnp.ndarray.shape` : Return the shape of an array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = [[1, 2, 3], [4, 5, 6]]</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a)</span>
+<span class="sd">    6</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a, 1)</span>
+<span class="sd">    3</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a, 0)</span>
+<span class="sd">    2</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.asarray(a)</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a)</span>
+<span class="sd">    6</span>
+<span class="sd">    &gt;&gt;&gt; np.size(a, 1)</span>
+<span class="sd">    3</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="squeeze">
