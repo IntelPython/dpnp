@@ -32,6 +32,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmax.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmin.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmod.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/heaviside.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/logaddexp2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/radians.cpp
 )

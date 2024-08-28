@@ -184,27 +184,61 @@ class dpnp_array:
     # '__divmod__',
     # '__doc__',
 
-    def __dlpack__(self, stream=None):
+    def __dlpack__(
+        self, *, stream=None, max_version=None, dl_device=None, copy=None
+    ):
         """
         Produces DLPack capsule.
 
         Parameters
         ----------
         stream : {:class:`dpctl.SyclQueue`, None}, optional
-            Execution queue to synchronize with. If ``None``,
-            synchronization is not performed.
+            Execution queue to synchronize with. If ``None``, synchronization
+            is not performed.
+            Default: ``None``.
+        max_version {tuple of ints, None}, optional
+            The maximum DLPack version the consumer (caller of ``__dlpack__``)
+            supports. As ``__dlpack__`` may not always return a DLPack capsule
+            with version `max_version`, the consumer must verify the version
+            even if this argument is passed.
+            Default: ``None``.
+        dl_device {tuple, None}, optional:
+            The device the returned DLPack capsule will be placed on. The
+            device must be a 2-tuple matching the format of
+            ``__dlpack_device__`` method, an integer enumerator representing
+            the device type followed by an integer representing the index of
+            the device.
+            Default: ``None``.
+        copy {bool, None}, optional:
+            Boolean indicating whether or not to copy the input.
+
+            * If `copy` is ``True``, the input will always be copied.
+            * If ``False``, a ``BufferError`` will be raised if a copy is
+              deemed necessary.
+            * If ``None``, a copy will be made only if deemed necessary,
+              otherwise, the existing memory buffer will be reused.
+
+            Default: ``None``.
 
         Raises
         ------
-        MemoryError
+        MemoryError:
             when host memory can not be allocated.
-        DLPackCreationError
-            when array is allocated on a partitioned
-            SYCL device, or with a non-default context.
+        DLPackCreationError:
+            when array is allocated on a partitioned SYCL device, or with
+            a non-default context.
+        BufferError:
+            when a copy is deemed necessary but `copy` is ``False`` or when
+            the provided `dl_device` cannot be handled.
 
         """
 
-        return self._array_obj.__dlpack__(stream=stream)
+        return self._array_obj.__dlpack__(
+            stream=stream,
+            max_version=max_version,
+            dl_device=dl_device,
+            copy=copy,
+        )
 
     def __dlpack_device__(self):
         """
@@ -896,14 +930,14 @@ class dpnp_array:
             Read the elements using this index order, and place the elements
             into the reshaped array using this index order.
 
-                - "C" means to read / write the elements using C-like index
+                - ``"C"`` means to read / write the elements using C-like index
                   order, with the last axis index changing fastest, back to the
                   first axis index changing slowest.
-                - "F" means to read / write the elements using Fortran-like
+                - ``"F"`` means to read / write the elements using Fortran-like
                   index order, with the first index changing fastest, and the
                   last index changing slowest.
 
-            The default is ``"C"``.
+            Default: ``"C"``.
 
         Returns
         -------
@@ -1081,7 +1115,33 @@ class dpnp_array:
 
     @property
     def ndim(self):
-        """Number of array dimensions."""
+        """
+        Return the number of dimensions of an array.
+
+        For full documentation refer to :obj:`numpy.ndarray.ndim`.
+
+        Returns
+        -------
+        number_of_dimensions : int
+            The number of dimensions in `a`.
+
+        See Also
+        --------
+        :obj:`dpnp.ndim` : Equivalent method for any array-like input.
+        :obj:`dpnp.shape` : Return the shape of an array.
+        :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.array([1, 2, 3])
+        >>> x.ndim
+        1
+        >>> y = np.zeros((2, 3, 4))
+        >>> y.ndim
+        3
+
+        """
 
         return self._array_obj.ndim
 
@@ -1355,7 +1415,29 @@ class dpnp_array:
 
     @property
     def size(self):
-        """Number of elements in the array."""
+        """
+        Number of elements in the array.
+
+        Returns
+        -------
+        element_count : int
+            Number of elements in the array.
+
+        See Also
+        --------
+        :obj:`dpnp.size` : Return the number of elements along a given axis.
+        :obj:`dpnp.shape` : Return the shape of an array.
+        :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.zeros((3, 5, 2), dtype=np.complex64)
+        >>> x.size
+        30
+
+        """
+
         return self._array_obj.size
 
     def sort(self, axis=-1, kind=None, order=None):

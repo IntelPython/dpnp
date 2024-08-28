@@ -2206,10 +2206,10 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
     p : {dpnp.ndarray, usm_ndarray}
         Input array.
     discont : {float, None}, optional
-        Maximum discontinuity between values, default is ``period / 2``. Values
-        below ``period / 2`` are treated as if they were ``period / 2``. To
-        have an effect different from the default, `discont` should be larger
-        than ``period / 2``.
+        Maximum discontinuity between values, default is ``None`` which is an
+        alias for ``period / 2``. Values below ``period / 2`` are treated as if
+        they were ``period / 2``. To have an effect different from the default,
+        `discont` should be larger than ``period / 2``.
         Default: ``None``.
     axis : int, optional
         Axis along which unwrap will operate, default is the last axis.

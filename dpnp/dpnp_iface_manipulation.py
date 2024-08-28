@@ -66,6 +66,7 @@ __all__ = [
     "flipud",
     "hstack",
     "moveaxis",
+    "ndim",
     "ravel",
     "repeat",
     "reshape",
@@ -74,6 +75,7 @@ __all__ = [
     "rollaxis",
     "row_stack",
     "shape",
+    "size",
     "squeeze",
     "stack",
     "swapaxes",
@@ -772,7 +774,8 @@ def concatenate(
         corresponding to axis (the first, by default).
     axis : int, optional
         The axis along which the arrays will be joined. If axis is ``None``,
-        arrays are flattened before use. Default is 0.
+        arrays are flattened before use.
+        Default: ``0``.
     out : dpnp.ndarray, optional
         If provided, the destination to place the result. The shape must be
         correct, matching that of what concatenate would have returned
@@ -1356,6 +1359,48 @@ def moveaxis(a, source, destination):
     )
 
 
+def ndim(a):
+    """
+    Return the number of dimensions of array-like input.
+
+    For full documentation refer to :obj:`numpy.ndim`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+
+    Returns
+    -------
+    number_of_dimensions : int
+        The number of dimensions in `a`. Scalars are zero-dimensional.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.ndim` : Equivalent method for `dpnp.ndarray`
+                        or `usm_ndarray` input.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.ndim(a)
+    2
+    >>> a = np.asarray(a)
+    >>> np.ndim(a)
+    2
+    >>> np.ndim(1)
+    0
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        return a.ndim
+    return numpy.ndim(a)
+
+
 def ravel(a, order="C"):
     """
     Return a contiguous flattened array.
@@ -1738,14 +1783,14 @@ def shape(a):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> dp.shape(dp.eye(3))
+    >>> import dpnp as np
+    >>> np.shape(np.eye(3))
     (3, 3)
-    >>> dp.shape([[1, 3]])
+    >>> np.shape([[1, 3]])
     (1, 2)
-    >>> dp.shape([0])
+    >>> np.shape([0])
     (1,)
-    >>> dp.shape(0)
+    >>> np.shape(0)
     ()
 
     """
@@ -1753,6 +1798,59 @@ def shape(a):
     if dpnp.is_supported_array_type(a):
         return a.shape
     return numpy.shape(a)
+
+
+def size(a, axis=None):
+    """
+    Return the number of elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.size`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+    axis : {None, int}, optional
+        Axis along which the elements are counted.
+        By default, give the total number of elements.
+        Default: ``None``.
+
+    Returns
+    -------
+    element_count : int
+        Number of elements along the specified axis.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.size` : number of elements in array.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+    >>> np.size(a, 0)
+    2
+
+    >>> a = np.asarray(a)
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        if axis is None:
+            return a.size
+        return a.shape[axis]
+
+    return numpy.size(a, axis)
 
 
 def squeeze(a, /, axis=None):

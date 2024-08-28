@@ -177,8 +177,8 @@ void init_heevd_batch(py::module_ m)
 
         auto heevd_batch_pyapi =
             [&](sycl::queue &exec_q, const std::int8_t jobz,
-                const std::int8_t upper_lower, arrayT &eig_vecs,
-                arrayT &eig_vals, const event_vecT &depends = {}) {
+                const std::int8_t upper_lower, const arrayT &eig_vecs,
+                const arrayT &eig_vals, const event_vecT &depends = {}) {
                 return evd::evd_batch_func(exec_q, jobz, upper_lower, eig_vecs,
                                            eig_vals, depends,
                                            heevd_batch_dispatch_table);

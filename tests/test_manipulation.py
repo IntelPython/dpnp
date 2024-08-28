@@ -89,6 +89,30 @@ def test_result_type_only_arrays():
     assert dpnp.result_type(*X) == numpy.result_type(*X_np)
 
 
+def test_ndim():
+    a = [[1, 2, 3], [4, 5, 6]]
+    ia = dpnp.array(a)
+
+    exp = numpy.ndim(a)
+    assert ia.ndim == exp
+    assert dpnp.ndim(a) == exp
+    assert dpnp.ndim(ia) == exp
+
+
+def test_size():
+    a = [[1, 2, 3], [4, 5, 6]]
+    ia = dpnp.array(a)
+
+    exp = numpy.size(a)
+    assert ia.size == exp
+    assert dpnp.size(a) == exp
+    assert dpnp.size(ia) == exp
+
+    exp = numpy.size(a, 0)
+    assert dpnp.size(a, 0) == exp
+    assert dpnp.size(ia, 0) == exp
+
+
 class TestRepeat:
     @pytest.mark.parametrize(
         "data",

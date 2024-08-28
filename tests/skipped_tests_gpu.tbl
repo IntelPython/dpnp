@@ -26,8 +26,6 @@ tests/test_umath.py::test_umaths[('frexp', 'f')]
 tests/test_umath.py::test_umaths[('frexp', 'd')]
 tests/test_umath.py::test_umaths[('gcd', 'ii')]
 tests/test_umath.py::test_umaths[('gcd', 'll')]
-tests/test_umath.py::test_umaths[('heaviside', 'ff')]
-tests/test_umath.py::test_umaths[('heaviside', 'dd')]
 tests/test_umath.py::test_umaths[('lcm', 'ii')]
 tests/test_umath.py::test_umaths[('lcm', 'll')]
 tests/test_umath.py::test_umaths[('ldexp', 'fi')]
@@ -233,8 +231,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_fx
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_x
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_size1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_to_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside_nan_inf
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_0_{a_shape=(), b_shape=(), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_1_{a_shape=(), b_shape=(), shape=(3, 2)}::test_beta

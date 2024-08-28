@@ -35,37 +35,12 @@ from dpctl.utils import ExecutionPlacementError
 import dpnp
 from dpnp.dpnp_utils import get_usm_allocations
 
+from ..dpnp_array import dpnp_array
+
 _einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 
 __all__ = ["dpnp_einsum"]
-
-
-def _calc_offset(shape, linear_id, strides):
-    """
-    Calculate the offset in a multi-dimensional array given the shape, linear_id, and strides.
-
-    Parameters
-    ----------
-    shape : tuple
-        The shape of the multi-dimensional array.
-    linear_id : int
-        The linear index in the multi-dimensional array.
-    strides : tuple
-        The strides of the multi-dimensional array.
-
-    Returns
-    -------
-    out : int
-        The offset in the multi-dimensional array.
-
-    """
-
-    offset = 0
-    indices = _index_linear_to_tuple(shape, linear_id)
-    for i in range(len(indices)):
-        offset += indices[i] * strides[i]
-    return offset
 
 
 def _chr(label):
@@ -89,7 +64,7 @@ def _chr(label):
 
     Examples
     --------
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> np_util._chr(97)
     'a'
     >>> np_util._chr(-1)
@@ -123,7 +98,7 @@ def _compute_size_by_dict(indices, idx_dict):
 
     Examples
     --------
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> np_util._compute_size_by_dict("abbc", {"a": 2, "b":3, "c":5})
     90
 
@@ -182,7 +157,7 @@ def _einsum_diagonals(input_subscripts, operands):
     Examples
     --------
     >>> import dpnp as np
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> a = np.arange(9).reshape(3, 3)
     >>> input_subscripts = ["ii"]
     >>> operands = [a]
@@ -246,7 +221,7 @@ def _expand_dims_transpose(arr, mode, mode_out):
     Example
     -------
     >>> import dpnp
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> a = dpnp.zeros((10, 20))
     >>> mode_a = ("A", "B")
     >>> mode_out = ("B", "C", "A")
@@ -296,7 +271,7 @@ def _find_contraction(positions, input_sets, output_set):
     Examples
     --------
     # A simple dot product test case
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> pos = (0, 1)
     >>> isets = [set("ab"), set("bc")]
     >>> oset = set("ac")
@@ -352,7 +327,7 @@ def _flatten_transpose(a, axeses):
     Examples
     --------
     >>> import dpnp as np
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> a = np.arange(24).reshape(2, 3, 4)
     >>> axeses = [(0, 2), (1,)]
     >>> out, shapes = np_util._flatten_transpose(a, axeses)
@@ -400,7 +375,7 @@ def _flop_count(idx_contraction, inner, num_terms, size_dictionary):
 
     Examples
     --------
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> np_util._flop_count("abc", False, 1, {"a": 2, "b":3, "c":5})
     30
 
@@ -447,7 +422,7 @@ def _greedy_path(input_sets, output_set, idx_dict, memory_limit):
 
     Examples
     --------
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> isets = [set("abd"), set("ac"), set("bdc")]
     >>> oset = set("")
     >>> idx_sizes = {"a": 1, "b":2, "c":3, "d":4}
@@ -535,34 +510,6 @@ def _greedy_path(input_sets, output_set, idx_dict, memory_limit):
     return path
 
 
-def _index_linear_to_tuple(shape, linear_id):
-    """
-    Convert a linear index to a tuple of indices in a multi-dimensional array.
-
-    Parameters
-    ----------
-    shape : tuple
-        The shape of the multi-dimensional array.
-    linear_id : int
-        The linear index to convert.
-
-    Returns
-    -------
-    out: tuple
-        A tuple of indices corresponding to the linear index.
-
-    """
-
-    len_shape = len(shape)
-    indices = [0] * len_shape
-    for i in range(len_shape):
-        prod_res = _compute_size(i + 1, shape)
-        indices[i] = linear_id // prod_res
-        linear_id %= prod_res
-
-    return tuple(indices)
-
-
 def _iter_path_pairs(path):
     """
     Copied from _iter_path_pairs in cupy/core/_einsum.py
@@ -636,7 +583,7 @@ def _optimal_path(input_sets, output_set, idx_dict, memory_limit):
 
     Examples
     --------
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> isets = [set("abd"), set("ac"), set("bdc")]
     >>> oset = set("")
     >>> idx_sizes = {"a": 1, "b":2, "c":3, "d":4}
@@ -709,7 +656,7 @@ def _parse_einsum_input(args):
     The operand list is simplified to reduce printing:
 
     >>> import dpnp as np
-    >>> import dpnp.dpnp_utils.dpnp_utils_linearalgebra as np_util
+    >>> import dpnp.dpnp_utils.dpnp_utils_einsum as np_util
     >>> a = np.random.rand(4, 4)
     >>> b = np.random.rand(4, 4, 4)
     >>> np_util._parse_einsum_input(("...a,...a->...", a, b))
@@ -853,6 +800,12 @@ def _parse_ellipsis_subscript(subscript, idx, ndim=None, ellipsis_len=None):
 def _parse_int_subscript(list_subscript):
     """Copied from _parse_int_subscript in cupy/core/_einsum.py"""
 
+    if not isinstance(
+        list_subscript, (list, tuple, numpy.ndarray, dpnp.ndarray)
+    ):
+        raise TypeError(
+            "subscripts for each operand must be a list, tuple or ndarray."
+        )
     str_subscript = ""
     for s in list_subscript:
         if s is Ellipsis:
@@ -865,6 +818,11 @@ def _parse_int_subscript(list_subscript):
                     "For this input type lists must contain "
                     "either int or Ellipsis"
                 ) from e
+            if isinstance(s, int):
+                if not 0 <= s < len(_einsum_symbols):
+                    raise ValueError(
+                        f"subscript is not within the valid range [0, {len(_einsum_symbols)})."
+                    )
             str_subscript += _einsum_symbols[s]
     return str_subscript
 
@@ -1012,8 +970,14 @@ def _transpose_ex(a, axeses):
         strides.append(stride)
 
     # TODO: replace with a.view() when it is implemented in dpnp
-    a = _view_work_around(a, shape, strides)
-    return a
+    return dpnp_array(
+        shape,
+        dtype=a.dtype,
+        buffer=a,
+        strides=strides,
+        usm_type=a.usm_type,
+        sycl_queue=a.sycl_queue,
+    )
 
 
 def _tuple_sorted_by_0(zs):
@@ -1063,39 +1027,6 @@ def _update_other_results(results, best):
     return mod_results
 
 
-def _view_work_around(a, shape, strides):
-    """
-    Create a copy of the input array with the specified shape and strides.
-
-    Parameters
-    ----------
-    a : {dpnp.ndarray, usm_ndarray}
-        The input array.
-    shape : tuple
-        The desired shape of the output array.
-    strides : tuple
-        The desired strides of the output array.
-
-    Returns
-    -------
-    out : dpnp.ndarray
-        A copy of the input array with the specified shape and strides.
-
-    """
-
-    n_size = numpy.prod(shape)
-    b = dpnp.empty(
-        n_size, dtype=a.dtype, usm_type=a.usm_type, sycl_queue=a.sycl_queue
-    )
-    for linear_id in range(n_size):
-        offset = _calc_offset(shape, linear_id, strides)
-        indices = _index_linear_to_tuple(a.shape, offset)
-        b[linear_id] = a[indices]
-    b = b.reshape(tuple(shape))
-
-    return b
-
-
 def dpnp_einsum(
     *operands, out=None, dtype=None, order="K", casting="safe", optimize=False
 ):
@@ -1118,12 +1049,18 @@ def dpnp_einsum(
             raise ExecutionPlacementError(
                 "Input and output allocation queues are not compatible"
             )
+
     result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
     for id, a in enumerate(operands):
         if dpnp.isscalar(a):
             operands[id] = dpnp.array(
                 a, dtype=result_dtype, usm_type=res_usm_type, sycl_queue=exec_q
             )
+    result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
+    if order in ["a", "A"]:
+        order = (
+            "F" if not any(arr.flags.c_contiguous for arr in arrays) else "C"
+        )
 
     input_subscripts = [
         _parse_ellipsis_subscript(sub, idx, ndim=arr.ndim)
@@ -1241,9 +1178,7 @@ def dpnp_einsum(
         operands = [a for a in operands]
     else:
         operands = [
-            dpnp.astype(
-                a, result_dtype, copy=False, casting=casting, order=order
-            )
+            dpnp.astype(a, result_dtype, copy=False, casting=casting)
             for a in operands
         ]
 
@@ -1309,5 +1244,7 @@ def dpnp_einsum(
     arr_out = arr0.transpose(transpose_axes).reshape(
         [dimension_dict[label] for label in output_subscript]
     )
+
+    arr_out = dpnp.asarray(arr_out, order=order)
     assert returns_view or arr_out.dtype == result_dtype
-    return dpnp.get_result_array(arr_out, out)
+    return dpnp.get_result_array(arr_out, out, casting=casting)

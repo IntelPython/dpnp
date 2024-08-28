@@ -314,17 +314,17 @@ def searchsorted(a, v, side="left", sorter=None):
         sort it.
     v : {dpnp.ndarray, usm_ndarray, scalar}
         Values to insert into `a`.
-    side : {'left', 'right'}, optional
-        If ``'left'``, the index of the first suitable location found is given.
-        If ``'right'``, return the last such index. If there is no suitable
+    side : {"left", "right"}, optional
+        If ``"left"``, the index of the first suitable location found is given.
+        If ``"right"``, return the last such index. If there is no suitable
         index, return either 0 or N (where N is the length of `a`).
-        Default is ``'left'``.
+        Default: ``"left"``.
     sorter : {dpnp.ndarray, usm_ndarray}, optional
         Optional 1-D array of integer indices that sort array a into ascending
         order. They are typically the result of :obj:`dpnp.argsort`.
-        Out of bound index values of `sorter` array are treated using `"wrap"`
-        mode documented in :py:func:`dpnp.take`.
-        Default is ``None``.
+        Out of bound index values of `sorter` array are treated using
+        ``"wrap"`` mode documented in :py:func:`dpnp.take`.
+        Default: ``None``.
 
     Returns
     -------
