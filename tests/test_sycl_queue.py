@@ -2449,11 +2449,10 @@ def test_astype(device_x, device_y):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_select(device):
-    sycl_queue = dpctl.SyclQueue(device)
-    condlist = [dpnp.array([True, False], sycl_queue=sycl_queue)]
-    choicelist = [dpnp.array([1, 2], sycl_queue=sycl_queue)]
+    condlist = [dpnp.array([True, False], device=device)]
+    choicelist = [dpnp.array([1, 2], device=device)]
     res = dpnp.select(condlist, choicelist)
-    assert_sycl_queue_equal(res.sycl_queue, sycl_queue)
+    assert_sycl_queue_equal(res.sycl_queue, condlist[0].sycl_queue)
 
 
 @pytest.mark.parametrize("axis", [None, 0, -1])

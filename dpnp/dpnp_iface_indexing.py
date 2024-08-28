@@ -1423,7 +1423,7 @@ def select(condlist, choicelist, default=0):
     dpnp.check_supported_arrays_type(*choicelist)
 
     if not dpnp.isscalar(default) and not (
-        dpnp.is_supported_array_type(default) and default.shape == ()
+        dpnp.is_supported_array_type(default) and default.ndim == 0
     ):
         raise TypeError(
             "A default value must be any of scalar or 0-d supported array type"
@@ -1456,9 +1456,7 @@ def select(condlist, choicelist, default=0):
         sycl_queue=sycl_queue_alloc,
     )
 
-    # Use np.copyto to burn each choicelist array onto result, using the
-    # corresponding condlist as a boolean mask. This is done in reverse
-    # order since the first choice should take precedence.
+    # Do in reverse order since the first choice should take precedence.
     choicelist = choicelist[::-1]
     condlist = condlist[::-1]
     for choice, cond in zip(choicelist, condlist):

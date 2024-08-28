@@ -13,7 +13,7 @@ from numpy.testing import (
 
 import dpnp
 
-from .helper import get_all_dtypes, get_integer_dtypes
+from .helper import get_all_dtypes, get_integer_dtypes, has_support_aspect64
 
 
 def _add_keepdims(func):
@@ -1057,3 +1057,87 @@ def test_fill_diagonal_error():
     arr = dpnp.ones((1, 2, 3))
     with pytest.raises(ValueError):
         dpnp.fill_diagonal(arr, 5)
+
+
+class TestSelect:
+    choices_np = [
+        numpy.array([1, 2, 3]),
+        numpy.array([4, 5, 6]),
+        numpy.array([7, 8, 9]),
+    ]
+    choices_dp = [
+        dpnp.array([1, 2, 3]),
+        dpnp.array([4, 5, 6]),
+        dpnp.array([7, 8, 9]),
+    ]
+    conditions_np = [
+        numpy.array([False, False, False]),
+        numpy.array([False, True, False]),
+        numpy.array([False, False, True]),
+    ]
+    conditions_dp = [
+        dpnp.array([False, False, False]),
+        dpnp.array([False, True, False]),
+        dpnp.array([False, False, True]),
+    ]
+
+    def test_basic(self):
+        expected = numpy.select(self.conditions_np, self.choices_np, default=15)
+        result = dpnp.select(self.conditions_dp, self.choices_dp, default=15)
+        assert_array_equal(expected, result)
+
+    def test_broadcasting(self):
+        conditions_np = [numpy.array(True), numpy.array([False, True, False])]
+        conditions_dp = [dpnp.array(True), dpnp.array([False, True, False])]
+        choices_np = [numpy.array(1), numpy.arange(12).reshape(4, 3)]
+        choices_dp = [dpnp.array(1), dpnp.arange(12).reshape(4, 3)]
+        expected = numpy.select(conditions_np, choices_np)
+        result = dpnp.select(conditions_dp, choices_dp)
+        assert_array_equal(expected, result)
+
+    def test_return_dtype(self):
+        dtype = dpnp.complex128 if has_support_aspect64() else dpnp.complex64
+        assert_equal(
+            dpnp.select(self.conditions_dp, self.choices_dp, 1j).dtype, dtype
+        )
+
+        choices = [choice.astype(dpnp.int32) for choice in self.choices_dp]
+        assert_equal(dpnp.select(self.conditions_dp, choices).dtype, dpnp.int32)
+
+    def test_nan(self):
+        choice_np = numpy.array([1, 2, 3, numpy.nan, 5, 7])
+        choice_dp = dpnp.array([1, 2, 3, dpnp.nan, 5, 7])
+        condition_np = numpy.isnan(choice_np)
+        condition_dp = dpnp.isnan(choice_dp)
+        expected = numpy.select([condition_np], [choice_np])
+        result = dpnp.select([condition_dp], [choice_dp])
+        assert_array_equal(expected, result)
+
+    def test_many_arguments(self):
+        condition_np = [numpy.array([False])] * 100
+        condition_dp = [dpnp.array([False])] * 100
+        choice_np = [numpy.array([1])] * 100
+        choice_dp = [dpnp.array([1])] * 100
+        expected = numpy.select(condition_np, choice_np)
+        result = dpnp.select(condition_dp, choice_dp)
+        assert_array_equal(expected, result)
+
+    def test_deprecated_empty(self):
+        assert_raises(ValueError, dpnp.select, [], [], 3j)
+        assert_raises(ValueError, dpnp.select, [], [])
+
+    def test_non_bool_deprecation(self):
+        choices = self.choices_dp
+        conditions = self.conditions_dp[:]
+        conditions[0] = conditions[0].astype(dpnp.int64)
+        assert_raises(TypeError, dpnp.select, conditions, choices)
+
+    def test_error(self):
+        x0 = dpnp.array([True, False])
+        x1 = dpnp.array([1, 2])
+        with pytest.raises(ValueError):
+            dpnp.select([x0], [x1, x1])
+        with pytest.raises(TypeError):
+            dpnp.select([x0], [x1], default=x1)
+        with pytest.raises(TypeError):
+            dpnp.select([x1], [x1])
