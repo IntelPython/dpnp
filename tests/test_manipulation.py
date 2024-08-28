@@ -113,7 +113,7 @@ def test_size():
     assert dpnp.size(a, 0) == exp
     assert dpnp.size(ia, 0) == exp
 
-    
+
 class TestAppend:
     @pytest.mark.parametrize(
         "arr",
