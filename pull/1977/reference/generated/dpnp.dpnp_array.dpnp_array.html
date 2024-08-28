@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+156.gf2a4c499aa documentation</title>
+  <title>dpnp.dpnp_array.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+171.g442182ace33 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=db87021c"></script>
+        <script src="../../_static/documentation_options.js?v=42c659fe"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+156.gf2a4c499aa
+                0.16.0dev0+171.g442182ace33
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -459,15 +459,15 @@ order <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;
 into the reshaped array using this index order.</p>
 <blockquote>
 <div><ul class="simple">
-<li><p>&quot;C&quot; means to read / write the elements using C-like index
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> means to read / write the elements using C-like index
 order, with the last axis index changing fastest, back to the
 first axis index changing slowest.</p></li>
-<li><p>&quot;F&quot; means to read / write the elements using Fortran-like
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> means to read / write the elements using Fortran-like
 index order, with the first index changing fastest, and the
 last index changing slowest.</p></li>
 </ul>
 </div></blockquote>
-<p>The default is <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p>
 </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -890,7 +890,37 @@ tuple form).</p></li>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.ndim">
 <span class="sig-name descname"><span class="pre">ndim</span></span><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.ndim" title="Link to this definition"></a></dt>
-<dd><p>Number of array dimensions.</p>
+<dd><p>Return the number of dimensions of an array.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.ndim.html#numpy.ndarray.ndim" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndarray.ndim</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>number_of_dimensions</strong> -- The number of dimensions in <cite>a</cite>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndim</span></code></dt><dd><p>Equivalent method for any array-like input.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.shape.html#dpnp.shape" title="dpnp.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.shape</span></code></a></dt><dd><p>Return the shape of an array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ndarray.shape.html#dpnp.ndarray.shape" title="dpnp.ndarray.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.shape</span></code></a></dt><dd><p>Return the shape of an array.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+<span class="go">1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span>
+<span class="go">3</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -959,6 +989,32 @@ preferred approach to set new shape of an array.</p>
 <dt class="sig sig-object py" id="dpnp.dpnp_array.dpnp_array.size">
 <span class="sig-name descname"><span class="pre">size</span></span><a class="headerlink" href="#dpnp.dpnp_array.dpnp_array.size" title="Link to this definition"></a></dt>
 <dd><p>Number of elements in the array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>element_count</strong> -- Number of elements in the array.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.size</span></code></dt><dd><p>Return the number of elements along a given axis.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.shape.html#dpnp.shape" title="dpnp.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.shape</span></code></a></dt><dd><p>Return the shape of an array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ndarray.shape.html#dpnp.ndarray.shape" title="dpnp.ndarray.shape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.shape</span></code></a></dt><dd><p>Return the shape of an array.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">size</span>
+<span class="go">30</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+156.gf2a4c499aa documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+171.g442182ace33 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=db87021c"></script>
+        <script src="../../_static/documentation_options.js?v=42c659fe"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+156.gf2a4c499aa
+                0.16.0dev0+171.g442182ace33
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1557,7 +1557,7 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">choicelist</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="ow">and</span> <span class="n">default</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">()</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">default</span><span class="p">)</span> <span class="ow">and</span> <span class="n">default</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="s2">&quot;A default value must be any of scalar or 0-d supported array type&quot;</span>
@@ -1590,9 +1590,7 @@
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue_alloc</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="c1"># Use np.copyto to burn each choicelist array onto result, using the</span>
-    <span class="c1"># corresponding condlist as a boolean mask. This is done in reverse</span>
-    <span class="c1"># order since the first choice should take precedence.</span>
+    <span class="c1"># Do in reverse order since the first choice should take precedence.</span>
     <span class="n">choicelist</span> <span class="o">=</span> <span class="n">choicelist</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="n">condlist</span> <span class="o">=</span> <span class="n">condlist</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">choice</span><span class="p">,</span> <span class="n">cond</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">choicelist</span><span class="p">,</span> <span class="n">condlist</span><span class="p">):</span>

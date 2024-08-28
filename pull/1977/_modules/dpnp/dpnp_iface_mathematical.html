@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+156.gf2a4c499aa documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+171.g442182ace33 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=db87021c"></script>
+        <script src="../../_static/documentation_options.js?v=42c659fe"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+156.gf2a4c499aa
+                0.16.0dev0+171.g442182ace33
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -190,6 +190,7 @@
     <span class="s2">&quot;fmin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
     <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
@@ -2294,6 +2295,62 @@
         <span class="k">return</span> <span class="n">outvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">outvals</span><span class="p">)</span></div>
 
+
+
+<span class="n">_HEAVISIDE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Compute the Heaviside step function.</span>
+
+<span class="s2">The Heaviside step function is defined as::</span>
+
+<span class="s2">                          0   if x1 &lt; 0</span>
+<span class="s2">    heaviside(x1, x2) =  x2   if x1 == 0</span>
+<span class="s2">                          1   if x1 &gt; 0</span>
+
+<span class="s2">where `x2` is often taken to be 0.5, but 0 and 1 are also sometimes used.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Input values.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    The value of the function when `x1` is ``0``.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The output array, element-wise Heaviside step function of `x1`.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([-1.5, 0, 2.0])</span>
+<span class="s2">&gt;&gt;&gt; np.heaviside(a, 0.5)</span>
+<span class="s2">array([0. , 0.5, 1. ])</span>
+<span class="s2">&gt;&gt;&gt; np.heaviside(a, 1)</span>
+<span class="s2">array([0., 1., 1.])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">heaviside</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside</span><span class="p">,</span>
+    <span class="n">_HEAVISIDE_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">_IMAG_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
