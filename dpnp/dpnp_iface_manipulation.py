@@ -351,7 +351,7 @@ def asarray_chkfinite(
         of lists and ndarrays. Success requires no NaNs or Infs.
     dtype : str or dtype object, optional
         By default, the data-type is inferred from the input data.
-        default: ``None``
+        default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: "K".
@@ -400,7 +400,7 @@ def asarray_chkfinite(
     --------
     >>> import dpnp as np
 
-    Convert a list into an array. If all elements are finite
+    Convert a list into an array. If all elements are finite,
     ``asarray_chkfinite`` is identical to ``asarray``.
 
     >>> a = [1, 2]
