@@ -1829,6 +1829,7 @@ def test_to_device(device_from, device_to):
     [
         "array",
         "asarray",
+        "asarray_chkfinite",
         "asanyarray",
         "ascontiguousarray",
         "asfarray",

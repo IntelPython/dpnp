@@ -50,6 +50,7 @@ from .dpnp_array import dpnp_array
 
 __all__ = [
     "append",
+    "asarray_chkfinite",
     "asfarray",
     "atleast_1d",
     "atleast_2d",
@@ -332,6 +333,116 @@ def append(arr, values, axis=None):
             values = dpnp.ravel(values)
         axis = 0
     return dpnp.concatenate((arr, values), axis=axis)
+
+
+def asarray_chkfinite(
+    a, dtype=None, order=None, *, device=None, usm_type=None, sycl_queue=None
+):
+    """
+    Convert the input to an array, checking for NaNs or Infs.
+
+    For full documentation refer to :obj:`numpy.asarray_chkfinite`.
+
+    Parameters
+    ----------
+    arr : array_like
+        Input data, in any form that can be converted to an array. This
+        includes lists, lists of tuples, tuples, tuples of tuples, tuples
+        of lists and ndarrays. Success requires no NaNs or Infs.
+    dtype : str or dtype object, optional
+        By default, the data-type is inferred from the input data.
+        default: ``None``
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array.
+        Default: "K".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`. No copy is performed if the input is
+        already an ndarray.
+
+    Raises
+    -------
+    ValueError
+        Raises ``ValueError`` if `a` contains NaN (Not a Number) or
+        Inf (Infinity).
+
+    See Also
+    --------
+    :obj:`dpnp.asarray` : Create an array.
+    :obj:`dpnp.asanyarray` : Converts an input object into array.
+    :obj:`dpnp.ascontiguousarray` : Convert input to a c-contiguous array.
+    :obj:`dpnp.asfortranarray` : Convert input to an array with column-major
+                        memory order.
+    :obj:`dpnp.fromiter` : Create an array from an iterator.
+    :obj:`dpnp.fromfunction` : Construct an array by executing a function
+                        on grid positions.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Convert a list into an array. If all elements are finite
+    ``asarray_chkfinite`` is identical to ``asarray``.
+
+    >>> a = [1, 2]
+    >>> np.asarray_chkfinite(a, dtype=np.float32)
+    array([1., 2.])
+
+    Raises ``ValueError`` if array_like contains Nans or Infs.
+
+    >>> a = [1, 2, np.inf]
+    >>> try:
+    ...     np.asarray_chkfinite(a)
+    ... except ValueError:
+    ...     print('ValueError')
+    ValueError
+
+    Creating an array on a different device or with a specified usm_type
+
+    >>> x = np.asarray_chkfinite([1, 2, 3]) # default case
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.asarray_chkfinite([1, 2, 3], device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.asarray_chkfinite([1, 2, 3], usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
+
+    """
+
+    a = dpnp.asarray(
+        a,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    if dpnp.issubdtype(a.dtype, dpnp.inexact) and not dpnp.isfinite(a).all():
+        raise ValueError("array must not contain infs or NaNs")
+    return a
 
 
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):

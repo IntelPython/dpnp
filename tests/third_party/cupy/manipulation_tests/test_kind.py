@@ -9,7 +9,6 @@ from tests.third_party.cupy import testing
 
 
 class TestKind(unittest.TestCase):
-    @pytest.mark.skip("dpnp.asarray_chkfinite() is not implemented yet")
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -17,7 +16,6 @@ class TestKind(unittest.TestCase):
         a = [0, 4, 0, 5]
         return xp.asarray_chkfinite(a, dtype=dtype, order=order)
 
-    @pytest.mark.skip("dpnp.asarray_chkfinite() is not implemented yet")
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes(no_bool=True)
     def test_asarray_chkfinite_non_finite_vals(self, dtype, order):

@@ -322,6 +322,7 @@ def test_logspace_base(usm_type_x, usm_type_y):
     [
         "array",
         "asarray",
+        "asarray_chkfinite",
         "asanyarray",
         "ascontiguousarray",
         "asfarray",
