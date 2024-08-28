@@ -50,6 +50,7 @@ from .dpnp_array import dpnp_array
 
 __all__ = [
     "append",
+    "array_split",
     "asarray_chkfinite",
     "asfarray",
     "atleast_1d",
@@ -61,11 +62,13 @@ __all__ = [
     "column_stack",
     "concatenate",
     "copyto",
+    "dsplit",
     "dstack",
     "expand_dims",
     "flip",
     "fliplr",
     "flipud",
+    "hsplit",
     "hstack",
     "moveaxis",
     "ndim",
@@ -78,6 +81,7 @@ __all__ = [
     "row_stack",
     "shape",
     "size",
+    "split",
     "squeeze",
     "stack",
     "swapaxes",
@@ -85,6 +89,7 @@ __all__ = [
     "transpose",
     "trim_zeros",
     "unique",
+    "vsplit",
     "vstack",
 ]
 
@@ -97,6 +102,19 @@ def _check_stack_arrays(arrays):
             'arrays to stack must be passed as a "sequence" type '
             "such as list or tuple."
         )
+
+
+def _is_sequence_of_ints(var):
+    """Check if var is a tuple, list, or 1-D ndarray of integers."""
+    if isinstance(var, (numpy.ndarray, dpnp_array, dpt.usm_ndarray)):
+        # If it is a supported array, check it is 1D
+        if var.ndim != 1:
+            return False
+    elif not isinstance(var, (list, tuple)):
+        return False
+
+    # Check if all elements are integers
+    return numpy.all(isinstance(x, (int, numpy.integer)) for x in var)
 
 
 def _unique_1d(
@@ -407,7 +425,7 @@ def asarray_chkfinite(
     >>> np.asarray_chkfinite(a, dtype=np.float32)
     array([1., 2.])
 
-    Raises ``ValueError`` if array_like contains Nans or Infs.
+    Raises ``ValueError`` if array_like contains NaNs or Infs.
 
     >>> a = [1, 2, np.inf]
     >>> try:
@@ -443,6 +461,67 @@ def asarray_chkfinite(
     if dpnp.issubdtype(a.dtype, dpnp.inexact) and not dpnp.isfinite(a).all():
         raise ValueError("array must not contain infs or NaNs")
     return a
+
+
+def array_split(ary, indices_or_sections, axis=0):
+    """
+    Split an array into multiple sub-arrays.
+
+    Please refer to the :obj:`dpnp.split` documentation. The only difference
+    between these functions is that ``dpnp.array_split`` allows
+    `indices_or_sections` to be an integer that does *not* equally divide the
+    axis. For an array of length l that should be split into n sections, it
+    returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
+    ``l//n``.
+
+    For full documentation refer to :obj:`numpy.array_split`.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(8.0)
+    >>> np.array_split(x, 3)
+    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]
+
+    >>> x = np.arange(9)
+    >>> np.array_split(x, 4)
+    [array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    n_tot = ary.shape[axis]
+    if dpnp.isscalar(indices_or_sections) and not isinstance(
+        indices_or_sections, str
+    ):
+        n_sec = int(indices_or_sections)
+        if n_sec <= 0:
+            raise ValueError("number sections must be larger than 0.") from None
+        n_each_sec, extras = numpy.divmod(n_tot, n_sec)
+        section_sizes = (
+            [0] + extras * [n_each_sec + 1] + (n_sec - extras) * [n_each_sec]
+        )
+        div_points = dpnp.array(section_sizes, dtype=dpnp.intp).cumsum()
+    elif _is_sequence_of_ints(indices_or_sections):
+        n_sec = len(indices_or_sections) + 1
+        div_points = [0] + list(indices_or_sections) + [n_tot]
+    else:
+        raise TypeError(
+            "indices_or_sections must be an integer or a sequence of integers."
+        )
+
+    sub_arys = []
+    sary = dpnp.swapaxes(ary, axis, 0)
+    for i in range(n_sec):
+        st = div_points[i]
+        end = div_points[i + 1]
+        sub_arys.append(dpnp.swapaxes(sary[st:end], axis, 0))
+
+    return sub_arys
 
 
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
@@ -1114,6 +1193,58 @@ def copyto(dst, src, casting="same_kind", where=True):
         dst_usm[mask_usm] = src_usm[mask_usm]
 
 
+def dsplit(ary, indices_or_sections):
+    """
+    Split array into multiple sub-arrays along the 3rd axis (depth).
+
+    Please refer to the :obj:`dpnp.split` documentation. ``dsplit``
+    is equivalent to ``split`` with ``axis=2``, the array is always
+    split along the third axis provided the array dimension is greater than
+    or equal to 3.
+
+    For full documentation refer to :obj:`numpy.dsplit`.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(16.0).reshape(2, 2, 4)
+    >>> x
+    array([[[ 0.,  1.,  2.,  3.],
+            [ 4.,  5.,  6.,  7.]],
+           [[ 8.,  9., 10., 11.],
+            [12., 13., 14., 15.]]])
+    >>> np.dsplit(x, 2)
+    [array([[[ 0.,  1.],
+             [ 4.,  5.]],
+            [[ 8.,  9.],
+             [12., 13.]]]),
+     array([[[ 2.,  3.],
+             [ 6.,  7.]],
+            [[10., 11.],
+             [14., 15.]]])]
+    >>> np.dsplit(x, np.array([3, 6]))
+    [array([[[ 0.,  1.,  2.],
+             [ 4.,  5.,  6.]],
+            [[ 8.,  9., 10.],
+             [12., 13., 14.]]]),
+     array([[[ 3.],
+             [ 7.]],
+            [[11.],
+             [15.]]]),
+     array([])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim < 3:
+        raise ValueError("dsplit only works on arrays of 3 or more dimensions")
+    return split(ary, indices_or_sections, 2)
+
+
 def dstack(tup):
     """
     Stack arrays in sequence depth wise (along third axis).
@@ -1436,6 +1567,80 @@ def flipud(m):
     if m.ndim < 1:
         raise ValueError(f"Input must be >= 1-d, but got {m.ndim}")
     return m[::-1, ...]
+
+
+def hsplit(ary, indices_or_sections):
+    """
+    Split an array into multiple sub-arrays horizontally (column-wise).
+
+    Please refer to the :obj:`dpnp.split` documentation. ``hsplit``
+    is equivalent to ``dpnp.split`` with ``axis=1``, the array is always
+    split along the second axis except for 1-D arrays, where it is split at
+    ``axis=0``.
+
+    For full documentation refer to :obj:`numpy.hsplit`.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(16.0).reshape(4, 4)
+    >>> x
+    array([[ 0.,  1.,  2.,  3.],
+           [ 4.,  5.,  6.,  7.],
+           [ 8.,  9., 10., 11.],
+           [12., 13., 14., 15.]])
+    >>> np.hsplit(x, 2)
+    [array([[ 0.,  1.],
+            [ 4.,  5.],
+            [ 8.,  9.],
+            [12., 13.]]),
+     array([[ 2.,  3.],
+            [ 6.,  7.],
+            [10., 11.],
+            [14., 15.]])]
+    >>> np.hsplit(x, np.array([3, 6]))
+    [array([[ 0.,  1.,  2.],
+            [ 4.,  5.,  6.],
+            [ 8.,  9., 10.],
+            [12., 13., 14.]]),
+     array([[ 3.],
+            [ 7.],
+            [11.],
+            [15.]]),
+     array([])]
+
+    With a higher dimensional array the split is still along the second axis.
+
+    >>> x = np.arange(8.0).reshape(2, 2, 2)
+    >>> x
+    array([[[0., 1.],
+            [2., 3.]],
+           [[4., 5.],
+            [6., 7.]]])
+    >>> np.hsplit(x, 2)
+    [array([[[0., 1.]],
+            [[4., 5.]]]),
+     array([[[2., 3.]],
+            [[6., 7.]]])]
+
+    With a 1-D array, the split is along axis 0.
+
+    >>> x = np.array([0, 1, 2, 3, 4, 5])
+    >>> np.hsplit(x, 2)
+    [array([0, 1, 2]), array([3, 4, 5])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim == 0:
+        raise ValueError("hsplit only works on arrays of 1 or more dimensions")
+    if ary.ndim > 1:
+        return split(ary, indices_or_sections, 1)
+    return split(ary, indices_or_sections, 0)
 
 
 def hstack(tup, *, dtype=None, casting="same_kind"):
@@ -2038,6 +2243,96 @@ def size(a, axis=None):
     return numpy.size(a, axis)
 
 
+def split(ary, indices_or_sections, axis=0):
+    """
+    Split an array into multiple sub-arrays as views into `ary`.
+
+    For full documentation refer to :obj:`numpy.split`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along `axis`. If such a split is not possible,
+        an error is raised.
+
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along `axis` the array is split. For example,
+        ``[2, 3]`` would, for ``axis=0``, result in
+
+        - ary[:2]
+        - ary[2:3]
+        - ary[3:]
+
+        If an index exceeds the dimension of the array along `axis`,
+        an empty sub-array is returned correspondingly.
+    axis : int, optional
+        The axis along which to split.
+        Default: ``0``.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
+    Raises
+    ------
+    ValueError
+        If `indices_or_sections` is given as an integer, but
+        a split does not result in equal division.
+
+    See Also
+    --------
+    :obj:`dpnp.array_split` : Split an array into multiple sub-arrays of equal
+                        or near-equal size. Does not raise an exception if an
+                        equal division cannot be made.
+    :obj:`dpnp.hsplit` : Split array into multiple sub-arrays horizontally
+                    (column-wise).
+    :obj:`dpnp.vsplit` : Split array into multiple sub-arrays vertically
+                    (row wise).
+    :obj:`dpnp.dsplit` : Split array into multiple sub-arrays along the 3rd
+                    axis (depth).
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
+                    (along third dimension).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(9.0)
+    >>> np.split(x, 3)
+    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7., 8.])]
+
+    >>> x = np.arange(8.0)
+    >>> np.split(x, [3, 5, 6, 10])
+    [array([0., 1., 2.]), array([3., 4.]), array([5.]), array([6., 7.]), \
+    array([])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim <= axis:
+        raise IndexError("Axis exceeds ndim")
+
+    if dpnp.isscalar(indices_or_sections) and not isinstance(
+        indices_or_sections, str
+    ):
+        if ary.shape[axis] % indices_or_sections != 0:
+            raise ValueError(
+                "indices_or_sections must divide the size along the axes.\n"
+                "If you want to split the array into non-equally-sized "
+                "arrays, use array_split instead."
+            )
+
+    return array_split(ary, indices_or_sections, axis)
+
+
 def squeeze(a, /, axis=None):
     """
     Removes singleton dimensions (axes) from array `a`.
@@ -2617,6 +2912,63 @@ def unique(
         result += (idx[1:] - idx[:-1],)
 
     return _unpack_tuple(result)
+
+
+def vsplit(ary, indices_or_sections):
+    """
+    Split an array into multiple sub-arrays vertically (row-wise).
+
+    Please refer to the :obj:`dpnp.split` documentation. ``vsplit``
+    is equivalent to ``split`` with ``axis=0``(default), the array
+    is always split along the first axis regardless of the array dimension.
+
+    For full documentation refer to :obj:`numpy.vsplit`.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(16.0).reshape(4, 4)
+    >>> x
+    array([[ 0.,  1.,  2.,  3.],
+           [ 4.,  5.,  6.,  7.],
+           [ 8.,  9., 10., 11.],
+           [12., 13., 14., 15.]])
+    >>> np.vsplit(x, 2)
+    [array([[0., 1., 2., 3.],
+            [4., 5., 6., 7.]]),
+     array([[ 8.,  9., 10., 11.],
+            [12., 13., 14., 15.]])]
+    >>> np.vsplit(x, np.array([3, 6]))
+    [array([[ 0.,  1.,  2.,  3.],
+            [ 4.,  5.,  6.,  7.],
+            [ 8.,  9., 10., 11.]]),
+     array([[12., 13., 14., 15.]]),
+     array([], shape=(0, 4), dtype=float64)]
+
+    With a higher dimensional array the split is still along the first axis.
+
+    >>> x = np.arange(8.0).reshape(2, 2, 2)
+    >>> x
+    array([[[0., 1.],
+            [2., 3.]],
+           [[4., 5.],
+            [6., 7.]]])
+    >>> np.vsplit(x, 2)
+    [array([[[0., 1.],
+             [2., 3.]]]),
+     array([[[4., 5.],
+             [6., 7.]]])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim < 2:
+        raise ValueError("vsplit only works on arrays of 2 or more dimensions")
+    return split(ary, indices_or_sections, 0)
 
 
 def vstack(tup, *, dtype=None, casting="same_kind"):
