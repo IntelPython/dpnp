@@ -11,7 +11,9 @@ Basic operations
    :nosignatures:
 
    dpnp.copyto
+   dpnp.ndim
    dpnp.shape
+   dpnp.size
 
 
 Changing array shape
@@ -73,6 +75,7 @@ Changing kind of array
    dpnp.asfarray
    dpnp.asfortranarray
    dpnp.ascontiguousarray
+   dpnp.asarray_chkfinite
    dpnp.require
 
 
