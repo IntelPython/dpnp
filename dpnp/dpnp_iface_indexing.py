@@ -906,8 +906,8 @@ def ix_(*args):
     and the dimension with the non-unit shape value cycles through all
     N dimensions.
 
-    Using `ix_` one can quickly construct index arrays that will index
-    the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
+    Using  :obj:`dpnp.ix_` one can quickly construct index arrays that will
+    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
     ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.
 
     Parameters
@@ -916,13 +916,20 @@ def ix_(*args):
         1-D sequences. Each sequence should be of integer or boolean type.
         Boolean sequences will be interpreted as boolean masks for the
         corresponding dimension (equivalent to passing in
-        dpnp.nonzero(boolean_sequence)).
+        ``dpnp.nonzero(boolean_sequence)``).
 
     Returns
     -------
-    out : tuple of ndarrays
+    out : tuple of dpnp.ndarray
         N arrays with N dimensions each, with N the number of input sequences.
         Together these arrays form an open mesh.
+
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
+    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.
+    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from
+                           coordinate vectors.
 
     Examples
     --------
@@ -956,13 +963,6 @@ def ix_(*args):
     array([[2, 4],
            [7, 9]])
 
-    See Also
-    --------
-    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
-    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.
-    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from
-                           coordinate vectors.
-
     """
 
     dpnp.check_supported_arrays_type(*args)
@@ -971,8 +971,8 @@ def ix_(*args):
     for k, new in enumerate(args):
         if new.ndim != 1:
             raise ValueError("Cross index must be 1 dimensional")
-        if dpnp.issubdtype(new.dtype, dpnp.bool_):
-            (new,) = new.nonzero()
+        if dpnp.issubdtype(new.dtype, dpnp.bool):
+            (new,) = dpnp.nonzero(new)
         new = new.reshape((1,) * k + (new.size,) + (1,) * (nd - k - 1))
         out.append(new)
     return tuple(out)

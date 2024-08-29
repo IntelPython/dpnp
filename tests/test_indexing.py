@@ -1059,33 +1059,32 @@ def test_fill_diagonal_error():
         dpnp.fill_diagonal(arr, 5)
 
 
-@pytest.mark.parametrize(
-    "x0", [[0, 1], [True, True]], ids=["[0, 1]", "[True, True]"]
-)
-@pytest.mark.parametrize(
-    "x1",
-    [[2, 4], [False, False, True, False, True]],
-    ids=["[2, 4]", "[False, False, True, False, True]"],
-)
-def test_ix(x0, x1):
-    expected = dpnp.ix_(dpnp.array(x0), dpnp.array(x1))
-    result = numpy.ix_(numpy.array(x0), numpy.array(x1))
+class TestIx:
+    @pytest.mark.parametrize(
+        "x0", [[0, 1], [True, True]], ids=["[0, 1]", "[True, True]"]
+    )
+    @pytest.mark.parametrize(
+        "x1",
+        [[2, 4], [False, False, True, False, True]],
+        ids=["[2, 4]", "[False, False, True, False, True]"],
+    )
+    def test_ix(self, x0, x1):
+        expected = dpnp.ix_(dpnp.array(x0), dpnp.array(x1))
+        result = numpy.ix_(numpy.array(x0), numpy.array(x1))
 
-    assert_array_equal(expected[0], result[0])
-    assert_array_equal(expected[1], result[1])
+        assert_array_equal(expected[0], result[0])
+        assert_array_equal(expected[1], result[1])
 
+    def test_ix_empty_out(self):
+        (a,) = dpnp.ix_(dpnp.array([], dtype=dpnp.intp))
+        assert_equal(a.dtype, dpnp.intp)
 
-def test_ix_empty_out():
-    (a,) = dpnp.ix_(dpnp.array([], dtype=dpnp.intp))
-    assert_equal(a.dtype, dpnp.intp)
+        (a,) = dpnp.ix_(dpnp.array([], dtype=dpnp.float32))
+        assert_equal(a.dtype, dpnp.float32)
 
-    (a,) = dpnp.ix_(dpnp.array([], dtype=dpnp.float32))
-    assert_equal(a.dtype, dpnp.float32)
+    def test_ix_error(self):
+        with pytest.raises(ValueError):
+            dpnp.ix_(dpnp.ones(()))
 
-
-def test_ix_error():
-    with pytest.raises(ValueError):
-        dpnp.ix_(dpnp.ones(()))
-
-    with pytest.raises(ValueError):
-        dpnp.ix_(dpnp.ones((2, 2)))
+        with pytest.raises(ValueError):
+            dpnp.ix_(dpnp.ones((2, 2)))

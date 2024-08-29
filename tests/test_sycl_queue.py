@@ -2516,7 +2516,7 @@ def test_ediff1d(device, to_end, to_begin):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_indices_sparse(device_0, device_1):
+def test_ix(device_0, device_1):
     x0 = dpnp.array([0, 1], device=device_0)
     x1 = dpnp.array([2, 4], device=device_1)
     ixgrid = dpnp.ix_(x0, x1)
