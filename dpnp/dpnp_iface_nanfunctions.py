@@ -84,7 +84,7 @@ def _replace_nan(a, val):
     """
 
     dpnp.check_supported_arrays_type(a)
-    if issubclass(a.dtype.type, dpnp.inexact):
+    if dpnp.issubdtype(a.dtype, dpnp.inexact):
         mask = dpnp.isnan(a)
         if not dpnp.any(mask):
             mask = None
