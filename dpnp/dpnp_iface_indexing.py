@@ -65,6 +65,7 @@ __all__ = [
     "fill_diagonal",
     "flatnonzero",
     "indices",
+    "ix_",
     "mask_indices",
     "nonzero",
     "place",
@@ -894,6 +895,86 @@ def indices(
         else:
             res[i] = idx
     return res
+
+
+def ix_(*args):
+    """Construct an open mesh from multiple sequences.
+
+    This function takes N 1-D sequences and returns N outputs with N
+    dimensions each, such that the shape is 1 in all but one dimension
+    and the dimension with the non-unit shape value cycles through all
+    N dimensions.
+
+    Using  :obj:`dpnp.ix_` one can quickly construct index arrays that will
+    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
+    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.
+
+    Parameters
+    ----------
+    x1, x2,..., xn : {dpnp.ndarray, usm_ndarray}
+        1-D sequences. Each sequence should be of integer or boolean type.
+        Boolean sequences will be interpreted as boolean masks for the
+        corresponding dimension (equivalent to passing in
+        ``dpnp.nonzero(boolean_sequence)``).
+
+    Returns
+    -------
+    out : tuple of dpnp.ndarray
+        N arrays with N dimensions each, with N the number of input sequences.
+        Together these arrays form an open mesh.
+
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
+    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.
+    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from
+                           coordinate vectors.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(10).reshape(2, 5)
+    >>> a
+    array([[0, 1, 2, 3, 4],
+           [5, 6, 7, 8, 9]])
+    >>> x1 = np.array([0, 1])
+    >>> x2 = np.array([2, 4])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> ixgrid
+    (array([[0],
+           [1]]), array([[2, 4]]))
+    >>> ixgrid[0].shape, ixgrid[1].shape
+    ((2, 1), (1, 2))
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+
+    >>> x1 = np.array([True, True])
+    >>> x2 = np.array([2, 4])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+    >>> x1 = np.array([True, True])
+    >>> x2 = np.array([False, False, True, False, True])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+
+    """
+
+    dpnp.check_supported_arrays_type(*args)
+    out = []
+    nd = len(args)
+    for k, new in enumerate(args):
+        if new.ndim != 1:
+            raise ValueError("Cross index must be 1 dimensional")
+        if dpnp.issubdtype(new.dtype, dpnp.bool):
+            (new,) = dpnp.nonzero(new)
+        new = new.reshape((1,) * k + (new.size,) + (1,) * (nd - k - 1))
+        out.append(new)
+    return tuple(out)
 
 
 def mask_indices(
