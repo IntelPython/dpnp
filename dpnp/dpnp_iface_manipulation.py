@@ -59,6 +59,7 @@ __all__ = [
     "broadcast_to",
     "can_cast",
     "column_stack",
+    "concat",
     "concatenate",
     "copyto",
     "dstack",
@@ -69,6 +70,7 @@ __all__ = [
     "hstack",
     "moveaxis",
     "ndim",
+    "permute_dims",
     "ravel",
     "repeat",
     "reshape",
@@ -950,11 +952,13 @@ def concatenate(
     """
     Join a sequence of arrays along an existing axis.
 
+    Note that :obj:`dpnp.concat` is an alias of :obj:`dpnp.concatenate`.
+
     For full documentation refer to :obj:`numpy.concatenate`.
 
     Parameters
     ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
+    arrays : {Sequence of dpnp.ndarray or usm_ndarray}
         The arrays must have the same shape, except in the dimension
         corresponding to axis (the first, by default).
     axis : int, optional
@@ -1029,6 +1033,9 @@ def concatenate(
         dpnp.copyto(out, res, casting=casting)
         return out
     return res
+
+
+concat = concatenate  # concat is an alias of concatenate
 
 
 def copyto(dst, src, casting="same_kind", where=True):
@@ -2309,6 +2316,8 @@ def transpose(a, axes=None):
     """
     Returns an array with axes transposed.
 
+    Note that :obj:`dpnp.permute_dims` is an alias of :obj:`dpnp.transpose`.
+
     For full documentation refer to :obj:`numpy.transpose`.
 
     Parameters
@@ -2373,6 +2382,9 @@ def transpose(a, axes=None):
     if axes is None:
         return array.transpose()
     return array.transpose(*axes)
+
+
+permute_dims = transpose  # permute_dims is an alias for transpose
 
 
 def trim_zeros(filt, trim="fb"):
