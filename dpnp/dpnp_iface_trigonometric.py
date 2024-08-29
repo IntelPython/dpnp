@@ -1527,7 +1527,7 @@ See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiations of inputs in
+:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiation of inputs in
                         base-2, element-wise.
 :obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the
                         input array.
@@ -1597,9 +1597,9 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiations of
+:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiation of
                        inputs, element-wise.
-:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiations of the inputs.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiation of the inputs.
 
 Examples
 --------

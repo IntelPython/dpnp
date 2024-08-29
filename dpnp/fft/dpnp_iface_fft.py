@@ -590,8 +590,8 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
     the frequency domain. So here it's :obj:`dpnp.fft.hfft` for which you must
     supply the length of the result if it is to be odd.
 
-    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,
-    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.
+    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within round-off error,
+    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within round-off error.
 
     The correct interpretation of the Hermitian input depends on the length of
     the original data, as given by `n`. This is because each input shape could
@@ -643,7 +643,7 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
     * ``a[0]`` should contain the zero frequency term,
     * ``a[1:n//2]`` should contain the positive-frequency terms,
     * ``a[n//2 + 1:]`` should contain the negative-frequency terms, in
-     increasing order starting from the most negative frequency.
+      increasing order starting from the most negative frequency.
 
     For an even number of input points, ``A[n//2]`` represents the sum of
     the values at the positive and negative Nyquist frequencies, as the two
@@ -1017,8 +1017,8 @@ def ihfft(a, n=None, axis=-1, norm=None, out=None):
     the frequency domain. So here it's :obj:`dpnp.fft.hfft` for which you must
     supply the length of the result if it is to be odd.
 
-    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,
-    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.
+    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within round-off error,
+    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within round-off error.
 
     Examples
     --------
@@ -1108,7 +1108,7 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
 
     If you specify an `n` such that `a` must be zero-padded or truncated, the
     extra/removed values will be added/removed at high frequencies. One can
-    thus resample a series to `m` points via Fourier interpolation by:
+    thus re-sample a series to `m` points via Fourier interpolation by:
     ``a_resamp = irfft(rfft(a), m)``.
 
     The correct interpretation of the Hermitian input depends on the length of
@@ -1282,7 +1282,7 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         If provided, the result will be placed in this array. It should be of
         the appropriate dtype and shape for the last transformation
         (consistent with the choice of `s`).
-         Default: ``None``.
+        Default: ``None``.
 
     Returns
     -------

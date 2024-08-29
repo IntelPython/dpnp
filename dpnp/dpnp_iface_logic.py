@@ -1,5 +1,3 @@
-# cython: language_level=3
-# distutils: language = c++
 # -*- coding: utf-8 -*-
 # *****************************************************************************
 # Copyright (c) 2016-2024, Intel Corporation
@@ -397,7 +395,7 @@ def array_equal(a1, a2, equal_nan=False):
     >>> np.array_equal(a, a, equal_nan=True)
     array(True)
 
-    When ``equal_nan`` is ``True``, complex values with nan components are
+    When ``equal_nan`` is ``True``, complex values with NaN components are
     considered equal if either the real *or* the imaginary components are
     ``NaNs``.
 

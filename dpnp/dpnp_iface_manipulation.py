@@ -2513,7 +2513,7 @@ def unique(
     (move the axis to the first dimension to keep the order of the other axes)
     and then flattening the subarrays in C order.
     For complex arrays all NaN values are considered equivalent (no matter
-    whether the NaN is in the real or imaginary part). As the representant for
+    whether the NaN is in the real or imaginary part). As the representative for
     the returned array the smallest one in the lexicographical order is chosen.
     For multi-dimensional inputs, `unique_inverse` is reshaped such that the
     input can be reconstructed using

@@ -528,7 +528,7 @@ def extract(condition, a):
     :obj:`dpnp.put` : Replaces specified elements of an array with given values.
     :obj:`dpnp.copyto` : Copies values from one array to another, broadcasting
                          as necessary.
-    :obj:`dpnp.compress` : eturn selected slices of an array along given axis.
+    :obj:`dpnp.compress` : Return selected slices of an array along given axis.
     :obj:`dpnp.place` : Change elements of an array based on conditional and
                         input values.
 
