@@ -137,6 +137,33 @@ class TestBitwise:
             np_a >>= np_b
             assert_array_equal(dp_a, np_a)
 
+    def test_bitwise_aliase1(self, lhs, rhs, dtype):
+        if numpy.isscalar(lhs):
+            pytest.skip("Input can't be scalar")
+        dp_a = self.array_or_scalar(inp, lhs, dtype=dtype)
+        result1 = inp.invert(dp_a)
+        result2 = inp.bitwise_invert(dp_a)
+        assert_array_equal(result1, result2)
+
+        result2 = inp.bitwise_not(dp_a)
+        assert_array_equal(result1, result2)
+
+    def test_bitwise_aliase2(self, lhs, rhs, dtype):
+        if dtype == inp.bool:
+            pytest.skip("A shift operation isn't implemented for bool type")
+        elif numpy.isscalar(lhs) and numpy.isscalar(rhs):
+            pytest.skip("Both inputs can't be scalars")
+
+        dp_a = self.array_or_scalar(inp, lhs, dtype=dtype)
+        dp_b = self.array_or_scalar(inp, rhs, dtype=dtype)
+        result1 = inp.left_shift(dp_a, dp_b)
+        result2 = inp.bitwise_left_shift(dp_a, dp_b)
+        assert_array_equal(result1, result2)
+
+        result1 = inp.right_shift(dp_a, dp_b)
+        result2 = inp.bitwise_right_shift(dp_a, dp_b)
+        assert_array_equal(result1, result2)
+
 
 @pytest.mark.parametrize("dtype", get_integer_dtypes())
 def test_invert_out(dtype):
