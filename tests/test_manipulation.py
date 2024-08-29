@@ -7,6 +7,7 @@ from numpy.testing import assert_array_equal, assert_raises
 import dpnp
 
 from .helper import (
+    assert_dtype_allclose,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
@@ -87,6 +88,135 @@ def test_result_type_only_arrays():
     ]
 
     assert dpnp.result_type(*X) == numpy.result_type(*X_np)
+
+
+def test_ndim():
+    a = [[1, 2, 3], [4, 5, 6]]
+    ia = dpnp.array(a)
+
+    exp = numpy.ndim(a)
+    assert ia.ndim == exp
+    assert dpnp.ndim(a) == exp
+    assert dpnp.ndim(ia) == exp
+
+
+def test_size():
+    a = [[1, 2, 3], [4, 5, 6]]
+    ia = dpnp.array(a)
+
+    exp = numpy.size(a)
+    assert ia.size == exp
+    assert dpnp.size(a) == exp
+    assert dpnp.size(ia) == exp
+
+    exp = numpy.size(a, 0)
+    assert dpnp.size(a, 0) == exp
+    assert dpnp.size(ia, 0) == exp
+
+
+class TestAppend:
+    @pytest.mark.parametrize(
+        "arr",
+        [[], [1, 2, 3], [[1, 2, 3], [4, 5, 6]]],
+        ids=["empty", "1D", "2D"],
+    )
+    @pytest.mark.parametrize(
+        "value",
+        [[], [1, 2, 3], [[1, 2, 3], [4, 5, 6]]],
+        ids=["empty", "1D", "2D"],
+    )
+    def test_basic(self, arr, value):
+        a = numpy.array(arr)
+        b = numpy.array(value)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        expected = numpy.append(a, b)
+        result = dpnp.append(ia, ib)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "arr",
+        [[], [1, 2, 3], [[1, 2, 3], [4, 5, 6]]],
+        ids=["empty", "1D", "2D"],
+    )
+    @pytest.mark.parametrize(
+        "value",
+        [5, [1, 2, 3], [[1, 2, 3], [4, 5, 6]]],
+        ids=["scalar", "1D", "2D"],
+    )
+    def test_array_like_value(self, arr, value):
+        a = numpy.array(arr)
+        ia = dpnp.array(a)
+
+        expected = numpy.append(a, value)
+        result = dpnp.append(ia, value)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "arr",
+        [[1, 2, 3], [[1, 2, 3], [4, 5, 6]]],
+        ids=["1D", "2D"],
+    )
+    @pytest.mark.parametrize(
+        "value",
+        [[1, 2, 3], [[1, 2, 3], [4, 5, 6]]],
+        ids=["1D", "2D"],
+    )
+    def test_usm_ndarray(self, arr, value):
+        a = numpy.array(arr)
+        b = numpy.array(value)
+        ia = dpt.asarray(a)
+        ib = dpt.asarray(b)
+
+        expected = numpy.append(a, b)
+        result = dpnp.append(ia, ib)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype2", get_all_dtypes(no_none=True))
+    def test_axis(self, dtype1, dtype2):
+        a = numpy.ones((2, 3), dtype=dtype1)
+        b = numpy.zeros((2, 4), dtype=dtype1)
+        ia = dpnp.asarray(a)
+        ib = dpnp.asarray(b)
+
+        expected = numpy.append(a, b, axis=1)
+        result = dpnp.append(ia, ib, axis=1)
+        assert_array_equal(result, expected)
+
+
+class TestAsarrayCheckFinite:
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_basic(self, dtype):
+        a = [1, 2, 3]
+        expected = numpy.asarray_chkfinite(a, dtype=dtype)
+        result = dpnp.asarray_chkfinite(a, dtype=dtype)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_error(self, xp):
+        b = [1, 2, numpy.inf]
+        c = [1, 2, numpy.nan]
+        assert_raises(ValueError, xp.asarray_chkfinite, b)
+        assert_raises(ValueError, xp.asarray_chkfinite, c)
+
+    @pytest.mark.parametrize("order", ["C", "F", "A", "K"])
+    def test_dtype_order(self, order):
+        a = [1, 2, 3]
+        expected = numpy.asarray_chkfinite(a, order=order)
+        result = dpnp.asarray_chkfinite(a, order=order)
+        assert_array_equal(result, expected)
+
+    def test_no_copy(self):
+        a = dpnp.ones(10)
+
+        # No copy is performed if the input is already an ndarray
+        b = dpnp.asarray_chkfinite(a)
+
+        # b is a view of a, changing b, modifies a
+        b[0::2] = 0
+        assert_array_equal(b, a)
 
 
 class TestRepeat:

@@ -49,6 +49,8 @@ import dpnp
 from .dpnp_array import dpnp_array
 
 __all__ = [
+    "append",
+    "asarray_chkfinite",
     "asfarray",
     "atleast_1d",
     "atleast_2d",
@@ -66,6 +68,7 @@ __all__ = [
     "flipud",
     "hstack",
     "moveaxis",
+    "ndim",
     "ravel",
     "repeat",
     "reshape",
@@ -74,6 +77,7 @@ __all__ = [
     "rollaxis",
     "row_stack",
     "shape",
+    "size",
     "squeeze",
     "stack",
     "swapaxes",
@@ -255,6 +259,189 @@ def _unpack_tuple(a):
 
     if len(a) == 1:
         return a[0]
+    return a
+
+
+def append(arr, values, axis=None):
+    """
+    Append values to the end of an array.
+
+    For full documentation refer to :obj:`numpy.append`.
+
+    Parameters
+    ----------
+    arr : {dpnp.ndarray, usm_ndarray}
+        Values are appended to a copy of this array.
+    values : {scalar, array_like}
+        These values are appended to a copy of `arr`. It must be of the
+        correct shape (the same shape as `arr`, excluding `axis`). If
+        `axis` is not specified, `values` can be any shape and will be
+        flattened before use.
+        These values can be in any form that can be converted to an array.
+        This includes scalars, lists, lists of tuples, tuples,
+        tuples of tuples, tuples of lists, and ndarrays.
+    axis : {None, int}, optional
+        The axis along which `values` are appended. If `axis` is not
+        given, both `arr` and `values` are flattened before use.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of `arr` with `values` appended to `axis`. Note that
+        `append` does not occur in-place: a new array is allocated and
+        filled. If `axis` is None, `out` is a flattened array.
+
+    See Also
+    --------
+    :obj:`dpnp.insert` : Insert elements into an array.
+    :obj:`dpnp.delete` : Delete elements from an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> np.append(a, [[4, 5, 6], [7, 8, 9]])
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    When `axis` is specified, `values` must have the correct shape.
+
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.append(b, [[7, 8, 9]], axis=0)
+    array([[1, 2, 3],
+           [4, 5, 6],
+           [7, 8, 9]])
+    >>> np.append(b, [7, 8, 9], axis=0)
+    Traceback (most recent call last):
+        ...
+    ValueError: all the input arrays must have same number of dimensions, but
+    the array at index 0 has 2 dimension(s) and the array at index 1 has 1
+    dimension(s)
+
+    """
+
+    dpnp.check_supported_arrays_type(arr)
+    if not dpnp.is_supported_array_type(values):
+        values = dpnp.array(
+            values, usm_type=arr.usm_type, sycl_queue=arr.sycl_queue
+        )
+
+    if axis is None:
+        if arr.ndim != 1:
+            arr = dpnp.ravel(arr)
+        if values.ndim != 1:
+            values = dpnp.ravel(values)
+        axis = 0
+    return dpnp.concatenate((arr, values), axis=axis)
+
+
+def asarray_chkfinite(
+    a, dtype=None, order=None, *, device=None, usm_type=None, sycl_queue=None
+):
+    """
+    Convert the input to an array, checking for NaNs or Infs.
+
+    For full documentation refer to :obj:`numpy.asarray_chkfinite`.
+
+    Parameters
+    ----------
+    arr : array_like
+        Input data, in any form that can be converted to an array. This
+        includes lists, lists of tuples, tuples, tuples of tuples, tuples
+        of lists and ndarrays. Success requires no NaNs or Infs.
+    dtype : str or dtype object, optional
+        By default, the data-type is inferred from the input data.
+        default: ``None``.
+    order : {"C", "F", "A", "K"}, optional
+        Memory layout of the newly output array.
+        Default: "K".
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`. No copy is performed if the input is
+        already an ndarray.
+
+    Raises
+    -------
+    ValueError
+        Raises ``ValueError`` if `a` contains NaN (Not a Number) or
+        Inf (Infinity).
+
+    See Also
+    --------
+    :obj:`dpnp.asarray` : Create an array.
+    :obj:`dpnp.asanyarray` : Converts an input object into array.
+    :obj:`dpnp.ascontiguousarray` : Convert input to a c-contiguous array.
+    :obj:`dpnp.asfortranarray` : Convert input to an array with column-major
+                        memory order.
+    :obj:`dpnp.fromiter` : Create an array from an iterator.
+    :obj:`dpnp.fromfunction` : Construct an array by executing a function
+                        on grid positions.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Convert a list into an array. If all elements are finite,
+    ``asarray_chkfinite`` is identical to ``asarray``.
+
+    >>> a = [1, 2]
+    >>> np.asarray_chkfinite(a, dtype=np.float32)
+    array([1., 2.])
+
+    Raises ``ValueError`` if array_like contains Nans or Infs.
+
+    >>> a = [1, 2, np.inf]
+    >>> try:
+    ...     np.asarray_chkfinite(a)
+    ... except ValueError:
+    ...     print('ValueError')
+    ValueError
+
+    Creating an array on a different device or with a specified usm_type
+
+    >>> x = np.asarray_chkfinite([1, 2, 3]) # default case
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.asarray_chkfinite([1, 2, 3], device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.asarray_chkfinite([1, 2, 3], usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
+
+    """
+
+    a = dpnp.asarray(
+        a,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    if dpnp.issubdtype(a.dtype, dpnp.inexact) and not dpnp.isfinite(a).all():
+        raise ValueError("array must not contain infs or NaNs")
     return a
 
 
@@ -772,7 +959,8 @@ def concatenate(
         corresponding to axis (the first, by default).
     axis : int, optional
         The axis along which the arrays will be joined. If axis is ``None``,
-        arrays are flattened before use. Default is 0.
+        arrays are flattened before use.
+        Default: ``0``.
     out : dpnp.ndarray, optional
         If provided, the destination to place the result. The shape must be
         correct, matching that of what concatenate would have returned
@@ -1356,6 +1544,48 @@ def moveaxis(a, source, destination):
     )
 
 
+def ndim(a):
+    """
+    Return the number of dimensions of array-like input.
+
+    For full documentation refer to :obj:`numpy.ndim`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+
+    Returns
+    -------
+    number_of_dimensions : int
+        The number of dimensions in `a`. Scalars are zero-dimensional.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.ndim` : Equivalent method for `dpnp.ndarray`
+                        or `usm_ndarray` input.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.ndim(a)
+    2
+    >>> a = np.asarray(a)
+    >>> np.ndim(a)
+    2
+    >>> np.ndim(1)
+    0
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        return a.ndim
+    return numpy.ndim(a)
+
+
 def ravel(a, order="C"):
     """
     Return a contiguous flattened array.
@@ -1738,14 +1968,14 @@ def shape(a):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> dp.shape(dp.eye(3))
+    >>> import dpnp as np
+    >>> np.shape(np.eye(3))
     (3, 3)
-    >>> dp.shape([[1, 3]])
+    >>> np.shape([[1, 3]])
     (1, 2)
-    >>> dp.shape([0])
+    >>> np.shape([0])
     (1,)
-    >>> dp.shape(0)
+    >>> np.shape(0)
     ()
 
     """
@@ -1753,6 +1983,59 @@ def shape(a):
     if dpnp.is_supported_array_type(a):
         return a.shape
     return numpy.shape(a)
+
+
+def size(a, axis=None):
+    """
+    Return the number of elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.size`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+    axis : {None, int}, optional
+        Axis along which the elements are counted.
+        By default, give the total number of elements.
+        Default: ``None``.
+
+    Returns
+    -------
+    element_count : int
+        Number of elements along the specified axis.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.size` : number of elements in array.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+    >>> np.size(a, 0)
+    2
+
+    >>> a = np.asarray(a)
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        if axis is None:
+            return a.size
+        return a.shape[axis]
+
+    return numpy.size(a, axis)
 
 
 def squeeze(a, /, axis=None):

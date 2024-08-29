@@ -1829,6 +1829,7 @@ def test_to_device(device_from, device_to):
     [
         "array",
         "asarray",
+        "asarray_chkfinite",
         "asanyarray",
         "ascontiguousarray",
         "asfarray",
@@ -1951,6 +1952,25 @@ def test_concat_stack(func, data1, data2, device):
 
     assert_allclose(result, expected)
 
+    assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_append(device):
+    x1_orig = numpy.array([1, 2, 3])
+    x2_orig = numpy.array([4, 5, 6])
+    expected = numpy.append(x1_orig, x2_orig)
+
+    x1 = dpnp.array(x1_orig, device=device)
+    x2 = dpnp.array(x2_orig, device=device)
+    result = dpnp.append(x1, x2)
+
+    assert_allclose(result, expected)
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
@@ -2439,6 +2459,18 @@ def test_astype(device_x, device_y):
     sycl_queue = dpctl.SyclQueue(device_y)
     y = dpnp.astype(x, dtype="f4", device=sycl_queue)
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_select(device):
+    condlist = [dpnp.array([True, False], device=device)]
+    choicelist = [dpnp.array([1, 2], device=device)]
+    res = dpnp.select(condlist, choicelist)
+    assert_sycl_queue_equal(res.sycl_queue, condlist[0].sycl_queue)
 
 
 @pytest.mark.parametrize("axis", [None, 0, -1])

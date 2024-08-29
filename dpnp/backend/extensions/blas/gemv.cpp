@@ -87,6 +87,10 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                 const std::int64_t lda, const T *x, const std::int64_t incx,
                 T beta, T *y, const std::int64_t incy,
                 const std::vector<sycl::event> &deps) -> sycl::event {
+#if defined(USE_ONEMKL_CUBLAS)
+            return mkl_blas::column_major::gemv(q, transA, m, n, alpha, a, lda,
+                                                x, incx, beta, y, incy, deps);
+#else
             if (is_row_major) {
                 return mkl_blas::row_major::gemv(q, transA, m, n, alpha, a, lda,
                                                  x, incx, beta, y, incy, deps);
@@ -96,6 +100,7 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
                                                     lda, x, incx, beta, y, incy,
                                                     deps);
             }
+#endif // USE_ONEMKL_CUBLAS
         };
         gemv_event = gemv_func(
             exec_q,
@@ -176,44 +181,83 @@ std::pair<sycl::event, sycl::event>
             "Input matrix is not c-contiguous nor f-contiguous.");
     }
 
+    const py::ssize_t *a_shape = matrixA.get_shape_raw();
+    const py::ssize_t *x_shape = vectorX.get_shape_raw();
+    const py::ssize_t *y_shape = vectorY.get_shape_raw();
+
+    oneapi::mkl::transpose transA;
+    std::size_t src_nelems;
+
+#if defined(USE_ONEMKL_CUBLAS)
+    const bool is_row_major = false;
+    std::int64_t m;
+    std::int64_t n;
+
+    if (is_matrixA_f_contig) {
+        m = a_shape[0];
+        n = a_shape[1];
+        if (transpose) {
+            transA = oneapi::mkl::transpose::T;
+            src_nelems = n;
+        }
+        else {
+            transA = oneapi::mkl::transpose::N;
+            src_nelems = m;
+        }
+    }
+    else {
+        m = a_shape[1];
+        n = a_shape[0];
+        if (transpose) {
+            transA = oneapi::mkl::transpose::N;
+            src_nelems = m;
+        }
+        else {
+            transA = oneapi::mkl::transpose::T;
+            src_nelems = n;
+        }
+    }
+#else
     bool is_row_major = true;
     if (is_matrixA_f_contig) {
         is_row_major = false;
     }
 
-    const py::ssize_t *a_shape = matrixA.get_shape_raw();
-    const py::ssize_t *x_shape = vectorX.get_shape_raw();
-    const py::ssize_t *y_shape = vectorY.get_shape_raw();
     const std::int64_t m = a_shape[0];
     const std::int64_t n = a_shape[1];
-    const std::int64_t lda = is_row_major ? n : m;
 
-    oneapi::mkl::transpose transA;
-    std::size_t src_nelems;
     if (transpose) {
         transA = oneapi::mkl::transpose::T;
         src_nelems = n;
-        if (m != x_shape[0]) {
+    }
+    else {
+        transA = oneapi::mkl::transpose::N;
+        src_nelems = m;
+    }
+#endif // USE_ONEMKL_CUBLAS
+
+    if (transpose) {
+        if (a_shape[0] != x_shape[0]) {
             throw py::value_error("The number of rows in A must be equal to "
                                   "the number of elements in X.");
         }
-        if (n != y_shape[0]) {
+        if (a_shape[1] != y_shape[0]) {
             throw py::value_error("The number of columns in A must be equal to "
                                   "the number of elements in Y.");
         }
     }
     else {
-        transA = oneapi::mkl::transpose::N;
-        src_nelems = m;
-        if (n != x_shape[0]) {
+        if (a_shape[1] != x_shape[0]) {
             throw py::value_error("The number of columns in A must be equal to "
                                   "the number of elements in X.");
         }
-        if (m != y_shape[0]) {
+        if (a_shape[0] != y_shape[0]) {
             throw py::value_error("The number of rows in A must be equal to "
                                   "the number of elements in Y.");
         }
     }
+
+    const std::int64_t lda = is_row_major ? n : m;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vectorY);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vectorY,
                                                                src_nelems);

@@ -53,8 +53,8 @@ include(GNUInstallDirs)
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.3.tar.gz
-    URL_HASH SHA256=6e7a84ec241544f2f5e30c7a82c09c81f0541dd14e9d9ef61051e07105f9c445
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.5.tar.gz
+    URL_HASH SHA256=b1e209c42b3a9ed74da3e0b25a4f4cd478d89d5efbb48f04b277df427faf6252
 )
 FetchContent_MakeAvailable(pybind11)
 
@@ -108,7 +108,7 @@ if(_use_onemkl_interfaces)
     set(BUILD_FUNCTIONAL_TESTS False)
     set(BUILD_EXAMPLES False)
     if(_use_onemkl_interfaces_cuda)
-        # set(ENABLE_CUBLAS_BACKEND True)
+        set(ENABLE_CUBLAS_BACKEND True)
         set(ENABLE_CUSOLVER_BACKEND True)
         set(ENABLE_CUFFT_BACKEND True)
         # set(ENABLE_CURAND_BACKEND True)

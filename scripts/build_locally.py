@@ -170,7 +170,7 @@ if __name__ == "__main__":
         type=str,
     )
     driver.add_argument(
-        "--onemkl_interfaces",
+        "--onemkl-interfaces",
         help="Build using oneMKL Interfaces",
         dest="onemkl_interfaces",
         action="store_true",
