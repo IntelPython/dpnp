@@ -208,6 +208,16 @@ class TestAsarrayCheckFinite:
         result = dpnp.asarray_chkfinite(a, order=order)
         assert_array_equal(result, expected)
 
+    def test_no_copy(self):
+        a = dpnp.ones(10)
+
+        # No copy is performed if the input is already an ndarray
+        b = dpnp.asarray_chkfinite(a)
+
+        # b is a view of a, changing b, modifies a
+        b[0::2] = 0
+        assert_array_equal(b, a)
+
 
 class TestRepeat:
     @pytest.mark.parametrize(
