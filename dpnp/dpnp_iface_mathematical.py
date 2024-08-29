@@ -111,6 +111,7 @@ __all__ = [
     "negative",
     "nextafter",
     "positive",
+    "pow",
     "power",
     "prod",
     "proj",
@@ -2869,6 +2870,8 @@ _POWER_DOCSTRING = """
 Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
 
+Note that :obj:`dpnp.pow` is an alias of :obj:`dpnp.power`.
+
 For full documentation refer to :obj:`numpy.power`.
 
 Parameters
@@ -2951,6 +2954,8 @@ power = DPNPBinaryFunc(
     mkl_impl_fn="_pow",
     binary_inplace_fn=ti._pow_inplace,
 )
+
+pow = power  # pow is an alias for power
 
 
 def prod(

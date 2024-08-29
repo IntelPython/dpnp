@@ -2051,21 +2051,6 @@ def test_divide_scalar(shape, dtype):
     assert_allclose(result, expected, rtol=1e-6)
 
 
-@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-def test_power_scalar(shape, dtype):
-    np_a = numpy.ones(shape, dtype=dtype)
-    dpnp_a = dpnp.ones(shape, dtype=dtype)
-
-    result = 4.2**dpnp_a**-1.3
-    expected = 4.2**np_a**-1.3
-    assert_allclose(result, expected, rtol=1e-6)
-
-    result **= dpnp_a
-    expected **= np_a
-    assert_allclose(result, expected, rtol=1e-6)
-
-
 @pytest.mark.parametrize(
     "data",
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
@@ -2312,39 +2297,6 @@ class TestProjection:
         result = dpnp.proj(dpnp.array(1, dtype=dtype))
         expected = dpnp.array(complex(1, 0))
         assert_allclose(result, expected)
-
-
-@pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))
-@pytest.mark.parametrize("data_type", get_all_dtypes())
-@pytest.mark.parametrize("val", [1.5, 1, 5], ids=["1.5", "1", "5"])
-@pytest.mark.parametrize(
-    "array",
-    [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-        [
-            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
-            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
-        ],
-    ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
-    ],
-)
-def test_power(array, val, data_type, val_type):
-    np_a = numpy.array(array, dtype=data_type)
-    dpnp_a = dpnp.array(array, dtype=data_type)
-    val_ = val_type(val)
-
-    result = dpnp.power(dpnp_a, val_)
-    expected = numpy.power(np_a, val_)
-    assert_allclose(expected, result, rtol=1e-6)
 
 
 class TestRoundingFuncs:
@@ -2998,6 +2950,38 @@ class TestMultiply:
 
 
 class TestPower:
+    @pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("data_type", get_all_dtypes())
+    @pytest.mark.parametrize("val", [1.5, 1, 5], ids=["1.5", "1", "5"])
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[0, 0], [0, 0]],
+            [[1, 2], [1, 2]],
+            [[1, 2], [3, 4]],
+            [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+            [
+                [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
+                [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+            ],
+        ],
+        ids=[
+            "[[0, 0], [0, 0]]",
+            "[[1, 2], [1, 2]]",
+            "[[1, 2], [3, 4]]",
+            "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
+            "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
+        ],
+    )
+    def test_basic(self, array, val, data_type, val_type):
+        np_a = numpy.array(array, dtype=data_type)
+        dpnp_a = dpnp.array(array, dtype=data_type)
+        val_ = val_type(val)
+
+        result = dpnp.power(dpnp_a, val_)
+        expected = numpy.power(np_a, val_)
+        assert_allclose(expected, result, rtol=1e-6)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_power(self, dtype):
         np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(
@@ -3112,6 +3096,27 @@ class TestPower:
         dpnp_res = dpnp.array(a) ** dpnp.array(b)
 
         assert_allclose(numpy_res, dpnp_res.asnumpy())
+
+    @pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_power_scalar(self, shape, dtype):
+        np_a = numpy.ones(shape, dtype=dtype)
+        dpnp_a = dpnp.ones(shape, dtype=dtype)
+
+        result = 4.2**dpnp_a**-1.3
+        expected = 4.2**np_a**-1.3
+        assert_allclose(result, expected, rtol=1e-6)
+
+        result **= dpnp_a
+        expected **= np_a
+        assert_allclose(result, expected, rtol=1e-6)
+
+    def test_alias(self):
+        a = dpnp.arange(10)
+        res1 = dpnp.power(a, 3)
+        res2 = dpnp.pow(a, 3)
+
+        assert_array_equal(res1, res2)
 
 
 @pytest.mark.parametrize(
