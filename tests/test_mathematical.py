@@ -3816,6 +3816,14 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected, factor=24)
 
+    def test_matmul_alias(self):
+        a = dpnp.ones((3, 4))
+        b = dpnp.ones((4, 5))
+
+        result1 = dpnp.matmul(a, b)
+        result2 = dpnp.linalg.matmul(a, b)
+        assert_array_equal(result1, result2)
+
 
 class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
