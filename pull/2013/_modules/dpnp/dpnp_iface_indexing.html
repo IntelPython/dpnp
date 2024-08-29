@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+163.gd1fa1e3dda documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+167.g360fa48393c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4bc5410f"></script>
+        <script src="../../_static/documentation_options.js?v=f57ff88e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+163.gd1fa1e3dda
+                0.16.0dev0+167.g360fa48393c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1022,8 +1022,8 @@
 <span class="sd">    and the dimension with the non-unit shape value cycles through all</span>
 <span class="sd">    N dimensions.</span>
 
-<span class="sd">    Using `ix_` one can quickly construct index arrays that will index</span>
-<span class="sd">    the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array</span>
+<span class="sd">    Using  :obj:`dpnp.ix_` one can quickly construct index arrays that will</span>
+<span class="sd">    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array</span>
 <span class="sd">    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.</span>
 
 <span class="sd">    Parameters</span>
@@ -1032,13 +1032,20 @@
 <span class="sd">        1-D sequences. Each sequence should be of integer or boolean type.</span>
 <span class="sd">        Boolean sequences will be interpreted as boolean masks for the</span>
 <span class="sd">        corresponding dimension (equivalent to passing in</span>
-<span class="sd">        dpnp.nonzero(boolean_sequence)).</span>
+<span class="sd">        ``dpnp.nonzero(boolean_sequence)``).</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : tuple of ndarrays</span>
+<span class="sd">    out : tuple of dpnp.ndarray</span>
 <span class="sd">        N arrays with N dimensions each, with N the number of input sequences.</span>
 <span class="sd">        Together these arrays form an open mesh.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.</span>
+<span class="sd">    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.</span>
+<span class="sd">    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from</span>
+<span class="sd">                           coordinate vectors.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1072,13 +1079,6 @@
 <span class="sd">    array([[2, 4],</span>
 <span class="sd">           [7, 9]])</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.</span>
-<span class="sd">    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.</span>
-<span class="sd">    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from</span>
-<span class="sd">                           coordinate vectors.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
@@ -1087,8 +1087,8 @@
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">new</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cross index must be 1 dimensional&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool_</span><span class="p">):</span>
-            <span class="p">(</span><span class="n">new</span><span class="p">,)</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">):</span>
+            <span class="p">(</span><span class="n">new</span><span class="p">,)</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
         <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">k</span> <span class="o">+</span> <span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">size</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="p">(</span><span class="n">nd</span> <span class="o">-</span> <span class="n">k</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
         <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out</span><span class="p">)</span></div>

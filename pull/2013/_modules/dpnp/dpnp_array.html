@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+163.gd1fa1e3dda documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+167.g360fa48393c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4bc5410f"></script>
+        <script src="../../_static/documentation_options.js?v=f57ff88e"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+163.gd1fa1e3dda
+                0.16.0dev0+167.g360fa48393c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1108,14 +1108,14 @@
 <span class="sd">            Read the elements using this index order, and place the elements</span>
 <span class="sd">            into the reshaped array using this index order.</span>
 
-<span class="sd">                - &quot;C&quot; means to read / write the elements using C-like index</span>
+<span class="sd">                - ``&quot;C&quot;`` means to read / write the elements using C-like index</span>
 <span class="sd">                  order, with the last axis index changing fastest, back to the</span>
 <span class="sd">                  first axis index changing slowest.</span>
-<span class="sd">                - &quot;F&quot; means to read / write the elements using Fortran-like</span>
+<span class="sd">                - ``&quot;F&quot;`` means to read / write the elements using Fortran-like</span>
 <span class="sd">                  index order, with the first index changing fastest, and the</span>
 <span class="sd">                  last index changing slowest.</span>
 
-<span class="sd">            The default is ``&quot;C&quot;``.</span>
+<span class="sd">            Default: ``&quot;C&quot;``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1306,7 +1306,33 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of array dimensions.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of dimensions of an array.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.ndim`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        number_of_dimensions : int</span>
+<span class="sd">            The number of dimensions in `a`.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.ndim` : Equivalent method for any array-like input.</span>
+<span class="sd">        :obj:`dpnp.shape` : Return the shape of an array.</span>
+<span class="sd">        :obj:`dpnp.ndarray.shape` : Return the shape of an array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; x.ndim</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((2, 3, 4))</span>
+<span class="sd">        &gt;&gt;&gt; y.ndim</span>
+<span class="sd">        3</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">ndim</span>
 
@@ -1607,7 +1633,29 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of elements in the array.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of elements in the array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        element_count : int</span>
+<span class="sd">            Number of elements in the array.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.size` : Return the number of elements along a given axis.</span>
+<span class="sd">        :obj:`dpnp.shape` : Return the shape of an array.</span>
+<span class="sd">        :obj:`dpnp.ndarray.shape` : Return the shape of an array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.zeros((3, 5, 2), dtype=np.complex64)</span>
+<span class="sd">        &gt;&gt;&gt; x.size</span>
+<span class="sd">        30</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">size</span>
 
 <div class="viewcode-block" id="dpnp_array.sort">
