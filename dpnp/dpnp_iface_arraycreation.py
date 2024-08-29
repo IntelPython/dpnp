@@ -1151,8 +1151,6 @@ def empty(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1186,7 +1184,7 @@ def empty(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"
@@ -1373,8 +1371,6 @@ def eye(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1414,7 +1410,7 @@ def eye(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"
@@ -2013,8 +2009,6 @@ def full(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -2048,7 +2042,7 @@ def full(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     return dpnp_container.full(
         shape,
@@ -3057,8 +3051,6 @@ def ones(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -3098,7 +3090,7 @@ def ones(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"
@@ -3706,8 +3698,6 @@ def zeros(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -3747,7 +3737,7 @@ def zeros(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"

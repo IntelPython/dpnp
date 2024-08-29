@@ -322,6 +322,7 @@ def test_logspace_base(usm_type_x, usm_type_y):
     [
         "array",
         "asarray",
+        "asarray_chkfinite",
         "asanyarray",
         "ascontiguousarray",
         "asfarray",
@@ -761,6 +762,18 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     x = dp.array(data1, usm_type=usm_type_x)
     y = dp.array(data2, usm_type=usm_type_y)
     z = getattr(dp, func)((x, y))
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_append(usm_type_x, usm_type_y):
+    x = dp.array([1, 2, 3], usm_type=usm_type_x)
+    y = dp.array([4, 5, 6], usm_type=usm_type_y)
+    z = dp.append(x, y)
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
