@@ -104,19 +104,6 @@ def _check_stack_arrays(arrays):
         )
 
 
-def _is_sequence_of_ints(var):
-    """Check if var is a tuple, list, or 1-D ndarray of integers."""
-    if isinstance(var, (numpy.ndarray, dpnp_array, dpt.usm_ndarray)):
-        # If it is a supported array, check it is 1D
-        if var.ndim != 1:
-            return False
-    elif not isinstance(var, (list, tuple)):
-        return False
-
-    # Check if all elements are integers
-    return numpy.all(isinstance(x, (int, numpy.integer)) for x in var)
-
-
 def _unique_1d(
     ar,
     return_index=False,
@@ -495,9 +482,12 @@ def array_split(ary, indices_or_sections, axis=0):
 
     dpnp.check_supported_arrays_type(ary)
     n_tot = ary.shape[axis]
-    if dpnp.isscalar(indices_or_sections) and not isinstance(
-        indices_or_sections, str
-    ):
+    try:
+        # handle array case.
+        n_sec = len(indices_or_sections) + 1
+        div_points = [0] + list(indices_or_sections) + [n_tot]
+    except TypeError:
+        # indices_or_sections is a scalar, not an array.
         n_sec = int(indices_or_sections)
         if n_sec <= 0:
             raise ValueError("number sections must be larger than 0.") from None
@@ -506,13 +496,6 @@ def array_split(ary, indices_or_sections, axis=0):
             [0] + extras * [n_each_sec + 1] + (n_sec - extras) * [n_each_sec]
         )
         div_points = dpnp.array(section_sizes, dtype=dpnp.intp).cumsum()
-    elif _is_sequence_of_ints(indices_or_sections):
-        n_sec = len(indices_or_sections) + 1
-        div_points = [0] + list(indices_or_sections) + [n_tot]
-    else:
-        raise TypeError(
-            "indices_or_sections must be an integer or a sequence of integers."
-        )
 
     sub_arys = []
     sary = dpnp.swapaxes(ary, axis, 0)
@@ -2320,9 +2303,7 @@ def split(ary, indices_or_sections, axis=0):
     if ary.ndim <= axis:
         raise IndexError("Axis exceeds ndim")
 
-    if dpnp.isscalar(indices_or_sections) and not isinstance(
-        indices_or_sections, str
-    ):
+    if dpnp.isscalar(indices_or_sections):
         if ary.shape[axis] % indices_or_sections != 0:
             raise ValueError(
                 "indices_or_sections must divide the size along the axes.\n"

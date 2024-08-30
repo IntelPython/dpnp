@@ -207,13 +207,37 @@ class TestArraySplit:
         a = xp.arange(10)
         assert_raises(TypeError, xp.array_split, a, "wrong")
 
-    @pytest.mark.parametrize("int_s", [1, 2.0, 3.0, 4.0, 5, 6, 7, 8, 9, 10, 11])
-    def test_integer_split(self, int_s):
+        # non-integer sequence
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.array_split, a, [3, 5.0])
+
+        # not 1D array
+        a = xp.arange(10)
+        indices = dpnp.array([[1, 5], [7, 9]])
+        assert_raises(ValueError, xp.array_split, a, indices)
+
+    @pytest.mark.parametrize(
+        "indices",
+        [
+            1,
+            2,
+            3.0,
+            dpnp.int64(5),
+            dpnp.int32(5),
+            dpnp.array(6),
+            numpy.array(7),
+            numpy.int32(5),
+            9,
+            10,
+            11,
+        ],
+    )
+    def test_integer_split(self, indices):
         a = numpy.arange(10)
         a_dp = dpnp.array(a)
 
-        expected = numpy.array_split(a, int_s)
-        result = dpnp.array_split(a_dp, int_s)
+        expected = numpy.array_split(a, indices)
+        result = dpnp.array_split(a_dp, indices)
         _compare_results(result, expected)
 
     def test_integer_split_2D_rows(self):
