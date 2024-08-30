@@ -19,7 +19,7 @@ Simple random data
    random_integers
    random_sample
    random
-   random.ranf
+   ranf
    sample
    choice
    bytes
