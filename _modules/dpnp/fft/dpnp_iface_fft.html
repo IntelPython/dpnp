@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+167.g870d1582aa5 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.16.0dev0+168.gd0bc51e10d0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=01e887ec"></script>
+        <script src="../../../_static/documentation_options.js?v=11d3fb60"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+167.g870d1582aa5
+                0.16.0dev0+168.gd0bc51e10d0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -697,8 +697,8 @@
 <span class="sd">    the frequency domain. So here it&#39;s :obj:`dpnp.fft.hfft` for which you must</span>
 <span class="sd">    supply the length of the result if it is to be odd.</span>
 
-<span class="sd">    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,</span>
-<span class="sd">    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.</span>
+<span class="sd">    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within round-off error,</span>
+<span class="sd">    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within round-off error.</span>
 
 <span class="sd">    The correct interpretation of the Hermitian input depends on the length of</span>
 <span class="sd">    the original data, as given by `n`. This is because each input shape could</span>
@@ -753,7 +753,7 @@
 <span class="sd">    * ``a[0]`` should contain the zero frequency term,</span>
 <span class="sd">    * ``a[1:n//2]`` should contain the positive-frequency terms,</span>
 <span class="sd">    * ``a[n//2 + 1:]`` should contain the negative-frequency terms, in</span>
-<span class="sd">     increasing order starting from the most negative frequency.</span>
+<span class="sd">      increasing order starting from the most negative frequency.</span>
 
 <span class="sd">    For an even number of input points, ``A[n//2]`` represents the sum of</span>
 <span class="sd">    the values at the positive and negative Nyquist frequencies, as the two</span>
@@ -1139,8 +1139,8 @@
 <span class="sd">    the frequency domain. So here it&#39;s :obj:`dpnp.fft.hfft` for which you must</span>
 <span class="sd">    supply the length of the result if it is to be odd.</span>
 
-<span class="sd">    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within roundoff error,</span>
-<span class="sd">    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within roundoff error.</span>
+<span class="sd">    * even: ``ihfft(hfft(a, 2*len(a) - 2)) == a``, within round-off error,</span>
+<span class="sd">    * odd: ``ihfft(hfft(a, 2*len(a) - 1)) == a``, within round-off error.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1233,7 +1233,7 @@
 
 <span class="sd">    If you specify an `n` such that `a` must be zero-padded or truncated, the</span>
 <span class="sd">    extra/removed values will be added/removed at high frequencies. One can</span>
-<span class="sd">    thus resample a series to `m` points via Fourier interpolation by:</span>
+<span class="sd">    thus re-sample a series to `m` points via Fourier interpolation by:</span>
 <span class="sd">    ``a_resamp = irfft(rfft(a), m)``.</span>
 
 <span class="sd">    The correct interpretation of the Hermitian input depends on the length of</span>
@@ -1413,7 +1413,7 @@
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate dtype and shape for the last transformation</span>
 <span class="sd">        (consistent with the choice of `s`).</span>
-<span class="sd">         Default: ``None``.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

@@ -4,7 +4,7 @@ Binary Operations
 .. https://docs.scipy.org/doc/numpy/reference/routines.bitwise.html
 
 Element-wise bit operations
---------------------------
+---------------------------
 
 .. autosummary::
    :toctree: generated/

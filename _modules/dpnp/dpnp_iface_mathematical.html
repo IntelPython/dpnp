@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+167.g870d1582aa5 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+168.gd0bc51e10d0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=01e887ec"></script>
+        <script src="../../_static/documentation_options.js?v=11d3fb60"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+167.g870d1582aa5
+                0.16.0dev0+168.gd0bc51e10d0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -201,6 +201,7 @@
     <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nextafter&quot;</span><span class="p">,</span>
     <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pow&quot;</span><span class="p">,</span>
     <span class="s2">&quot;power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
@@ -1852,7 +1853,7 @@
 <span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
 <span class="s2">element-wise maxima.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then the non-nan element is</span>
+<span class="s2">If one of the elements being compared is a NaN, then the non-NaN element is</span>
 <span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
 <span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
 <span class="s2">the real or imaginary parts being a NaN. The net effect is that NaNs are</span>
@@ -1900,7 +1901,7 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">The fmax is equivalent to ``dpnp.where(x1 &gt;= x2, x1, x2)`` when neither</span>
+<span class="s2">``fmax(x1, x2)`` is equivalent to ``dpnp.where(x1 &gt;= x2, x1, x2)`` when neither</span>
 <span class="s2">`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.</span>
 
 <span class="s2">Examples</span>
@@ -1937,7 +1938,7 @@
 <span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
 <span class="s2">element-wise minima.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then the non-nan element is</span>
+<span class="s2">If one of the elements being compared is a NaN, then the non-NaN element is</span>
 <span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
 <span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
 <span class="s2">the real or imaginary parts being a NaN. The net effect is that NaNs are</span>
@@ -1985,7 +1986,7 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">The fmin is equivalent to ``dpnp.where(x1 &lt;= x2, x1, x2)`` when neither</span>
+<span class="s2">``fmin(x1, x2)`` is equivalent to ``dpnp.where(x1 &lt;= x2, x1, x2)`` when neither</span>
 <span class="s2">`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.</span>
 
 <span class="s2">Examples</span>
@@ -2681,7 +2682,7 @@
 <span class="k">def</span> <span class="nf">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace ``NaN`` with zero and infinity with large finite numbers (default</span>
-<span class="sd">    behaviour) or with the numbers defined by the user using the `nan`,</span>
+<span class="sd">    behavior) or with the numbers defined by the user using the `nan`,</span>
 <span class="sd">    `posinf` and/or `neginf` keywords.</span>
 
 <span class="sd">    If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value</span>
@@ -2992,6 +2993,8 @@
 <span class="s2">Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array</span>
 <span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
 
+<span class="s2">Note that :obj:`dpnp.pow` is an alias of :obj:`dpnp.power`.</span>
+
 <span class="s2">For full documentation refer to :obj:`numpy.power`.</span>
 
 <span class="s2">Parameters</span>
@@ -3074,6 +3077,8 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_pow&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_pow_inplace</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="nb">pow</span> <span class="o">=</span> <span class="n">power</span>  <span class="c1"># pow is an alias for power</span>
 
 
 <div class="viewcode-block" id="prod">

@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+167.g870d1582aa5 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+168.gd0bc51e10d0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=01e887ec"></script>
+        <script src="../../_static/documentation_options.js?v=11d3fb60"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+167.g870d1582aa5
+                0.16.0dev0+168.gd0bc51e10d0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -149,6 +149,7 @@
     <span class="s2">&quot;broadcast_to&quot;</span><span class="p">,</span>
     <span class="s2">&quot;can_cast&quot;</span><span class="p">,</span>
     <span class="s2">&quot;column_stack&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;concat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copyto&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dstack&quot;</span><span class="p">,</span>
@@ -159,6 +160,7 @@
     <span class="s2">&quot;hstack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;moveaxis&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ndim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;permute_dims&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ravel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;reshape&quot;</span><span class="p">,</span>
@@ -1072,11 +1074,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Join a sequence of arrays along an existing axis.</span>
 
+<span class="sd">    Note that :obj:`dpnp.concat` is an alias of :obj:`dpnp.concatenate`.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.concatenate`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arrays : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    arrays : {Sequence of dpnp.ndarray or usm_ndarray}</span>
 <span class="sd">        The arrays must have the same shape, except in the dimension</span>
 <span class="sd">        corresponding to axis (the first, by default).</span>
 <span class="sd">    axis : int, optional</span>
@@ -1152,6 +1156,9 @@
         <span class="k">return</span> <span class="n">out</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
+
+
+<span class="n">concat</span> <span class="o">=</span> <span class="n">concatenate</span>  <span class="c1"># concat is an alias of concatenate</span>
 
 
 <div class="viewcode-block" id="copyto">
@@ -2497,6 +2504,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an array with axes transposed.</span>
 
+<span class="sd">    Note that :obj:`dpnp.permute_dims` is an alias of :obj:`dpnp.transpose`.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.transpose`.</span>
 
 <span class="sd">    Parameters</span>
@@ -2562,6 +2571,9 @@
         <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">*</span><span class="n">axes</span><span class="p">)</span></div>
 
+
+
+<span class="n">permute_dims</span> <span class="o">=</span> <span class="n">transpose</span>  <span class="c1"># permute_dims is an alias for transpose</span>
 
 
 <div class="viewcode-block" id="trim_zeros">
@@ -2707,7 +2719,7 @@
 <span class="sd">    (move the axis to the first dimension to keep the order of the other axes)</span>
 <span class="sd">    and then flattening the subarrays in C order.</span>
 <span class="sd">    For complex arrays all NaN values are considered equivalent (no matter</span>
-<span class="sd">    whether the NaN is in the real or imaginary part). As the representant for</span>
+<span class="sd">    whether the NaN is in the real or imaginary part). As the representative for</span>
 <span class="sd">    the returned array the smallest one in the lexicographical order is chosen.</span>
 <span class="sd">    For multi-dimensional inputs, `unique_inverse` is reshaped such that the</span>
 <span class="sd">    input can be reconstructed using</span>
