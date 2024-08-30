@@ -46,8 +46,11 @@ from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 __all__ = [
     "bitwise_and",
+    "bitwise_invert",
+    "bitwise_left_shift",
     "bitwise_not",
     "bitwise_or",
+    "bitwise_right_shift",
     "bitwise_xor",
     "invert",
     "left_shift",
@@ -260,6 +263,8 @@ bitwise_xor = DPNPBinaryFunc(
 _INVERT_DOCSTRING = """
 Inverts (flips) each bit for each element `x_i` of the input array `x`.
 
+Note that :obj:`dpnp.bitwise_invert` is an alias of :obj:`dpnp.invert`.
+
 For full documentation refer to :obj:`numpy.invert`.
 
 Parameters
@@ -321,12 +326,14 @@ invert = DPNPUnaryFunc(
 
 
 bitwise_not = invert  # bitwise_not is an alias for invert
-
+bitwise_invert = invert  # bitwise_invert is an alias for invert
 
 _LEFT_SHIFT_DOCSTRING = """
 Shifts the bits of each element `x1_i` of the input array x1 to the left by
 appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to
 the right of `x1_i`.
+
+Note that :obj:`dpnp.bitwise_left_shift` is an alias of :obj:`dpnp.left_shift`.
 
 For full documentation refer to :obj:`numpy.left_shift`.
 
@@ -384,10 +391,14 @@ left_shift = DPNPBinaryFunc(
     _LEFT_SHIFT_DOCSTRING,
 )
 
+bitwise_left_shift = left_shift  # bitwise_left_shift is an alias for left_shift
+
 
 _RIGHT_SHIFT_DOCSTRING = """
 Shifts the bits of each element `x1_i` of the input array `x1` to the right
 according to the respective element `x2_i` of the input array `x2`.
+
+Note that :obj:`dpnp.bitwise_right_shift` is an alias of :obj:`dpnp.right_shift`.
 
 For full documentation refer to :obj:`numpy.right_shift`.
 
@@ -445,3 +456,6 @@ right_shift = DPNPBinaryFunc(
     ti._bitwise_right_shift,
     _RIGHT_SHIFT_DOCSTRING,
 )
+
+# bitwise_right_shift is an alias for right_shift
+bitwise_right_shift = right_shift

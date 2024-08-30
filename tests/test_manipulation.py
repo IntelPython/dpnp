@@ -497,6 +497,14 @@ class TestTranspose:
         result = da.transpose(1, 0, 2)
         assert_array_equal(result, expected)
 
+    def test_alias(self):
+        a = dpnp.ones((5, 3))
+
+        res1 = dpnp.transpose((a))
+        res2 = dpnp.permute_dims((a))
+
+        assert_array_equal(res1, res2)
+
 
 class TestTrimZeros:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))

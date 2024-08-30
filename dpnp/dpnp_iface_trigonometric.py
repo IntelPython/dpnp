@@ -59,6 +59,13 @@ __all__ = [
     "arctan",
     "arctan2",
     "arctanh",
+    "asin",
+    "asinh",
+    "acos",
+    "acosh",
+    "atan",
+    "atan2",
+    "atanh",
     "cbrt",
     "cos",
     "cosh",
@@ -101,8 +108,11 @@ def _get_accumulation_res_dt(a, dtype, _out):
     return dtu._to_device_supported_dtype(dtype, a.sycl_device)
 
 
-_ACOS_DOCSTRING = """
+_ACOS_DOCSTRING = r"""
 Computes inverse cosine for each element `x_i` for input array `x`.
+
+The inverse of :obj:`dpnp.cos` so that, if ``y = cos(x)``, then ``x = arccos(y)``.
+Note that :obj:`dpnp.acos` is an alias of :obj:`dpnp.arccos`.
 
 For full documentation refer to :obj:`numpy.arccos`.
 
@@ -138,6 +148,22 @@ See Also
 :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
 :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
 
+Notes
+-----
+:obj:`dpnp.arccos` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that ``cos(z) = x``. The convention is to return the
+angle `z` whose real part lies in `[0, pi]`.
+
+For real-valued input data types, :obj:`dpnp.arccos` always returns real output.
+For each value that cannot be expressed as a real number or infinity, it yields
+``nan``.
+
+For complex-valued input, :obj:`dpnp.arccos` is a complex analytic function that
+has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous
+from above on the former and from below on the latter.
+
+The inverse cos is also known as :math:`acos` or :math:`cos^{-1}`.
+
 Examples
 --------
 >>> import dpnp as np
@@ -155,9 +181,14 @@ arccos = DPNPUnaryFunc(
     mkl_impl_fn="_acos",
 )
 
+acos = arccos  # acos is an alias for arccos
 
-_ACOSH_DOCSTRING = """
+
+_ACOSH_DOCSTRING = r"""
 Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
+
+The inverse of :obj:`dpnp.cosh` so that, if ``y = cosh(x)``, then ``x = arccosh(y)``.
+Note that :obj:`dpnp.acosh` is an alias of :obj:`dpnp.arccosh`.
 
 For full documentation refer to :obj:`numpy.arccosh`.
 
@@ -189,9 +220,26 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
-:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
 :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
+:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
+:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
 :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+
+Notes
+-----
+:obj:`dpnp.arccosh` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that ``cosh(z) = x``. The convention is to return the
+angle `z` whose real part lies in `[0, inf]`.
+
+For real-valued input data types, :obj:`dpnp.arccosh` always returns real output.
+For each value that cannot be expressed as a real number or infinity, it yields
+``nan``.
+
+For complex-valued input, :obj:`dpnp.arccosh` is a complex analytic function that
+has, by convention, the branch cuts `[-inf, 1]` and is continuous from above.
+
+The inverse hyperbolic cos is also known as :math:`acosh` or :math:`cosh^{-1}`.
 
 Examples
 --------
@@ -210,9 +258,14 @@ arccosh = DPNPUnaryFunc(
     mkl_impl_fn="_acosh",
 )
 
+acosh = arccosh  # acosh is an alias for arccosh
 
-_ASIN_DOCSTRING = """
+
+_ASIN_DOCSTRING = r"""
 Computes inverse sine for each element `x_i` for input array `x`.
+
+The inverse of :obj:`dpnp.sin`, so that if ``y = sin(x)`` then ``x = arcsin(y)``.
+Note that :obj:`dpnp.asin` is an alias of :obj:`dpnp.arcsin`.
 
 For full documentation refer to :obj:`numpy.arcsin`.
 
@@ -244,9 +297,28 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.sin` : Trigonometric sine, element-wise.
-:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.cos` : Trigonometric cosine, element-wise.
 :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+:obj:`dpnp.tan` : Trigonometric tangent, element-wise.
+:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
 :obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+
+Notes
+-----
+:obj:`dpnp.arcsin` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that ``sin(z) = x``. The convention is to return the
+angle `z` whose real part lies in `[-pi/2, pi/2]`.
+
+For real-valued input data types, :obj:`dpnp.arcsin` always returns real output.
+For each value that cannot be expressed as a real number or infinity, it yields
+``nan``.
+
+For complex-valued input, :obj:`dpnp.arcsin` is a complex analytic function that
+has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous
+from above on the former and from below on the latter.
+
+The inverse sine is also known as :math:`asin` or :math:`sin^{-1}`.
 
 Examples
 --------
@@ -265,9 +337,14 @@ arcsin = DPNPUnaryFunc(
     mkl_impl_fn="_asin",
 )
 
+asin = arcsin  # asin is an alias for arcsin
 
-_ASINH_DOCSTRING = """
+
+_ASINH_DOCSTRING = r"""
 Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
+
+The inverse of :obj:`dpnp.sinh`, so that if ``y = sinh(x)`` then ``x = arcsinh(y)``.
+Note that :obj:`dpnp.asinh` is an alias of :obj:`dpnp.arcsinh`.
 
 For full documentation refer to :obj:`numpy.arcsinh`.
 
@@ -303,6 +380,23 @@ See Also
 :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
 :obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
 
+Notes
+-----
+:obj:`dpnp.arcsinh` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that ``sin(z) = x``. The convention is to return the
+angle `z` whose real part lies in `[-pi/2, pi/2]`.
+
+For real-valued input data types, :obj:`dpnp.arcsinh` always returns real output.
+For each value that cannot be expressed as a real number or infinity, it yields
+``nan``.
+
+For complex-valued input, :obj:`dpnp.arcsinh` is a complex analytic function that
+has, by convention, the branch cuts `[1j, infj]` and `[`1j, -infj]` and is continuous
+from above on the former and from below on the latter.
+
+The inverse hyperbolic sine is also known as :math:`asinh` or :math:`sinh^{-1}`.
+
+
 Examples
 --------
 >>> import dpnp as np
@@ -320,9 +414,14 @@ arcsinh = DPNPUnaryFunc(
     mkl_impl_fn="_asinh",
 )
 
+asinh = arcsinh  # asinh is an alias for arcsinh
 
-_ATAN_DOCSTRING = """
+
+_ATAN_DOCSTRING = r"""
 Computes inverse tangent for each element `x_i` for input array `x`.
+
+The inverse of :obj:`dpnp.tan`, so that if ``y = tan(x)`` then ``x = arctan(y)``.
+Note that :obj:`dpnp.atan` is an alias of :obj:`dpnp.arctan`.
 
 For full documentation refer to :obj:`numpy.arctan`.
 
@@ -360,6 +459,22 @@ See Also
 :obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
 :obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.
 
+Notes
+-----
+:obj:`dpnp.arctan` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that ``tan(z) = x``. The convention is to return the
+angle `z` whose real part lies in `[-pi/2, pi/2]`.
+
+For real-valued input data types, :obj:`dpnp.arctan` always returns real output.
+For each value that cannot be expressed as a real number or infinity, it yields
+``nan``.
+
+For complex-valued input, :obj:`dpnp.arctan` is a complex analytic function that
+has, by convention, the branch cuts `[1j, infj]` and `[-1j, -infj]`  and is continuous
+from the left on the former and from the right on the latter.
+
+The inverse tan is also known as :math:`atan` or :math:`tan^{-1}`.
+
 Examples
 --------
 >>> import dpnp as np
@@ -377,11 +492,17 @@ arctan = DPNPUnaryFunc(
     mkl_impl_fn="_atan",
 )
 
+atan = arctan  # atan is an alias for arctan
+
 
 _ATAN2_DOCSTRING = """
 Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
 `x1_i` of the input array `x1` with the respective element `x2_i` of the
 input array `x2`. Each element-wise result is expressed in radians.
+
+Note that :obj:`dpnp.atan2` is an alias of :obj:`dpnp.arctan2`.
+This function is not defined for complex-valued arguments; for the so-called
+argument of complex values, use :obj:`dpnp.angle`.
 
 For full documentation refer to :obj:`numpy.arctan2`.
 
@@ -453,9 +574,14 @@ arctan2 = DPNPBinaryFunc(
     mkl_impl_fn="_atan2",
 )
 
+atan2 = arctan2  # atan2 is an alias for arctan2
 
-_ATANH_DOCSTRING = """
+
+_ATANH_DOCSTRING = r"""
 Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
+
+The inverse of :obj:`dpnp.tanh`, so that if ``y = tanh(x)`` then ``x = arctanh(y)``.
+Note that :obj:`dpnp.atanh` is an alias of :obj:`dpnp.arctanh`.
 
 For full documentation refer to :obj:`numpy.arctanh`.
 
@@ -491,6 +617,22 @@ See Also
 :obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
 :obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
 
+Notes
+-----
+:obj:`dpnp.arctanh` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that ``tanh(z) = x``. The convention is to return the
+angle `z` whose real part lies in `[-pi/2, pi/2]`.
+
+For real-valued input data types, :obj:`dpnp.arctanh` always returns real output.
+For each value that cannot be expressed as a real number or infinity, it yields
+``nan``.
+
+For complex-valued input, :obj:`dpnp.arctanh` is a complex analytic function that
+has, by convention, the branch cuts `[-1, -inf]` and `[1, inf]` and is is continuous
+from above on the former and from below on the latter.
+
+The inverse hyperbolic tan is also known as :math:`atanh` or :math:`tanh^{-1}`.
+
 Examples
 --------
 >>> import dpnp as np
@@ -507,6 +649,8 @@ arctanh = DPNPUnaryFunc(
     mkl_fn_to_call="_mkl_atanh_to_call",
     mkl_impl_fn="_atanh",
 )
+
+atanh = arctanh  # atanh is an alias for arctanh
 
 
 _CBRT_DOCSTRING = """
@@ -1383,7 +1527,7 @@ See Also
 --------
 :obj:`dpnp.log` : Natural logarithm, element-wise.
 :obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiations of inputs in
+:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiation of inputs in
                         base-2, element-wise.
 :obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the
                         input array.
@@ -1453,9 +1597,9 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiations of
+:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiation of
                        inputs, element-wise.
-:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiations of the inputs.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiation of the inputs.
 
 Examples
 --------

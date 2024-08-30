@@ -74,6 +74,7 @@ __all__ = [
     "eigvalsh",
     "inv",
     "lstsq",
+    "matmul",
     "matrix_power",
     "matrix_rank",
     "multi_dot",
@@ -678,6 +679,76 @@ def lstsq(a, b, rcond=None):
         raise TypeError("rcond must be integer, floating type, or None")
 
     return dpnp_lstsq(a, b, rcond=rcond)
+
+
+def matmul(x1, x2, /):
+    """
+    Computes the matrix product.
+
+    This function is Array API compatible, contrary to :obj:`dpnp.matmul`.
+
+    For full documentation refer to :obj:`numpy.linalg.matmul`.
+
+    Parameters
+    ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    x2 : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns the matrix product of the inputs.
+        This is a 0-d array only when both `x1`, `x2` are 1-d vectors.
+
+    See Also
+    --------
+    :obj:`dpnp.matmul` : similar function with support for more
+                    kwyeord arguments.
+
+    Examples
+    --------
+    For 2-D arrays it is the matrix product:
+
+    >>> import dpnp as np
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([[4, 1], [2, 2]])
+    >>> np.linalg.matmul(a, b)
+    array([[4, 1],
+           [2, 2]])
+
+    For 2-D mixed with 1-D, the result is the usual.
+
+    >>> a = np.array([[1, 0], [0, 1]])
+    >>> b = np.array([1, 2])
+    >>> np.linalg.matmul(a, b)
+    array([1, 2])
+    >>> np.linalg.matmul(b, a)
+    array([1, 2])
+
+    Broadcasting is conventional for stacks of arrays
+
+    >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
+    >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
+    >>> np.linalg.matmul(a,b).shape
+    (2, 2, 2)
+    >>> np.linalg.matmul(a, b)[0, 1, 1]
+    array(98)
+    >>> np.sum(a[0, 1, :] * b[0 , :, 1])
+    array(98)
+
+    Vector, vector returns the scalar inner product, but neither argument
+    is complex-conjugated:
+
+    >>> x1 = np.array([2j, 3j])
+    >>> x2 = np.array([2j, 3j])
+    >>> np.linalg.matmul(x1, x2)
+    array(-13+0j)
+
+    """
+
+    return dpnp.matmul(x1, x2)
 
 
 def matrix_power(a, n):
