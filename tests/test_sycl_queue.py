@@ -2461,6 +2461,18 @@ def test_astype(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
 
 
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_select(device):
+    condlist = [dpnp.array([True, False], device=device)]
+    choicelist = [dpnp.array([1, 2], device=device)]
+    res = dpnp.select(condlist, choicelist)
+    assert_sycl_queue_equal(res.sycl_queue, condlist[0].sycl_queue)
+
+
 @pytest.mark.parametrize("axis", [None, 0, -1])
 @pytest.mark.parametrize(
     "device",
@@ -2524,3 +2536,21 @@ def test_ediff1d(device, to_end, to_begin):
     res = dpnp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 
     assert_sycl_queue_equal(res.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device_0",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_1",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_ix(device_0, device_1):
+    x0 = dpnp.array([0, 1], device=device_0)
+    x1 = dpnp.array([2, 4], device=device_1)
+    ixgrid = dpnp.ix_(x0, x1)
+    assert_sycl_queue_equal(ixgrid[0].sycl_queue, x0.sycl_queue)
+    assert_sycl_queue_equal(ixgrid[1].sycl_queue, x1.sycl_queue)

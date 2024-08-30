@@ -38,7 +38,6 @@ and the rest of the library
 __all__ += [
     "dpnp_choose",
     "dpnp_putmask",
-    "dpnp_select",
 ]
 
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_choose_t)(c_dpctl.DPCTLSyclQueueRef,
@@ -102,20 +101,3 @@ cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.
     for i in range(arr.size):
         if mask_flatiter[i]:
             arr_flatiter[i] = values_flatiter[i % values_size]
-
-
-cpdef utils.dpnp_descriptor dpnp_select(list condlist, list choicelist, default):
-    cdef size_t size_ = condlist[0].size
-    cdef utils.dpnp_descriptor res_array = utils_py.create_output_descriptor_py(condlist[0].shape, choicelist[0].dtype, None)
-
-    pass_val = {a: default for a in range(size_)}
-    for i in range(len(condlist)):
-        for j in range(size_):
-            if (condlist[i])[j]:
-                res_array.get_pyobj()[j] = (choicelist[i])[j]
-                pass_val.pop(j)
-
-    for ind, val in pass_val.items():
-        res_array.get_pyobj()[ind] = val
-
-    return res_array
