@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+169.g5227757820a documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+172.ge4164891db documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=fec8ac44"></script>
+        <script src="../../_static/documentation_options.js?v=a46cb2ac"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+169.g5227757820a
+                0.16.0dev0+172.ge4164891db
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -150,6 +150,7 @@
     <span class="s2">&quot;broadcast_to&quot;</span><span class="p">,</span>
     <span class="s2">&quot;can_cast&quot;</span><span class="p">,</span>
     <span class="s2">&quot;column_stack&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;concat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copyto&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dsplit&quot;</span><span class="p">,</span>
@@ -162,6 +163,7 @@
     <span class="s2">&quot;hstack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;moveaxis&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ndim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;permute_dims&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ravel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;reshape&quot;</span><span class="p">,</span>
@@ -192,19 +194,6 @@
             <span class="s1">&#39;arrays to stack must be passed as a &quot;sequence&quot; type &#39;</span>
             <span class="s2">&quot;such as list or tuple.&quot;</span>
         <span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_is_sequence_of_ints</span><span class="p">(</span><span class="n">var</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if var is a tuple, list, or 1-D ndarray of integers.&quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
-        <span class="c1"># If it is a supported array, check it is 1D</span>
-        <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span>
-    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
-        <span class="k">return</span> <span class="kc">False</span>
-
-    <span class="c1"># Check if all elements are integers</span>
-    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">var</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_unique_1d</span><span class="p">(</span>
@@ -593,9 +582,12 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
     <span class="n">n_tot</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">indices_or_sections</span><span class="p">,</span> <span class="nb">str</span>
-    <span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># handle array case.</span>
+        <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">div_points</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">n_tot</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="c1"># indices_or_sections is a scalar, not an array.</span>
         <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n_sec</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number sections must be larger than 0.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
@@ -604,13 +596,6 @@
             <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">extras</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_sec</span> <span class="o">-</span> <span class="n">extras</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span><span class="p">]</span>
         <span class="p">)</span>
         <span class="n">div_points</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">section_sizes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
-    <span class="k">elif</span> <span class="n">_is_sequence_of_ints</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">):</span>
-        <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">div_points</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">n_tot</span><span class="p">]</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;indices_or_sections must be an integer or a sequence of integers.&quot;</span>
-        <span class="p">)</span>
 
     <span class="n">sub_arys</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">sary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -1154,11 +1139,13 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Join a sequence of arrays along an existing axis.</span>
 
+<span class="sd">    Note that :obj:`dpnp.concat` is an alias of :obj:`dpnp.concatenate`.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.concatenate`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    arrays : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    arrays : {Sequence of dpnp.ndarray or usm_ndarray}</span>
 <span class="sd">        The arrays must have the same shape, except in the dimension</span>
 <span class="sd">        corresponding to axis (the first, by default).</span>
 <span class="sd">    axis : int, optional</span>
@@ -1234,6 +1221,9 @@
         <span class="k">return</span> <span class="n">out</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
+
+
+<span class="n">concat</span> <span class="o">=</span> <span class="n">concatenate</span>  <span class="c1"># concat is an alias of concatenate</span>
 
 
 <div class="viewcode-block" id="copyto">
@@ -2505,9 +2495,7 @@
     <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;=</span> <span class="n">axis</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Axis exceeds ndim&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-        <span class="n">indices_or_sections</span><span class="p">,</span> <span class="nb">str</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">%</span> <span class="n">indices_or_sections</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;indices_or_sections must divide the size along the axes.</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -2804,6 +2792,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an array with axes transposed.</span>
 
+<span class="sd">    Note that :obj:`dpnp.permute_dims` is an alias of :obj:`dpnp.transpose`.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.transpose`.</span>
 
 <span class="sd">    Parameters</span>
@@ -2869,6 +2859,9 @@
         <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">array</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="o">*</span><span class="n">axes</span><span class="p">)</span></div>
 
+
+
+<span class="n">permute_dims</span> <span class="o">=</span> <span class="n">transpose</span>  <span class="c1"># permute_dims is an alias for transpose</span>
 
 
 <div class="viewcode-block" id="trim_zeros">
@@ -3014,7 +3007,7 @@
 <span class="sd">    (move the axis to the first dimension to keep the order of the other axes)</span>
 <span class="sd">    and then flattening the subarrays in C order.</span>
 <span class="sd">    For complex arrays all NaN values are considered equivalent (no matter</span>
-<span class="sd">    whether the NaN is in the real or imaginary part). As the representant for</span>
+<span class="sd">    whether the NaN is in the real or imaginary part). As the representative for</span>
 <span class="sd">    the returned array the smallest one in the lexicographical order is chosen.</span>
 <span class="sd">    For multi-dimensional inputs, `unique_inverse` is reshaped such that the</span>
 <span class="sd">    input can be reconstructed using</span>
