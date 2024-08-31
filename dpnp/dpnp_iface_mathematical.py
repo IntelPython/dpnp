@@ -111,6 +111,7 @@ __all__ = [
     "negative",
     "nextafter",
     "positive",
+    "pow",
     "power",
     "prod",
     "proj",
@@ -1738,7 +1739,7 @@ _FMAX_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise maxima.
 
-If one of the elements being compared is a NaN, then the non-nan element is
+If one of the elements being compared is a NaN, then the non-NaN element is
 returned. If both elements are NaNs then the first is returned. The latter
 distinction is important for complex NaNs, which are defined as at least one of
 the real or imaginary parts being a NaN. The net effect is that NaNs are
@@ -1786,7 +1787,7 @@ See Also
 
 Notes
 -----
-The fmax is equivalent to ``dpnp.where(x1 >= x2, x1, x2)`` when neither
+``fmax(x1, x2)`` is equivalent to ``dpnp.where(x1 >= x2, x1, x2)`` when neither
 `x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
 Examples
@@ -1823,7 +1824,7 @@ _FMIN_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise minima.
 
-If one of the elements being compared is a NaN, then the non-nan element is
+If one of the elements being compared is a NaN, then the non-NaN element is
 returned. If both elements are NaNs then the first is returned. The latter
 distinction is important for complex NaNs, which are defined as at least one of
 the real or imaginary parts being a NaN. The net effect is that NaNs are
@@ -1871,7 +1872,7 @@ See Also
 
 Notes
 -----
-The fmin is equivalent to ``dpnp.where(x1 <= x2, x1, x2)`` when neither
+``fmin(x1, x2)`` is equivalent to ``dpnp.where(x1 <= x2, x1, x2)`` when neither
 `x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
 Examples
@@ -2559,7 +2560,7 @@ multiply = DPNPBinaryFunc(
 def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     """
     Replace ``NaN`` with zero and infinity with large finite numbers (default
-    behaviour) or with the numbers defined by the user using the `nan`,
+    behavior) or with the numbers defined by the user using the `nan`,
     `posinf` and/or `neginf` keywords.
 
     If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value
@@ -2869,6 +2870,8 @@ _POWER_DOCSTRING = """
 Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
 
+Note that :obj:`dpnp.pow` is an alias of :obj:`dpnp.power`.
+
 For full documentation refer to :obj:`numpy.power`.
 
 Parameters
@@ -2951,6 +2954,8 @@ power = DPNPBinaryFunc(
     mkl_impl_fn="_pow",
     binary_inplace_fn=ti._pow_inplace,
 )
+
+pow = power  # pow is an alias for power
 
 
 def prod(

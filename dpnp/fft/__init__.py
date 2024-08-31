@@ -88,11 +88,6 @@ The inverse DFT is defined as
 It differs from the forward transform by the sign of the exponential
 argument and the default normalization by :math:`1/n`.
 
-Type Promotion
---------------
-`dpnp.fft` promotes ``float32`` and ``complex64`` arrays to ``float64`` and
-``complex128`` arrays respectively.
-
 Normalization
 -------------
 The argument ``norm`` indicates which direction of the pair of direct/inverse

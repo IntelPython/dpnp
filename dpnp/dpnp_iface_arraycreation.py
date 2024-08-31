@@ -913,9 +913,11 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         on the `k`-th diagonal.
         If `v` is a 2-D array and is an instance of
         {dpnp.ndarray, usm_ndarray}, then:
-          - If `device`, `usm_type`, and `sycl_queue` are set to their
-            default values, returns a read/write view of its k-th diagonal.
-          - Otherwise, returns a copy of its k-th diagonal.
+
+            - If `device`, `usm_type`, and `sycl_queue` are set to their
+              default values, returns a read/write view of its k-th diagonal.
+            - Otherwise, returns a copy of its k-th diagonal.
+
     k : int, optional
         Diagonal in question. Use k > 0 for diagonals above
         the main diagonal, and k < 0 for diagonals below the main diagonal.
