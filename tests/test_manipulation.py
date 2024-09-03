@@ -320,6 +320,26 @@ class TestSplit:
         a = xp.arange(9)
         assert_raises(IndexError, xp.split, a, 3, axis=1)
 
+    @pytest.mark.parametrize(
+        "indices",
+        [
+            2,
+            3.0,
+            dpnp.int64(5),
+            dpnp.int32(5),
+            dpnp.array(6),
+            numpy.array(7),
+            numpy.int32(5),
+        ],
+    )
+    def test_integer_split(self, indices):
+        a = numpy.arange(10)
+        a_dp = dpnp.array(a)
+
+        expected = numpy.array_split(a, indices)
+        result = dpnp.array_split(a_dp, indices)
+        _compare_results(result, expected)
+
 
 # array_split has more comprehensive test of splitting.
 # only do simple test on hsplit, vsplit, and dsplit

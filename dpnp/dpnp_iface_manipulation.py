@@ -465,6 +465,27 @@ def array_split(ary, indices_or_sections, axis=0):
 
     For full documentation refer to :obj:`numpy.array_split`.
 
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, and array length is l, it
+        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
+        ``l//n``.
+
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along `axis` the array is split.
+    axis : int, optional
+        The axis along which to split.
+        Default: ``0``.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
     See Also
     --------
     :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
@@ -497,7 +518,12 @@ def array_split(ary, indices_or_sections, axis=0):
         section_sizes = (
             [0] + extras * [n_each_sec + 1] + (n_sec - extras) * [n_each_sec]
         )
-        div_points = dpnp.array(section_sizes, dtype=dpnp.intp).cumsum()
+        div_points = dpnp.array(
+            section_sizes,
+            dtype=dpnp.intp,
+            usm_type=ary.usm_type,
+            sycl_queue=ary.sycl_queue,
+        ).cumsum()
 
     sub_arys = []
     sary = dpnp.swapaxes(ary, axis, 0)
@@ -1194,6 +1220,23 @@ def dsplit(ary, indices_or_sections):
 
     For full documentation refer to :obj:`numpy.dsplit`.
 
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along the third axis. If such a split is not
+        possible, an error is raised.
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along the third axis the array is split.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
     See Also
     --------
     :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
@@ -1569,6 +1612,25 @@ def hsplit(ary, indices_or_sections):
     ``axis=0``.
 
     For full documentation refer to :obj:`numpy.hsplit`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along the second axis except for 1-D arrays, where
+        it is split at the first axis. If such a split is not possible,
+        an error is raised.
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along the second axis the array is split. For 1-D arrays,
+        the entries indicate where along the first axis the array is split.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
 
     See Also
     --------
@@ -2310,13 +2372,15 @@ def split(ary, indices_or_sections, axis=0):
     if ary.ndim <= axis:
         raise IndexError("Axis exceeds ndim")
 
-    if dpnp.isscalar(indices_or_sections):
+    try:
+        len(indices_or_sections)
+    except TypeError:
         if ary.shape[axis] % indices_or_sections != 0:
             raise ValueError(
                 "indices_or_sections must divide the size along the axes.\n"
                 "If you want to split the array into non-equally-sized "
                 "arrays, use array_split instead."
-            )
+            ) from None
 
     return array_split(ary, indices_or_sections, axis)
 
@@ -2916,6 +2980,23 @@ def vsplit(ary, indices_or_sections):
     is always split along the first axis regardless of the array dimension.
 
     For full documentation refer to :obj:`numpy.vsplit`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along the first axis. If such a split is not
+        possible, an error is raised.
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along the first axis the array is split.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
 
     See Also
     --------
