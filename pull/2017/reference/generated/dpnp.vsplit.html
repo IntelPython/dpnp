@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.vsplit &mdash; Data Parallel Extension for NumPy 0.16.0dev0+172.ge4164891db documentation</title>
+  <title>dpnp.vsplit &mdash; Data Parallel Extension for NumPy 0.16.0dev0+176.g83fdf5ceb34 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a46cb2ac"></script>
+        <script src="../../_static/documentation_options.js?v=6abca183"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+172.ge4164891db
+                0.16.0dev0+176.g83fdf5ceb34
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -138,6 +138,25 @@
 is equivalent to <code class="docutils literal notranslate"><span class="pre">split</span></code> with <a href="#id1"><span class="problematic" id="id2">``</span></a>axis=0``(default), the array
 is always split along the first axis regardless of the array dimension.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vsplit.html#numpy.vsplit" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.vsplit</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ary</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be divided into sub-arrays.</p></li>
+<li><p><strong>indices_or_sections</strong> (<em>{int</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em>) -- If <cite>indices_or_sections</cite> is an integer, N, the array will be divided
+into N equal arrays along the first axis. If such a split is not
+possible, an error is raised.
+If <cite>indices_or_sections</cite> is a sequence of sorted integers, the entries
+indicate where along the first axis the array is split.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sub-arrays</strong> -- A list of sub arrays. Each array is a view of the corresponding input
+array.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)">list</a> of dpnp.ndarray</p>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">

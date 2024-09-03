@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+172.ge4164891db documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.16.0dev0+176.g83fdf5ceb34 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=a46cb2ac"></script>
+        <script src="../../_static/documentation_options.js?v=6abca183"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+172.ge4164891db
+                0.16.0dev0+176.g83fdf5ceb34
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -563,6 +563,27 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.array_split`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ary : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be divided into sub-arrays.</span>
+<span class="sd">    indices_or_sections : {int, sequence of ints}</span>
+<span class="sd">        If `indices_or_sections` is an integer, N, and array length is l, it</span>
+<span class="sd">        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size</span>
+<span class="sd">        ``l//n``.</span>
+
+<span class="sd">        If `indices_or_sections` is a sequence of sorted integers, the entries</span>
+<span class="sd">        indicate where along `axis` the array is split.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis along which to split.</span>
+<span class="sd">        Default: ``0``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sub-arrays : list of dpnp.ndarray</span>
+<span class="sd">        A list of sub arrays. Each array is a view of the corresponding input</span>
+<span class="sd">        array.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.</span>
@@ -595,7 +616,12 @@
         <span class="n">section_sizes</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">extras</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_sec</span> <span class="o">-</span> <span class="n">extras</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">div_points</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">section_sizes</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+        <span class="n">div_points</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="n">section_sizes</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
 
     <span class="n">sub_arys</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">sary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -1325,6 +1351,23 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.dsplit`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ary : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be divided into sub-arrays.</span>
+<span class="sd">    indices_or_sections : {int, sequence of ints}</span>
+<span class="sd">        If `indices_or_sections` is an integer, N, the array will be divided</span>
+<span class="sd">        into N equal arrays along the third axis. If such a split is not</span>
+<span class="sd">        possible, an error is raised.</span>
+<span class="sd">        If `indices_or_sections` is a sequence of sorted integers, the entries</span>
+<span class="sd">        indicate where along the third axis the array is split.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sub-arrays : list of dpnp.ndarray</span>
+<span class="sd">        A list of sub arrays. Each array is a view of the corresponding input</span>
+<span class="sd">        array.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.</span>
@@ -1718,6 +1761,25 @@
 <span class="sd">    ``axis=0``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.hsplit`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ary : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be divided into sub-arrays.</span>
+<span class="sd">    indices_or_sections : {int, sequence of ints}</span>
+<span class="sd">        If `indices_or_sections` is an integer, N, the array will be divided</span>
+<span class="sd">        into N equal arrays along the second axis except for 1-D arrays, where</span>
+<span class="sd">        it is split at the first axis. If such a split is not possible,</span>
+<span class="sd">        an error is raised.</span>
+<span class="sd">        If `indices_or_sections` is a sequence of sorted integers, the entries</span>
+<span class="sd">        indicate where along the second axis the array is split. For 1-D arrays,</span>
+<span class="sd">        the entries indicate where along the first axis the array is split.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sub-arrays : list of dpnp.ndarray</span>
+<span class="sd">        A list of sub arrays. Each array is a view of the corresponding input</span>
+<span class="sd">        array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -2495,13 +2557,15 @@
     <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;=</span> <span class="n">axis</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Axis exceeds ndim&quot;</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">len</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">%</span> <span class="n">indices_or_sections</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;indices_or_sections must divide the size along the axes.</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;If you want to split the array into non-equally-sized &quot;</span>
                 <span class="s2">&quot;arrays, use array_split instead.&quot;</span>
-            <span class="p">)</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">array_split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
@@ -3125,6 +3189,23 @@
 <span class="sd">    is always split along the first axis regardless of the array dimension.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.vsplit`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ary : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be divided into sub-arrays.</span>
+<span class="sd">    indices_or_sections : {int, sequence of ints}</span>
+<span class="sd">        If `indices_or_sections` is an integer, N, the array will be divided</span>
+<span class="sd">        into N equal arrays along the first axis. If such a split is not</span>
+<span class="sd">        possible, an error is raised.</span>
+<span class="sd">        If `indices_or_sections` is a sequence of sorted integers, the entries</span>
+<span class="sd">        indicate where along the first axis the array is split.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sub-arrays : list of dpnp.ndarray</span>
+<span class="sd">        A list of sub arrays. Each array is a view of the corresponding input</span>
+<span class="sd">        array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
