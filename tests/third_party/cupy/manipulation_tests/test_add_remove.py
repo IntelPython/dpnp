@@ -123,7 +123,6 @@ class TestAppend(unittest.TestCase):
         return xp.append(xp.array([]), xp.arange(10))
 
 
-@pytest.mark.skip("resize() is not implemented yet")
 class TestResize(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test(self, xp):
@@ -137,14 +136,17 @@ class TestResize(unittest.TestCase):
     def test_shape_int(self, xp):
         return xp.resize(xp.arange(10), 15)
 
+    @pytest.mark.skip("scalar is not supported.")
     @testing.numpy_cupy_array_equal()
     def test_scalar(self, xp):
         return xp.resize(2, (10, 10))
 
+    @pytest.mark.skip("scalar is not supported.")
     @testing.numpy_cupy_array_equal()
     def test_scalar_shape_int(self, xp):
         return xp.resize(2, 10)
 
+    @pytest.mark.skip("scalar is not supported.")
     @testing.numpy_cupy_array_equal()
     def test_typed_scalar(self, xp):
         return xp.resize(xp.float32(10.0), (10, 10))
@@ -153,7 +155,7 @@ class TestResize(unittest.TestCase):
     def test_zerodim(self, xp):
         return xp.resize(xp.array(0), (10, 10))
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_empty(self, xp):
         return xp.resize(xp.array([]), (10, 10))
 

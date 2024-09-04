@@ -1284,6 +1284,34 @@ def test_out_multi_dot(device):
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_resize(device):
+    dpnp_data = dpnp.arange(10, device=device)
+    result = dpnp.resize(dpnp_data, (2, 5))
+
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_rot90(device):
+    dpnp_data = dpnp.array([[1, 2], [3, 4]], device=device)
+    result = dpnp.rot90(dpnp_data)
+
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
 class TestFft:
     @pytest.mark.parametrize(
         "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]

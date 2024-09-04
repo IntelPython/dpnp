@@ -202,7 +202,6 @@ class TestFlip(unittest.TestCase):
                 xp.flip(x, -3)
 
 
-@pytest.mark.skip("`rot90` isn't supported yet")
 class TestRot90(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
