@@ -117,18 +117,6 @@ tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_bool_nd
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_empty_ndarray
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_list
 tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_ndarray
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_clip
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_nd_coords
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_raise
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_wrap
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_dims_overflow
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_float_dims
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_mode
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_multi_index_dtype
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_multi_index_shape
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_order
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_multi_index_broadcasting
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_2
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_3
@@ -138,10 +126,6 @@ tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_6
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_7
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_8
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_9
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_dtype
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_index
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_order
 
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
 tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
