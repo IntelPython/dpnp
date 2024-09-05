@@ -360,6 +360,15 @@ class TestConcatenate:
         with pytest.raises(TypeError):
             dpnp.concatenate([x], out=out, dtype="i4")
 
+    def test_alias(self):
+        a = dpnp.ones((5, 5))
+        b = dpnp.zeros((5, 5))
+
+        res1 = dpnp.concatenate((a, b))
+        res2 = dpnp.concat((a, b))
+
+        assert_array_equal(res1, res2)
+
 
 class TestDims:
     @pytest.mark.parametrize("dt", get_all_dtypes())

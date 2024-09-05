@@ -768,6 +768,29 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize(
+    "func,data1",
+    [
+        pytest.param("array_split", [1, 2, 3, 4]),
+        pytest.param("split", [1, 2, 3, 4]),
+        pytest.param("hsplit", [1, 2, 3, 4]),
+        pytest.param(
+            "dsplit",
+            [[[1, 2, 3, 4], [1, 2, 3, 4]], [[1, 2, 3, 4], [1, 2, 3, 4]]],
+        ),
+        pytest.param("vsplit", [[1, 2, 3, 4], [1, 2, 3, 4]]),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_split(func, data1, usm_type):
+    x = dp.array(data1, usm_type=usm_type)
+    y = getattr(dp, func)(x, 2)
+
+    assert x.usm_type == usm_type
+    assert y[0].usm_type == usm_type
+    assert y[1].usm_type == usm_type
+
+
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_append(usm_type_x, usm_type_y):
@@ -1435,6 +1458,15 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_select(usm_type_x, usm_type_y):
+    condlist = [dp.array([True, False], usm_type=usm_type_x)]
+    choicelist = [dp.array([1, 2], usm_type=usm_type_y)]
+    res = dp.select(condlist, choicelist)
+    assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize("axis", [None, 0, -1])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_unique(axis, usm_type):
@@ -1494,3 +1526,13 @@ def test_ravel_index(usm_type):
     x = dp.array([1, 0], usm_type=usm_type)
     result = dp.ravel_multi_index(x, (2, 2))
     assert result.usm_type == x.usm_type
+
+
+@pytest.mark.parametrize("usm_type_0", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_1", list_of_usm_types, ids=list_of_usm_types)
+def test_ix(usm_type_0, usm_type_1):
+    x0 = dp.array([0, 1], usm_type=usm_type_0)
+    x1 = dp.array([2, 4], usm_type=usm_type_1)
+    ixgrid = dp.ix_(x0, x1)
+    assert ixgrid[0].usm_type == x0.usm_type
+    assert ixgrid[1].usm_type == x1.usm_type

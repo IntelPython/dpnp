@@ -1951,7 +1951,6 @@ def test_concat_stack(func, data1, data2, device):
     result = getattr(dpnp, func)((x1, x2))
 
     assert_allclose(result, expected)
-
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
@@ -1973,6 +1972,36 @@ def test_append(device):
     assert_allclose(result, expected)
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func,data1",
+    [
+        pytest.param("array_split", [1, 2, 3, 4]),
+        pytest.param("split", [1, 2, 3, 4]),
+        pytest.param("hsplit", [1, 2, 3, 4]),
+        pytest.param(
+            "dsplit",
+            [[[1, 2, 3, 4], [1, 2, 3, 4]], [[1, 2, 3, 4], [1, 2, 3, 4]]],
+        ),
+        pytest.param("vsplit", [[1, 2, 3, 4], [1, 2, 3, 4]]),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_split(func, data1, device):
+    x1_orig = numpy.array(data1)
+    x1 = dpnp.array(data1, device=device)
+    expected = getattr(numpy, func)(x1_orig, 2)
+    result = getattr(dpnp, func)(x1, 2)
+
+    assert_allclose(result[0], expected[0])
+    assert_allclose(result[1], expected[1])
+    assert_sycl_queue_equal(result[0].sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result[1].sycl_queue, x1.sycl_queue)
 
 
 @pytest.mark.parametrize(
@@ -2461,6 +2490,18 @@ def test_astype(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
 
 
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_select(device):
+    condlist = [dpnp.array([True, False], device=device)]
+    choicelist = [dpnp.array([1, 2], device=device)]
+    res = dpnp.select(condlist, choicelist)
+    assert_sycl_queue_equal(res.sycl_queue, condlist[0].sycl_queue)
+
+
 @pytest.mark.parametrize("axis", [None, 0, -1])
 @pytest.mark.parametrize(
     "device",
@@ -2548,3 +2589,21 @@ def test_ravel_index(device):
     result = dpnp.ravel_multi_index(x, (2, 2))
     assert result.usm_type == x.usm_type
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device_0",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "device_1",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_ix(device_0, device_1):
+    x0 = dpnp.array([0, 1], device=device_0)
+    x1 = dpnp.array([2, 4], device=device_1)
+    ixgrid = dpnp.ix_(x0, x1)
+    assert_sycl_queue_equal(ixgrid[0].sycl_queue, x0.sycl_queue)
+    assert_sycl_queue_equal(ixgrid[1].sycl_queue, x1.sycl_queue)

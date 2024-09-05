@@ -60,10 +60,6 @@ tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::te
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_2
 tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_3
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_bool_ndarray
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_empty_ndarray
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_list
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_ndarray
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_1
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_2
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_3
@@ -73,19 +69,6 @@ tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_6
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_7
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_8
 tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_9
-
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_scalar
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_empty_lists
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_length_error
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
 
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises

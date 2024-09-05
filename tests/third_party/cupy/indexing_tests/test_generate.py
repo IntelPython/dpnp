@@ -30,6 +30,7 @@ class TestIndices(unittest.TestCase):
 
 
 class TestIX_(unittest.TestCase):
+    @pytest.mark.skip("List input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_ix_list(self, xp):
         return xp.ix_([0, 1], [2, 4])

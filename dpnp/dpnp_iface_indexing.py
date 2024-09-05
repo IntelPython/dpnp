@@ -49,13 +49,11 @@ import dpnp
 from .dpnp_algo import (
     dpnp_choose,
     dpnp_putmask,
-    dpnp_select,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     call_origin,
     get_usm_allocations,
-    use_origin_backend,
 )
 
 __all__ = [
@@ -67,6 +65,7 @@ __all__ = [
     "fill_diagonal",
     "flatnonzero",
     "indices",
+    "ix_",
     "mask_indices",
     "nonzero",
     "place",
@@ -558,7 +557,7 @@ def extract(condition, a):
     :obj:`dpnp.put` : Replaces specified elements of an array with given values.
     :obj:`dpnp.copyto` : Copies values from one array to another, broadcasting
                          as necessary.
-    :obj:`dpnp.compress` : eturn selected slices of an array along given axis.
+    :obj:`dpnp.compress` : Return selected slices of an array along given axis.
     :obj:`dpnp.place` : Change elements of an array based on conditional and
                         input values.
 
@@ -925,6 +924,86 @@ def indices(
         else:
             res[i] = idx
     return res
+
+
+def ix_(*args):
+    """Construct an open mesh from multiple sequences.
+
+    This function takes N 1-D sequences and returns N outputs with N
+    dimensions each, such that the shape is 1 in all but one dimension
+    and the dimension with the non-unit shape value cycles through all
+    N dimensions.
+
+    Using  :obj:`dpnp.ix_` one can quickly construct index arrays that will
+    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
+    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.
+
+    Parameters
+    ----------
+    x1, x2,..., xn : {dpnp.ndarray, usm_ndarray}
+        1-D sequences. Each sequence should be of integer or boolean type.
+        Boolean sequences will be interpreted as boolean masks for the
+        corresponding dimension (equivalent to passing in
+        ``dpnp.nonzero(boolean_sequence)``).
+
+    Returns
+    -------
+    out : tuple of dpnp.ndarray
+        N arrays with N dimensions each, with N the number of input sequences.
+        Together these arrays form an open mesh.
+
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
+    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.
+    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from
+                           coordinate vectors.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(10).reshape(2, 5)
+    >>> a
+    array([[0, 1, 2, 3, 4],
+           [5, 6, 7, 8, 9]])
+    >>> x1 = np.array([0, 1])
+    >>> x2 = np.array([2, 4])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> ixgrid
+    (array([[0],
+           [1]]), array([[2, 4]]))
+    >>> ixgrid[0].shape, ixgrid[1].shape
+    ((2, 1), (1, 2))
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+
+    >>> x1 = np.array([True, True])
+    >>> x2 = np.array([2, 4])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+    >>> x1 = np.array([True, True])
+    >>> x2 = np.array([False, False, True, False, True])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+
+    """
+
+    dpnp.check_supported_arrays_type(*args)
+    out = []
+    nd = len(args)
+    for k, new in enumerate(args):
+        if new.ndim != 1:
+            raise ValueError("Cross index must be 1 dimensional")
+        if dpnp.issubdtype(new.dtype, dpnp.bool):
+            (new,) = dpnp.nonzero(new)
+        new = new.reshape((1,) * k + (new.size,) + (1,) * (nd - k - 1))
+        out.append(new)
+    return tuple(out)
 
 
 def mask_indices(
@@ -1493,31 +1572,114 @@ def select(condlist, choicelist, default=0):
 
     For full documentation refer to :obj:`numpy.select`.
 
-    Limitations
-    -----------
-    Arrays of input lists are supported as :obj:`dpnp.ndarray`.
-    Parameter `default` is supported only with default values.
+    Parameters
+    ----------
+    condlist : list of bool dpnp.ndarray or usm_ndarray
+        The list of conditions which determine from which array in `choicelist`
+        the output elements are taken. When multiple conditions are satisfied,
+        the first one encountered in `condlist` is used.
+    choicelist : list of dpnp.ndarray or usm_ndarray
+        The list of arrays from which the output elements are taken. It has
+        to be of the same length as `condlist`.
+    default : {scalar, dpnp.ndarray, usm_ndarray}, optional
+        The element inserted in `output` when all conditions evaluate to
+        ``False``. Default: ``0``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The output at position m is the m-th element of the array in
+        `choicelist` where the m-th element of the corresponding array in
+        `condlist` is ``True``.
+
+    See Also
+    --------
+    :obj:`dpnp.where` : Return elements from one of two arrays depending on
+                       condition.
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.choose` : Construct an array from an index array and a set of
+                         arrays to choose from.
+    :obj:`dpnp.compress` : Return selected slices of an array along given axis.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagonal` : Return specified diagonals.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Beginning with an array of integers from 0 to 5 (inclusive),
+    elements less than ``3`` are negated, elements greater than ``3``
+    are squared, and elements not meeting either of these conditions
+    (exactly ``3``) are replaced with a `default` value of ``42``.
+
+    >>> x = np.arange(6)
+    >>> condlist = [x<3, x>3]
+    >>> choicelist = [x, x**2]
+    >>> np.select(condlist, choicelist, 42)
+    array([ 0,  1,  2, 42, 16, 25])
+
+    When multiple conditions are satisfied, the first one encountered in
+    `condlist` is used.
+
+    >>> condlist = [x<=4, x>3]
+    >>> choicelist = [x, x**2]
+    >>> np.select(condlist, choicelist, 55)
+    array([ 0,  1,  2,  3,  4, 25])
+
     """
 
-    if not use_origin_backend():
-        if not isinstance(condlist, list):
-            pass
-        elif not isinstance(choicelist, list):
-            pass
-        elif len(condlist) != len(choicelist):
-            pass
-        else:
-            val = True
-            size_ = condlist[0].size
-            for cond, choice in zip(condlist, choicelist):
-                if cond.size != size_ or choice.size != size_:
-                    val = False
-            if not val:
-                pass
-            else:
-                return dpnp_select(condlist, choicelist, default).get_pyobj()
+    if len(condlist) != len(choicelist):
+        raise ValueError(
+            "list of cases must be same length as list of conditions"
+        )
 
-    return call_origin(numpy.select, condlist, choicelist, default)
+    if len(condlist) == 0:
+        raise ValueError("select with an empty condition list is not possible")
+
+    dpnp.check_supported_arrays_type(*condlist)
+    dpnp.check_supported_arrays_type(*choicelist)
+
+    if not dpnp.isscalar(default) and not (
+        dpnp.is_supported_array_type(default) and default.ndim == 0
+    ):
+        raise TypeError(
+            "A default value must be any of scalar or 0-d supported array type"
+        )
+
+    dtype = dpnp.result_type(*choicelist, default)
+
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations(
+        condlist + choicelist + [default]
+    )
+
+    for i, cond in enumerate(condlist):
+        if not dpnp.issubdtype(cond, dpnp.bool):
+            raise TypeError(
+                f"invalid entry {i} in condlist: should be boolean ndarray"
+            )
+
+    # Convert conditions to arrays and broadcast conditions and choices
+    # as the shape is needed for the result
+    condlist = dpnp.broadcast_arrays(*condlist)
+    choicelist = dpnp.broadcast_arrays(*choicelist)
+
+    result_shape = dpnp.broadcast_arrays(condlist[0], choicelist[0])[0].shape
+
+    result = dpnp.full(
+        result_shape,
+        default,
+        dtype=dtype,
+        usm_type=usm_type_alloc,
+        sycl_queue=sycl_queue_alloc,
+    )
+
+    # Do in reverse order since the first choice should take precedence.
+    choicelist = choicelist[::-1]
+    condlist = condlist[::-1]
+    for choice, cond in zip(choicelist, condlist):
+        dpnp.where(cond, choice, result, out=result)
+
+    return result
 
 
 # pylint: disable=redefined-outer-name
