@@ -1951,7 +1951,6 @@ def test_concat_stack(func, data1, data2, device):
     result = getattr(dpnp, func)((x1, x2))
 
     assert_allclose(result, expected)
-
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
@@ -1973,6 +1972,36 @@ def test_append(device):
     assert_allclose(result, expected)
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "func,data1",
+    [
+        pytest.param("array_split", [1, 2, 3, 4]),
+        pytest.param("split", [1, 2, 3, 4]),
+        pytest.param("hsplit", [1, 2, 3, 4]),
+        pytest.param(
+            "dsplit",
+            [[[1, 2, 3, 4], [1, 2, 3, 4]], [[1, 2, 3, 4], [1, 2, 3, 4]]],
+        ),
+        pytest.param("vsplit", [[1, 2, 3, 4], [1, 2, 3, 4]]),
+    ],
+)
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_split(func, data1, device):
+    x1_orig = numpy.array(data1)
+    x1 = dpnp.array(data1, device=device)
+    expected = getattr(numpy, func)(x1_orig, 2)
+    result = getattr(dpnp, func)(x1, 2)
+
+    assert_allclose(result[0], expected[0])
+    assert_allclose(result[1], expected[1])
+    assert_sycl_queue_equal(result[0].sycl_queue, x1.sycl_queue)
+    assert_sycl_queue_equal(result[1].sycl_queue, x1.sycl_queue)
 
 
 @pytest.mark.parametrize(

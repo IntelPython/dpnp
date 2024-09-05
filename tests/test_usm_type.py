@@ -768,6 +768,29 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize(
+    "func,data1",
+    [
+        pytest.param("array_split", [1, 2, 3, 4]),
+        pytest.param("split", [1, 2, 3, 4]),
+        pytest.param("hsplit", [1, 2, 3, 4]),
+        pytest.param(
+            "dsplit",
+            [[[1, 2, 3, 4], [1, 2, 3, 4]], [[1, 2, 3, 4], [1, 2, 3, 4]]],
+        ),
+        pytest.param("vsplit", [[1, 2, 3, 4], [1, 2, 3, 4]]),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_split(func, data1, usm_type):
+    x = dp.array(data1, usm_type=usm_type)
+    y = getattr(dp, func)(x, 2)
+
+    assert x.usm_type == usm_type
+    assert y[0].usm_type == usm_type
+    assert y[1].usm_type == usm_type
+
+
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_append(usm_type_x, usm_type_y):
