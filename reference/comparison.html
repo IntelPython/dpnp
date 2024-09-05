@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparison Table NumPy/ DPNP/ CuPy &mdash; Data Parallel Extension for NumPy 0.16.0dev0+173.ga337c9e3936 documentation</title>
+  <title>Comparison Table NumPy/ DPNP/ CuPy &mdash; Data Parallel Extension for NumPy 0.16.0dev0+174.g606b82c332c documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../_static/jquery.js?v=5d32c60e"></script>
         <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../_static/documentation_options.js?v=9043d50b"></script>
+        <script src="../_static/documentation_options.js?v=7b6d4204"></script>
         <script src="../_static/doctools.js?v=9a2dae69"></script>
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+173.ga337c9e3936
+                0.16.0dev0+174.g606b82c332c
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -112,7 +112,7 @@
 <h1>Comparison Table NumPy/ DPNP/ CuPy<a class="headerlink" href="#comparison-table-numpy-dpnp-cupy" title="Link to this heading"></a></h1>
 <p>Here is a list of NumPy and CuPy APIs and its corresponding DPNP implementations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-</span></code> in DPNP column means that DPNP implementation is not provided yet.</p>
-<p><strong>NumPy(v1.23.5) / DPNP(v0.16.0dev0+173.ga337c9e3936) / CuPy(v9.6.0) APIs</strong></p>
+<p><strong>NumPy(v1.23.5) / DPNP(v0.16.0dev0+174.g606b82c332c) / CuPy(v9.6.0) APIs</strong></p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -124,7 +124,7 @@
 </tr>
 <tr class="row-even"><td><p>Module-Level</p></td>
 <td><p>397</p></td>
-<td><p>257</p></td>
+<td><p>262</p></td>
 <td><p>299</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi-Dimensional Array</p></td>
@@ -149,7 +149,7 @@
 </tr>
 <tr class="row-odd"><td><p>Total</p></td>
 <td><p>542</p></td>
-<td><p>382</p></td>
+<td><p>387</p></td>
 <td><p>429</p></td>
 </tr>
 </tbody>
@@ -306,7 +306,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.array_repr</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array_split.html#numpy.array_split" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array_split</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.array_split.html#dpnp.array_split" title="dpnp.array_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array_split</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.array_split</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array_str.html#numpy.array_str" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.array_str</span></code></a></p></td>
@@ -602,7 +602,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.dot</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dsplit.html#numpy.dsplit" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dsplit</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.dsplit.html#dpnp.dsplit" title="dpnp.dsplit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dsplit</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.dsplit</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dstack.html#numpy.dstack" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dstack</span></code></a></p></td>
@@ -850,7 +850,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.histogramdd</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.hsplit.html#numpy.hsplit" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.hsplit</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.hsplit.html#dpnp.hsplit" title="dpnp.hsplit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.hsplit</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.hsplit</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.hstack.html#numpy.hstack" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.hstack</span></code></a></p></td>
@@ -1582,7 +1582,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.split.html#numpy.split" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.split</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.split.html#dpnp.split" title="dpnp.split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.split</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.split</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sqrt.html#numpy.sqrt" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.sqrt</span></code></a></p></td>
@@ -1730,7 +1730,7 @@
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.vdot</span></code></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vsplit.html#numpy.vsplit" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.vsplit</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.vsplit.html#dpnp.vsplit" title="dpnp.vsplit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vsplit</span></code></a></p></td>
 <td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.vsplit</span></code></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vstack.html#numpy.vstack" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.vstack</span></code></a></p></td>
@@ -1758,7 +1758,7 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>397</p></td>
-<td><p>257</p></td>
+<td><p>262</p></td>
 <td><p>299</p></td>
 </tr>
 </tbody>
