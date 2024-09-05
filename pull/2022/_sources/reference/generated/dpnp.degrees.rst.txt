@@ -1,0 +1,6 @@
+﻿dpnp.degrees
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: degrees
