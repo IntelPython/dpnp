@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.unravel_index &mdash; Data Parallel Extension for NumPy 0.16.0dev0+177.g71a33d0959c documentation</title>
+  <title>dpnp.unravel_index &mdash; Data Parallel Extension for NumPy 0.16.0dev0+181.g4c3c994f7c2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3deeace5"></script>
+        <script src="../../_static/documentation_options.js?v=294065b9"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+177.g71a33d0959c
+                0.16.0dev0+181.g4c3c994f7c2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,8 +133,8 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>indices</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- An integer array whose elements are indices into the flattened version
-of an array of dimensions shape.</p></li>
-<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) -- The shape of the array to use for unraveling indices.</p></li>
+of an array of dimensions <code class="docutils literal notranslate"><span class="pre">shape</span></code>.</p></li>
+<li><p><strong>shape</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><em>ints</em>) -- The shape of the array to use for unraveling <code class="docutils literal notranslate"><span class="pre">indices</span></code>.</p></li>
 <li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;}</em><em>, </em><em>optional</em>) -- Determines whether the indices should be viewed as indexing in
 row-major (C-style) or column-major (Fortran-style) order.
 Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p></li>
@@ -156,12 +156,12 @@ Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&qu
 </div>
 <p class="rubric">Examples</p>
 <p>import dpnp as np
-&gt;&gt;&gt; np.unravel_index([22, 41, 37], (7,6))
+&gt;&gt;&gt; np.unravel_index(np.array([22, 41, 37]), (7, 6))
 (array([3, 6, 6]), array([4, 5, 1]))
-&gt;&gt;&gt; np.unravel_index([31, 41, 13], (7,6), order='F')
+&gt;&gt;&gt; np.unravel_index(np.array([31, 41, 13]), (7, 6), order=&quot;F&quot;)
 (array([3, 6, 6]), array([4, 5, 1]))</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="mi">1621</span><span class="p">,</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
-<span class="go">(3, 1, 4, 1)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">1621</span><span class="p">),</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">))</span>
+<span class="go">(array(3), array(1), array(4), array(1))</span>
 </pre></div>
 </div>
 </dd></dl>

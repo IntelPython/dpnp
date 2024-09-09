@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+177.g71a33d0959c documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.16.0dev0+181.g4c3c994f7c2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=3deeace5"></script>
+        <script src="../../_static/documentation_options.js?v=294065b9"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+177.g71a33d0959c
+                0.16.0dev0+181.g4c3c994f7c2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1606,19 +1606,21 @@
 <span class="sd">    ----------</span>
 <span class="sd">    multi_index : tuple of {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        A tuple of integer arrays, one array for each dimension.</span>
-<span class="sd">    dims : tuple of ints</span>
+<span class="sd">    dims : tuple or list of ints</span>
 <span class="sd">        The shape of array into which the indices from ``multi_index`` apply.</span>
 <span class="sd">    mode : {&quot;raise&quot;, &quot;wrap&quot; or &quot;clip&#39;}, optional</span>
-<span class="sd">        Specifies how out-of-bounds indices are handled.  Can specify either</span>
+<span class="sd">        Specifies how out-of-bounds indices are handled. Can specify either</span>
 <span class="sd">        one mode or a tuple of modes, one mode per index:</span>
-<span class="sd">            - &quot;raise&quot; -- raise an error (default)</span>
+<span class="sd">            - &quot;raise&quot; -- raise an error</span>
 <span class="sd">            - &quot;wrap&quot; -- wrap around</span>
 <span class="sd">            - &quot;clip&quot; -- clip to the range</span>
 <span class="sd">            In &quot;clip&quot; mode, a negative index which would normally wrap will</span>
 <span class="sd">            clip to 0 instead.</span>
+<span class="sd">        Default: ``&quot;raise&quot;``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Determines whether the multi-index should be viewed as indexing in</span>
 <span class="sd">        row-major (C-style) or column-major (Fortran-style) order.</span>
+<span class="sd">        Default: ``&quot;C&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1634,17 +1636,18 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; arr = np.array([[3,6,6],[4,5,1]])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (7,6))</span>
+<span class="sd">    &gt;&gt;&gt; arr = np.array([[3, 6, 6], [4, 5, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (7, 6))</span>
 <span class="sd">    array([22, 41, 37])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (7,6), order=&quot;F&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (7, 6), order=&quot;F&quot;)</span>
 <span class="sd">    array([31, 41, 13])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4,6), mode=&quot;clip&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4, 6), mode=&quot;clip&quot;)</span>
 <span class="sd">    array([22, 23, 19])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4,4), mode=(&quot;clip&quot;,&quot;wrap&quot;))</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (4, 4), mode=(&quot;clip&quot;, &quot;wrap&quot;))</span>
 <span class="sd">    array([12, 13, 13])</span>
-<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index((3,1,4,1), (6,7,8,9))</span>
-<span class="sd">    1621</span>
+<span class="sd">    &gt;&gt;&gt; arr = np.array([3, 1, 4, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.ravel_multi_index(arr, (6, 7, 8, 9))</span>
+<span class="sd">    array(1621)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1657,11 +1660,8 @@
     <span class="n">s</span> <span class="o">=</span> <span class="mi">1</span>
     <span class="n">ravel_strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ndim</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">multi_index</span><span class="p">):</span>
-        <span class="n">usm_type_alloc</span> <span class="o">=</span> <span class="n">multi_index</span><span class="o">.</span><span class="n">usm_type</span>
-        <span class="n">sycl_queue_alloc</span> <span class="o">=</span> <span class="n">multi_index</span><span class="o">.</span><span class="n">sycl_queue</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">usm_type_alloc</span><span class="p">,</span> <span class="n">sycl_queue_alloc</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">(</span><span class="n">multi_index</span><span class="p">)</span>
+    <span class="n">multi_index</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">multi_index</span><span class="p">)</span>
+    <span class="n">usm_type_alloc</span><span class="p">,</span> <span class="n">sycl_queue_alloc</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">(</span><span class="n">multi_index</span><span class="p">)</span>
 
     <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span> <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">order</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;C&quot;</span><span class="p">:</span>
@@ -1681,7 +1681,6 @@
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue_alloc</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="k">for</span> <span class="n">d</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="n">_mode</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dims</span><span class="p">,</span> <span class="n">ravel_strides</span><span class="p">,</span> <span class="n">multi_index</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
-        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">idx</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;multi_index entries could not be cast from dtype(</span><span class="si">{</span><span class="n">idx</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">)&quot;</span>
@@ -2485,9 +2484,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    indices : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        An integer array whose elements are indices into the flattened version</span>
-<span class="sd">        of an array of dimensions shape.</span>
-<span class="sd">    shape : tuple of ints</span>
-<span class="sd">        The shape of the array to use for unraveling indices.</span>
+<span class="sd">        of an array of dimensions ``shape``.</span>
+<span class="sd">    shape : tuple or list of ints</span>
+<span class="sd">        The shape of the array to use for unraveling ``indices``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Determines whether the indices should be viewed as indexing in</span>
 <span class="sd">        row-major (C-style) or column-major (Fortran-style) order.</span>
@@ -2507,13 +2506,13 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.unravel_index([22, 41, 37], (7,6))</span>
+<span class="sd">    &gt;&gt;&gt; np.unravel_index(np.array([22, 41, 37]), (7, 6))</span>
 <span class="sd">    (array([3, 6, 6]), array([4, 5, 1]))</span>
-<span class="sd">    &gt;&gt;&gt; np.unravel_index([31, 41, 13], (7,6), order=&#39;F&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.unravel_index(np.array([31, 41, 13]), (7, 6), order=&quot;F&quot;)</span>
 <span class="sd">    (array([3, 6, 6]), array([4, 5, 1]))</span>
 
-<span class="sd">    &gt;&gt;&gt; np.unravel_index(1621, (6,7,8,9))</span>
-<span class="sd">    (3, 1, 4, 1)</span>
+<span class="sd">    &gt;&gt;&gt; np.unravel_index(np.array(1621), (6, 7, 8, 9))</span>
+<span class="sd">    (array(3), array(1), array(4), array(1))</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
