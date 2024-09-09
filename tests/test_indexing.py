@@ -1134,8 +1134,6 @@ class TestUnravelIndex:
         assert_raises(ValueError, dpnp.unravel_index, dpnp.array(-1), (2, 2))
         assert_raises(TypeError, dpnp.unravel_index, dpnp.array(0.5), (2, 2))
         assert_raises(ValueError, dpnp.unravel_index, dpnp.array(4), (2, 2))
-
-    def test_empty_indices_error(self):
         assert_raises(TypeError, dpnp.unravel_index, dpnp.array([]), (10, 3, 5))
 
     def test_empty_indices(self):

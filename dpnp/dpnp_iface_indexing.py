@@ -1469,19 +1469,21 @@ def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
     ----------
     multi_index : tuple of {dpnp.ndarray, usm_ndarray}
         A tuple of integer arrays, one array for each dimension.
-    dims : tuple of ints
+    dims : tuple or list of ints
         The shape of array into which the indices from ``multi_index`` apply.
     mode : {"raise", "wrap" or "clip'}, optional
-        Specifies how out-of-bounds indices are handled.  Can specify either
+        Specifies how out-of-bounds indices are handled. Can specify either
         one mode or a tuple of modes, one mode per index:
-            - "raise" -- raise an error (default)
+            - "raise" -- raise an error
             - "wrap" -- wrap around
             - "clip" -- clip to the range
             In "clip" mode, a negative index which would normally wrap will
             clip to 0 instead.
+        Default: ``"raise"``.
     order : {None, "C", "F"}, optional
         Determines whether the multi-index should be viewed as indexing in
         row-major (C-style) or column-major (Fortran-style) order.
+        Default: ``"C"``.
 
     Returns
     -------
@@ -1497,17 +1499,18 @@ def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
     Examples
     --------
     >>> import dpnp as np
-    >>> arr = np.array([[3,6,6],[4,5,1]])
-    >>> np.ravel_multi_index(arr, (7,6))
+    >>> arr = np.array([[3, 6, 6], [4, 5, 1]])
+    >>> np.ravel_multi_index(arr, (7, 6))
     array([22, 41, 37])
-    >>> np.ravel_multi_index(arr, (7,6), order="F")
+    >>> np.ravel_multi_index(arr, (7, 6), order="F")
     array([31, 41, 13])
-    >>> np.ravel_multi_index(arr, (4,6), mode="clip")
+    >>> np.ravel_multi_index(arr, (4, 6), mode="clip")
     array([22, 23, 19])
-    >>> np.ravel_multi_index(arr, (4,4), mode=("clip","wrap"))
+    >>> np.ravel_multi_index(arr, (4, 4), mode=("clip", "wrap"))
     array([12, 13, 13])
-    >>> np.ravel_multi_index((3,1,4,1), (6,7,8,9))
-    1621
+    >>> arr = np.array([3, 1, 4, 1])
+    >>> np.ravel_multi_index(arr, (6, 7, 8, 9))
+    array(1621)
 
     """
 
@@ -1520,11 +1523,8 @@ def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
     s = 1
     ravel_strides = [1] * ndim
 
-    if dpnp.is_supported_array_type(multi_index):
-        usm_type_alloc = multi_index.usm_type
-        sycl_queue_alloc = multi_index.sycl_queue
-    else:
-        usm_type_alloc, sycl_queue_alloc = get_usm_allocations(multi_index)
+    multi_index = tuple(multi_index)
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations(multi_index)
 
     order = "C" if order is None else order.upper()
     if order == "C":
@@ -1544,7 +1544,6 @@ def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
         sycl_queue=sycl_queue_alloc,
     )
     for d, stride, idx, _mode in zip(dims, ravel_strides, multi_index, mode):
-        dpnp.check_supported_arrays_type(idx)
         if not dpnp.can_cast(idx, dpnp.int64, "same_kind"):
             raise TypeError(
                 f"multi_index entries could not be cast from dtype({idx.dtype})"
@@ -2324,9 +2323,9 @@ def unravel_index(indices, shape, order="C"):
     ----------
     indices : {dpnp.ndarray, usm_ndarray}
         An integer array whose elements are indices into the flattened version
-        of an array of dimensions shape.
-    shape : tuple of ints
-        The shape of the array to use for unraveling indices.
+        of an array of dimensions ``shape``.
+    shape : tuple or list of ints
+        The shape of the array to use for unraveling ``indices``.
     order : {None, "C", "F"}, optional
         Determines whether the indices should be viewed as indexing in
         row-major (C-style) or column-major (Fortran-style) order.
@@ -2346,13 +2345,13 @@ def unravel_index(indices, shape, order="C"):
     Examples
     --------
     import dpnp as np
-    >>> np.unravel_index([22, 41, 37], (7,6))
+    >>> np.unravel_index(np.array([22, 41, 37]), (7, 6))
     (array([3, 6, 6]), array([4, 5, 1]))
-    >>> np.unravel_index([31, 41, 13], (7,6), order='F')
+    >>> np.unravel_index(np.array([31, 41, 13]), (7, 6), order="F")
     (array([3, 6, 6]), array([4, 5, 1]))
 
-    >>> np.unravel_index(1621, (6,7,8,9))
-    (3, 1, 4, 1)
+    >>> np.unravel_index(np.array(1621), (6, 7, 8, 9))
+    (array(3), array(1), array(4), array(1))
 
     """
 

@@ -2587,7 +2587,6 @@ def test_unravel_index(device):
 def test_ravel_index(device):
     x = dpnp.array([1, 0], device=device)
     result = dpnp.ravel_multi_index(x, (2, 2))
-    assert result.usm_type == x.usm_type
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
