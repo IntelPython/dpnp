@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.16.0] - 09/DD/2024
 
-This release completes implementation of `dpnp.fft` module and adds array manipulation, indexing and elementwise routines. Moreover, it adds support to build `dpnp` for Nvidia GPUs is added.
+This release reaches an important milestone by making offloading fully asynchronous. Calls to `dpnp` submit tasks for execution to DPC++ runtime and return without waiting for execution of these tasks to finish. The sequential semantics a user comes to expect from execution of Python script is preserved though.
+In addition, this release completes implementation of `dpnp.fft` module and adds several new array manipulation, indexing and elementwise routines. Moreover, it adds support to build `dpnp` for Nvidia GPUs.
 
 ### Added
 
