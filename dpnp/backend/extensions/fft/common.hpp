@@ -111,8 +111,12 @@ public:
         const typename valT::value_type dim = get_dim();
 
         valT fwd_strides(dim + 1);
+#if COMPILER_VERSION_FLAG
+        descr_.get_value(mkl_dft::config_param::FWD_STRIDES, &fwd_strides);
+#else
         descr_.get_value(mkl_dft::config_param::FWD_STRIDES,
                          fwd_strides.data());
+#endif
         return fwd_strides;
     }
 
@@ -126,6 +130,11 @@ public:
                 "Strides length does not match descriptor's dimension");
         }
         descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());
+#if COMPILER_VERSION_FLAG
+        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides);
+#else
+        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());
+#endif
     }
 
     // config_param::BWD_STRIDES
@@ -135,8 +144,12 @@ public:
         const typename valT::value_type dim = get_dim();
 
         valT bwd_strides(dim + 1);
+#if COMPILER_COMPILER_VERSION_FLAG
+        descr_.get_value(mkl_dft::config_param::BWD_STRIDES, &bwd_strides);
+#else
         descr_.get_value(mkl_dft::config_param::BWD_STRIDES,
                          bwd_strides.data());
+#endif
         return bwd_strides;
     }
 
@@ -149,7 +162,11 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
+#if COMPILER_VERSION_FLAG
+        descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides);
+#else
         descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides.data());
+#endif
     }
 
     // config_param::FWD_DISTANCE
@@ -187,7 +204,7 @@ public:
     // config_param::PLACEMENT
     bool get_in_place()
     {
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_FLAG
         mkl_dft::config_value placement;
         descr_.get_value(mkl_dft::config_param::PLACEMENT, &placement);
         return (placement == mkl_dft::config_value::INPLACE);
@@ -201,7 +218,7 @@ public:
 
     void set_in_place(const bool &in_place_request)
     {
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_FLAG
         descr_.set_value(mkl_dft::config_param::PLACEMENT,
                          (in_place_request)
                              ? mkl_dft::config_value::INPLACE
@@ -227,7 +244,7 @@ public:
     // config_param::COMMIT_STATUS
     bool is_committed()
     {
-#if defined(USE_ONEMKL_INTERFACES)
+#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_FLAG
         mkl_dft::config_value committed;
         descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &committed);
         return (committed == mkl_dft::config_value::COMMITTED);

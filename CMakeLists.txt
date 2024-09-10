@@ -46,6 +46,11 @@ else()
     find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 endif()
 
+if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "2025.0.0")
+    add_definitions(-DCOMPILER_VERSION_FLAG=1)
+else()
+    add_definitions(-DCOMPILER_VERSION_FLAG=0)
+endif()
 
 include(GNUInstallDirs)
 
