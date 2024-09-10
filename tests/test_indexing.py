@@ -1037,6 +1037,112 @@ def test_fill_diagonal_error():
         dpnp.fill_diagonal(arr, 5)
 
 
+class TestRavelIndex:
+    def test_basic(self):
+        expected = numpy.ravel_multi_index(numpy.array([1, 0]), (2, 2))
+        result = dpnp.ravel_multi_index(dpnp.array([1, 0]), (2, 2))
+        assert_equal(expected, result)
+
+        x_np = numpy.array([[3, 6, 6], [4, 5, 1]])
+        x_dp = dpnp.array([[3, 6, 6], [4, 5, 1]])
+
+        expected = numpy.ravel_multi_index(x_np, (7, 6))
+        result = dpnp.ravel_multi_index(x_dp, (7, 6))
+        assert_equal(expected, result)
+
+    def test_mode(self):
+        x_np = numpy.array([[3, 6, 6], [4, 5, 1]])
+        x_dp = dpnp.array([[3, 6, 6], [4, 5, 1]])
+
+        expected = numpy.ravel_multi_index(x_np, (4, 6), mode="clip")
+        result = dpnp.ravel_multi_index(x_dp, (4, 6), mode="clip")
+        assert_equal(expected, result)
+
+        expected = numpy.ravel_multi_index(x_np, (4, 4), mode=("clip", "wrap"))
+        result = dpnp.ravel_multi_index(x_dp, (4, 4), mode=("clip", "wrap"))
+        assert_equal(expected, result)
+
+    def test_order_f(self):
+        x_np = numpy.array([[3, 6, 6], [4, 5, 1]])
+        x_dp = dpnp.array([[3, 6, 6], [4, 5, 1]])
+        expected = numpy.ravel_multi_index(x_np, (7, 6), order="F")
+        result = dpnp.ravel_multi_index(x_dp, (7, 6), order="F")
+        assert_equal(expected, result)
+
+    def test_error(self):
+        assert_raises(
+            ValueError, dpnp.ravel_multi_index, dpnp.array([2, 1]), (2, 2)
+        )
+        assert_raises(
+            ValueError, dpnp.ravel_multi_index, dpnp.array([0, -3]), (2, 2)
+        )
+        assert_raises(
+            ValueError, dpnp.ravel_multi_index, dpnp.array([0, 2]), (2, 2)
+        )
+        assert_raises(
+            TypeError, dpnp.ravel_multi_index, dpnp.array([0.1, 0.0]), (2, 2)
+        )
+
+    def test_empty_indices_error(self):
+        assert_raises(TypeError, dpnp.ravel_multi_index, ([], []), (10, 3))
+        assert_raises(TypeError, dpnp.ravel_multi_index, ([], ["abc"]), (10, 3))
+        assert_raises(
+            TypeError,
+            dpnp.ravel_multi_index,
+            (dpnp.array([]), dpnp.array([])),
+            (5, 3),
+        )
+
+    def test_empty_indices(self):
+        assert_equal(
+            dpnp.ravel_multi_index(
+                (dpnp.array([], dtype=int), dpnp.array([], dtype=int)), (5, 3)
+            ),
+            [],
+        )
+        assert_equal(
+            dpnp.ravel_multi_index(dpnp.array([[], []], dtype=int), (5, 3)), []
+        )
+
+
+class TestUnravelIndex:
+    def test_basic(self):
+        expected = numpy.unravel_index(numpy.array(2), (2, 2))
+        result = dpnp.unravel_index(dpnp.array(2), (2, 2))
+        assert_equal(expected, result)
+
+        x_np = numpy.array([22, 41, 37])
+        x_dp = dpnp.array([22, 41, 37])
+
+        expected = numpy.unravel_index(x_np, (7, 6))
+        result = dpnp.unravel_index(x_dp, (7, 6))
+        assert_equal(expected, result)
+
+    def test_order_f(self):
+        x_np = numpy.array([31, 41, 13])
+        x_dp = dpnp.array([31, 41, 13])
+        expected = numpy.unravel_index(x_np, (7, 6), order="F")
+        result = dpnp.unravel_index(x_dp, (7, 6), order="F")
+        assert_equal(expected, result)
+
+    def test_new_shape(self):
+        expected = numpy.unravel_index(numpy.array(2), shape=(2, 2))
+        result = dpnp.unravel_index(dpnp.array(2), shape=(2, 2))
+        assert_equal(expected, result)
+
+    def test_error(self):
+        assert_raises(ValueError, dpnp.unravel_index, dpnp.array(-1), (2, 2))
+        assert_raises(TypeError, dpnp.unravel_index, dpnp.array(0.5), (2, 2))
+        assert_raises(ValueError, dpnp.unravel_index, dpnp.array(4), (2, 2))
+        assert_raises(TypeError, dpnp.unravel_index, dpnp.array([]), (10, 3, 5))
+
+    def test_empty_indices(self):
+        assert_equal(
+            dpnp.unravel_index(dpnp.array([], dtype=int), (10, 3, 5)),
+            [[], [], []],
+        )
+
+
 class TestIx:
     @pytest.mark.parametrize(
         "x0", [[0, 1], [True, True]], ids=["[0, 1]", "[True, True]"]
