@@ -129,7 +129,7 @@ installation layout of compatible version. The following plugins from CodePlay a
 
 .. _codeplay_nv_plugin: https://developer.codeplay.com/products/oneapi/nvidia/
 
-Build ``dpnp`` requires `build Data Parallel Control Library for custom SYCL targets
+Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
 <https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
 
 Build ``dpnp`` as follows:
