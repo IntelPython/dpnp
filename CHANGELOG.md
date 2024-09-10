@@ -91,7 +91,7 @@ This release completes implementation of `dpnp.fft` module and adds array manipu
 * Removed `dpnp.issubcdtype` per NumPy 2.0 recommendation [#1996](https://github.com/IntelPython/dpnp/pull/1996)
 * Reworked `dpnp.unique` implementation to align with NumPy 2.0 [#1999](https://github.com/IntelPython/dpnp/pull/1999)
 * Reworked `dpnp.linalg.solve` backend implementation to work with OneMKL Interfaces [#2001](https://github.com/IntelPython/dpnp/pull/2001)
-* Reworked `dpnp.trapzoid` implementation through existing functions instead of falling back on NumPy [#2003](https://github.com/IntelPython/dpnp/pull/2003)
+* Reworked `dpnp.trapezoid` implementation through existing functions instead of falling back on NumPy [#2003](https://github.com/IntelPython/dpnp/pull/2003)
 * Added `copy` keyword to `dpnp.array` to align with NumPy 2.0  [#2006](https://github.com/IntelPython/dpnp/pull/2006)
 * Extended `dpnp.heaviside` to support `order` and `out` keyword arguments by writing dedicated kernel for it [#2008](https://github.com/IntelPython/dpnp/pull/2008)
 * `dpnp` uses pybind11 2.13.5 [#2010](https://github.com/IntelPython/dpnp/pull/2010)
