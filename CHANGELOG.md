@@ -36,6 +36,7 @@ This release completes implementation of `dpnp.fft` module and adds array manipu
 * Added implementation of `dpnp.append` and `dpnp.asarray_chkfinite` functions [#2015](https://github.com/IntelPython/dpnp/pull/2015)
 * Added implementation of `dpnp.array_split`, `dpnp.split`, `dpnp.hsplit`, `dpnp.vsplit`, and `dpnp.dsplit` functions [#2017](https://github.com/IntelPython/dpnp/pull/2017)
 * Added runtime dependency on `intel-gpu-ocl-icd-system` package [#2023](https://github.com/IntelPython/dpnp/pull/2023)
+* Added implementation of `dpnp.ravel_multi_index` and `dpnp.unravel_index` functions [#2022](https://github.com/IntelPython/dpnp/pull/2022)
 
 ### Change
 
