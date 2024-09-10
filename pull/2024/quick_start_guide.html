@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.16.0dev0+183.g6ded0ccbee3 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.16.0dev0+185.ge27e51385b6 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=06c56f43"></script>
+        <script src="_static/documentation_options.js?v=81067c01"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+183.g6ded0ccbee3
+                0.16.0dev0+185.ge27e51385b6
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -65,6 +65,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#install-package-from-intel-r-channel">Install Package from Intel(R) channel</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#build-and-install-conda-package">Build and Install Conda Package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#build-and-install-with-scikit-build">Build and Install with scikit-build</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#building-for-custom-sycl-targets">Building for custom SYCL targets</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
@@ -183,6 +184,24 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </div>
 <p>Alternatively, to develop on Linux OS, you can use the driver script:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py
+</pre></div>
+</div>
+</section>
+<section id="building-for-custom-sycl-targets">
+<h3>Building for custom SYCL targets<a class="headerlink" href="#building-for-custom-sycl-targets" title="Link to this heading"></a></h3>
+<p>Project <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> is written using generic SYCL and supports building for multiple SYCL targets,
+subject to limitations of <a class="reference external" href="https://codeplay.com/">CodePlay</a> plugins implementing SYCL
+programming model for classes of devices.</p>
+<p>Building <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> for these targets requires that these CodePlay plugins be installed into DPC++
+installation layout of compatible version. The following plugins from CodePlay are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><a class="reference external" href="https://developer.codeplay.com/products/oneapi/nvidia/">oneAPI for NVIDIA(R) GPUs</a></p></li>
+</ul>
+</div></blockquote>
+<p>Building <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> also requires <a class="reference external" href="https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets">building Data Parallel Control Library for custom SYCL targets.</a></p>
+<p>Build <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target<span class="o">=</span>cuda
 </pre></div>
 </div>
 </section>
