@@ -1513,6 +1513,21 @@ def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
     assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_args])
 
 
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_unravel_index(usm_type):
+    x = dp.array(2, usm_type=usm_type)
+    result = dp.unravel_index(x, shape=(2, 2))
+    for res in result:
+        assert res.usm_type == x.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_ravel_index(usm_type):
+    x = dp.array([1, 0], usm_type=usm_type)
+    result = dp.ravel_multi_index(x, (2, 2))
+    assert result.usm_type == x.usm_type
+
+
 @pytest.mark.parametrize("usm_type_0", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_1", list_of_usm_types, ids=list_of_usm_types)
 def test_ix(usm_type_0, usm_type_1):

@@ -2568,6 +2568,29 @@ def test_ediff1d(device, to_end, to_begin):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_unravel_index(device):
+    x = dpnp.array(2, device=device)
+    result = dpnp.unravel_index(x, shape=(2, 2))
+    for res in result:
+        assert_sycl_queue_equal(res.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_ravel_index(device):
+    x = dpnp.array([1, 0], device=device)
+    result = dpnp.ravel_multi_index(x, (2, 2))
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "device_0",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
