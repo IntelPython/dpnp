@@ -126,6 +126,7 @@ if(_use_onemkl_interfaces)
             GIT_TAG f2d2dcb4213a435bb60fbb88320c5f24892423ce
     )
     FetchContent_MakeAvailable(onemkl_interfaces_library)
+    set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 endif()
 
 if(WIN32)

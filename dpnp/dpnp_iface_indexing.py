@@ -72,6 +72,7 @@ __all__ = [
     "put",
     "put_along_axis",
     "putmask",
+    "ravel_multi_index",
     "select",
     "take",
     "take_along_axis",
@@ -79,6 +80,7 @@ __all__ = [
     "tril_indices_from",
     "triu_indices",
     "triu_indices_from",
+    "unravel_index",
 ]
 
 
@@ -131,6 +133,33 @@ def _build_along_axis_index(a, ind, axis):
             )
 
     return tuple(fancy_index)
+
+
+def _ravel_multi_index_checks(multi_index, dims, order):
+    dpnp.check_supported_arrays_type(*multi_index)
+    ndim = len(dims)
+    if len(multi_index) != ndim:
+        raise ValueError(
+            f"parameter multi_index must be a sequence of length {ndim}"
+        )
+    dim_mul = 1.0
+    for d in dims:
+        if not isinstance(d, int):
+            raise TypeError(
+                f"{type(d)} object cannot be interpreted as an integer"
+            )
+        dim_mul *= d
+
+    if dim_mul > dpnp.iinfo(dpnp.int64).max:
+        raise ValueError(
+            "invalid dims: array size defined by dims is larger than the "
+            "maximum possible size"
+        )
+    if order not in ("C", "c", "F", "f", None):
+        raise ValueError(
+            "Unrecognized `order` keyword value, expecting "
+            f"'C' or 'F', but got '{order}'"
+        )
 
 
 def choose(x1, choices, out=None, mode="raise"):
@@ -1429,6 +1458,112 @@ def putmask(x1, mask, values):
     return call_origin(numpy.putmask, x1, mask, values, dpnp_inplace=True)
 
 
+def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
+    """
+    Converts a tuple of index arrays into an array of flat indices, applying
+    boundary modes to the multi-index.
+
+    For full documentation refer to :obj:`numpy.ravel_multi_index`.
+
+    Parameters
+    ----------
+    multi_index : tuple of {dpnp.ndarray, usm_ndarray}
+        A tuple of integer arrays, one array for each dimension.
+    dims : tuple or list of ints
+        The shape of array into which the indices from ``multi_index`` apply.
+    mode : {"raise", "wrap" or "clip'}, optional
+        Specifies how out-of-bounds indices are handled. Can specify either
+        one mode or a tuple of modes, one mode per index:
+            - "raise" -- raise an error
+            - "wrap" -- wrap around
+            - "clip" -- clip to the range
+            In "clip" mode, a negative index which would normally wrap will
+            clip to 0 instead.
+        Default: ``"raise"``.
+    order : {None, "C", "F"}, optional
+        Determines whether the multi-index should be viewed as indexing in
+        row-major (C-style) or column-major (Fortran-style) order.
+        Default: ``"C"``.
+
+    Returns
+    -------
+    raveled_indices : dpnp.ndarray
+        An array of indices into the flattened version of an array of
+        dimensions ``dims``.
+
+    See Also
+    --------
+    :obj:`dpnp.unravel_index` : Converts array of flat indices into a tuple of
+                                coordinate arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> arr = np.array([[3, 6, 6], [4, 5, 1]])
+    >>> np.ravel_multi_index(arr, (7, 6))
+    array([22, 41, 37])
+    >>> np.ravel_multi_index(arr, (7, 6), order="F")
+    array([31, 41, 13])
+    >>> np.ravel_multi_index(arr, (4, 6), mode="clip")
+    array([22, 23, 19])
+    >>> np.ravel_multi_index(arr, (4, 4), mode=("clip", "wrap"))
+    array([12, 13, 13])
+    >>> arr = np.array([3, 1, 4, 1])
+    >>> np.ravel_multi_index(arr, (6, 7, 8, 9))
+    array(1621)
+
+    """
+
+    _ravel_multi_index_checks(multi_index, dims, order)
+
+    ndim = len(dims)
+    if isinstance(mode, str):
+        mode = (mode,) * ndim
+
+    s = 1
+    ravel_strides = [1] * ndim
+
+    multi_index = tuple(multi_index)
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations(multi_index)
+
+    order = "C" if order is None else order.upper()
+    if order == "C":
+        for i in range(ndim - 2, -1, -1):
+            s = s * dims[i + 1]
+            ravel_strides[i] = s
+    else:
+        for i in range(1, ndim):
+            s = s * dims[i - 1]
+            ravel_strides[i] = s
+
+    multi_index = dpnp.broadcast_arrays(*multi_index)
+    raveled_indices = dpnp.zeros(
+        multi_index[0].shape,
+        dtype=dpnp.int64,
+        usm_type=usm_type_alloc,
+        sycl_queue=sycl_queue_alloc,
+    )
+    for d, stride, idx, _mode in zip(dims, ravel_strides, multi_index, mode):
+        if not dpnp.can_cast(idx, dpnp.int64, "same_kind"):
+            raise TypeError(
+                f"multi_index entries could not be cast from dtype({idx.dtype})"
+                f" to dtype({dpnp.int64}) according to the rule 'same_kind'"
+            )
+        idx = idx.astype(dpnp.int64, copy=False)
+
+        if _mode == "raise":
+            if dpnp.any(dpnp.logical_or(idx >= d, idx < 0)):
+                raise ValueError("invalid entry in coordinates array")
+        elif _mode == "clip":
+            idx = dpnp.clip(idx, 0, d - 1)
+        elif _mode == "wrap":
+            idx = idx % d
+        else:
+            raise ValueError(f"Unrecognized mode: {_mode}")
+        raveled_indices += stride * idx
+    return raveled_indices
+
+
 def select(condlist, choicelist, default=0):
     """
     Return an array drawn from elements in `choicelist`, depending on
@@ -2177,3 +2312,78 @@ def triu_indices_from(arr, k=0):
         usm_type=arr.usm_type,
         sycl_queue=arr.sycl_queue,
     )
+
+
+def unravel_index(indices, shape, order="C"):
+    """Converts array of flat indices into a tuple of coordinate arrays.
+
+    For full documentation refer to :obj:`numpy.unravel_index`.
+
+    Parameters
+    ----------
+    indices : {dpnp.ndarray, usm_ndarray}
+        An integer array whose elements are indices into the flattened version
+        of an array of dimensions ``shape``.
+    shape : tuple or list of ints
+        The shape of the array to use for unraveling ``indices``.
+    order : {None, "C", "F"}, optional
+        Determines whether the indices should be viewed as indexing in
+        row-major (C-style) or column-major (Fortran-style) order.
+        Default: ``"C"``.
+
+    Returns
+    -------
+    unraveled_coords : tuple of dpnp.ndarray
+        Each array in the tuple has the same shape as the indices array.
+
+    See Also
+    --------
+    :obj:`dpnp.ravel_multi_index` : Converts a tuple of index arrays into an
+                                    array of flat indices.
+
+
+    Examples
+    --------
+    import dpnp as np
+    >>> np.unravel_index(np.array([22, 41, 37]), (7, 6))
+    (array([3, 6, 6]), array([4, 5, 1]))
+    >>> np.unravel_index(np.array([31, 41, 13]), (7, 6), order="F")
+    (array([3, 6, 6]), array([4, 5, 1]))
+
+    >>> np.unravel_index(np.array(1621), (6, 7, 8, 9))
+    (array(3), array(1), array(4), array(1))
+
+    """
+
+    dpnp.check_supported_arrays_type(indices)
+
+    if order not in ("C", "c", "F", "f", None):
+        raise ValueError(
+            "Unrecognized `order` keyword value, expecting "
+            f"'C' or 'F', but got '{order}'"
+        )
+    order = "C" if order is None else order.upper()
+    if order == "C":
+        shape = reversed(shape)
+
+    if not dpnp.can_cast(indices, dpnp.int64, "same_kind"):
+        raise TypeError(
+            "Iterator operand 0 dtype could not be cast from dtype("
+            f"{indices.dtype}) to dtype({dpnp.int64}) according to the rule "
+            "'same_kind'"
+        )
+
+    if (indices < 0).any():
+        raise ValueError("invalid entry in index array")
+
+    unraveled_coords = []
+    for dim in shape:
+        unraveled_coords.append(indices % dim)
+        indices = indices // dim
+
+    if (indices > 0).any():
+        raise ValueError("invalid entry in index array")
+
+    if order == "C":
+        unraveled_coords = reversed(unraveled_coords)
+    return tuple(unraveled_coords)
