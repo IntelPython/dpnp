@@ -212,12 +212,12 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        <span class="keyword">const</span> <span class="keyword">typename</span> valT::value_type dim = get_dim();</div>
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span> </div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        valT fwd_strides(dim + 1);</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#if COMPILER_VERSION_FLAG</span></div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span><span class="preprocessor">#if COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        descr_.get_value(mkl_dft::config_param::FWD_STRIDES, &amp;fwd_strides);</div>
 <div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        descr_.get_value(mkl_dft::config_param::FWD_STRIDES,</div>
 <div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>                         fwd_strides.data());</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span><span class="preprocessor">#endif </span><span class="comment">// COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        <span class="keywordflow">return</span> fwd_strides;</div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    }</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
@@ -231,11 +231,11 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>                <span class="stringliteral">&quot;Strides length does not match descriptor&#39;s dimension&quot;</span>);</div>
 <div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>        }</div>
 <div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="preprocessor">#if COMPILER_VERSION_FLAG</span></div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="preprocessor">#if COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides);</div>
 <div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span><span class="preprocessor">#endif </span><span class="comment">// COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>    }</div>
 <div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
 <div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>    <span class="comment">// config_param::BWD_STRIDES</span></div>
@@ -245,12 +245,12 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00144" name="l00144"></a><span class="lineno">  144</span>        <span class="keyword">const</span> <span class="keyword">typename</span> valT::value_type dim = get_dim();</div>
 <div class="line"><a id="l00145" name="l00145"></a><span class="lineno">  145</span> </div>
 <div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>        valT bwd_strides(dim + 1);</div>
-<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="preprocessor">#if COMPILER_COMPILER_VERSION_FLAG</span></div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span><span class="preprocessor">#if COMPILER_COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>        descr_.get_value(mkl_dft::config_param::BWD_STRIDES, &amp;bwd_strides);</div>
 <div class="line"><a id="l00149" name="l00149"></a><span class="lineno">  149</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00150" name="l00150"></a><span class="lineno">  150</span>        descr_.get_value(mkl_dft::config_param::BWD_STRIDES,</div>
 <div class="line"><a id="l00151" name="l00151"></a><span class="lineno">  151</span>                         bwd_strides.data());</div>
-<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00152" name="l00152"></a><span class="lineno">  152</span><span class="preprocessor">#endif </span><span class="comment">// COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00153" name="l00153"></a><span class="lineno">  153</span>        <span class="keywordflow">return</span> bwd_strides;</div>
 <div class="line"><a id="l00154" name="l00154"></a><span class="lineno">  154</span>    }</div>
 <div class="line"><a id="l00155" name="l00155"></a><span class="lineno">  155</span> </div>
@@ -263,11 +263,11 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>            <span class="keywordflow">throw</span> py::value_error(</div>
 <div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>                <span class="stringliteral">&quot;Strides length does not match descriptor&#39;s dimension&quot;</span>);</div>
 <div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>        }</div>
-<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="preprocessor">#if COMPILER_VERSION_FLAG</span></div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span><span class="preprocessor">#if COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>        descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides);</div>
 <div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span><span class="preprocessor">#else</span></div>
 <div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>        descr_.set_value(mkl_dft::config_param::BWD_STRIDES, strides.data());</div>
-<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span><span class="preprocessor">#endif </span><span class="comment">// COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    }</div>
 <div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span> </div>
 <div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    <span class="comment">// config_param::FWD_DISTANCE</span></div>
@@ -305,7 +305,7 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00204" name="l00204"></a><span class="lineno">  204</span>    <span class="comment">// config_param::PLACEMENT</span></div>
 <div class="line"><a id="l00205" name="l00205"></a><span class="lineno">  205</span>    <span class="keywordtype">bool</span> get_in_place()</div>
 <div class="line"><a id="l00206" name="l00206"></a><span class="lineno">  206</span>    {</div>
-<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="preprocessor">#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_FLAG</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno">  207</span><span class="preprocessor">#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>        mkl_dft::config_value placement;</div>
 <div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>        descr_.get_value(mkl_dft::config_param::PLACEMENT, &amp;placement);</div>
 <div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>        <span class="keywordflow">return</span> (placement == mkl_dft::config_value::INPLACE);</div>
@@ -314,12 +314,12 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00213" name="l00213"></a><span class="lineno">  213</span>        DFTI_CONFIG_VALUE placement;</div>
 <div class="line"><a id="l00214" name="l00214"></a><span class="lineno">  214</span>        descr_.get_value(mkl_dft::config_param::PLACEMENT, &amp;placement);</div>
 <div class="line"><a id="l00215" name="l00215"></a><span class="lineno">  215</span>        <span class="keywordflow">return</span> (placement == DFTI_CONFIG_VALUE::DFTI_INPLACE);</div>
-<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span><span class="preprocessor">#endif </span><span class="comment">// USE_ONEMKL_INTERFACES</span></div>
+<div class="line"><a id="l00216" name="l00216"></a><span class="lineno">  216</span><span class="preprocessor">#endif </span><span class="comment">// USE_ONEMKL_INTERFACES or COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00217" name="l00217"></a><span class="lineno">  217</span>    }</div>
 <div class="line"><a id="l00218" name="l00218"></a><span class="lineno">  218</span> </div>
 <div class="line"><a id="l00219" name="l00219"></a><span class="lineno">  219</span>    <span class="keywordtype">void</span> set_in_place(<span class="keyword">const</span> <span class="keywordtype">bool</span> &amp;in_place_request)</div>
 <div class="line"><a id="l00220" name="l00220"></a><span class="lineno">  220</span>    {</div>
-<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_FLAG</span></div>
+<div class="line"><a id="l00221" name="l00221"></a><span class="lineno">  221</span><span class="preprocessor">#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00222" name="l00222"></a><span class="lineno">  222</span>        descr_.set_value(mkl_dft::config_param::PLACEMENT,</div>
 <div class="line"><a id="l00223" name="l00223"></a><span class="lineno">  223</span>                         (in_place_request)</div>
 <div class="line"><a id="l00224" name="l00224"></a><span class="lineno">  224</span>                             ? mkl_dft::config_value::INPLACE</div>
@@ -330,7 +330,7 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span>                         (in_place_request)</div>
 <div class="line"><a id="l00230" name="l00230"></a><span class="lineno">  230</span>                             ? DFTI_CONFIG_VALUE::DFTI_INPLACE</div>
 <div class="line"><a id="l00231" name="l00231"></a><span class="lineno">  231</span>                             : DFTI_CONFIG_VALUE::DFTI_NOT_INPLACE);</div>
-<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="preprocessor">#endif </span><span class="comment">// USE_ONEMKL_INTERFACES</span></div>
+<div class="line"><a id="l00232" name="l00232"></a><span class="lineno">  232</span><span class="preprocessor">#endif </span><span class="comment">// USE_ONEMKL_INTERFACES or COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00233" name="l00233"></a><span class="lineno">  233</span>    }</div>
 <div class="line"><a id="l00234" name="l00234"></a><span class="lineno">  234</span> </div>
 <div class="line"><a id="l00235" name="l00235"></a><span class="lineno">  235</span>    <span class="comment">// config_param::PRECISION</span></div>
@@ -345,7 +345,7 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00244" name="l00244"></a><span class="lineno">  244</span>    <span class="comment">// config_param::COMMIT_STATUS</span></div>
 <div class="line"><a id="l00245" name="l00245"></a><span class="lineno">  245</span>    <span class="keywordtype">bool</span> is_committed()</div>
 <div class="line"><a id="l00246" name="l00246"></a><span class="lineno">  246</span>    {</div>
-<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="preprocessor">#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_FLAG</span></div>
+<div class="line"><a id="l00247" name="l00247"></a><span class="lineno">  247</span><span class="preprocessor">#if defined(USE_ONEMKL_INTERFACES) || COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00248" name="l00248"></a><span class="lineno">  248</span>        mkl_dft::config_value committed;</div>
 <div class="line"><a id="l00249" name="l00249"></a><span class="lineno">  249</span>        descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &amp;committed);</div>
 <div class="line"><a id="l00250" name="l00250"></a><span class="lineno">  250</span>        <span class="keywordflow">return</span> (committed == mkl_dft::config_value::COMMITTED);</div>
@@ -354,7 +354,7 @@ $(document).ready(function(){initNavTree('fft_2common_8hpp_source.html',''); ini
 <div class="line"><a id="l00253" name="l00253"></a><span class="lineno">  253</span>        DFTI_CONFIG_VALUE committed;</div>
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span>        descr_.get_value(mkl_dft::config_param::COMMIT_STATUS, &amp;committed);</div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>        <span class="keywordflow">return</span> (committed == DFTI_CONFIG_VALUE::DFTI_COMMITTED);</div>
-<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><span class="preprocessor">#endif </span><span class="comment">// USE_ONEMKL_INTERFACES</span></div>
+<div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span><span class="preprocessor">#endif </span><span class="comment">// USE_ONEMKL_INTERFACES or COMPILER_VERSION_2025_OR_LATER</span></div>
 <div class="line"><a id="l00257" name="l00257"></a><span class="lineno">  257</span>    }</div>
 <div class="line"><a id="l00258" name="l00258"></a><span class="lineno">  258</span> </div>
 <div class="line"><a id="l00259" name="l00259"></a><span class="lineno">  259</span><span class="keyword">private</span>:</div>
