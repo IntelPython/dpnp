@@ -47,9 +47,9 @@ else()
 endif()
 
 if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "2025.0.0")
-    add_definitions(-DCOMPILER_VERSION_FLAG=1)
+    add_definitions(-DCOMPILER_VERSION_2025_OR_LATER=1)
 else()
-    add_definitions(-DCOMPILER_VERSION_FLAG=0)
+    add_definitions(-DCOMPILER_VERSION_2025_OR_LATER=0)
 endif()
 
 include(GNUInstallDirs)
