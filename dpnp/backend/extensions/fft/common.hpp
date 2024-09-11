@@ -129,7 +129,6 @@ public:
             throw py::value_error(
                 "Strides length does not match descriptor's dimension");
         }
-        descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides.data());
 #if COMPILER_VERSION_2025_OR_LATER
         descr_.set_value(mkl_dft::config_param::FWD_STRIDES, strides);
 #else
