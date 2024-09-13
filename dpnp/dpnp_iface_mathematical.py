@@ -224,8 +224,7 @@ def _gradient_num_diff_2nd_order_interior(
         # fix the shape for broadcasting
         shape = [1] * ndim
         shape[axis] = -1
-        # TODO: use shape.setter once dpctl#1699 is resolved
-        # a.shape = b.shape = c.shape = shape
+
         a = a.reshape(shape)
         b = b.reshape(shape)
         c = c.reshape(shape)
