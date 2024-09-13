@@ -329,7 +329,7 @@ def _result_type(dtype1, dtype2, has_fp64):
     return rt
 
 
-def _aling_dtypes(a_dtype, bins_dtype, ntype, has_fp64):
+def _align_dtypes(a_dtype, bins_dtype, ntype, has_fp64):
     a_bin_dtype = _result_type(a_dtype, bins_dtype, has_fp64)
 
     supported_types = (dpnp.float32, dpnp.int64, dpnp.uint64, dpnp.complex64)
@@ -465,7 +465,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     queue = a.sycl_queue
     has_fp64 = queue.sycl_device.has_aspect_fp64
 
-    a_bin_dtype, hist_dtype = _aling_dtypes(
+    a_bin_dtype, hist_dtype = _align_dtypes(
         a.dtype, bin_edges.dtype, ntype, has_fp64
     )
 
@@ -485,7 +485,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         else None
     )
 
-    n_usm_type = "shared" if usm_type == "host" else usm_type
+    n_usm_type = "device" if usm_type == "host" else usm_type
     n_casted = dpnp.zeros(
         bin_edges.size - 1,
         dtype=hist_dtype,

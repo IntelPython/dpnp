@@ -333,7 +333,7 @@ struct IsNan
     static bool isnan(const T &v)
     {
         if constexpr (std::is_floating_point<T>::value) {
-            return std::isnan(v);
+            return sycl::isnan(v);
         }
 
         return false;
@@ -347,7 +347,7 @@ struct IsNan<std::complex<T>>
     {
         T real1 = std::real(v);
         T imag1 = std::imag(v);
-        return std::isnan(real1) || std::isnan(imag1);
+        return sycl::isnan(real1) || sycl::isnan(imag1);
     }
 };
 
@@ -418,9 +418,9 @@ void submit_histogram(const T *in,
                       size_t size,
                       size_t dims,
                       uint32_t WorkPI,
-                      HistImpl &hist,
-                      Edges &edges,
-                      Weights &weights,
+                      const HistImpl &hist,
+                      const Edges &edges,
+                      const Weights &weights,
                       sycl::nd_range<1> nd_range,
                       sycl::handler &cgh)
 {

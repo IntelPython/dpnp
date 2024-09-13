@@ -24,16 +24,20 @@
 //*****************************************************************************
 
 #include <algorithm>
+#include <limits>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "dpctl4pybind11.hpp"
+#include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
 #include "histogram_common.hpp"
 
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
+using dpctl_td_ns::typenum_t;
 
 namespace histogram
 {
@@ -45,9 +49,8 @@ void validate(const usm_ndarray &sample,
 {
     auto exec_q = sample.get_queue();
     using array_ptr = const usm_ndarray *;
-    using array_list = std::vector<array_ptr>;
 
-    array_list arrays{&sample, &bins, &histogram};
+    std::vector<array_ptr> arrays{&sample, &bins, &histogram};
     std::unordered_map<array_ptr, std::string> names = {
         {arrays[0], "sample"}, {arrays[1], "bins"}, {arrays[2], "histogram"}};
 
@@ -94,10 +97,21 @@ void validate(const usm_ndarray &sample,
                               std::to_string(histogram.get_ndim()) + "d");
     }
 
-    if (weights_ptr && weights_ptr->get_ndim() != 1) {
-        throw py::value_error(get_name(weights_ptr) +
-                              " parameter must be 1d. Actual " +
-                              std::to_string(weights_ptr->get_ndim()) + "d");
+    if (weights_ptr) {
+        if (weights_ptr->get_ndim() != 1) {
+            throw py::value_error(
+                get_name(weights_ptr) + " parameter must be 1d. Actual " +
+                std::to_string(weights_ptr->get_ndim()) + "d");
+        }
+
+        auto sample_size = sample.get_size();
+        auto weights_size = weights_ptr->get_size();
+        if (sample.get_size() != weights_ptr->get_size()) {
+            throw py::value_error(
+                get_name(&sample) + " size (" + std::to_string(sample_size) +
+                ") and " + get_name(weights_ptr) + " size (" +
+                std::to_string(weights_size) + ")" + " must match");
+        }
     }
 
     if (sample.get_ndim() > 2) {
@@ -142,6 +156,30 @@ void validate(const usm_ndarray &sample,
             " shape mismatch. " + get_name(&histogram) +
             " expected to have size = " + std::to_string(expected_hist_size) +
             ". Actual " + std::to_string(histogram.get_size()));
+    }
+
+    int64_t max_hist_size = std::numeric_limits<uint32_t>::max() - 1;
+    if (histogram.get_size() > max_hist_size) {
+        throw py::value_error(get_name(&histogram) +
+                              " parameter size expected to be less than " +
+                              std::to_string(max_hist_size) + ". Actual " +
+                              std::to_string(histogram.get_size()));
+    }
+
+    auto array_types = dpctl_td_ns::usm_ndarray_types();
+    auto hist_type = static_cast<typenum_t>(
+        array_types.typenum_to_lookup_id(histogram.get_typenum()));
+    if (histogram.get_elemsize() == 8 && hist_type != typenum_t::CFLOAT) {
+        auto device = exec_q.get_device();
+        bool _64bit_atomics = device.has(sycl::aspect::atomic64);
+
+        if (!_64bit_atomics) {
+            auto device_name = device.get_info<sycl::info::device::name>();
+            throw py::value_error(
+                get_name(&histogram) +
+                " parameter has 64-bit type, but 64-bit atomics " +
+                " are not supported for " + device_name);
+        }
     }
 }
 
