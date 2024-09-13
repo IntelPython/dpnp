@@ -2049,7 +2049,7 @@ def resize(a, new_shape):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be resized.
-    new_shape : int or tuple or list of ints
+    new_shape : {int, tuple or list of ints}
         Shape of resized array.
 
     Returns
