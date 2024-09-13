@@ -1,6 +1,0 @@
-﻿dpnp.hsplit
-===========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: hsplit
