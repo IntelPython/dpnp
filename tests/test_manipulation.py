@@ -1,3 +1,5 @@
+import itertools
+
 import dpctl.tensor as dpt
 import numpy
 import pytest
@@ -663,6 +665,60 @@ class TestRepeat:
         expected = a.repeat(reps)
         result = ia.repeat(reps)
         assert_array_equal(result, expected)
+
+
+class TestRequire:
+    flag_names = ["C", "C_CONTIGUOUS", "F", "F_CONTIGUOUS", "W"]
+
+    def generate_all_false(self, dtype):
+        a_np = numpy.zeros((10, 10))
+        a_dp = dpnp.zeros((10, 10))
+        a_np = a_np[::2, ::2]
+        a_dp = a_dp[::2, ::2]
+        a_np.flags["W"] = False
+        a_dp.flags["W"] = False
+        assert not a_dp.flags["C"]
+        assert not a_dp.flags["F"]
+        assert not a_dp.flags["W"]
+        return a_np, a_dp
+
+    def set_and_check_flag(self, flag, dtype, arr):
+        if dtype is None:
+            dtype = arr[1].dtype
+        a_np = numpy.require(arr[0], dtype, [flag])
+        a_dp = dpnp.require(arr[1], dtype, [flag])
+        assert a_np.flags[flag] == a_dp.flags[flag]
+        assert a_np.dtype == a_dp.dtype
+
+        # a further call to dpnp.require ought to return the same array
+        c = dpnp.require(a_dp, None, [flag])
+        assert c is a_dp
+
+    def test_require_each(self):
+        id = ["f4", "i4"]
+        fd = [None, "f4", "c8"]
+        for idtype, fdtype, flag in itertools.product(id, fd, self.flag_names):
+            a = self.generate_all_false(idtype)
+            self.set_and_check_flag(flag, fdtype, a)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unknown_requirement(self, xp):
+        a = self.generate_all_false("f4")
+        assert_raises(KeyError, xp.require, a, None, "Q")
+
+    def test_non_array_input(self):
+        a_np = numpy.require([1, 2, 3, 4], "i4", ["C", "W"])
+        a_dp = dpnp.require([1, 2, 3, 4], "i4", ["C", "W"])
+        assert a_np.flags["C"] == a_dp.flags["C"]
+        assert a_np.flags["F"] == a_dp.flags["F"]
+        assert a_np.flags["W"] == a_dp.flags["W"]
+        assert a_np.dtype == a_dp.dtype
+        assert_array_equal(a_np, a_dp)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_C_and_F_simul(self, xp):
+        a = self.generate_all_false("f4")
+        assert_raises(ValueError, xp.require, a, None, ["C", "F"])
 
 
 class TestTranspose:

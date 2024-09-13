@@ -76,6 +76,7 @@ __all__ = [
     "permute_dims",
     "ravel",
     "repeat",
+    "require",
     "reshape",
     "result_type",
     "roll",
@@ -646,12 +647,8 @@ def atleast_1d(*arys):
     """
 
     res = []
+    dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
-        if not dpnp.is_supported_array_type(ary):
-            raise TypeError(
-                "Each input array must be any of supported type, "
-                f"but got {type(ary)}"
-            )
         if ary.ndim == 0:
             result = ary.reshape(1)
         else:
@@ -704,12 +701,8 @@ def atleast_2d(*arys):
     """
 
     res = []
+    dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
-        if not dpnp.is_supported_array_type(ary):
-            raise TypeError(
-                "Each input array must be any of supported type, "
-                f"but got {type(ary)}"
-            )
         if ary.ndim == 0:
             result = ary.reshape(1, 1)
         elif ary.ndim == 1:
@@ -768,12 +761,8 @@ def atleast_3d(*arys):
     """
 
     res = []
+    dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
-        if not dpnp.is_supported_array_type(ary):
-            raise TypeError(
-                "Each input array must be any of supported type, "
-                f"but got {type(ary)}"
-            )
         if ary.ndim == 0:
             result = ary.reshape(1, 1, 1)
         elif ary.ndim == 1:
@@ -1952,6 +1941,105 @@ def repeat(a, repeats, axis=None):
     usm_arr = dpnp.get_usm_ndarray(a)
     usm_res = dpt.repeat(usm_arr, repeats, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
+
+
+def require(a, dtype=None, requirements=None, *, like=None):
+    """
+    Return an dpnp.ndarray of the provided type that satisfies requirements.
+
+    This function is useful to be sure that an array with the correct flags
+    is returned for passing to compiled code (perhaps through ctypes).
+
+    For full documentation refer to :obj:`numpy.require`.
+
+    Parameters
+    ----------
+    a : array_like
+       The object to be converted to a type-and-requirement-satisfying array.
+    dtype : data-type, optional
+       The required data-type. If None preserve the current dtype. If your
+       application requires the data to be in native byteorder, include
+       a byteorder specification as a part of the dtype specification.
+    requirements : {str, sequence of str}, , optional
+       The requirements list can be any of the following:
+
+       * 'F_CONTIGUOUS' ('F') - ensure a Fortran-contiguous array
+       * 'C_CONTIGUOUS' ('C') - ensure a C-contiguous array
+       * 'WRITABLE' ('W') - ensure a writable array
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array with specified requirements and type if given.
+
+    Limitations
+    -----------
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    See Also
+    --------
+    :obj:`dpnp.asarray` : Convert input to an ndarray.
+    :obj:`dpnp.asanyarray ` : Convert to an ndarray, but pass through
+                        ndarray subclasses.
+    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.
+    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with
+                        column-major memory order.
+    :obj:`dpnp.ndarray.flags` : Information about the memory layout
+                        of the array.
+
+    Notes
+    -----
+    The returned array will be guaranteed to have the listed requirements
+    by making a copy if needed.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2,3)
+    >>> x.flags
+      C_CONTIGUOUS : True
+      F_CONTIGUOUS : False
+      WRITEABLE : True
+
+    >>> y = np.require(x, dtype=np.float32, requirements=['W', 'F'])
+    >>> y.flags
+      C_CONTIGUOUS : False
+      F_CONTIGUOUS : True
+      WRITEABLE : True
+
+    """
+
+    dpnp.check_limitations(like=like)
+
+    possible_flags = {
+        "C": "C",
+        "C_CONTIGUOUS": "C",
+        "F": "F",
+        "F_CONTIGUOUS": "F",
+        "W": "W",
+        "WRITEABLE": "W",
+    }
+
+    if not requirements:
+        return dpnp.asanyarray(a, dtype=dtype)
+
+    requirements = {possible_flags[x.upper()] for x in requirements}
+    order = "A"
+    if requirements.issuperset({"C", "F"}):
+        raise ValueError("Cannot specify both 'C' and 'F' order")
+    if "F" in requirements:
+        order = "F"
+        requirements.remove("F")
+    elif "C" in requirements:
+        order = "C"
+        requirements.remove("C")
+
+    arr = dpnp.array(a, dtype=dtype, order=order, copy=None)
+    if not arr.flags["W"]:
+        return arr.copy(order)
+
+    return arr
 
 
 def reshape(a, /, newshape, order="C", copy=None):
