@@ -37,11 +37,12 @@ Transpose-like operations
    :nosignatures:
 
    dpnp.moveaxis
-   dpnp.roll
    dpnp.rollaxis
    dpnp.swapaxes
    dpnp.ndarray.T
    dpnp.transpose
+   dpnp.permute_dims
+   dpnp.matrix_transpose (Array API compatible)
 
 
 Changing number of dimensions
@@ -69,9 +70,8 @@ Changing kind of array
    :nosignatures:
 
    dpnp.asarray
-   dpnp.asnumpy
    dpnp.asanyarray
-   dpnp.asmatrix
+   dpnp.asnumpy
    dpnp.asfarray
    dpnp.asfortranarray
    dpnp.ascontiguousarray
@@ -87,13 +87,14 @@ Joining arrays
    :nosignatures:
 
    dpnp.concatenate
+   dpnp.concat
    dpnp.stack
    dpnp.block
    dpnp.vstack
    dpnp.hstack
+   dpnp.dstack
    dpnp.column_stack
    dpnp.row_stack
-   dpnp.dstack
 
 
 Splitting arrays
@@ -108,6 +109,7 @@ Splitting arrays
    dpnp.dsplit
    dpnp.hsplit
    dpnp.vsplit
+   dpnp.unstack
 
 
 Tiling arrays
@@ -132,8 +134,8 @@ Adding and removing elements
    dpnp.insert
    dpnp.append
    dpnp.resize
-   dpnp.unique
    dpnp.trim_zeros
+   dpnp.unique
    dpnp.pad
 
 
@@ -147,6 +149,5 @@ Rearranging elements
    dpnp.flip
    dpnp.fliplr
    dpnp.flipud
-   dpnp.reshape
    dpnp.roll
    dpnp.rot90
