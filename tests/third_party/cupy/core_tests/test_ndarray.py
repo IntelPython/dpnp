@@ -272,7 +272,8 @@ class TestNdarrayShape(unittest.TestCase):
         return xp.array(arr.shape)
 
     @pytest.mark.skip(
-        "dpctl-1699: shape setter does not work with negative shape"
+        "dpctl-1699: shape setter does not work with negative shape "
+        "(no plan to support that)"
     )
     @testing.numpy_cupy_array_equal()
     def test_shape_set_infer(self, xp):
