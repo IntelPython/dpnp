@@ -666,18 +666,18 @@ class TestRepeat:
 
 
 class TestResize:
-    def test_copies(self):
-        a = numpy.array([[1, 2], [3, 4]])
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([[1, 2], [3, 4]], (2, 4)),
+            pytest.param([[1, 2], [3, 4], [1, 2], [3, 4]], (4, 2)),
+            pytest.param([[1, 2, 3], [4, 1, 2], [3, 4, 1], [2, 3, 4]], (4, 3)),
+        ],
+    )
+    def test_copies(self, data, shape):
+        a = numpy.array(data)
         ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, (2, 4)), numpy.resize(a, (2, 4)))
-
-        a = numpy.array([[1, 2], [3, 4], [1, 2], [3, 4]])
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, (4, 2)), numpy.resize(a, (4, 2)))
-
-        a = numpy.array([[1, 2, 3], [4, 1, 2], [3, 4, 1], [2, 3, 4]])
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, (4, 3)), numpy.resize(a, (4, 3)))
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
 
     @pytest.mark.parametrize("newshape", [(2, 4), [2, 4], (10,), 10])
     def test_newshape_type(self, newshape):
@@ -685,18 +685,18 @@ class TestResize:
         ia = dpnp.array(a)
         assert_equal(dpnp.resize(ia, newshape), numpy.resize(a, newshape))
 
-    def test_repeats(self):
-        a = numpy.array([1, 2, 3])
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([1, 2, 3], (2, 4)),
+            pytest.param([[1, 2], [3, 1], [2, 3], [1, 2]], (4, 2)),
+            pytest.param([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]], (4, 3)),
+        ],
+    )
+    def test_repeats(self, data, shape):
+        a = numpy.array(data)
         ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, (2, 4)), numpy.resize(a, (2, 4)))
-
-        a = numpy.array([[1, 2], [3, 1], [2, 3], [1, 2]])
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, (4, 2)), numpy.resize(a, (4, 2)))
-
-        a = numpy.array([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]])
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, (4, 3)), numpy.resize(a, (4, 3)))
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
 
     def test_zeroresize(self):
         a = numpy.array([[1, 2], [3, 4]])
@@ -729,9 +729,9 @@ class TestRot90:
         assert_raises(ValueError, xp.rot90, xp.ones((2, 2)), axes=(0, 2))
         assert_raises(ValueError, xp.rot90, xp.ones((2, 2)), axes=(1, 1))
         assert_raises(ValueError, xp.rot90, xp.ones((2, 2, 2)), axes=(-2, 1))
-        if xp == dpnp:
-            # NumPy return result of k=3 incorrectly when k is float
-            assert_raises(TypeError, xp.rot90, xp.ones((2, 2)), k=2.5)
+
+    def test_error_float_k(self):
+        assert_raises(TypeError, dpnp.rot90, dpnp.ones((2, 2)), k=2.5)
 
     def test_basic(self):
         a = numpy.array([[0, 1, 2], [3, 4, 5]])

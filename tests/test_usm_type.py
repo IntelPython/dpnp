@@ -622,6 +622,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("real_if_close", [2.1 + 4e-15j, 5.2 + 3e-16j]),
         pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("rot90", [[1, 2], [3, 4]]),
         pytest.param("rsqrt", [1, 8, 27]),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
@@ -1016,15 +1017,6 @@ def test_eigenvalue(func, shape, usm_type):
 def test_resize(usm_type):
     dpnp_data = dp.arange(10, usm_type=usm_type)
     result = dp.resize(dpnp_data, (2, 5))
-
-    assert dpnp_data.usm_type == usm_type
-    assert result.usm_type == usm_type
-
-
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_rot90(usm_type):
-    dpnp_data = dp.array([[1, 2], [3, 4]], usm_type=usm_type)
-    result = dp.rot90(dpnp_data)
 
     assert dpnp_data.usm_type == usm_type
     assert result.usm_type == usm_type

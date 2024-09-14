@@ -39,6 +39,7 @@ it contains:
 
 
 import math
+import operator
 
 import dpctl.tensor as dpt
 import numpy
@@ -1524,6 +1525,7 @@ def fliplr(m):
     --------
     :obj:`dpnp.flipud` : Flip an array vertically (axis=0).
     :obj:`dpnp.flip` : Flip array in one or more dimensions.
+    :obj:`dpnp.rot90` : Rotate array counterclockwise.
 
     Examples
     --------
@@ -1574,6 +1576,7 @@ def flipud(m):
     --------
     :obj:`dpnp.fliplr` : Flip array in the left/right direction.
     :obj:`dpnp.flip` : Flip array in one or more dimensions.
+    :obj:`dpnp.rot90` : Rotate array counterclockwise.
 
     Examples
     --------
@@ -2056,12 +2059,12 @@ def resize(a, new_shape):
     -------
     out : dpnp.ndarray
         The new array is formed from the data in the old array, repeated
-        if necessary to fill out the required number of elements.  The
+        if necessary to fill out the required number of elements. The
         data are repeated iterating over the array in C-order.
 
     See Also
     --------
-    :obj:`dpnp.ndarray.reshape` : Resize an array in-place.
+    :obj:`dpnp.ndarray.resize` : Resize an array in-place.
     :obj:`dpnp.reshape` : Reshape an array without changing the total size.
     :obj:`dpnp.pad` : Enlarge and pad an array.
     :obj:`dpnp.repeat` : Repeat elements of an array.
@@ -2083,8 +2086,8 @@ def resize(a, new_shape):
     Examples
     --------
     >>> import dpnp as np
-    >>> a=np.array([[0, 1], [2, 3]])
-    >>> np.resize(a, (2 ,3))
+    >>> a = np.array([[0, 1], [2, 3]])
+    >>> np.resize(a, (2, 3))
     array([[0, 1, 2],
            [3, 0, 1]])
     >>> np.resize(a, (1, 4))
@@ -2097,24 +2100,24 @@ def resize(a, new_shape):
 
     dpnp.check_supported_arrays_type(a)
     if a.ndim == 0:
-        return dpnp.full(new_shape, a)
+        return dpnp.full_like(a, a, shape=new_shape)
 
     if isinstance(new_shape, (int, numpy.integer)):
         new_shape = (new_shape,)
 
-    a = dpnp.ravel(a)
     new_size = 1
     for dim_length in new_shape:
         if dim_length < 0:
             raise ValueError("all elements of `new_shape` must be non-negative")
         new_size *= dim_length
 
-    if a.size == 0 or new_size == 0:
+    a_size = a.size
+    if a_size == 0 or new_size == 0:
         # First case must zero fill. The second would have repeats == 0.
         return dpnp.zeros_like(a, shape=new_shape)
 
-    repeats = -(-new_size // a.size)  # ceil division
-    a = dpnp.concatenate((a,) * repeats)[:new_size]
+    repeats = -(-new_size // a_size)  # ceil division
+    a = dpnp.concatenate((dpnp.ravel(a),) * repeats)[:new_size]
 
     return a.reshape(new_shape)
 
@@ -2324,7 +2327,7 @@ def rot90(m, k=1, axes=(0, 1)):
 
     Notes
     -----
-    ``rot90(m, k=1, axes=(1,0))``  is the reverse of
+    ``rot90(m, k=1, axes=(1,0))`` is the reverse of
     ``rot90(m, k=1, axes=(0,1))``.
 
     ``rot90(m, k=1, axes=(1,0))`` is equivalent to
@@ -2353,8 +2356,7 @@ def rot90(m, k=1, axes=(0, 1)):
     """
 
     dpnp.check_supported_arrays_type(m)
-    if not isinstance(k, (int, dpnp.integer)):
-        raise TypeError("k must be an integer.")
+    k = operator.index(k)
 
     m_ndim = m.ndim
     if m_ndim < 2:
@@ -2384,7 +2386,7 @@ def rot90(m, k=1, axes=(0, 1)):
     )
 
     if k == 1:
-        return dpnp.transpose(flip(m, axes[1]), axes_list)
+        return dpnp.transpose(dpnp.flip(m, axes[1]), axes_list)
 
     # k == 3
     return dpnp.flip(dpnp.transpose(m, axes_list), axes[1])
