@@ -63,7 +63,7 @@ class TestAppend(unittest.TestCase):
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test(self, xp, dtype1, dtype2):
         a = testing.shaped_random((3, 4, 5), xp, dtype1)
         b = testing.shaped_random((6, 7), xp, dtype2)

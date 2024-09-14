@@ -300,7 +300,7 @@ def append(arr, values, axis=None):
     out : dpnp.ndarray
         A copy of `arr` with `values` appended to `axis`. Note that
         `append` does not occur in-place: a new array is allocated and
-        filled. If `axis` is None, `out` is a flattened array.
+        filled. If `axis` is ``None``, `out` is a flattened array.
 
     See Also
     --------
@@ -345,6 +345,89 @@ def append(arr, values, axis=None):
     return dpnp.concatenate((arr, values), axis=axis)
 
 
+def array_split(ary, indices_or_sections, axis=0):
+    """
+    Split an array into multiple sub-arrays.
+
+    Please refer to the :obj:`dpnp.split` documentation. The only difference
+    between these functions is that ``dpnp.array_split`` allows
+    `indices_or_sections` to be an integer that does *not* equally divide the
+    axis. For an array of length l that should be split into n sections, it
+    returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
+    ``l//n``.
+
+    For full documentation refer to :obj:`numpy.array_split`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, and array length is l, it
+        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
+        ``l//n``.
+
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along `axis` the array is split.
+    axis : int, optional
+        The axis along which to split.
+        Default: ``0``.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(8.0)
+    >>> np.array_split(x, 3)
+    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]
+
+    >>> x = np.arange(9)
+    >>> np.array_split(x, 4)
+    [array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    n_tot = ary.shape[axis]
+    try:
+        # handle array case.
+        n_sec = len(indices_or_sections) + 1
+        div_points = [0] + list(indices_or_sections) + [n_tot]
+    except TypeError:
+        # indices_or_sections is a scalar, not an array.
+        n_sec = int(indices_or_sections)
+        if n_sec <= 0:
+            raise ValueError("number sections must be larger than 0.") from None
+        n_each_sec, extras = numpy.divmod(n_tot, n_sec)
+        section_sizes = (
+            [0] + extras * [n_each_sec + 1] + (n_sec - extras) * [n_each_sec]
+        )
+        div_points = dpnp.array(
+            section_sizes,
+            dtype=dpnp.intp,
+            usm_type=ary.usm_type,
+            sycl_queue=ary.sycl_queue,
+        ).cumsum()
+
+    sub_arys = []
+    sary = dpnp.swapaxes(ary, axis, 0)
+    for i in range(n_sec):
+        st = div_points[i]
+        end = div_points[i + 1]
+        sub_arys.append(dpnp.swapaxes(sary[st:end], axis, 0))
+
+    return sub_arys
+
+
 def asarray_chkfinite(
     a, dtype=None, order=None, *, device=None, usm_type=None, sycl_queue=None
 ):
@@ -359,12 +442,12 @@ def asarray_chkfinite(
         Input data, in any form that can be converted to an array. This
         includes lists, lists of tuples, tuples, tuples of tuples, tuples
         of lists and ndarrays. Success requires no NaNs or Infs.
-    dtype : str or dtype object, optional
+    dtype : {None, str, dtype object}, optional
         By default, the data-type is inferred from the input data.
-        default: ``None``.
-    order : {"C", "F", "A", "K"}, optional
+        Default: ``None``.
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
-        Default: "K".
+        Default: ``"K"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -453,89 +536,6 @@ def asarray_chkfinite(
     if dpnp.issubdtype(a.dtype, dpnp.inexact) and not dpnp.isfinite(a).all():
         raise ValueError("array must not contain infs or NaNs")
     return a
-
-
-def array_split(ary, indices_or_sections, axis=0):
-    """
-    Split an array into multiple sub-arrays.
-
-    Please refer to the :obj:`dpnp.split` documentation. The only difference
-    between these functions is that ``dpnp.array_split`` allows
-    `indices_or_sections` to be an integer that does *not* equally divide the
-    axis. For an array of length l that should be split into n sections, it
-    returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
-    ``l//n``.
-
-    For full documentation refer to :obj:`numpy.array_split`.
-
-    Parameters
-    ----------
-    ary : {dpnp.ndarray, usm_ndarray}
-        Array to be divided into sub-arrays.
-    indices_or_sections : {int, sequence of ints}
-        If `indices_or_sections` is an integer, N, and array length is l, it
-        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
-        ``l//n``.
-
-        If `indices_or_sections` is a sequence of sorted integers, the entries
-        indicate where along `axis` the array is split.
-    axis : int, optional
-        The axis along which to split.
-        Default: ``0``.
-
-    Returns
-    -------
-    sub-arrays : list of dpnp.ndarray
-        A list of sub arrays. Each array is a view of the corresponding input
-        array.
-
-    See Also
-    --------
-    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> x = np.arange(8.0)
-    >>> np.array_split(x, 3)
-    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]
-
-    >>> x = np.arange(9)
-    >>> np.array_split(x, 4)
-    [array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8])]
-
-    """
-
-    dpnp.check_supported_arrays_type(ary)
-    n_tot = ary.shape[axis]
-    try:
-        # handle array case.
-        n_sec = len(indices_or_sections) + 1
-        div_points = [0] + list(indices_or_sections) + [n_tot]
-    except TypeError:
-        # indices_or_sections is a scalar, not an array.
-        n_sec = int(indices_or_sections)
-        if n_sec <= 0:
-            raise ValueError("number sections must be larger than 0.") from None
-        n_each_sec, extras = numpy.divmod(n_tot, n_sec)
-        section_sizes = (
-            [0] + extras * [n_each_sec + 1] + (n_sec - extras) * [n_each_sec]
-        )
-        div_points = dpnp.array(
-            section_sizes,
-            dtype=dpnp.intp,
-            usm_type=ary.usm_type,
-            sycl_queue=ary.sycl_queue,
-        ).cumsum()
-
-    sub_arys = []
-    sary = dpnp.swapaxes(ary, axis, 0)
-    for i in range(n_sec):
-        st = div_points[i]
-        end = div_points[i + 1]
-        sub_arys.append(dpnp.swapaxes(sary[st:end], axis, 0))
-
-    return sub_arys
 
 
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
