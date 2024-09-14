@@ -1945,7 +1945,8 @@ def repeat(a, repeats, axis=None):
 
 def require(a, dtype=None, requirements=None, *, like=None):
     """
-    Return an dpnp.ndarray of the provided type that satisfies requirements.
+    Return a :class:`dpnp.ndarray` of the provided type that satisfies
+    requirements.
 
     This function is useful to be sure that an array with the correct flags
     is returned for passing to compiled code (perhaps through ctypes).
@@ -1956,11 +1957,9 @@ def require(a, dtype=None, requirements=None, *, like=None):
     ----------
     a : array_like
        The object to be converted to a type-and-requirement-satisfying array.
-    dtype : data-type, optional
-       The required data-type. If None preserve the current dtype. If your
-       application requires the data to be in native byteorder, include
-       a byteorder specification as a part of the dtype specification.
-    requirements : {str, sequence of str}, , optional
+    dtype : {None, data-type}, optional
+       The required data-type. If ``None`` preserve the current dtype.
+    requirements : {None, str, sequence of str}, optional
        The requirements list can be any of the following:
 
        * 'F_CONTIGUOUS' ('F') - ensure a Fortran-contiguous array
@@ -1980,7 +1979,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
     See Also
     --------
     :obj:`dpnp.asarray` : Convert input to an ndarray.
-    :obj:`dpnp.asanyarray ` : Convert to an ndarray, but pass through
+    :obj:`dpnp.asanyarray` : Convert to an ndarray, but pass through
                         ndarray subclasses.
     :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.
     :obj:`dpnp.asfortranarray` : Convert input to an ndarray with
@@ -1996,7 +1995,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.arange(6).reshape(2,3)
+    >>> x = np.arange(6).reshape(2, 3)
     >>> x.flags
       C_CONTIGUOUS : True
       F_CONTIGUOUS : False
@@ -2024,7 +2023,14 @@ def require(a, dtype=None, requirements=None, *, like=None):
     if not requirements:
         return dpnp.asanyarray(a, dtype=dtype)
 
-    requirements = {possible_flags[x.upper()] for x in requirements}
+    try:
+        requirements = {possible_flags[x.upper()] for x in requirements}
+    except KeyError as exc:
+        incorrect_flag = (set(requirements) - set(possible_flags.keys())).pop()
+        raise ValueError(
+            f"Incorrect flag {incorrect_flag} in requirements"
+        ) from exc
+
     order = "A"
     if requirements.issuperset({"C", "F"}):
         raise ValueError("Cannot specify both 'C' and 'F' order")

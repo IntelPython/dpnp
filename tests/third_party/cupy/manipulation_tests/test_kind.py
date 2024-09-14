@@ -118,12 +118,11 @@ class TestKind(unittest.TestCase):
         with pytest.raises(ValueError):
             cupy.require(x, dtype, ["C", "F"])
 
-    @pytest.mark.skip("dpnp.require() does support requirement ['W']")
     @testing.for_all_dtypes()
     def test_require_incorrect_requirments(self, dtype):
         x = cupy.zeros((2, 3, 4), dtype=dtype)
         with pytest.raises(ValueError):
-            cupy.require(x, dtype, ["W"])
+            cupy.require(x, dtype, ["O"])
 
     @testing.for_all_dtypes()
     def test_require_incorrect_dtype(self, dtype):

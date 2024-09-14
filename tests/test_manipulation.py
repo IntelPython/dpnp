@@ -671,8 +671,8 @@ class TestRequire:
     flag_names = ["C", "C_CONTIGUOUS", "F", "F_CONTIGUOUS", "W"]
 
     def generate_all_false(self, dtype):
-        a_np = numpy.zeros((10, 10))
-        a_dp = dpnp.zeros((10, 10))
+        a_np = numpy.zeros((10, 10), dtype=dtype)
+        a_dp = dpnp.zeros((10, 10), dtype=dtype)
         a_np = a_np[::2, ::2]
         a_dp = a_dp[::2, ::2]
         a_np.flags["W"] = False
@@ -704,7 +704,7 @@ class TestRequire:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_unknown_requirement(self, xp):
         a = self.generate_all_false("f4")
-        assert_raises(KeyError, xp.require, a, None, "Q")
+        assert_raises((KeyError, ValueError), xp.require, a, None, "Q")
 
     def test_non_array_input(self):
         expected = numpy.require([1, 2, 3, 4], "i4", ["C", "W"])
