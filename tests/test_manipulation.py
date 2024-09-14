@@ -685,14 +685,14 @@ class TestRequire:
     def set_and_check_flag(self, flag, dtype, arr):
         if dtype is None:
             dtype = arr[1].dtype
-        a_np = numpy.require(arr[0], dtype, [flag])
-        a_dp = dpnp.require(arr[1], dtype, [flag])
-        assert a_np.flags[flag] == a_dp.flags[flag]
-        assert a_np.dtype == a_dp.dtype
+        result = numpy.require(arr[0], dtype, [flag])
+        expected = dpnp.require(arr[1], dtype, [flag])
+        assert result.flags[flag] == expected.flags[flag]
+        assert result.dtype == expected.dtype
 
         # a further call to dpnp.require ought to return the same array
-        c = dpnp.require(a_dp, None, [flag])
-        assert c is a_dp
+        c = dpnp.require(expected, None, [flag])
+        assert c is expected
 
     def test_require_each(self):
         id = ["f4", "i4"]
@@ -707,18 +707,29 @@ class TestRequire:
         assert_raises(KeyError, xp.require, a, None, "Q")
 
     def test_non_array_input(self):
-        a_np = numpy.require([1, 2, 3, 4], "i4", ["C", "W"])
-        a_dp = dpnp.require([1, 2, 3, 4], "i4", ["C", "W"])
-        assert a_np.flags["C"] == a_dp.flags["C"]
-        assert a_np.flags["F"] == a_dp.flags["F"]
-        assert a_np.flags["W"] == a_dp.flags["W"]
-        assert a_np.dtype == a_dp.dtype
-        assert_array_equal(a_np, a_dp)
+        expected = numpy.require([1, 2, 3, 4], "i4", ["C", "W"])
+        result = dpnp.require([1, 2, 3, 4], "i4", ["C", "W"])
+        assert expected.flags["C"] == result.flags["C"]
+        assert expected.flags["F"] == result.flags["F"]
+        assert expected.flags["W"] == result.flags["W"]
+        assert expected.dtype == result.dtype
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_C_and_F_simul(self, xp):
         a = self.generate_all_false("f4")
         assert_raises(ValueError, xp.require, a, None, ["C", "F"])
+
+    def test_copy(self):
+        a_np = numpy.arange(6).reshape(2, 3)
+        a_dp = dpnp.arange(6).reshape(2, 3)
+        a_np.flags["W"] = False
+        a_dp.flags["W"] = False
+        expected = numpy.require(a_np, requirements=["W", "C"])
+        result = dpnp.require(a_dp, requirements=["W", "C"])
+        # copy is done
+        assert result is not a_dp
+        assert_array_equal(expected, result)
 
 
 class TestTranspose:
