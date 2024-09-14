@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.require &mdash; Data Parallel Extension for NumPy 0.17.0dev0+6.gdb4aac68dcf documentation</title>
+  <title>dpnp.require &mdash; Data Parallel Extension for NumPy 0.17.0dev0+10.gc901ab332b2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=2be6afc4"></script>
+        <script src="../../_static/documentation_options.js?v=34b73367"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+6.gdb4aac68dcf
+                0.17.0dev0+10.gc901ab332b2
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -133,7 +133,8 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.require">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">require</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">requirements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">like</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#require"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.require" title="Link to this definition"></a></dt>
-<dd><p>Return an dpnp.ndarray of the provided type that satisfies requirements.</p>
+<dd><p>Return a <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> of the provided type that satisfies
+requirements.</p>
 <p>This function is useful to be sure that an array with the correct flags
 is returned for passing to compiled code (perhaps through ctypes).</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.require.html#numpy.require" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.require</span></code></a>.</p>
@@ -141,10 +142,8 @@ is returned for passing to compiled code (perhaps through ctypes).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>array_like</em>) -- The object to be converted to a type-and-requirement-satisfying array.</p></li>
-<li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) -- The required data-type. If None preserve the current dtype. If your
-application requires the data to be in native byteorder, include
-a byteorder specification as a part of the dtype specification.</p></li>
-<li><p><strong>requirements</strong> (<em>{str</em><em>, </em><em>sequence</em><em> of </em><em>str}</em><em>, </em><em>, </em><em>optional</em>) -- <p>The requirements list can be any of the following:</p>
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>data-type}</em><em>, </em><em>optional</em>) -- The required data-type. If <code class="docutils literal notranslate"><span class="pre">None</span></code> preserve the current dtype.</p></li>
+<li><p><strong>requirements</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>sequence</em><em> of </em><em>str}</em><em>, </em><em>optional</em>) -- <p>The requirements list can be any of the following:</p>
 <ul>
 <li><p>'F_CONTIGUOUS' ('F') - ensure a Fortran-contiguous array</p></li>
 <li><p>'C_CONTIGUOUS' ('C') - ensure a C-contiguous array</p></li>
@@ -165,18 +164,16 @@ a byteorder specification as a part of the dtype specification.</p></li>
 Otherwise, the function raises <cite>NotImplementedError</cite> exception.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="dpnp.asarray.html#dpnp.asarray" title="dpnp.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asarray</span></code></a> : Convert input to an ndarray.
-:obj:<a href="#id1"><span class="problematic" id="id2">`</span></a>dpnp.asanyarray ` : Convert to an ndarray, but pass through</p>
-<blockquote>
-<div><p>ndarray subclasses.</p>
-</div></blockquote>
-<p><a class="reference internal" href="dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ascontiguousarray</span></code></a> : Convert input to a contiguous array.
-<a class="reference internal" href="dpnp.asfortranarray.html#dpnp.asfortranarray" title="dpnp.asfortranarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></a> : Convert input to an ndarray with</p>
-<blockquote>
-<div><p>column-major memory order.</p>
-</div></blockquote>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.ndarray.flags.html#dpnp.ndarray.flags" title="dpnp.ndarray.flags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flags</span></code></a><span class="classifier">Information about the memory layout</span></dt><dd><p>of the array.</p>
+<dt><a class="reference internal" href="dpnp.asarray.html#dpnp.asarray" title="dpnp.asarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asarray</span></code></a></dt><dd><p>Convert input to an ndarray.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.asanyarray.html#dpnp.asanyarray" title="dpnp.asanyarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asanyarray</span></code></a></dt><dd><p>Convert to an ndarray, but pass through ndarray subclasses.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ascontiguousarray.html#dpnp.ascontiguousarray" title="dpnp.ascontiguousarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ascontiguousarray</span></code></a></dt><dd><p>Convert input to a contiguous array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.asfortranarray.html#dpnp.asfortranarray" title="dpnp.asfortranarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.asfortranarray</span></code></a></dt><dd><p>Convert input to an ndarray with column-major memory order.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.ndarray.flags.html#dpnp.ndarray.flags" title="dpnp.ndarray.flags"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.flags</span></code></a></dt><dd><p>Information about the memory layout of the array.</p>
 </dd>
 </dl>
 </div>
@@ -185,7 +182,7 @@ Otherwise, the function raises <cite>NotImplementedError</cite> exception.</p>
 by making a copy if needed.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">flags</span>
 <span class="go">  C_CONTIGUOUS : True</span>
 <span class="go">  F_CONTIGUOUS : False</span>
