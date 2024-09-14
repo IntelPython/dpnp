@@ -97,11 +97,15 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Extended `dpnp.heaviside` to support `order` and `out` keyword arguments by writing dedicated kernel for it [#2008](https://github.com/IntelPython/dpnp/pull/2008)
 * `dpnp` uses pybind11 2.13.5 [#2010](https://github.com/IntelPython/dpnp/pull/2010)
 * Add `COMPILER_VERSION_2025_OR_LATER` flag to be able to run `dpnp.fft` module with both 2024.2 and 2025.0 versions of the compiler [#2025](https://github.com/IntelPython/dpnp/pull/2025)
+* Cleaned up an implementation of `dpnp.gradient` by removing obsolete TODO which is not going to be done [#2032](https://github.com/IntelPython/dpnp/pull/2032)
+* Updated `Array Manipulation Routines` page in documentation to add missing functions and to remove duplicate entries [#2033](https://github.com/IntelPython/dpnp/pull/2033)
 
 ### Fixed
 
 * Resolved an issue with `dpnp.matmul` when an f_contiguous `out` keyword is passed to the the function [#1872](https://github.com/IntelPython/dpnp/pull/1872)
 * Resolved a possible race condition in `dpnp.inv` [#1940](https://github.com/IntelPython/dpnp/pull/1940)
+* Resolved an issue with failing tests for `dpnp.append` when running on a device without fp64 support [#2034](https://github.com/IntelPython/dpnp/pull/2034)
+
 
 ## [0.15.0] - 05/25/2024
 
