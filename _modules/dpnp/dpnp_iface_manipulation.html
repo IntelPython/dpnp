@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+3.g6ee4cb5b5a9 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+4.g1cba68cb5f1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b68ff6f7"></script>
+        <script src="../../_static/documentation_options.js?v=7ccbeb3c"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+3.g6ee4cb5b5a9
+                0.17.0dev0+4.g1cba68cb5f1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -389,7 +389,7 @@
 <span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        A copy of `arr` with `values` appended to `axis`. Note that</span>
 <span class="sd">        `append` does not occur in-place: a new array is allocated and</span>
-<span class="sd">        filled. If `axis` is None, `out` is a flattened array.</span>
+<span class="sd">        filled. If `axis` is ``None``, `out` is a flattened array.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -435,6 +435,92 @@
 
 
 
+<div class="viewcode-block" id="array_split">
+<a class="viewcode-back" href="../../reference/generated/dpnp.array_split.html#dpnp.array_split">[docs]</a>
+<span class="k">def</span> <span class="nf">array_split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Split an array into multiple sub-arrays.</span>
+
+<span class="sd">    Please refer to the :obj:`dpnp.split` documentation. The only difference</span>
+<span class="sd">    between these functions is that ``dpnp.array_split`` allows</span>
+<span class="sd">    `indices_or_sections` to be an integer that does *not* equally divide the</span>
+<span class="sd">    axis. For an array of length l that should be split into n sections, it</span>
+<span class="sd">    returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size</span>
+<span class="sd">    ``l//n``.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.array_split`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ary : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Array to be divided into sub-arrays.</span>
+<span class="sd">    indices_or_sections : {int, sequence of ints}</span>
+<span class="sd">        If `indices_or_sections` is an integer, N, and array length is l, it</span>
+<span class="sd">        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size</span>
+<span class="sd">        ``l//n``.</span>
+
+<span class="sd">        If `indices_or_sections` is a sequence of sorted integers, the entries</span>
+<span class="sd">        indicate where along `axis` the array is split.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        The axis along which to split.</span>
+<span class="sd">        Default: ``0``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    sub-arrays : list of dpnp.ndarray</span>
+<span class="sd">        A list of sub arrays. Each array is a view of the corresponding input</span>
+<span class="sd">        array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.arange(8.0)</span>
+<span class="sd">    &gt;&gt;&gt; np.array_split(x, 3)</span>
+<span class="sd">    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.arange(9)</span>
+<span class="sd">    &gt;&gt;&gt; np.array_split(x, 4)</span>
+<span class="sd">    [array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8])]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
+    <span class="n">n_tot</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># handle array case.</span>
+        <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">div_points</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">n_tot</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="c1"># indices_or_sections is a scalar, not an array.</span>
+        <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n_sec</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number sections must be larger than 0.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="n">n_each_sec</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">n_tot</span><span class="p">,</span> <span class="n">n_sec</span><span class="p">)</span>
+        <span class="n">section_sizes</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">extras</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_sec</span> <span class="o">-</span> <span class="n">extras</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">div_points</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+            <span class="n">section_sizes</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+
+    <span class="n">sub_arys</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">sary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sec</span><span class="p">):</span>
+        <span class="n">st</span> <span class="o">=</span> <span class="n">div_points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="n">end</span> <span class="o">=</span> <span class="n">div_points</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">sub_arys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">sary</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">sub_arys</span></div>
+
+
+
 <div class="viewcode-block" id="asarray_chkfinite">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asarray_chkfinite.html#dpnp.asarray_chkfinite">[docs]</a>
 <span class="k">def</span> <span class="nf">asarray_chkfinite</span><span class="p">(</span>
@@ -451,12 +537,12 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes lists, lists of tuples, tuples, tuples of tuples, tuples</span>
 <span class="sd">        of lists and ndarrays. Success requires no NaNs or Infs.</span>
-<span class="sd">    dtype : str or dtype object, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        By default, the data-type is inferred from the input data.</span>
-<span class="sd">        default: ``None``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
-<span class="sd">        Default: &quot;K&quot;.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -545,92 +631,6 @@
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must not contain infs or NaNs&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">a</span></div>
-
-
-
-<div class="viewcode-block" id="array_split">
-<a class="viewcode-back" href="../../reference/generated/dpnp.array_split.html#dpnp.array_split">[docs]</a>
-<span class="k">def</span> <span class="nf">array_split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Split an array into multiple sub-arrays.</span>
-
-<span class="sd">    Please refer to the :obj:`dpnp.split` documentation. The only difference</span>
-<span class="sd">    between these functions is that ``dpnp.array_split`` allows</span>
-<span class="sd">    `indices_or_sections` to be an integer that does *not* equally divide the</span>
-<span class="sd">    axis. For an array of length l that should be split into n sections, it</span>
-<span class="sd">    returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size</span>
-<span class="sd">    ``l//n``.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.array_split`.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    ary : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Array to be divided into sub-arrays.</span>
-<span class="sd">    indices_or_sections : {int, sequence of ints}</span>
-<span class="sd">        If `indices_or_sections` is an integer, N, and array length is l, it</span>
-<span class="sd">        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size</span>
-<span class="sd">        ``l//n``.</span>
-
-<span class="sd">        If `indices_or_sections` is a sequence of sorted integers, the entries</span>
-<span class="sd">        indicate where along `axis` the array is split.</span>
-<span class="sd">    axis : int, optional</span>
-<span class="sd">        The axis along which to split.</span>
-<span class="sd">        Default: ``0``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    sub-arrays : list of dpnp.ndarray</span>
-<span class="sd">        A list of sub arrays. Each array is a view of the corresponding input</span>
-<span class="sd">        array.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.arange(8.0)</span>
-<span class="sd">    &gt;&gt;&gt; np.array_split(x, 3)</span>
-<span class="sd">    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]</span>
-
-<span class="sd">    &gt;&gt;&gt; x = np.arange(9)</span>
-<span class="sd">    &gt;&gt;&gt; np.array_split(x, 4)</span>
-<span class="sd">    [array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8])]</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">ary</span><span class="p">)</span>
-    <span class="n">n_tot</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="c1"># handle array case.</span>
-        <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
-        <span class="n">div_points</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">n_tot</span><span class="p">]</span>
-    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-        <span class="c1"># indices_or_sections is a scalar, not an array.</span>
-        <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">n_sec</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number sections must be larger than 0.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
-        <span class="n">n_each_sec</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">n_tot</span><span class="p">,</span> <span class="n">n_sec</span><span class="p">)</span>
-        <span class="n">section_sizes</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">extras</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_sec</span> <span class="o">-</span> <span class="n">extras</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="n">div_points</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="n">section_sizes</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
-            <span class="n">usm_type</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
-
-    <span class="n">sub_arys</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">sary</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_sec</span><span class="p">):</span>
-        <span class="n">st</span> <span class="o">=</span> <span class="n">div_points</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-        <span class="n">end</span> <span class="o">=</span> <span class="n">div_points</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="n">sub_arys</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">sary</span><span class="p">[</span><span class="n">st</span><span class="p">:</span><span class="n">end</span><span class="p">],</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">sub_arys</span></div>
 
 
 
