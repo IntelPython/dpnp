@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.clip
+=================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.clip
