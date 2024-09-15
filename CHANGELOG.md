@@ -108,6 +108,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Add `COMPILER_VERSION_2025_OR_LATER` flag to be able to run `dpnp.fft` module with both 2024.2 and 2025.0 versions of the compiler [#2025](https://github.com/IntelPython/dpnp/pull/2025)
 * Cleaned up an implementation of `dpnp.gradient` by removing obsolete TODO which is not going to be done [#2032](https://github.com/IntelPython/dpnp/pull/2032)
 * Updated `Array Manipulation Routines` page in documentation to add missing functions and to remove duplicate entries [#2033](https://github.com/IntelPython/dpnp/pull/2033)
+* `dpnp` uses pybind11 2.13.6 [#2041](https://github.com/IntelPython/dpnp/pull/2041)
 
 ### Fixed
 
