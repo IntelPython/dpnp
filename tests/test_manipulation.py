@@ -848,7 +848,6 @@ class TestRot90:
             )
 
 
-
 class TestTranspose:
     @pytest.mark.parametrize("axes", [(0, 1), (1, 0), [0, 1]])
     def test_2d_with_axes(self, axes):
