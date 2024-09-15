@@ -39,6 +39,7 @@ it contains:
 
 
 import math
+import operator
 
 import dpctl.tensor as dpt
 import numpy
@@ -78,9 +79,11 @@ __all__ = [
     "repeat",
     "require",
     "reshape",
+    "resize",
     "result_type",
     "roll",
     "rollaxis",
+    "rot90",
     "row_stack",
     "shape",
     "size",
@@ -1511,6 +1514,7 @@ def fliplr(m):
     --------
     :obj:`dpnp.flipud` : Flip an array vertically (axis=0).
     :obj:`dpnp.flip` : Flip array in one or more dimensions.
+    :obj:`dpnp.rot90` : Rotate array counterclockwise.
 
     Examples
     --------
@@ -1561,6 +1565,7 @@ def flipud(m):
     --------
     :obj:`dpnp.fliplr` : Flip array in the left/right direction.
     :obj:`dpnp.flip` : Flip array in one or more dimensions.
+    :obj:`dpnp.rot90` : Rotate array counterclockwise.
 
     Examples
     --------
@@ -2079,7 +2084,8 @@ def reshape(a, /, newshape, order="C", copy=None):
         If ``False``, the result array can never be a copy
         and a ValueError exception will be raised in case the copy is necessary.
         If ``None``, the result array will reuse existing memory buffer of `a`
-        if possible and copy otherwise. Default: None.
+        if possible and copy otherwise.
+        Default: ``None``.
 
     Returns
     -------
@@ -2098,14 +2104,14 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.array([[1, 2, 3], [4, 5, 6]])
-    >>> dp.reshape(a, 6)
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.reshape(a, 6)
     array([1, 2, 3, 4, 5, 6])
-    >>> dp.reshape(a, 6, order='F')
+    >>> np.reshape(a, 6, order='F')
     array([1, 4, 2, 5, 3, 6])
 
-    >>> dp.reshape(a, (3, -1))       # the unspecified value is inferred to be 2
+    >>> np.reshape(a, (3, -1))       # the unspecified value is inferred to be 2
     array([[1, 2],
            [3, 4],
            [5, 6]])
@@ -2123,6 +2129,91 @@ def reshape(a, /, newshape, order="C", copy=None):
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.reshape(usm_a, shape=newshape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_res)
+
+
+def resize(a, new_shape):
+    """
+    Return a new array with the specified shape.
+
+    If the new array is larger than the original array, then the new array is
+    filled with repeated copies of `a`. Note that this behavior is different
+    from ``a.resize(new_shape)`` which fills with zeros instead of repeated
+    copies of `a`.
+
+    For full documentation refer to :obj:`numpy.resize`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to be resized.
+    new_shape : {int, tuple or list of ints}
+        Shape of resized array.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The new array is formed from the data in the old array, repeated
+        if necessary to fill out the required number of elements. The
+        data are repeated iterating over the array in C-order.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.resize` : Resize an array in-place.
+    :obj:`dpnp.reshape` : Reshape an array without changing the total size.
+    :obj:`dpnp.pad` : Enlarge and pad an array.
+    :obj:`dpnp.repeat` : Repeat elements of an array.
+
+    Notes
+    -----
+    When the total size of the array does not change :obj:`dpnp.reshape` should
+    be used. In most other cases either indexing (to reduce the size) or
+    padding (to increase the size) may be a more appropriate solution.
+
+    Warning: This functionality does **not** consider axes separately,
+    i.e. it does not apply interpolation/extrapolation.
+    It fills the return array with the required number of elements, iterating
+    over `a` in C-order, disregarding axes (and cycling back from the start if
+    the new shape is larger). This functionality is therefore not suitable to
+    resize images, or data where each axis represents a separate and distinct
+    entity.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[0, 1], [2, 3]])
+    >>> np.resize(a, (2, 3))
+    array([[0, 1, 2],
+           [3, 0, 1]])
+    >>> np.resize(a, (1, 4))
+    array([[0, 1, 2, 3]])
+    >>> np.resize(a, (2, 4))
+    array([[0, 1, 2, 3],
+           [0, 1, 2, 3]])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    if a.ndim == 0:
+        return dpnp.full_like(a, a, shape=new_shape)
+
+    if isinstance(new_shape, (int, numpy.integer)):
+        new_shape = (new_shape,)
+
+    new_size = 1
+    for dim_length in new_shape:
+        if dim_length < 0:
+            raise ValueError("all elements of `new_shape` must be non-negative")
+        new_size *= dim_length
+
+    a_size = a.size
+    if a_size == 0 or new_size == 0:
+        # First case must zero fill. The second would have repeats == 0.
+        return dpnp.zeros_like(a, shape=new_shape)
+
+    repeats = -(-new_size // a_size)  # ceil division
+    a = dpnp.concatenate((dpnp.ravel(a),) * repeats)[:new_size]
+
+    return a.reshape(new_shape)
 
 
 def result_type(*arrays_and_dtypes):
@@ -2146,16 +2237,16 @@ def result_type(*arrays_and_dtypes):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.arange(3, dtype=dp.int64)
-    >>> b = dp.arange(7, dtype=dp.int32)
-    >>> dp.result_type(a, b)
+    >>> import dpnp as np
+    >>> a = np.arange(3, dtype=np.int64)
+    >>> b = np.arange(7, dtype=np.int32)
+    >>> np.result_type(a, b)
     dtype('int64')
 
-    >>> dp.result_type(dp.int64, dp.complex128)
+    >>> np.result_type(np.int64, np.complex128)
     dtype('complex128')
 
-    >>> dp.result_type(dp.ones(10, dtype=dp.float32), dp.float64)
+    >>> np.result_type(np.ones(10, dtype=np.float32), np.float64)
     dtype('float64')
 
     """
@@ -2292,6 +2383,107 @@ def rollaxis(x, axis, start=0):
         return x
     usm_array = dpnp.get_usm_ndarray(x)
     return dpnp.moveaxis(usm_array, source=axis, destination=start)
+
+
+def rot90(m, k=1, axes=(0, 1)):
+    """
+    Rotate an array by 90 degrees in the plane specified by axes.
+
+    Rotation direction is from the first towards the second axis.
+    This means for a 2D array with the default `k` and `axes`, the
+    rotation will be counterclockwise.
+
+    For full documentation refer to :obj:`numpy.rot90`.
+
+    Parameters
+    ----------
+    m : {dpnp.ndarray, usm_ndarray}
+        Array of two or more dimensions.
+    k : integer, optional
+        Number of times the array is rotated by 90 degrees.
+        Default: ``1``.
+    axes : (2,) array_like of ints, optional
+        The array is rotated in the plane defined by the axes.
+        Axes must be different.
+        Default: ``(0, 1)``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A rotated view of `m`.
+
+    See Also
+    --------
+    :obj:`dpnp.flip` : Reverse the order of elements in an array along
+                    the given axis.
+    :obj:`dpnp.fliplr` : Flip an array horizontally.
+    :obj:`dpnp.flipud` : Flip an array vertically.
+
+    Notes
+    -----
+    ``rot90(m, k=1, axes=(1,0))`` is the reverse of
+    ``rot90(m, k=1, axes=(0,1))``.
+
+    ``rot90(m, k=1, axes=(1,0))`` is equivalent to
+    ``rot90(m, k=-1, axes=(0,1))``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> m = np.array([[1, 2], [3, 4]])
+    >>> m
+    array([[1, 2],
+           [3, 4]])
+    >>> np.rot90(m)
+    array([[2, 4],
+           [1, 3]])
+    >>> np.rot90(m, 2)
+    array([[4, 3],
+           [2, 1]])
+    >>> m = np.arange(8).reshape((2, 2, 2))
+    >>> np.rot90(m, 1, (1, 2))
+    array([[[1, 3],
+            [0, 2]],
+           [[5, 7],
+            [4, 6]]])
+
+    """
+
+    dpnp.check_supported_arrays_type(m)
+    k = operator.index(k)
+
+    m_ndim = m.ndim
+    if m_ndim < 2:
+        raise ValueError("Input must be at least 2-d.")
+
+    if len(axes) != 2:
+        raise ValueError("len(axes) must be 2.")
+
+    if axes[0] == axes[1] or abs(axes[0] - axes[1]) == m_ndim:
+        raise ValueError("Axes must be different.")
+
+    if not (-m_ndim <= axes[0] < m_ndim and -m_ndim <= axes[1] < m_ndim):
+        raise ValueError(
+            f"Axes={axes} out of range for array of ndim={m_ndim}."
+        )
+
+    k %= 4
+    if k == 0:
+        return m[:]
+    if k == 2:
+        return dpnp.flip(dpnp.flip(m, axes[0]), axes[1])
+
+    axes_list = list(range(0, m_ndim))
+    (axes_list[axes[0]], axes_list[axes[1]]) = (
+        axes_list[axes[1]],
+        axes_list[axes[0]],
+    )
+
+    if k == 1:
+        return dpnp.transpose(dpnp.flip(m, axes[1]), axes_list)
+
+    # k == 3
+    return dpnp.flip(dpnp.transpose(m, axes_list), axes[1])
 
 
 def shape(a):

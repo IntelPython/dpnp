@@ -4,7 +4,7 @@ import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from numpy.testing import assert_array_equal, assert_raises
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
 from tests.third_party.cupy import testing
@@ -730,6 +730,123 @@ class TestRequire:
         # copy is done
         assert result is not a_dp
         assert_array_equal(expected, result)
+
+
+class TestResize:
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([[1, 2], [3, 4]], (2, 4)),
+            pytest.param([[1, 2], [3, 4], [1, 2], [3, 4]], (4, 2)),
+            pytest.param([[1, 2, 3], [4, 1, 2], [3, 4, 1], [2, 3, 4]], (4, 3)),
+        ],
+    )
+    def test_copies(self, data, shape):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
+
+    @pytest.mark.parametrize("newshape", [(2, 4), [2, 4], (10,), 10])
+    def test_newshape_type(self, newshape):
+        a = numpy.array([[1, 2], [3, 4]])
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, newshape), numpy.resize(a, newshape))
+
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([1, 2, 3], (2, 4)),
+            pytest.param([[1, 2], [3, 1], [2, 3], [1, 2]], (4, 2)),
+            pytest.param([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]], (4, 3)),
+        ],
+    )
+    def test_repeats(self, data, shape):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
+
+    def test_zeroresize(self):
+        a = numpy.array([[1, 2], [3, 4]])
+        ia = dpnp.array(a)
+        assert_array_equal(dpnp.resize(ia, (0,)), numpy.resize(a, (0,)))
+        assert_equal(a.dtype, ia.dtype)
+
+        assert_equal(dpnp.resize(ia, (0, 2)), numpy.resize(a, (0, 2)))
+        assert_equal(dpnp.resize(ia, (2, 0)), numpy.resize(a, (2, 0)))
+
+    def test_reshape_from_zero(self):
+        a = numpy.zeros(0, dtype=numpy.float32)
+        ia = dpnp.array(a)
+        assert_array_equal(dpnp.resize(ia, (2, 1)), numpy.resize(a, (2, 1)))
+        assert_equal(a.dtype, ia.dtype)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_negative_resize(self, xp):
+        a = xp.arange(0, 10, dtype=xp.float32)
+        new_shape = (-10, -1)
+        with pytest.raises(ValueError, match=r"negative"):
+            xp.resize(a, new_shape=new_shape)
+
+
+class TestRot90:
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_error(self, xp):
+        assert_raises(ValueError, xp.rot90, xp.ones(4))
+        assert_raises(ValueError, xp.rot90, xp.ones((2, 2, 2)), axes=(0, 1, 2))
+        assert_raises(ValueError, xp.rot90, xp.ones((2, 2)), axes=(0, 2))
+        assert_raises(ValueError, xp.rot90, xp.ones((2, 2)), axes=(1, 1))
+        assert_raises(ValueError, xp.rot90, xp.ones((2, 2, 2)), axes=(-2, 1))
+
+    def test_error_float_k(self):
+        assert_raises(TypeError, dpnp.rot90, dpnp.ones((2, 2)), k=2.5)
+
+    def test_basic(self):
+        a = numpy.array([[0, 1, 2], [3, 4, 5]])
+        ia = dpnp.array(a)
+
+        for k in range(-3, 13, 4):
+            assert_equal(dpnp.rot90(ia, k=k), numpy.rot90(a, k=k))
+        for k in range(-2, 13, 4):
+            assert_equal(dpnp.rot90(ia, k=k), numpy.rot90(a, k=k))
+        for k in range(-1, 13, 4):
+            assert_equal(dpnp.rot90(ia, k=k), numpy.rot90(a, k=k))
+        for k in range(0, 13, 4):
+            assert_equal(dpnp.rot90(ia, k=k), numpy.rot90(a, k=k))
+
+        assert_equal(dpnp.rot90(dpnp.rot90(ia, axes=(0, 1)), axes=(1, 0)), ia)
+        assert_equal(
+            dpnp.rot90(ia, k=1, axes=(1, 0)), dpnp.rot90(ia, k=-1, axes=(0, 1))
+        )
+
+    def test_axes(self):
+        a = numpy.ones((50, 40, 3))
+        ia = dpnp.array(a)
+        assert_equal(dpnp.rot90(ia), numpy.rot90(a))
+        assert_equal(dpnp.rot90(ia, axes=(0, 2)), dpnp.rot90(ia, axes=(0, -1)))
+        assert_equal(dpnp.rot90(ia, axes=(1, 2)), dpnp.rot90(ia, axes=(-2, -1)))
+
+    @pytest.mark.parametrize(
+        "axes", [(1, 2), [1, 2], numpy.array([1, 2]), dpnp.array([1, 2])]
+    )
+    def test_axes_type(self, axes):
+        a = numpy.ones((50, 40, 3))
+        ia = dpnp.array(a)
+        assert_equal(dpnp.rot90(ia, axes=axes), numpy.rot90(a, axes=axes))
+
+    def test_rotation_axes(self):
+        a = numpy.arange(8).reshape((2, 2, 2))
+        ia = dpnp.array(a)
+
+        assert_equal(dpnp.rot90(ia, axes=(0, 1)), numpy.rot90(a, axes=(0, 1)))
+        assert_equal(dpnp.rot90(ia, axes=(1, 0)), numpy.rot90(a, axes=(1, 0)))
+        assert_equal(dpnp.rot90(ia, axes=(1, 2)), numpy.rot90(a, axes=(1, 2)))
+
+        for k in range(1, 5):
+            assert_equal(
+                dpnp.rot90(ia, k=k, axes=(2, 0)),
+                numpy.rot90(a, k=k, axes=(2, 0)),
+            )
+
 
 
 class TestTranspose:
