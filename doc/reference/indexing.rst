@@ -1,14 +1,13 @@
 .. _routines.indexing:
+.. _arrays.indexing:
 
-Array Indexing Routines
-=======================
+Indexing routines
+=================
 
-.. https://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
+.. https://numpy.org/doc/stable/reference/routines.indexing.html
 
 Generating index arrays
 -----------------------
-
-
 .. autosummary::
    :toctree: generated/
    :nosignatures:
