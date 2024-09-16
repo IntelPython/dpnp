@@ -1,0 +1,6 @@
+﻿dpnp.amax
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: amax
