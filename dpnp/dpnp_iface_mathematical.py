@@ -627,7 +627,7 @@ ceil = DPNPUnaryFunc(
 )
 
 
-def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
+def clip(a, /, a_min=None, a_max=None, *, out=None, order="K", **kwargs):
     """
     Clip (limit) the values in an array.
 
@@ -639,8 +639,10 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
         Array containing elements to clip.
     a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
         Minimum and maximum value. If ``None``, clipping is not performed on
-        the corresponding edge. Only one of `a_min` and `a_max` may be
-        ``None``. Both are broadcast against `a`.
+        the corresponding edge. If both ``a_min`` and ``a_max`` are ``None``,
+        the elements of the returned array stay the same.
+        Both are broadcast against `a`.
+        Default : ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array
         for in-place clipping. `out` must be of the right shape to hold the
@@ -686,9 +688,6 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
 
     if kwargs:
         raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
-
-    if a_min is None and a_max is None:
-        raise ValueError("One of max or min must be given")
 
     if order is None:
         order = "K"
