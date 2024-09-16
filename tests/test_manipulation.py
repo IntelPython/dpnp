@@ -701,24 +701,26 @@ class TestRequire:
             a = self.generate_all_false(idtype)
             self.set_and_check_flag(flag, fdtype, a)
 
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_unknown_requirement(self, xp):
+    def test_unknown_requirement(self):
         a = self.generate_all_false("f4")
-        assert_raises((KeyError, ValueError), xp.require, a, None, "Q")
+        assert_raises(KeyError, numpy.require, a[0], None, "Q")
+        assert_raises(ValueError, dpnp.require, a[1], None, "Q")
 
     def test_non_array_input(self):
-        expected = numpy.require([1, 2, 3, 4], "i4", ["C", "W"])
-        result = dpnp.require([1, 2, 3, 4], "i4", ["C", "W"])
+        a_np = numpy.array([1, 2, 3, 4])
+        a_dp = dpnp.array(a_np)
+        expected = numpy.require(a_np, "i4", ["C", "W"])
+        result = dpnp.require(a_dp, "i4", ["C", "W"])
         assert expected.flags["C"] == result.flags["C"]
         assert expected.flags["F"] == result.flags["F"]
         assert expected.flags["W"] == result.flags["W"]
         assert expected.dtype == result.dtype
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_C_and_F_simul(self, xp):
+    def test_C_and_F_simul(self):
         a = self.generate_all_false("f4")
-        assert_raises(ValueError, xp.require, a, None, ["C", "F"])
+        assert_raises(ValueError, numpy.require, a[0], None, ["C", "F"])
+        assert_raises(ValueError, dpnp.require, a[1], None, ["C", "F"])
 
     def test_copy(self):
         a_np = numpy.arange(6).reshape(2, 3)

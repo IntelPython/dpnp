@@ -1960,8 +1960,9 @@ def require(a, dtype=None, requirements=None, *, like=None):
 
     Parameters
     ----------
-    a : array_like
-       The object to be converted to a type-and-requirement-satisfying array.
+    a : {dpnp.ndarray, usm_ndarray}
+       The input array to be converted to a type-and-requirement-satisfying
+       array.
     dtype : {None, data-type}, optional
        The required data-type. If ``None`` preserve the current dtype.
     requirements : {None, str, sequence of str}, optional
@@ -2015,6 +2016,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
     """
 
     dpnp.check_limitations(like=like)
+    dpnp.check_supported_arrays_type(a)
 
     possible_flags = {
         "C": "C",
