@@ -934,7 +934,7 @@ def ix_(*args):
     and the dimension with the non-unit shape value cycles through all
     N dimensions.
 
-    Using  :obj:`dpnp.ix_` one can quickly construct index arrays that will
+    Using :obj:`dpnp.ix_` one can quickly construct index arrays that will
     index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
     ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.
 
@@ -994,6 +994,7 @@ def ix_(*args):
     """
 
     dpnp.check_supported_arrays_type(*args)
+
     out = []
     nd = len(args)
     for k, new in enumerate(args):
@@ -1001,7 +1002,7 @@ def ix_(*args):
             raise ValueError("Cross index must be 1 dimensional")
         if dpnp.issubdtype(new.dtype, dpnp.bool):
             (new,) = dpnp.nonzero(new)
-        new = new.reshape((1,) * k + (new.size,) + (1,) * (nd - k - 1))
+        new = dpnp.reshape(new, (1,) * k + (new.size,) + (1,) * (nd - k - 1))
         out.append(new)
     return tuple(out)
 
