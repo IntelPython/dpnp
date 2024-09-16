@@ -108,21 +108,6 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_pa
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
 
-tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_AxisConcatenator_init1
-tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_len
-tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1
-tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_2
-tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_3
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_1
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_2
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_3
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_4
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_5
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_6
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_7
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_8
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_9
-
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
 
