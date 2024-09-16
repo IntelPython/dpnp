@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.require &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.gaca421e89f7 documentation</title>
+  <title>dpnp.require &mdash; Data Parallel Extension for NumPy 0.17.0dev0+20.gb00078298af documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=45f3e8b6"></script>
+        <script src="../../_static/documentation_options.js?v=868f4c84"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+17.gaca421e89f7
+                0.17.0dev0+20.gb00078298af
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -77,7 +77,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
@@ -141,7 +141,8 @@ is returned for passing to compiled code (perhaps through ctypes).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>array_like</em>) -- The object to be converted to a type-and-requirement-satisfying array.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The input array to be converted to a type-and-requirement-satisfying
+array.</p></li>
 <li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>data-type}</em><em>, </em><em>optional</em>) -- The required data-type. If <code class="docutils literal notranslate"><span class="pre">None</span></code> preserve the current dtype.</p></li>
 <li><p><strong>requirements</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>, </em><em>sequence</em><em> of </em><em>str}</em><em>, </em><em>optional</em>) -- <p>The requirements list can be any of the following:</p>
 <ul>

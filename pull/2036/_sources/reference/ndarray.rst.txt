@@ -34,7 +34,7 @@ Indexing arrays
 Arrays can be indexed using an extended Python slicing syntax,
 ``array[selection]``.
 
-.. seealso:: :ref:`Array Indexing Routines <routines.indexing>`.
+.. seealso:: :ref:`Indexing routines <routines.indexing>`.
 
 
 Array attributes
