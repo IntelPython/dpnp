@@ -495,6 +495,7 @@ def test_meshgrid(device):
         ),
         pytest.param("real_if_close", [2.1 + 4e-15j, 5.2 + 3e-16j]),
         pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("rot90", [[1, 2], [3, 4]]),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
         pytest.param(
@@ -1282,6 +1283,20 @@ def test_out_multi_dot(device):
 
         _, exec_q = get_usm_allocations(dpnp_array_list)
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_resize(device):
+    dpnp_data = dpnp.arange(10, device=device)
+    result = dpnp.resize(dpnp_data, (2, 5))
+
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
 
 
 class TestFft:

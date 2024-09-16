@@ -38,6 +38,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Added implementation of `dpnp.array_split`, `dpnp.split`, `dpnp.hsplit`, `dpnp.vsplit`, and `dpnp.dsplit` functions [#2017](https://github.com/IntelPython/dpnp/pull/2017)
 * Added runtime dependency on `intel-gpu-ocl-icd-system` package [#2023](https://github.com/IntelPython/dpnp/pull/2023)
 * Added implementation of `dpnp.ravel_multi_index` and `dpnp.unravel_index` functions [#2022](https://github.com/IntelPython/dpnp/pull/2022)
+* Added implementation of `dpnp.resize` and `dpnp.rot90` functions [#2030](https://github.com/IntelPython/dpnp/pull/2030)
 
 ### Change
 
@@ -96,10 +97,11 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Added `copy` keyword to `dpnp.array` to align with NumPy 2.0  [#2006](https://github.com/IntelPython/dpnp/pull/2006)
 * Extended `dpnp.heaviside` to support `order` and `out` keyword arguments by writing dedicated kernel for it [#2008](https://github.com/IntelPython/dpnp/pull/2008)
 * `dpnp` uses pybind11 2.13.5 [#2010](https://github.com/IntelPython/dpnp/pull/2010)
-* Add `COMPILER_VERSION_2025_OR_LATER` flag to be able to run `dpnp.fft` module with both 2024.2 and 2025.0 versions of the compiler [#2025](https://github.com/IntelPython/dpnp/pull/2025)
+* Added `COMPILER_VERSION_2025_OR_LATER` flag to be able to run `dpnp.fft` module with both 2024.2 and 2025.0 versions of the compiler [#2025](https://github.com/IntelPython/dpnp/pull/2025)
 * Cleaned up an implementation of `dpnp.gradient` by removing obsolete TODO which is not going to be done [#2032](https://github.com/IntelPython/dpnp/pull/2032)
 * Updated `Array Manipulation Routines` page in documentation to add missing functions and to remove duplicate entries [#2033](https://github.com/IntelPython/dpnp/pull/2033)
 * `dpnp` uses pybind11 2.13.6 [#2041](https://github.com/IntelPython/dpnp/pull/2041)
+* Updated `dpnp.fft` backend to depend on `INTEL_MKL_VERSION` flag to ensures that the appropriate code segment is executed based on the version of OneMKL [#2035](https://github.com/IntelPython/dpnp/pull/2035)
 
 ### Fixed
 
