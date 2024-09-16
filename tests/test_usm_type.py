@@ -1014,6 +1014,19 @@ def test_eigenvalue(func, shape, usm_type):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_require(usm_type):
+    dpnp_data = dp.arange(10, usm_type=usm_type).reshape(2, 5)
+    result = dp.require(dpnp_data, dtype="f4", requirements=["F"])
+    assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+    # No requirements
+    result = dp.require(dpnp_data, dtype="f4")
+    assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_resize(usm_type):
     dpnp_data = dp.arange(10, usm_type=usm_type)
     result = dp.resize(dpnp_data, (2, 5))

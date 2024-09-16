@@ -39,6 +39,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Added runtime dependency on `intel-gpu-ocl-icd-system` package [#2023](https://github.com/IntelPython/dpnp/pull/2023)
 * Added implementation of `dpnp.ravel_multi_index` and `dpnp.unravel_index` functions [#2022](https://github.com/IntelPython/dpnp/pull/2022)
 * Added implementation of `dpnp.resize` and `dpnp.rot90` functions [#2030](https://github.com/IntelPython/dpnp/pull/2030)
+* Added implementation of `dpnp.require` function [#2036](https://github.com/IntelPython/dpnp/pull/2036)
 
 ### Change
 
