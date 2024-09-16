@@ -1,5 +1,6 @@
 import functools
 
+import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
@@ -12,6 +13,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
 from .helper import get_all_dtypes, get_integer_dtypes, has_support_aspect64
 
@@ -285,22 +287,42 @@ class TestIx:
         expected = dpnp.ix_(dpnp.array(x0), dpnp.array(x1))
         result = numpy.ix_(numpy.array(x0), numpy.array(x1))
 
-        assert_array_equal(expected[0], result[0])
-        assert_array_equal(expected[1], result[1])
+        assert_array_equal(result[0], expected[0])
+        assert_array_equal(result[1], expected[1])
 
-    def test_ix_empty_out(self):
-        (a,) = dpnp.ix_(dpnp.array([], dtype=dpnp.intp))
-        assert_equal(a.dtype, dpnp.intp)
+    @pytest.mark.parametrize("dt", [dpnp.intp, dpnp.float32])
+    def test_ix_empty_out(self, dt):
+        a = numpy.array([], dtype=dt)
+        ia = dpnp.array(a)
 
-        (a,) = dpnp.ix_(dpnp.array([], dtype=dpnp.float32))
-        assert_equal(a.dtype, dpnp.float32)
+        (result,) = dpnp.ix_(ia)
+        (expected,) = numpy.ix_(a)
+        assert_array_equal(result, expected)
+        assert a.dtype == dt
 
-    def test_ix_error(self):
-        with pytest.raises(ValueError):
-            dpnp.ix_(dpnp.ones(()))
+    def test_repeated_input(self):
+        a = numpy.arange(5)
+        ia = dpnp.array(a)
 
-        with pytest.raises(ValueError):
-            dpnp.ix_(dpnp.ones((2, 2)))
+        result = dpnp.ix_(ia, ia)
+        expected = numpy.ix_(a, a)
+        assert_array_equal(result[0], expected[0])
+        assert_array_equal(result[1], expected[1])
+
+    @pytest.mark.parametrize("arr", [[2, 4, 0, 1], [True, False, True, True]])
+    def test_usm_ndarray_input(self, arr):
+        a = numpy.array(arr)
+        ia = dpt.asarray(a)
+
+        (result,) = dpnp.ix_(ia)
+        (expected,) = numpy.ix_(a)
+        assert_array_equal(result, expected)
+        assert isinstance(result, dpnp_array)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [(), (2, 2)])
+    def test_ix_error(self, xp, shape):
+        assert_raises(ValueError, xp.ix_, xp.ones(shape))
 
 
 class TestNonzero:
