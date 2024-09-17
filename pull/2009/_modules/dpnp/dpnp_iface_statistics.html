@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.ga51f56b57a documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.g762e8aca622 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d8df1f6"></script>
+        <script src="../../_static/documentation_options.js?v=8b297d33"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+157.ga51f56b57a
+                0.17.0dev0+17.g762e8aca622
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -286,16 +286,18 @@
 
 <span class="sd">        The only constraint on `weights` is that `sum(weights)` must not be 0.</span>
 <span class="sd">    returned : {bool}, optional</span>
-<span class="sd">        Default is ``False``. If ``True``, the tuple (`average`,</span>
-<span class="sd">        `sum_of_weights`) is returned, otherwise only the average is returned.</span>
-<span class="sd">        If `weights=None`, `sum_of_weights` is equivalent to the number of</span>
-<span class="sd">        elements over which the average is taken.</span>
+<span class="sd">        If ``True``, the tuple (`average`, `sum_of_weights`) is returned,</span>
+<span class="sd">        otherwise only the average is returned. If `weights=None`,</span>
+<span class="sd">        `sum_of_weights` is equivalent to the number of elements over which</span>
+<span class="sd">        the average is taken.</span>
+<span class="sd">        Default: ``False``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
 <span class="sd">        compatible with the input array according to Array Broadcasting</span>
 <span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
-<span class="sd">        the returned array. Default: ``False``.</span>
+<span class="sd">        the returned array.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

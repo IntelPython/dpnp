@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.concatenate &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.ga51f56b57a documentation</title>
+  <title>dpnp.concatenate &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.g762e8aca622 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,14 +24,14 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d8df1f6"></script>
+        <script src="../../_static/documentation_options.js?v=8b297d33"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.stack" href="dpnp.stack.html" />
-    <link rel="prev" title="dpnp.asfortranarray" href="dpnp.asfortranarray.html" /> 
+    <link rel="next" title="dpnp.concat" href="dpnp.concat.html" />
+    <link rel="prev" title="dpnp.require" href="dpnp.require.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+157.ga51f56b57a
+                0.17.0dev0+17.g762e8aca622
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -77,7 +77,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
@@ -134,14 +134,16 @@
 <dt class="sig sig-object py" id="dpnp.concatenate">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">concatenate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'same_kind'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#concatenate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.concatenate" title="Link to this definition"></a></dt>
 <dd><p>Join a sequence of arrays along an existing axis.</p>
+<p>Note that <a class="reference internal" href="dpnp.concat.html#dpnp.concat" title="dpnp.concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.concat</span></code></a> is an alias of <a class="reference internal" href="#dpnp.concatenate" title="dpnp.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.concatenate</span></code></a>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.concatenate</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>arrays</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- The arrays must have the same shape, except in the dimension
+<li><p><strong>arrays</strong> (<em>{Sequence</em><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray}</em>) -- The arrays must have the same shape, except in the dimension
 corresponding to axis (the first, by default).</p></li>
 <li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- The axis along which the arrays will be joined. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
-arrays are flattened before use. Default is 0.</p></li>
+arrays are flattened before use.
+Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 <li><p><strong>out</strong> (<em>dpnp.ndarray</em><em>, </em><em>optional</em>) -- If provided, the destination to place the result. The shape must be
 correct, matching that of what concatenate would have returned
 if no out argument were specified.</p></li>
@@ -160,15 +162,15 @@ provided together with <cite>out</cite>.</p></li>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array_split</span></code></dt><dd><p>Split an array into multiple sub-arrays of equal or near-equal size.</p>
+<dt><a class="reference internal" href="dpnp.array_split.html#dpnp.array_split" title="dpnp.array_split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array_split</span></code></a></dt><dd><p>Split an array into multiple sub-arrays of equal or near-equal size.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.split</span></code></dt><dd><p>Split array into a list of multiple sub-arrays of equal size.</p>
+<dt><a class="reference internal" href="dpnp.split.html#dpnp.split" title="dpnp.split"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.split</span></code></a></dt><dd><p>Split array into a list of multiple sub-arrays of equal size.</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.hsplit</span></code></dt><dd><p>Split array into multiple sub-arrays horizontally (column wise).</p>
+<dt><a class="reference internal" href="dpnp.hsplit.html#dpnp.hsplit" title="dpnp.hsplit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.hsplit</span></code></a></dt><dd><p>Split array into multiple sub-arrays horizontally (column wise).</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vsplit</span></code></dt><dd><p>Split array into multiple sub-arrays vertically (row wise).</p>
+<dt><a class="reference internal" href="dpnp.vsplit.html#dpnp.vsplit" title="dpnp.vsplit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vsplit</span></code></a></dt><dd><p>Split array into multiple sub-arrays vertically (row wise).</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dsplit</span></code></dt><dd><p>Split array into multiple sub-arrays along the 3rd axis (depth).</p>
+<dt><a class="reference internal" href="dpnp.dsplit.html#dpnp.dsplit" title="dpnp.dsplit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dsplit</span></code></a></dt><dd><p>Split array into multiple sub-arrays along the 3rd axis (depth).</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.stack.html#dpnp.stack" title="dpnp.stack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.stack</span></code></a></dt><dd><p>Stack a sequence of arrays along a new axis.</p>
 </dd>
@@ -207,8 +209,8 @@ provided together with <cite>out</cite>.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.asfortranarray.html" class="btn btn-neutral float-left" title="dpnp.asfortranarray" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.stack.html" class="btn btn-neutral float-right" title="dpnp.stack" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.require.html" class="btn btn-neutral float-left" title="dpnp.require" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.concat.html" class="btn btn-neutral float-right" title="dpnp.concat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

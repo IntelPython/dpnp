@@ -44,6 +44,7 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::GetrfTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::GetriBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::GetrsTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
+    [ "dpnp::kernels::heaviside::HeavisideFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ],
     [ "dpnp::extensions::lapack::types::HeevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
     [ "std::integral_constant", null, [
       [ "is_complex< _Tp >", "structis__complex.html", null ]

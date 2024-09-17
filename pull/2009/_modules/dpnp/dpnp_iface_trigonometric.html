@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.ga51f56b57a documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.g762e8aca622 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d8df1f6"></script>
+        <script src="../../_static/documentation_options.js?v=8b297d33"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+157.ga51f56b57a
+                0.17.0dev0+17.g762e8aca622
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -149,6 +149,13 @@
     <span class="s2">&quot;arctan&quot;</span><span class="p">,</span>
     <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
     <span class="s2">&quot;arctanh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;asin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;asinh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;acos&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;acosh&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;atan&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;atan2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;atanh&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cbrt&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cos&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cosh&quot;</span><span class="p">,</span>
@@ -191,8 +198,11 @@
     <span class="k">return</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
-<span class="n">_ACOS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ACOS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse cosine for each element `x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.cos` so that, if ``y = cos(x)``, then ``x = arccos(y)``.</span>
+<span class="s2">Note that :obj:`dpnp.acos` is an alias of :obj:`dpnp.arccos`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arccos`.</span>
 
@@ -228,6 +238,22 @@
 <span class="s2">:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.</span>
 <span class="s2">:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.arccos` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that ``cos(z) = x``. The convention is to return the</span>
+<span class="s2">angle `z` whose real part lies in `[0, pi]`.</span>
+
+<span class="s2">For real-valued input data types, :obj:`dpnp.arccos` always returns real output.</span>
+<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
+<span class="s2">``nan``.</span>
+
+<span class="s2">For complex-valued input, :obj:`dpnp.arccos` is a complex analytic function that</span>
+<span class="s2">has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous</span>
+<span class="s2">from above on the former and from below on the latter.</span>
+
+<span class="s2">The inverse cos is also known as :math:`acos` or :math:`cos^{-1}`.</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -245,9 +271,14 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acos&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">acos</span> <span class="o">=</span> <span class="n">arccos</span>  <span class="c1"># acos is an alias for arccos</span>
 
-<span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.cosh` so that, if ``y = cosh(x)``, then ``x = arccosh(y)``.</span>
+<span class="s2">Note that :obj:`dpnp.acosh` is an alias of :obj:`dpnp.arccosh`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arccosh`.</span>
 
@@ -279,9 +310,26 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.arccosh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that ``cosh(z) = x``. The convention is to return the</span>
+<span class="s2">angle `z` whose real part lies in `[0, inf]`.</span>
+
+<span class="s2">For real-valued input data types, :obj:`dpnp.arccosh` always returns real output.</span>
+<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
+<span class="s2">``nan``.</span>
+
+<span class="s2">For complex-valued input, :obj:`dpnp.arccosh` is a complex analytic function that</span>
+<span class="s2">has, by convention, the branch cuts `[-inf, 1]` and is continuous from above.</span>
+
+<span class="s2">The inverse hyperbolic cos is also known as :math:`acosh` or :math:`cosh^{-1}`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -300,9 +348,14 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acosh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">acosh</span> <span class="o">=</span> <span class="n">arccosh</span>  <span class="c1"># acosh is an alias for arccosh</span>
 
-<span class="n">_ASIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_ASIN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse sine for each element `x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.sin`, so that if ``y = sin(x)`` then ``x = arcsin(y)``.</span>
+<span class="s2">Note that :obj:`dpnp.asin` is an alias of :obj:`dpnp.arcsin`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arcsin`.</span>
 
@@ -334,9 +387,28 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.arcsin` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that ``sin(z) = x``. The convention is to return the</span>
+<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+
+<span class="s2">For real-valued input data types, :obj:`dpnp.arcsin` always returns real output.</span>
+<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
+<span class="s2">``nan``.</span>
+
+<span class="s2">For complex-valued input, :obj:`dpnp.arcsin` is a complex analytic function that</span>
+<span class="s2">has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous</span>
+<span class="s2">from above on the former and from below on the latter.</span>
+
+<span class="s2">The inverse sine is also known as :math:`asin` or :math:`sin^{-1}`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -355,9 +427,14 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asin&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">asin</span> <span class="o">=</span> <span class="n">arcsin</span>  <span class="c1"># asin is an alias for arcsin</span>
 
-<span class="n">_ASINH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_ASINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse hyperbolic sine for each element `x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.sinh`, so that if ``y = sinh(x)`` then ``x = arcsinh(y)``.</span>
+<span class="s2">Note that :obj:`dpnp.asinh` is an alias of :obj:`dpnp.arcsinh`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arcsinh`.</span>
 
@@ -393,6 +470,23 @@
 <span class="s2">:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.arcsinh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that ``sin(z) = x``. The convention is to return the</span>
+<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+
+<span class="s2">For real-valued input data types, :obj:`dpnp.arcsinh` always returns real output.</span>
+<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
+<span class="s2">``nan``.</span>
+
+<span class="s2">For complex-valued input, :obj:`dpnp.arcsinh` is a complex analytic function that</span>
+<span class="s2">has, by convention, the branch cuts `[1j, infj]` and `[`1j, -infj]` and is continuous</span>
+<span class="s2">from above on the former and from below on the latter.</span>
+
+<span class="s2">The inverse hyperbolic sine is also known as :math:`asinh` or :math:`sinh^{-1}`.</span>
+
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -410,9 +504,14 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_asinh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">asinh</span> <span class="o">=</span> <span class="n">arcsinh</span>  <span class="c1"># asinh is an alias for arcsinh</span>
 
-<span class="n">_ATAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_ATAN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes inverse tangent for each element `x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.tan`, so that if ``y = tan(x)`` then ``x = arctan(y)``.</span>
+<span class="s2">Note that :obj:`dpnp.atan` is an alias of :obj:`dpnp.arctan`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arctan`.</span>
 
@@ -450,6 +549,22 @@
 <span class="s2">:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.arctan` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that ``tan(z) = x``. The convention is to return the</span>
+<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+
+<span class="s2">For real-valued input data types, :obj:`dpnp.arctan` always returns real output.</span>
+<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
+<span class="s2">``nan``.</span>
+
+<span class="s2">For complex-valued input, :obj:`dpnp.arctan` is a complex analytic function that</span>
+<span class="s2">has, by convention, the branch cuts `[1j, infj]` and `[-1j, -infj]`  and is continuous</span>
+<span class="s2">from the left on the former and from the right on the latter.</span>
+
+<span class="s2">The inverse tan is also known as :math:`atan` or :math:`tan^{-1}`.</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -467,11 +582,17 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">atan</span> <span class="o">=</span> <span class="n">arctan</span>  <span class="c1"># atan is an alias for arctan</span>
+
 
 <span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element</span>
 <span class="s2">`x1_i` of the input array `x1` with the respective element `x2_i` of the</span>
 <span class="s2">input array `x2`. Each element-wise result is expressed in radians.</span>
+
+<span class="s2">Note that :obj:`dpnp.atan2` is an alias of :obj:`dpnp.arctan2`.</span>
+<span class="s2">This function is not defined for complex-valued arguments; for the so-called</span>
+<span class="s2">argument of complex values, use :obj:`dpnp.angle`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arctan2`.</span>
 
@@ -543,9 +664,14 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan2&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">atan2</span> <span class="o">=</span> <span class="n">arctan2</span>  <span class="c1"># atan2 is an alias for arctan2</span>
 
-<span class="n">_ATANH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">_ATANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.</span>
+
+<span class="s2">The inverse of :obj:`dpnp.tanh`, so that if ``y = tanh(x)`` then ``x = arctanh(y)``.</span>
+<span class="s2">Note that :obj:`dpnp.atanh` is an alias of :obj:`dpnp.arctanh`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.arctanh`.</span>
 
@@ -581,6 +707,22 @@
 <span class="s2">:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">:obj:`dpnp.arctanh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that ``tanh(z) = x``. The convention is to return the</span>
+<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+
+<span class="s2">For real-valued input data types, :obj:`dpnp.arctanh` always returns real output.</span>
+<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
+<span class="s2">``nan``.</span>
+
+<span class="s2">For complex-valued input, :obj:`dpnp.arctanh` is a complex analytic function that</span>
+<span class="s2">has, by convention, the branch cuts `[-1, -inf]` and `[1, inf]` and is is continuous</span>
+<span class="s2">from above on the former and from below on the latter.</span>
+
+<span class="s2">The inverse hyperbolic tan is also known as :math:`atanh` or :math:`tanh^{-1}`.</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -597,6 +739,8 @@
     <span class="n">mkl_fn_to_call</span><span class="o">=</span><span class="s2">&quot;_mkl_atanh_to_call&quot;</span><span class="p">,</span>
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atanh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="n">atanh</span> <span class="o">=</span> <span class="n">arctanh</span>  <span class="c1"># atanh is an alias for arctanh</span>
 
 
 <span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -1476,7 +1620,7 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.log` : Natural logarithm, element-wise.</span>
 <span class="s2">:obj:`dpnp.exp` : Exponential, element-wise.</span>
-<span class="s2">:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiations of inputs in</span>
+<span class="s2">:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiation of inputs in</span>
 <span class="s2">                        base-2, element-wise.</span>
 <span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the</span>
 <span class="s2">                        input array.</span>
@@ -1546,9 +1690,9 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiations of</span>
+<span class="s2">:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiation of</span>
 <span class="s2">                       inputs, element-wise.</span>
-<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiations of the inputs.</span>
+<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiation of the inputs.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2307,10 +2451,10 @@
 <span class="sd">    p : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    discont : {float, None}, optional</span>
-<span class="sd">        Maximum discontinuity between values, default is ``period / 2``. Values</span>
-<span class="sd">        below ``period / 2`` are treated as if they were ``period / 2``. To</span>
-<span class="sd">        have an effect different from the default, `discont` should be larger</span>
-<span class="sd">        than ``period / 2``.</span>
+<span class="sd">        Maximum discontinuity between values, default is ``None`` which is an</span>
+<span class="sd">        alias for ``period / 2``. Values below ``period / 2`` are treated as if</span>
+<span class="sd">        they were ``period / 2``. To have an effect different from the default,</span>
+<span class="sd">        `discont` should be larger than ``period / 2``.</span>
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis along which unwrap will operate, default is the last axis.</span>

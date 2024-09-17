@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.ga51f56b57a documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.g762e8aca622 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d8df1f6"></script>
+        <script src="../../_static/documentation_options.js?v=8b297d33"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+157.ga51f56b57a
+                0.17.0dev0+17.g762e8aca622
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -190,6 +190,7 @@
     <span class="s2">&quot;fmin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
     <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
@@ -200,6 +201,7 @@
     <span class="s2">&quot;negative&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nextafter&quot;</span><span class="p">,</span>
     <span class="s2">&quot;positive&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pow&quot;</span><span class="p">,</span>
     <span class="s2">&quot;power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;prod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;proj&quot;</span><span class="p">,</span>
@@ -312,8 +314,7 @@
         <span class="c1"># fix the shape for broadcasting</span>
         <span class="n">shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">ndim</span>
         <span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
-        <span class="c1"># TODO: use shape.setter once dpctl#1699 is resolved</span>
-        <span class="c1"># a.shape = b.shape = c.shape = shape</span>
+
         <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
         <span class="n">c</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
@@ -1851,7 +1852,7 @@
 <span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
 <span class="s2">element-wise maxima.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then the non-nan element is</span>
+<span class="s2">If one of the elements being compared is a NaN, then the non-NaN element is</span>
 <span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
 <span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
 <span class="s2">the real or imaginary parts being a NaN. The net effect is that NaNs are</span>
@@ -1899,7 +1900,7 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">The fmax is equivalent to ``dpnp.where(x1 &gt;= x2, x1, x2)`` when neither</span>
+<span class="s2">``fmax(x1, x2)`` is equivalent to ``dpnp.where(x1 &gt;= x2, x1, x2)`` when neither</span>
 <span class="s2">`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.</span>
 
 <span class="s2">Examples</span>
@@ -1936,7 +1937,7 @@
 <span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
 <span class="s2">element-wise minima.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then the non-nan element is</span>
+<span class="s2">If one of the elements being compared is a NaN, then the non-NaN element is</span>
 <span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
 <span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
 <span class="s2">the real or imaginary parts being a NaN. The net effect is that NaNs are</span>
@@ -1984,7 +1985,7 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">The fmin is equivalent to ``dpnp.where(x1 &lt;= x2, x1, x2)`` when neither</span>
+<span class="s2">``fmin(x1, x2)`` is equivalent to ``dpnp.where(x1 &lt;= x2, x1, x2)`` when neither</span>
 <span class="s2">`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.</span>
 
 <span class="s2">Examples</span>
@@ -2294,6 +2295,62 @@
         <span class="k">return</span> <span class="n">outvals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">outvals</span><span class="p">)</span></div>
 
+
+
+<span class="n">_HEAVISIDE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Compute the Heaviside step function.</span>
+
+<span class="s2">The Heaviside step function is defined as::</span>
+
+<span class="s2">                          0   if x1 &lt; 0</span>
+<span class="s2">    heaviside(x1, x2) =  x2   if x1 == 0</span>
+<span class="s2">                          1   if x1 &gt; 0</span>
+
+<span class="s2">where `x2` is often taken to be 0.5, but 0 and 1 are also sometimes used.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Input values.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    The value of the function when `x1` is ``0``.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The output array, element-wise Heaviside step function of `x1`.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; a = np.array([-1.5, 0, 2.0])</span>
+<span class="s2">&gt;&gt;&gt; np.heaviside(a, 0.5)</span>
+<span class="s2">array([0. , 0.5, 1. ])</span>
+<span class="s2">&gt;&gt;&gt; np.heaviside(a, 1)</span>
+<span class="s2">array([0., 1., 1.])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">heaviside</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside</span><span class="p">,</span>
+    <span class="n">_HEAVISIDE_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">_IMAG_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
@@ -2624,7 +2681,7 @@
 <span class="k">def</span> <span class="nf">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace ``NaN`` with zero and infinity with large finite numbers (default</span>
-<span class="sd">    behaviour) or with the numbers defined by the user using the `nan`,</span>
+<span class="sd">    behavior) or with the numbers defined by the user using the `nan`,</span>
 <span class="sd">    `posinf` and/or `neginf` keywords.</span>
 
 <span class="sd">    If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value</span>
@@ -2935,6 +2992,8 @@
 <span class="s2">Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array</span>
 <span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
 
+<span class="s2">Note that :obj:`dpnp.pow` is an alias of :obj:`dpnp.power`.</span>
+
 <span class="s2">For full documentation refer to :obj:`numpy.power`.</span>
 
 <span class="s2">Parameters</span>
@@ -3017,6 +3076,8 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_pow&quot;</span><span class="p">,</span>
     <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_pow_inplace</span><span class="p">,</span>
 <span class="p">)</span>
+
+<span class="nb">pow</span> <span class="o">=</span> <span class="n">power</span>  <span class="c1"># pow is an alias for power</span>
 
 
 <div class="viewcode-block" id="prod">

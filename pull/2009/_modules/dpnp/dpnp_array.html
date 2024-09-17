@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.ga51f56b57a documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.g762e8aca622 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d8df1f6"></script>
+        <script src="../../_static/documentation_options.js?v=8b297d33"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+157.ga51f56b57a
+                0.17.0dev0+17.g762e8aca622
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -282,27 +282,61 @@
     <span class="c1"># &#39;__divmod__&#39;,</span>
     <span class="c1"># &#39;__doc__&#39;,</span>
 
-    <span class="k">def</span> <span class="nf">__dlpack__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__dlpack__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">max_version</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dl_device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Produces DLPack capsule.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 <span class="sd">        stream : {:class:`dpctl.SyclQueue`, None}, optional</span>
-<span class="sd">            Execution queue to synchronize with. If ``None``,</span>
-<span class="sd">            synchronization is not performed.</span>
+<span class="sd">            Execution queue to synchronize with. If ``None``, synchronization</span>
+<span class="sd">            is not performed.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        max_version {tuple of ints, None}, optional</span>
+<span class="sd">            The maximum DLPack version the consumer (caller of ``__dlpack__``)</span>
+<span class="sd">            supports. As ``__dlpack__`` may not always return a DLPack capsule</span>
+<span class="sd">            with version `max_version`, the consumer must verify the version</span>
+<span class="sd">            even if this argument is passed.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        dl_device {tuple, None}, optional:</span>
+<span class="sd">            The device the returned DLPack capsule will be placed on. The</span>
+<span class="sd">            device must be a 2-tuple matching the format of</span>
+<span class="sd">            ``__dlpack_device__`` method, an integer enumerator representing</span>
+<span class="sd">            the device type followed by an integer representing the index of</span>
+<span class="sd">            the device.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        copy {bool, None}, optional:</span>
+<span class="sd">            Boolean indicating whether or not to copy the input.</span>
+
+<span class="sd">            * If `copy` is ``True``, the input will always be copied.</span>
+<span class="sd">            * If ``False``, a ``BufferError`` will be raised if a copy is</span>
+<span class="sd">              deemed necessary.</span>
+<span class="sd">            * If ``None``, a copy will be made only if deemed necessary,</span>
+<span class="sd">              otherwise, the existing memory buffer will be reused.</span>
+
+<span class="sd">            Default: ``None``.</span>
 
 <span class="sd">        Raises</span>
 <span class="sd">        ------</span>
-<span class="sd">        MemoryError</span>
+<span class="sd">        MemoryError:</span>
 <span class="sd">            when host memory can not be allocated.</span>
-<span class="sd">        DLPackCreationError</span>
-<span class="sd">            when array is allocated on a partitioned</span>
-<span class="sd">            SYCL device, or with a non-default context.</span>
+<span class="sd">        DLPackCreationError:</span>
+<span class="sd">            when array is allocated on a partitioned SYCL device, or with</span>
+<span class="sd">            a non-default context.</span>
+<span class="sd">        BufferError:</span>
+<span class="sd">            when a copy is deemed necessary but `copy` is ``False`` or when</span>
+<span class="sd">            the provided `dl_device` cannot be handled.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack__</span><span class="p">(</span><span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">__dlpack__</span><span class="p">(</span>
+            <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span>
+            <span class="n">max_version</span><span class="o">=</span><span class="n">max_version</span><span class="p">,</span>
+            <span class="n">dl_device</span><span class="o">=</span><span class="n">dl_device</span><span class="p">,</span>
+            <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__dlpack_device__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1074,14 +1108,14 @@
 <span class="sd">            Read the elements using this index order, and place the elements</span>
 <span class="sd">            into the reshaped array using this index order.</span>
 
-<span class="sd">                - &quot;C&quot; means to read / write the elements using C-like index</span>
+<span class="sd">                - ``&quot;C&quot;`` means to read / write the elements using C-like index</span>
 <span class="sd">                  order, with the last axis index changing fastest, back to the</span>
 <span class="sd">                  first axis index changing slowest.</span>
-<span class="sd">                - &quot;F&quot; means to read / write the elements using Fortran-like</span>
+<span class="sd">                - ``&quot;F&quot;`` means to read / write the elements using Fortran-like</span>
 <span class="sd">                  index order, with the first index changing fastest, and the</span>
 <span class="sd">                  last index changing slowest.</span>
 
-<span class="sd">            The default is ``&quot;C&quot;``.</span>
+<span class="sd">            Default: ``&quot;C&quot;``.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
@@ -1272,7 +1306,33 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">ndim</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of array dimensions.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the number of dimensions of an array.</span>
+
+<span class="sd">        For full documentation refer to :obj:`numpy.ndarray.ndim`.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        number_of_dimensions : int</span>
+<span class="sd">            The number of dimensions in `a`.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.ndim` : Equivalent method for any array-like input.</span>
+<span class="sd">        :obj:`dpnp.shape` : Return the shape of an array.</span>
+<span class="sd">        :obj:`dpnp.ndarray.shape` : Return the shape of an array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.array([1, 2, 3])</span>
+<span class="sd">        &gt;&gt;&gt; x.ndim</span>
+<span class="sd">        1</span>
+<span class="sd">        &gt;&gt;&gt; y = np.zeros((2, 3, 4))</span>
+<span class="sd">        &gt;&gt;&gt; y.ndim</span>
+<span class="sd">        3</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">ndim</span>
 
@@ -1573,7 +1633,29 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Number of elements in the array.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Number of elements in the array.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        element_count : int</span>
+<span class="sd">            Number of elements in the array.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.size` : Return the number of elements along a given axis.</span>
+<span class="sd">        :obj:`dpnp.shape` : Return the shape of an array.</span>
+<span class="sd">        :obj:`dpnp.ndarray.shape` : Return the shape of an array.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; x = np.zeros((3, 5, 2), dtype=np.complex64)</span>
+<span class="sd">        &gt;&gt;&gt; x.size</span>
+<span class="sd">        30</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">size</span>
 
 <div class="viewcode-block" id="dpnp_array.sort">

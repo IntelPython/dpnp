@@ -12,12 +12,12 @@ Standard FFTs
    :toctree: generated/
    :nosignatures:
 
-   dpnp.fft.fft
-   dpnp.fft.ifft
-   dpnp.fft.fft2
-   dpnp.fft.ifft2
-   dpnp.fft.fftn
-   dpnp.fft.ifftn
+   fft
+   ifft
+   fft2
+   ifft2
+   fftn
+   ifftn
 
 
 Real FFTs
@@ -27,12 +27,12 @@ Real FFTs
    :toctree: generated/
    :nosignatures:
 
-   dpnp.fft.rfft
-   dpnp.fft.irfft
-   dpnp.fft.rfft2
-   dpnp.fft.irfft2
-   dpnp.fft.rfftn
-   dpnp.fft.irfftn
+   rfft
+   irfft
+   rfft2
+   irfft2
+   rfftn
+   irfftn
 
 
 Hermitian FFTs
@@ -42,8 +42,8 @@ Hermitian FFTs
    :toctree: generated/
    :nosignatures:
 
-   dpnp.fft.hfft
-   dpnp.fft.ihfft
+   hfft
+   ihfft
 
 
 Helper routines
@@ -53,10 +53,10 @@ Helper routines
    :toctree: generated/
    :nosignatures:
 
-   dpnp.fft.fftfreq
-   dpnp.fft.rfftfreq
-   dpnp.fft.fftshift
-   dpnp.fft.ifftshift
+   fftfreq
+   rfftfreq
+   fftshift
+   ifftshift
 
    .. fft.config module is not implemented yet
    .. dpnp.fft.config.set_cufft_callbacks
@@ -65,3 +65,4 @@ Helper routines
    .. dpnp.fft.config.show_plan_cache_info
 
 .. automodule:: dpnp.fft
+    :no-index:

@@ -44,7 +44,7 @@ You will need one of the commands below:
 
 * Conda: ``conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge``
 
-* Pip: ``python -m pip install --index-url https://pypi.anaconda.org/intel/simple dpnp``
+* Pip: ``python -m pip install dpnp``
 
 These commands install dpnp package along with its dependencies, including
 ``dpctl`` package with `Data Parallel Control Library`_ and all required
@@ -116,6 +116,27 @@ Alternatively, to develop on Linux OS, you can use the driver script:
 
     python scripts/build_locally.py
 
+Building for custom SYCL targets
+--------------------------------
+Project ``dpnp`` is written using generic SYCL and supports building for multiple SYCL targets,
+subject to limitations of `CodePlay <https://codeplay.com/>`_ plugins implementing SYCL
+programming model for classes of devices.
+
+Building ``dpnp`` for these targets requires that these CodePlay plugins be installed into DPC++
+installation layout of compatible version. The following plugins from CodePlay are supported:
+
+    - `oneAPI for NVIDIA(R) GPUs <codeplay_nv_plugin_>`_
+
+.. _codeplay_nv_plugin: https://developer.codeplay.com/products/oneapi/nvidia/
+
+Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
+<https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
+
+Build ``dpnp`` as follows:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --target=cuda
 
 Testing
 =======

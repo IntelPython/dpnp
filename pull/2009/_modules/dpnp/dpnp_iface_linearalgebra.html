@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.ga51f56b57a documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.g762e8aca622 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d8df1f6"></script>
+        <script src="../../_static/documentation_options.js?v=8b297d33"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+157.ga51f56b57a
+                0.17.0dev0+17.g762e8aca622
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -258,11 +258,16 @@
 <div class="viewcode-block" id="einsum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.einsum.html#dpnp.einsum">[docs]</a>
 <span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span>
-    <span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="kc">False</span>
+    <span class="o">*</span><span class="n">operands</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span>
+    <span class="n">optimize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum(subscripts, *operands, out=None, dtype=None, order=&quot;K&quot;, \</span>
-<span class="sd">        casting=&quot;safe&quot;, optimize=False)</span>
+<span class="sd">        casting=&quot;same_kind&quot;, optimize=False)</span>
 
 <span class="sd">    Evaluates the Einstein summation convention on the operands.</span>
 
@@ -281,14 +286,14 @@
 <span class="sd">        If provided, the calculation is done into this array.</span>
 <span class="sd">    dtype : {dtype, None}, optional</span>
 <span class="sd">        If provided, forces the calculation to use the data type specified.</span>
-<span class="sd">        Default is ``None``.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Controls the memory layout of the output. ``&quot;C&quot;`` means it should be</span>
 <span class="sd">        C-contiguous. ``&quot;F&quot;`` means it should be F-contiguous, ``&quot;A&quot;`` means</span>
 <span class="sd">        it should be ``&quot;F&quot;`` if the inputs are all ``&quot;F&quot;``, ``&quot;C&quot;`` otherwise.</span>
 <span class="sd">        ``&quot;K&quot;`` means it should be as close to the layout as the inputs as</span>
 <span class="sd">        is possible, including arbitrarily permuted axes.</span>
-<span class="sd">        Default is ``&quot;K&quot;``.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Setting this to</span>
 <span class="sd">        ``&quot;unsafe&quot;`` is not recommended, as it can adversely affect</span>
@@ -301,12 +306,17 @@
 <span class="sd">            like float64 to float32, are allowed.</span>
 <span class="sd">          * ``&quot;unsafe&quot;`` means any data conversions may be done.</span>
 
-<span class="sd">        Default is ``&quot;safe&quot;``.</span>
+<span class="sd">        Please note that, in contrast to NumPy, the default setting here is</span>
+<span class="sd">        ``&quot;same_kind&quot;``. This is to prevent errors that may occur when data</span>
+<span class="sd">        needs to be converted to `float64`, but the device does not support it.</span>
+<span class="sd">        In such cases, the data is instead converted to `float32`.</span>
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 <span class="sd">    optimize : {False, True, &quot;greedy&quot;, &quot;optimal&quot;}, optional</span>
 <span class="sd">        Controls if intermediate optimization should occur. No optimization</span>
 <span class="sd">        will occur if ``False`` and ``True`` will default to the ``&quot;greedy&quot;``</span>
 <span class="sd">        algorithm. Also accepts an explicit contraction list from the</span>
-<span class="sd">        :obj:`dpnp.einsum_path` function. Default is ``False``.</span>
+<span class="sd">        :obj:`dpnp.einsum_path` function.</span>
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -551,7 +561,7 @@
 <span class="sd">          the number of terms in the contraction. Equivalent to the</span>
 <span class="sd">          ``&quot;optimal&quot;`` path for most contractions.</span>
 
-<span class="sd">        Default is ``&quot;greedy&quot;``.</span>
+<span class="sd">        Default: ``&quot;greedy&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -843,16 +853,18 @@
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        a shape that matches the signature `(n,k),(k,m)-&gt;(n,m)` but the type</span>
-<span class="sd">        (of the calculated values) will be cast if necessary. Default: ``None``.</span>
+<span class="sd">        (of the calculated values) will be cast if necessary.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
 <span class="sd">        array will have data type that is determined by considering</span>
 <span class="sd">        Promotion Type Rule and device capabilities.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
-<span class="sd">        Controls what kind of data casting may occur. Default: ``&quot;same_kind&quot;``.</span>
+<span class="sd">        Controls what kind of data casting may occur.</span>
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
-<span class="sd">        Default: &quot;K&quot;.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    axes : {list of tuples}, optional</span>
 <span class="sd">        A list of tuples with indices of axes the matrix product should operate</span>
 <span class="sd">        on. For instance, for the signature of ``(i,j),(j,k)-&gt;(i,k)``, the base</span>

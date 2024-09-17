@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.select &mdash; Data Parallel Extension for NumPy 0.16.0dev0+157.ga51f56b57a documentation</title>
+  <title>dpnp.select &mdash; Data Parallel Extension for NumPy 0.17.0dev0+17.g762e8aca622 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=7d8df1f6"></script>
+        <script src="../../_static/documentation_options.js?v=8b297d33"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.16.0dev0+157.ga51f56b57a
+                0.17.0dev0+17.g762e8aca622
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -65,7 +65,7 @@
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../indexing.html">Array Indexing Routines</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../indexing.html">Indexing routines</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../indexing.html#generating-index-arrays">Generating index arrays</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="../indexing.html#indexing-like-operations">Indexing-like operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../indexing.html#inserting-data-into-arrays">Inserting data into arrays</a></li>
@@ -111,7 +111,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../indexing.html">Array Indexing Routines</a></li>
+          <li class="breadcrumb-item"><a href="../indexing.html">Indexing routines</a></li>
       <li class="breadcrumb-item active">dpnp.select</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.select.rst.txt" rel="nofollow"> View page source</a>
@@ -130,9 +130,67 @@
 <dd><p>Return an array drawn from elements in <cite>choicelist</cite>, depending on
 conditions.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.select.html#numpy.select" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.select</span></code></a>.</p>
-<p class="rubric">Limitations</p>
-<p>Arrays of input lists are supported as <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.
-Parameter <cite>default</cite> is supported only with default values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>condlist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><em>bool dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of conditions which determine from which array in <cite>choicelist</cite>
+the output elements are taken. When multiple conditions are satisfied,
+the first one encountered in <cite>condlist</cite> is used.</p></li>
+<li><p><strong>choicelist</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray</em>) -- The list of arrays from which the output elements are taken. It has
+to be of the same length as <cite>condlist</cite>.</p></li>
+<li><p><strong>default</strong> (<em>{scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- The element inserted in <cite>output</cite> when all conditions evaluate to
+<code class="docutils literal notranslate"><span class="pre">False</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- The output at position m is the m-th element of the array in
+<cite>choicelist</cite> where the m-th element of the corresponding array in
+<cite>condlist</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.where.html#dpnp.where" title="dpnp.where"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.where</span></code></a></dt><dd><p>Return elements from one of two arrays depending on condition.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.take.html#dpnp.take" title="dpnp.take"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.take</span></code></a></dt><dd><p>Take elements from an array along an axis.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.choose.html#dpnp.choose" title="dpnp.choose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.choose</span></code></a></dt><dd><p>Construct an array from an index array and a set of arrays to choose from.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.compress</span></code></dt><dd><p>Return selected slices of an array along given axis.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.diag.html#dpnp.diag" title="dpnp.diag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diag</span></code></a></dt><dd><p>Extract a diagonal or construct a diagonal array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></a></dt><dd><p>Return specified diagonals.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>Beginning with an array of integers from 0 to 5 (inclusive),
+elements less than <code class="docutils literal notranslate"><span class="pre">3</span></code> are negated, elements greater than <code class="docutils literal notranslate"><span class="pre">3</span></code>
+are squared, and elements not meeting either of these conditions
+(exactly <code class="docutils literal notranslate"><span class="pre">3</span></code>) are replaced with a <cite>default</cite> value of <code class="docutils literal notranslate"><span class="pre">42</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">&lt;</span><span class="mi">3</span><span class="p">,</span> <span class="n">x</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">choicelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+<span class="go">array([ 0,  1,  2, 42, 16, 25])</span>
+</pre></div>
+</div>
+<p>When multiple conditions are satisfied, the first one encountered in
+<cite>condlist</cite> is used.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">condlist</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">&lt;=</span><span class="mi">4</span><span class="p">,</span> <span class="n">x</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">choicelist</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">**</span><span class="mi">2</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">condlist</span><span class="p">,</span> <span class="n">choicelist</span><span class="p">,</span> <span class="mi">55</span><span class="p">)</span>
+<span class="go">array([ 0,  1,  2,  3,  4, 25])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
