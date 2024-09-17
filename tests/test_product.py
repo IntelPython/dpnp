@@ -741,7 +741,7 @@ class TestKron:
     @pytest.mark.parametrize(
         "stride", [3, -1, -2, -4], ids=["3", "-1", "-2", "-4"]
     )
-    def test_kron_strided(self, dtype, stride):
+    def test_kron_strided1(self, dtype, stride):
         a = numpy.arange(20, dtype=dtype)
         b = numpy.arange(20, dtype=dtype)
         ia = dpnp.array(a)
@@ -749,6 +749,32 @@ class TestKron:
 
         result = dpnp.kron(ia[::stride], ib[::stride])
         expected = numpy.kron(a[::stride], b[::stride])
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("stride", [2, -1, -2], ids=["2", "-1", "-2"])
+    def test_kron_strided2(self, stride):
+        a = numpy.arange(48).reshape(6, 8)
+        b = numpy.arange(480).reshape(6, 8, 10)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.kron(
+            ia[::stride, ::stride], ib[::stride, ::stride, ::stride]
+        )
+        expected = numpy.kron(
+            a[::stride, ::stride], b[::stride, ::stride, ::stride]
+        )
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["C", "F", "A"])
+    def test_kron_order(self, order):
+        a = numpy.arange(48).reshape(6, 8, order=order)
+        b = numpy.arange(480).reshape(6, 8, 10, order=order)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.kron(ia, ib)
+        expected = numpy.kron(a, b)
         assert_dtype_allclose(result, expected)
 
 
