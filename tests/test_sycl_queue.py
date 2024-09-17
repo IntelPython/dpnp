@@ -1290,6 +1290,26 @@ def test_out_multi_dot(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_require(device):
+    dpnp_data = dpnp.arange(10, device=device).reshape(2, 5)
+    result = dpnp.require(dpnp_data, dtype="f4", requirements=["F"])
+
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+    # No requirements
+    result = dpnp.require(dpnp_data, dtype="f4")
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_resize(device):
     dpnp_data = dpnp.arange(10, device=device)
     result = dpnp.resize(dpnp_data, (2, 5))

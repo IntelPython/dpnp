@@ -1,3 +1,5 @@
+import itertools
+
 import dpctl.tensor as dpt
 import numpy
 import pytest
@@ -663,6 +665,73 @@ class TestRepeat:
         expected = a.repeat(reps)
         result = ia.repeat(reps)
         assert_array_equal(result, expected)
+
+
+class TestRequire:
+    flag_names = ["C", "C_CONTIGUOUS", "F", "F_CONTIGUOUS", "W"]
+
+    def generate_all_false(self, dtype):
+        a_np = numpy.zeros((10, 10), dtype=dtype)
+        a_dp = dpnp.zeros((10, 10), dtype=dtype)
+        a_np = a_np[::2, ::2]
+        a_dp = a_dp[::2, ::2]
+        a_np.flags["W"] = False
+        a_dp.flags["W"] = False
+        assert not a_dp.flags["C"]
+        assert not a_dp.flags["F"]
+        assert not a_dp.flags["W"]
+        return a_np, a_dp
+
+    def set_and_check_flag(self, flag, dtype, arr):
+        if dtype is None:
+            dtype = arr[1].dtype
+        result = numpy.require(arr[0], dtype, [flag])
+        expected = dpnp.require(arr[1], dtype, [flag])
+        assert result.flags[flag] == expected.flags[flag]
+        assert result.dtype == expected.dtype
+
+        # a further call to dpnp.require ought to return the same array
+        c = dpnp.require(expected, None, [flag])
+        assert c is expected
+
+    def test_require_each(self):
+        id = ["f4", "i4"]
+        fd = [None, "f4", "c8"]
+        for idtype, fdtype, flag in itertools.product(id, fd, self.flag_names):
+            a = self.generate_all_false(idtype)
+            self.set_and_check_flag(flag, fdtype, a)
+
+    def test_unknown_requirement(self):
+        a = self.generate_all_false("f4")
+        assert_raises(KeyError, numpy.require, a[0], None, "Q")
+        assert_raises(ValueError, dpnp.require, a[1], None, "Q")
+
+    def test_non_array_input(self):
+        a_np = numpy.array([1, 2, 3, 4])
+        a_dp = dpnp.array(a_np)
+        expected = numpy.require(a_np, "i4", ["C", "W"])
+        result = dpnp.require(a_dp, "i4", ["C", "W"])
+        assert expected.flags["C"] == result.flags["C"]
+        assert expected.flags["F"] == result.flags["F"]
+        assert expected.flags["W"] == result.flags["W"]
+        assert expected.dtype == result.dtype
+        assert_array_equal(expected, result)
+
+    def test_C_and_F_simul(self):
+        a = self.generate_all_false("f4")
+        assert_raises(ValueError, numpy.require, a[0], None, ["C", "F"])
+        assert_raises(ValueError, dpnp.require, a[1], None, ["C", "F"])
+
+    def test_copy(self):
+        a_np = numpy.arange(6).reshape(2, 3)
+        a_dp = dpnp.arange(6).reshape(2, 3)
+        a_np.flags["W"] = False
+        a_dp.flags["W"] = False
+        expected = numpy.require(a_np, requirements=["W", "C"])
+        result = dpnp.require(a_dp, requirements=["W", "C"])
+        # copy is done
+        assert result is not a_dp
+        assert_array_equal(expected, result)
 
 
 class TestResize:
