@@ -477,10 +477,12 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
             "supported types"
         )
 
-    a_casted = a.astype(a_bin_dtype, order="C", copy=False)
-    bin_edges_casted = bin_edges.astype(a_bin_dtype, order="C", copy=False)
+    a_casted = dpnp.astype(a, a_bin_dtype, order="C", copy=False)
+    bin_edges_casted = dpnp.astype(
+        bin_edges, a_bin_dtype, order="C", copy=False
+    )
     weights_casted = (
-        weights.astype(hist_dtype, order="C", copy=False)
+        dpnp.astype(weights, hist_dtype, order="C", copy=False)
         if weights is not None
         else None
     )
@@ -516,7 +518,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     if usm_type != n_usm_type:
         n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
     else:
-        n = n_casted.astype(ntype, copy=False)
+        n = dpnp.astype(n_casted, ntype, copy=False)
 
     if density:
         # pylint: disable=possibly-used-before-assignment

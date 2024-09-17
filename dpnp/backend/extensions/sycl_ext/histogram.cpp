@@ -31,10 +31,12 @@
 #include <unordered_map>
 #include <vector>
 
-// dpctl tensor headers
-#include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+
+// dpctl tensor headers
+#include "dpctl4pybind11.hpp"
+#include "utils/type_dispatch.hpp"
 
 #include "histogram.hpp"
 #include "histogram_common.hpp"
