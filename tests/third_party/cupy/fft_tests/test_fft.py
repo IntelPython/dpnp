@@ -122,7 +122,7 @@ class TestFftOrder:
             [
                 # some of the following cases are modified, since in NumPy 2.0.0
                 # `s` must contain only integer `s`, not None values, and
-                # If `s` is not None, `axes`` must not be None either.
+                # If `s` is not None, `axes` must not be None either.
                 {"shape": (3, 4), "s": None, "axes": None},
                 {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
                 {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
@@ -142,8 +142,8 @@ class TestFftOrder:
                 # {"shape": (0, 5), "s": None, "axes": None}, # mkl_fft gh-110
                 # {"shape": (2, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
                 # {"shape": (0, 0, 5), "s": None, "axes": None}, # mkl_fft gh-110
-                {"shape": (3, 4), "s": (0, 5), "axes": None},
-                {"shape": (3, 4), "s": (1, 0), "axes": None},
+                {"shape": (3, 4), "s": (0, 5), "axes": (0, 1)},
+                {"shape": (3, 4), "s": (1, 0), "axes": (0, 1)},
             ],
             testing.product(
                 {"norm": [None, "backward", "ortho", "forward", ""]}
@@ -208,7 +208,7 @@ class TestFft2:
             [
                 # some of the following cases are modified, since in NumPy 2.0.0
                 # `s` must contain only integer `s`, not None values, and
-                # If `s` is not None, `axes`` must not be None either.
+                # If `s` is not None, `axes` must not be None either.
                 {"shape": (3, 4), "s": None, "axes": None},
                 {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
                 {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
@@ -341,7 +341,7 @@ class TestRfft:
             [
                 # some of the following cases are modified, since in NumPy 2.0.0
                 # `s` must contain only integer `s`, not None values, and
-                # If `s` is not None, `axes`` must not be None either.
+                # If `s` is not None, `axes` must not be None either.
                 {"shape": (3, 4), "s": None, "axes": None},
                 {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
                 {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},
@@ -434,7 +434,7 @@ class TestRfft2EmptyAxes:
             [
                 # some of the following cases are modified, since in NumPy 2.0.0
                 # `s` must contain only integer `s`, not None values, and
-                # If `s` is not None, `axes`` must not be None either.
+                # If `s` is not None, `axes` must not be None either.
                 {"shape": (3, 4), "s": None, "axes": None},
                 {"shape": (3, 4), "s": (1, 4), "axes": (0, 1)},
                 {"shape": (3, 4), "s": (1, 5), "axes": (0, 1)},

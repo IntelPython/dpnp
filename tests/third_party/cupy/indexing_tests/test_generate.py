@@ -23,6 +23,7 @@ class TestIndices(unittest.TestCase):
     def test_indices_list2(self, xp, dtype):
         return xp.indices((1, 2, 3, 4), dtype)
 
+    @testing.with_requires("numpy>=1.24")
     def test_indices_list3(self):
         for xp in (numpy, cupy):
             with pytest.raises((ValueError, TypeError)):
@@ -30,6 +31,7 @@ class TestIndices(unittest.TestCase):
 
 
 class TestIX_(unittest.TestCase):
+    @pytest.mark.skip("List input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_ix_list(self, xp):
         return xp.ix_([0, 1], [2, 4])
@@ -48,6 +50,7 @@ class TestIX_(unittest.TestCase):
         return xp.ix_(xp.array([True, False] * 2))
 
 
+@pytest.mark.skip("r_[] is not supported yet")
 class TestR_(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -65,7 +68,9 @@ class TestR_(unittest.TestCase):
         return xp.r_[a, b, c]
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(
+        type_check=(numpy.lib.NumpyVersion(numpy.__version__) >= "1.25.0")
+    )
     def test_r_2(self, xp, dtype):
         a = xp.array([1, 2, 3], dtype)
         return xp.r_[a, 0, 0, a]
@@ -99,7 +104,14 @@ class TestR_(unittest.TestCase):
         with self.assertRaises(ValueError):
             cupy.r_[a, b]
 
+    @testing.numpy_cupy_array_equal(
+        type_check=(numpy.lib.NumpyVersion(numpy.__version__) >= "1.25.0")
+    )
+    def test_r_scalars(self, xp):
+        return xp.r_[0, 0.5, -1, 0.3]
 
+
+@pytest.mark.skip("c_[] is not supported yet")
 class TestC_(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -124,6 +136,7 @@ class TestC_(unittest.TestCase):
             cupy.c_[a, b]
 
 
+@pytest.mark.skip("no AxisConcatenator is provided")
 class TestAxisConcatenator(unittest.TestCase):
     def test_AxisConcatenator_init1(self):
         with self.assertRaises(TypeError):
@@ -131,7 +144,7 @@ class TestAxisConcatenator(unittest.TestCase):
 
     def test_len(self):
         a = generate.AxisConcatenator()
-        self.assertEqual(len(a), 0)
+        assert len(a) == 0
 
 
 class TestUnravelIndex(unittest.TestCase):
@@ -338,11 +351,7 @@ class TestTrilIndicesForm:
     @testing.for_all_dtypes()
     def test_tril_indices_from_4(self, dtype):
         for xp in (numpy, cupy):
-            if xp is numpy:
-                error = AttributeError
-            else:
-                error = TypeError
-            with pytest.raises(error):
+            with pytest.raises((AttributeError, TypeError)):
                 xp.tril_indices_from(4, k=1)
 
 
@@ -393,9 +402,5 @@ class TestTriuIndicesFrom:
     @testing.for_all_dtypes()
     def test_triu_indices_from_4(self, dtype):
         for xp in (numpy, cupy):
-            if xp is numpy:
-                error = AttributeError
-            else:
-                error = TypeError
-            with pytest.raises(error):
+            with pytest.raises((AttributeError, TypeError)):
                 xp.triu_indices_from(4, k=1)

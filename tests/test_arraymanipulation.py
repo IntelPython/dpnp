@@ -1,3 +1,4 @@
+import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
@@ -45,6 +46,13 @@ class TestAtleast1d:
         desired = [a, b]
         assert_array_equal(res, desired)
 
+    def test_dpnp_dpt_array(self):
+        a = dpnp.array([1, 2])
+        b = dpt.asarray([2, 3])
+        res = dpnp.atleast_1d(a, b)
+        desired = [dpnp.array([1, 2]), dpnp.array([2, 3])]
+        assert_array_equal(res, desired)
+
 
 class TestAtleast2d:
     def test_0D_array(self):
@@ -77,6 +85,13 @@ class TestAtleast2d:
         desired = [a, b]
         assert_array_equal(res, desired)
 
+    def test_dpnp_dpt_array(self):
+        a = dpnp.array([1, 2])
+        b = dpt.asarray([2, 3])
+        res = dpnp.atleast_2d(a, b)
+        desired = [dpnp.array([[1, 2]]), dpnp.array([[2, 3]])]
+        assert_array_equal(res, desired)
+
 
 class TestAtleast3d:
     def test_0D_array(self):
@@ -107,6 +122,13 @@ class TestAtleast3d:
         b = dpnp.array([b, b])
         res = [dpnp.atleast_3d(a), dpnp.atleast_3d(b)]
         desired = [a, b]
+        assert_array_equal(res, desired)
+
+    def test_dpnp_dpt_array(self):
+        a = dpnp.array([1, 2])
+        b = dpt.asarray([2, 3])
+        res = dpnp.atleast_3d(a, b)
+        desired = [dpnp.array([[[1], [2]]]), dpnp.array([[[2], [3]]])]
         assert_array_equal(res, desired)
 
 
@@ -359,6 +381,15 @@ class TestConcatenate:
         out = dpnp.empty_like(x)
         with pytest.raises(TypeError):
             dpnp.concatenate([x], out=out, dtype="i4")
+
+    def test_alias(self):
+        a = dpnp.ones((5, 5))
+        b = dpnp.zeros((5, 5))
+
+        res1 = dpnp.concatenate((a, b))
+        res2 = dpnp.concat((a, b))
+
+        assert_array_equal(res1, res2)
 
 
 class TestDims:

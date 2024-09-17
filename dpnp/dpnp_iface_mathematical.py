@@ -100,6 +100,7 @@ __all__ = [
     "fmin",
     "fmod",
     "gradient",
+    "heaviside",
     "imag",
     "maximum",
     "minimum",
@@ -110,6 +111,7 @@ __all__ = [
     "negative",
     "nextafter",
     "positive",
+    "pow",
     "power",
     "prod",
     "proj",
@@ -222,8 +224,7 @@ def _gradient_num_diff_2nd_order_interior(
         # fix the shape for broadcasting
         shape = [1] * ndim
         shape[axis] = -1
-        # TODO: use shape.setter once dpctl#1699 is resolved
-        # a.shape = b.shape = c.shape = shape
+
         a = a.reshape(shape)
         b = b.reshape(shape)
         c = c.reshape(shape)
@@ -1737,7 +1738,7 @@ _FMAX_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise maxima.
 
-If one of the elements being compared is a NaN, then the non-nan element is
+If one of the elements being compared is a NaN, then the non-NaN element is
 returned. If both elements are NaNs then the first is returned. The latter
 distinction is important for complex NaNs, which are defined as at least one of
 the real or imaginary parts being a NaN. The net effect is that NaNs are
@@ -1785,7 +1786,7 @@ See Also
 
 Notes
 -----
-The fmax is equivalent to ``dpnp.where(x1 >= x2, x1, x2)`` when neither
+``fmax(x1, x2)`` is equivalent to ``dpnp.where(x1 >= x2, x1, x2)`` when neither
 `x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
 Examples
@@ -1822,7 +1823,7 @@ _FMIN_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise minima.
 
-If one of the elements being compared is a NaN, then the non-nan element is
+If one of the elements being compared is a NaN, then the non-NaN element is
 returned. If both elements are NaNs then the first is returned. The latter
 distinction is important for complex NaNs, which are defined as at least one of
 the real or imaginary parts being a NaN. The net effect is that NaNs are
@@ -1870,7 +1871,7 @@ See Also
 
 Notes
 -----
-The fmin is equivalent to ``dpnp.where(x1 <= x2, x1, x2)`` when neither
+``fmin(x1, x2)`` is equivalent to ``dpnp.where(x1 <= x2, x1, x2)`` when neither
 `x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
 Examples
@@ -2177,6 +2178,62 @@ def gradient(f, *varargs, axis=None, edge_order=1):
     if len(axes) == 1:
         return outvals[0]
     return tuple(outvals)
+
+
+_HEAVISIDE_DOCSTRING = """
+Compute the Heaviside step function.
+
+The Heaviside step function is defined as::
+
+                          0   if x1 < 0
+    heaviside(x1, x2) =  x2   if x1 == 0
+                          1   if x1 > 0
+
+where `x2` is often taken to be 0.5, but 0 and 1 are also sometimes used.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Input values.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    The value of the function when `x1` is ``0``.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The output array, element-wise Heaviside step function of `x1`.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([-1.5, 0, 2.0])
+>>> np.heaviside(a, 0.5)
+array([0. , 0.5, 1. ])
+>>> np.heaviside(a, 1)
+array([0., 1., 1.])
+"""
+
+heaviside = DPNPBinaryFunc(
+    "heaviside",
+    ufi._heaviside_result_type,
+    ufi._heaviside,
+    _HEAVISIDE_DOCSTRING,
+)
 
 
 _IMAG_DOCSTRING = """
@@ -2502,7 +2559,7 @@ multiply = DPNPBinaryFunc(
 def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     """
     Replace ``NaN`` with zero and infinity with large finite numbers (default
-    behaviour) or with the numbers defined by the user using the `nan`,
+    behavior) or with the numbers defined by the user using the `nan`,
     `posinf` and/or `neginf` keywords.
 
     If `x` is inexact, ``NaN`` is replaced by zero or by the user defined value
@@ -2812,6 +2869,8 @@ _POWER_DOCSTRING = """
 Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
 `x1` with the respective element `x2_i` of the input array `x2`.
 
+Note that :obj:`dpnp.pow` is an alias of :obj:`dpnp.power`.
+
 For full documentation refer to :obj:`numpy.power`.
 
 Parameters
@@ -2894,6 +2953,8 @@ power = DPNPBinaryFunc(
     mkl_impl_fn="_pow",
     binary_inplace_fn=ti._pow_inplace,
 )
+
+pow = power  # pow is an alias for power
 
 
 def prod(

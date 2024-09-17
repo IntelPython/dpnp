@@ -70,20 +70,30 @@ class TestTrace:
 @pytest.mark.parametrize(
     "func, args",
     [
-        pytest.param("empty", [3]),
         pytest.param("empty_like", [dpnp.ones(10)]),
-        pytest.param("eye", [3]),
-        pytest.param("full", [3, 7]),
         pytest.param("full_like", [dpnp.ones(10), 7]),
-        pytest.param("ones", [3]),
         pytest.param("ones_like", [dpnp.ones(10)]),
-        pytest.param("zeros", [3]),
         pytest.param("zeros_like", [dpnp.ones(10)]),
     ],
 )
-def test_exception_order(func, args):
+def test_exception_order1(func, args):
     with pytest.raises(NotImplementedError):
         getattr(dpnp, func)(*args, order="K")
+    with pytest.raises(ValueError):
+        getattr(dpnp, func)(*args, order="S")
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("empty", [3]),
+        pytest.param("eye", [3]),
+        pytest.param("full", [3, 7]),
+        pytest.param("ones", [3]),
+        pytest.param("zeros", [3]),
+    ],
+)
+def test_exception_order2(func, args):
     with pytest.raises(ValueError):
         getattr(dpnp, func)(*args, order="S")
 

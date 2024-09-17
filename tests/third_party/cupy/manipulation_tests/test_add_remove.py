@@ -4,6 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing._loops import (
     _complex_dtypes,
@@ -58,17 +59,17 @@ class TestDelete(unittest.TestCase):
         return xp.delete(arr, indices)
 
 
-@pytest.mark.skip("append() is not implemented yet")
 class TestAppend(unittest.TestCase):
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test(self, xp, dtype1, dtype2):
         a = testing.shaped_random((3, 4, 5), xp, dtype1)
         b = testing.shaped_random((6, 7), xp, dtype2)
         return xp.append(a, b)
 
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
@@ -80,11 +81,12 @@ class TestAppend(unittest.TestCase):
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_scalar_rhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype2).type(10).item()
         return xp.append(xp.arange(20, dtype=dtype1), scalar)
 
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
@@ -96,12 +98,13 @@ class TestAppend(unittest.TestCase):
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_numpy_scalar_rhs(self, xp, dtype1, dtype2):
         scalar = xp.dtype(dtype2).type(10)
         return xp.append(xp.arange(20, dtype=dtype1), scalar)
 
     @testing.numpy_cupy_array_equal()
+    @pytest.mark.skip("Scalar input is not supported")
     def test_scalar_both(self, xp):
         return xp.append(10, 10)
 
@@ -115,12 +118,11 @@ class TestAppend(unittest.TestCase):
     def test_zerodim(self, xp):
         return xp.append(xp.array(0), xp.arange(10))
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_empty(self, xp):
         return xp.append(xp.array([]), xp.arange(10))
 
 
-@pytest.mark.skip("resize() is not implemented yet")
 class TestResize(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test(self, xp):
@@ -134,14 +136,17 @@ class TestResize(unittest.TestCase):
     def test_shape_int(self, xp):
         return xp.resize(xp.arange(10), 15)
 
+    @pytest.mark.skip("scalar is not supported.")
     @testing.numpy_cupy_array_equal()
     def test_scalar(self, xp):
         return xp.resize(2, (10, 10))
 
+    @pytest.mark.skip("scalar is not supported.")
     @testing.numpy_cupy_array_equal()
     def test_scalar_shape_int(self, xp):
         return xp.resize(2, 10)
 
+    @pytest.mark.skip("scalar is not supported.")
     @testing.numpy_cupy_array_equal()
     def test_typed_scalar(self, xp):
         return xp.resize(xp.float32(10.0), (10, 10))
@@ -150,7 +155,7 @@ class TestResize(unittest.TestCase):
     def test_zerodim(self, xp):
         return xp.resize(xp.array(0), (10, 10))
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_empty(self, xp):
         return xp.resize(xp.array([]), (10, 10))
 

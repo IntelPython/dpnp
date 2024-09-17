@@ -39,6 +39,7 @@ it contains:
 
 
 import math
+import operator
 
 import dpctl.tensor as dpt
 import numpy
@@ -49,6 +50,9 @@ import dpnp
 from .dpnp_array import dpnp_array
 
 __all__ = [
+    "append",
+    "array_split",
+    "asarray_chkfinite",
     "asfarray",
     "atleast_1d",
     "atleast_2d",
@@ -57,23 +61,33 @@ __all__ = [
     "broadcast_to",
     "can_cast",
     "column_stack",
+    "concat",
     "concatenate",
     "copyto",
+    "dsplit",
     "dstack",
     "expand_dims",
     "flip",
     "fliplr",
     "flipud",
+    "hsplit",
     "hstack",
     "moveaxis",
+    "ndim",
+    "permute_dims",
     "ravel",
     "repeat",
+    "require",
     "reshape",
+    "resize",
     "result_type",
     "roll",
     "rollaxis",
+    "rot90",
     "row_stack",
     "shape",
+    "size",
+    "split",
     "squeeze",
     "stack",
     "swapaxes",
@@ -81,6 +95,7 @@ __all__ = [
     "transpose",
     "trim_zeros",
     "unique",
+    "vsplit",
     "vstack",
 ]
 
@@ -258,6 +273,272 @@ def _unpack_tuple(a):
     return a
 
 
+def append(arr, values, axis=None):
+    """
+    Append values to the end of an array.
+
+    For full documentation refer to :obj:`numpy.append`.
+
+    Parameters
+    ----------
+    arr : {dpnp.ndarray, usm_ndarray}
+        Values are appended to a copy of this array.
+    values : {scalar, array_like}
+        These values are appended to a copy of `arr`. It must be of the
+        correct shape (the same shape as `arr`, excluding `axis`). If
+        `axis` is not specified, `values` can be any shape and will be
+        flattened before use.
+        These values can be in any form that can be converted to an array.
+        This includes scalars, lists, lists of tuples, tuples,
+        tuples of tuples, tuples of lists, and ndarrays.
+    axis : {None, int}, optional
+        The axis along which `values` are appended. If `axis` is not
+        given, both `arr` and `values` are flattened before use.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of `arr` with `values` appended to `axis`. Note that
+        `append` does not occur in-place: a new array is allocated and
+        filled. If `axis` is ``None``, `out` is a flattened array.
+
+    See Also
+    --------
+    :obj:`dpnp.insert` : Insert elements into an array.
+    :obj:`dpnp.delete` : Delete elements from an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> np.append(a, [[4, 5, 6], [7, 8, 9]])
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+
+    When `axis` is specified, `values` must have the correct shape.
+
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.append(b, [[7, 8, 9]], axis=0)
+    array([[1, 2, 3],
+           [4, 5, 6],
+           [7, 8, 9]])
+    >>> np.append(b, [7, 8, 9], axis=0)
+    Traceback (most recent call last):
+        ...
+    ValueError: all the input arrays must have same number of dimensions, but
+    the array at index 0 has 2 dimension(s) and the array at index 1 has 1
+    dimension(s)
+
+    """
+
+    dpnp.check_supported_arrays_type(arr)
+    if not dpnp.is_supported_array_type(values):
+        values = dpnp.array(
+            values, usm_type=arr.usm_type, sycl_queue=arr.sycl_queue
+        )
+
+    if axis is None:
+        if arr.ndim != 1:
+            arr = dpnp.ravel(arr)
+        if values.ndim != 1:
+            values = dpnp.ravel(values)
+        axis = 0
+    return dpnp.concatenate((arr, values), axis=axis)
+
+
+def array_split(ary, indices_or_sections, axis=0):
+    """
+    Split an array into multiple sub-arrays.
+
+    Please refer to the :obj:`dpnp.split` documentation. The only difference
+    between these functions is that ``dpnp.array_split`` allows
+    `indices_or_sections` to be an integer that does *not* equally divide the
+    axis. For an array of length l that should be split into n sections, it
+    returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
+    ``l//n``.
+
+    For full documentation refer to :obj:`numpy.array_split`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, and array length is l, it
+        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
+        ``l//n``.
+
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along `axis` the array is split.
+    axis : int, optional
+        The axis along which to split.
+        Default: ``0``.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(8.0)
+    >>> np.array_split(x, 3)
+    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7.])]
+
+    >>> x = np.arange(9)
+    >>> np.array_split(x, 4)
+    [array([0, 1, 2]), array([3, 4]), array([5, 6]), array([7, 8])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    n_tot = ary.shape[axis]
+    try:
+        # handle array case.
+        n_sec = len(indices_or_sections) + 1
+        div_points = [0] + list(indices_or_sections) + [n_tot]
+    except TypeError:
+        # indices_or_sections is a scalar, not an array.
+        n_sec = int(indices_or_sections)
+        if n_sec <= 0:
+            raise ValueError("number sections must be larger than 0.") from None
+        n_each_sec, extras = numpy.divmod(n_tot, n_sec)
+        section_sizes = (
+            [0] + extras * [n_each_sec + 1] + (n_sec - extras) * [n_each_sec]
+        )
+        div_points = dpnp.array(
+            section_sizes,
+            dtype=dpnp.intp,
+            usm_type=ary.usm_type,
+            sycl_queue=ary.sycl_queue,
+        ).cumsum()
+
+    sub_arys = []
+    sary = dpnp.swapaxes(ary, axis, 0)
+    for i in range(n_sec):
+        st = div_points[i]
+        end = div_points[i + 1]
+        sub_arys.append(dpnp.swapaxes(sary[st:end], axis, 0))
+
+    return sub_arys
+
+
+def asarray_chkfinite(
+    a, dtype=None, order=None, *, device=None, usm_type=None, sycl_queue=None
+):
+    """
+    Convert the input to an array, checking for NaNs or Infs.
+
+    For full documentation refer to :obj:`numpy.asarray_chkfinite`.
+
+    Parameters
+    ----------
+    arr : array_like
+        Input data, in any form that can be converted to an array. This
+        includes lists, lists of tuples, tuples, tuples of tuples, tuples
+        of lists and ndarrays. Success requires no NaNs or Infs.
+    dtype : {None, str, dtype object}, optional
+        By default, the data-type is inferred from the input data.
+        Default: ``None``.
+    order : {None, "C", "F", "A", "K"}, optional
+        Memory layout of the newly output array.
+        Default: ``"K"``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API concept of device where the output array is created.
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
+        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array interpretation of `a`. No copy is performed if the input is
+        already an ndarray.
+
+    Raises
+    -------
+    ValueError
+        Raises ``ValueError`` if `a` contains NaN (Not a Number) or
+        Inf (Infinity).
+
+    See Also
+    --------
+    :obj:`dpnp.asarray` : Create an array.
+    :obj:`dpnp.asanyarray` : Converts an input object into array.
+    :obj:`dpnp.ascontiguousarray` : Convert input to a c-contiguous array.
+    :obj:`dpnp.asfortranarray` : Convert input to an array with column-major
+                        memory order.
+    :obj:`dpnp.fromiter` : Create an array from an iterator.
+    :obj:`dpnp.fromfunction` : Construct an array by executing a function
+                        on grid positions.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Convert a list into an array. If all elements are finite,
+    ``asarray_chkfinite`` is identical to ``asarray``.
+
+    >>> a = [1, 2]
+    >>> np.asarray_chkfinite(a, dtype=np.float32)
+    array([1., 2.])
+
+    Raises ``ValueError`` if array_like contains NaNs or Infs.
+
+    >>> a = [1, 2, np.inf]
+    >>> try:
+    ...     np.asarray_chkfinite(a)
+    ... except ValueError:
+    ...     print('ValueError')
+    ValueError
+
+    Creating an array on a different device or with a specified usm_type
+
+    >>> x = np.asarray_chkfinite([1, 2, 3]) # default case
+    >>> x, x.device, x.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'device')
+
+    >>> y = np.asarray_chkfinite([1, 2, 3], device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([1, 2, 3]), Device(opencl:cpu:0), 'device')
+
+    >>> z = np.asarray_chkfinite([1, 2, 3], usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([1, 2, 3]), Device(level_zero:gpu:0), 'host')
+
+    """
+
+    a = dpnp.asarray(
+        a,
+        dtype=dtype,
+        order=order,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
+    )
+    if dpnp.issubdtype(a.dtype, dpnp.inexact) and not dpnp.isfinite(a).all():
+        raise ValueError("array must not contain infs or NaNs")
+    return a
+
+
 def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
     """
     Return an array converted to a float type.
@@ -369,12 +650,8 @@ def atleast_1d(*arys):
     """
 
     res = []
+    dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
-        if not dpnp.is_supported_array_type(ary):
-            raise TypeError(
-                "Each input array must be any of supported type, "
-                f"but got {type(ary)}"
-            )
         if ary.ndim == 0:
             result = ary.reshape(1)
         else:
@@ -427,12 +704,8 @@ def atleast_2d(*arys):
     """
 
     res = []
+    dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
-        if not dpnp.is_supported_array_type(ary):
-            raise TypeError(
-                "Each input array must be any of supported type, "
-                f"but got {type(ary)}"
-            )
         if ary.ndim == 0:
             result = ary.reshape(1, 1)
         elif ary.ndim == 1:
@@ -491,12 +764,8 @@ def atleast_3d(*arys):
     """
 
     res = []
+    dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
-        if not dpnp.is_supported_array_type(ary):
-            raise TypeError(
-                "Each input array must be any of supported type, "
-                f"but got {type(ary)}"
-            )
         if ary.ndim == 0:
             result = ary.reshape(1, 1, 1)
         elif ary.ndim == 1:
@@ -763,16 +1032,19 @@ def concatenate(
     """
     Join a sequence of arrays along an existing axis.
 
+    Note that :obj:`dpnp.concat` is an alias of :obj:`dpnp.concatenate`.
+
     For full documentation refer to :obj:`numpy.concatenate`.
 
     Parameters
     ----------
-    arrays : {dpnp.ndarray, usm_ndarray}
+    arrays : {Sequence of dpnp.ndarray or usm_ndarray}
         The arrays must have the same shape, except in the dimension
         corresponding to axis (the first, by default).
     axis : int, optional
         The axis along which the arrays will be joined. If axis is ``None``,
-        arrays are flattened before use. Default is 0.
+        arrays are flattened before use.
+        Default: ``0``.
     out : dpnp.ndarray, optional
         If provided, the destination to place the result. The shape must be
         correct, matching that of what concatenate would have returned
@@ -841,6 +1113,9 @@ def concatenate(
         dpnp.copyto(out, res, casting=casting)
         return out
     return res
+
+
+concat = concatenate  # concat is an alias of concatenate
 
 
 def copyto(dst, src, casting="same_kind", where=True):
@@ -924,6 +1199,75 @@ def copyto(dst, src, casting="same_kind", where=True):
             dpnp.get_usm_ndarray(where),
         )
         dst_usm[mask_usm] = src_usm[mask_usm]
+
+
+def dsplit(ary, indices_or_sections):
+    """
+    Split array into multiple sub-arrays along the 3rd axis (depth).
+
+    Please refer to the :obj:`dpnp.split` documentation. ``dsplit``
+    is equivalent to ``split`` with ``axis=2``, the array is always
+    split along the third axis provided the array dimension is greater than
+    or equal to 3.
+
+    For full documentation refer to :obj:`numpy.dsplit`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along the third axis. If such a split is not
+        possible, an error is raised.
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along the third axis the array is split.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(16.0).reshape(2, 2, 4)
+    >>> x
+    array([[[ 0.,  1.,  2.,  3.],
+            [ 4.,  5.,  6.,  7.]],
+           [[ 8.,  9., 10., 11.],
+            [12., 13., 14., 15.]]])
+    >>> np.dsplit(x, 2)
+    [array([[[ 0.,  1.],
+             [ 4.,  5.]],
+            [[ 8.,  9.],
+             [12., 13.]]]),
+     array([[[ 2.,  3.],
+             [ 6.,  7.]],
+            [[10., 11.],
+             [14., 15.]]])]
+    >>> np.dsplit(x, np.array([3, 6]))
+    [array([[[ 0.,  1.,  2.],
+             [ 4.,  5.,  6.]],
+            [[ 8.,  9., 10.],
+             [12., 13., 14.]]]),
+     array([[[ 3.],
+             [ 7.]],
+            [[11.],
+             [15.]]]),
+     array([])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim < 3:
+        raise ValueError("dsplit only works on arrays of 3 or more dimensions")
+    return split(ary, indices_or_sections, 2)
 
 
 def dstack(tup):
@@ -1170,6 +1514,7 @@ def fliplr(m):
     --------
     :obj:`dpnp.flipud` : Flip an array vertically (axis=0).
     :obj:`dpnp.flip` : Flip array in one or more dimensions.
+    :obj:`dpnp.rot90` : Rotate array counterclockwise.
 
     Examples
     --------
@@ -1220,6 +1565,7 @@ def flipud(m):
     --------
     :obj:`dpnp.fliplr` : Flip array in the left/right direction.
     :obj:`dpnp.flip` : Flip array in one or more dimensions.
+    :obj:`dpnp.rot90` : Rotate array counterclockwise.
 
     Examples
     --------
@@ -1248,6 +1594,99 @@ def flipud(m):
     if m.ndim < 1:
         raise ValueError(f"Input must be >= 1-d, but got {m.ndim}")
     return m[::-1, ...]
+
+
+def hsplit(ary, indices_or_sections):
+    """
+    Split an array into multiple sub-arrays horizontally (column-wise).
+
+    Please refer to the :obj:`dpnp.split` documentation. ``hsplit``
+    is equivalent to ``dpnp.split`` with ``axis=1``, the array is always
+    split along the second axis except for 1-D arrays, where it is split at
+    ``axis=0``.
+
+    For full documentation refer to :obj:`numpy.hsplit`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along the second axis except for 1-D arrays, where
+        it is split at the first axis. If such a split is not possible,
+        an error is raised.
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along the second axis the array is split. For 1-D arrays,
+        the entries indicate where along the first axis the array is split.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(16.0).reshape(4, 4)
+    >>> x
+    array([[ 0.,  1.,  2.,  3.],
+           [ 4.,  5.,  6.,  7.],
+           [ 8.,  9., 10., 11.],
+           [12., 13., 14., 15.]])
+    >>> np.hsplit(x, 2)
+    [array([[ 0.,  1.],
+            [ 4.,  5.],
+            [ 8.,  9.],
+            [12., 13.]]),
+     array([[ 2.,  3.],
+            [ 6.,  7.],
+            [10., 11.],
+            [14., 15.]])]
+    >>> np.hsplit(x, np.array([3, 6]))
+    [array([[ 0.,  1.,  2.],
+            [ 4.,  5.,  6.],
+            [ 8.,  9., 10.],
+            [12., 13., 14.]]),
+     array([[ 3.],
+            [ 7.],
+            [11.],
+            [15.]]),
+     array([])]
+
+    With a higher dimensional array the split is still along the second axis.
+
+    >>> x = np.arange(8.0).reshape(2, 2, 2)
+    >>> x
+    array([[[0., 1.],
+            [2., 3.]],
+           [[4., 5.],
+            [6., 7.]]])
+    >>> np.hsplit(x, 2)
+    [array([[[0., 1.]],
+            [[4., 5.]]]),
+     array([[[2., 3.]],
+            [[6., 7.]]])]
+
+    With a 1-D array, the split is along axis 0.
+
+    >>> x = np.array([0, 1, 2, 3, 4, 5])
+    >>> np.hsplit(x, 2)
+    [array([0, 1, 2]), array([3, 4, 5])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim == 0:
+        raise ValueError("hsplit only works on arrays of 1 or more dimensions")
+    if ary.ndim > 1:
+        return split(ary, indices_or_sections, 1)
+    return split(ary, indices_or_sections, 0)
 
 
 def hstack(tup, *, dtype=None, casting="same_kind"):
@@ -1354,6 +1793,48 @@ def moveaxis(a, source, destination):
     return dpnp_array._create_from_usm_ndarray(
         dpt.moveaxis(usm_array, source, destination)
     )
+
+
+def ndim(a):
+    """
+    Return the number of dimensions of array-like input.
+
+    For full documentation refer to :obj:`numpy.ndim`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+
+    Returns
+    -------
+    number_of_dimensions : int
+        The number of dimensions in `a`. Scalars are zero-dimensional.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.ndim` : Equivalent method for `dpnp.ndarray`
+                        or `usm_ndarray` input.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.ndim(a)
+    2
+    >>> a = np.asarray(a)
+    >>> np.ndim(a)
+    2
+    >>> np.ndim(1)
+    0
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        return a.ndim
+    return numpy.ndim(a)
 
 
 def ravel(a, order="C"):
@@ -1467,6 +1948,113 @@ def repeat(a, repeats, axis=None):
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
+def require(a, dtype=None, requirements=None, *, like=None):
+    """
+    Return a :class:`dpnp.ndarray` of the provided type that satisfies
+    requirements.
+
+    This function is useful to be sure that an array with the correct flags
+    is returned for passing to compiled code (perhaps through ctypes).
+
+    For full documentation refer to :obj:`numpy.require`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+       The input array to be converted to a type-and-requirement-satisfying
+       array.
+    dtype : {None, data-type}, optional
+       The required data-type. If ``None`` preserve the current dtype.
+    requirements : {None, str, sequence of str}, optional
+       The requirements list can be any of the following:
+
+       * 'F_CONTIGUOUS' ('F') - ensure a Fortran-contiguous array
+       * 'C_CONTIGUOUS' ('C') - ensure a C-contiguous array
+       * 'WRITABLE' ('W') - ensure a writable array
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Array with specified requirements and type if given.
+
+    Limitations
+    -----------
+    Parameter `like` is supported only with default value ``None``.
+    Otherwise, the function raises `NotImplementedError` exception.
+
+    See Also
+    --------
+    :obj:`dpnp.asarray` : Convert input to an ndarray.
+    :obj:`dpnp.asanyarray` : Convert to an ndarray, but pass through
+                        ndarray subclasses.
+    :obj:`dpnp.ascontiguousarray` : Convert input to a contiguous array.
+    :obj:`dpnp.asfortranarray` : Convert input to an ndarray with
+                        column-major memory order.
+    :obj:`dpnp.ndarray.flags` : Information about the memory layout
+                        of the array.
+
+    Notes
+    -----
+    The returned array will be guaranteed to have the listed requirements
+    by making a copy if needed.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(6).reshape(2, 3)
+    >>> x.flags
+      C_CONTIGUOUS : True
+      F_CONTIGUOUS : False
+      WRITEABLE : True
+
+    >>> y = np.require(x, dtype=np.float32, requirements=['W', 'F'])
+    >>> y.flags
+      C_CONTIGUOUS : False
+      F_CONTIGUOUS : True
+      WRITEABLE : True
+
+    """
+
+    dpnp.check_limitations(like=like)
+    dpnp.check_supported_arrays_type(a)
+
+    possible_flags = {
+        "C": "C",
+        "C_CONTIGUOUS": "C",
+        "F": "F",
+        "F_CONTIGUOUS": "F",
+        "W": "W",
+        "WRITEABLE": "W",
+    }
+
+    if not requirements:
+        return dpnp.asanyarray(a, dtype=dtype)
+
+    try:
+        requirements = {possible_flags[x.upper()] for x in requirements}
+    except KeyError as exc:
+        incorrect_flag = (set(requirements) - set(possible_flags.keys())).pop()
+        raise ValueError(
+            f"Incorrect flag {incorrect_flag} in requirements"
+        ) from exc
+
+    order = "A"
+    if requirements.issuperset({"C", "F"}):
+        raise ValueError("Cannot specify both 'C' and 'F' order")
+    if "F" in requirements:
+        order = "F"
+        requirements.remove("F")
+    elif "C" in requirements:
+        order = "C"
+        requirements.remove("C")
+
+    arr = dpnp.array(a, dtype=dtype, order=order, copy=None)
+    if not arr.flags["W"]:
+        return arr.copy(order)
+
+    return arr
+
+
 def reshape(a, /, newshape, order="C", copy=None):
     """
     Gives a new shape to an array without changing its data.
@@ -1498,7 +2086,8 @@ def reshape(a, /, newshape, order="C", copy=None):
         If ``False``, the result array can never be a copy
         and a ValueError exception will be raised in case the copy is necessary.
         If ``None``, the result array will reuse existing memory buffer of `a`
-        if possible and copy otherwise. Default: None.
+        if possible and copy otherwise.
+        Default: ``None``.
 
     Returns
     -------
@@ -1517,14 +2106,14 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.array([[1, 2, 3], [4, 5, 6]])
-    >>> dp.reshape(a, 6)
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.reshape(a, 6)
     array([1, 2, 3, 4, 5, 6])
-    >>> dp.reshape(a, 6, order='F')
+    >>> np.reshape(a, 6, order='F')
     array([1, 4, 2, 5, 3, 6])
 
-    >>> dp.reshape(a, (3, -1))       # the unspecified value is inferred to be 2
+    >>> np.reshape(a, (3, -1))       # the unspecified value is inferred to be 2
     array([[1, 2],
            [3, 4],
            [5, 6]])
@@ -1542,6 +2131,91 @@ def reshape(a, /, newshape, order="C", copy=None):
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.reshape(usm_a, shape=newshape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_res)
+
+
+def resize(a, new_shape):
+    """
+    Return a new array with the specified shape.
+
+    If the new array is larger than the original array, then the new array is
+    filled with repeated copies of `a`. Note that this behavior is different
+    from ``a.resize(new_shape)`` which fills with zeros instead of repeated
+    copies of `a`.
+
+    For full documentation refer to :obj:`numpy.resize`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to be resized.
+    new_shape : {int, tuple or list of ints}
+        Shape of resized array.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The new array is formed from the data in the old array, repeated
+        if necessary to fill out the required number of elements. The
+        data are repeated iterating over the array in C-order.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.resize` : Resize an array in-place.
+    :obj:`dpnp.reshape` : Reshape an array without changing the total size.
+    :obj:`dpnp.pad` : Enlarge and pad an array.
+    :obj:`dpnp.repeat` : Repeat elements of an array.
+
+    Notes
+    -----
+    When the total size of the array does not change :obj:`dpnp.reshape` should
+    be used. In most other cases either indexing (to reduce the size) or
+    padding (to increase the size) may be a more appropriate solution.
+
+    Warning: This functionality does **not** consider axes separately,
+    i.e. it does not apply interpolation/extrapolation.
+    It fills the return array with the required number of elements, iterating
+    over `a` in C-order, disregarding axes (and cycling back from the start if
+    the new shape is larger). This functionality is therefore not suitable to
+    resize images, or data where each axis represents a separate and distinct
+    entity.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[0, 1], [2, 3]])
+    >>> np.resize(a, (2, 3))
+    array([[0, 1, 2],
+           [3, 0, 1]])
+    >>> np.resize(a, (1, 4))
+    array([[0, 1, 2, 3]])
+    >>> np.resize(a, (2, 4))
+    array([[0, 1, 2, 3],
+           [0, 1, 2, 3]])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    if a.ndim == 0:
+        return dpnp.full_like(a, a, shape=new_shape)
+
+    if isinstance(new_shape, (int, numpy.integer)):
+        new_shape = (new_shape,)
+
+    new_size = 1
+    for dim_length in new_shape:
+        if dim_length < 0:
+            raise ValueError("all elements of `new_shape` must be non-negative")
+        new_size *= dim_length
+
+    a_size = a.size
+    if a_size == 0 or new_size == 0:
+        # First case must zero fill. The second would have repeats == 0.
+        return dpnp.zeros_like(a, shape=new_shape)
+
+    repeats = -(-new_size // a_size)  # ceil division
+    a = dpnp.concatenate((dpnp.ravel(a),) * repeats)[:new_size]
+
+    return a.reshape(new_shape)
 
 
 def result_type(*arrays_and_dtypes):
@@ -1565,16 +2239,16 @@ def result_type(*arrays_and_dtypes):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> a = dp.arange(3, dtype=dp.int64)
-    >>> b = dp.arange(7, dtype=dp.int32)
-    >>> dp.result_type(a, b)
+    >>> import dpnp as np
+    >>> a = np.arange(3, dtype=np.int64)
+    >>> b = np.arange(7, dtype=np.int32)
+    >>> np.result_type(a, b)
     dtype('int64')
 
-    >>> dp.result_type(dp.int64, dp.complex128)
+    >>> np.result_type(np.int64, np.complex128)
     dtype('complex128')
 
-    >>> dp.result_type(dp.ones(10, dtype=dp.float32), dp.float64)
+    >>> np.result_type(np.ones(10, dtype=np.float32), np.float64)
     dtype('float64')
 
     """
@@ -1713,6 +2387,107 @@ def rollaxis(x, axis, start=0):
     return dpnp.moveaxis(usm_array, source=axis, destination=start)
 
 
+def rot90(m, k=1, axes=(0, 1)):
+    """
+    Rotate an array by 90 degrees in the plane specified by axes.
+
+    Rotation direction is from the first towards the second axis.
+    This means for a 2D array with the default `k` and `axes`, the
+    rotation will be counterclockwise.
+
+    For full documentation refer to :obj:`numpy.rot90`.
+
+    Parameters
+    ----------
+    m : {dpnp.ndarray, usm_ndarray}
+        Array of two or more dimensions.
+    k : integer, optional
+        Number of times the array is rotated by 90 degrees.
+        Default: ``1``.
+    axes : (2,) array_like of ints, optional
+        The array is rotated in the plane defined by the axes.
+        Axes must be different.
+        Default: ``(0, 1)``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A rotated view of `m`.
+
+    See Also
+    --------
+    :obj:`dpnp.flip` : Reverse the order of elements in an array along
+                    the given axis.
+    :obj:`dpnp.fliplr` : Flip an array horizontally.
+    :obj:`dpnp.flipud` : Flip an array vertically.
+
+    Notes
+    -----
+    ``rot90(m, k=1, axes=(1,0))`` is the reverse of
+    ``rot90(m, k=1, axes=(0,1))``.
+
+    ``rot90(m, k=1, axes=(1,0))`` is equivalent to
+    ``rot90(m, k=-1, axes=(0,1))``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> m = np.array([[1, 2], [3, 4]])
+    >>> m
+    array([[1, 2],
+           [3, 4]])
+    >>> np.rot90(m)
+    array([[2, 4],
+           [1, 3]])
+    >>> np.rot90(m, 2)
+    array([[4, 3],
+           [2, 1]])
+    >>> m = np.arange(8).reshape((2, 2, 2))
+    >>> np.rot90(m, 1, (1, 2))
+    array([[[1, 3],
+            [0, 2]],
+           [[5, 7],
+            [4, 6]]])
+
+    """
+
+    dpnp.check_supported_arrays_type(m)
+    k = operator.index(k)
+
+    m_ndim = m.ndim
+    if m_ndim < 2:
+        raise ValueError("Input must be at least 2-d.")
+
+    if len(axes) != 2:
+        raise ValueError("len(axes) must be 2.")
+
+    if axes[0] == axes[1] or abs(axes[0] - axes[1]) == m_ndim:
+        raise ValueError("Axes must be different.")
+
+    if not (-m_ndim <= axes[0] < m_ndim and -m_ndim <= axes[1] < m_ndim):
+        raise ValueError(
+            f"Axes={axes} out of range for array of ndim={m_ndim}."
+        )
+
+    k %= 4
+    if k == 0:
+        return m[:]
+    if k == 2:
+        return dpnp.flip(dpnp.flip(m, axes[0]), axes[1])
+
+    axes_list = list(range(0, m_ndim))
+    (axes_list[axes[0]], axes_list[axes[1]]) = (
+        axes_list[axes[1]],
+        axes_list[axes[0]],
+    )
+
+    if k == 1:
+        return dpnp.transpose(dpnp.flip(m, axes[1]), axes_list)
+
+    # k == 3
+    return dpnp.flip(dpnp.transpose(m, axes_list), axes[1])
+
+
 def shape(a):
     """
     Return the shape of an array.
@@ -1738,14 +2513,14 @@ def shape(a):
 
     Examples
     --------
-    >>> import dpnp as dp
-    >>> dp.shape(dp.eye(3))
+    >>> import dpnp as np
+    >>> np.shape(np.eye(3))
     (3, 3)
-    >>> dp.shape([[1, 3]])
+    >>> np.shape([[1, 3]])
     (1, 2)
-    >>> dp.shape([0])
+    >>> np.shape([0])
     (1,)
-    >>> dp.shape(0)
+    >>> np.shape(0)
     ()
 
     """
@@ -1753,6 +2528,149 @@ def shape(a):
     if dpnp.is_supported_array_type(a):
         return a.shape
     return numpy.shape(a)
+
+
+def size(a, axis=None):
+    """
+    Return the number of elements along a given axis.
+
+    For full documentation refer to :obj:`numpy.size`.
+
+    Parameters
+    ----------
+    a : array_like
+        Input data.
+    axis : {None, int}, optional
+        Axis along which the elements are counted.
+        By default, give the total number of elements.
+        Default: ``None``.
+
+    Returns
+    -------
+    element_count : int
+        Number of elements along the specified axis.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.size` : number of elements in array.
+    :obj:`dpnp.shape` : Return the shape of an array.
+    :obj:`dpnp.ndarray.shape` : Return the shape of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = [[1, 2, 3], [4, 5, 6]]
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+    >>> np.size(a, 0)
+    2
+
+    >>> a = np.asarray(a)
+    >>> np.size(a)
+    6
+    >>> np.size(a, 1)
+    3
+
+    """
+
+    if dpnp.is_supported_array_type(a):
+        if axis is None:
+            return a.size
+        return a.shape[axis]
+
+    return numpy.size(a, axis)
+
+
+def split(ary, indices_or_sections, axis=0):
+    """
+    Split an array into multiple sub-arrays as views into `ary`.
+
+    For full documentation refer to :obj:`numpy.split`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along `axis`. If such a split is not possible,
+        an error is raised.
+
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along `axis` the array is split. For example,
+        ``[2, 3]`` would, for ``axis=0``, result in
+
+        - ary[:2]
+        - ary[2:3]
+        - ary[3:]
+
+        If an index exceeds the dimension of the array along `axis`,
+        an empty sub-array is returned correspondingly.
+    axis : int, optional
+        The axis along which to split.
+        Default: ``0``.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
+    Raises
+    ------
+    ValueError
+        If `indices_or_sections` is given as an integer, but
+        a split does not result in equal division.
+
+    See Also
+    --------
+    :obj:`dpnp.array_split` : Split an array into multiple sub-arrays of equal
+                        or near-equal size. Does not raise an exception if an
+                        equal division cannot be made.
+    :obj:`dpnp.hsplit` : Split array into multiple sub-arrays horizontally
+                    (column-wise).
+    :obj:`dpnp.vsplit` : Split array into multiple sub-arrays vertically
+                    (row wise).
+    :obj:`dpnp.dsplit` : Split array into multiple sub-arrays along the 3rd
+                    axis (depth).
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.stack` : Join a sequence of arrays along a new axis.
+    :obj:`dpnp.hstack` : Stack arrays in sequence horizontally (column wise).
+    :obj:`dpnp.vstack` : Stack arrays in sequence vertically (row wise).
+    :obj:`dpnp.dstack` : Stack arrays in sequence depth wise
+                    (along third dimension).
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(9.0)
+    >>> np.split(x, 3)
+    [array([0., 1., 2.]), array([3., 4., 5.]), array([6., 7., 8.])]
+
+    >>> x = np.arange(8.0)
+    >>> np.split(x, [3, 5, 6, 10])
+    [array([0., 1., 2.]), array([3., 4.]), array([5.]), array([6., 7.]), \
+    array([])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim <= axis:
+        raise IndexError("Axis exceeds ndim")
+
+    try:
+        len(indices_or_sections)
+    except TypeError:
+        if ary.shape[axis] % indices_or_sections != 0:
+            raise ValueError(
+                "indices_or_sections must divide the size along the axes.\n"
+                "If you want to split the array into non-equally-sized "
+                "arrays, use array_split instead."
+            ) from None
+
+    return array_split(ary, indices_or_sections, axis)
 
 
 def squeeze(a, /, axis=None):
@@ -2026,6 +2944,8 @@ def transpose(a, axes=None):
     """
     Returns an array with axes transposed.
 
+    Note that :obj:`dpnp.permute_dims` is an alias of :obj:`dpnp.transpose`.
+
     For full documentation refer to :obj:`numpy.transpose`.
 
     Parameters
@@ -2090,6 +3010,9 @@ def transpose(a, axes=None):
     if axes is None:
         return array.transpose()
     return array.transpose(*axes)
+
+
+permute_dims = transpose  # permute_dims is an alias for transpose
 
 
 def trim_zeros(filt, trim="fb"):
@@ -2230,7 +3153,7 @@ def unique(
     (move the axis to the first dimension to keep the order of the other axes)
     and then flattening the subarrays in C order.
     For complex arrays all NaN values are considered equivalent (no matter
-    whether the NaN is in the real or imaginary part). As the representant for
+    whether the NaN is in the real or imaginary part). As the representative for
     the returned array the smallest one in the lexicographical order is chosen.
     For multi-dimensional inputs, `unique_inverse` is reshaped such that the
     input can be reconstructed using
@@ -2334,6 +3257,80 @@ def unique(
         result += (idx[1:] - idx[:-1],)
 
     return _unpack_tuple(result)
+
+
+def vsplit(ary, indices_or_sections):
+    """
+    Split an array into multiple sub-arrays vertically (row-wise).
+
+    Please refer to the :obj:`dpnp.split` documentation. ``vsplit``
+    is equivalent to ``split`` with ``axis=0``(default), the array
+    is always split along the first axis regardless of the array dimension.
+
+    For full documentation refer to :obj:`numpy.vsplit`.
+
+    Parameters
+    ----------
+    ary : {dpnp.ndarray, usm_ndarray}
+        Array to be divided into sub-arrays.
+    indices_or_sections : {int, sequence of ints}
+        If `indices_or_sections` is an integer, N, the array will be divided
+        into N equal arrays along the first axis. If such a split is not
+        possible, an error is raised.
+        If `indices_or_sections` is a sequence of sorted integers, the entries
+        indicate where along the first axis the array is split.
+
+    Returns
+    -------
+    sub-arrays : list of dpnp.ndarray
+        A list of sub arrays. Each array is a view of the corresponding input
+        array.
+
+    See Also
+    --------
+    :obj:`dpnp.split` : Split array into multiple sub-arrays of equal size.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.arange(16.0).reshape(4, 4)
+    >>> x
+    array([[ 0.,  1.,  2.,  3.],
+           [ 4.,  5.,  6.,  7.],
+           [ 8.,  9., 10., 11.],
+           [12., 13., 14., 15.]])
+    >>> np.vsplit(x, 2)
+    [array([[0., 1., 2., 3.],
+            [4., 5., 6., 7.]]),
+     array([[ 8.,  9., 10., 11.],
+            [12., 13., 14., 15.]])]
+    >>> np.vsplit(x, np.array([3, 6]))
+    [array([[ 0.,  1.,  2.,  3.],
+            [ 4.,  5.,  6.,  7.],
+            [ 8.,  9., 10., 11.]]),
+     array([[12., 13., 14., 15.]]),
+     array([], shape=(0, 4), dtype=float64)]
+
+    With a higher dimensional array the split is still along the first axis.
+
+    >>> x = np.arange(8.0).reshape(2, 2, 2)
+    >>> x
+    array([[[0., 1.],
+            [2., 3.]],
+           [[4., 5.],
+            [6., 7.]]])
+    >>> np.vsplit(x, 2)
+    [array([[[0., 1.],
+             [2., 3.]]]),
+     array([[[4., 5.],
+             [6., 7.]]])]
+
+    """
+
+    dpnp.check_supported_arrays_type(ary)
+    if ary.ndim < 2:
+        raise ValueError("vsplit only works on arrays of 2 or more dimensions")
+    return split(ary, indices_or_sections, 0)
 
 
 def vstack(tup, *, dtype=None, casting="same_kind"):

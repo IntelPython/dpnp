@@ -322,6 +322,7 @@ def test_logspace_base(usm_type_x, usm_type_y):
     [
         "array",
         "asarray",
+        "asarray_chkfinite",
         "asanyarray",
         "ascontiguousarray",
         "asfarray",
@@ -621,6 +622,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("real_if_close", [2.1 + 4e-15j, 5.2 + 3e-16j]),
         pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("rot90", [[1, 2], [3, 4]]),
         pytest.param("rsqrt", [1, 8, 27]),
         pytest.param("sign", [-5.0, 0.0, 4.5]),
         pytest.param("signbit", [-5.0, 0.0, 4.5]),
@@ -686,6 +688,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param(
             "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
         ),
+        pytest.param("heaviside", [-1.5, 0, 2.0], [1]),
         pytest.param(
             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
         ),
@@ -760,6 +763,41 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     x = dp.array(data1, usm_type=usm_type_x)
     y = dp.array(data2, usm_type=usm_type_y)
     z = getattr(dp, func)((x, y))
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize(
+    "func,data1",
+    [
+        pytest.param("array_split", [1, 2, 3, 4]),
+        pytest.param("split", [1, 2, 3, 4]),
+        pytest.param("hsplit", [1, 2, 3, 4]),
+        pytest.param(
+            "dsplit",
+            [[[1, 2, 3, 4], [1, 2, 3, 4]], [[1, 2, 3, 4], [1, 2, 3, 4]]],
+        ),
+        pytest.param("vsplit", [[1, 2, 3, 4], [1, 2, 3, 4]]),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_split(func, data1, usm_type):
+    x = dp.array(data1, usm_type=usm_type)
+    y = getattr(dp, func)(x, 2)
+
+    assert x.usm_type == usm_type
+    assert y[0].usm_type == usm_type
+    assert y[1].usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_append(usm_type_x, usm_type_y):
+    x = dp.array([1, 2, 3], usm_type=usm_type_x)
+    y = dp.array([4, 5, 6], usm_type=usm_type_y)
+    z = dp.append(x, y)
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
@@ -975,65 +1013,92 @@ def test_eigenvalue(func, shape, usm_type):
     assert a.usm_type == dp_val.usm_type
 
 
-@pytest.mark.parametrize(
-    "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
-)
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_fft(func, usm_type):
-    dtype = dp.float32 if func in ["rfft", "ihfft"] else dp.complex64
-    dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dtype)
-    result = getattr(dp.fft, func)(dpnp_data)
+def test_require(usm_type):
+    dpnp_data = dp.arange(10, usm_type=usm_type).reshape(2, 5)
+    result = dp.require(dpnp_data, dtype="f4", requirements=["F"])
+    assert dpnp_data.usm_type == usm_type
+    assert result.usm_type == usm_type
 
+    # No requirements
+    result = dp.require(dpnp_data, dtype="f4")
     assert dpnp_data.usm_type == usm_type
     assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_fftn(usm_type):
-    dpnp_data = dp.arange(24, usm_type=usm_type).reshape(2, 3, 4)
-    assert dpnp_data.usm_type == usm_type
-
-    result = dp.fft.fftn(dpnp_data)
-    assert result.usm_type == usm_type
-
-    result = dp.fft.ifftn(result)
-    assert result.usm_type == usm_type
-
-
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_rfftn(usm_type):
-    dpnp_data = dp.arange(24, usm_type=usm_type).reshape(2, 3, 4)
-    assert dpnp_data.usm_type == usm_type
-
-    result = dp.fft.rfftn(dpnp_data)
-    assert result.usm_type == usm_type
-
-    result = dp.fft.irfftn(result)
-    assert result.usm_type == usm_type
-
-
-@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
-@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
-def test_fftfreq(func, usm_type):
-    result = getattr(dp.fft, func)(10, 0.5, usm_type=usm_type)
-    expected = getattr(numpy.fft, func)(10, 0.5)
-
-    if usm_type is None:
-        # assert against default USM type
-        usm_type = "device"
-
-    assert_dtype_allclose(result, expected)
-    assert result.usm_type == usm_type
-
-
-@pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
-@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-def test_fftshift(func, usm_type):
-    dpnp_data = dp.fft.fftfreq(10, 0.5, usm_type=usm_type)
-    result = getattr(dp.fft, func)(dpnp_data)
+def test_resize(usm_type):
+    dpnp_data = dp.arange(10, usm_type=usm_type)
+    result = dp.resize(dpnp_data, (2, 5))
 
     assert dpnp_data.usm_type == usm_type
     assert result.usm_type == usm_type
+
+
+class TestFft:
+    @pytest.mark.parametrize(
+        "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
+    )
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_fft(self, func, usm_type):
+        dtype = dp.float32 if func in ["rfft", "ihfft"] else dp.complex64
+        dpnp_data = dp.arange(100, usm_type=usm_type, dtype=dtype)
+        result = getattr(dp.fft, func)(dpnp_data)
+
+        assert dpnp_data.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_fftn(self, usm_type):
+        dpnp_data = dp.arange(24, usm_type=usm_type).reshape(2, 3, 4)
+        assert dpnp_data.usm_type == usm_type
+
+        result = dp.fft.fftn(dpnp_data)
+        assert result.usm_type == usm_type
+
+        result = dp.fft.ifftn(result)
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_rfftn(self, usm_type):
+        dpnp_data = dp.arange(24, usm_type=usm_type).reshape(2, 3, 4)
+        assert dpnp_data.usm_type == usm_type
+
+        result = dp.fft.rfftn(dpnp_data)
+        assert result.usm_type == usm_type
+
+        result = dp.fft.irfftn(result)
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+    def test_fftfreq(self, func, usm_type):
+        result = getattr(dp.fft, func)(10, 0.5, usm_type=usm_type)
+        expected = getattr(numpy.fft, func)(10, 0.5)
+
+        if usm_type is None:
+            # assert against default USM type
+            usm_type = "device"
+
+        assert_dtype_allclose(result, expected)
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_fftshift(self, func, usm_type):
+        dpnp_data = dp.fft.fftfreq(10, 0.5, usm_type=usm_type)
+        result = getattr(dp.fft, func)(dpnp_data)
+
+        assert dpnp_data.usm_type == usm_type
+        assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize(
@@ -1416,6 +1481,15 @@ def test_histogram_bin_edges(usm_type_v, usm_type_w):
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_select(usm_type_x, usm_type_y):
+    condlist = [dp.array([True, False], usm_type=usm_type_x)]
+    choicelist = [dp.array([1, 2], usm_type=usm_type_y)]
+    res = dp.select(condlist, choicelist)
+    assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize("axis", [None, 0, -1])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_unique(axis, usm_type):
@@ -1460,3 +1534,28 @@ def test_ediff1d(usm_type_x, usm_type_args, to_end, to_begin):
     res = dp.ediff1d(x, to_end=to_end, to_begin=to_begin)
 
     assert res.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_args])
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_unravel_index(usm_type):
+    x = dp.array(2, usm_type=usm_type)
+    result = dp.unravel_index(x, shape=(2, 2))
+    for res in result:
+        assert res.usm_type == x.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_ravel_index(usm_type):
+    x = dp.array([1, 0], usm_type=usm_type)
+    result = dp.ravel_multi_index(x, (2, 2))
+    assert result.usm_type == x.usm_type
+
+
+@pytest.mark.parametrize("usm_type_0", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_1", list_of_usm_types, ids=list_of_usm_types)
+def test_ix(usm_type_0, usm_type_1):
+    x0 = dp.array([0, 1], usm_type=usm_type_0)
+    x1 = dp.array([2, 4], usm_type=usm_type_1)
+    ixgrid = dp.ix_(x0, x1)
+    assert ixgrid[0].usm_type == x0.usm_type
+    assert ixgrid[1].usm_type == x1.usm_type

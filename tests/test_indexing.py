@@ -1,5 +1,6 @@
 import functools
 
+import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
@@ -12,8 +13,9 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
-from .helper import get_all_dtypes, get_integer_dtypes
+from .helper import get_all_dtypes, get_integer_dtypes, has_support_aspect64
 
 
 def _add_keepdims(func):
@@ -270,6 +272,57 @@ class TestIndexing:
         slices = (slice(None), dpnp.array([0, 1, 2, 3]))
         arr[slices] = 10
         assert_array_equal(arr, 10.0)
+
+
+class TestIx:
+    @pytest.mark.parametrize(
+        "x0", [[0, 1], [True, True]], ids=["[0, 1]", "[True, True]"]
+    )
+    @pytest.mark.parametrize(
+        "x1",
+        [[2, 4], [False, False, True, False, True]],
+        ids=["[2, 4]", "[False, False, True, False, True]"],
+    )
+    def test_ix(self, x0, x1):
+        expected = dpnp.ix_(dpnp.array(x0), dpnp.array(x1))
+        result = numpy.ix_(numpy.array(x0), numpy.array(x1))
+
+        assert_array_equal(result[0], expected[0])
+        assert_array_equal(result[1], expected[1])
+
+    @pytest.mark.parametrize("dt", [dpnp.intp, dpnp.float32])
+    def test_ix_empty_out(self, dt):
+        a = numpy.array([], dtype=dt)
+        ia = dpnp.array(a)
+
+        (result,) = dpnp.ix_(ia)
+        (expected,) = numpy.ix_(a)
+        assert_array_equal(result, expected)
+        assert a.dtype == dt
+
+    def test_repeated_input(self):
+        a = numpy.arange(5)
+        ia = dpnp.array(a)
+
+        result = dpnp.ix_(ia, ia)
+        expected = numpy.ix_(a, a)
+        assert_array_equal(result[0], expected[0])
+        assert_array_equal(result[1], expected[1])
+
+    @pytest.mark.parametrize("arr", [[2, 4, 0, 1], [True, False, True, True]])
+    def test_usm_ndarray_input(self, arr):
+        a = numpy.array(arr)
+        ia = dpt.asarray(a)
+
+        (result,) = dpnp.ix_(ia)
+        (expected,) = numpy.ix_(a)
+        assert_array_equal(result, expected)
+        assert isinstance(result, dpnp_array)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("shape", [(), (2, 2)])
+    def test_ix_error(self, xp, shape):
+        assert_raises(ValueError, xp.ix_, xp.ones(shape))
 
 
 class TestNonzero:
@@ -949,28 +1002,6 @@ def test_putmask3(arr, mask, vals):
     assert_array_equal(a, ia)
 
 
-def test_select():
-    cond_val1 = numpy.array(
-        [True, True, True, False, False, False, False, False, False, False]
-    )
-    cond_val2 = numpy.array(
-        [False, False, False, False, False, True, True, True, True, True]
-    )
-    icond_val1 = dpnp.array(cond_val1)
-    icond_val2 = dpnp.array(cond_val2)
-    condlist = [cond_val1, cond_val2]
-    icondlist = [icond_val1, icond_val2]
-    choice_val1 = numpy.full(10, -2)
-    choice_val2 = numpy.full(10, -1)
-    ichoice_val1 = dpnp.array(choice_val1)
-    ichoice_val2 = dpnp.array(choice_val2)
-    choicelist = [choice_val1, choice_val2]
-    ichoicelist = [ichoice_val1, ichoice_val2]
-    expected = numpy.select(condlist, choicelist)
-    result = dpnp.select(icondlist, ichoicelist)
-    assert_array_equal(expected, result)
-
-
 @pytest.mark.parametrize(
     "m", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
 )
@@ -1057,3 +1088,193 @@ def test_fill_diagonal_error():
     arr = dpnp.ones((1, 2, 3))
     with pytest.raises(ValueError):
         dpnp.fill_diagonal(arr, 5)
+
+
+class TestRavelIndex:
+    def test_basic(self):
+        expected = numpy.ravel_multi_index(numpy.array([1, 0]), (2, 2))
+        result = dpnp.ravel_multi_index(dpnp.array([1, 0]), (2, 2))
+        assert_equal(expected, result)
+
+        x_np = numpy.array([[3, 6, 6], [4, 5, 1]])
+        x_dp = dpnp.array([[3, 6, 6], [4, 5, 1]])
+
+        expected = numpy.ravel_multi_index(x_np, (7, 6))
+        result = dpnp.ravel_multi_index(x_dp, (7, 6))
+        assert_equal(expected, result)
+
+    def test_mode(self):
+        x_np = numpy.array([[3, 6, 6], [4, 5, 1]])
+        x_dp = dpnp.array([[3, 6, 6], [4, 5, 1]])
+
+        expected = numpy.ravel_multi_index(x_np, (4, 6), mode="clip")
+        result = dpnp.ravel_multi_index(x_dp, (4, 6), mode="clip")
+        assert_equal(expected, result)
+
+        expected = numpy.ravel_multi_index(x_np, (4, 4), mode=("clip", "wrap"))
+        result = dpnp.ravel_multi_index(x_dp, (4, 4), mode=("clip", "wrap"))
+        assert_equal(expected, result)
+
+    def test_order_f(self):
+        x_np = numpy.array([[3, 6, 6], [4, 5, 1]])
+        x_dp = dpnp.array([[3, 6, 6], [4, 5, 1]])
+        expected = numpy.ravel_multi_index(x_np, (7, 6), order="F")
+        result = dpnp.ravel_multi_index(x_dp, (7, 6), order="F")
+        assert_equal(expected, result)
+
+    def test_error(self):
+        assert_raises(
+            ValueError, dpnp.ravel_multi_index, dpnp.array([2, 1]), (2, 2)
+        )
+        assert_raises(
+            ValueError, dpnp.ravel_multi_index, dpnp.array([0, -3]), (2, 2)
+        )
+        assert_raises(
+            ValueError, dpnp.ravel_multi_index, dpnp.array([0, 2]), (2, 2)
+        )
+        assert_raises(
+            TypeError, dpnp.ravel_multi_index, dpnp.array([0.1, 0.0]), (2, 2)
+        )
+
+    def test_empty_indices_error(self):
+        assert_raises(TypeError, dpnp.ravel_multi_index, ([], []), (10, 3))
+        assert_raises(TypeError, dpnp.ravel_multi_index, ([], ["abc"]), (10, 3))
+        assert_raises(
+            TypeError,
+            dpnp.ravel_multi_index,
+            (dpnp.array([]), dpnp.array([])),
+            (5, 3),
+        )
+
+    def test_empty_indices(self):
+        assert_equal(
+            dpnp.ravel_multi_index(
+                (dpnp.array([], dtype=int), dpnp.array([], dtype=int)), (5, 3)
+            ),
+            [],
+        )
+        assert_equal(
+            dpnp.ravel_multi_index(dpnp.array([[], []], dtype=int), (5, 3)), []
+        )
+
+
+class TestUnravelIndex:
+    def test_basic(self):
+        expected = numpy.unravel_index(numpy.array(2), (2, 2))
+        result = dpnp.unravel_index(dpnp.array(2), (2, 2))
+        assert_equal(expected, result)
+
+        x_np = numpy.array([22, 41, 37])
+        x_dp = dpnp.array([22, 41, 37])
+
+        expected = numpy.unravel_index(x_np, (7, 6))
+        result = dpnp.unravel_index(x_dp, (7, 6))
+        assert_equal(expected, result)
+
+    def test_order_f(self):
+        x_np = numpy.array([31, 41, 13])
+        x_dp = dpnp.array([31, 41, 13])
+        expected = numpy.unravel_index(x_np, (7, 6), order="F")
+        result = dpnp.unravel_index(x_dp, (7, 6), order="F")
+        assert_equal(expected, result)
+
+    def test_new_shape(self):
+        expected = numpy.unravel_index(numpy.array(2), shape=(2, 2))
+        result = dpnp.unravel_index(dpnp.array(2), shape=(2, 2))
+        assert_equal(expected, result)
+
+    def test_error(self):
+        assert_raises(ValueError, dpnp.unravel_index, dpnp.array(-1), (2, 2))
+        assert_raises(TypeError, dpnp.unravel_index, dpnp.array(0.5), (2, 2))
+        assert_raises(ValueError, dpnp.unravel_index, dpnp.array(4), (2, 2))
+        assert_raises(TypeError, dpnp.unravel_index, dpnp.array([]), (10, 3, 5))
+
+    def test_empty_indices(self):
+        assert_equal(
+            dpnp.unravel_index(dpnp.array([], dtype=int), (10, 3, 5)),
+            [[], [], []],
+        )
+
+
+class TestSelect:
+    choices_np = [
+        numpy.array([1, 2, 3]),
+        numpy.array([4, 5, 6]),
+        numpy.array([7, 8, 9]),
+    ]
+    choices_dp = [
+        dpnp.array([1, 2, 3]),
+        dpnp.array([4, 5, 6]),
+        dpnp.array([7, 8, 9]),
+    ]
+    conditions_np = [
+        numpy.array([False, False, False]),
+        numpy.array([False, True, False]),
+        numpy.array([False, False, True]),
+    ]
+    conditions_dp = [
+        dpnp.array([False, False, False]),
+        dpnp.array([False, True, False]),
+        dpnp.array([False, False, True]),
+    ]
+
+    def test_basic(self):
+        expected = numpy.select(self.conditions_np, self.choices_np, default=15)
+        result = dpnp.select(self.conditions_dp, self.choices_dp, default=15)
+        assert_array_equal(expected, result)
+
+    def test_broadcasting(self):
+        conditions_np = [numpy.array(True), numpy.array([False, True, False])]
+        conditions_dp = [dpnp.array(True), dpnp.array([False, True, False])]
+        choices_np = [numpy.array(1), numpy.arange(12).reshape(4, 3)]
+        choices_dp = [dpnp.array(1), dpnp.arange(12).reshape(4, 3)]
+        expected = numpy.select(conditions_np, choices_np)
+        result = dpnp.select(conditions_dp, choices_dp)
+        assert_array_equal(expected, result)
+
+    def test_return_dtype(self):
+        dtype = dpnp.complex128 if has_support_aspect64() else dpnp.complex64
+        assert_equal(
+            dpnp.select(self.conditions_dp, self.choices_dp, 1j).dtype, dtype
+        )
+
+        choices = [choice.astype(dpnp.int32) for choice in self.choices_dp]
+        assert_equal(dpnp.select(self.conditions_dp, choices).dtype, dpnp.int32)
+
+    def test_nan(self):
+        choice_np = numpy.array([1, 2, 3, numpy.nan, 5, 7])
+        choice_dp = dpnp.array([1, 2, 3, dpnp.nan, 5, 7])
+        condition_np = numpy.isnan(choice_np)
+        condition_dp = dpnp.isnan(choice_dp)
+        expected = numpy.select([condition_np], [choice_np])
+        result = dpnp.select([condition_dp], [choice_dp])
+        assert_array_equal(expected, result)
+
+    def test_many_arguments(self):
+        condition_np = [numpy.array([False])] * 100
+        condition_dp = [dpnp.array([False])] * 100
+        choice_np = [numpy.array([1])] * 100
+        choice_dp = [dpnp.array([1])] * 100
+        expected = numpy.select(condition_np, choice_np)
+        result = dpnp.select(condition_dp, choice_dp)
+        assert_array_equal(expected, result)
+
+    def test_deprecated_empty(self):
+        assert_raises(ValueError, dpnp.select, [], [], 3j)
+        assert_raises(ValueError, dpnp.select, [], [])
+
+    def test_non_bool_deprecation(self):
+        choices = self.choices_dp
+        conditions = self.conditions_dp[:]
+        conditions[0] = conditions[0].astype(dpnp.int64)
+        assert_raises(TypeError, dpnp.select, conditions, choices)
+
+    def test_error(self):
+        x0 = dpnp.array([True, False])
+        x1 = dpnp.array([1, 2])
+        with pytest.raises(ValueError):
+            dpnp.select([x0], [x1, x1])
+        with pytest.raises(TypeError):
+            dpnp.select([x0], [x1], default=x1)
+        with pytest.raises(TypeError):
+            dpnp.select([x1], [x1])

@@ -1230,6 +1230,42 @@ class TestGradient:
         assert type(res) is tuple
 
 
+class TestHeavside:
+    @pytest.mark.parametrize("val", [0.5, 1.0])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_basic(self, val, dt):
+        a = numpy.array(
+            [[-30.0, -0.1, 0.0, 0.2], [7.5, numpy.nan, numpy.inf, -numpy.inf]],
+            dtype=dt,
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.heaviside(ia, val)
+        expected = numpy.heaviside(a, val)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "a_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "b_dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_both_input_as_arrays(self, a_dt, b_dt):
+        a = numpy.array([-1.5, 0, 2.0], dtype=a_dt)
+        b = numpy.array([-0, 0.5, 1.0], dtype=b_dt)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.heaviside(ia, ib)
+        expected = numpy.heaviside(a, b)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex_dtype(self, xp, dt):
+        a = xp.array([-1.5, 0, 2.0], dtype=dt)
+        assert_raises((TypeError, ValueError), xp.heaviside, a, 0.5)
+
+
 @pytest.mark.parametrize("dtype1", get_all_dtypes())
 @pytest.mark.parametrize("dtype2", get_all_dtypes())
 @pytest.mark.parametrize(
@@ -2015,21 +2051,6 @@ def test_divide_scalar(shape, dtype):
     assert_allclose(result, expected, rtol=1e-6)
 
 
-@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-def test_power_scalar(shape, dtype):
-    np_a = numpy.ones(shape, dtype=dtype)
-    dpnp_a = dpnp.ones(shape, dtype=dtype)
-
-    result = 4.2**dpnp_a**-1.3
-    expected = 4.2**np_a**-1.3
-    assert_allclose(result, expected, rtol=1e-6)
-
-    result **= dpnp_a
-    expected **= np_a
-    assert_allclose(result, expected, rtol=1e-6)
-
-
 @pytest.mark.parametrize(
     "data",
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
@@ -2276,39 +2297,6 @@ class TestProjection:
         result = dpnp.proj(dpnp.array(1, dtype=dtype))
         expected = dpnp.array(complex(1, 0))
         assert_allclose(result, expected)
-
-
-@pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))
-@pytest.mark.parametrize("data_type", get_all_dtypes())
-@pytest.mark.parametrize("val", [1.5, 1, 5], ids=["1.5", "1", "5"])
-@pytest.mark.parametrize(
-    "array",
-    [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
-        [
-            [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
-            [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
-        ],
-    ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
-    ],
-)
-def test_power(array, val, data_type, val_type):
-    np_a = numpy.array(array, dtype=data_type)
-    dpnp_a = dpnp.array(array, dtype=data_type)
-    val_ = val_type(val)
-
-    result = dpnp.power(dpnp_a, val_)
-    expected = numpy.power(np_a, val_)
-    assert_allclose(expected, result, rtol=1e-6)
 
 
 class TestRoundingFuncs:
@@ -2962,6 +2950,38 @@ class TestMultiply:
 
 
 class TestPower:
+    @pytest.mark.parametrize("val_type", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("data_type", get_all_dtypes())
+    @pytest.mark.parametrize("val", [1.5, 1, 5], ids=["1.5", "1", "5"])
+    @pytest.mark.parametrize(
+        "array",
+        [
+            [[0, 0], [0, 0]],
+            [[1, 2], [1, 2]],
+            [[1, 2], [3, 4]],
+            [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]],
+            [
+                [[[1, 2], [3, 4]], [[1, 2], [2, 1]]],
+                [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
+            ],
+        ],
+        ids=[
+            "[[0, 0], [0, 0]]",
+            "[[1, 2], [1, 2]]",
+            "[[1, 2], [3, 4]]",
+            "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
+            "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
+        ],
+    )
+    def test_basic(self, array, val, data_type, val_type):
+        np_a = numpy.array(array, dtype=data_type)
+        dpnp_a = dpnp.array(array, dtype=data_type)
+        val_ = val_type(val)
+
+        result = dpnp.power(dpnp_a, val_)
+        expected = numpy.power(np_a, val_)
+        assert_allclose(expected, result, rtol=1e-6)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_power(self, dtype):
         np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(
@@ -3076,6 +3096,27 @@ class TestPower:
         dpnp_res = dpnp.array(a) ** dpnp.array(b)
 
         assert_allclose(numpy_res, dpnp_res.asnumpy())
+
+    @pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_power_scalar(self, shape, dtype):
+        np_a = numpy.ones(shape, dtype=dtype)
+        dpnp_a = dpnp.ones(shape, dtype=dtype)
+
+        result = 4.2**dpnp_a**-1.3
+        expected = 4.2**np_a**-1.3
+        assert_allclose(result, expected, rtol=1e-6)
+
+        result **= dpnp_a
+        expected **= np_a
+        assert_allclose(result, expected, rtol=1e-6)
+
+    def test_alias(self):
+        a = dpnp.arange(10)
+        res1 = dpnp.power(a, 3)
+        res2 = dpnp.pow(a, 3)
+
+        assert_array_equal(res1, res2)
 
 
 @pytest.mark.parametrize(
@@ -3774,6 +3815,14 @@ class TestMatmul:
         result = dpnp.matmul(a_dp, b_dp)
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected, factor=24)
+
+    def test_matmul_alias(self):
+        a = dpnp.ones((3, 4))
+        b = dpnp.ones((4, 5))
+
+        result1 = dpnp.matmul(a, b)
+        result2 = dpnp.linalg.matmul(a, b)
+        assert_array_equal(result1, result2)
 
 
 class TestMatmulInvalidCases:

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(dpnp
-  VERSION 0.16
+  VERSION 0.17
   LANGUAGES CXX
   DESCRIPTION "NumPy-like API accelerated by SYCL."
 )
@@ -46,15 +46,14 @@ else()
     find_package(oneDPL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 endif()
 
-
 include(GNUInstallDirs)
 
 # Fetch pybind11
 include(FetchContent)
 FetchContent_Declare(
     pybind11
-    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.3.tar.gz
-    URL_HASH SHA256=6e7a84ec241544f2f5e30c7a82c09c81f0541dd14e9d9ef61051e07105f9c445
+    URL https://github.com/pybind/pybind11/archive/refs/tags/v2.13.6.tar.gz
+    URL_HASH SHA256=e08cb87f4773da97fa7b5f035de8763abc656d87d5773e62f6da0587d1f0ec20
 )
 FetchContent_MakeAvailable(pybind11)
 
@@ -108,7 +107,7 @@ if(_use_onemkl_interfaces)
     set(BUILD_FUNCTIONAL_TESTS False)
     set(BUILD_EXAMPLES False)
     if(_use_onemkl_interfaces_cuda)
-        # set(ENABLE_CUBLAS_BACKEND True)
+        set(ENABLE_CUBLAS_BACKEND True)
         set(ENABLE_CUSOLVER_BACKEND True)
         set(ENABLE_CUFFT_BACKEND True)
         # set(ENABLE_CURAND_BACKEND True)
@@ -121,6 +120,7 @@ if(_use_onemkl_interfaces)
             GIT_TAG f2d2dcb4213a435bb60fbb88320c5f24892423ce
     )
     FetchContent_MakeAvailable(onemkl_interfaces_library)
+    set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 endif()
 
 if(WIN32)

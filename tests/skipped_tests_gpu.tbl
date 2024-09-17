@@ -26,8 +26,6 @@ tests/test_umath.py::test_umaths[('frexp', 'f')]
 tests/test_umath.py::test_umaths[('frexp', 'd')]
 tests/test_umath.py::test_umaths[('gcd', 'ii')]
 tests/test_umath.py::test_umaths[('gcd', 'll')]
-tests/test_umath.py::test_umaths[('heaviside', 'ff')]
-tests/test_umath.py::test_umaths[('heaviside', 'dd')]
 tests/test_umath.py::test_umaths[('lcm', 'ii')]
 tests/test_umath.py::test_umaths[('lcm', 'll')]
 tests/test_umath.py::test_umaths[('ldexp', 'fi')]
@@ -109,55 +107,6 @@ tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_pa
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_min
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
 tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
-
-tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_AxisConcatenator_init1
-tests/third_party/cupy/indexing_tests/test_generate.py::TestAxisConcatenator::test_len
-tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_1
-tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_2
-tests/third_party/cupy/indexing_tests/test_generate.py::TestC_::test_c_3
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_bool_ndarray
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_empty_ndarray
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_list
-tests/third_party/cupy/indexing_tests/test_generate.py::TestIX_::test_ix_ndarray
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_clip
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_nd_coords
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_raise
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_basic_wrap
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_dims_overflow
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_float_dims
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_mode
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_multi_index_dtype
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_multi_index_shape
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_invalid_order
-tests/third_party/cupy/indexing_tests/test_generate.py::TestRavelMultiIndex::test_multi_index_broadcasting
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_1
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_2
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_3
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_4
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_5
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_6
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_7
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_8
-tests/third_party/cupy/indexing_tests/test_generate.py::TestR_::test_r_9
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_dtype
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_index
-tests/third_party/cupy/indexing_tests/test_generate.py::TestUnravelIndex::test_invalid_order
-
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_1D_choicelist
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_choicelist_condlist_broadcast
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_default_scalar
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_empty_lists
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_length_error
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_broadcastable_complex
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_odd_shaped_non_broadcastable
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestSelect::test_select_type_error_condlist
 
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
 tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
@@ -247,8 +196,6 @@ tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_fx
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_x
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_size1
 tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_to_nan
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside
-tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_heaviside_nan_inf
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_0_{a_shape=(), b_shape=(), shape=(4, 3, 2)}::test_beta
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta_param_1_{a_shape=(), b_shape=(), shape=(3, 2)}::test_beta

@@ -155,10 +155,17 @@ class TestNdarrayInitRaise(unittest.TestCase):
             cupy.array(arr)
 
     @pytest.mark.skip("no ndim limit")
+    @testing.with_requires("numpy>=2.0")
+    @testing.numpy_cupy_array_equal()
+    def test_upper_limit_ndim(self, xp):
+        shape = [1 for i in range(64)]
+        return xp.zeros(shape, dtype=xp.int8)
+
+    @pytest.mark.skip("no ndim limit")
     def test_excessive_ndim(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
-                xp.ndarray(shape=[1 for i in range(33)], dtype=xp.int8)
+                xp.ndarray(shape=[1 for i in range(65)], dtype=xp.int8)
 
 
 @testing.parameterize(
@@ -265,7 +272,8 @@ class TestNdarrayShape(unittest.TestCase):
         return xp.array(arr.shape)
 
     @pytest.mark.skip(
-        "dpctl-1699: shape setter does not work with negative shape"
+        "dpctl-1699: shape setter does not work with negative shape "
+        "(no plan to support that)"
     )
     @testing.numpy_cupy_array_equal()
     def test_shape_set_infer(self, xp):
@@ -588,7 +596,6 @@ class TestZeroSizedNdarrayTakeIndexError(unittest.TestCase):
                 wrap_take(a, i)
 
 
-@pytest.mark.skip("size() is not supported")
 class TestSize(unittest.TestCase):
     @testing.numpy_cupy_equal()
     def test_size_without_axis(self, xp):

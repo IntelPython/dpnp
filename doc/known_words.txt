@@ -29,6 +29,8 @@ finiteness
 Flannery
 Fortran
 Frobenius
+fs
+getter
 Hadamard
 Hypergeometric
 iinfo
@@ -40,11 +42,14 @@ Mersenne
 meshgrid
 Mises
 multinomial
+multivalued
 NaN
 NaT
 ndarray
 ndarrays
 ndim
+Nj
+Nk
 normed
 Nyquist
 oneAPI

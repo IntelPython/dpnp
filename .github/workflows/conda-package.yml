@@ -53,7 +53,7 @@ env:
       third_party/cupy/core_tests
       third_party/cupy/fft_tests
       third_party/cupy/creation_tests
-      third_party/cupy/indexing_tests/test_indexing.py
+      third_party/cupy/indexing_tests
       third_party/cupy/lib_tests
       third_party/cupy/linalg_tests
       third_party/cupy/logic_tests
@@ -62,6 +62,7 @@ env:
       third_party/cupy/sorting_tests
       third_party/cupy/statistics_tests/test_histogram.py
       third_party/cupy/statistics_tests/test_meanvar.py
+      third_party/cupy/test_ndim.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -144,13 +145,13 @@ jobs:
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
 
       - name: Upload artifact
-        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@834a144ee995460fba8ed112a2fc961b36a5ec5a # v4.3.6
+        uses: actions/upload-artifact@50769540e7f4bd5e21e526ee35c689e35e0d6874 # v4.4.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl

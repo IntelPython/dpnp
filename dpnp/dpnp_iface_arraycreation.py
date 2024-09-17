@@ -233,10 +233,16 @@ def array(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    copy : bool, optional
-        If ``True`` (default), then the object is copied.
+        Default: ``None``.
+    copy : {None, bool}, optional
+        If ``True``, then the array data is copied. If ``None``, a copy will
+        only be made if a copy is needed to satisfy any of the requirements
+        (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``
+        exception if a copy can not be avoided.
+        Default: ``True``.
     order : {"C", "F", "A", "K"}, optional
-        Memory layout of the newly output array. Default: "K".
+        Memory layout of the newly output array.
+        Default: ``"K"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -244,6 +250,7 @@ def array(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -322,11 +329,6 @@ def array(
             f"default value ``0``, but got {ndmin}"
         )
 
-    # `False`` in numpy means exactly the same like `None` in python array API:
-    # that is to reuse existing memory buffer if possible or to copy otherwise.
-    if copy is False:
-        copy = None
-
     return dpnp_container.asarray(
         a,
         dtype=dtype,
@@ -364,7 +366,8 @@ def asanyarray(
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
     order : {None, "C", "F", "A", "K"}, optional
-        Memory layout of the newly output array. Default: "K".
+        Memory layout of the newly output array.
+        Default: ``"K"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -443,10 +446,12 @@ def asarray(
     a,
     dtype=None,
     order=None,
-    like=None,
+    *,
     device=None,
     usm_type=None,
     sycl_queue=None,
+    copy=None,
+    like=None,
 ):
     """
     Converts an input object into array.
@@ -463,8 +468,10 @@ def asarray(
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
+        Default: ``None``.
     order : {None, "C", "F", "A", "K"}, optional
-        Memory layout of the newly output array. Default: "K".
+        Memory layout of the newly output array.
+        Default: ``"K"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -472,6 +479,7 @@ def asarray(
         a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
         or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -481,6 +489,12 @@ def asarray(
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
         Default: ``None``.
+    copy : {None, bool}, optional
+        If ``True``, then the array data is copied. If ``None``, a copy will
+        only be made if a copy is needed to satisfy any of the requirements
+        (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``
+        exception if a copy can not be avoided.
+        Default: ``True``.
 
     Returns
     -------
@@ -533,6 +547,7 @@ def asarray(
     return dpnp_container.asarray(
         a,
         dtype=dtype,
+        copy=copy,
         order=order,
         device=device,
         usm_type=usm_type,
@@ -898,12 +913,15 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         on the `k`-th diagonal.
         If `v` is a 2-D array and is an instance of
         {dpnp.ndarray, usm_ndarray}, then:
-          - If `device`, `usm_type`, and `sycl_queue` are set to their
-            default values, returns a read/write view of its k-th diagonal.
-          - Otherwise, returns a copy of its k-th diagonal.
+
+            - If `device`, `usm_type`, and `sycl_queue` are set to their
+              default values, returns a read/write view of its k-th diagonal.
+            - Otherwise, returns a copy of its k-th diagonal.
+
     k : int, optional
-        Diagonal in question. The default is 0. Use k > 0 for diagonals above
+        Diagonal in question. Use k > 0 for diagonals above
         the main diagonal, and k < 0 for diagonals below the main diagonal.
+        Default: ``0``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -1109,7 +1127,8 @@ def empty(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -1134,8 +1153,6 @@ def empty(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1169,7 +1186,7 @@ def empty(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"
@@ -1211,7 +1228,8 @@ def empty_like(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -1328,7 +1346,8 @@ def eye(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -1354,8 +1373,6 @@ def eye(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -1395,7 +1412,7 @@ def eye(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"
@@ -1439,7 +1456,8 @@ def frombuffer(
     count : int, optional
         Number of items to read. ``-1`` means all data in the buffer.
     offset : int, optional
-        Start reading the buffer from this offset (in bytes); default: 0.
+        Start reading the buffer from this offset (in bytes).
+        Default: ``0``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -1967,7 +1985,8 @@ def full(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -1992,8 +2011,6 @@ def full(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -2027,7 +2044,7 @@ def full(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     return dpnp_container.full(
         shape,
@@ -2072,7 +2089,8 @@ def full_like(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -2188,7 +2206,8 @@ def geomspace(
         ``num + 1`` values are spaced over the interval in log-space, of which
         all but the last (a sequence of length `num`) are returned.
     num : int, optional
-        Number of samples to generate. Default is 50.
+        Number of samples to generate.
+        Default: ``50``.
     dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
@@ -2207,7 +2226,7 @@ def geomspace(
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
         If ``True``, `stop` is the last sample. Otherwise, it is not included.
-        Default is ``True``.
+        Default: ``True``.
     axis : int, optional
         The axis in the result to store the samples. Relevant only if start or
         stop are array-like. By default (0), the samples will be along a new
@@ -2432,7 +2451,7 @@ def linspace(
         A SYCL queue to use for output array allocation and copying.
     endpoint : bool, optional
         If ``True``, `stop` is the last sample. Otherwise, it is not included.
-        Default is ``True``.
+        Default: ``True``.
     retstep : bool, optional
         If ``True``, return (samples, step), where step is the spacing between
         samples.
@@ -2639,7 +2658,8 @@ def logspace(
         values are spaced over the interval in log-space, of which all but
         the last (a sequence of length `num`) are returned.
     num : int, optional
-        Number of samples to generate. Default is 50.
+        Number of samples to generate.
+        Default: ``50``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -2654,7 +2674,7 @@ def logspace(
         A SYCL queue to use for output array allocation and copying.
     endpoint : {bool}, optional
         If ``True``, stop is the last sample. Otherwise, it is not included.
-        Default is ``True``.
+        Default: ``True``.
     base : {array_like}, optional
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
@@ -2662,7 +2682,8 @@ def logspace(
         that can be converted to an array.This includes scalars, lists, lists
         of tuples, tuples, tuples of tuples, tuples of lists, and ndarrays.
         The `step` size between the elements in ``ln(samples) / ln(base)``
-        (or log_base(samples)) is uniform. Default is 10.0.
+        (or log_base(samples)) is uniform.
+        Default: ``10.0``.
     dtype : {None, dtype}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
@@ -3006,7 +3027,8 @@ def ones(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -3031,8 +3053,6 @@ def ones(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -3072,7 +3092,7 @@ def ones(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"
@@ -3114,7 +3134,8 @@ def ones_like(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -3286,7 +3307,7 @@ def tri(
     k : int, optional
         The sub-diagonal at and below which the array is filled. k = 0 is
         the main diagonal, while k < 0 is below it, and k > 0 is above.
-        The default is 0.
+        Default: ``0``.
     dtype : {None, dtype}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
@@ -3649,11 +3670,12 @@ def zeros(
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
     dtype : {None, dtype}, optional
-        The desired dtype for the array, e.g., dpnp.int32.
+        The desired dtype for the array, e.g., `dpnp.int32`.
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -3678,8 +3700,6 @@ def zeros(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises `NotImplementedError` exception.
 
@@ -3719,7 +3739,7 @@ def zeros(
 
     """
 
-    dpnp.check_limitations(order=order, like=like)
+    dpnp.check_limitations(like=like)
 
     if usm_type is None:
         usm_type = "device"
@@ -3761,7 +3781,8 @@ def zeros_like(
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
-        Memory layout of the newly output array. Default: "C".
+        Memory layout of the newly output array.
+        Default: ``"C"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional

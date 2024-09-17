@@ -3,6 +3,7 @@ import pytest
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
+    assert_array_equal,
     assert_equal,
     assert_raises,
 )
@@ -71,20 +72,11 @@ def get_id(val):
     return val.__str__()
 
 
-# SAT-7247: implement missing umaths and to remove the list
+# implement missing umaths and to remove the list
+# SAT-7324 vecdot
+# SAT-7323 bitwise_count
 new_umaths_numpy_20 = [
-    "acos",
-    "acosh",
-    "asin",
-    "asinh",
-    "atan",
-    "atan2",
-    "atanh",
     "bitwise_count",
-    "bitwise_invert",
-    "bitwise_left_shift",
-    "bitwise_right_shift",
-    "pow",
     "vecdot",
 ]
 
@@ -99,7 +91,7 @@ def test_umaths(test_cases):
 
     if umath == "matmul":
         sh = (4, 4)
-    elif umath == "power":
+    elif umath in ["power", "pow"]:
         sh = (2, 3)
     else:
         sh = (3, 4)
@@ -228,6 +220,14 @@ class TestArctan2:
         dp_out = dpnp.empty(shape)
         with pytest.raises(ValueError):
             dpnp.arctan2(dp_array, dp_array, out=dp_out)
+
+    def test_alias(self):
+        x = dpnp.array([-1, +1, +1, -1])
+        y = dpnp.array([-1, -1, +1, +1])
+
+        res1 = dpnp.arctan2(y, x)
+        res2 = dpnp.atan2(y, x)
+        assert_array_equal(res1, res2)
 
 
 class TestCbrt:
@@ -750,3 +750,16 @@ class TestUmath:
         a = dpnp.arange(10)
         assert_raises(TypeError, getattr(dpnp, func_name), a, out)
         assert_raises(TypeError, getattr(numpy, func_name), a.asnumpy(), out)
+
+
+def test_trigonometric_hyperbolic_aliases():
+    a = dpnp.array([-0.5, 0, 0.5])
+
+    assert_array_equal(dpnp.arcsin(a), dpnp.asin(a))
+    assert_array_equal(dpnp.arccos(a), dpnp.acos(a))
+    assert_array_equal(dpnp.arctan(a), dpnp.atan(a))
+    assert_array_equal(dpnp.arctanh(a), dpnp.atanh(a))
+    assert_array_equal(dpnp.arcsinh(a), dpnp.asinh(a))
+
+    a = dpnp.array([1, 1.5, 2])
+    assert_array_equal(dpnp.arccosh(a), dpnp.acosh(a))

@@ -23,37 +23,35 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "degrees.hpp"
-#include "fabs.hpp"
-#include "fix.hpp"
-#include "float_power.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "heaviside.hpp"
-#include "logaddexp2.hpp"
-#include "radians.hpp"
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
+// dpctl tensor headers
+#include "utils/math_utils.hpp"
+#include "utils/type_utils.hpp"
 
-namespace dpnp::extensions::ufunc
+namespace dpnp::kernels::heaviside
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+namespace mu_ns = dpctl::tensor::math_utils;
+namespace tu_ns = dpctl::tensor::type_utils;
+
+template <typename argT1, typename argT2, typename resT>
+struct HeavisideFunctor
 {
-    init_degrees(m);
-    init_fabs(m);
-    init_fix(m);
-    init_float_power(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_heaviside(m);
-    init_logaddexp2(m);
-    init_radians(m);
-}
-} // namespace dpnp::extensions::ufunc
+    using supports_sg_loadstore = std::negation<
+        std::disjunction<tu_ns::is_complex<argT1>, tu_ns::is_complex<argT2>>>;
+    using supports_vec = typename std::false_type;
+
+    resT operator()(const argT1 &in1, const argT2 &in2) const
+    {
+        if (std::isnan(in1)) {
+            return in1;
+        }
+        else if (in1 == 0) {
+            return in2;
+        }
+        return resT(in1 > 0);
+    }
+};
+} // namespace dpnp::kernels::heaviside

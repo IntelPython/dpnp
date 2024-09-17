@@ -49,12 +49,11 @@ import dpnp
 from .dpnp_algo import (
     dpnp_choose,
     dpnp_putmask,
-    dpnp_select,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
     call_origin,
-    use_origin_backend,
+    get_usm_allocations,
 )
 
 __all__ = [
@@ -66,12 +65,14 @@ __all__ = [
     "fill_diagonal",
     "flatnonzero",
     "indices",
+    "ix_",
     "mask_indices",
     "nonzero",
     "place",
     "put",
     "put_along_axis",
     "putmask",
+    "ravel_multi_index",
     "select",
     "take",
     "take_along_axis",
@@ -79,6 +80,7 @@ __all__ = [
     "tril_indices_from",
     "triu_indices",
     "triu_indices_from",
+    "unravel_index",
 ]
 
 
@@ -131,6 +133,33 @@ def _build_along_axis_index(a, ind, axis):
             )
 
     return tuple(fancy_index)
+
+
+def _ravel_multi_index_checks(multi_index, dims, order):
+    dpnp.check_supported_arrays_type(*multi_index)
+    ndim = len(dims)
+    if len(multi_index) != ndim:
+        raise ValueError(
+            f"parameter multi_index must be a sequence of length {ndim}"
+        )
+    dim_mul = 1.0
+    for d in dims:
+        if not isinstance(d, int):
+            raise TypeError(
+                f"{type(d)} object cannot be interpreted as an integer"
+            )
+        dim_mul *= d
+
+    if dim_mul > dpnp.iinfo(dpnp.int64).max:
+        raise ValueError(
+            "invalid dims: array size defined by dims is larger than the "
+            "maximum possible size"
+        )
+    if order not in ("C", "c", "F", "f", None):
+        raise ValueError(
+            "Unrecognized `order` keyword value, expecting "
+            f"'C' or 'F', but got '{order}'"
+        )
 
 
 def choose(x1, choices, out=None, mode="raise"):
@@ -528,7 +557,7 @@ def extract(condition, a):
     :obj:`dpnp.put` : Replaces specified elements of an array with given values.
     :obj:`dpnp.copyto` : Copies values from one array to another, broadcasting
                          as necessary.
-    :obj:`dpnp.compress` : eturn selected slices of an array along given axis.
+    :obj:`dpnp.compress` : Return selected slices of an array along given axis.
     :obj:`dpnp.place` : Change elements of an array based on conditional and
                         input values.
 
@@ -895,6 +924,87 @@ def indices(
         else:
             res[i] = idx
     return res
+
+
+def ix_(*args):
+    """Construct an open mesh from multiple sequences.
+
+    This function takes N 1-D sequences and returns N outputs with N
+    dimensions each, such that the shape is 1 in all but one dimension
+    and the dimension with the non-unit shape value cycles through all
+    N dimensions.
+
+    Using :obj:`dpnp.ix_` one can quickly construct index arrays that will
+    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
+    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.
+
+    Parameters
+    ----------
+    x1, x2,..., xn : {dpnp.ndarray, usm_ndarray}
+        1-D sequences. Each sequence should be of integer or boolean type.
+        Boolean sequences will be interpreted as boolean masks for the
+        corresponding dimension (equivalent to passing in
+        ``dpnp.nonzero(boolean_sequence)``).
+
+    Returns
+    -------
+    out : tuple of dpnp.ndarray
+        N arrays with N dimensions each, with N the number of input sequences.
+        Together these arrays form an open mesh.
+
+    See Also
+    --------
+    :obj:`dpnp.mgrid` : Return a dense multi-dimensional “meshgrid”.
+    :obj:`dpnp.ogrid` : Return an open multi-dimensional “meshgrid”.
+    :obj:`dpnp.meshgrid` : Return a tuple of coordinate matrices from
+                           coordinate vectors.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(10).reshape(2, 5)
+    >>> a
+    array([[0, 1, 2, 3, 4],
+           [5, 6, 7, 8, 9]])
+    >>> x1 = np.array([0, 1])
+    >>> x2 = np.array([2, 4])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> ixgrid
+    (array([[0],
+           [1]]), array([[2, 4]]))
+    >>> ixgrid[0].shape, ixgrid[1].shape
+    ((2, 1), (1, 2))
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+
+    >>> x1 = np.array([True, True])
+    >>> x2 = np.array([2, 4])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+    >>> x1 = np.array([True, True])
+    >>> x2 = np.array([False, False, True, False, True])
+    >>> ixgrid = np.ix_(x1, x2)
+    >>> a[ixgrid]
+    array([[2, 4],
+           [7, 9]])
+
+    """
+
+    dpnp.check_supported_arrays_type(*args)
+
+    out = []
+    nd = len(args)
+    for k, new in enumerate(args):
+        if new.ndim != 1:
+            raise ValueError("Cross index must be 1 dimensional")
+        if dpnp.issubdtype(new.dtype, dpnp.bool):
+            (new,) = dpnp.nonzero(new)
+        new = dpnp.reshape(new, (1,) * k + (new.size,) + (1,) * (nd - k - 1))
+        out.append(new)
+    return tuple(out)
 
 
 def mask_indices(
@@ -1349,6 +1459,112 @@ def putmask(x1, mask, values):
     return call_origin(numpy.putmask, x1, mask, values, dpnp_inplace=True)
 
 
+def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
+    """
+    Converts a tuple of index arrays into an array of flat indices, applying
+    boundary modes to the multi-index.
+
+    For full documentation refer to :obj:`numpy.ravel_multi_index`.
+
+    Parameters
+    ----------
+    multi_index : tuple of {dpnp.ndarray, usm_ndarray}
+        A tuple of integer arrays, one array for each dimension.
+    dims : tuple or list of ints
+        The shape of array into which the indices from ``multi_index`` apply.
+    mode : {"raise", "wrap" or "clip'}, optional
+        Specifies how out-of-bounds indices are handled. Can specify either
+        one mode or a tuple of modes, one mode per index:
+            - "raise" -- raise an error
+            - "wrap" -- wrap around
+            - "clip" -- clip to the range
+            In "clip" mode, a negative index which would normally wrap will
+            clip to 0 instead.
+        Default: ``"raise"``.
+    order : {None, "C", "F"}, optional
+        Determines whether the multi-index should be viewed as indexing in
+        row-major (C-style) or column-major (Fortran-style) order.
+        Default: ``"C"``.
+
+    Returns
+    -------
+    raveled_indices : dpnp.ndarray
+        An array of indices into the flattened version of an array of
+        dimensions ``dims``.
+
+    See Also
+    --------
+    :obj:`dpnp.unravel_index` : Converts array of flat indices into a tuple of
+                                coordinate arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> arr = np.array([[3, 6, 6], [4, 5, 1]])
+    >>> np.ravel_multi_index(arr, (7, 6))
+    array([22, 41, 37])
+    >>> np.ravel_multi_index(arr, (7, 6), order="F")
+    array([31, 41, 13])
+    >>> np.ravel_multi_index(arr, (4, 6), mode="clip")
+    array([22, 23, 19])
+    >>> np.ravel_multi_index(arr, (4, 4), mode=("clip", "wrap"))
+    array([12, 13, 13])
+    >>> arr = np.array([3, 1, 4, 1])
+    >>> np.ravel_multi_index(arr, (6, 7, 8, 9))
+    array(1621)
+
+    """
+
+    _ravel_multi_index_checks(multi_index, dims, order)
+
+    ndim = len(dims)
+    if isinstance(mode, str):
+        mode = (mode,) * ndim
+
+    s = 1
+    ravel_strides = [1] * ndim
+
+    multi_index = tuple(multi_index)
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations(multi_index)
+
+    order = "C" if order is None else order.upper()
+    if order == "C":
+        for i in range(ndim - 2, -1, -1):
+            s = s * dims[i + 1]
+            ravel_strides[i] = s
+    else:
+        for i in range(1, ndim):
+            s = s * dims[i - 1]
+            ravel_strides[i] = s
+
+    multi_index = dpnp.broadcast_arrays(*multi_index)
+    raveled_indices = dpnp.zeros(
+        multi_index[0].shape,
+        dtype=dpnp.int64,
+        usm_type=usm_type_alloc,
+        sycl_queue=sycl_queue_alloc,
+    )
+    for d, stride, idx, _mode in zip(dims, ravel_strides, multi_index, mode):
+        if not dpnp.can_cast(idx, dpnp.int64, "same_kind"):
+            raise TypeError(
+                f"multi_index entries could not be cast from dtype({idx.dtype})"
+                f" to dtype({dpnp.int64}) according to the rule 'same_kind'"
+            )
+        idx = idx.astype(dpnp.int64, copy=False)
+
+        if _mode == "raise":
+            if dpnp.any(dpnp.logical_or(idx >= d, idx < 0)):
+                raise ValueError("invalid entry in coordinates array")
+        elif _mode == "clip":
+            idx = dpnp.clip(idx, 0, d - 1)
+        elif _mode == "wrap":
+            idx = idx % d
+        else:
+            raise ValueError(f"Unrecognized mode: {_mode}")
+        raveled_indices += stride * idx
+    return raveled_indices
+
+
 def select(condlist, choicelist, default=0):
     """
     Return an array drawn from elements in `choicelist`, depending on
@@ -1356,31 +1572,114 @@ def select(condlist, choicelist, default=0):
 
     For full documentation refer to :obj:`numpy.select`.
 
-    Limitations
-    -----------
-    Arrays of input lists are supported as :obj:`dpnp.ndarray`.
-    Parameter `default` is supported only with default values.
+    Parameters
+    ----------
+    condlist : list of bool dpnp.ndarray or usm_ndarray
+        The list of conditions which determine from which array in `choicelist`
+        the output elements are taken. When multiple conditions are satisfied,
+        the first one encountered in `condlist` is used.
+    choicelist : list of dpnp.ndarray or usm_ndarray
+        The list of arrays from which the output elements are taken. It has
+        to be of the same length as `condlist`.
+    default : {scalar, dpnp.ndarray, usm_ndarray}, optional
+        The element inserted in `output` when all conditions evaluate to
+        ``False``. Default: ``0``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The output at position m is the m-th element of the array in
+        `choicelist` where the m-th element of the corresponding array in
+        `condlist` is ``True``.
+
+    See Also
+    --------
+    :obj:`dpnp.where` : Return elements from one of two arrays depending on
+                       condition.
+    :obj:`dpnp.take` : Take elements from an array along an axis.
+    :obj:`dpnp.choose` : Construct an array from an index array and a set of
+                         arrays to choose from.
+    :obj:`dpnp.compress` : Return selected slices of an array along given axis.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagonal` : Return specified diagonals.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Beginning with an array of integers from 0 to 5 (inclusive),
+    elements less than ``3`` are negated, elements greater than ``3``
+    are squared, and elements not meeting either of these conditions
+    (exactly ``3``) are replaced with a `default` value of ``42``.
+
+    >>> x = np.arange(6)
+    >>> condlist = [x<3, x>3]
+    >>> choicelist = [x, x**2]
+    >>> np.select(condlist, choicelist, 42)
+    array([ 0,  1,  2, 42, 16, 25])
+
+    When multiple conditions are satisfied, the first one encountered in
+    `condlist` is used.
+
+    >>> condlist = [x<=4, x>3]
+    >>> choicelist = [x, x**2]
+    >>> np.select(condlist, choicelist, 55)
+    array([ 0,  1,  2,  3,  4, 25])
+
     """
 
-    if not use_origin_backend():
-        if not isinstance(condlist, list):
-            pass
-        elif not isinstance(choicelist, list):
-            pass
-        elif len(condlist) != len(choicelist):
-            pass
-        else:
-            val = True
-            size_ = condlist[0].size
-            for cond, choice in zip(condlist, choicelist):
-                if cond.size != size_ or choice.size != size_:
-                    val = False
-            if not val:
-                pass
-            else:
-                return dpnp_select(condlist, choicelist, default).get_pyobj()
+    if len(condlist) != len(choicelist):
+        raise ValueError(
+            "list of cases must be same length as list of conditions"
+        )
 
-    return call_origin(numpy.select, condlist, choicelist, default)
+    if len(condlist) == 0:
+        raise ValueError("select with an empty condition list is not possible")
+
+    dpnp.check_supported_arrays_type(*condlist)
+    dpnp.check_supported_arrays_type(*choicelist)
+
+    if not dpnp.isscalar(default) and not (
+        dpnp.is_supported_array_type(default) and default.ndim == 0
+    ):
+        raise TypeError(
+            "A default value must be any of scalar or 0-d supported array type"
+        )
+
+    dtype = dpnp.result_type(*choicelist, default)
+
+    usm_type_alloc, sycl_queue_alloc = get_usm_allocations(
+        condlist + choicelist + [default]
+    )
+
+    for i, cond in enumerate(condlist):
+        if not dpnp.issubdtype(cond, dpnp.bool):
+            raise TypeError(
+                f"invalid entry {i} in condlist: should be boolean ndarray"
+            )
+
+    # Convert conditions to arrays and broadcast conditions and choices
+    # as the shape is needed for the result
+    condlist = dpnp.broadcast_arrays(*condlist)
+    choicelist = dpnp.broadcast_arrays(*choicelist)
+
+    result_shape = dpnp.broadcast_arrays(condlist[0], choicelist[0])[0].shape
+
+    result = dpnp.full(
+        result_shape,
+        default,
+        dtype=dtype,
+        usm_type=usm_type_alloc,
+        sycl_queue=sycl_queue_alloc,
+    )
+
+    # Do in reverse order since the first choice should take precedence.
+    choicelist = choicelist[::-1]
+    condlist = condlist[::-1]
+    for choice, cond in zip(choicelist, condlist):
+        dpnp.where(cond, choice, result, out=result)
+
+    return result
 
 
 # pylint: disable=redefined-outer-name
@@ -2014,3 +2313,78 @@ def triu_indices_from(arr, k=0):
         usm_type=arr.usm_type,
         sycl_queue=arr.sycl_queue,
     )
+
+
+def unravel_index(indices, shape, order="C"):
+    """Converts array of flat indices into a tuple of coordinate arrays.
+
+    For full documentation refer to :obj:`numpy.unravel_index`.
+
+    Parameters
+    ----------
+    indices : {dpnp.ndarray, usm_ndarray}
+        An integer array whose elements are indices into the flattened version
+        of an array of dimensions ``shape``.
+    shape : tuple or list of ints
+        The shape of the array to use for unraveling ``indices``.
+    order : {None, "C", "F"}, optional
+        Determines whether the indices should be viewed as indexing in
+        row-major (C-style) or column-major (Fortran-style) order.
+        Default: ``"C"``.
+
+    Returns
+    -------
+    unraveled_coords : tuple of dpnp.ndarray
+        Each array in the tuple has the same shape as the indices array.
+
+    See Also
+    --------
+    :obj:`dpnp.ravel_multi_index` : Converts a tuple of index arrays into an
+                                    array of flat indices.
+
+
+    Examples
+    --------
+    import dpnp as np
+    >>> np.unravel_index(np.array([22, 41, 37]), (7, 6))
+    (array([3, 6, 6]), array([4, 5, 1]))
+    >>> np.unravel_index(np.array([31, 41, 13]), (7, 6), order="F")
+    (array([3, 6, 6]), array([4, 5, 1]))
+
+    >>> np.unravel_index(np.array(1621), (6, 7, 8, 9))
+    (array(3), array(1), array(4), array(1))
+
+    """
+
+    dpnp.check_supported_arrays_type(indices)
+
+    if order not in ("C", "c", "F", "f", None):
+        raise ValueError(
+            "Unrecognized `order` keyword value, expecting "
+            f"'C' or 'F', but got '{order}'"
+        )
+    order = "C" if order is None else order.upper()
+    if order == "C":
+        shape = reversed(shape)
+
+    if not dpnp.can_cast(indices, dpnp.int64, "same_kind"):
+        raise TypeError(
+            "Iterator operand 0 dtype could not be cast from dtype("
+            f"{indices.dtype}) to dtype({dpnp.int64}) according to the rule "
+            "'same_kind'"
+        )
+
+    if (indices < 0).any():
+        raise ValueError("invalid entry in index array")
+
+    unraveled_coords = []
+    for dim in shape:
+        unraveled_coords.append(indices % dim)
+        indices = indices // dim
+
+    if (indices > 0).any():
+        raise ValueError("invalid entry in index array")
+
+    if order == "C":
+        unraveled_coords = reversed(unraveled_coords)
+    return tuple(unraveled_coords)

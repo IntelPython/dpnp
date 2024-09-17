@@ -475,15 +475,23 @@ class TestEinSumBinaryOperation:
 
 
 class TestEinSumBinaryOperationWithScalar:
+    # with an scalar, NumPy < 2.0.0 uses the other input arrays to determine
+    # the output type while for NumPy > 2.0.0 the scalar with default machine
+    # dtype is used to determine the output type
+    if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+        type_check = has_support_aspect64()
+    else:
+        type_check = False
+
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(contiguous_check=False)
+    @testing.numpy_cupy_allclose(contiguous_check=False, type_check=type_check)
     def test_scalar_1(self, xp, dtype):
         shape_a = (2,)
         a = testing.shaped_arange(shape_a, xp, dtype)
         return xp.asarray(xp.einsum(",i->", 3, a))
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(contiguous_check=False)
+    @testing.numpy_cupy_allclose(contiguous_check=False, type_check=type_check)
     def test_scalar_2(self, xp, dtype):
         shape_a = (2,)
         a = testing.shaped_arange(shape_a, xp, dtype)

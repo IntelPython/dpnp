@@ -412,11 +412,11 @@ def _gemm_matmul(exec_q, x1, x2, res):
     _manager.add_event_pair(ht_ev, gemm_ev)
 
     if row_major:
-        if res.flags.f_contiguous is True:
+        if res.flags.f_contiguous:
             # read data in "F" order and write it in "C" order
             res = dpnp.ravel(res, order="F").reshape(res.shape, order="C")
     else:
-        if res.flags.c_contiguous is True:
+        if res.flags.c_contiguous:
             # read data in "C" order and write it in "F" order
             res = dpnp.ravel(res, order="C").reshape(res.shape, order="F")
 
@@ -729,6 +729,12 @@ def dpnp_matmul(
                 "Input and output allocation queues are not compatible"
             )
 
+    if order in ["a", "A"]:
+        if x1.flags.f_contiguous and x2.flags.f_contiguous:
+            order = "F"
+        else:
+            order = "C"
+
     x1_ndim = x1.ndim
     x2_ndim = x2.ndim
     if axes is not None:
@@ -839,6 +845,7 @@ def dpnp_matmul(
         x2_contig_flag, _, x2_f = _define_contig_flag(x2)
 
         res_order = "F" if (x1_f and x2_f and call_flag == "gemm") else "C"
+
         result = _create_result_array(
             x1,
             x2,
@@ -920,12 +927,12 @@ def dpnp_matmul(
                 result = dpnp.moveaxis(result, (-2, -1), axes_res)
             elif len(axes_res) == 1:
                 result = dpnp.moveaxis(result, (-1,), axes_res)
-            return result
+            return dpnp.ascontiguousarray(result)
 
         # If `order` was not passed as default
         # we need to update it to match the passed `order`.
         if order not in ["k", "K"]:
-            return dpnp.array(result, copy=False, order=order)
+            return dpnp.asarray(result, order=order)
         # dpnp.ascontiguousarray changes 0-D array to 1-D array
         if result.ndim == 0:
             return result
