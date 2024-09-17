@@ -48,6 +48,7 @@ from dpctl.tensor._numpy_helper import AxisError, normalize_axis_index
 import dpnp
 
 from .dpnp_array import dpnp_array
+from .dpnp_utils.dpnp_utils_pad import dpnp_pad
 
 __all__ = [
     "append",
@@ -74,6 +75,7 @@ __all__ = [
     "hstack",
     "moveaxis",
     "ndim",
+    "pad",
     "permute_dims",
     "ravel",
     "repeat",
@@ -1835,6 +1837,217 @@ def ndim(a):
     if dpnp.is_supported_array_type(a):
         return a.ndim
     return numpy.ndim(a)
+
+
+def pad(array, pad_width, mode="constant", **kwargs):
+    """
+    Pad an array.
+
+    For full documentation refer to :obj:`numpy.pad`.
+
+    Parameters
+    ----------
+    array : {dpnp.ndarray, usm_ndarray}
+        The array to pad.
+    pad_width : {sequence, array_like, int}
+        Number of values padded to the edges of each axis.
+        ``((before_1, after_1), ... (before_N, after_N))`` unique pad widths
+        for each axis.
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after pad for each axis.
+        ``(pad,)`` or ``int`` is a shortcut for ``before = after = pad`` width
+        for all axes.
+    mode : {str, function}, optional
+        One of the following string values or a user supplied function.
+
+        "constant"
+            Pads with a constant value.
+        "edge"
+            Pads with the edge values of array.
+        "linear_ramp"
+            Pads with the linear ramp between `end_value` and the
+            array edge value.
+        "maximum"
+            Pads with the maximum value of all or part of the
+            vector along each axis.
+        "mean"
+            Pads with the mean value of all or part of the
+            vector along each axis.
+        "minimum"
+            Pads with the minimum value of all or part of the
+            vector along each axis.
+        "reflect"
+            Pads with the reflection of the vector mirrored on
+            the first and last values of the vector along each
+            axis.
+        "symmetric"
+            Pads with the reflection of the vector mirrored
+            along the edge of the array.
+        "wrap"
+            Pads with the wrap of the vector along the axis.
+            The first values are used to pad the end and the
+            end values are used to pad the beginning.
+        "empty"
+            Pads with undefined values.
+        <function>
+            Padding function, see Notes.
+        Default: ``"constant"``.
+    stat_length : {None, int, sequence of ints}, optional
+        Used in "maximum", "mean", and "minimum". Number of
+        values at edge of each axis used to calculate the statistic value.
+
+        ``((before_1, after_1), ... (before_N, after_N))`` unique statistic
+        lengths for each axis.
+
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after statistic lengths for each axis.
+
+        ``(stat_length,)`` or ``int`` is a shortcut for
+        ``before = after = statistic`` length for all axes.
+
+       Default: ``None``, to use the entire axis.
+    constant_values : {sequence, scalar}, optional
+        Used in "constant". The values to set the padded values for each
+        axis.
+        ``((before_1, after_1), ... (before_N, after_N))`` unique pad constants
+        for each axis.
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after constants for each axis.
+        ``(constant,)`` or ``constant`` is a shortcut for
+        ``before = after = constant`` for all axes.
+        Default: ``0``.
+    end_values : {sequence, scalar}, optional
+        Used in "linear_ramp". The values used for the ending value of the
+        linear_ramp and that will form the edge of the padded array.
+        ``((before_1, after_1), ... (before_N, after_N))`` unique end values
+        for each axis.
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after end values for each axis.
+        ``(constant,)`` or ``constant`` is a shortcut for
+        ``before = after = constant`` for all axes.
+        Default: ``0``.
+    reflect_type : {"even", "odd"}, optional
+        Used in "reflect", and "symmetric". The "even" style is the
+        default with an unaltered reflection around the edge value. For
+        the "odd" style, the extended part of the array is created by
+        subtracting the reflected values from two times the edge value.
+        Default: ``"even"``.
+
+    Returns
+    -------
+    padded array : dpnp.ndarray
+        Padded array of rank equal to `array` with shape increased
+        according to `pad_width`.
+
+    Limitations
+    -----------
+    Parameter `mode` as ``"median"`` is not currently supported and
+    ``NotImplementedError`` exception will be raised.
+
+    Notes
+    -----
+    For an array with rank greater than 1, some of the padding of later
+    axes is calculated from padding of previous axes. This is easiest to
+    think about with a rank 2 array where the corners of the padded array
+    are calculated by using padded values from the first axis.
+
+    The padding function, if used, should modify a rank 1 array in-place. It
+    has the following signature::
+
+        padding_func(vector, iaxis_pad_width, iaxis, kwargs)
+
+    where
+
+    vector : dpnp.ndarray
+        A rank 1 array already padded with zeros. Padded values are
+        vector[:iaxis_pad_width[0]] and vector[-iaxis_pad_width[1]:].
+    iaxis_pad_width : tuple
+        A 2-tuple of ints, iaxis_pad_width[0] represents the number of
+        values padded at the beginning of vector where
+        iaxis_pad_width[1] represents the number of values padded at
+        the end of vector.
+    iaxis : int
+        The axis currently being calculated.
+    kwargs : dict
+        Any keyword arguments the function requires.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3, 4, 5])
+    >>> np.pad(a, (2, 3), 'constant', constant_values=(4, 6))
+    array([4, 4, 1, 2, 3, 4, 5, 6, 6, 6])
+
+    >>> np.pad(a, (2, 3), 'edge')
+    array([1, 1, 1, 2, 3, 4, 5, 5, 5, 5])
+
+    >>> np.pad(a, (2, 3), 'linear_ramp', end_values=(5, -4))
+    array([ 5,  3,  1,  2,  3,  4,  5,  2, -1, -4])
+
+    >>> np.pad(a, (2,), 'maximum')
+    array([5, 5, 1, 2, 3, 4, 5, 5, 5])
+
+    >>> np.pad(a, (2,), 'mean')
+    array([3, 3, 1, 2, 3, 4, 5, 3, 3])
+
+    >>> np.pad(a, (2,), 'median')
+    NotImplementedError: Keyword argument `mode` does not support 'median'
+
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.pad(a, ((3, 2), (2, 3)), 'minimum')
+    array([[1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1],
+           [3, 3, 3, 4, 3, 3, 3],
+           [1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1]])
+
+    >>> a = np.array([1, 2, 3, 4, 5])
+    >>> np.pad(a, (2, 3), 'reflect')
+    array([3, 2, 1, 2, 3, 4, 5, 4, 3, 2])
+
+    >>> np.pad(a, (2, 3), 'reflect', reflect_type='odd')
+    array([-1,  0,  1,  2,  3,  4,  5,  6,  7,  8])
+
+    >>> np.pad(a, (2, 3), 'symmetric')
+    array([2, 1, 1, 2, 3, 4, 5, 5, 4, 3])
+
+    >>> np.pad(a, (2, 3), 'symmetric', reflect_type='odd')
+    array([0, 1, 1, 2, 3, 4, 5, 5, 6, 7])
+
+    >>> np.pad(a, (2, 3), 'wrap')
+    array([4, 5, 1, 2, 3, 4, 5, 1, 2, 3])
+
+    >>> def pad_width(vector, pad_width, iaxis, kwargs):
+    ...     pad_value = kwargs.get('padder', 10)
+    ...     vector[:pad_width[0]] = pad_value
+    ...     vector[-pad_width[1]:] = pad_value
+    >>> a = np.arange(6)
+    >>> a = a.reshape((2, 3))
+    >>> np.pad(a, 2, pad_width)
+    array([[10, 10, 10, 10, 10, 10, 10],
+           [10, 10, 10, 10, 10, 10, 10],
+           [10, 10,  0,  1,  2, 10, 10],
+           [10, 10,  3,  4,  5, 10, 10],
+           [10, 10, 10, 10, 10, 10, 10],
+           [10, 10, 10, 10, 10, 10, 10]])
+    >>> np.pad(a, 2, pad_width, padder=100)
+    array([[100, 100, 100, 100, 100, 100, 100],
+           [100, 100, 100, 100, 100, 100, 100],
+           [100, 100,   0,   1,   2, 100, 100],
+           [100, 100,   3,   4,   5, 100, 100],
+           [100, 100, 100, 100, 100, 100, 100],
+           [100, 100, 100, 100, 100, 100, 100]])
+
+    """
+
+    dpnp.check_supported_arrays_type(array)
+    if mode == "median":
+        raise NotImplementedError(
+            "Keyword argument `mode` does not support 'median'"
+        )
+    return dpnp_pad(array, pad_width, mode=mode, **kwargs)
 
 
 def ravel(a, order="C"):
