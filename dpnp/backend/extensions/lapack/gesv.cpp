@@ -39,6 +39,8 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
+using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+
 typedef sycl::event (*gesv_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           const std::int64_t,
@@ -93,7 +95,7 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         ipiv = helper::alloc_ipiv(n, exec_q);
     } catch (const std::exception &e) {
         if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
+            sycl_free_noexcept(scratchpad, exec_q);
         throw;
     }
 
@@ -178,9 +180,9 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
+            sycl_free_noexcept(scratchpad, exec_q);
         if (ipiv != nullptr)
-            sycl::free(ipiv, exec_q);
+            sycl_free_noexcept(ipiv, exec_q);
         throw std::runtime_error(error_msg.str());
     }
 
@@ -188,8 +190,8 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         cgh.depends_on(comp_event);
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad, ipiv]() {
-            sycl::free(scratchpad, ctx);
-            sycl::free(ipiv, ctx);
+            sycl_free_noexcept(scratchpad, ctx);
+            sycl_free_noexcept(ipiv, ctx);
         });
     });
 
