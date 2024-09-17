@@ -34,6 +34,7 @@ from dpctl.tensor._tensor_impl import (
 from dpctl.utils import SequentialOrderManager
 
 import dpnp
+from dpnp.dpnp_array import dpnp_array
 
 
 def dpnp_fill(arr, val):
@@ -43,7 +44,7 @@ def dpnp_fill(arr, val):
 
     dpnp.check_supported_arrays_type(val, scalar_type=True, all_scalars=True)
     # if val is an array, process it
-    if isinstance(val, (dpnp.dpnp_array, dpt.usm_ndarray)):
+    if isinstance(val, (dpnp_array, dpt.usm_ndarray)):
         val = dpnp.get_usm_ndarray(val)
         if val.shape != ():
             raise ValueError("`val` must be a scalar")
