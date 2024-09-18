@@ -189,7 +189,7 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
-            sycl::free(scratchpad, exec_q);
+            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
         throw std::runtime_error(error_msg.str());
     }
@@ -199,7 +199,9 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
             cgh.depends_on(ev);
         }
         auto ctx = exec_q.get_context();
-        cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
+        cgh.host_task([ctx, scratchpad]() {
+            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+        });
     });
 
     return ht_ev;
