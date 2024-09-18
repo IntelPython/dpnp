@@ -25,13 +25,13 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+import dpctl.utils as dpu
 import numpy as np
 from dpctl.tensor._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
     _full_usm_ndarray,
     _zeros_usm_ndarray,
 )
-from dpctl.utils import SequentialOrderManager
 
 import dpnp
 
@@ -46,6 +46,10 @@ def dpnp_fill(arr, val):
         val = dpnp.get_usm_ndarray(val)
         if val.shape != ():
             raise ValueError("`val` must be a scalar")
+        if dpu.get_execution_queue((exec_q, val.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input arrays have incompatible queues."
+            )
         a_val = dpt.asarray(
             val,
             dtype=arr.dtype,
@@ -53,7 +57,7 @@ def dpnp_fill(arr, val):
             sycl_queue=exec_q,
         )
         a_val = dpt.broadcast_to(a_val, arr.shape)
-        _manager = SequentialOrderManager[exec_q]
+        _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
         h_ev, c_ev = _copy_usm_ndarray_into_usm_ndarray(
             src=a_val, dst=arr, sycl_queue=exec_q, depends=dep_evs
@@ -74,7 +78,7 @@ def dpnp_fill(arr, val):
     elif val_type is int and dpnp.issubdtype(dt, dpnp.integer):
         val = np.asarray(val, dtype=dt)[()]
 
-    _manager = SequentialOrderManager[exec_q]
+    _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
     # can leverage efficient memset when val is 0
     if arr.flags["FORC"] and val == 0:
