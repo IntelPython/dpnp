@@ -1032,7 +1032,10 @@ def test_random(func, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
+    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # TODO: remove the w/a once resolved
+    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
     kwargs["device"] = None
     kwargs["sycl_queue"] = sycl_queue
 
