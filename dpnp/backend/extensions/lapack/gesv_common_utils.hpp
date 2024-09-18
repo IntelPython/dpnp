@@ -30,6 +30,7 @@
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "common_helpers.hpp"
@@ -159,10 +160,12 @@ inline void handle_lapack_exc(sycl::queue &exec_q,
         const auto threshold =
             std::numeric_limits<ThresholdType>::epsilon() * 100;
         if (std::abs(host_U) < threshold) {
+            using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+
             if (scratchpad != nullptr)
-                sycl::free(scratchpad, exec_q);
+                sycl_free_noexcept(scratchpad, exec_q);
             if (ipiv != nullptr)
-                sycl::free(ipiv, exec_q);
+                sycl_free_noexcept(ipiv, exec_q);
             throw LinAlgError("The input coefficient matrix is singular.");
         }
         else {
