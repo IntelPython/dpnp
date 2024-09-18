@@ -38,7 +38,6 @@ from dpnp.dpnp_array import dpnp_array
 
 
 def dpnp_fill(arr, val):
-    dpnp.check_supported_arrays_type(arr)
     arr = dpnp.get_usm_ndarray(arr)
     exec_q = arr.sycl_queue
 
