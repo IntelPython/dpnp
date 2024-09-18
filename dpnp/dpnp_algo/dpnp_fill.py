@@ -48,8 +48,6 @@ def dpnp_fill(arr, val):
         val = dpnp.get_usm_ndarray(val)
         if val.shape != ():
             raise ValueError("`val` must be a scalar")
-        # asarray moves scalar to the correct device
-        # and casts to the expected dtype
         a_val = dpt.asarray(
             val,
             dtype=arr.dtype,
@@ -78,8 +76,8 @@ def dpnp_fill(arr, val):
     dep_evs = _manager.submitted_events
     # can leverage efficient memset when val is 0
     if arr.flags["FORC"] and val == 0:
-        h_ev, zeros_ev = _zeros_usm_ndarray(arr, exec_q)
+        h_ev, zeros_ev = _zeros_usm_ndarray(arr, exec_q, depends=dep_evs)
         _manager.add_event_pair(h_ev, zeros_ev)
     else:
-        h_ev, fill_ev = _full_usm_ndarray(val, arr, exec_q)
+        h_ev, fill_ev = _full_usm_ndarray(val, arr, exec_q, depends=dep_evs)
         _manager.add_event_pair(h_ev, fill_ev)
