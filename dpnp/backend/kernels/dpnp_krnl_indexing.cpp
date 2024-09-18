@@ -60,19 +60,19 @@ DPCTLSyclEventRef dpnp_choose_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType1> input1_ptr(q_ref, array1_in, size);
+    DPNPC_ptr_adapter<_DataType1> input1_ptr(q_ref, array1_in, size, true);
     _DataType1 *array_in = input1_ptr.get_ptr();
 
-    DPNPC_ptr_adapter<_DataType2 *> choices_ptr(q_ref, choices1, choices_size);
+    DPNPC_ptr_adapter<_DataType2 *> choices_ptr(q_ref, choices1, choices_size, true);
     _DataType2 **choices = choices_ptr.get_ptr();
 
     for (size_t i = 0; i < choices_size; ++i) {
         DPNPC_ptr_adapter<_DataType2> choice_ptr(q_ref, choices[i],
-                                                 choice_size);
+                                                 choice_size, true);
         choices[i] = choice_ptr.get_ptr();
     }
 
-    DPNPC_ptr_adapter<_DataType2> result1_ptr(q_ref, result1, size, false,
+    DPNPC_ptr_adapter<_DataType2> result1_ptr(q_ref, result1, size, true,
                                               true);
     _DataType2 *result = result1_ptr.get_ptr();
 
@@ -88,6 +88,7 @@ DPCTLSyclEventRef dpnp_choose_c(DPCTLSyclQueueRef q_ref,
     };
 
     sycl::event event = q.submit(kernel_func);
+    result1_ptr.depends_on(event);
 
     event_ref = reinterpret_cast<DPCTLSyclEventRef>(&event);
 
