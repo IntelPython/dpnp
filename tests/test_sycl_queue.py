@@ -1075,7 +1075,10 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
+    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # TODO: remove the w/a once resolved
+    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
 
     # test with in-order SYCL queue per a device and passed as argument
     seed = (147, 56, 896) if device.is_cpu else 987654
