@@ -65,7 +65,8 @@ DPCTLSyclEventRef dpnp_choose_c(DPCTLSyclQueueRef q_ref,
 
     // choices1 is a list of pointers to device memory,
     // which is allocating on the host, so memcpy to device memory is required
-    DPNPC_ptr_adapter<_DataType2 *> choices_ptr(q_ref, choices1, choices_size, true);
+    DPNPC_ptr_adapter<_DataType2 *> choices_ptr(q_ref, choices1, choices_size,
+                                                true);
     _DataType2 **choices = choices_ptr.get_ptr();
 
     for (size_t i = 0; i < choices_size; ++i) {
