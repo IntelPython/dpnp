@@ -112,6 +112,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Resolved a possible race condition in `dpnp.inv` [#1940](https://github.com/IntelPython/dpnp/pull/1940)
 * Resolved an issue with failing tests for `dpnp.append` when running on a device without fp64 support [#2034](https://github.com/IntelPython/dpnp/pull/2034)
 * Resolved an issue with input array of `usm_ndarray` passed into `dpnp.ix_` [#2047](https://github.com/IntelPython/dpnp/pull/2047)
+* Added a workaround to prevent crash in tests on Windows in internal CI/CD (when running on either Lunar Lake or Arrow Lake) [#2062](https://github.com/IntelPython/dpnp/pull/2062)
 
 
 ## [0.15.0] - 05/25/2024
