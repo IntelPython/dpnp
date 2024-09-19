@@ -1,6 +1,0 @@
-﻿dpnp.ascontiguousarray
-======================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: ascontiguousarray
