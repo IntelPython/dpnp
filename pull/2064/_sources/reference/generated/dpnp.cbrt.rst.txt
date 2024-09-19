@@ -1,6 +1,0 @@
-﻿dpnp.cbrt
-=========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: cbrt
