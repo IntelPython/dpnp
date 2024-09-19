@@ -56,6 +56,29 @@
 }
 
 #if (not defined(NDEBUG))
+[[maybe_unused]] static std::string
+    device_type_to_str(sycl::info::device_type devTy)
+{
+    std::stringstream ss;
+    switch (devTy) {
+    case sycl::info::device_type::cpu:
+        ss << "cpu";
+        break;
+    case sycl::info::device_type::gpu:
+        ss << "gpu";
+        break;
+    case sycl::info::device_type::accelerator:
+        ss << "accelerator";
+        break;
+    case sycl::info::device_type::custom:
+        ss << "custom";
+        break;
+    default:
+        ss << "unknown";
+    }
+    return ss.str();
+}
+
 [[maybe_unused]] static void show_available_sycl_devices()
 {
     const std::vector<sycl::device> devices = sycl::device::get_devices();
@@ -69,7 +92,7 @@
             // it->has(sycl::aspect::usm_shared_allocations)  << " "
             << " - id=" << it->get_info<sycl::info::device::vendor_id>()
             << ", type="
-            << static_cast<pi_uint64>(
+            << device_type_to_str(
                    it->get_info<sycl::info::device::device_type>())
             << ", gws="
             << it->get_info<sycl::info::device::max_work_group_size>()
