@@ -775,6 +775,8 @@ class TestKron:
 
         result = dpnp.kron(ia, ib)
         expected = numpy.kron(a, b)
+        assert result.flags["C_CONTIGUOUS"] == expected.flags["C_CONTIGUOUS"]
+        assert result.flags["F_CONTIGUOUS"] == expected.flags["F_CONTIGUOUS"]
         assert_dtype_allclose(result, expected)
 
 
