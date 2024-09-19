@@ -60,15 +60,15 @@ DPCTLSyclEventRef dpnp_choose_c(DPCTLSyclQueueRef q_ref,
 
     sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
 
-    DPNPC_ptr_adapter<_DataType1> input1_ptr(q_ref, array1_in, size, true);
+    DPNPC_ptr_adapter<_DataType1> input1_ptr(q_ref, array1_in, size);
     _DataType1 *array_in = input1_ptr.get_ptr();
 
-    DPNPC_ptr_adapter<_DataType2 *> choices_ptr(q_ref, choices1, choices_size, true);
+    DPNPC_ptr_adapter<_DataType2 *> choices_ptr(q_ref, choices1, choices_size);
     _DataType2 **choices = choices_ptr.get_ptr();
 
     for (size_t i = 0; i < choices_size; ++i) {
         DPNPC_ptr_adapter<_DataType2> choice_ptr(q_ref, choices[i],
-                                                 choice_size, true);
+                                                 choice_size);
         choices[i] = choice_ptr.get_ptr();
     }
 
