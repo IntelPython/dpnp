@@ -120,7 +120,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Resolved a possible race condition in `dpnp.inv` [#1940](https://github.com/IntelPython/dpnp/pull/1940)
 * Resolved an issue with failing tests for `dpnp.append` when running on a device without fp64 support [#2034](https://github.com/IntelPython/dpnp/pull/2034)
 * Resolved an issue with input array of `usm_ndarray` passed into `dpnp.ix_` [#2047](https://github.com/IntelPython/dpnp/pull/2047)
-
+* Fixed a crash in `dpnp.choose` caused by missing memory copying from host to device memory [#2063](https://github.com/IntelPython/dpnp/pull/2063)
 
 ## [0.15.0] - 05/25/2024
 
