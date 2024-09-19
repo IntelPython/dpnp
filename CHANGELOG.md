@@ -48,6 +48,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Added runtime dependency on `intel-gpu-ocl-icd-system` package [#2023](https://github.com/IntelPython/dpnp/pull/2023)
 * Added implementation of `dpnp.ravel_multi_index` and `dpnp.unravel_index` functions [#2022](https://github.com/IntelPython/dpnp/pull/2022)
 * Added implementation of `dpnp.resize` and `dpnp.rot90` functions [#2030](https://github.com/IntelPython/dpnp/pull/2030)
+* Added implementation of `dpnp.require` function [#2036](https://github.com/IntelPython/dpnp/pull/2036)
 
 ### Change
 
@@ -111,6 +112,8 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Updated `Array Manipulation Routines` page in documentation to add missing functions and to remove duplicate entries [#2033](https://github.com/IntelPython/dpnp/pull/2033)
 * `dpnp` uses pybind11 2.13.6 [#2041](https://github.com/IntelPython/dpnp/pull/2041)
 * Updated `dpnp.fft` backend to depend on `INTEL_MKL_VERSION` flag to ensures that the appropriate code segment is executed based on the version of OneMKL [#2035](https://github.com/IntelPython/dpnp/pull/2035)
+* Use `dpctl::tensor::alloc_utils::sycl_free_noexcept` instead of `sycl::free` in `host_task` tasks associated with life-time management of temporary USM allocations [#2058](https://github.com/IntelPython/dpnp/pull/2058)
+* Improved implementation of `dpnp.kron` to avoid unnecessary copy for non-contiguous arrays [#2059](https://github.com/IntelPython/dpnp/pull/2059)
 
 ### Fixed
 
@@ -118,6 +121,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Resolved a possible race condition in `dpnp.inv` [#1940](https://github.com/IntelPython/dpnp/pull/1940)
 * Resolved an issue with failing tests for `dpnp.append` when running on a device without fp64 support [#2034](https://github.com/IntelPython/dpnp/pull/2034)
 * Resolved an issue with input array of `usm_ndarray` passed into `dpnp.ix_` [#2047](https://github.com/IntelPython/dpnp/pull/2047)
+* Added a workaround to prevent crash in tests on Windows in internal CI/CD (when running on either Lunar Lake or Arrow Lake) [#2062](https://github.com/IntelPython/dpnp/pull/2062)
 
 
 ## [0.15.0] - 05/25/2024

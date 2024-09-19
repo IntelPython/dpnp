@@ -1032,7 +1032,10 @@ def test_random(func, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
+    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # TODO: remove the w/a once resolved
+    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
     kwargs["device"] = None
     kwargs["sycl_queue"] = sycl_queue
 
@@ -1075,7 +1078,10 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
+    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # TODO: remove the w/a once resolved
+    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
 
     # test with in-order SYCL queue per a device and passed as argument
     seed = (147, 56, 896) if device.is_cpu else 987654
@@ -1283,6 +1289,26 @@ def test_out_multi_dot(device):
 
         _, exec_q = get_usm_allocations(dpnp_array_list)
         assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_require(device):
+    dpnp_data = dpnp.arange(10, device=device).reshape(2, 5)
+    result = dpnp.require(dpnp_data, dtype="f4", requirements=["F"])
+
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
+
+    # No requirements
+    result = dpnp.require(dpnp_data, dtype="f4")
+    expected_queue = dpnp_data.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
 
 
 @pytest.mark.parametrize(
