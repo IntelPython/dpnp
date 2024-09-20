@@ -99,6 +99,7 @@ repos:
             "--disable=c-extension-no-member",
             "--disable=import-error",
             "--disable=redefined-builtin",
-            "--disable=unused-wildcard-import"
+            "--disable=unused-wildcard-import",
+            "--disable=too-many-arguments"
             ]
         files: '^dpnp/(dpnp_iface.*|fft|linalg)'
