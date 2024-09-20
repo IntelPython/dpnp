@@ -100,6 +100,6 @@ repos:
             "--disable=import-error",
             "--disable=redefined-builtin",
             "--disable=unused-wildcard-import",
-            "--disable=too-many-arguments"
+            "--disable=too-many-positional-arguments"
             ]
         files: '^dpnp/(dpnp_iface.*|fft|linalg)'
