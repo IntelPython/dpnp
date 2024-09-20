@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-### Change
+### Changed
 
 ### Fixed
 
@@ -50,7 +50,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Added implementation of `dpnp.resize` and `dpnp.rot90` functions [#2030](https://github.com/IntelPython/dpnp/pull/2030)
 * Added implementation of `dpnp.require` function [#2036](https://github.com/IntelPython/dpnp/pull/2036)
 
-### Change
+### Changed
 
 * Extended pre-commit pylint check to `dpnp.fft` module [#1860](https://github.com/IntelPython/dpnp/pull/1860)
 * Reworked `vm` vector math backend to reuse `dpctl.tensor` functions around unary and binary functions [#1868](https://github.com/IntelPython/dpnp/pull/1868)
@@ -114,6 +114,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Updated `dpnp.fft` backend to depend on `INTEL_MKL_VERSION` flag to ensures that the appropriate code segment is executed based on the version of OneMKL [#2035](https://github.com/IntelPython/dpnp/pull/2035)
 * Use `dpctl::tensor::alloc_utils::sycl_free_noexcept` instead of `sycl::free` in `host_task` tasks associated with life-time management of temporary USM allocations [#2058](https://github.com/IntelPython/dpnp/pull/2058)
 * Improved implementation of `dpnp.kron` to avoid unnecessary copy for non-contiguous arrays [#2059](https://github.com/IntelPython/dpnp/pull/2059)
+* Updated the test suit for `dpnp.fft` module [#2071](https://github.com/IntelPython/dpnp/pull/2071)
 
 ### Fixed
 
