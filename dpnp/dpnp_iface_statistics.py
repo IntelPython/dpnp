@@ -371,6 +371,8 @@ def correlate(x1, x2, mode="valid"):
 
     """
 
+    dpnp.not_implemented_for_cuda_backend(x1)
+
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc:
@@ -654,6 +656,8 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
     3.5
 
     """
+
+    dpnp.not_implemented_for_cuda_backend(x1)
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:

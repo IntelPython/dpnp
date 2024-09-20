@@ -78,6 +78,8 @@ def erf(in_array1):
 
     """
 
+    dpnp.not_implemented_for_cuda_backend(in_array1)
+
     x1_desc = dpnp.get_dpnp_descriptor(
         in_array1, copy_when_strides=False, copy_when_nondefault_queue=False
     )

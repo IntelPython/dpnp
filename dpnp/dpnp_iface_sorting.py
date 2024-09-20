@@ -174,6 +174,8 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
 
     """
 
+    dpnp.not_implemented_for_cuda_backend(x1)
+
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if not isinstance(kth, int):

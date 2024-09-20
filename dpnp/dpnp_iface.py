@@ -72,6 +72,7 @@ __all__ = [
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
+    "not_implemented_for_cuda_backend",
     "synchronize_array_data",
 ]
 
@@ -798,6 +799,21 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
+
+
+def not_implemented_for_cuda_backend(obj):
+    """
+    Raise NotImplementedError for cuda devices.
+
+    Parameters
+    ----------
+    obj : {SyclDevice, SyclQueue, dpnp.ndarray, usm_ndarray}
+        An input object with sycl_device property to check device backend.
+
+    """
+    sycl_device = getattr(obj, "sycl_device", None)
+    if sycl_device is not None and "cuda" in sycl_device.backend.name:
+        raise NotImplementedError("function not implemented for cuda backend")
 
 
 def synchronize_array_data(a):
