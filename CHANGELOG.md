@@ -114,8 +114,8 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Resolved an issue with input array of `usm_ndarray` passed into `dpnp.ix_` [#2047](https://github.com/IntelPython/dpnp/pull/2047)
 * Added a workaround to prevent crash in tests on Windows in internal CI/CD (when running on either Lunar Lake or Arrow Lake) [#2062](https://github.com/IntelPython/dpnp/pull/2062)
 * Fixed a crash in `dpnp.choose` caused by missing control of releasing temporary allocated device memory [#2063](https://github.com/IntelPython/dpnp/pull/2063)
-* Resolve compilation warning and error while building in debug mode [#2066](https://github.com/IntelPython/dpnp/pull/2066)
-
+* Resolved compilation warning and error while building in debug mode [#2066](https://github.com/IntelPython/dpnp/pull/2066)
+* Fixed an issue with asynchronous execution in `dpnp.fft` module [#2067](https://github.com/IntelPython/dpnp/pull/2067)
 
 ## [0.15.0] - 05/25/2024
 
