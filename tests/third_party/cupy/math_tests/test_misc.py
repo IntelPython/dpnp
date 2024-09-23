@@ -126,7 +126,9 @@ class TestMisc:
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.clip(3, None)
 
-    # numpy>=2.0 does not raise ValueError with a_min=None, a_max=None
+    # According to Python Array API, clip() should return
+    # an array with the same elements in `a` if `min` and `max` are `None`.
+    # Numpy < 2.0 is not compatible with this and throws a ValueError
     @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     def test_clip_min_max_none(self, dtype):
@@ -156,10 +158,9 @@ class TestMisc:
     def test_external_clip4(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp, dtype)
-            # dpnp.clip() has default a_min, a_max variables as None
-            # while numpy.clip() uses np._NoValue(numpy>=2.0)
-            # or required arguments (numpy<2.0) for a_min, a_max
-            # and raises TypeError if passing a_min only
+            # dpnp.clip() has min, max arguments as None by default
+            # and allows passing one of these, according to Python Array API,
+            # while numpy throws a TypeError in this case
             if xp is numpy:
                 with pytest.raises(TypeError):
                     xp.clip(a, 3)
