@@ -1,6 +1,7 @@
 # CMake build and local install directory
 _skbuild
 build_cython
+cython_debug
 dpnp.egg-info
 
 # Byte-compiled / optimized / DLL files

@@ -27,6 +27,7 @@
 
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
+#include "utils/sycl_alloc_utils.hpp"
 #include "utils/type_utils.hpp"
 
 #include "getrs.hpp"
@@ -122,7 +123,8 @@ static sycl::event getrs_impl(sycl::queue &exec_q,
         else if (info > 0) {
             is_exception_caught = false;
             if (scratchpad != nullptr) {
-                sycl::free(scratchpad, exec_q);
+                dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad,
+                                                               exec_q);
             }
             throw LinAlgError("The solve could not be completed.");
         }
@@ -140,7 +142,7 @@ static sycl::event getrs_impl(sycl::queue &exec_q,
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr) {
-            sycl::free(scratchpad, exec_q);
+            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, exec_q);
         }
 
         throw std::runtime_error(error_msg.str());
@@ -149,7 +151,9 @@ static sycl::event getrs_impl(sycl::queue &exec_q,
     sycl::event clean_up_event = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(getrs_event);
         auto ctx = exec_q.get_context();
-        cgh.host_task([ctx, scratchpad]() { sycl::free(scratchpad, ctx); });
+        cgh.host_task([ctx, scratchpad]() {
+            dpctl::tensor::alloc_utils::sycl_free_noexcept(scratchpad, ctx);
+        });
     });
     host_task_events.push_back(clean_up_event);
     return getrs_event;

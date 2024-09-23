@@ -94,7 +94,6 @@ class TestKind(unittest.TestCase):
 
         assert func(numpy) == func(cupy)
 
-    @pytest.mark.skip("dpnp.require() is not implemented yet")
     @testing.for_all_dtypes()
     def test_require_flag_check(self, dtype):
         possible_flags = [["C_CONTIGUOUS"], ["F_CONTIGUOUS"]]
@@ -105,7 +104,7 @@ class TestKind(unittest.TestCase):
                 assert arr.flags[parameter]
                 assert arr.dtype == dtype
 
-    @pytest.mark.skip("dpnp.require() is not implemented yet")
+    @pytest.mark.skip("dpnp.require() does not support requirement ['O']")
     @testing.for_all_dtypes()
     def test_require_owndata(self, dtype):
         x = cupy.zeros((2, 3, 4), dtype=dtype)
@@ -113,28 +112,24 @@ class TestKind(unittest.TestCase):
         arr = cupy.require(arr, dtype, ["O"])
         assert arr.flags["OWNDATA"]
 
-    @pytest.mark.skip("dpnp.require() is not implemented yet")
     @testing.for_all_dtypes()
     def test_require_C_and_F_flags(self, dtype):
         x = cupy.zeros((2, 3, 4), dtype=dtype)
         with pytest.raises(ValueError):
             cupy.require(x, dtype, ["C", "F"])
 
-    @pytest.mark.skip("dpnp.require() is not implemented yet")
     @testing.for_all_dtypes()
     def test_require_incorrect_requirments(self, dtype):
         x = cupy.zeros((2, 3, 4), dtype=dtype)
         with pytest.raises(ValueError):
-            cupy.require(x, dtype, ["W"])
+            cupy.require(x, dtype, ["O"])
 
-    @pytest.mark.skip("dpnp.require() is not implemented yet")
     @testing.for_all_dtypes()
     def test_require_incorrect_dtype(self, dtype):
         x = cupy.zeros((2, 3, 4), dtype=dtype)
-        with pytest.raises(ValueError):
+        with pytest.raises((ValueError, TypeError)):
             cupy.require(x, "random", "C")
 
-    @pytest.mark.skip("dpnp.require() is not implemented yet")
     @testing.for_all_dtypes()
     def test_require_empty_requirements(self, dtype):
         x = cupy.zeros((2, 3, 4), dtype=dtype)
