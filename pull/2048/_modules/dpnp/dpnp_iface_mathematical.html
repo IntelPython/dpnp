@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev0+30.ge075dc1697e documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev0+32.gf39cb99f577 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=cf0a9cc1"></script>
+        <script src="../../_static/documentation_options.js?v=44fea3df"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+30.ge075dc1697e
+                0.17.0dev0+32.gf39cb99f577
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -734,7 +734,7 @@
 <span class="sd">        Array containing elements to clip.</span>
 <span class="sd">    min, max : {dpnp.ndarray, usm_ndarray, None}</span>
 <span class="sd">        Minimum and maximum value. If ``None``, clipping is not performed on</span>
-<span class="sd">        the corresponding edge. If both ``min`` and ``max`` are ``None``,</span>
+<span class="sd">        the corresponding edge. If both `min` and `max` are ``None``,</span>
 <span class="sd">        the elements of the returned array stay the same.</span>
 <span class="sd">        Both are broadcast against `a`.</span>
 <span class="sd">        Default : ``None``.</span>
@@ -742,9 +742,11 @@
 <span class="sd">        The results will be placed in this array. It may be the input array</span>
 <span class="sd">        for in-place clipping. `out` must be of the right shape to hold the</span>
 <span class="sd">        output. Its type is preserved.</span>
+<span class="sd">        Default : ``None``.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="sd">        If `order` is ``None``, the default value ``&quot;K&quot;`` will be used.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
