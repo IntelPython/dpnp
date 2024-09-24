@@ -81,6 +81,9 @@ class RandomState:
         self._sycl_queue = dpnp.get_normalized_queue_device(
             device=device, sycl_queue=sycl_queue
         )
+
+        dpnp.not_implemented_for_cuda_backend(self._sycl_queue)
+
         self._sycl_device = self._sycl_queue.sycl_device
 
         is_cpu = self._sycl_device.is_cpu
@@ -238,6 +241,8 @@ class RandomState:
                 pass
             elif not dpnp.isscalar(scale):
                 pass
+            elif dpnp.is_cuda_backend():
+                pass
             else:
                 dtype = self._validate_float_dtype(
                     dtype, (dpnp.float32, dpnp.float64)
@@ -366,6 +371,8 @@ class RandomState:
             if not dpnp.isscalar(low):
                 pass
             elif not (high is None or dpnp.isscalar(high)):
+                pass
+            elif dpnp.is_cuda_backend():
                 pass
             else:
                 _dtype = dpnp.int32 if dtype is int else dpnp.dtype(dtype)
@@ -590,6 +597,8 @@ class RandomState:
             if not dpnp.isscalar(low):
                 pass
             elif not dpnp.isscalar(high):
+                pass
+            elif dpnp.is_cuda_backend():
                 pass
             else:
                 min_double = dpnp.finfo("double").min

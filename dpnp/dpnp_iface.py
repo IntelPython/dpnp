@@ -69,10 +69,10 @@ __all__ = [
     "get_normalized_queue_device",
     "get_result_array",
     "get_usm_ndarray",
+    "is_cuda_backend",
     "get_usm_ndarray_or_scalar",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
-    "not_implemented_for_cuda_backend",
     "synchronize_array_data",
 ]
 
@@ -758,6 +758,37 @@ def get_usm_ndarray_or_scalar(a):
     return a if dpnp.isscalar(a) else get_usm_ndarray(a)
 
 
+def is_cuda_backend(obj=None):
+    """
+    Checks that object has a cuda backend.
+
+    Parameters
+    ----------
+    obj : {Device, SyclDevice, SyclQueue, dpnp.ndarray, usm_ndarray, None},
+          optional
+        An input object with sycl_device property to check device backend.
+        If obj is  ``None``, device backend will be checked for the default
+        queue.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : bool
+        Return ``True`` if object has a cuda backend, otherwise``False``.
+
+    """
+
+    if obj is None:
+        sycl_device = dpctl.SyclQueue().sycl_device
+    elif isinstance(obj, dpctl.SyclDevice):
+        sycl_device = obj
+    else:
+        sycl_device = getattr(obj, "sycl_device", None)
+    if sycl_device is not None and "cuda" in sycl_device.backend.name:
+        return True
+    return False
+
+
 def is_supported_array_or_scalar(a):
     """
     Return ``True`` if `a` is a scalar or an array of either
@@ -799,21 +830,6 @@ def is_supported_array_type(a):
     """
 
     return isinstance(a, (dpnp_array, dpt.usm_ndarray))
-
-
-def not_implemented_for_cuda_backend(obj):
-    """
-    Raise NotImplementedError for cuda devices.
-
-    Parameters
-    ----------
-    obj : {SyclDevice, SyclQueue, dpnp.ndarray, usm_ndarray}
-        An input object with sycl_device property to check device backend.
-
-    """
-    sycl_device = getattr(obj, "sycl_device", None)
-    if sycl_device is not None and "cuda" in sycl_device.backend.name:
-        raise NotImplementedError("function not implemented for cuda backend")
 
 
 def synchronize_array_data(a):

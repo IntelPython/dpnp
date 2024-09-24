@@ -197,8 +197,8 @@ class TestFft:
     @pytest.mark.parametrize("axis", [0, 1])
     def test_fft_inplace_out(self, axis):
         # Test some weirder in-place combinations
-        y = dpnp.random.rand(20, 20) + 1j * dpnp.random.rand(20, 20)
-        y_np = y.asnumpy()
+        y_np = numpy.random.rand(20, 20) + 1j * numpy.random.rand(20, 20)
+        y = dpnp.asarray(y_np)
         # Fully in-place.
         y1 = y.copy()
         expected1 = numpy.fft.fft(y1.asnumpy(), axis=axis)

@@ -371,8 +371,6 @@ def correlate(x1, x2, mode="valid"):
 
     """
 
-    dpnp.not_implemented_for_cuda_backend(x1)
-
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc:
@@ -381,6 +379,8 @@ def correlate(x1, x2, mode="valid"):
         elif x1_desc.shape != x2_desc.shape:
             pass
         elif mode != "valid":
+            pass
+        elif dpnp.is_cuda_backend(x1) or dpnp.is_cuda_backend(x2):
             pass
         else:
             return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
@@ -657,8 +657,6 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
 
     """
 
-    dpnp.not_implemented_for_cuda_backend(x1)
-
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
         if axis is not None:
@@ -668,6 +666,8 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
         elif overwrite_input:
             pass
         elif keepdims:
+            pass
+        elif dpnp.is_cuda_backend(x1):
             pass
         else:
             result_obj = dpnp_median(x1_desc).get_pyobj()

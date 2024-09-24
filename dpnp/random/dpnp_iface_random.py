@@ -150,6 +150,8 @@ def beta(a, b, size=None):
             pass
         elif b <= 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_beta(a, b, size).get_pyobj()
 
@@ -195,6 +197,8 @@ def binomial(n, p, size=None):
         elif p > 1 or p < 0:
             pass
         elif n < 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_binomial(int(n), p, size).get_pyobj()
@@ -243,6 +247,8 @@ def chisquare(df, size=None):
         if not dpnp.isscalar(df):
             pass
         elif df <= 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             # TODO:
@@ -312,6 +318,8 @@ def exponential(scale=1.0, size=None):
             pass
         elif scale < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_exponential(scale, size).get_pyobj()
 
@@ -347,6 +355,8 @@ def f(dfnum, dfden, size=None):
         elif dfnum <= 0:
             pass
         elif dfden <= 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_f(dfnum, dfden, size).get_pyobj()
@@ -386,6 +396,8 @@ def gamma(shape, scale=1.0, size=None):
             pass
         elif shape < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_gamma(shape, scale, size).get_pyobj()
 
@@ -419,6 +431,8 @@ def geometric(p, size=None):
         if not dpnp.isscalar(p):
             pass
         elif p > 1 or p <= 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_geometric(p, size).get_pyobj()
@@ -455,6 +469,8 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         elif not dpnp.isscalar(loc):
             pass
         elif scale < 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_gumbel(loc, scale, size).get_pyobj()
@@ -504,6 +520,8 @@ def hypergeometric(ngood, nbad, nsample, size=None):
             pass
         elif nsample < 1:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             _m = int(ngood)
             _l = int(ngood) + int(nbad)
@@ -542,6 +560,8 @@ def laplace(loc=0.0, scale=1.0, size=None):
             pass
         elif scale < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_laplace(loc, scale, size).get_pyobj()
 
@@ -575,6 +595,8 @@ def logistic(loc=0.0, scale=1.0, size=None):
         elif not dpnp.isscalar(scale):
             pass
         elif scale < 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             result = dpnp_rng_logistic(loc, scale, size).get_pyobj()
@@ -616,6 +638,8 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         elif not dpnp.isscalar(sigma):
             pass
         elif sigma < 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_lognormal(mean, sigma, size).get_pyobj()
@@ -674,6 +698,8 @@ def multinomial(n, pvals, size=None):
             pass
         elif pvals_sum < 0.0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             if size is None:
                 shape = (d,)
@@ -724,6 +750,8 @@ def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
         elif (len(cov_.shape) != 2) or (cov_.shape[0] != cov_.shape[1]):
             pass
         elif mean_.shape[0] != cov_.shape[0]:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             final_shape = list(shape[:])
@@ -776,6 +804,8 @@ def negative_binomial(n, p, size=None):
         elif p > 1 or p < 0:
             pass
         elif n <= 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_negative_binomial(n, p, size).get_pyobj()
@@ -862,6 +892,8 @@ def noncentral_chisquare(df, nonc, size=None):
             pass
         elif nonc < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_noncentral_chisquare(df, nonc, size).get_pyobj()
 
@@ -911,6 +943,8 @@ def pareto(a, size=None):
         if not dpnp.isscalar(a):
             pass
         elif a <= 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_pareto(a, size).get_pyobj()
@@ -981,6 +1015,8 @@ def poisson(lam=1.0, size=None):
             pass
         elif lam < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_poisson(lam, size).get_pyobj()
 
@@ -1015,6 +1051,8 @@ def power(a, size=None):
         if not dpnp.isscalar(a):
             pass
         elif a <= 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_power(a, size).get_pyobj()
@@ -1423,6 +1461,8 @@ def rayleigh(scale=1.0, size=None):
             pass
         elif scale < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_rayleigh(scale, size).get_pyobj()
 
@@ -1495,6 +1535,8 @@ def shuffle(x1):
     if x1_desc:
         if not dpnp.is_type_supported(x1_desc.dtype):
             pass
+        elif dpnp.is_cuda_backend(x1):
+            pass
         else:
             dpnp_rng_shuffle(x1_desc).get_pyobj()
             return
@@ -1545,6 +1587,8 @@ def seed(seed=None, device=None, sycl_queue=None):
             pass
         elif seed < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             # TODO:
             # migrate to a single approach with RandomState class
@@ -1577,7 +1621,10 @@ def standard_cauchy(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_rng_standard_cauchy(size).get_pyobj()
+        if dpnp.is_cuda_backend():
+            pass
+        else:
+            return dpnp_rng_standard_cauchy(size).get_pyobj()
 
     return call_origin(numpy.random.standard_cauchy, size)
 
@@ -1602,7 +1649,10 @@ def standard_exponential(size=None):
     """
 
     if not use_origin_backend(size):
-        return dpnp_rng_standard_exponential(size).get_pyobj()
+        if dpnp.is_cuda_backend():
+            pass
+        else:
+            return dpnp_rng_standard_exponential(size).get_pyobj()
 
     return call_origin(numpy.random.standard_exponential, size)
 
@@ -1635,6 +1685,8 @@ def standard_gamma(shape, size=None):
         if not dpnp.isscalar(shape):
             pass
         elif shape < 0:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_standard_gamma(shape, size).get_pyobj()
@@ -1714,6 +1766,8 @@ def standard_t(df, size=None):
             pass
         elif df <= 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_standard_t(df, size).get_pyobj()
 
@@ -1757,6 +1811,8 @@ def triangular(left, mode, right, size=None):
         elif mode > right:
             pass
         elif left == right:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_triangular(left, mode, right, size).get_pyobj()
@@ -1862,6 +1918,8 @@ def vonmises(mu, kappa, size=None):
             return dpnp.nan
         elif kappa < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_vonmises(mu, kappa, size).get_pyobj()
 
@@ -1898,6 +1956,8 @@ def wald(mean, scale, size=None):
             pass
         elif scale <= 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_wald(mean, scale, size).get_pyobj()
 
@@ -1930,6 +1990,8 @@ def weibull(a, size=None):
             pass
         elif a < 0:
             pass
+        elif dpnp.is_cuda_backend():
+            pass
         else:
             return dpnp_rng_weibull(a, size).get_pyobj()
 
@@ -1961,6 +2023,8 @@ def zipf(a, size=None):
         if not dpnp.isscalar(a):
             pass
         elif a <= 1:
+            pass
+        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_zipf(a, size).get_pyobj()
