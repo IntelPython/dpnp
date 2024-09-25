@@ -2,8 +2,9 @@ import math
 
 import numpy
 import pytest
-from tests.tests_perf.data_generator import *
-from tests.tests_perf.test_perf_base import DPNPTestPerfBase
+
+from dpnp.tests.tests_perf.data_generator import *
+from dpnp.tests.tests_perf.test_perf_base import DPNPTestPerfBase
 
 SEED = 7777777
 SL, SH = 10.0, 50.0
