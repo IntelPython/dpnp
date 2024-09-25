@@ -1,0 +1,215 @@
+import unittest
+
+import numpy
+import pytest
+from tests.third_party.cupy import testing
+
+import dpnp as cupy
+
+
+class TestMatrix(unittest.TestCase):
+    @testing.numpy_cupy_array_equal()
+    def test_diag1(self, xp):
+        a = testing.shaped_arange((3, 3), xp)
+        return xp.diag(a)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diag2(self, xp):
+        a = testing.shaped_arange((3, 3), xp)
+        return xp.diag(a, 1)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diag3(self, xp):
+        a = testing.shaped_arange((3, 3), xp)
+        return xp.diag(a, -2)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diag_extraction_from_nested_list(self, xp):
+        a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        r = xp.diag(a, 1)
+        assert isinstance(r, xp.ndarray)
+        return r
+
+    @testing.numpy_cupy_array_equal()
+    def test_diag_extraction_from_nested_tuple(self, xp):
+        a = ((1, 2, 3), (4, 5, 6), (7, 8, 9))
+        r = xp.diag(a, -1)
+        assert isinstance(r, xp.ndarray)
+        return r
+
+    @testing.numpy_cupy_array_equal()
+    def test_diag_construction(self, xp):
+        a = testing.shaped_arange((3,), xp)
+        r = xp.diag(a)
+        assert isinstance(r, xp.ndarray)
+        return r
+
+    @testing.numpy_cupy_array_equal()
+    def test_diag_construction_from_list(self, xp):
+        a = [1, 2, 3]
+        r = xp.diag(a)
+        assert isinstance(r, xp.ndarray)
+        return r
+
+    @testing.numpy_cupy_array_equal()
+    def test_diag_construction_from_tuple(self, xp):
+        a = (1, 2, 3)
+        r = xp.diag(a)
+        assert isinstance(r, xp.ndarray)
+        return r
+
+    def test_diag_scaler(self):
+        for xp in (numpy, cupy):
+            with pytest.raises(ValueError):
+                xp.diag(1)
+
+    def test_diag_0dim(self):
+        for xp in (numpy, cupy):
+            with pytest.raises(ValueError):
+                xp.diag(xp.zeros(()))
+
+    def test_diag_3dim(self):
+        for xp in (numpy, cupy):
+            with pytest.raises(ValueError):
+                xp.diag(xp.zeros((2, 2, 2)))
+
+    @testing.numpy_cupy_array_equal()
+    def test_diagflat1(self, xp):
+        a = testing.shaped_arange((3, 3), xp)
+        return xp.diagflat(a)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diagflat2(self, xp):
+        a = testing.shaped_arange((3, 3), xp)
+        return xp.diagflat(a, 1)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diagflat3(self, xp):
+        a = testing.shaped_arange((3, 3), xp)
+        return xp.diagflat(a, -2)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diagflat_from_scalar(self, xp):
+        return xp.diagflat(3)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diagflat_from_scalar_with_k0(self, xp):
+        return xp.diagflat(3, 0)
+
+    @testing.numpy_cupy_array_equal()
+    def test_diagflat_from_scalar_with_k1(self, xp):
+        return xp.diagflat(3, 1)
+
+
+@testing.parameterize(
+    {"shape": (2,)},
+    {"shape": (3, 3)},
+    {"shape": (4, 3)},
+)
+class TestTri(unittest.TestCase):
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_tri(self, xp, dtype):
+        return xp.tri(*self.shape, k=0, dtype=dtype)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_tri_nega(self, xp, dtype):
+        return xp.tri(*self.shape, k=-1, dtype=dtype)
+
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_tri_posi(self, xp, dtype):
+        return xp.tri(*self.shape, k=1, dtype=dtype)
+
+
+@testing.parameterize(
+    {"shape": (2,)},
+    {"shape": (3, 3)},
+    {"shape": (4, 3)},
+    {"shape": (2, 3, 4)},
+)
+class TestTriLowerAndUpper(unittest.TestCase):
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_tril(self, xp, dtype):
+        m = testing.shaped_arange(self.shape, xp, dtype)
+        return xp.tril(m)
+
+    @pytest.mark.skip("list as input arg is not supported")
+    @testing.numpy_cupy_array_equal()
+    def test_tril_array_like(self, xp):
+        return xp.tril([[1, 2], [3, 4]])
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_tril_nega(self, xp, dtype):
+        m = testing.shaped_arange(self.shape, xp, dtype)
+        return xp.tril(m, k=-1)
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_tril_posi(self, xp, dtype):
+        m = testing.shaped_arange(self.shape, xp, dtype)
+        return xp.tril(m, k=1)
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_triu(self, xp, dtype):
+        m = testing.shaped_arange(self.shape, xp, dtype)
+        return xp.triu(m)
+
+    @pytest.mark.skip("list as input arg is not supported")
+    @testing.numpy_cupy_array_equal()
+    def test_triu_array_like(self, xp):
+        return xp.triu([[1, 2], [3, 4]])
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_triu_nega(self, xp, dtype):
+        m = testing.shaped_arange(self.shape, xp, dtype)
+        return xp.triu(m, k=-1)
+
+    @testing.for_all_dtypes(no_complex=True)
+    @testing.numpy_cupy_array_equal()
+    def test_triu_posi(self, xp, dtype):
+        m = testing.shaped_arange(self.shape, xp, dtype)
+        return xp.triu(m, k=1)
+
+
+@testing.parameterize(
+    *testing.product({"N": [None, 0, 1, 2, 3], "increasing": [False, True]})
+)
+class TestVander(unittest.TestCase):
+    @testing.for_all_dtypes(no_bool=True)
+    @testing.numpy_cupy_allclose(type_check=False)
+    def test_vander(self, xp, dtype):
+        a = testing.shaped_arange((3,), xp, dtype=dtype)
+        return xp.vander(a, N=self.N, increasing=self.increasing)
+
+    @testing.numpy_cupy_allclose()
+    def test_vander_array_like_list(self, xp):
+        a = [0, 1, 2, 3, 4, 5, 6]
+        return xp.vander(a, N=self.N, increasing=self.increasing)
+
+    @testing.numpy_cupy_allclose()
+    def test_vander_array_like_tuple(self, xp):
+        a = (0, 1, 2, 3, 4, 5, 6)
+        return xp.vander(a, N=self.N, increasing=self.increasing)
+
+    def test_vander_scalar(self):
+        for xp in (numpy, cupy):
+            with pytest.raises(ValueError):
+                xp.vander(1, N=self.N, increasing=self.increasing)
+
+    def test_vander_0dim(self):
+        for xp in (numpy, cupy):
+            a = xp.zeros(())
+            with pytest.raises(ValueError):
+                xp.vander(a, N=self.N, increasing=self.increasing)
+
+    def test_vander_2dim(self):
+        for xp in (numpy, cupy):
+            m = xp.zeros((2, 2))
+            with pytest.raises(ValueError):
+                xp.vander(m, N=self.N, increasing=self.increasing)
