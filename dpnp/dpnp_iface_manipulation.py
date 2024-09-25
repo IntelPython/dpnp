@@ -2055,7 +2055,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
     return arr
 
 
-def reshape(a, /, newshape, order="C", copy=None):
+def reshape(a, /, shape=None, *, newshape=None, order="C", copy=None):
     """
     Gives a new shape to an array without changing its data.
 
@@ -2065,12 +2065,14 @@ def reshape(a, /, newshape, order="C", copy=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
-    newshape : int or tuple of ints
+    shape : int or tuple of ints
         The new shape should be compatible with the original shape. If
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
-    order : {"C", "F"}, optional
+    newshape : int or tuple of ints
+        Replaced by shape argument. Retained for backward compatibility.
+    order : {None, "C", "F"}, optional
         Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order. ``"C"``
         means to read / write the elements using C-like index order,
@@ -2080,6 +2082,8 @@ def reshape(a, /, newshape, order="C", copy=None):
         changing fastest, and the last index changing slowest. Note that
         the ``"C"`` and ``"F"`` options take no account of the memory layout of
         the underlying array, and only refer to the order of indexing.
+        ``order=None`` is an alias for ``order="C"``.
+        Default: ``"C"``.
     copy : {None, bool}, optional
         Boolean indicating whether or not to copy the input array.
         If ``True``, the result array will always be a copy of input `a`.
@@ -2093,7 +2097,7 @@ def reshape(a, /, newshape, order="C", copy=None):
     -------
     out : dpnp.ndarray
         This will be a new view object if possible; otherwise, it will
-        be a copy.  Note there is no guarantee of the *memory layout* (C- or
+        be a copy. Note there is no guarantee of the *memory layout* (C- or
         Fortran- contiguous) of the returned array.
 
     Limitations
@@ -2120,8 +2124,18 @@ def reshape(a, /, newshape, order="C", copy=None):
 
     """
 
-    if newshape is None:
-        newshape = a.shape
+    if newshape is None and shape is None:
+        raise TypeError(
+            "reshape() missing 1 required positional argument: 'shape'"
+        )
+
+    if newshape is not None:
+        if shape is not None:
+            raise TypeError(
+                "You cannot specify 'newshape' and 'shape' arguments "
+                "at the same time."
+            )
+        shape = newshape
 
     if order is None:
         order = "C"
@@ -2129,7 +2143,7 @@ def reshape(a, /, newshape, order="C", copy=None):
         raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
 
     usm_a = dpnp.get_usm_ndarray(a)
-    usm_res = dpt.reshape(usm_a, shape=newshape, order=order, copy=copy)
+    usm_res = dpt.reshape(usm_a, shape=shape, order=order, copy=copy)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
