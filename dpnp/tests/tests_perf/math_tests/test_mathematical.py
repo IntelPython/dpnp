@@ -1,7 +1,8 @@
 import numpy
 import pytest
-from tests.tests_perf.data_generator import *
-from tests.tests_perf.test_perf_base import DPNPTestPerfBase
+
+from dpnp.tests.tests_perf.data_generator import *
+from dpnp.tests.tests_perf.test_perf_base import DPNPTestPerfBase
 
 
 class TestDPNPMathematical(DPNPTestPerfBase):

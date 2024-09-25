@@ -1,9 +1,9 @@
 import numpy
 import pytest
-from tests.tests_perf.data_generator import *
-from tests.tests_perf.test_perf_base import DPNPTestPerfBase
 
 import dpnp
+from dpnp.tests.tests_perf.data_generator import *
+from dpnp.tests.tests_perf.test_perf_base import DPNPTestPerfBase
 
 
 def cos_2_args(input_A, input_B, lib):
