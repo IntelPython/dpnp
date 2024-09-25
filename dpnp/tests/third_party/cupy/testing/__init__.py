@@ -1,4 +1,4 @@
-from tests.third_party.cupy.testing._array import (
+from dpnp.tests.third_party.cupy.testing._array import (
     assert_allclose,
     assert_array_almost_equal,
     assert_array_almost_equal_nulp,
@@ -7,10 +7,10 @@ from tests.third_party.cupy.testing._array import (
     assert_array_list_equal,
     assert_array_max_ulp,
 )
-from tests.third_party.cupy.testing._attr import multi_gpu, slow
+from dpnp.tests.third_party.cupy.testing._attr import multi_gpu, slow
 
-# from tests.third_party.cupy.testing._helper import shaped_sparse_random
-from tests.third_party.cupy.testing._helper import (
+# from dpnp.tests.third_party.cupy.testing._helper import shaped_sparse_random
+from dpnp.tests.third_party.cupy.testing._helper import (
     AssertFunctionIsCalled,
     NumpyAliasBasicTestBase,
     NumpyAliasValuesTestBase,
@@ -23,7 +23,7 @@ from tests.third_party.cupy.testing._helper import (
     shaped_reverse_arange,
     with_requires,
 )
-from tests.third_party.cupy.testing._loops import (
+from dpnp.tests.third_party.cupy.testing._loops import (
     for_all_dtypes,
     for_all_dtypes_combination,
     for_castings,
@@ -50,9 +50,12 @@ from tests.third_party.cupy.testing._loops import (
     numpy_cupy_equal,
     numpy_cupy_raises,
 )
-from tests.third_party.cupy.testing._parameterized import (
+from dpnp.tests.third_party.cupy.testing._parameterized import (
     parameterize,
     product,
     product_dict,
 )
-from tests.third_party.cupy.testing._random import fix_random, generate_seed
+from dpnp.tests.third_party.cupy.testing._random import (
+    fix_random,
+    generate_seed,
+)

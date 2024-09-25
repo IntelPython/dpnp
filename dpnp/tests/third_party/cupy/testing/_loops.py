@@ -10,10 +10,10 @@ from typing import Tuple, Type
 import numpy
 from dpctl import select_default_device
 from dpctl.tensor._numpy_helper import AxisError
-from tests.third_party.cupy.testing import _array, _parameterized
-from tests.third_party.cupy.testing._pytest_impl import is_available
 
 import dpnp as cupy
+from dpnp.tests.third_party.cupy.testing import _array, _parameterized
+from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
 
 # import cupyx
 # import cupyx.scipy.sparse
@@ -564,7 +564,7 @@ def numpy_cupy_allclose(
     should return same value.
 
     >>> import unittest
-    >>> from tests.third_party.cupy import testing
+    >>> from dpnp.tests.third_party.cupy import testing
     >>> class TestFoo(unittest.TestCase):
     ...
     ...     @testing.numpy_cupy_allclose()
@@ -1082,7 +1082,7 @@ def for_all_dtypes(
     ``dtype`` is an argument inserted by the decorator.
 
     >>> import unittest
-    >>> from tests.third_party.cupy import testing
+    >>> from dpnp.tests.third_party.cupy import testing
     >>> class TestNpz(unittest.TestCase):
     ...
     ...     @testing.for_all_dtypes()
@@ -1098,7 +1098,7 @@ def for_all_dtypes(
     The following is such an example.
 
     >>> import unittest
-    >>> from tests.third_party.cupy import testing
+    >>> from dpnp.tests.third_party.cupy import testing
     >>> class TestMean(unittest.TestCase):
     ...
     ...     @testing.for_all_dtypes()
