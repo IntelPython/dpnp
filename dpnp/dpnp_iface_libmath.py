@@ -81,7 +81,7 @@ def erf(in_array1):
     x1_desc = dpnp.get_dpnp_descriptor(
         in_array1, copy_when_strides=False, copy_when_nondefault_queue=False
     )
-    if x1_desc and dpnp.is_cuda_backend(in_array1):
+    if x1_desc and not dpnp.is_cuda_backend(in_array1):
         return dpnp_erf(x1_desc).get_pyobj()
 
     result = create_output_descriptor_py(

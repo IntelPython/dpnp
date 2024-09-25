@@ -366,6 +366,7 @@ class TestSortComplex:
         assert result.dtype == expected.dtype
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("kth", [0, 1], ids=["0", "1"])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize(

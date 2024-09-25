@@ -82,8 +82,6 @@ class RandomState:
             device=device, sycl_queue=sycl_queue
         )
 
-        dpnp.not_implemented_for_cuda_backend(self._sycl_queue)
-
         self._sycl_device = self._sycl_queue.sycl_device
 
         is_cpu = self._sycl_device.is_cpu

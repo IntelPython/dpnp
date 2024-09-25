@@ -1190,6 +1190,7 @@ def test_out_2in_1out(func, data1, data2, device):
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "device",
     valid_devices,

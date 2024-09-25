@@ -1,4 +1,3 @@
-# FAILED
 # fft
 tests/test_fft.py::TestFftn::test_fftn[C-forward-None-complex64]
 tests/test_fft.py::TestFftn::test_fftn[C-forward-None-complex128]
@@ -375,367 +374,25 @@ tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulIntegralLargeBatch::
 tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulIntegralLargeBatch::test_operator_matmul[shape10-shape20]
 tests/third_party/cupy/math_tests/test_matmul.py::TestMatmulIntegralLargeBatch::test_operator_matmul[shape11-shape21]
 
-
-# NotImplementedError
-# modf
-tests/test_arithmetic.py::TestArithmetic::test_modf_part1
-tests/test_arithmetic.py::TestArithmetic::test_modf_part2
-tests/test_umath.py::test_umaths[('modf', 'f')]
-tests/test_umath.py::test_umaths[('modf', 'd')]
-tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticModf::test_modf
-tests/test_sycl_queue.py::test_modf[cuda:gpu:0]
-
-# partition
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-bool_-0]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-bool_-1]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-int32-0]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-int32-1]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-int64-0]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-int64-1]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-float32-0]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-float32-1]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-float64-0]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-float64-1]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex64-0]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex64-1]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex128-0]
-tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex128-1]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-bool_-0]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-bool_-1]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int32-0]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int32-1]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int64-0]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int64-1]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float32-0]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float32-1]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float64-0]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float64-1]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex64-0]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex64-1]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex128-0]
-tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex128-1]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-bool_-0]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-bool_-1]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int32-0]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int32-1]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int64-0]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int64-1]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float32-0]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float32-1]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float64-0]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float64-1]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex64-0]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex64-1]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex128-0]
-tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex128-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-bool_-0]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-bool_-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int32-0]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int32-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int64-0]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int64-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float32-0]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float32-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float64-0]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float64-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex64-0]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex64-1]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex128-0]
-tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex128-1]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-bool_-0]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-bool_-1]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int32-0]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int32-1]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int64-0]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int64-1]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float32-0]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float32-1]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float64-0]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float64-1]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex64-0]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex64-1]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex128-0]
-tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex128-1]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-bool_-0]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-bool_-1]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int32-0]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int32-1]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int64-0]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int64-1]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float32-0]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float32-1]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float64-0]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float64-1]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex64-0]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex64-1]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex128-0]
-tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex128-1]
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_zero_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_axis1
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_axis2
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_non_contiguous
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_none_axis
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_one_dim
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_sequence_kth
-tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_zero_dim
-
-# erf
-tests/test_special.py::test_erf
-tests/test_special.py::test_erf_fallback
-tests/test_strides.py::test_strides_erf[(10,)-int32]
-tests/test_strides.py::test_strides_erf[(10,)-int64]
-tests/test_strides.py::test_strides_erf[(10,)-float32]
-tests/test_strides.py::test_strides_erf[(10,)-float64]
-tests/test_strides.py::test_strides_erf[(10,)-None]
-
-# median
-tests/test_statistics.py::test_median[2-int32]
-tests/test_statistics.py::test_median[2-int64]
-tests/test_statistics.py::test_median[2-float32]
-tests/test_statistics.py::test_median[2-float64]
-tests/test_statistics.py::test_median[4-int32]
-tests/test_statistics.py::test_median[4-int64]
-tests/test_statistics.py::test_median[4-float32]
-tests/test_statistics.py::test_median[4-float64]
-tests/test_statistics.py::test_median[8-int32]
-tests/test_statistics.py::test_median[8-int64]
-tests/test_statistics.py::test_median[8-float32]
-tests/test_statistics.py::test_median[8-float64]
-tests/test_statistics.py::test_median[16-int32]
-tests/test_statistics.py::test_median[16-int64]
-tests/test_statistics.py::test_median[16-float32]
-tests/test_statistics.py::test_median[16-float64]
-tests/test_statistics.py::test_median[3-int32]
-tests/test_statistics.py::test_median[3-int64]
-tests/test_statistics.py::test_median[3-float32]
-tests/test_statistics.py::test_median[3-float64]
-tests/test_statistics.py::test_median[9-int32]
-tests/test_statistics.py::test_median[9-int64]
-tests/test_statistics.py::test_median[9-float32]
-tests/test_statistics.py::test_median[9-float64]
-tests/test_statistics.py::test_median[27-int32]
-tests/test_statistics.py::test_median[27-int64]
-tests/test_statistics.py::test_median[27-float32]
-tests/test_statistics.py::test_median[27-float64]
-tests/test_statistics.py::test_median[81-int32]
-tests/test_statistics.py::test_median[81-int64]
-tests/test_statistics.py::test_median[81-float32]
-tests/test_statistics.py::test_median[81-float64]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_axis2
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_overwrite_input
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_axis1
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_keepdims_noaxis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedian::test_median_invalid_axis
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_0_{axis=(0, 1), keepdims=True, shape=(3, 4, 5)}]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_1_{axis=(0, 1), keepdims=False, shape=(3, 4, 5)}]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_2_{axis=(0, -1), keepdims=True, shape=(3, 4, 5)}]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_3_{axis=(0, -1), keepdims=False, shape=(3, 4, 5)}]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_4_{axis=(1, 2), keepdims=True, shape=(3, 4, 5)}]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_5_{axis=(1, 2), keepdims=False, shape=(3, 4, 5)}]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_6_{axis=(1,), keepdims=True, shape=(3, 4, 5)}]
-tests/third_party/cupy/statistics_tests/test_meanvar.py::TestMedianAxis::test_median_axis_sequence[_param_7_{axis=(1,), keepdims=False, shape=(3, 4, 5)}]
-
-# choose
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast2
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_broadcast_fail
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_clip
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_choose_wrap
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_raise
-tests/third_party/cupy/indexing_tests/test_indexing.py::TestChoose::test_unknown_clip
-
-# correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_0_{mode='valid', shape1=(5,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_1_{mode='valid', shape1=(5,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_2_{mode='valid', shape1=(5,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_3_{mode='valid', shape1=(5,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_4_{mode='valid', shape1=(6,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_5_{mode='valid', shape1=(6,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_6_{mode='valid', shape1=(6,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_7_{mode='valid', shape1=(6,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_8_{mode='valid', shape1=(20,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_9_{mode='valid', shape1=(20,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_10_{mode='valid', shape1=(20,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_11_{mode='valid', shape1=(20,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_12_{mode='valid', shape1=(21,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_13_{mode='valid', shape1=(21,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_14_{mode='valid', shape1=(21,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_15_{mode='valid', shape1=(21,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_16_{mode='same', shape1=(5,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_17_{mode='same', shape1=(5,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_18_{mode='same', shape1=(5,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_19_{mode='same', shape1=(5,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_20_{mode='same', shape1=(6,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_21_{mode='same', shape1=(6,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_22_{mode='same', shape1=(6,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_23_{mode='same', shape1=(6,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_24_{mode='same', shape1=(20,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_25_{mode='same', shape1=(20,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_26_{mode='same', shape1=(20,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_27_{mode='same', shape1=(20,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_28_{mode='same', shape1=(21,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_29_{mode='same', shape1=(21,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_30_{mode='same', shape1=(21,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_31_{mode='same', shape1=(21,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_32_{mode='full', shape1=(5,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_33_{mode='full', shape1=(5,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_34_{mode='full', shape1=(5,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_35_{mode='full', shape1=(5,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_36_{mode='full', shape1=(6,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_37_{mode='full', shape1=(6,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_38_{mode='full', shape1=(6,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_39_{mode='full', shape1=(6,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_40_{mode='full', shape1=(20,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_41_{mode='full', shape1=(20,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_42_{mode='full', shape1=(20,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_43_{mode='full', shape1=(20,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_44_{mode='full', shape1=(21,), shape2=(5,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_45_{mode='full', shape1=(21,), shape2=(6,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_46_{mode='full', shape1=(21,), shape2=(20,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateShapeCombination_param_47_{mode='full', shape1=(21,), shape2=(21,)}::test_correlate
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_large_non_contiguous
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_0_{mode='valid'}::test_correlate_non_contiguous
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_large_non_contiguous
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_1_{mode='full'}::test_correlate_non_contiguous
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_diff_types
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_large_non_contiguous
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelate_param_2_{mode='same'}::test_correlate_non_contiguous
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_empty
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_ndim
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_0_{mode='valid'}::test_correlate_zero_dim
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_empty
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_ndim
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_1_{mode='same'}::test_correlate_zero_dim
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_empty
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_ndim
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrelateInvalid_param_2_{mode='full'}::test_correlate_zero_dim
-
-#random
-tests/test_random.py::test_input_size[chisquare]
-tests/test_random.py::test_input_shape[chisquare]
-tests/test_random.py::test_seed[random]
-tests/test_random.py::test_seed[random_sample]
-tests/test_random.py::test_randn_normal_distribution
-tests/test_random.py::TestDistributionsBeta::test_moments
-tests/test_random.py::TestDistributionsBeta::test_seed
-tests/test_random.py::TestDistributionsBinomial::test_moments
-tests/test_random.py::TestDistributionsBinomial::test_seed
-tests/test_random.py::TestDistributionsChisquare::test_seed
-tests/test_random.py::TestDistributionsExponential::test_seed
-tests/test_random.py::TestDistributionsF::test_moments
-tests/test_random.py::TestDistributionsF::test_seed
-tests/test_random.py::TestDistributionsGamma::test_moments
-tests/test_random.py::TestDistributionsGamma::test_seed
-tests/test_random.py::TestDistributionsGeometric::test_moments
-tests/test_random.py::TestDistributionsGeometric::test_seed
-tests/test_random.py::TestDistributionsGumbel::test_moments
-tests/test_random.py::TestDistributionsGumbel::test_seed
-tests/test_random.py::TestDistributionsHypergeometric::test_moments
-tests/test_random.py::TestDistributionsHypergeometric::test_seed
-tests/test_random.py::TestDistributionsLaplace::test_moments
-tests/test_random.py::TestDistributionsLaplace::test_seed
-tests/test_random.py::TestDistributionsLogistic::test_moments
-tests/test_random.py::TestDistributionsLogistic::test_seed
-tests/test_random.py::TestDistributionsLognormal::test_moments
-tests/test_random.py::TestDistributionsLognormal::test_seed
-tests/test_random.py::TestDistributionsMultinomial::test_seed1
-tests/test_random.py::TestDistributionsNegativeBinomial::test_seed
-tests/test_random.py::TestDistributionsNormal::test_moments
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_grt_1]
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_eq_1]
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_less_1]
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_seed[df_grt_1]
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_seed[df_eq_1]
-tests/test_random.py::TestDistributionsNoncentralChisquare::test_seed[df_less_1]
-tests/test_random.py::TestDistributionsPareto::test_moments
-tests/test_random.py::TestDistributionsPareto::test_seed
-tests/test_random.py::TestDistributionsPoisson::test_moments
-tests/test_random.py::TestDistributionsPoisson::test_seed
-tests/test_random.py::TestDistributionsPower::test_moments
-tests/test_random.py::TestDistributionsPower::test_seed
-tests/test_random.py::TestDistributionsRayleigh::test_moments
-tests/test_random.py::TestDistributionsRayleigh::test_seed
-tests/test_random.py::TestDistributionsStandardCauchy::test_seed
-tests/test_random.py::TestDistributionsStandardExponential::test_moments
-tests/test_random.py::TestDistributionsStandardExponential::test_seed
-tests/test_random.py::TestDistributionsStandardGamma::test_moments
-tests/test_random.py::TestDistributionsStandardNormal::test_moments
-tests/test_random.py::TestDistributionsStandardT::test_moments
-tests/test_random.py::TestDistributionsStandardT::test_seed
-tests/test_random.py::TestDistributionsTriangular::test_moments
-tests/test_random.py::TestDistributionsTriangular::test_seed
-tests/test_random.py::TestDistributionsUniform::test_moments
-tests/test_random.py::TestDistributionsVonmises::test_moments[large_kappa]
-tests/test_random.py::TestDistributionsVonmises::test_moments[small_kappa]
-tests/test_random.py::TestDistributionsVonmises::test_seed[large_kappa]
-tests/test_random.py::TestDistributionsVonmises::test_seed[small_kappa]
-tests/test_random.py::TestDistributionsWald::test_moments
-tests/test_random.py::TestDistributionsWald::test_seed
-tests/test_random.py::TestDistributionsWeibull::test_seed
-tests/test_random.py::TestDistributionsZipf::test_seed
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.array([])]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)]
-tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
+# random state
 tests/test_random_state.py::TestNormal::test_distr[host-float32]
 tests/test_random_state.py::TestNormal::test_distr[host-float64]
 tests/test_random_state.py::TestNormal::test_distr[host-None]
 tests/test_random_state.py::TestNormal::test_distr[device-float32]
-tests/test_random_state.py::TestNormal::test_distr[device-float64]
+tests/test_random_state.py::TestNormal::test_distr[device-float64] 
 tests/test_random_state.py::TestNormal::test_distr[device-None]
 tests/test_random_state.py::TestNormal::test_distr[shared-float32]
 tests/test_random_state.py::TestNormal::test_distr[shared-float64]
 tests/test_random_state.py::TestNormal::test_distr[shared-None]
+tests/test_random_state.py::TestNormal::test_scale[host-float32]
+tests/test_random_state.py::TestNormal::test_scale[host-float64]
+tests/test_random_state.py::TestNormal::test_scale[host-None]
+tests/test_random_state.py::TestNormal::test_scale[device-float32]
+tests/test_random_state.py::TestNormal::test_scale[device-float64]
+tests/test_random_state.py::TestNormal::test_scale[device-None]
+tests/test_random_state.py::TestNormal::test_scale[shared-float32]
+tests/test_random_state.py::TestNormal::test_scale[shared-float64] 
+tests/test_random_state.py::TestNormal::test_scale[shared-None]
 tests/test_random_state.py::TestNormal::test_inf_loc[numpy.inf]
 tests/test_random_state.py::TestNormal::test_inf_loc[-numpy.inf]
 tests/test_random_state.py::TestNormal::test_inf_loc[nextafter(max, 0)]
@@ -743,29 +400,65 @@ tests/test_random_state.py::TestNormal::test_inf_loc[nextafter(min, 0)]
 tests/test_random_state.py::TestNormal::test_inf_scale
 tests/test_random_state.py::TestNormal::test_inf_loc_scale[numpy.inf]
 tests/test_random_state.py::TestNormal::test_inf_loc_scale[-numpy.inf]
+tests/test_random_state.py::TestNormal::test_extreme_bounds
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.float16]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[float]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.int64]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.int32]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.int]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[int]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[numpy.clongdouble]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.complex128]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.complex64]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.bool]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.bool_]
+tests/test_random_state.py::TestNormal::test_invalid_usm_type[Empty]
+tests/test_random_state.py::TestNormal::test_invalid_usm_type[Unknown]
 tests/test_random_state.py::TestRand::test_distr[host]
 tests/test_random_state.py::TestRand::test_distr[device]
 tests/test_random_state.py::TestRand::test_distr[shared]
+tests/test_random_state.py::TestRand::test_zero_dims[(0,)]
+tests/test_random_state.py::TestRand::test_zero_dims[(3, 0)]
+tests/test_random_state.py::TestRand::test_zero_dims[(3, 0, 10)]
+tests/test_random_state.py::TestRand::test_zero_dims[()]
+tests/test_random_state.py::TestRand::test_wrong_dims
 tests/test_random_state.py::TestRandInt::test_distr[host-int]
 tests/test_random_state.py::TestRandInt::test_distr[host-dpnp.int32]
 tests/test_random_state.py::TestRandInt::test_distr[device-int]
 tests/test_random_state.py::TestRandInt::test_distr[device-dpnp.int32]
 tests/test_random_state.py::TestRandInt::test_distr[shared-int]
 tests/test_random_state.py::TestRandInt::test_distr[shared-dpnp.int32]
-tests/test_random_state.py::TestRandInt::test_float_bounds
+tests/test_random_state.py::TestRandInt::test_float_bounds randint
 tests/test_random_state.py::TestRandInt::test_negative_bounds
 tests/test_random_state.py::TestRandInt::test_negative_interval
+tests/test_random_state.py::TestRandInt::test_bounds_checking
 tests/test_random_state.py::TestRandInt::test_rng_zero_and_extremes
-tests/test_random_state.py::TestRandInt::test_in_bounds_fuzz
+tests/test_random_state.py::TestRandInt::test_zero_size[(3, 0, 4)]
+tests/test_random_state.py::TestRandInt::test_zero_size[0]
+tests/test_random_state.py::TestRandInt::test_zero_size[(0,)]
+tests/test_random_state.py::TestRandInt::test_zero_size[()]
+tests/test_random_state.py::TestRandInt::test_invalid_usm_type[Empty]
+tests/test_random_state.py::TestRandInt::test_invalid_usm_type[Unknown]
 tests/test_random_state.py::TestRandN::test_distr[host]
 tests/test_random_state.py::TestRandN::test_distr[device]
 tests/test_random_state.py::TestRandN::test_distr[shared]
+tests/test_random_state.py::TestRandN::test_zero_dims[(0,)]
+tests/test_random_state.py::TestRandN::test_zero_dims[(3, 0)]
+tests/test_random_state.py::TestRandN::test_zero_dims[(3, 0, 10)]
+tests/test_random_state.py::TestRandN::test_zero_dims[()]
+tests/test_random_state.py::TestRandN::test_wrong_dims
+tests/test_random_state.py::TestSeed::test_scalar[normal]
+tests/test_random_state.py::TestSeed::test_scalar[standard_normal]
+tests/test_random_state.py::TestSeed::test_scalar[random_sample]
+tests/test_random_state.py::TestSeed::test_scalar[uniform]
 tests/test_random_state.py::TestStandardNormal::test_distr[host]
 tests/test_random_state.py::TestStandardNormal::test_distr[device]
 tests/test_random_state.py::TestStandardNormal::test_distr[shared]
+tests/test_random_state.py::TestStandardNormal::test_wrong_dims
 tests/test_random_state.py::TestRandSample::test_distr[host]
 tests/test_random_state.py::TestRandSample::test_distr[device]
 tests/test_random_state.py::TestRandSample::test_distr[shared]
+tests/test_random_state.py::TestRandSample::test_wrong_dims
 tests/test_random_state.py::TestUniform::test_distr[host-float32-(low, high)=[1.23, 10.54]]
 tests/test_random_state.py::TestUniform::test_distr[host-float32-(low, high)=[10.54, 1.23]]
 tests/test_random_state.py::TestUniform::test_distr[host-float64-(low, high)=[1.23, 10.54]]
@@ -790,26 +483,87 @@ tests/test_random_state.py::TestUniform::test_distr[shared-int32-(low, high)=[1.
 tests/test_random_state.py::TestUniform::test_distr[shared-int32-(low, high)=[10.54, 1.23]]
 tests/test_random_state.py::TestUniform::test_distr[shared-None-(low, high)=[1.23, 10.54]]
 tests/test_random_state.py::TestUniform::test_distr[shared-None-(low, high)=[10.54, 1.23]]
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy_param_0_{shape=(4, 3, 2)}::test_standard_cauchy
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy_param_1_{shape=(3, 2)}::test_standard_cauchy
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential_param_0_{shape=(4, 3, 2)}::test_standard_exponential
-tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential_param_1_{shape=(3, 2)}::test_standard_exponential
-tests/third_party/cupy/random_tests/test_sample.py::TestRandint::test_lo_hi_nonrandom
-tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_1
-tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_2
-tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float2
-tests/test_mathematical.py::TestUnwrap::test_rand[int64]
-tests/test_random.py::test_check_output[random]
-tests/test_random.py::test_check_output[random_sample]
-tests/test_random.py::test_check_output[ranf]
-tests/test_random.py::test_check_output[sample]
-tests/test_random.py::test_seed[ranf]
-tests/test_random.py::test_seed[sample]
-tests/test_random.py::test_seed[rand]
-tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_overflow
-tests/test_random.py::test_check_output[rand]
-tests/test_random.py::TestDistributionsNormal::test_seed
-tests/test_random_state.py::TestSeed::test_scalar[normal]
-tests/test_random_state.py::TestSeed::test_scalar[standard_normal]
-tests/test_random_state.py::TestSeed::test_scalar[random_sample]
-tests/test_random_state.py::TestSeed::test_scalar[uniform]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-float32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-float64]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-int32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-None]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-float32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-float64]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-int32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-None]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-float32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-float64]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-int32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-None]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.float16]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[float]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.int64]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.int]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[int]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[numpy.clongdouble]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.complex128]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.complex64]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.bool]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.bool_]
+tests/test_random_state.py::TestUniform::test_invalid_usm_type[Empty]
+tests/test_random_state.py::TestUniform::test_invalid_usm_type[Unknown]
+tests/test_random_state.py::TestRandInt::test_float_bounds
+tests/test_random_state.py::TestRandInt::test_full_range
+tests/test_random_state.py::TestUniform::test_range_bounds
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-normal-kwargs0]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-rand-kwargs1]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-randint-kwargs2]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-randn-kwargs3]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-random-kwargs4]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-random_integers-kwargs5]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-random_sample-kwargs6]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-ranf-kwargs7]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-sample-kwargs8]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-standard_normal-kwargs9]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-uniform-kwargs10]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-normal-kwargs0]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-rand-kwargs1]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-randint-kwargs2]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-randn-kwargs3]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-random-kwargs4]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-random_integers-kwargs5]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-random_sample-kwargs6]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-ranf-kwargs7]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-sample-kwargs8]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-standard_normal-kwargs9]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-uniform-kwargs10]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-normal-kwargs0]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-rand-kwargs1]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-randint-kwargs2]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-randn-kwargs3]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-random-kwargs4]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-random_integers-kwargs5]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-random_sample-kwargs6]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-ranf-kwargs7]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-sample-kwargs8]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-standard_normal-kwargs9]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-uniform-kwargs10]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-random_sample-args4-kwargs4]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-standard_normal-args5-kwargs5]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-uniform-args6-kwargs6]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-random_sample-args4-kwargs4]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-standard_normal-args5-kwargs5]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-uniform-args6-kwargs6]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-random_sample-args4-kwargs4]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-standard_normal-args5-kwargs5]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-uniform-args6-kwargs6]
+tests/test_random.py::TestDistributionsGeometric::test_moments
+tests/test_random.py::TestDistributionsLaplace::test_extreme_value
+tests/test_random.py::TestDistributionsPareto::test_moments

@@ -1,6 +1,7 @@
 import unittest
 
 import numpy
+import pytest
 
 from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
@@ -9,6 +10,7 @@ from tests.third_party.cupy import testing
 class TestArithmetic(unittest.TestCase):
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_modf_part1(self, xp, dtype):
         a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
         b, _ = xp.modf(a)
@@ -17,6 +19,7 @@ class TestArithmetic(unittest.TestCase):
 
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_modf_part2(self, xp, dtype):
         a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
         _, c = xp.modf(a)

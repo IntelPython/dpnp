@@ -599,6 +599,7 @@ class TestDistributionsRayleigh(RandomDistributionsTestCase):
     )
 )
 class TestDistributionsStandardCauchy(RandomDistributionsTestCase):
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_standard_cauchy(self):
         self.check_distribution("standard_cauchy", {})
 
@@ -611,6 +612,7 @@ class TestDistributionsStandardCauchy(RandomDistributionsTestCase):
     )
 )
 class TestDistributionsStandardExponential(RandomDistributionsTestCase):
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_standard_exponential(self):
         self.check_distribution("standard_exponential", {})
 
@@ -639,6 +641,7 @@ class TestDistributionsStandardGamma(RandomDistributionsTestCase):
     )
 )
 class TestDistributionsStandardNormal(RandomDistributionsTestCase):
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_standard_normal(self):
         self.check_distribution("standard_normal", {})
 

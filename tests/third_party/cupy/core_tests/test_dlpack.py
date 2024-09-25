@@ -11,24 +11,18 @@ from tests.third_party.cupy import testing
 
 def _gen_array(dtype, alloc_q=None):
     if cupy.issubdtype(dtype, numpy.unsignedinteger):
-        array = cupy.random.randint(
-            0, 10, size=(2, 3), sycl_queue=alloc_q
-        ).astype(dtype)
+        array = numpy.random.randint(0, 10, size=(2, 3))
     elif cupy.issubdtype(dtype, cupy.integer):
-        array = cupy.random.randint(
-            -10, 10, size=(2, 3), sycl_queue=alloc_q
-        ).astype(dtype)
+        array = numpy.random.randint(-10, 10, size=(2, 3))
     elif cupy.issubdtype(dtype, cupy.floating):
-        array = cupy.random.rand(2, 3, sycl_queue=alloc_q).astype(dtype)
+        array = numpy.random.rand(2, 3)
     elif cupy.issubdtype(dtype, cupy.complexfloating):
-        array = cupy.random.random((2, 3), sycl_queue=alloc_q).astype(dtype)
+        array = numpy.random.random((2, 3))
     elif dtype == cupy.bool_:
-        array = cupy.random.randint(
-            0, 2, size=(2, 3), sycl_queue=alloc_q
-        ).astype(cupy.bool_)
+        array = numpy.random.randint(0, 2, size=(2, 3))
     else:
         assert False, f"unrecognized dtype: {dtype}"
-    return array
+    return cupy.asarray(array, sycl_queue=alloc_q).astype(dtype)
 
 
 class TestDLPackConversion(unittest.TestCase):
