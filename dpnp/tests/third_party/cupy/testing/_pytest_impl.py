@@ -1,6 +1,6 @@
 import unittest
 
-import tests.third_party.cupy.testing._parameterized
+import dpnp.tests.third_party.cupy.testing._parameterized
 
 try:
     import _pytest

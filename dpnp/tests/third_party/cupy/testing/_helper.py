@@ -6,9 +6,9 @@ from typing import Callable
 from unittest import mock
 
 import numpy
-from tests.third_party.cupy.testing._pytest_impl import is_available
 
 import dpnp as cupy
+from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
 
 # from cupy._core import internal
 # import cupyx
