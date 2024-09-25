@@ -16,7 +16,6 @@ from numpy.testing import (
     assert_raises,
     assert_raises_regex,
 )
-from tests.third_party.cupy import testing
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
@@ -36,6 +35,7 @@ from .test_umath import (
     _get_numpy_arrays_2in_1out,
     _get_output_data_type,
 )
+from .third_party.cupy import testing
 
 
 class TestAngle:

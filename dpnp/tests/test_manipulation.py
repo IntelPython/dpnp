@@ -5,7 +5,6 @@ import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
-from tests.third_party.cupy import testing
 
 import dpnp
 
@@ -18,6 +17,7 @@ from .helper import (
     get_integer_dtypes,
     has_support_aspect64,
 )
+from .third_party.cupy import testing
 
 testdata = []
 testdata += [

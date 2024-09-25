@@ -8,11 +8,11 @@ from numpy.testing import (
     assert_equal,
     assert_raises,
 )
-from tests.third_party.cupy import testing
 
 import dpnp
 
 from .helper import get_all_dtypes, get_float_complex_dtypes
+from .third_party.cupy import testing
 
 
 class TestAtleast1d:

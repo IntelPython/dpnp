@@ -12,7 +12,6 @@ from numpy.testing import (
     assert_raises_regex,
     suppress_warnings,
 )
-from tests.third_party.cupy import testing
 
 import dpnp as inp
 
@@ -25,6 +24,7 @@ from .helper import (
     has_support_aspect64,
     is_cpu_device,
 )
+from .third_party.cupy import testing
 
 
 def vvsort(val, vec, size, xp):
