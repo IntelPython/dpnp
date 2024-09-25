@@ -1,8 +1,9 @@
 import unittest
 
 import numpy
-from tests.helper import has_support_aspect64
-from tests.third_party.cupy import testing
+
+from .helper import has_support_aspect64
+from .third_party.cupy import testing
 
 
 class TestArithmetic(unittest.TestCase):

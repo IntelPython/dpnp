@@ -8,7 +8,6 @@ from numpy.testing import (
     assert_equal,
     assert_raises,
 )
-from tests.third_party.cupy import testing
 
 import dpnp
 
@@ -20,6 +19,7 @@ from .helper import (
     get_float_dtypes,
     has_support_aspect64,
 )
+from .third_party.cupy import testing
 
 
 class TestNanArgmaxNanArgmin:

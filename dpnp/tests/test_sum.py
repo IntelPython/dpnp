@@ -5,13 +5,14 @@ import pytest
 from numpy.testing import (
     assert_array_equal,
 )
-from tests.helper import (
+
+import dpnp
+
+from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_float_dtypes,
 )
-
-import dpnp
 
 
 @pytest.mark.usefixtures("suppress_complex_warning")

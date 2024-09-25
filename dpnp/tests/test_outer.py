@@ -3,9 +3,10 @@ import unittest
 import numpy as np
 import pytest
 from numpy.testing import assert_raises
-from tests.third_party.cupy import testing
 
 import dpnp as dp
+
+from .third_party.cupy import testing
 
 
 class TestOuter(unittest.TestCase):

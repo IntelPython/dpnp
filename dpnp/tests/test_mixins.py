@@ -1,6 +1,6 @@
 import unittest
 
-from tests.third_party.cupy import testing
+from .third_party.cupy import testing
 
 
 class TestMatMul(unittest.TestCase):
