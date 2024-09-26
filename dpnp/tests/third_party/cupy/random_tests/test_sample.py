@@ -3,11 +3,11 @@ from unittest import mock
 
 import numpy
 import pytest
-from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import _condition, _hypothesis
 
 import dpnp as cupy
 from dpnp import random
+from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing import _condition, _hypothesis
 
 
 class TestRandint(unittest.TestCase):

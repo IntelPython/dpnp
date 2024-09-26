@@ -1,10 +1,10 @@
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from tests.helper import has_support_aspect16, has_support_aspect64
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect16, has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 ignore_runtime_warnings = pytest.mark.filterwarnings(
     "ignore", category=RuntimeWarning

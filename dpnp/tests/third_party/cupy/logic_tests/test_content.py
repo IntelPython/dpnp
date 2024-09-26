@@ -1,7 +1,8 @@
 import unittest
 
 import numpy
-from tests.third_party.cupy import testing
+
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestContent(unittest.TestCase):

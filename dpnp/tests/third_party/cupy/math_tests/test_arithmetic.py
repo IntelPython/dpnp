@@ -9,10 +9,9 @@ if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
 else:
     from numpy import ComplexWarning
 
-from tests.helper import has_support_aspect16, has_support_aspect64
-from tests.third_party.cupy import testing
-
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect16, has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 float_types = [numpy.float16, numpy.float32, numpy.float64]
 complex_types = [numpy.complex64, numpy.complex128]

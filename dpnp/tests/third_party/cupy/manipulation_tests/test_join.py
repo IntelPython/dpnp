@@ -6,10 +6,9 @@ if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
 else:
     from numpy import AxisError, ComplexWarning
 
-from tests.helper import has_support_aspect64
-from tests.third_party.cupy import testing
-
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestJoin:

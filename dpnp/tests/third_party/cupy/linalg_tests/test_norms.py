@@ -2,10 +2,10 @@ import unittest
 
 import numpy
 import pytest
-from tests.helper import is_cpu_device
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.helper import is_cpu_device
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestTrace(unittest.TestCase):

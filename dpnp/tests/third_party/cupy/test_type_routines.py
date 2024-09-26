@@ -2,10 +2,10 @@ import unittest
 
 import numpy
 import pytest
-from tests.helper import has_support_aspect64
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 
 def _generate_type_routines_input(xp, dtype, obj_type):

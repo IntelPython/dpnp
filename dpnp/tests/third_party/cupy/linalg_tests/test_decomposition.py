@@ -2,11 +2,15 @@ import unittest
 
 import numpy
 import pytest
-from tests.helper import has_support_aspect64, is_cpu_device, is_win_platform
-from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import _condition
 
 import dpnp as cupy
+from dpnp.tests.helper import (
+    has_support_aspect64,
+    is_cpu_device,
+    is_win_platform,
+)
+from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing import _condition
 
 
 def random_matrix(shape, dtype, scale, sym=False):

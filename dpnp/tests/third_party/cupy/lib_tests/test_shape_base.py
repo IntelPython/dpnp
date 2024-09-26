@@ -3,9 +3,9 @@ import unittest
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.third_party.cupy import testing
 
 
 @testing.parameterize(*(testing.product({"axis": [0, 1, -1]})))

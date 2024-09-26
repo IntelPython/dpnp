@@ -4,13 +4,13 @@ import warnings
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from tests.helper import (
+
+import dpnp as cupy
+from dpnp.tests.helper import (
     has_support_aspect16,
     has_support_aspect64,
 )
-from tests.third_party.cupy import testing
-
-import dpnp as cupy
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestSumprod:
