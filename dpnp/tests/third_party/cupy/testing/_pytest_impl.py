@@ -50,7 +50,7 @@ def parameterize(*params, _ids=True):
     check_available("parameterize")
     if _ids:
         param_name = (
-            tests.third_party.cupy.testing._parameterized._make_class_name
+            dpnp.tests.third_party.cupy.testing._parameterized._make_class_name
         )
     else:
 

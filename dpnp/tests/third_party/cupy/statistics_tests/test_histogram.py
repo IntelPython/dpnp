@@ -3,10 +3,10 @@ import unittest
 
 import numpy
 import pytest
-from tests.helper import has_support_aspect64
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 # Note that numpy.bincount does not support uint64 on 64-bit environment
 # as it casts an input array to intp.

@@ -2,9 +2,9 @@ import warnings
 
 import numpy
 import pytest
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.third_party.cupy import testing
 
 if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
     from numpy.exceptions import ComplexWarning

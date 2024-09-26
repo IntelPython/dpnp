@@ -4,9 +4,9 @@ import dpctl
 import dpctl.tensor._dlpack as dlp
 import numpy
 import pytest
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.third_party.cupy import testing
 
 
 def _gen_array(dtype, alloc_q=None):

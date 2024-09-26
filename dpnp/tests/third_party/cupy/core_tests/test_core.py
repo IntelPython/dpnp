@@ -3,9 +3,9 @@ import unittest
 
 import numpy
 import pytest
-from tests.third_party.cupy import testing
 
 import dpnp as cupy
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestSize(unittest.TestCase):

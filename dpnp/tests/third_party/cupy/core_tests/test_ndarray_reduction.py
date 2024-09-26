@@ -3,10 +3,10 @@ import unittest
 import numpy
 import pytest
 
-# from cupy.core import _accelerator
-from tests.third_party.cupy import testing
-
 import dpnp as cupy
+
+# from cupy.core import _accelerator
+from dpnp.tests.third_party.cupy import testing
 
 
 @testing.parameterize(

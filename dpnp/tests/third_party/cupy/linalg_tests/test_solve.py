@@ -2,14 +2,14 @@ import unittest
 
 import numpy
 import pytest
-from tests.helper import (
+
+import dpnp as cupy
+from dpnp.tests.helper import (
     assert_dtype_allclose,
     has_support_aspect64,
 )
-from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import _condition
-
-import dpnp as cupy
+from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing import _condition
 
 
 @testing.parameterize(
