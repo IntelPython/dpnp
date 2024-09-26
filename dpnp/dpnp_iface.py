@@ -760,14 +760,14 @@ def get_usm_ndarray_or_scalar(a):
 
 def is_cuda_backend(obj=None):
     """
-    Checks that object has a cuda backend.
+    Checks that object has a CUDA backend.
 
     Parameters
     ----------
     obj : {Device, SyclDevice, SyclQueue, dpnp.ndarray, usm_ndarray, None},
           optional
         An input object with sycl_device property to check device backend.
-        If obj is  ``None``, device backend will be checked for the default
+        If `obj` is ``None``, device backend will be checked for the default
         queue.
         Default: ``None``.
 
@@ -784,7 +784,10 @@ def is_cuda_backend(obj=None):
         sycl_device = obj
     else:
         sycl_device = getattr(obj, "sycl_device", None)
-    if sycl_device is not None and "cuda" in sycl_device.backend.name:
+    if (
+        sycl_device is not None
+        and sycl_device.backend == dpctl.backend_type.cuda
+    ):
         return True
     return False
 

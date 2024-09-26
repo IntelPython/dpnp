@@ -65,14 +65,12 @@ def pytest_collection_modifyitems(config, items):
     )
 
     # global skip file for cuda backend
-    test_exclude_file_cuda = os.path.join(
-        test_path, "skipped_tests_cuda.tbl"
-    )
+    test_exclude_file_cuda = os.path.join(test_path, "skipped_tests_cuda.tbl")
 
     dev = dpctl.select_default_device()
     is_cpu = dev.is_cpu
     is_gpu_no_fp64 = not dev.has_aspect_fp64
-    is_cuda = "cuda" in str(dev.backend.name)
+    is_cuda = dpnp.is_cuda_backend(dev)
 
     print("")
     print(f"DPNP current device is CPU: {is_cpu}")
@@ -89,9 +87,7 @@ def pytest_collection_modifyitems(config, items):
                 get_excluded_tests(test_exclude_file_gpu_no_fp64)
             )
         if is_cuda:
-            excluded_tests.extend(
-                get_excluded_tests(test_exclude_file_cuda)
-            )
+            excluded_tests.extend(get_excluded_tests(test_exclude_file_cuda))
     else:
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
 
