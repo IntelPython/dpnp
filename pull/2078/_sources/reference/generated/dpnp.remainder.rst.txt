@@ -1,6 +1,0 @@
-﻿dpnp.remainder
-==============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: remainder
