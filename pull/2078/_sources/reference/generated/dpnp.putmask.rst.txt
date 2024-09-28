@@ -1,0 +1,6 @@
+﻿dpnp.putmask
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: putmask
