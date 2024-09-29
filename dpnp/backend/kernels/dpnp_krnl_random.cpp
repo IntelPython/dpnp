@@ -2553,7 +2553,8 @@ DPCTLSyclEventRef
 
     const _DataType d_zero = 0.0, d_one = 1.0;
 
-    assert(0. < kappa <= 1.0);
+    assert(0. < kappa);
+    assert(kappa <= 1.0);
 
     r = 1 + sqrt(1 + 4 * kappa * kappa);
     rho_over_kappa = (2) / (r + sqrt(2 * r));
