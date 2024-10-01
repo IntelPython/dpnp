@@ -2071,7 +2071,7 @@ def reshape(a, /, shape=None, *, newshape=None, order="C", copy=None):
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
     newshape : int or tuple of ints
-        Replaced by shape argument. Retained for backward compatibility.
+        Replaced by `shape` argument. Retained for backward compatibility.
     order : {None, "C", "F"}, optional
         Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order. ``"C"``
