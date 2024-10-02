@@ -323,20 +323,17 @@ std::tuple<sycl::event, sycl::event, bool>
     return std::make_tuple(args_ev, gemm_ev, is_row_major);
 }
 
-bool _is_lnl_bm_architecture(sycl::device &dev)
+bool _is_lnl_bm_architecture(const sycl::device &dev)
 {
 #if !defined(USE_ONEMKL_CUBLAS)
-    if (dev.ext_oneapi_architecture_is(
-            sycl::ext::oneapi::experimental::architecture::
-                intel_gpu_lnl_m)) /* Lunar Lake */
-    {
+    namespace syclex = sycl::ext::oneapi::experimental;
+    const auto arch = dev.get_info<syclex::info::device::architecture>();
+    switch (arch) {
+    case syclex::architecture::intel_gpu_lnl_m:   /* Lunar Lake */
+    case syclex::architecture::intel_gpu_bmg_g21: /* Battlemage G21 */
         return true;
-    }
-    else if (dev.ext_oneapi_architecture_is(
-                 sycl::ext::oneapi::experimental::architecture::
-                     intel_gpu_bmg_g21)) /* Battlemage G21 */
-    {
-        return true;
+    default:
+        return false;
     }
 #endif // !defined(USE_ONEMKL_CUBLAS)
     return false;
