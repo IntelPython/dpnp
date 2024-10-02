@@ -119,6 +119,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Fixed a crash in `dpnp.choose` caused by missing control of releasing temporary allocated device memory [#2063](https://github.com/IntelPython/dpnp/pull/2063)
 * Resolved compilation warning and error while building in debug mode [#2066](https://github.com/IntelPython/dpnp/pull/2066)
 * Fixed an issue with asynchronous execution in `dpnp.fft` module [#2067](https://github.com/IntelPython/dpnp/pull/2067)
+* Added a workaround to fix the incorrect result from `dpnp.matmul` computing on Lunar Lake or Arrow Lake Battlemage graphics [#2082](https://github.com/IntelPython/dpnp/pull/2082)
 
 ## [0.15.0] - 05/25/2024
 
