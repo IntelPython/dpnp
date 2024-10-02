@@ -128,9 +128,9 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        m.def("_is_lnl_arl_architecture", &blas_ns::_is_lnl_arl_architecture,
+        m.def("_is_lnl_bm_architecture", &blas_ns::_is_lnl_bm_architecture,
               "Return ``True`` if SYCL device belongs to either Lunar Lake or "
-              "Arrow Lake architecture",
+              "Battlemage G21 Intel GPU architecture",
               py::arg("device"));
     }
 

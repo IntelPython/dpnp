@@ -323,44 +323,21 @@ std::tuple<sycl::event, sycl::event, bool>
     return std::make_tuple(args_ev, gemm_ev, is_row_major);
 }
 
-bool _is_lnl_arl_architecture(sycl::device &dev)
+bool _is_lnl_bm_architecture(sycl::device &dev)
 {
 #if !defined(USE_ONEMKL_CUBLAS)
     if (dev.ext_oneapi_architecture_is(
             sycl::ext::oneapi::experimental::architecture::
                 intel_gpu_lnl_m)) /* Lunar Lake */
     {
-        std::cout << "_is_lnl_arl_architecture: running on Lunar Lake" << std::endl;
         return true;
     }
-    if (dev.ext_oneapi_architecture_is(
+    else if (dev.ext_oneapi_architecture_is(
             sycl::ext::oneapi::experimental::architecture::
                 intel_gpu_bmg_g21)) /* Battlemage G21 */
     {
-        std::cout << "_is_lnl_arl_architecture: running on Battlemage G21" << std::endl;
         return true;
     }
-    // else if (dev.ext_oneapi_architecture_is(
-    //              sycl::ext::oneapi::experimental::architecture::
-    //                  intel_gpu_arl_h)) /* Arrow Lake H */
-    // {
-    //     std::cout << "_is_lnl_arl_architecture: running on Arrow Lake H" << std::endl;
-    //     return true;
-    // }
-    // else if (dev.ext_oneapi_architecture_is(
-    //              sycl::ext::oneapi::experimental::architecture::
-    //                  intel_gpu_arl_u)) /* Arrow Lake U */
-    // {
-    //     std::cout << "_is_lnl_arl_architecture: running on Arrow Lake U" << std::endl;
-    //     return true;
-    // }
-    // else if (dev.ext_oneapi_architecture_is(
-    //              sycl::ext::oneapi::experimental::architecture::
-    //                  intel_gpu_arl_s)) /* Arrow Lake S */
-    // {
-    //     std::cout << "_is_lnl_arl_architecture: running on Arrow Lake S" << std::endl;
-    //     return true;
-    // }
 #endif // !defined(USE_ONEMKL_CUBLAS)
     return false;
 }

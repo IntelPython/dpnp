@@ -39,7 +39,7 @@ extern std::tuple<sycl::event, sycl::event, bool>
          const dpctl::tensor::usm_ndarray &resultC,
          const std::vector<sycl::event> &depends);
 
-extern bool _is_lnl_arl_architecture(sycl::device &dev);
+extern bool _is_lnl_bm_architecture(sycl::device &dev);
 
 extern std::tuple<sycl::event, sycl::event, bool>
     gemm_batch(sycl::queue &exec_q,

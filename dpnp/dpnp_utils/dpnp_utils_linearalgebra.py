@@ -894,13 +894,13 @@ def dpnp_matmul(
                 )
                 _manager.add_event_pair(ht_ev, gemv_ev)
             elif call_flag == "gemm":
-                # MKLD-17976: due to known issue in OneMKL on Lunar Lake,
-                # Battlemage G21 and Arrow Lake architectures, it forces
-                # to implement a temporary workaround with extra copying
-                # of an input array in case when it has a small size and
+                # MKLD-17976: due to known issue in OneMKL on Lunar Lake and
+                # Battlemage G21 Intel GPU architectures, it forces
+                # to implement a temporary workaround with extra copying of
+                # an input array in case when it has a small size and
                 # non-zero offset
                 # TODO: remove the workaround once OneMKL issue is resolved
-                if bi._is_lnl_arl_architecture(exec_q.get_sycl_device()):
+                if bi._is_lnl_bm_architecture(exec_q.get_sycl_device()):
                     def _need_to_copy(a):
                         a_usm = dpnp.get_usm_ndarray(a)
                         if a_usm._element_offset > 0 and a_usm.size < 16:
