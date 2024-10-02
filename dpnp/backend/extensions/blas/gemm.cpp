@@ -323,7 +323,7 @@ std::tuple<sycl::event, sycl::event, bool>
     return std::make_tuple(args_ev, gemm_ev, is_row_major);
 }
 
-bool _is_lnl_bm_architecture(const sycl::device &dev);
+bool _is_lnl_bm_architecture(const sycl::device &dev)
 {
 #if !defined(USE_ONEMKL_CUBLAS)
     if (dev.ext_oneapi_architecture_is(
