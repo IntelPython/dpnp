@@ -323,6 +323,25 @@ std::tuple<sycl::event, sycl::event, bool>
     return std::make_tuple(args_ev, gemm_ev, is_row_major);
 }
 
+bool _is_lnl_arl_architecture(sycl::device &dev)
+{
+#if !defined(USE_ONEMKL_CUBLAS)
+    if (dev.ext_oneapi_architecture_is(
+            sycl::ext::oneapi::experimental::architecture::
+                intel_gpu_20_4_4)) /* Lunar Lake */
+    {
+        return true;
+    }
+    else if (dev.ext_oneapi_architecture_is(
+                 sycl::ext::oneapi::experimental::architecture::
+                     intel_gpu_12_74_4)) /* Arrow Lake */
+    {
+        return true;
+    }
+#endif // !defined(USE_ONEMKL_CUBLAS)
+    return false;
+}
+
 template <typename fnT, typename Tab, typename Tc>
 struct GemmContigFactory
 {
