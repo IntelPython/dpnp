@@ -340,27 +340,27 @@ bool _is_lnl_arl_architecture(sycl::device &dev)
         std::cout << "_is_lnl_arl_architecture: running on Battlemage G21" << std::endl;
         return true;
     }
-    else if (dev.ext_oneapi_architecture_is(
-                 sycl::ext::oneapi::experimental::architecture::
-                     intel_gpu_arl_h)) /* Arrow Lake H */
-    {
-        std::cout << "_is_lnl_arl_architecture: running on Arrow Lake H" << std::endl;
-        return true;
-    }
-    else if (dev.ext_oneapi_architecture_is(
-                 sycl::ext::oneapi::experimental::architecture::
-                     intel_gpu_arl_u)) /* Arrow Lake U */
-    {
-        std::cout << "_is_lnl_arl_architecture: running on Arrow Lake U" << std::endl;
-        return true;
-    }
-    else if (dev.ext_oneapi_architecture_is(
-                 sycl::ext::oneapi::experimental::architecture::
-                     intel_gpu_arl_s)) /* Arrow Lake S */
-    {
-        std::cout << "_is_lnl_arl_architecture: running on Arrow Lake S" << std::endl;
-        return true;
-    }
+    // else if (dev.ext_oneapi_architecture_is(
+    //              sycl::ext::oneapi::experimental::architecture::
+    //                  intel_gpu_arl_h)) /* Arrow Lake H */
+    // {
+    //     std::cout << "_is_lnl_arl_architecture: running on Arrow Lake H" << std::endl;
+    //     return true;
+    // }
+    // else if (dev.ext_oneapi_architecture_is(
+    //              sycl::ext::oneapi::experimental::architecture::
+    //                  intel_gpu_arl_u)) /* Arrow Lake U */
+    // {
+    //     std::cout << "_is_lnl_arl_architecture: running on Arrow Lake U" << std::endl;
+    //     return true;
+    // }
+    // else if (dev.ext_oneapi_architecture_is(
+    //              sycl::ext::oneapi::experimental::architecture::
+    //                  intel_gpu_arl_s)) /* Arrow Lake S */
+    // {
+    //     std::cout << "_is_lnl_arl_architecture: running on Arrow Lake S" << std::endl;
+    //     return true;
+    // }
 #endif // !defined(USE_ONEMKL_CUBLAS)
     return false;
 }
