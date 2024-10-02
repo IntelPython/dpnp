@@ -899,6 +899,7 @@ def dpnp_matmul(
                 # to implement a temporary workaround with extra copying of
                 # an input array in case when it has a small size and
                 # non-zero offset
+                # The issue was detected by failing tests for eig/eigh
                 # TODO: remove the workaround once OneMKL issue is resolved
                 if bi._is_lnl_bm_architecture(exec_q.get_sycl_device()):
 
