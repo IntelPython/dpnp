@@ -898,7 +898,7 @@ def dpnp_matmul(
                 # Arrow Lake architectures, it forces to implement a temporary
                 # workaround with extra copying of an input array in case when
                 # it has a small size and non-zero offset
-                # TODO: remove the workaraound once OneMKL issue is resolved
+                # TODO: remove the workaround once OneMKL issue is resolved
                 if (
                     compute_dtype != dpnp.float32
                     and bi._is_lnl_arl_architecture(exec_q.get_sycl_device())
