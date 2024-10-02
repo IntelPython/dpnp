@@ -333,8 +333,8 @@ bool _is_lnl_bm_architecture(sycl::device &dev)
         return true;
     }
     else if (dev.ext_oneapi_architecture_is(
-            sycl::ext::oneapi::experimental::architecture::
-                intel_gpu_bmg_g21)) /* Battlemage G21 */
+                 sycl::ext::oneapi::experimental::architecture::
+                     intel_gpu_bmg_g21)) /* Battlemage G21 */
     {
         return true;
     }
