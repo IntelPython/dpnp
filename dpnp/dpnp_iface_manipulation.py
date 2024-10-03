@@ -40,6 +40,7 @@ it contains:
 
 import math
 import operator
+import warnings
 
 import dpctl.tensor as dpt
 import numpy
@@ -2055,7 +2056,7 @@ def require(a, dtype=None, requirements=None, *, like=None):
     return arr
 
 
-def reshape(a, /, shape=None, *, newshape=None, order="C", copy=None):
+def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
     """
     Gives a new shape to an array without changing its data.
 
@@ -2072,7 +2073,7 @@ def reshape(a, /, shape=None, *, newshape=None, order="C", copy=None):
         inferred from the length of the array and remaining dimensions.
     newshape : int or tuple of ints
         Replaced by `shape` argument. Retained for backward compatibility.
-    order : {None, "C", "F"}, optional
+    order : {None, "C", "F", "A"}, optional
         Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order. ``"C"``
         means to read / write the elements using C-like index order,
@@ -2082,15 +2083,14 @@ def reshape(a, /, shape=None, *, newshape=None, order="C", copy=None):
         changing fastest, and the last index changing slowest. Note that
         the ``"C"`` and ``"F"`` options take no account of the memory layout of
         the underlying array, and only refer to the order of indexing.
-        ``order=None`` is an alias for ``order="C"``.
+        ``order=None`` is an alias for ``order="C"``. ``"A"`` means to
+        read / write the elements in Fortran-like index order if ``a`` is
+        Fortran *contiguous* in memory, C-like order otherwise.
         Default: ``"C"``.
     copy : {None, bool}, optional
-        Boolean indicating whether or not to copy the input array.
-        If ``True``, the result array will always be a copy of input `a`.
-        If ``False``, the result array can never be a copy
-        and a ValueError exception will be raised in case the copy is necessary.
-        If ``None``, the result array will reuse existing memory buffer of `a`
-        if possible and copy otherwise.
+        If ``True``, then the array data is copied. If ``None``, a copy will
+        only be made if it's required by ``order``. For ``False`` it raises
+        a ``ValueError`` if a copy cannot be avoided.
         Default: ``None``.
 
     Returns
@@ -2100,13 +2100,43 @@ def reshape(a, /, shape=None, *, newshape=None, order="C", copy=None):
         be a copy. Note there is no guarantee of the *memory layout* (C- or
         Fortran- contiguous) of the returned array.
 
-    Limitations
-    -----------
-    Parameter `order` is supported only with values ``"C"`` and ``"F"``.
-
     See Also
     --------
     :obj:`dpnp.ndarray.reshape` : Equivalent method.
+
+    Notes
+    -----
+    It is not always possible to change the shape of an array without copying
+    the data.
+
+    The ``order`` keyword gives the index ordering both for *fetching*
+    the values from ``a``, and then *placing* the values into the output
+    array. For example, let's say you have an array:
+
+    >>> import dpnp as np
+    >>> a = np.arange(6).reshape((3, 2))
+    >>> a
+    array([[0, 1],
+           [2, 3],
+           [4, 5]])
+
+    You can think of reshaping as first raveling the array (using the given
+    index order), then inserting the elements from the raveled array into the
+    new array using the same kind of index ordering as was used for the
+    raveling.
+
+    >>> np.reshape(a, (2, 3)) # C-like index ordering
+    array([[0, 1, 2],
+           [3, 4, 5]])
+    >>> np.reshape(np.ravel(a), (2, 3)) # equivalent to C ravel then C reshape
+    array([[0, 1, 2],
+           [3, 4, 5]])
+    >>> np.reshape(a, (2, 3), order='F') # Fortran-like index ordering
+    array([[0, 4, 3],
+           [2, 1, 5]])
+    >>> np.reshape(np.ravel(a, order='F'), (2, 3), order='F')
+    array([[0, 4, 3],
+           [2, 1, 5]])
 
     Examples
     --------
@@ -2135,12 +2165,22 @@ def reshape(a, /, shape=None, *, newshape=None, order="C", copy=None):
                 "You cannot specify 'newshape' and 'shape' arguments "
                 "at the same time."
             )
+        # Deprecated in dpnp 0.17.0
+        warnings.warn(
+            "`newshape` keyword argument is deprecated, "
+            "use `shape=...` or pass shape positionally instead. "
+            "(deprecated in dpnp 0.17.0)",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         shape = newshape
 
     if order is None:
         order = "C"
+    elif order in "aA":
+        order = "F" if a.flags.fnc else "C"
     elif order not in "cfCF":
-        raise ValueError(f"order must be one of 'C' or 'F' (got {order})")
+        raise ValueError(f"order must be None, 'C', 'F', or 'A' (got {order})")
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.reshape(usm_a, shape=shape, order=order, copy=copy)

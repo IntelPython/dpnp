@@ -1286,7 +1286,7 @@ class dpnp_array:
 
         return dpnp.repeat(self, repeats, axis=axis)
 
-    def reshape(self, *sh, **kwargs):
+    def reshape(self, *shape, order="C", copy=None):
         """
         Returns an array containing the same data with a new shape.
 
@@ -1311,9 +1311,9 @@ class dpnp_array:
 
         """
 
-        if len(sh) == 1:
-            sh = sh[0]
-        return dpnp.reshape(self, sh, **kwargs)
+        if len(shape) == 1:
+            shape = shape[0]
+        return dpnp.reshape(self, shape, order=order, copy=copy)
 
     # 'resize',
 
