@@ -1885,7 +1885,7 @@ def ravel(a, order="C"):
     Notes
     -----
     In row-major, C-style order, in two dimensions, the row index
-    varies the slowest, and the column index the quickest.  This can
+    varies the slowest, and the column index the quickest. This can
     be generalized to multiple dimensions, where row-major order
     implies that the index along the first axis varies slowest, and
     the index along the last quickest. The opposite holds for
@@ -1907,7 +1907,8 @@ def ravel(a, order="C"):
     >>> np.ravel(x, order='F')
     array([1, 4, 2, 5, 3, 6])
 
-    When ``order`` is 'A', it will preserve the array's 'C' or 'F' ordering:
+    When `order` is ``"A"``, it will preserve the array's
+    ``"C"`` or ``"F"`` ordering:
 
     >>> np.ravel(x.T)
     array([1, 4, 2, 5, 3, 6])
