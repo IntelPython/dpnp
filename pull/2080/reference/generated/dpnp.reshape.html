@@ -13,7 +13,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.reshape &mdash; Data Parallel Extension for NumPy 0.17.0dev0+37.g047e7599e02 documentation</title>
+  <title>dpnp.reshape &mdash; Data Parallel Extension for NumPy 0.17.0dev0+39.g8c166482646 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -24,7 +24,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4dea7dc7"></script>
+        <script src="../../_static/documentation_options.js?v=97eb8911"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -46,7 +46,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+37.g047e7599e02
+                0.17.0dev0+39.g8c166482646
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -143,7 +143,6 @@
 an integer, then the result will be a 1-D array of that length.
 One shape dimension can be -1. In this case, the value is
 inferred from the length of the array and remaining dimensions.</p></li>
-<li><p><strong>newshape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) -- Replaced by <cite>shape</cite> argument. Retained for backward compatibility.</p></li>
 <li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;}</em><em>, </em><em>optional</em>) -- Read the elements of <cite>a</cite> using this index order, and place the
 elements into the reshaped array using this index order. <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>
 means to read / write the elements using C-like index order,
@@ -157,6 +156,7 @@ the underlying array, and only refer to the order of indexing.
 read / write the elements in Fortran-like index order if <code class="docutils literal notranslate"><span class="pre">a</span></code> is
 Fortran <em>contiguous</em> in memory, C-like order otherwise.
 Default: <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code>.</p></li>
+<li><p><strong>newshape</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.12)"><em>tuple</em></a><em> of </em><em>ints</em>) -- Replaced by <cite>shape</cite> argument. Retained for backward compatibility.</p></li>
 <li><p><strong>copy</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the array data is copied. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, a copy will
 only be made if it's required by <code class="docutils literal notranslate"><span class="pre">order</span></code>. For <code class="docutils literal notranslate"><span class="pre">False</span></code> it raises
 a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if a copy cannot be avoided.
@@ -182,7 +182,7 @@ Fortran- contiguous) of the returned array.</p>
 <p class="rubric">Notes</p>
 <p>It is not always possible to change the shape of an array without copying
 the data.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">order</span></code> keyword gives the index ordering both for <em>fetching</em>
+<p>The <cite>order</cite> keyword gives the index ordering both for <em>fetching</em>
 the values from <code class="docutils literal notranslate"><span class="pre">a</span></code>, and then <em>placing</em> the values into the output
 array. For example, let's say you have an array:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
