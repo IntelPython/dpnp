@@ -448,6 +448,22 @@ class TestAsarrayCheckFinite:
         assert_array_equal(b, a)
 
 
+class TestRavel:
+    def test_error(self):
+        ia = dpnp.arange(10).reshape(2, 5)
+        assert_raises(NotImplementedError, dpnp.ravel, ia, order="K")
+
+    @pytest.mark.parametrize("order", ["C", "F", "A"])
+    def test_non_contiguous(self, order):
+        a = numpy.arange(10)[::2]
+        ia = dpnp.arange(10)[::2]
+        expected = numpy.ravel(a, order=order)
+        result = dpnp.ravel(ia, order=order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_array_equal(result, expected)
+
+
 class TestRepeat:
     @pytest.mark.parametrize(
         "data",

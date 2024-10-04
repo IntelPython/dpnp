@@ -1849,23 +1849,50 @@ def ravel(a, order="C"):
     x : {dpnp.ndarray, usm_ndarray}
         Input array. The elements in `a` are read in the order specified by
         order, and packed as a 1-D array.
-    order : {"C", "F"}, optional
+    order : {None, "C", "F", "A"}, optional
         The elements of `a` are read using this index order. ``"C"`` means to
         index the elements in row-major, C-style order, with the last axis
         index changing fastest, back to the first axis index changing slowest.
         ``"F"`` means to index the elements in column-major, Fortran-style
         order, with the first index changing fastest, and the last index
-        changing slowest. By default, ``"C"`` index order is used.
+        changing slowest. Note that the "C" and "F" options take no account of
+        the memory layout of the underlying array, and only refer to
+        the order of axis indexing. "A" means to read the elements in
+        Fortran-like index order if `a` is Fortran *contiguous* in
+        memory, C-like order otherwise. ``order=None`` is an alias for
+        ``order="C"``.
+        Default: ``"C"``.
 
     Returns
     -------
     out : dpnp.ndarray
         A contiguous 1-D array of the same subtype as `a`, with shape (a.size,).
 
+    Limitations
+    -----------
+    `order="K"` is not supported and the function raises `NotImplementedError`
+    exception.
+
     See Also
     --------
-    :obj:`dpnp.reshape` : Change the shape of an array without changing its
-                          data.
+    :obj:`dpnp.ndarray.flat` : 1-D iterator over an array.
+    :obj:`dpnp.ndarray.flatten` : 1-D array copy of the elements of an array
+                    in row-major order.
+    :obj:`dpnp.ndarray.reshape` : Change the shape of an array without
+                    changing its data.
+    :obj:`dpnp.reshape` : The same as :obj:`dpnp.ndarray.reshape`.
+
+    Notes
+    -----
+    In row-major, C-style order, in two dimensions, the row index
+    varies the slowest, and the column index the quickest.  This can
+    be generalized to multiple dimensions, where row-major order
+    implies that the index along the first axis varies slowest, and
+    the index along the last quickest. The opposite holds for
+    column-major, Fortran-style index ordering.
+
+    When a view is desired in as many cases as possible, ``arr.reshape(-1)``
+    may be preferable.
 
     Examples
     --------
@@ -1880,9 +1907,26 @@ def ravel(a, order="C"):
     >>> np.ravel(x, order='F')
     array([1, 4, 2, 5, 3, 6])
 
+    When ``order`` is 'A', it will preserve the array's 'C' or 'F' ordering:
+
+    >>> np.ravel(x.T)
+    array([1, 4, 2, 5, 3, 6])
+    >>> np.ravel(x.T, order='A')
+    array([1, 2, 3, 4, 5, 6])
+
     """
 
-    return dpnp.reshape(a, -1, order=order)
+    if order in "kK":
+        raise NotImplementedError(
+            "Keyword argument `order` is supported only with "
+            f"values None, 'C', 'F', and 'A', but got '{order}'"
+        )
+
+    result = dpnp.reshape(a, -1, order=order)
+    if result.flags.c_contiguous:
+        return result
+
+    return dpnp.ascontiguousarray(result)
 
 
 def repeat(a, repeats, axis=None):
@@ -2071,8 +2115,6 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
-    newshape : int or tuple of ints
-        Replaced by `shape` argument. Retained for backward compatibility.
     order : {None, "C", "F", "A"}, optional
         Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order. ``"C"``
@@ -2087,6 +2129,8 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
         read / write the elements in Fortran-like index order if ``a`` is
         Fortran *contiguous* in memory, C-like order otherwise.
         Default: ``"C"``.
+    newshape : int or tuple of ints
+        Replaced by `shape` argument. Retained for backward compatibility.
     copy : {None, bool}, optional
         If ``True``, then the array data is copied. If ``None``, a copy will
         only be made if it's required by ``order``. For ``False`` it raises
@@ -2109,7 +2153,7 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
     It is not always possible to change the shape of an array without copying
     the data.
 
-    The ``order`` keyword gives the index ordering both for *fetching*
+    The `order` keyword gives the index ordering both for *fetching*
     the values from ``a``, and then *placing* the values into the output
     array. For example, let's say you have an array:
 
