@@ -138,7 +138,7 @@ def _get_empty_array(
             order = "C"
         elif a.flags.f_contiguous:
             order = "F"
-        elif a.flags.f_contiguous:
+        elif a.flags.c_contiguous:
             order = "C"
         else:
             strides = _get_strides_for_order_k(a, _shape)
