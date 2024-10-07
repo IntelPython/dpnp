@@ -137,12 +137,6 @@ void validate(const usm_ndarray &sample,
                               " parameter must have at least 1 element");
     }
 
-    if (histogram.get_ndim() != 1) {
-        throw py::value_error(get_name(&histogram) +
-                              " parameter must be 1d. Actual " +
-                              std::to_string(histogram.get_ndim()) + "d");
-    }
-
     if (weights_ptr) {
         if (weights_ptr->get_ndim() != 1) {
             throw py::value_error(
@@ -150,9 +144,9 @@ void validate(const usm_ndarray &sample,
                 std::to_string(weights_ptr->get_ndim()) + "d");
         }
 
-        auto sample_size = sample.get_size();
+        auto sample_size = sample.get_shape(0);
         auto weights_size = weights_ptr->get_size();
-        if (sample.get_size() != weights_ptr->get_size()) {
+        if (sample_size != weights_ptr->get_size()) {
             throw py::value_error(
                 get_name(&sample) + " size (" + std::to_string(sample_size) +
                 ") and " + get_name(weights_ptr) + " size (" +
@@ -168,42 +162,37 @@ void validate(const usm_ndarray &sample,
     }
 
     if (sample.get_ndim() == 1) {
-        if (bins_ptr != nullptr && bins_ptr->get_ndim() != 1) {
+        if (histogram.get_ndim() != 1) {
             throw py::value_error(get_name(&sample) + " parameter is 1d, but " +
-                                  get_name(bins_ptr) + " is " +
-                                  std::to_string(bins_ptr->get_ndim()) + "d");
+                                  get_name(&histogram) + " is " +
+                                  std::to_string(histogram.get_ndim()) + "d");
+        }
+
+        if (bins_ptr && histogram.get_size() != bins_ptr->get_size() - 1) {
+            auto hist_size = histogram.get_size();
+            auto bins_size = bins_ptr->get_size();
+            throw py::value_error(
+                get_name(&histogram) + " parameter and " + get_name(bins_ptr) +
+                " parameters shape mismatch. " + get_name(&histogram) +
+                " size is " + std::to_string(hist_size) + get_name(bins_ptr) +
+                " must have size " + std::to_string(hist_size + 1) +
+                " but have " + std::to_string(bins_size));
         }
     }
     else if (sample.get_ndim() == 2) {
         auto sample_count = sample.get_shape(0);
         auto expected_dims = sample.get_shape(1);
 
-        if (bins_ptr != nullptr && bins_ptr->get_ndim() != expected_dims) {
-            throw py::value_error(get_name(&sample) + " parameter has shape {" +
-                                  std::to_string(sample_count) + "x" +
-                                  std::to_string(expected_dims) + "}" +
-                                  ", so " + get_name(bins_ptr) +
+        if (histogram.get_ndim() != expected_dims) {
+            throw py::value_error(get_name(&sample) + " parameter has shape (" +
+                                  std::to_string(sample_count) + ", " +
+                                  std::to_string(expected_dims) + ")" +
+                                  ", so " + get_name(&histogram) +
                                   " parameter expected to be " +
                                   std::to_string(expected_dims) +
                                   "d. "
                                   "Actual " +
-                                  std::to_string(bins->get_ndim()) + "d");
-        }
-    }
-
-    if (bins_ptr != nullptr) {
-        py::ssize_t expected_hist_size = 1;
-        for (int i = 0; i < bins_ptr->get_ndim(); ++i) {
-            expected_hist_size *= (bins_ptr->get_shape(i) - 1);
-        }
-
-        if (histogram.get_size() != expected_hist_size) {
-            throw py::value_error(
-                get_name(&histogram) + " and " + get_name(bins_ptr) +
-                " shape mismatch. " + get_name(&histogram) +
-                " expected to have size = " +
-                std::to_string(expected_hist_size) + ". Actual " +
-                std::to_string(histogram.get_size()));
+                                  std::to_string(histogram.get_ndim()) + "d");
         }
     }
 

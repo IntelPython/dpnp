@@ -611,3 +611,185 @@ class TestBincount:
         expected = numpy.bincount(np_a, weights=np_weights)
         result = dpnp.bincount(dpnp_a, weights=dpnp_weights)
         assert_allclose(expected, result)
+
+
+class TestHistogramDd:
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_rand_data(self, dtype):
+        n = 100
+        dims = 3
+        v = numpy.random.rand(n, dims).astype(dtype=dtype)
+        iv = dpnp.array(v, dtype=dtype)
+
+        expected_hist, _ = numpy.histogramdd(v)
+        result_hist, _ = dpnp.histogramdd(iv)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_linspace_data(self, dtype):
+        n = 100
+        dims = 3
+        v = numpy.linspace(0, 10, n * dims, dtype=dtype).reshape(n, dims)
+        iv = dpnp.array(v)
+
+        expected_hist, _ = numpy.histogramdd(v)
+        result_hist, _ = dpnp.histogramdd(iv)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_bin(self, xp):
+        a = xp.array([[1, 2]])
+        assert_raises(ValueError, xp.histogramdd, a, bins=0.1)
+
+    @pytest.mark.parametrize(
+        "bins",
+        [
+            11,
+            [11] * 3,
+            [[0, 20, 40, 60, 80, 100]] * 3,
+            [[0, 20, 40, 60, 80, 300]] * 3,
+        ],
+    )
+    def test_bins(self, bins):
+        n = 100
+        dims = 3
+        v = numpy.arange(100 * 3).reshape(n, dims)
+        iv = dpnp.array(v)
+
+        bins_dpnp = bins
+        if isinstance(bins, list):
+            if isinstance(bins[0], list):
+                bins = [numpy.array(b) for b in bins]
+                bins_dpnp = [dpnp.array(b) for b in bins]
+
+        expected_hist, expected_edges = numpy.histogramdd(v, bins)
+        result_hist, result_edges = dpnp.histogramdd(iv, bins_dpnp)
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges, expected_edges)
+
+    def test_no_side_effects(self):
+        v = dpnp.array([[1.3, 2.5, 2.3]])
+        copy_v = v.copy()
+
+        # check that ensures that values passed to ``histogramdd`` are unchanged
+        _, _ = dpnp.histogramdd(v)
+        assert (v == copy_v).all()
+
+    @pytest.mark.parametrize("data", [[], 1, [0, 1, 1, 3, 3]])
+    def test_01d(self, data):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+
+        expected_hist, expected_edges = numpy.histogramdd(a)
+        result_hist, result_edges = dpnp.histogramdd(ia)
+
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges, expected_edges)
+
+    def test_3d(self):
+        a = dpnp.ones((10, 10, 10))
+
+        with assert_raises_regex(ValueError, "no more than 2 dimensions"):
+            dpnp.histogramdd(a)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_finite_range(self, xp):
+        vals = xp.linspace(0.0, 1.0, num=100)
+
+        # normal ranges should be fine
+        _, _ = xp.histogramdd(vals, range=[[0.25, 0.75]])
+        assert_raises(ValueError, xp.histogramdd, vals, range=[[xp.nan, 0.75]])
+        assert_raises(ValueError, xp.histogramdd, vals, range=[[0.25, xp.inf]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range(self, xp):
+        # start of range must be < end of range
+        vals = xp.linspace(0.0, 1.0, num=100)
+        with assert_raises_regex(ValueError, "max must be larger than"):
+            xp.histogramdd(vals, range=[[0.1, 0.01]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
+    def test_infinite_edge(self, xp, inf_val):
+        v = xp.array([0.5, 1.5, inf_val])
+        min, max = v.min(), v.max()
+
+        # both first and last ranges must be finite
+        with assert_raises_regex(
+            ValueError,
+            f"autodetected range of \\[{min}, {max}\\] is not finite",
+        ):
+            xp.histogramdd(v)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unsigned_monotonicity_check(self, xp):
+        # bins must increase monotonically when bins contain unsigned values
+        arr = xp.array([2])
+        bins = xp.array([1, 3, 1], dtype="uint64")
+        with assert_raises(ValueError):
+            xp.histogramdd(arr, bins=bins)
+
+    def test_nan_values(self):
+        one_nan = numpy.array([0, 1, numpy.nan])
+        all_nan = numpy.array([numpy.nan, numpy.nan])
+
+        ione_nan = dpnp.array(one_nan)
+        iall_nan = dpnp.array(all_nan)
+
+        # NaN is not counted
+        expected_hist, expected_edges = numpy.histogramdd(
+            one_nan, bins=[[0, 1]]
+        )
+        result_hist, result_edges = dpnp.histogramdd(ione_nan, bins=[[0, 1]])
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges, expected_edges)
+
+        # NaN is not counted
+        expected_hist, expected_edges = numpy.histogramdd(
+            all_nan, bins=[[0, 1]]
+        )
+        result_hist, result_edges = dpnp.histogramdd(iall_nan, bins=[[0, 1]])
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges, expected_edges)
+
+    def test_bins_another_sycl_queue(self):
+        v = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        bins = dpnp.arange(4, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogramdd(v, bins=[bins])
+
+    def test_sample_array_like(self):
+        v = [0, 1, 2, 3, 4]
+        with assert_raises(ValueError):
+            dpnp.histogramdd(v)
+
+    def test_weights_array_like(self):
+        v = dpnp.arange(5)
+        w = [1, 2, 3, 4, 5]
+        with assert_raises(ValueError):
+            dpnp.histogramdd(v, weights=w)
+
+    def test_weights_another_sycl_queue(self):
+        v = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        w = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogramdd(v, weights=w)
+
+    @pytest.mark.parametrize(
+        "bins_count",
+        [10, 10**2, 10**3, 10**4, 10**5, 10**6],
+    )
+    def test_different_bins_amount(self, bins_count):
+        v = numpy.linspace(0, bins_count, bins_count, dtype=numpy.float32)
+        iv = dpnp.array(v)
+
+        expected_hist, expected_edges = numpy.histogramdd(v, bins=[bins_count])
+        result_hist, result_edges = dpnp.histogramdd(iv, bins=[bins_count])
+        assert_array_equal(result_hist, expected_hist)
+        assert_allclose(result_edges, expected_edges)

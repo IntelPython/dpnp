@@ -34,7 +34,29 @@
 // so sycl.hpp must be included before math_utils.hpp
 #include <sycl/sycl.hpp>
 #include "utils/math_utils.hpp"
+#include "utils/type_utils.hpp"
 // clang-format on
+
+namespace dpctl
+{
+namespace tensor
+{
+namespace type_utils
+{
+// Upstream to dpctl
+template <class T>
+struct is_complex<const std::complex<T>> : std::true_type
+{
+};
+
+template <typename T>
+constexpr bool is_complex_v = is_complex<T>::value;
+
+} // namespace type_utils
+} // namespace tensor
+} // namespace dpctl
+
+namespace type_utils = dpctl::tensor::type_utils;
 
 namespace statistics
 {
@@ -56,24 +78,20 @@ constexpr auto Align(N n, D d)
 template <typename T, sycl::memory_order Order, sycl::memory_scope Scope>
 struct AtomicOp
 {
-    static void add(T &lhs, const T value)
+    static void add(T &lhs, const T &value)
     {
-        sycl::atomic_ref<T, Order, Scope> lh(lhs);
-        lh += value;
-    }
-};
+        if constexpr (type_utils::is_complex_v<T>) {
+            using vT = typename T::value_type;
+            vT *_lhs = reinterpret_cast<vT(&)[2]>(lhs);
+            const vT *_val = reinterpret_cast<const vT(&)[2]>(value);
 
-template <typename T, sycl::memory_order Order, sycl::memory_scope Scope>
-struct AtomicOp<std::complex<T>, Order, Scope>
-{
-    static void add(std::complex<T> &lhs, const std::complex<T> value)
-    {
-        T *_lhs = reinterpret_cast<T(&)[2]>(lhs);
-        const T *_val = reinterpret_cast<const T(&)[2]>(value);
-        sycl::atomic_ref<T, Order, Scope> lh0(_lhs[0]);
-        lh0 += _val[0];
-        sycl::atomic_ref<T, Order, Scope> lh1(_lhs[1]);
-        lh1 += _val[1];
+            AtomicOp<vT, Order, Scope>::add(_lhs[0], _val[0]);
+            AtomicOp<vT, Order, Scope>::add(_lhs[1], _val[1]);
+        }
+        else {
+            sycl::atomic_ref<T, Order, Scope> lh(lhs);
+            lh += value;
+        }
     }
 };
 
@@ -82,17 +100,12 @@ struct Less
 {
     bool operator()(const T &lhs, const T &rhs) const
     {
-        return std::less{}(lhs, rhs);
-    }
-};
-
-template <typename T>
-struct Less<std::complex<T>>
-{
-    bool operator()(const std::complex<T> &lhs,
-                    const std::complex<T> &rhs) const
-    {
-        return dpctl::tensor::math_utils::less_complex(lhs, rhs);
+        if constexpr (type_utils::is_complex_v<T>) {
+            return dpctl::tensor::math_utils::less_complex(lhs, rhs);
+        }
+        else {
+            return std::less{}(lhs, rhs);
+        }
     }
 };
 
@@ -101,23 +114,22 @@ struct IsNan
 {
     static bool isnan(const T &v)
     {
-        if constexpr (std::is_floating_point_v<T> ||
-                      std::is_same_v<T, sycl::half>) {
-            return sycl::isnan(v);
+        if constexpr (type_utils::is_complex_v<T>) {
+            const auto real1 = std::real(v);
+            const auto imag1 = std::imag(v);
+
+            using vT = typename T::value_type;
+
+            return IsNan<vT>::isnan(real1) || IsNan<vT>::isnan(imag1);
+        }
+        else {
+            if constexpr (std::is_floating_point_v<T> ||
+                          std::is_same_v<T, sycl::half>) {
+                return sycl::isnan(v);
+            }
         }
 
         return false;
-    }
-};
-
-template <typename T>
-struct IsNan<std::complex<T>>
-{
-    static bool isnan(const std::complex<T> &v)
-    {
-        T real1 = std::real(v);
-        T imag1 = std::imag(v);
-        return sycl::isnan(real1) || sycl::isnan(imag1);
     }
 };
 

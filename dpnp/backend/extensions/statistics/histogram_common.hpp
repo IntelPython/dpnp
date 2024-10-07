@@ -52,12 +52,15 @@ template <typename T, int Dims>
 struct CachedData
 {
     static constexpr bool const sync_after_init = true;
-    using pointer_type = T *;
+    using Shape = sycl::range<Dims>;
+    using value_type = T;
+    using pointer_type = value_type *;
+    static constexpr auto dims = Dims;
 
-    using ncT = typename std::remove_const<T>::type;
+    using ncT = typename std::remove_const<value_type>::type;
     using LocalData = sycl::local_accessor<ncT, Dims>;
 
-    CachedData(T *global_data, sycl::range<Dims> shape, sycl::handler &cgh)
+    CachedData(T *global_data, Shape shape, sycl::handler &cgh)
     {
         this->global_data = global_data;
         local_data = LocalData(shape, cgh);
@@ -87,9 +90,20 @@ struct CachedData
         return local_data.size();
     }
 
+    T &operator[](const sycl::id<Dims> &id) const
+    {
+        return local_data[id];
+    }
+
+    template <typename = std::enable_if_t<Dims == 1>>
+    T &operator[](const size_t id) const
+    {
+        return local_data[id];
+    }
+
 private:
     LocalData local_data;
-    T *global_data = nullptr;
+    value_type *global_data = nullptr;
 };
 
 template <typename T, int Dims>
@@ -97,7 +111,9 @@ struct UncachedData
 {
     static constexpr bool const sync_after_init = false;
     using Shape = sycl::range<Dims>;
-    using pointer_type = T *;
+    using value_type = T;
+    using pointer_type = value_type *;
+    static constexpr auto dims = Dims;
 
     UncachedData(T *global_data, const Shape &shape, sycl::handler &)
     {
@@ -118,6 +134,17 @@ struct UncachedData
     size_t size() const
     {
         return _shape.size();
+    }
+
+    T &operator[](const sycl::id<Dims> &id) const
+    {
+        return global_data[id];
+    }
+
+    template <typename = std::enable_if_t<Dims == 1>>
+    T &operator[](const size_t id) const
+    {
+        return global_data[id];
     }
 
 private:
@@ -290,9 +317,9 @@ class histogram_kernel;
 
 template <typename T, typename HistImpl, typename Edges, typename Weights>
 void submit_histogram(const T *in,
-                      size_t size,
-                      size_t dims,
-                      uint32_t WorkPI,
+                      const size_t size,
+                      const size_t dims,
+                      const uint32_t WorkPI,
                       const HistImpl &hist,
                       const Edges &edges,
                       const Weights &weights,

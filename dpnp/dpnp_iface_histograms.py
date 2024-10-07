@@ -38,6 +38,7 @@ it contains:
 """
 
 import operator
+from collections.abc import Iterable
 
 import dpctl.utils as dpu
 import numpy
@@ -56,6 +57,7 @@ __all__ = [
     "digitize",
     "histogram",
     "histogram_bin_edges",
+    "histogramdd",
 ]
 
 # range is a keyword argument to many functions, so save the builtin so they can
@@ -63,8 +65,8 @@ __all__ = [
 _range = range
 
 
-def _result_type_for_device(dtype1, dtype2, device):
-    rt = dpnp.result_type(dtype1, dtype2)
+def _result_type_for_device(dtypes, device):
+    rt = dpnp.result_type(*dtypes)
     return map_dtype_to_device(rt, device)
 
 
@@ -72,7 +74,7 @@ def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
     has_fp64 = device.has_aspect_fp64
     has_fp16 = device.has_aspect_fp16
 
-    a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
+    a_bin_dtype = _result_type_for_device([a_dtype, bins_dtype], device)
 
     # histogram implementation doesn't support uint64 as histogram type
     # we can use int64 instead. Result would be correct even in case of overflow
@@ -129,12 +131,18 @@ def _get_outer_edges(a, range):
 
     """
 
+    def _is_finite(a):
+        if dpnp.is_supported_array_type(a):
+            return dpnp.isfinite(a)
+
+        return numpy.isfinite(a)
+
     if range is not None:
         first_edge, last_edge = range
         if first_edge > last_edge:
             raise ValueError("max must be larger than min in range parameter.")
 
-        if not (numpy.isfinite(first_edge) and numpy.isfinite(last_edge)):
+        if not (_is_finite(first_edge) and _is_finite(last_edge)):
             raise ValueError(
                 f"supplied range of [{first_edge}, {last_edge}] is not finite"
             )
@@ -145,7 +153,7 @@ def _get_outer_edges(a, range):
 
     else:
         first_edge, last_edge = a.min(), a.max()
-        if not (dpnp.isfinite(first_edge) and dpnp.isfinite(last_edge)):
+        if not (_is_finite(first_edge) and _is_finite(last_edge)):
             raise ValueError(
                 f"autodetected range of [{first_edge}, {last_edge}] "
                 "is not finite"
@@ -225,6 +233,32 @@ def _get_bin_edges(a, bins, range, usm_type):
         )
         return bin_edges, (first_edge, last_edge, n_equal_bins)
     return bin_edges, None
+
+
+def _normalize_array(a, dtype, usm_type=None):
+    if usm_type is None:
+        usm_type = a.usm_type
+
+    try:
+        return dpnp.asarray(
+            a,
+            dtype=dtype,
+            usm_type=usm_type,
+            sycl_queue=a.sycl_queue,
+            order="C",
+            copy=False,
+        )
+    except ValueError:
+        pass
+
+    return dpnp.asarray(
+        a,
+        dtype=dtype,
+        usm_type=usm_type,
+        sycl_queue=a.sycl_queue,
+        order="C",
+        copy=True,
+    )
 
 
 def _bincount_validate(x, weights, minlength):
@@ -392,20 +426,16 @@ def bincount(x, weights=None, minlength=None):
             "supported types"
         )
 
-    x_casted = dpnp.astype(x, dtype=x_casted_dtype, copy=False)
+    x_casted = _normalize_array(x, dtype=x_casted_dtype)
 
     if weights is not None:
-        weights_casted = dpnp.astype(weights, dtype=ntype_casted, copy=False)
+        weights_casted = _normalize_array(weights, dtype=ntype_casted)
 
     n_casted = _bincount_run_native(
         x_casted, weights_casted, minlength, ntype_casted, usm_type
     )
 
-    n_usm_type = n_casted.usm_type
-    if usm_type != n_usm_type:
-        n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
-    else:
-        n = dpnp.astype(n_casted, ntype, copy=False)
+    n = _normalize_array(n_casted, dtype=ntype, usm_type=usm_type)
 
     return n
 
@@ -613,14 +643,10 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
             "supported types"
         )
 
-    a_casted = dpnp.astype(a, a_bin_dtype, order="C", copy=False)
-    bin_edges_casted = dpnp.astype(
-        bin_edges, a_bin_dtype, order="C", copy=False
-    )
+    a_casted = _normalize_array(a, a_bin_dtype)
+    bin_edges_casted = _normalize_array(bin_edges, a_bin_dtype)
     weights_casted = (
-        dpnp.astype(weights, hist_dtype, order="C", copy=False)
-        if weights is not None
-        else None
+        _normalize_array(weights, hist_dtype) if weights is not None else None
     )
 
     # histogram implementation uses atomics, but atomics doesn't work with
@@ -655,10 +681,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     )
     _manager.add_event_pair(mem_ev, ht_ev)
 
-    if usm_type != n_usm_type:
-        n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
-    else:
-        n = dpnp.astype(n_casted, ntype, copy=False)
+    n = _normalize_array(n_casted, dtype=ntype, usm_type=usm_type)
 
     if density:
         db = dpnp.astype(
@@ -752,3 +775,310 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
     a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
     bin_edges, _ = _get_bin_edges(a, bins, range, usm_type)
     return bin_edges
+
+
+def _histdd_validate_bins(bins):
+    for i, b in enumerate(bins):
+        if numpy.ndim(b) == 0:
+            if b < 1:
+                raise ValueError(
+                    f"'bins[{i}' must be positive, when an integer"
+                )
+        elif numpy.ndim(b) == 1:
+            # will check for monotonicity later
+            pass
+        else:
+            raise ValueError(
+                f"'bins[{i}]' must be either scalar or 1d array-like,"
+                + f" but it is {type(b)}"
+            )
+
+
+def _histdd_check_monotonicity(bins):
+    for i, b in enumerate(bins):
+        if dpnp.any(b[:-1] > b[1:]):
+            raise ValueError(
+                f"bins[{i}] must increase monotonically, when an array"
+            )
+
+
+def _histdd_normalize_bins(bins, ndims):
+    if not isinstance(bins, Iterable):
+        if not isinstance(bins, int):
+            raise ValueError("'bins' must be an integer, when a scalar")
+
+        bins = [bins] * ndims
+
+    if len(bins) != ndims:
+        raise ValueError(
+            f"The dimension of bins ({len(bins)}) must be equal"
+            + f" to the dimension of the sample ({ndims})."
+        )
+
+    _histdd_validate_bins(bins)
+
+    return bins
+
+
+def _histdd_normalize_range(range, ndims):
+    if range is None:
+        range = [None] * ndims
+
+    if len(range) != ndims:
+        raise ValueError(
+            f"range argument length ({len(range)}) must match"
+            + f" number of dimensions ({ndims})"
+        )
+
+    return range
+
+
+def _histdd_make_edges(sample, bins, range, usm_type):
+    bedges_list = []
+    for i, (r, _bins) in enumerate(zip(range, bins)):
+        bedges, _ = _get_bin_edges(sample[:, i], _bins, r, usm_type)
+        bedges_list.append(bedges)
+
+    return bedges_list
+
+
+def _histdd_flatten_binedges(bedges_list, edges_count_list, dtype):
+    queue = bedges_list[0].sycl_queue
+    usm_type = bedges_list[0].usm_type
+    total_edges_size = numpy.sum(edges_count_list)
+
+    bin_edges_flat = dpnp.empty(
+        shape=total_edges_size, dtype=dtype, sycl_queue=queue, usm_type=usm_type
+    )
+
+    offset = numpy.pad(numpy.cumsum(edges_count_list), (1, 0))
+    bin_edges_view_list = []
+    for start, end, bedges in zip(offset[:-1], offset[1:], bedges_list):
+        edges_slice = bin_edges_flat[start:end]
+        bin_edges_view_list.append(edges_slice)
+        edges_slice[:] = bedges
+
+    return bin_edges_flat, bin_edges_view_list
+
+
+def _histdd_run_native(
+    sample, weights, hist_dtype, bin_edges, edges_count_list, usm_type
+):
+    queue = sample.sycl_queue
+
+    hist_shape = [ec - 1 for ec in edges_count_list]
+    bin_edges_count = dpnp.asarray(
+        edges_count_list, dtype=dpnp.int64, sycl_queue=queue
+    )
+
+    n_usm_type = "device" if usm_type == "host" else usm_type
+    n = dpnp.zeros(
+        shape=hist_shape,
+        dtype=hist_dtype,
+        sycl_queue=queue,
+        usm_type=n_usm_type,
+    )
+
+    sample_usm = dpnp.get_usm_ndarray(sample)
+    weights_usm = dpnp.get_usm_ndarray(weights) if weights is not None else None
+    edges_usm = dpnp.get_usm_ndarray(bin_edges)
+    edges_count_usm = dpnp.get_usm_ndarray(bin_edges_count)
+    n_usm = dpnp.get_usm_ndarray(n)
+
+    _manager = dpu.SequentialOrderManager[queue]
+
+    mem_ev, hdd_ev = statistics_ext.histogramdd(
+        sample_usm,
+        edges_usm,
+        edges_count_usm,
+        weights_usm,
+        n_usm,
+        depends=_manager.submitted_events,
+    )
+
+    _manager.add_event_pair(mem_ev, hdd_ev)
+
+    return n
+
+
+def _histdd_hist_dtype(queue, weights):
+    hist_dtype = dpnp.default_float_type(sycl_queue=queue)
+    device = queue.sycl_device
+
+    if weights is not None:
+        # hist_dtype is either float or complex, so it is ok
+        # to calculate it as result type between default_float and
+        # weights.dtype
+        hist_dtype = _result_type_for_device(
+            [hist_dtype, weights.dtype], device
+        )
+
+    return hist_dtype
+
+
+def _histdd_sample_dtype(queue, sample, bin_edges_list):
+    device = queue.sycl_device
+
+    dtypes_ = [bin_edges.dtype for bin_edges in bin_edges_list]
+    dtypes_.append(sample.dtype)
+
+    return _result_type_for_device(dtypes_, device)
+
+
+def _histdd_supported_dtypes(sample, bin_edges_list, weights):
+    queue = sample.sycl_queue
+    device = queue.sycl_device
+
+    hist_dtype = _histdd_hist_dtype(queue, weights)
+    sample_dtype = _histdd_sample_dtype(queue, sample, bin_edges_list)
+
+    supported_types = statistics_ext.histogramdd_dtypes()
+
+    # passing sample_dtype twice as we already
+    # aligned sample_dtype and bins dtypes
+    sample_dtype, hist_dtype = _align_dtypes(
+        sample_dtype, sample_dtype, hist_dtype, supported_types, device
+    )
+
+    return sample_dtype, hist_dtype
+
+
+def _histdd_extract_arrays(sample, weights, bins):
+    all_arrays = [sample]
+    if weights is not None:
+        all_arrays.append(weights)
+
+    if isinstance(bins, Iterable):
+        all_arrays.extend([b for b in bins if dpnp.is_supported_array_type(b)])
+
+    return all_arrays
+
+
+def histogramdd(sample, bins=10, range=None, weights=None, density=False):
+    """
+    Compute the multidimensional histogram of some data.
+
+    For full documentation refer to :obj:`numpy.histogramdd`.
+
+    Parameters
+    ----------
+    sample : {dpnp.ndarray, usm_ndarray}
+        Input (N, D)-shaped array to be histogrammed.
+
+    bins : {sequence, int}, optional
+        The bin specification:
+        * A sequence of arrays describing the monotonically increasing bin
+          edges along each dimension.
+        * The number of bins for each dimension (nx, ny, ... =bins)
+        * The number of bins for all dimensions (nx=ny=...=bins).
+        Default: ``10``
+    range : {None, sequence}, optional
+        A sequence of length D, each an optional (lower, upper) tuple giving
+        the outer bin edges to be used if the edges are not given explicitly in
+        `bins`.
+        An entry of None in the sequence results in the minimum and maximum
+        values being used for the corresponding dimension.
+        None is equivalent to passing a tuple of D None values.
+        Default: ``None``
+    weights : {dpnp.ndarray, usm_ndarray}, optional
+        An (N,)-shaped array of values `w_i` weighing each sample
+        `(x_i, y_i, z_i, ...)`.
+        Weights are normalized to 1 if density is True. If density is False,
+        the values of the returned histogram are equal to the sum of the
+        weights belonging to the samples falling into each bin.
+        Default: ``None``
+    density : {bool}, optional
+        If ``False``, the default, returns the number of samples in each bin.
+        If ``True``, returns the probability *density* function at the bin,
+        ``bin_count / sample_count / bin_volume``.
+        Default: ``False``
+
+    Returns
+    -------
+    H : {dpnp.ndarray}
+        The multidimensional histogram of sample x. See density and weights
+        for the different possible semantics.
+    edges : {list of ndarrays}
+        A list of D arrays describing the bin edges for each dimension.
+
+    See Also
+    --------
+    :obj:`dpnp.histogram`: 1-D histogram
+    :obj:`dpnp.histogram2d`: 2-D histogram
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> r = np.random.normal(size=(100,3))
+    >>> H, edges = np.histogramdd(r, bins = (5, 8, 4))
+    >>> H.shape, edges[0].size, edges[1].size, edges[2].size
+    ((5, 8, 4), 6, 9, 5)
+
+    """
+
+    if not dpnp.is_supported_array_type(sample):
+        raise ValueError("sample must be dpnp.ndarray or usm_ndarray")
+
+    if weights is not None and not dpnp.is_supported_array_type(weights):
+        raise ValueError("weights must be dpnp.ndarray or usm_ndarray")
+
+    if sample.ndim == 0 and sample.size == 1:
+        sample = dpnp.reshape(sample, (1, 1))
+    elif sample.ndim == 1:
+        sample = dpnp.reshape(sample, (sample.size, 1))
+    elif sample.ndim > 2:
+        raise ValueError("sample must have no more than 2 dimensions")
+
+    ndim = sample.shape[1] if sample.size > 0 else 1
+
+    _arrays = _histdd_extract_arrays(sample, weights, bins)
+    usm_type = dpu.get_coerced_usm_type([a.usm_type for a in _arrays])
+    queue = dpu.get_execution_queue([a.sycl_queue for a in _arrays])
+
+    assert usm_type is not None
+
+    if queue is None:
+        raise ValueError("all arrays must be allocated on the same SYCL queue")
+
+    bins = _histdd_normalize_bins(bins, ndim)
+    range = _histdd_normalize_range(range, ndim)
+
+    bin_edges_list = _histdd_make_edges(sample, bins, range, usm_type)
+    sample_dtype, hist_dtype = _histdd_supported_dtypes(
+        sample, bin_edges_list, weights
+    )
+
+    edges_count_list = [bin_edges.size for bin_edges in bin_edges_list]
+    bin_edges_flat, bin_edges_view_list = _histdd_flatten_binedges(
+        bin_edges_list, edges_count_list, sample_dtype
+    )
+
+    _histdd_check_monotonicity(bin_edges_view_list)
+
+    sample_ = _normalize_array(sample, sample_dtype)
+    weights_ = (
+        _normalize_array(weights, hist_dtype) if weights is not None else None
+    )
+    n = _histdd_run_native(
+        sample_,
+        weights_,
+        hist_dtype,
+        bin_edges_flat,
+        edges_count_list,
+        usm_type,
+    )
+
+    expexted_hist_dtype = _histdd_hist_dtype(queue, weights)
+    n = _normalize_array(n, expexted_hist_dtype, usm_type)
+
+    if density:
+        # calculate the probability density function
+        s = n.sum()
+        for i in _range(ndim):
+            diff = dpnp.diff(bin_edges_view_list[i])
+            shape = [1] * ndim
+            shape[i] = diff.size
+            n = n / dpnp.reshape(diff, shape=shape)
+        n /= s
+
+    return n, bin_edges_view_list
