@@ -128,7 +128,7 @@ def _get_empty_array(
 
     if order is None:
         order = "K"
-    elif order in "aA":
+    if order in "aA":
         if a.flags.fnc:
             order = "F"
         else:
