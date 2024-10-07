@@ -63,6 +63,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPReal,
     DPNPRound,
     DPNPUnaryFunc,
+    acceptance_fn_gcd_lcm,
     acceptance_fn_negative,
     acceptance_fn_positive,
     acceptance_fn_sign,
@@ -2020,6 +2021,7 @@ gcd = DPNPBinaryFunc(
     ufi._gcd_result_type,
     ufi._gcd,
     _GCD_DOCSTRING,
+    acceptance_fn=acceptance_fn_gcd_lcm,
 )
 
 
@@ -2379,6 +2381,7 @@ lcm = DPNPBinaryFunc(
     ufi._lcm_result_type,
     ufi._lcm,
     _LCM_DOCSTRING,
+    acceptance_fn=acceptance_fn_gcd_lcm,
 )
 
 
