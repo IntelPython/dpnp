@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+35.g57512f19879 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+40.g229421b9640 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4c83132f"></script>
+        <script src="../../_static/documentation_options.js?v=8314fb69"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+35.g57512f19879
+                0.17.0dev0+40.g229421b9640
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -217,13 +217,13 @@
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
-    <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">in</span> <span class="s2">&quot;aA&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">:</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
-    <span class="k">elif</span> <span class="n">order</span> <span class="o">==</span> <span class="s2">&quot;K&quot;</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">in</span> <span class="s2">&quot;kK&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_shape</span><span class="p">)</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
         <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span><span class="p">:</span>
@@ -233,6 +233,10 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">strides</span> <span class="o">=</span> <span class="n">_get_strides_for_order_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_shape</span><span class="p">)</span>
             <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;cfCF&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;order must be None, &#39;C&#39;, &#39;F&#39;, &#39;A&#39;, or &#39;K&#39; (got &#39;</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
         <span class="n">_shape</span><span class="p">,</span>
@@ -1423,6 +1427,7 @@
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
@@ -2302,6 +2307,7 @@
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
@@ -3365,6 +3371,7 @@
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
@@ -4029,6 +4036,7 @@
 <span class="sd">        input array is allocated.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
