@@ -143,6 +143,10 @@ def _get_empty_array(
         else:
             strides = _get_strides_for_order_k(a, _shape)
             order = "C"
+    elif order not in "cfCF":
+        raise ValueError(
+            f"order must be None, 'C', 'F', 'A', or 'K' (got '{order}')"
+        )
 
     return dpnp_array(
         _shape,
