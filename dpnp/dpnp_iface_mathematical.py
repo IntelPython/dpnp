@@ -1988,6 +1988,12 @@ For full documentation refer to :obj:`numpy.gcd`.
 
 Parameters
 ----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 x : {dpnp.ndarray, usm_ndarray}
     An array of floats to be rounded.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
@@ -2348,8 +2354,12 @@ For full documentation refer to :obj:`numpy.lcm`.
 
 Parameters
 ----------
-x : {dpnp.ndarray, usm_ndarray}
-    An array of floats to be rounded.
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
