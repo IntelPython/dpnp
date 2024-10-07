@@ -500,6 +500,32 @@ def test_matmul(usm_type_x, usm_type_y, shape_pair):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((4,), (4,)),  # call_flag: dot
+        ((3, 1), (3, 1)),
+        ((2, 0), (2, 0)),  # zero-size inputs, 1D output
+        ((3, 0, 4), (3, 0, 4)),  # zero-size output
+        ((3, 4), (3, 4)),  # call_flag: vecdot
+    ],
+)
+def test_vecdot(usm_type_x, usm_type_y, shape_pair):
+    shape1, shape2 = shape_pair
+    x = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    y = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    x = dp.array(x, usm_type=usm_type_x)
+    y = dp.array(y, usm_type=usm_type_y)
+    z = dp.vecdot(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_meshgrid(usm_type_x, usm_type_y):
     x = dp.arange(100, usm_type=usm_type_x)
     y = dp.arange(100, usm_type=usm_type_y)

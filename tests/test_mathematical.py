@@ -3929,9 +3929,8 @@ class TestMatmul:
         ],
     )
     def test_matmul_out_0D(self, out_shape):
-        # for matmul of 0-D arrays with out keyword,
-        # NumPy repeats the data to match the shape
-        # of output array
+        # for matmul of 1-D arrays, output is 0-D and if out keyword is given
+        # NumPy repeats the data to match the shape of output array
         a = numpy.arange(3)
         b = dpnp.asarray(a)
 
@@ -4093,15 +4092,8 @@ class TestMatmulInvalidCases:
             dpnp.matmul(a1, a2, subok=False)
 
         with pytest.raises(NotImplementedError):
-            dpnp.matmul(
-                a1, a2, signature=(dpnp.float32, dpnp.float32, dpnp.float32)
-            )
-
-        def custom_error_callback(err):
-            print("Custom error callback triggered with error:", err)
-
-        with pytest.raises(NotImplementedError):
-            dpnp.matmul(a1, a2, extobj=[32, 1, custom_error_callback])
+            signature = (dpnp.float32, dpnp.float32, dpnp.float32)
+            dpnp.matmul(a1, a2, signature=signature)
 
         with pytest.raises(NotImplementedError):
             dpnp.matmul(a1, a2, axis=2)
