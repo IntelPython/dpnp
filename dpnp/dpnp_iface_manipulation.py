@@ -2225,7 +2225,9 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
     elif order in "aA":
         order = "F" if a.flags.fnc else "C"
     elif order not in "cfCF":
-        raise ValueError(f"order must be None, 'C', 'F', or 'A' (got {order})")
+        raise ValueError(
+            f"order must be None, 'C', 'F', or 'A' (got '{order}')"
+        )
 
     usm_a = dpnp.get_usm_ndarray(a)
     usm_res = dpt.reshape(usm_a, shape=shape, order=order, copy=copy)

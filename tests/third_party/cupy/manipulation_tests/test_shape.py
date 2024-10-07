@@ -2,6 +2,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -93,21 +94,19 @@ class TestReshape:
             with pytest.raises(ValueError):
                 a.reshape((-1, 0))
 
-    @pytest.mark.skip("array.base is not implemented")
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_reshape_zerosize(self, xp):
         a = xp.zeros((0,))
         b = a.reshape((0,))
-        assert b.base is a
+        # assert b.base is a
         return b
 
-    @pytest.mark.skip("array.base is not implemented")
     @testing.for_orders("CFA")
-    @testing.numpy_cupy_array_equal(strides_check=True)
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_reshape_zerosize2(self, xp, order):
         a = xp.zeros((2, 0, 3))
         b = a.reshape((5, 0, 4), order=order)
-        assert b.base is a
+        # assert b.base is a
         return b
 
     @testing.for_orders("CFA")
