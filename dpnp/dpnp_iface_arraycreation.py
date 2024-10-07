@@ -127,13 +127,13 @@ def _get_empty_array(
     )
 
     if order is None:
-        order = "C"
-    elif order == "A":
+        order = "K"
+    elif order in "aA":
         if a.flags.fnc:
             order = "F"
         else:
             order = "C"
-    elif order == "K":
+    elif order in "kK":
         if len(_shape) != a.ndim:
             order = "C"
         elif a.flags.f_contiguous:
@@ -1301,6 +1301,7 @@ def empty_like(
         input array is allocated.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
+        ``order=None`` is an alias for ``order="K"``.
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
@@ -2156,6 +2157,7 @@ def full_like(
         input array is allocated.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
+        ``order=None`` is an alias for ``order="K"``.
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
@@ -3195,6 +3197,7 @@ def ones_like(
         input array is allocated.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
+        ``order=None`` is an alias for ``order="K"``.
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
@@ -3838,6 +3841,7 @@ def zeros_like(
         input array is allocated.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
+        ``order=None`` is an alias for ``order="K"``.
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
