@@ -69,7 +69,6 @@ Norms and other numbers
    dpnp.trace
    dpnp.linalg.trace (Array API compatible)
 
-
 Solving linear equations
 --------------------------
 
@@ -88,6 +87,7 @@ Other matrix operations
 -----------------------
 .. autosummary::
    :toctree: generated/
+   :nosignatures:
 
    dpnp.diagonal
    dpnp.linalg.diagonal (Array API compatible)
@@ -97,5 +97,6 @@ Exceptions
 ----------
 .. autosummary::
    :toctree: generated/
+   :nosignatures:
 
    dpnp.linalg.linAlgError
