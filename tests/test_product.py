@@ -5,6 +5,7 @@ from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
@@ -1289,3 +1290,147 @@ class TestVdot:
         # The second array should be of size one
         with pytest.raises(ValueError):
             dpnp.vdot(b, a)
+
+
+@testing.with_requires("numpy>=2.0")
+class TestVecdot:
+    def setup_method(self):
+        numpy.random.seed(42)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), (4,)),
+            ((3, 4), (3, 4)),
+            ((1, 4), (3, 4)),
+            ((4,), (3, 4)),
+            ((3, 4), (1, 4)),
+            ((3, 4), (4,)),
+            ((1, 4, 5), (3, 1, 5)),
+        ],
+    )
+    def test_basic(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        a = numpy.array(
+            numpy.random.uniform(-5, 5, size1), dtype=dtype
+        ).reshape(shape1)
+        b = numpy.array(
+            numpy.random.uniform(-5, 5, size2), dtype=dtype
+        ).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), (4,)),
+            ((3, 4), (3, 4)),
+            ((1, 4), (3, 4)),
+            ((4,), (3, 4)),
+            ((3, 4), (1, 4)),
+            ((3, 4), (4,)),
+            ((1, 4, 5), (3, 1, 5)),
+        ],
+    )
+    def test_complex(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        x11 = numpy.random.uniform(-5, 5, size1)
+        x12 = numpy.random.uniform(-5, 5, size1)
+        x21 = numpy.random.uniform(-5, 5, size2)
+        x22 = numpy.random.uniform(-5, 5, size2)
+        a = numpy.array(x11 + 1j * x12, dtype=dtype).reshape(shape1)
+        b = numpy.array(x21 + 1j * x22, dtype=dtype).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [0, 1, 2, -1, -2, -3])
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), (4, 4, 4)),
+            ((3, 4, 5), (3, 4, 5)),
+        ],
+    )
+    def test_axis(self, axis, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        x11 = numpy.random.uniform(-5, 5, size1)
+        x12 = numpy.random.uniform(-5, 5, size1)
+        x21 = numpy.random.uniform(-5, 5, size2)
+        x22 = numpy.random.uniform(-5, 5, size2)
+        a = numpy.array(x11 + 1j * x12, dtype=numpy.complex64).reshape(shape1)
+        b = numpy.array(x21 + 1j * x22, dtype=numpy.complex64).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("stride", [2, -1, -2])
+    def test_strided(self, stride):
+        a = numpy.arange(100).reshape(10, 10)
+        b = numpy.arange(100).reshape(10, 10)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia[::stride, ::stride], ib[::stride, ::stride])
+        expected = numpy.vecdot(a[::stride, ::stride], b[::stride, ::stride])
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes())
+    @pytest.mark.parametrize("dtype2", get_all_dtypes())
+    def test_input_dtype_matrix(self, dtype1, dtype2):
+        x1 = numpy.random.uniform(-5, 5, 10)
+        x2 = numpy.random.uniform(-5, 5, 10)
+        a = numpy.array(x1, dtype=dtype1).reshape(2, 5)
+        b = numpy.array(x2, dtype=dtype2).reshape(2, 5)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [0, 1, 2, -1, -2, -3])
+    def test_linalg_vecdot(self, axis):
+        x11 = numpy.random.uniform(-5, 5, 4)
+        x12 = numpy.random.uniform(-5, 5, 4)
+        x21 = numpy.random.uniform(-5, 5, 64)
+        x22 = numpy.random.uniform(-5, 5, 64)
+        a = numpy.array(x11 + 1j * x12, dtype=numpy.complex64)
+        b = numpy.array(x21 + 1j * x22, dtype=numpy.complex64).reshape(4, 4, 4)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.linalg.vecdot(ia, ib)
+        expected = numpy.linalg.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    def test_error(self):
+        a = dpnp.ones(25)
+        b = dpnp.ones(24)
+        # size of input arrays differ
+        with pytest.raises(ValueError):
+            dpnp.vecdot(a, b)
+
+        # The second array should be of size one
+        with pytest.raises(ValueError):
+            dpnp.vecdot(b, a)

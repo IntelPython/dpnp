@@ -13,9 +13,12 @@ Matrix and vector products
    dpnp.dot
    dpnp.linalg.multi_dot
    dpnp.vdot
+   dpnp.vecdot
+   dpnp.linalg.vecdot
    dpnp.inner
    dpnp.outer
    dpnp.matmul
+   dpnp.linalg.matmul
    dpnp.tensordot
    dpnp.einsum
    dpnp.einsum_path
@@ -58,7 +61,6 @@ Norms and other numbers
    dpnp.linalg.matrix_rank
    dpnp.linalg.slogdet
    dpnp.trace
-
 
 Solving linear equations
 --------------------------

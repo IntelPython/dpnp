@@ -28,7 +28,10 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_tuple
+from dpctl.tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
@@ -36,7 +39,7 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul"]
+__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul", "dpnp_vecdot"]
 
 
 def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
@@ -187,7 +190,7 @@ def _define_contig_flag(x):
     return flag, x_is_c_contiguous, x_is_f_contiguous
 
 
-def _define_dim_flags(x, pos):
+def _define_dim_flags(x, axis):
     """
     Define useful flags for the main calculation in dpnp_matmul.
     x_is_1D: `x` is 1D array or inherently 1D (all dimensions are equal to one
@@ -200,14 +203,14 @@ def _define_dim_flags(x, pos):
     if x.shape = (3, 4, 1, 2), then x_base_is_1D = True
     """
 
-    index = -1 if pos == 0 else -2
     x_shape = x.shape
     x_ndim = x.ndim
     x_is_1D = x_ndim == 1
     if numpy.prod(x_shape) != 0:
+        # if the first condition is valid, the 2nd condition is not checked
         # the 2nd condition is only expected to be checked for
-        # ND-arrays (N>1) since index is in [-2, -1]
-        x_is_1D = x_is_1D or numpy.prod(x_shape) == x_shape[index]
+        # ND-arrays (N>1) since axis could be -2
+        x_is_1D = x_is_1D or numpy.prod(x_shape) == x_shape[axis]
 
     x_is_2D = False
     if not x_is_1D:
@@ -255,8 +258,8 @@ def _get_result_shape(x1, x2, out, np_flag):
             _shape_error(x1_shape[-1], x2_shape[-1], None, err_msg=0)
         result_shape = x1_shape[:-1]
     else:  # at least 2D
-        x1_is_2D, x1_is_1D, _ = _define_dim_flags(x1, pos=0)
-        x2_is_2D, x2_is_1D, _ = _define_dim_flags(x2, pos=1)
+        x1_is_2D, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
+        x2_is_2D, x2_is_1D, _ = _define_dim_flags(x2, axis=-2)
 
         if x1_shape[-1] != x2_shape[-2]:
             _shape_error(x1_shape[-1], x2_shape[-2], None, err_msg=0)
@@ -319,6 +322,97 @@ def _get_result_shape(x1, x2, out, np_flag):
                         _shape_error(
                             out_shape[:-2], result_shape[:-2], None, err_msg=3
                         )
+
+    return x1, x2, result_shape
+
+
+def _get_result_shape2(x1, x2, out, np_flag, axis):
+    """
+    Three task are completed in this function:
+        - Get the shape of the result array.
+        - Validate the shape of output array, if provided.
+        - Align the input arrays if they could be broadcast together.
+    """
+    x1_ndim = x1.ndim
+    x2_ndim = x2.ndim
+
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+
+    if x1_ndim == 0:
+        raise ValueError(
+            "Input array 0 does not have enough dimensions (has 0, but requires at least 1)"
+        )
+    if x2_ndim == 0:
+        raise ValueError(
+            "Input array 1 does not have enough dimensions (has 0, but requires at least 1)"
+        )
+
+    if x1_ndim == 1 and x2_ndim == 1:
+        if x1_shape[-1] != x2_shape[-1]:
+            _shape_error(x1_shape[-1], x2_shape[-1], None, err_msg=0)
+        result_shape = ()
+    elif x1_ndim == 1:
+        if x1_shape[-1] != x2_shape[axis]:
+            _shape_error(x1_shape[-1], x2_shape[axis], None, err_msg=0)
+        axis = normalize_axis_index(axis, x2_ndim, "axis")
+        result_shape = x2_shape[:axis] + x2_shape[axis + 1 :]
+    elif x2_ndim == 1:
+        if x1_shape[axis] != x2_shape[-1]:
+            _shape_error(x1_shape[axis], x2_shape[-1], None, err_msg=0)
+        axis = normalize_axis_index(axis, x1_ndim, "axis")
+        result_shape = x1_shape[:axis] + x1_shape[axis + 1 :]
+    else:  # at least 2D
+        _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
+        _, x2_is_1D, _ = _define_dim_flags(x2, axis=-2)
+
+        if x1_shape[axis] != x2_shape[axis]:
+            _shape_error(x1_shape[axis], x2_shape[axis], None, err_msg=0)
+
+        if x1_ndim != x2_ndim:
+            diff = abs(x1_ndim - x2_ndim)
+            if x1_ndim < x2_ndim:
+                # VAHID: use broadcasting to align the shapes
+                x1 = dpnp.reshape(x1, ((1,) * diff + x1.shape))
+                x1_shape = x1.shape
+            else:
+                x2 = dpnp.reshape(x2, ((1,) * diff + x2.shape))
+                x2_shape = x2.shape
+
+        # examining the option to align inputs when their
+        # shapes differ but the shape of one of them is 1
+        # in that dimension (similar to braodcasting concept)
+        axis = normalize_axis_index(axis, x1_ndim, "axis")
+        tmp_shape = list(x1_shape[:axis] + x1_shape[axis + 1 :])
+        for i in range(len(tmp_shape)):
+            if x1_shape[i] != x2_shape[i]:
+                if x1_shape[i] == 1:
+                    tmp_shape[i] = x2_shape[i]
+                    # If array `x1` is inherently 1D or 2D, there's
+                    # no need to duplicate the data for the dimension
+                    # with shape equal to one; gemv_batch or gemm_batch
+                    # can handle it by using zero as the stride between
+                    # different `x1` matrices
+                    if not x1_is_1D:
+                        x1 = dpnp.repeat(x1, x2_shape[i], axis=i)
+                elif x2_shape[i] == 1:
+                    if not x2_is_1D:
+                        x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
+                else:
+                    _shape_error(x1_shape, x2_shape, None, err_msg=2)
+
+        result_shape = tuple(tmp_shape)
+
+    if out is not None:
+        out_shape = out.shape
+        if out_shape != result_shape and not np_flag:
+            len_out = len(out_shape)
+            len_res = len(result_shape)
+            if len_out != len_res:
+                _shape_error(len_out, len_res, None, err_msg=4)
+            for i in range(len_out):
+                if out_shape[i] != result_shape[i]:
+                    _shape_error(out_shape, result_shape, None, err_msg=3)
 
     return x1, x2, result_shape
 
@@ -709,10 +803,8 @@ def dpnp_matmul(
     """
     Return the matrix product of two arrays.
 
-    The main calculation is done by calling an extension function
-    for BLAS library of OneMKL. Depending on dimension of `x1` and `x2` arrays,
-    it will be either ``gemm`` (for one- and two-dimentional arrays) or
-    ``gemm_batch``(for others).
+    The main calculation is performed by calling an extension function
+    for BLAS library of OneMKL.
 
     """
 
@@ -726,7 +818,7 @@ def dpnp_matmul(
             )
 
     if order in ["a", "A"]:
-        if x1.flags.f_contiguous and x2.flags.f_contiguous:
+        if x1.flags.fnc and x2.flags.fnc:
             order = "F"
         else:
             order = "C"
@@ -772,8 +864,8 @@ def dpnp_matmul(
     transpose = False
     x1_shape = x1.shape
     x2_shape = x2.shape
-    x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, pos=0)
-    x2_is_2D, x2_is_1D, x2_base_is_1D = _define_dim_flags(x2, pos=1)
+    x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, axis=-1)
+    x2_is_2D, x2_is_1D, x2_base_is_1D = _define_dim_flags(x2, axis=-2)
 
     # TODO: investigate usage of syrk function from BLAS in
     # case of a.T @ a and a @ a.T to gain performance.
@@ -943,6 +1035,150 @@ def dpnp_matmul(
 
     if compute_dtype != res_dtype:
         result = dpnp.astype(result, res_dtype, copy=False)
+
+    if out is None:
+        if axes is not None:
+            # Move the data to the appropriate axes of the result array
+            if len(axes_res) == 2:
+                result = dpnp.moveaxis(result, (-2, -1), axes_res)
+            elif len(axes_res) == 1:
+                result = dpnp.moveaxis(result, (-1,), axes_res)
+            return dpnp.ascontiguousarray(result)
+
+        # If `order` was not passed as default
+        # we need to update it to match the passed `order`.
+        if order not in ["k", "K"]:
+            return dpnp.asarray(result, order=order)
+        # dpnp.ascontiguousarray changes 0-D array to 1-D array
+        if result.ndim == 0:
+            return result
+        return dpnp.ascontiguousarray(result)
+
+    result = dpnp.get_result_array(result, out, casting=casting)
+    if axes is not None and out is result:
+        # out and out_orig contain the same data but they have different shape
+        return out_orig
+    return result
+
+
+def dpnp_vecdot(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    casting="same_kind",
+    order="K",
+    dtype=None,
+    axes=None,
+    axis=-1,
+):
+    """Vector dot product of two arrays."""
+
+    dpnp.check_supported_arrays_type(x1, x2)
+    res_usm_type, exec_q = get_usm_allocations([x1, x2])
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+    if order in ["a", "A"]:
+        if x1.flags.fnc and x2.flags.fnc:
+            order = "F"
+        else:
+            order = "C"
+
+    x1_ndim = x1.ndim
+    x2_ndim = x2.ndim
+    if axes is not None:
+        axes = _validate_axes(x1, x2, axes)
+
+        axes_x1, axes_x2, axes_res = axes
+        axes_x1 = normalize_axis_tuple(axes_x1, x1_ndim, "axis")
+        axes_x2 = normalize_axis_tuple(axes_x2, x2_ndim, "axis")
+
+        # Move the axes that are going to be used in matrix product,
+        # to the end of "x1" and "x2"
+        x1 = dpnp.moveaxis(x1, axes_x1, (-2, -1)) if x1_ndim != 1 else x1
+        x2 = dpnp.moveaxis(x2, axes_x2, (-2, -1)) if x2_ndim != 1 else x2
+
+        out_orig = out
+        if out is not None:
+            # out that is passed to the backend should have the correct shape
+            if len(axes_res) == 2:
+                out = dpnp.moveaxis(out, axes_res, (-2, -1))
+            elif len(axes_res) == 1:
+                out = dpnp.moveaxis(out, axes_res, (-1,))
+
+    # With these conditions, the result is a 0D array. However,
+    # NumPy allows out to have any shape and the result is expanded to it
+    NumPy_special_behavior = (
+        out is not None and x1_ndim == 1 and x2_ndim == 1 and out.shape != ()
+    )
+
+    x1, x2, result_shape = _get_result_shape2(
+        x1, x2, out, NumPy_special_behavior, axis
+    )
+
+    # Determine the appropriate data types
+    _, res_dtype = _compute_res_dtype(
+        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+    )
+
+    call_flag = None
+    x1_shape = x1.shape
+    # x2_shape = x2.shape
+    _, x1_is_1D, _ = _define_dim_flags(x1, axis=axis)
+    _, x2_is_1D, _ = _define_dim_flags(x2, axis=axis)
+
+    if numpy.prod(result_shape) == 0 or x1.size == 0 or x2.size == 0:
+        result = _create_result_array(
+            x1,
+            x2,
+            out,
+            result_shape,
+            res_dtype,
+            res_usm_type,
+            exec_q,
+        )
+        if x1.size == 0 or x2.size == 0:
+            result.fill(0)
+    elif x1_shape[axis] == 1:
+        call_flag = "multiply"
+    elif x1_is_1D and x2_is_1D:
+        call_flag = "dot"
+        # arrays are inehrently 1D, make them 1D
+        x1 = dpnp.ravel(x1)
+        x2 = dpnp.ravel(x2)
+    else:
+        # TODO: if a batch version of MKL dot is implemented, can be used here
+        call_flag = "vecdot"
+        # res_shape = result_shape
+
+    # dispatch to proper function call
+    if call_flag == "multiply":
+        result = dpnp.multiply(x1, x2)
+    elif call_flag == "dot":
+        if out is not None and out.shape != ():
+            result = dpnp_dot(x1, x2, out=None, conjugate=True)
+        else:
+            result = dpnp_dot(x1, x2, out=out, conjugate=True)
+    else:  # call_flag == "vecdot"
+        if axis >= 0:
+            # dpt.vecdot only works with negative axis
+            axis = axis - x1_ndim
+        x1_usm = dpnp.get_usm_ndarray(x1)
+        x2_usm = dpnp.get_usm_ndarray(x2)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.vecdot(x1_usm, x2_usm, axis=axis)
+        )
+
+    if NumPy_special_behavior:
+        result = dpnp.tile(result, out.shape)
+    elif result.shape != result_shape:
+        result = dpnp.reshape(result, result_shape)
 
     if out is None:
         if axes is not None:

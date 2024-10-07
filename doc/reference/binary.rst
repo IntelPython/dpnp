@@ -18,7 +18,6 @@ Element-wise bit operations
    dpnp.left_shift
    dpnp.right_shift
 
-
 Bit packing
 -----------
 
@@ -28,7 +27,6 @@ Bit packing
 
    dpnp.packbits
    dpnp.unpackbits
-
 
 Output formatting
 -----------------
