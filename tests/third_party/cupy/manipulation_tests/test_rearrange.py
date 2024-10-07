@@ -41,6 +41,8 @@ class TestRoll(unittest.TestCase):
 
 
 class TestRollTypeError(unittest.TestCase):
+    # TODO: update, once dpctl#1857 is resolved
+    @testing.with_requires("numpy<2.1.2")  # done in numpy#27437
     def test_roll_invalid_shift(self):
         for xp in (numpy, cupy):
             x = testing.shaped_arange((5, 2), xp)
