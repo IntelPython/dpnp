@@ -805,6 +805,7 @@ class TestPad:
         with pytest.raises(ValueError, match=match):
             dpnp.pad(a, 1, mode, stat_length=(1, 0))
 
+    @testing.with_requires("numpy>=2.0")  # numpy<2 has a bug, numpy-gh-25963
     @pytest.mark.parametrize("pad_width", [2, 3, 4, [1, 10], [15, 2], [45, 10]])
     @pytest.mark.parametrize("mode", ["reflect", "symmetric"])
     @pytest.mark.parametrize("reflect_type", ["even", "odd"])
