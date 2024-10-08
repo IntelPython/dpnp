@@ -72,6 +72,7 @@ __all__ = [
     "flipud",
     "hsplit",
     "hstack",
+    "matrix_transpose",
     "moveaxis",
     "ndim",
     "permute_dims",
@@ -1749,6 +1750,53 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     if arrs and arrs[0].ndim == 1:
         return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
     return dpnp.concatenate(arrs, axis=1, dtype=dtype, casting=casting)
+
+
+def matrix_transpose(x, /):
+    """
+    Transposes a matrix (or a stack of matrices) ``x``.
+
+    For full documentation refer to :obj:`numpy.matrix_transpose`.
+
+    Parameters
+    ----------
+    x : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Input array with ``x.ndim >= 2` and whose two innermost
+        dimensions form ``MxN`` matrices.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the transpose for each matrix and having shape
+        (..., N, M).
+
+    See Also
+    --------
+    :obj:`dpnp.transpose` : Returns an array with axes transposed.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.matrix_transpose(a)
+    array([[1, 3],
+           [2, 4]])
+
+    >>> b = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+    >>> np.matrix_transpose(b)
+    array([[[1, 3],
+            [2, 4]],
+           [[5, 7],
+            [6, 8]]])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+    if x.ndim < 2:
+        raise ValueError(
+            f"Input array must be at least 2-dimensional, but it is {x.ndim}"
+        )
+    return dpnp.swapaxes(x, -1, -2)
 
 
 def moveaxis(a, source, destination):
