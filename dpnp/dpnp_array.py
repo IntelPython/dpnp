@@ -108,6 +108,14 @@ class dpnp_array:
         """View of the transposed array."""
         return self.transpose()
 
+    @property
+    def mT(self):
+        """View of the matrix transposed array."""
+        if self.ndim < 2:
+            raise ValueError("matrix transpose with ndim < 2 is undefined")
+
+        return self.swapaxes(-1, -2)
+
     def to_device(self, target_device):
         """Transfer array to target device."""
 
