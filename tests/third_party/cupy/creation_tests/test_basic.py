@@ -82,7 +82,7 @@ class TestBasic:
         del a
         cupy.get_default_memory_pool().free_all_blocks()
 
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like(self, xp, dtype, order):
@@ -91,7 +91,7 @@ class TestBasic:
         b.fill(0)
         return b
 
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_contiguity(self, xp, dtype, order):
@@ -104,7 +104,7 @@ class TestBasic:
             assert b.flags.c_contiguous
         return b
 
-    @testing.for_orders("CF")
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_contiguity2(self, xp, dtype, order):
@@ -118,7 +118,7 @@ class TestBasic:
             assert b.flags.f_contiguous
         return b
 
-    @testing.for_orders("CF")
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_contiguity3(self, xp, dtype, order):
@@ -138,7 +138,6 @@ class TestBasic:
             assert not b.flags.f_contiguous
         return b
 
-    @pytest.mark.skip("order 'K' is not supported")
     @testing.for_all_dtypes()
     def test_empty_like_K_strides(self, dtype):
         # test strides that are both non-contiguous and non-descending
@@ -154,7 +153,10 @@ class TestBasic:
         bg.fill(0)
 
         # make sure NumPy and CuPy strides agree
-        assert b.strides == bg.strides
+        scaled_numpy_strides = b.strides
+        scale = b.itemsize
+        numpy_strides = tuple(i / scale for i in scaled_numpy_strides)
+        assert numpy_strides == bg.strides
         return
 
     @testing.with_requires("numpy>=1.19")
@@ -165,10 +167,9 @@ class TestBasic:
             with pytest.raises(ValueError):
                 xp.empty_like(a, order="Q")
 
-    @pytest.mark.skip("subok keyword is not supported")
     def test_empty_like_subok(self):
         a = testing.shaped_arange((2, 3, 4), cupy)
-        with pytest.raises(TypeError):
+        with pytest.raises(NotImplementedError):
             cupy.empty_like(a, subok=True)
 
     @pytest.mark.skip("strides for zero sized array is different")
@@ -225,17 +226,16 @@ class TestBasic:
         b_strides = tuple(x * b.itemsize for x in b.strides)
         assert b_strides == a.strides
 
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_zeros_like(self, xp, dtype, order):
         a = xp.ndarray((2, 3, 4), dtype=dtype)
         return xp.zeros_like(a, order=order)
 
-    @pytest.mark.skip("subok keyword is not supported")
     def test_zeros_like_subok(self):
         a = cupy.ndarray((2, 3, 4))
-        with pytest.raises(TypeError):
+        with pytest.raises(NotImplementedError):
             cupy.zeros_like(a, subok=True)
 
     @testing.for_CF_orders()
@@ -244,17 +244,16 @@ class TestBasic:
     def test_ones(self, xp, dtype, order):
         return xp.ones((2, 3, 4), dtype=dtype, order=order)
 
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_ones_like(self, xp, dtype, order):
         a = xp.ndarray((2, 3, 4), dtype=dtype)
         return xp.ones_like(a, order=order)
 
-    @pytest.mark.skip("subok keyword is not supported")
     def test_ones_like_subok(self):
         a = cupy.ndarray((2, 3, 4))
-        with pytest.raises(TypeError):
+        with pytest.raises(NotImplementedError):
             cupy.ones_like(a, subok=True)
 
     @testing.for_CF_orders()
@@ -278,7 +277,7 @@ class TestBasic:
                 (2, 3, 4), numpy.array(1, dtype=dtype1), dtype=dtype2
             )
 
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_full_like(self, xp, dtype, order):
@@ -293,10 +292,9 @@ class TestBasic:
             warnings.simplefilter("ignore", ComplexWarning)
             return xp.full_like(a, numpy.array(1, dtype=dtype1))
 
-    @pytest.mark.skip("subok keyword is not supported")
     def test_full_like_subok(self):
         a = cupy.ndarray((2, 3, 4))
-        with pytest.raises(TypeError):
+        with pytest.raises(NotImplementedError):
             cupy.full_like(a, 1, subok=True)
 
 
@@ -309,7 +307,7 @@ class TestBasic:
 )
 class TestBasicReshape:
     @testing.with_requires("numpy>=1.17.0")
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape(self, xp, dtype, order):
@@ -330,7 +328,7 @@ class TestBasicReshape:
         testing.assert_array_equal(b, c)
 
     @testing.with_requires("numpy>=1.17.0")
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape_contiguity(self, xp, dtype, order):
@@ -343,7 +341,7 @@ class TestBasicReshape:
             assert b.flags.c_contiguous
         return b
 
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     def test_empty_like_reshape_contiguity_cupy_only(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -358,7 +356,7 @@ class TestBasicReshape:
         testing.assert_array_equal(b, c)
 
     @testing.with_requires("numpy>=1.17.0")
-    @testing.for_orders("CF")
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape_contiguity2(self, xp, dtype, order):
@@ -375,7 +373,7 @@ class TestBasicReshape:
             assert b.flags.f_contiguous
         return b
 
-    @testing.for_orders("CF")
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     def test_empty_like_reshape_contiguity2_cupy_only(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -394,7 +392,7 @@ class TestBasicReshape:
         testing.assert_array_equal(b, c)
 
     @testing.with_requires("numpy>=1.17.0")
-    @testing.for_orders("CF")
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_empty_like_reshape_contiguity3(self, xp, dtype, order):
@@ -418,7 +416,7 @@ class TestBasicReshape:
             assert not b.flags.f_contiguous
         return b
 
-    @testing.for_orders("CF")
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     def test_empty_like_reshape_contiguity3_cupy_only(self, dtype, order):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -444,7 +442,6 @@ class TestBasicReshape:
         c.fill(0)
         testing.assert_array_equal(b, c)
 
-    @pytest.mark.skip("order 'K' is not supported")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_all_dtypes()
     def test_empty_like_K_strides_reshape(self, dtype):
@@ -461,11 +458,14 @@ class TestBasicReshape:
         bg.fill(0)
 
         # make sure NumPy and CuPy strides agree
-        assert b.strides == bg.strides
+        scaled_numpy_strides = b.strides
+        scale = b.itemsize
+        numpy_strides = tuple(i / scale for i in scaled_numpy_strides)
+        assert numpy_strides == bg.strides
         return
 
     @testing.with_requires("numpy>=1.17.0")
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_zeros_like_reshape(self, xp, dtype, order):
@@ -482,7 +482,7 @@ class TestBasicReshape:
         testing.assert_array_equal(b, c)
 
     @testing.with_requires("numpy>=1.17.0")
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_ones_like_reshape(self, xp, dtype, order):
@@ -498,7 +498,7 @@ class TestBasicReshape:
         testing.assert_array_equal(b, c)
 
     @testing.with_requires("numpy>=1.17.0")
-    @testing.for_CF_orders()
+    @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_full_like_reshape(self, xp, dtype, order):
