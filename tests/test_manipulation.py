@@ -4,7 +4,12 @@ import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from numpy.lib._arraypad_impl import _as_pairs as numpy_as_pairs
+
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+    from numpy.lib._arraypad_impl import _as_pairs as numpy_as_pairs
+else:
+    from numpy.lib.arraypad import _as_pairs as numpy_as_pairs
+
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
@@ -464,13 +469,18 @@ class TestPad:
         "empty": {},
     }
 
-    @pytest.mark.parametrize("mode", _all_modes.keys() - {"empty"})
+    @pytest.mark.parametrize("mode", _all_modes.keys())
     def test_basic(self, mode):
         a_np = numpy.arange(100)
         a_dp = dpnp.array(a_np)
         expected = numpy.pad(a_np, (25, 20), mode=mode)
         result = dpnp.pad(a_dp, (25, 20), mode=mode)
-        assert_array_equal(result, expected)
+        if mode == "empty":
+            # omit uninitialized "empty" boundary from the comparison
+            assert result.shape == expected.shape
+            assert_equal(result[25:-20], expected[25:-20])
+        else:
+            assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("mode", _all_modes.keys())
     def test_memory_layout_persistence(self, mode):
@@ -493,7 +503,12 @@ class TestPad:
         a_dp = dpnp.arange(24).reshape(4, 6)[::2, ::2]
         expected = numpy.pad(a_np, (2, 3), mode=mode)
         result = dpnp.pad(a_dp, (2, 3), mode=mode)
-        assert_array_equal(result, expected)
+        if mode == "empty":
+            # omit uninitialized "empty" boundary from the comparison
+            assert result.shape == expected.shape
+            assert_equal(result[2:-3, 2:-3], expected[2:-3, 2:-3])
+        else:
+            assert_array_equal(result, expected)
 
     # TODO: include "linear_ramp" when dpnp issue gh-2084 is resolved
     @pytest.mark.parametrize("pad_width", [0, (0, 0), ((0, 0), (0, 0))])
@@ -850,7 +865,7 @@ class TestPad:
         a_dp = dpnp.array(a_np)
         expected = numpy.pad(a_np, [(0,), (2,), (1,)], mode)
         result = dpnp.pad(a_dp, [(0,), (2,), (1,)], mode)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "mode",
