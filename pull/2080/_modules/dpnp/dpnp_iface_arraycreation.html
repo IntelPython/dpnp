@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+43.g92070ea25f0 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+46.g33b66df48fe documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=cf0a7205"></script>
+        <script src="../../_static/documentation_options.js?v=97242d31"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+43.g92070ea25f0
+                0.17.0dev0+46.g33b66df48fe
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -185,6 +185,82 @@
     <span class="s2">&quot;zeros&quot;</span><span class="p">,</span>
     <span class="s2">&quot;zeros_like&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_get_empty_array</span><span class="p">(</span>
+    <span class="n">a</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get an empty array as the base for empty_like, ones_like, zeros_like,</span>
+<span class="sd">    and full_like.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">strides</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">shape</span><span class="p">):</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">shape</span><span class="p">,)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_shape</span> <span class="o">=</span> <span class="n">shape</span>
+    <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
+    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
+    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
+    <span class="k">if</span> <span class="n">order</span> <span class="ow">in</span> <span class="s2">&quot;aA&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">in</span> <span class="s2">&quot;kK&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_shape</span><span class="p">)</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+        <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">f_contiguous</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span>
+        <span class="k">elif</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">c_contiguous</span><span class="p">:</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">strides</span> <span class="o">=</span> <span class="n">_get_strides_for_order_k</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_shape</span><span class="p">)</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;C&quot;</span>
+    <span class="k">elif</span> <span class="n">order</span> <span class="ow">not</span> <span class="ow">in</span> <span class="s2">&quot;cfCF&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;order must be None, &#39;C&#39;, &#39;F&#39;, &#39;A&#39;, or &#39;K&#39; (got &#39;</span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&#39;)&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
+        <span class="n">_shape</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+        <span class="n">strides</span><span class="o">=</span><span class="n">strides</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_strides_for_order_k</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate strides when order=&#39;K&#39; for empty_like, ones_like, zeros_like,</span>
+<span class="sd">    and full_like where `shape` is ``None`` or len(shape) == x.ndim.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">stride_and_index</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([(</span><span class="nb">abs</span><span class="p">(</span><span class="n">s</span><span class="p">),</span> <span class="o">-</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">strides</span><span class="p">)])</span>
+    <span class="n">strides</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">stride</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">stride_and_index</span><span class="p">:</span>
+        <span class="n">strides</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">stride</span>
+        <span class="n">stride</span> <span class="o">*=</span> <span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span> <span class="k">if</span> <span class="n">shape</span> <span class="k">else</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="o">-</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">strides</span>
 
 
 <div class="viewcode-block" id="arange">
@@ -1328,7 +1404,7 @@
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1349,9 +1425,10 @@
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
-<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
-<span class="sd">        Default: ``&quot;C&quot;``.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -1378,8 +1455,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
-<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
@@ -1417,20 +1492,16 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
-    <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
-    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">_shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+    <span class="k">return</span> <span class="n">_get_empty_array</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -2209,7 +2280,7 @@
     <span class="n">fill_value</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -2234,9 +2305,10 @@
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
-<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
-<span class="sd">        Default: ``&quot;C&quot;``.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -2263,8 +2335,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
-<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
@@ -2302,23 +2372,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
-    <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
-    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">full</span><span class="p">(</span>
-        <span class="n">_shape</span><span class="p">,</span>
-        <span class="n">fill_value</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">_get_empty_array</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
-    <span class="p">)</span></div>
+        <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -3282,7 +3348,7 @@
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3303,9 +3369,10 @@
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
-<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
-<span class="sd">        Default: ``&quot;C&quot;``.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -3332,8 +3399,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
-<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
@@ -3372,21 +3437,19 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
-    <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
-    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
-        <span class="n">_shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">_get_empty_array</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
-    <span class="p">)</span></div>
+        <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 
 
@@ -3950,7 +4013,7 @@
     <span class="o">/</span><span class="p">,</span>
     <span class="o">*</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3971,9 +4034,10 @@
 <span class="sd">        The desired dtype for the array, e.g., dpnp.int32.</span>
 <span class="sd">        Default is the default floating point data type for the device where</span>
 <span class="sd">        input array is allocated.</span>
-<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
-<span class="sd">        Default: ``&quot;C&quot;``.</span>
+<span class="sd">        ``order=None`` is an alias for ``order=&quot;K&quot;``.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    shape : {None, int, sequence of ints}</span>
 <span class="sd">        Overrides the shape of the result.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
@@ -4000,8 +4064,6 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Parameter `order` is supported only with values ``&quot;C&quot;``, ``&quot;F&quot;`` and</span>
-<span class="sd">    ``None``.</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
 <span class="sd">    Otherwise, the function raises `NotImplementedError` exception.</span>
 
@@ -4041,21 +4103,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">)</span>
 
-    <span class="n">_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">shape</span>
-    <span class="n">_dtype</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">dtype</span>
-    <span class="n">_usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">usm_type</span>
-    <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_normalized_queue_device</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
-        <span class="n">_shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">_dtype</span><span class="p">,</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">_get_empty_array</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">_usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">_sycl_queue</span><span class="p">,</span>
-    <span class="p">)</span></div>
+        <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">res</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 </pre></div>
 
