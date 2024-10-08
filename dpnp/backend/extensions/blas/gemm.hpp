@@ -40,6 +40,7 @@ extern std::tuple<sycl::event, sycl::event, bool>
          const std::vector<sycl::event> &depends);
 
 extern bool _is_lnl_bm_architecture(const sycl::device &dev);
+extern bool _is_16_bytes_aligned(const dpctl::tensor::usm_ndarray &a);
 
 extern std::tuple<sycl::event, sycl::event, bool>
     gemm_batch(sycl::queue &exec_q,

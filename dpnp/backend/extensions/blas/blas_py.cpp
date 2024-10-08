@@ -135,6 +135,13 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
+        m.def("_is_16_bytes_aligned", &blas_ns::_is_16_bytes_aligned,
+              "Return ``True`` if pointer on USM allocation has 16 bytes "
+              "alignment in memory",
+              py::arg("a"));
+    }
+
+    {
         m.def("_gemm_batch", &blas_ns::gemm_batch,
               "Call `gemm_batch` from OneMKL BLAS library to compute "
               "the matrix-matrix product for a batch of 2-D matrices.",
