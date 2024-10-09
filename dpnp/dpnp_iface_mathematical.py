@@ -107,6 +107,7 @@ __all__ = [
     "heaviside",
     "imag",
     "lcm",
+    "ldexp",
     "maximum",
     "minimum",
     "mod",
@@ -2029,6 +2030,12 @@ Returns
 out : dpnp.ndarray
     The greatest common divisor of the absolute value of the inputs.
 
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.lcm` : The lowest common multiple.
@@ -2393,6 +2400,12 @@ Returns
 out : dpnp.ndarray
     The lowest common multiple of the absolute value of the inputs.
 
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.gcd` : The greatest common divisor.
@@ -2412,6 +2425,67 @@ lcm = DPNPBinaryFunc(
     ufi._lcm,
     _LCM_DOCSTRING,
     acceptance_fn=acceptance_fn_gcd_lcm,
+)
+
+
+_LDEXP_DOCSTRING = """
+Returns x1 * 2**x2, element-wise.
+
+The mantissas `x1` and twos exponents `x2` are used to construct floating point
+numbers ``x1 * 2**x2``.
+
+For full documentation refer to :obj:`numpy.ldexp`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Array of multipliers.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Array of twos exponents.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The result of ``x1 * 2**x2``.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.frexp` : Return (y1, y2) from ``x = y1 * 2**y2``, inverse to `ldexp`.
+
+Notes
+-----
+Complex dtypes are not supported, they will raise a TypeError.
+
+:obj:`dpnp.ldexp` is useful as the inverse of :obj:`dpnp.frexp`, if used by
+itself it is more clear to simply use the expression ``x1 * 2**x2``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.ldexp(5, np.arange(4))
+array([ 5., 10., 20., 40.])
+"""
+
+ldexp = DPNPBinaryFunc(
+    "_ldexp",
+    ufi._ldexp_result_type,
+    ufi._ldexp,
+    _LDEXP_DOCSTRING,
 )
 
 
