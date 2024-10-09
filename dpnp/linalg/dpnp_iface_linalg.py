@@ -1318,9 +1318,9 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
 
 def svdvals(x, /):
     """
-    Returns the singular values of a matrix (or a stack of matrices) ``x``.
+    Returns the singular values of a matrix (or a stack of matrices) `x`.
 
-    When ``x`` is a stack of matrices, the function will compute
+    When `x` is a stack of matrices, the function will compute
     the singular values for each matrix in the stack.
 
     Calling ``dpnp.linalg.svdvals(x)`` to get singular values is the same as
