@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+39.ga376197c225 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+41.gbd8c420c857 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=1ae22cbe"></script>
+        <script src="../../../_static/documentation_options.js?v=48bb6656"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+39.ga376197c225
+                0.17.0dev0+41.gbd8c420c857
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -1457,11 +1457,13 @@
 
 
 
+<div class="viewcode-block" id="svdvals">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.svdvals.html#dpnp.linalg.svdvals">[docs]</a>
 <span class="k">def</span> <span class="nf">svdvals</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns the singular values of a matrix (or a stack of matrices) ``x``.</span>
+<span class="sd">    Returns the singular values of a matrix (or a stack of matrices) `x`.</span>
 
-<span class="sd">    When ``x`` is a stack of matrices, the function will compute</span>
+<span class="sd">    When `x` is a stack of matrices, the function will compute</span>
 <span class="sd">    the singular values for each matrix in the stack.</span>
 
 <span class="sd">    Calling ``dpnp.linalg.svdvals(x)`` to get singular values is the same as</span>
@@ -1510,7 +1512,8 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="slogdet">

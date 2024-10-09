@@ -32,6 +32,7 @@ Decompositions
    dpnp.linalg.cholesky
    dpnp.linalg.qr
    dpnp.linalg.svd
+   dpnp.linalg.svdvals
 
 Matrix eigenvalues
 ------------------
