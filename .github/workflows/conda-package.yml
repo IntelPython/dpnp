@@ -159,7 +159,7 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
       - name: Install dpnp
-        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -175,14 +175,15 @@ jobs:
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          export DPNP_TEST_ALL_TYPES=1
+          python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 10
+          timeout_minutes: 45
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
@@ -190,7 +191,8 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.TEST_ENV_NAME }}
 
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            export DPNP_TEST_ALL_TYPES=1
+            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows:
     name: Test ['windows-2019', python='${{ matrix.python }}']
@@ -282,7 +284,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -311,18 +313,20 @@ jobs:
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          set DPNP_TEST_ALL_TYPES=1
+          pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 15
+          timeout_minutes: 45
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            set DPNP_TEST_ALL_TYPES=1
+            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
