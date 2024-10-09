@@ -12,6 +12,7 @@ from dpctl import select_default_device
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
+from tests import config
 from tests.third_party.cupy.testing import _array, _parameterized
 from tests.third_party.cupy.testing._pytest_impl import is_available
 
@@ -1039,19 +1040,39 @@ def _get_supported_complex_dtypes():
         return (numpy.complex64,)
 
 
+def _get_int_dtypes():
+    if config.all_types:
+        return _signed_dtypes + _unsigned_dtypes
+    else:
+        return (numpy.int64, numpy.int32)
+
+
 _complex_dtypes = _get_supported_complex_dtypes()
 _regular_float_dtypes = _get_supported_float_dtypes()
-_float_dtypes = _regular_float_dtypes
-_signed_dtypes = ()
+_float_dtypes = _regular_float_dtypes + (numpy.float16,)
+_signed_dtypes = tuple(numpy.dtype(i).type for i in "bhilq")
 _unsigned_dtypes = tuple(numpy.dtype(i).type for i in "BHILQ")
-_int_dtypes = _signed_dtypes + _unsigned_dtypes
-_int_bool_dtypes = _int_dtypes
+_int_dtypes = _get_int_dtypes()
+_int_bool_dtypes = _int_dtypes + (numpy.bool_,)
 _regular_dtypes = _regular_float_dtypes + _int_bool_dtypes
 _dtypes = _float_dtypes + _int_bool_dtypes
 
 
 def _make_all_dtypes(no_float16, no_bool, no_complex):
-    return (numpy.int64, numpy.int32) + _get_supported_float_dtypes()
+    if no_float16:
+        dtypes = _regular_float_dtypes
+    else:
+        dtypes = _float_dtypes
+
+    if no_bool:
+        dtypes += _int_dtypes
+    else:
+        dtypes += _int_bool_dtypes
+
+    if not no_complex:
+        dtypes += _complex_dtypes
+
+    return dtypes
 
 
 def for_all_dtypes(

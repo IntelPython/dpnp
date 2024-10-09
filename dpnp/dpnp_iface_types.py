@@ -59,8 +59,14 @@ __all__ = [
     "inf",
     "int",
     "int_",
+    "int8",
+    "int16",
     "int32",
     "int64",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
     "integer",
     "intc",
     "intp",
@@ -95,8 +101,14 @@ floating = numpy.floating
 inexact = numpy.inexact
 int = numpy.int_
 int_ = numpy.int_
+int8 = numpy.int8
+int16 = numpy.int16
 int32 = numpy.int32
 int64 = numpy.int64
+uint8 = numpy.uint8
+uint16 = numpy.uint16
+uint32 = numpy.uint32
+uint64 = numpy.uint64
 integer = numpy.integer
 intc = numpy.intc
 intp = numpy.intp
