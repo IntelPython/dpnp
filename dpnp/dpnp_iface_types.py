@@ -40,6 +40,7 @@ from .dpnp_array import dpnp_array
 __all__ = [
     "bool",
     "bool_",
+    "byte",
     "cdouble",
     "complex128",
     "complex64",
@@ -57,8 +58,9 @@ __all__ = [
     "iinfo",
     "inexact",
     "inf",
-    "int",
     "int_",
+    "int8",
+    "int16",
     "int32",
     "int64",
     "integer",
@@ -66,12 +68,24 @@ __all__ = [
     "intp",
     "issubdtype",
     "is_type_supported",
+    "longlong",
     "nan",
     "newaxis",
     "number",
     "pi",
+    "short",
     "signedinteger",
     "single",
+    "ubyte",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uintc",
+    "uintp",
+    "unsignedinteger",
+    "ushort",
+    "ulonglong",
 ]
 
 
@@ -81,6 +95,7 @@ __all__ = [
 # =============================================================================
 bool = numpy.bool_
 bool_ = numpy.bool_
+byte = numpy.byte
 cdouble = numpy.cdouble
 complex128 = numpy.complex128
 complex64 = numpy.complex64
@@ -93,16 +108,29 @@ float32 = numpy.float32
 float64 = numpy.float64
 floating = numpy.floating
 inexact = numpy.inexact
-int = numpy.int_
 int_ = numpy.int_
+int8 = numpy.int8
+int16 = numpy.int16
 int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
 intc = numpy.intc
 intp = numpy.intp
+longlong = numpy.longlong
 number = numpy.number
+short = numpy.short
 signedinteger = numpy.signedinteger
 single = numpy.single
+ubyte = numpy.ubyte
+uint8 = numpy.uint8
+uint16 = numpy.uint16
+uint32 = numpy.uint32
+uint64 = numpy.uint64
+uintc = numpy.uintc
+uintp = numpy.uintp
+unsignedinteger = numpy.unsignedinteger
+ushort = numpy.ushort
+ulonglong = numpy.ulonglong
 
 
 # =============================================================================

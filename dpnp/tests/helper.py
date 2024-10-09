@@ -2,9 +2,11 @@ from sys import platform
 
 import dpctl
 import numpy
+import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+from dpnp.tests import config
 
 
 def assert_dtype_allclose(
@@ -88,6 +90,18 @@ def get_integer_dtypes():
     Build a list of integer types supported by DPNP.
     """
 
+    if config.all_int_types:
+        return [
+            dpnp.int8,
+            dpnp.int16,
+            dpnp.int32,
+            dpnp.int64,
+            dpnp.uint8,
+            dpnp.uint16,
+            dpnp.uint32,
+            dpnp.uint64,
+        ]
+
     return [dpnp.int32, dpnp.int64]
 
 
@@ -134,7 +148,13 @@ def get_float_complex_dtypes(no_float16=True, device=None):
 
 
 def get_all_dtypes(
-    no_bool=False, no_float16=True, no_complex=False, no_none=False, device=None
+    no_bool=False,
+    no_float16=True,
+    no_complex=False,
+    no_none=False,
+    device=None,
+    xfail_dtypes=None,
+    exclude=None,
 ):
     """
     Build a list of types supported by DPNP based on input flags and device capabilities.
@@ -158,6 +178,18 @@ def get_all_dtypes(
     # add None value to validate a default dtype
     if not no_none:
         dtypes.append(None)
+
+    def mark_xfail(dtype):
+        if xfail_dtypes is not None and dtype in xfail_dtypes:
+            return pytest.param(dtype, marks=pytest.mark.xfail)
+        return dtype
+
+    def not_excluded(dtype):
+        if exclude is None:
+            return True
+        return dtype not in exclude
+
+    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
 
 
