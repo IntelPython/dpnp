@@ -1,6 +1,0 @@
-﻿dpnp.roll
-=========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: roll
