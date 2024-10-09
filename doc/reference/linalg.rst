@@ -30,6 +30,7 @@ Decompositions
    :nosignatures:
 
    dpnp.linalg.cholesky
+   dpnp.linalg.outer
    dpnp.linalg.qr
    dpnp.linalg.svd
    dpnp.linalg.svdvals
