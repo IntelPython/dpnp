@@ -70,6 +70,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     acceptance_fn_positive,
     acceptance_fn_sign,
     acceptance_fn_subtract,
+    resolve_weak_types_2nd_arg_int,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
@@ -2486,6 +2487,7 @@ ldexp = DPNPBinaryFunc(
     ufi._ldexp_result_type,
     ufi._ldexp,
     _LDEXP_DOCSTRING,
+    weak_type_resolver=resolve_weak_types_2nd_arg_int,
 )
 
 

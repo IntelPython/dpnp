@@ -25,6 +25,8 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as dti
+import dpctl.tensor._type_utils as dtu
 import numpy
 from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
@@ -46,6 +48,7 @@ __all__ = [
     "DPNPReal",
     "DPNPRound",
     "DPNPUnaryFunc",
+    "resolve_weak_types_2nd_arg_int",
 ]
 
 
@@ -244,6 +247,14 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         The function is only called when both arguments of the binary
         function require casting, e.g. both arguments of
         `dpctl.tensor.logaddexp` are arrays with integral data type.
+    weak_type_resolver : {callable}, optional
+        Function to influence type promotion behavior for Python scalar types
+        of this binary function. The function takes 3 arguments:
+            o1_dtype - Data type or Python scalar type of the first argument
+            o2_dtype - Data type or Python scalar type of of the second argument
+            sycl_dev - The :class:`dpctl.SyclDevice` where the function
+                evaluation is carried out.
+        One of `o1_dtype` and `o2_dtype` must be a ``dtype`` instance.
     """
 
     def __init__(
@@ -256,6 +267,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         mkl_impl_fn=None,
         binary_inplace_fn=None,
         acceptance_fn=None,
+        weak_type_resolver=None,
     ):
         def _call_func(src1, src2, dst, sycl_queue, depends=None):
             """
@@ -281,6 +293,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             docs,
             binary_inplace_fn,
             acceptance_fn=acceptance_fn,
+            weak_type_resolver=weak_type_resolver,
         )
         self.__name__ = "DPNPBinaryFunc"
 
@@ -606,3 +619,22 @@ def acceptance_fn_subtract(
         )
     else:
         return True
+
+
+def resolve_weak_types_2nd_arg_int(o1_dtype, o2_dtype, sycl_dev):
+    """
+    The second weak dtype has to be upcasting up to default integer dtype
+    for a SYCL device where it is possible.
+    For other cases the default weak types resolving will be applied.
+
+    """
+
+    if dtu._is_weak_dtype(o2_dtype):
+        o1_kind_num = dtu._strong_dtype_num_kind(o1_dtype)
+        o2_kind_num = dtu._weak_type_num_kind(o2_dtype)
+        if o2_kind_num < o1_kind_num:
+            if isinstance(o2_dtype, (dtu.WeakBooleanType, dtu.WeakIntegralType)):
+                print()
+                print(o1_dtype, dpt.dtype(dti.default_device_int_type(sycl_dev)))
+                return o1_dtype, dpt.dtype(dti.default_device_int_type(sycl_dev))
+    return dtu._resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)
