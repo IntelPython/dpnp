@@ -716,6 +716,11 @@ def test_reduce_hypot(device):
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
         pytest.param(
+            "gcd",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
+        pytest.param(
             "gradient",
             [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
             [0.0, 1.0, 1.5, 3.5, 4.0, 6.0],
@@ -731,6 +736,11 @@ def test_reduce_hypot(device):
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
+        pytest.param(
+            "lcm",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
