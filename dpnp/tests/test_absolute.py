@@ -13,9 +13,9 @@ from .helper import (
 
 
 @pytest.mark.parametrize("func", ["abs", "absolute"])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 def test_abs(func, dtype):
-    a = numpy.array([1, 0, 2, -3, -1, 2, 21, -9], dtype=dtype)
+    a = numpy.array([1, 0, 2, -3, -1, 2, 21, -9]).astype(dtype=dtype)
     ia = dpnp.array(a)
 
     result = getattr(dpnp, func)(ia)
