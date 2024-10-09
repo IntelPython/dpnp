@@ -78,9 +78,11 @@ var NAVTREEINDEX0 =
 "extensions_2ufunc_2elementwise__functions_2fmax_8hpp_source.html":[2,0,0,4,0,5],
 "extensions_2ufunc_2elementwise__functions_2fmin_8hpp_source.html":[2,0,0,4,0,6],
 "extensions_2ufunc_2elementwise__functions_2fmod_8hpp_source.html":[2,0,0,4,0,7],
-"extensions_2ufunc_2elementwise__functions_2heaviside_8hpp_source.html":[2,0,0,4,0,8],
-"extensions_2ufunc_2elementwise__functions_2logaddexp2_8hpp_source.html":[2,0,0,4,0,9],
-"extensions_2ufunc_2elementwise__functions_2radians_8hpp_source.html":[2,0,0,4,0,11],
+"extensions_2ufunc_2elementwise__functions_2gcd_8hpp_source.html":[2,0,0,4,0,8],
+"extensions_2ufunc_2elementwise__functions_2heaviside_8hpp_source.html":[2,0,0,4,0,9],
+"extensions_2ufunc_2elementwise__functions_2lcm_8hpp_source.html":[2,0,0,4,0,10],
+"extensions_2ufunc_2elementwise__functions_2logaddexp2_8hpp_source.html":[2,0,0,4,0,11],
+"extensions_2ufunc_2elementwise__functions_2radians_8hpp_source.html":[2,0,0,4,0,13],
 "extensions_2vm_2fmax_8hpp_source.html":[2,0,0,5,20],
 "extensions_2vm_2fmin_8hpp_source.html":[2,0,0,5,21],
 "extensions_2vm_2fmod_8hpp_source.html":[2,0,0,5,22],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558addd017f3f6c6753bc796a1ee5e9e4dcb":[0,1,2,21],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558adddd48eebbd0f2d9af89499617eebe64":[0,1,2,15],
 "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ae0cf8c82c5a808c57953a90659c234b1":[0,1,2,75],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ae57add61435f1fe27df7af416aacd162":[0,1,2,76],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ae7cdf66fd8b623050ba1a0d26e12d1bd":[0,1,2,67],
-"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aece0d851a884f3b66f3d1e6c1f67a540":[0,1,2,102]
+"group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ae57add61435f1fe27df7af416aacd162":[0,1,2,76]
 };

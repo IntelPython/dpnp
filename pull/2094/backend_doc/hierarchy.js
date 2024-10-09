@@ -33,6 +33,7 @@ var hierarchy =
     [ "dpnp::kernels::fmin::FminFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ],
     [ "dpnp::kernels::fmod::FmodFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ],
     [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
+    [ "dpnp::kernels::gcd::GcdFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ],
     [ "dpnp::extensions::blas::types::GemmBatchTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::types::GemmTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::types::GemvTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html", null ],
@@ -49,6 +50,7 @@ var hierarchy =
     [ "std::integral_constant", null, [
       [ "is_complex< _Tp >", "structis__complex.html", null ]
     ] ],
+    [ "dpnp::kernels::lcm::LcmFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html", null ],
