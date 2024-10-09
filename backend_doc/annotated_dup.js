@@ -70,8 +70,14 @@ var annotated_dup =
         [ "fmod", null, [
           [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
         ] ],
+        [ "gcd", null, [
+          [ "GcdFunctor", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ]
+        ] ],
         [ "heaviside", null, [
           [ "HeavisideFunctor", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ]
+        ] ],
+        [ "lcm", null, [
+          [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]
         ] ],
         [ "logaddexp2", null, [
           [ "Logaddexp2Functor", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ]
