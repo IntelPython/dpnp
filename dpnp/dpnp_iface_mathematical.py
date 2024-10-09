@@ -63,6 +63,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPReal,
     DPNPRound,
     DPNPUnaryFunc,
+    acceptance_fn_gcd_lcm,
     acceptance_fn_negative,
     acceptance_fn_positive,
     acceptance_fn_sign,
@@ -99,9 +100,11 @@ __all__ = [
     "fmax",
     "fmin",
     "fmod",
+    "gcd",
     "gradient",
     "heaviside",
     "imag",
+    "lcm",
     "maximum",
     "minimum",
     "mod",
@@ -1978,6 +1981,55 @@ fmod = DPNPBinaryFunc(
     mkl_impl_fn="_fmod",
 )
 
+_GCD_DOCSTRING = """
+Returns the greatest common divisor of ``|x1|`` and ``|x2|``.
+
+For full documentation refer to :obj:`numpy.gcd`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x : {dpnp.ndarray, usm_ndarray}
+    An array of floats to be rounded.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The greatest common divisor of the absolute value of the inputs.
+
+See Also
+--------
+:obj:`dpnp.lcm` : The lowest common multiple.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.gcd(np.array(12), 20)
+array(4)
+>>> np.gcd(np.arange(6), 20)
+array([20,  1,  2,  1,  4,  5])
+"""
+
+gcd = DPNPBinaryFunc(
+    "gcd",
+    ufi._gcd_result_type,
+    ufi._gcd,
+    _GCD_DOCSTRING,
+    acceptance_fn=acceptance_fn_gcd_lcm,
+)
+
 
 def gradient(f, *varargs, axis=None, edge_order=1):
     """
@@ -2292,6 +2344,54 @@ imag = DPNPUnaryFunc(
     ti._imag_result_type,
     ti._imag,
     _IMAG_DOCSTRING,
+)
+
+
+_LCM_DOCSTRING = """
+Returns the lowest common multiple of ``|x1|`` and ``|x2|``.
+
+For full documentation refer to :obj:`numpy.lcm`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The lowest common multiple of the absolute value of the inputs.
+
+See Also
+--------
+:obj:`dpnp.gcd` : The greatest common divisor.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.lcm(np.array(12), 20)
+array(60)
+>>> np.lcm(np.arange(6), 20)
+array([ 0, 20, 20, 60, 20, 20])
+"""
+
+lcm = DPNPBinaryFunc(
+    "lcm",
+    ufi._lcm_result_type,
+    ufi._lcm,
+    _LCM_DOCSTRING,
+    acceptance_fn=acceptance_fn_gcd_lcm,
 )
 
 
