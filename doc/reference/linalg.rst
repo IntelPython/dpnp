@@ -1,7 +1,7 @@
 Linear Algebra
 ==============
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.linalg.html
+.. https://numpy.org/doc/stable/reference/routines.linalg.html
 
 Matrix and vector products
 --------------------------
@@ -13,10 +13,14 @@ Matrix and vector products
    dpnp.dot
    dpnp.linalg.multi_dot
    dpnp.vdot
+   dpnp.vecdot
+   dpnp.linalg.vecdot
    dpnp.inner
    dpnp.outer
    dpnp.matmul
+   dpnp.linalg.matmul
    dpnp.tensordot
+   dpnp.linalg.tensordot
    dpnp.einsum
    dpnp.einsum_path
    dpnp.linalg.matrix_power
@@ -29,6 +33,7 @@ Decompositions
    :toctree: generated/
    :nosignatures:
 
+   dpnp.linalg.cross
    dpnp.linalg.cholesky
    dpnp.linalg.outer
    dpnp.linalg.qr
@@ -55,11 +60,14 @@ Norms and other numbers
    :nosignatures:
 
    dpnp.linalg.norm
+   dpnp.linalg.matrix_norm
+   dpnp.linalg.vector_norm
    dpnp.linalg.cond
    dpnp.linalg.det
    dpnp.linalg.matrix_rank
    dpnp.linalg.slogdet
    dpnp.trace
+   dpnp.linalg.trace
 
 
 Solving linear equations
@@ -75,3 +83,7 @@ Solving linear equations
    dpnp.linalg.inv
    dpnp.linalg.pinv
    dpnp.linalg.tensorinv
+   dpnp.diagonal
+   dpnp.linalg.diagonal
+   dpnp.linalg.matrix_tranpose
+   dpnp.linalg.linAlgError

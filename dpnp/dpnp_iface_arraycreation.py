@@ -231,7 +231,7 @@ def arange(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -347,7 +347,7 @@ def array(
     Parameter `subok` is supported only with default value ``False``.
     Parameter `ndmin` is supported only with default value ``0``.
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -469,7 +469,7 @@ def asanyarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -581,7 +581,7 @@ def asarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -675,7 +675,7 @@ def ascontiguousarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -788,7 +788,7 @@ def asfortranarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -900,7 +900,7 @@ def copy(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Returns
     -------
@@ -1230,7 +1230,7 @@ def empty(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -1334,7 +1334,7 @@ def empty_like(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -1445,7 +1445,7 @@ def eye(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -1554,7 +1554,7 @@ def frombuffer(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1668,7 +1668,7 @@ def fromfile(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1789,7 +1789,7 @@ def fromfunction(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1896,7 +1896,7 @@ def fromiter(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1996,7 +1996,7 @@ def fromstring(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -2083,7 +2083,7 @@ def full(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -2190,7 +2190,7 @@ def full_like(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -2414,7 +2414,7 @@ def identity(
     Limitations
     -----------
     Parameter `like` is currently not supported.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -2638,7 +2638,7 @@ def loadtxt(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -3120,7 +3120,7 @@ def ones(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -3230,7 +3230,7 @@ def ones_like(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -3320,6 +3320,7 @@ def trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):
 
     See Also
     --------
+    :obj:`dpnp.linalg.trace` : Array API compatible version.
     :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
     :obj:`dpnp.diagonal` : Return specified diagonals.
     :obj:`dpnp.diagflat` : Create a 2-D array with the flattened input as
@@ -3764,7 +3765,7 @@ def zeros(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -3874,7 +3875,7 @@ def zeros_like(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------

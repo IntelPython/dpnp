@@ -3264,7 +3264,7 @@ def vsplit(ary, indices_or_sections):
     Split an array into multiple sub-arrays vertically (row-wise).
 
     Please refer to the :obj:`dpnp.split` documentation. ``vsplit``
-    is equivalent to ``split`` with ``axis=0``(default), the array
+    is equivalent to ``split`` with ``axis=0`` (default), the array
     is always split along the first axis regardless of the array dimension.
 
     For full documentation refer to :obj:`numpy.vsplit`.

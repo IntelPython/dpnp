@@ -780,6 +780,7 @@ def matmul(
 
     See Also
     --------
+    :obj:`dpnp.linalg.matmul` : Array API compatible version.
     :obj:`dpnp.vdot` : Complex-conjugating dot product.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
     :obj:`dpnp.einsum` : Einstein summation convention.
@@ -874,15 +875,17 @@ def outer(a, b, out=None):
     b : {dpnp.ndarray, usm_ndarray}
         Second input vector. Input is flattened if not already 1-dimensional.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
-        A location where the result is stored
+        A location where the result is stored.
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        out[i, j] = a[i] * b[j]
+        ``out[i, j] = a[i] * b[j]``
 
     See Also
     --------
+    :obj:`dpnp.linalg.outer` : Array API compatible version.
     :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
                          on the operands.
     :obj:`dpnp.inner` : Returns the inner product of two arrays.
@@ -898,6 +901,30 @@ def outer(a, b, out=None):
     array([[1, 2, 3],
            [1, 2, 3],
            [1, 2, 3]])
+
+    Make a (*very* coarse) grid for computing a Mandelbrot set:
+
+    >>> rl = np.outer(np.ones((5,)), np.linspace(-2, 2, 5))
+    >>> rl
+    array([[-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.]])
+    >>> im = np.outer(1j*np.linspace(2, -2, 5), np.ones((5,)))
+    >>> im
+    array([[0.+2.j, 0.+2.j, 0.+2.j, 0.+2.j, 0.+2.j],
+           [0.+1.j, 0.+1.j, 0.+1.j, 0.+1.j, 0.+1.j],
+           [0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j],
+           [0.-1.j, 0.-1.j, 0.-1.j, 0.-1.j, 0.-1.j],
+           [0.-2.j, 0.-2.j, 0.-2.j, 0.-2.j, 0.-2.j]])
+    >>> grid = rl + im
+    >>> grid
+    array([[-2.+2.j, -1.+2.j,  0.+2.j,  1.+2.j,  2.+2.j],
+           [-2.+1.j, -1.+1.j,  0.+1.j,  1.+1.j,  2.+1.j],
+           [-2.+0.j, -1.+0.j,  0.+0.j,  1.+0.j,  2.+0.j],
+           [-2.-1.j, -1.-1.j,  0.-1.j,  1.-1.j,  2.-1.j],
+           [-2.-2.j, -1.-2.j,  0.-2.j,  1.-2.j,  2.-2.j]])
 
     """
 
@@ -918,6 +945,13 @@ def outer(a, b, out=None):
 def tensordot(a, b, axes=2):
     r"""
     Compute tensor dot product along specified axes.
+
+    Given two tensors, `a` and `b`, and an array_like object containing
+    two array_like objects, ``(a_axes, b_axes)``, sum the products of
+    `a`'s and `b`'s elements (components) over the axes specified by
+    ``a_axes`` and ``b_axes``. The third argument can be a single non-negative
+    integer_like scalar, ``N``; if it is such, then the last ``N`` dimensions
+    of `a` and the first ``N`` dimensions of `b` are summed over.
 
     For full documentation refer to :obj:`numpy.tensordot`.
 
@@ -944,6 +978,7 @@ def tensordot(a, b, axes=2):
 
     See Also
     --------
+    :obj:`dpnp.linalg.tensordot` : Equivalent function.
     :obj:`dpnp.dot` : Returns the dot product.
     :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
                          on the operands.
