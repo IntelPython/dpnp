@@ -332,7 +332,7 @@ def _result_type(dtype1, dtype2, has_fp64):
 def _align_dtypes(a_dtype, bins_dtype, ntype, has_fp64):
     a_bin_dtype = _result_type(a_dtype, bins_dtype, has_fp64)
 
-    supported_types = (dpnp.float32, dpnp.int64, dpnp.uint64, dpnp.complex64)
+    supported_types = (dpnp.float32, dpnp.int64, numpy.uint64, dpnp.complex64)
     if has_fp64:
         supported_types += (dpnp.float64, dpnp.complex128)
 
@@ -341,7 +341,7 @@ def _align_dtypes(a_dtype, bins_dtype, ntype, has_fp64):
 
     a_bin_dtype = _find_supported_dtype(a_bin_dtype, supported_types)
     hist_dtype = _find_supported_dtype(ntype, supported_types)
-    if hist_dtype == dpnp.uint64:
+    if hist_dtype == numpy.uint64:
         hist_dtype = dpnp.int64
 
     if (a_bin_dtype in float_types and hist_dtype in float_types) or (
@@ -522,7 +522,9 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     if density:
         # pylint: disable=possibly-used-before-assignment
-        db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
+        db = dpnp.diff(bin_edges).astype(
+            dpnp.default_float_type(sycl_queue=queue)
+        )
         return n / db / n.sum(), bin_edges
 
     return n, bin_edges

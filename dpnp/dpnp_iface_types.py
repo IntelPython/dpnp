@@ -61,7 +61,6 @@ __all__ = [
     "int_",
     "int32",
     "int64",
-    "uint64",
     "integer",
     "intc",
     "intp",
@@ -98,7 +97,6 @@ int = numpy.int_
 int_ = numpy.int_
 int32 = numpy.int32
 int64 = numpy.int64
-uint64 = numpy.uint64
 integer = numpy.integer
 intc = numpy.intc
 intp = numpy.intp
