@@ -59,6 +59,7 @@ env:
       third_party/cupy/logic_tests
       third_party/cupy/manipulation_tests
       third_party/cupy/math_tests
+      third_party/cupy/padding_tests
       third_party/cupy/sorting_tests
       third_party/cupy/statistics_tests/test_histogram.py
       third_party/cupy/statistics_tests/test_meanvar.py
