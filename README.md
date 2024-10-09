@@ -41,7 +41,7 @@ python scripts/build_locally.py
 ## Install Wheel Package via pip
 Install DPNP
 ```cmd
-python -m pip install dpnp
+python -m pip install --index-url https://software.repos.intel.com/python/pypi dpnp
 ```
 
 Set path to Performance Libraries in case of using venv or system Python:
