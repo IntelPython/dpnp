@@ -59,7 +59,6 @@ Norms and other numbers
    dpnp.linalg.slogdet
    dpnp.trace
 
-
 Solving linear equations
 --------------------------
 
@@ -73,3 +72,12 @@ Solving linear equations
    dpnp.linalg.inv
    dpnp.linalg.pinv
    dpnp.linalg.tensorinv
+
+Other matrix operations
+-----------------------
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.linalg.diagonal (Array API compatible)
+   dpnp.linalg.matrix_transpose (Array API compatible)
