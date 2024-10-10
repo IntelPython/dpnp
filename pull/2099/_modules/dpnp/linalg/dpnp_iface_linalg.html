@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+41.g99b693ec722 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+44.g1427802de64 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=aceee096"></script>
+        <script src="../../../_static/documentation_options.js?v=0051f0bc"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+41.g99b693ec722
+                0.17.0dev0+44.g1427802de64
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -337,7 +337,7 @@
 <span class="sd">        non-compute axes. The size of the axis over which to compute</span>
 <span class="sd">        the cross-product must be the same size as the respective axis</span>
 <span class="sd">        in `x1`.</span>
-<span class="sd">    axis : {int, None}, optional</span>
+<span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis (dimension) of `x1` and `x2` containing the vectors for</span>
 <span class="sd">        which to compute the cross-product.</span>
 <span class="sd">        Default: ``-1``.</span>
@@ -465,6 +465,8 @@
 <span class="sd">            * offset = 0: the main diagonal.</span>
 <span class="sd">            * offset &gt; 0: off-diagonal above the main diagonal.</span>
 <span class="sd">            * offset &lt; 0: off-diagonal below the main diagonal.</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1337,7 +1339,7 @@
 <span class="sd">        Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless</span>
 <span class="sd">        `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm</span>
 <span class="sd">        of ``x.ravel`` will be returned.</span>
-<span class="sd">    ord : {int, inf, -inf, &quot;fro&quot;, &quot;nuc&quot;}, optional</span>
+<span class="sd">    ord : {int, float, inf, -inf, &quot;fro&quot;, &quot;nuc&quot;}, optional</span>
 <span class="sd">        Norm type. inf means dpnp&#39;s `inf` object.</span>
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : {None, int, 2-tuple of ints}, optional</span>
@@ -2314,7 +2316,7 @@
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
 <span class="sd">        Default: ``False``.</span>
-<span class="sd">    ord : {int, inf, -inf, &#39;fro&#39;, &#39;nuc&#39;}, optional</span>
+<span class="sd">    ord : {int, float, inf, -inf, &#39;fro&#39;, &#39;nuc&#39;}, optional</span>
 <span class="sd">        The order of the norm. For details see the table under ``Notes``</span>
 <span class="sd">        section in :obj:`dpnp.linalg.norm`.</span>
 <span class="sd">        Default: ``2``.</span>
@@ -2357,23 +2359,25 @@
 <span class="sd">    array(0.8058837395885292)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="n">x_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">x_ndim</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># Note: dpnp.linalg.norm() doesn&#39;t handle 0-D arrays</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">_axis</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
         <span class="c1"># Note: The axis argument supports any number of axes, whereas</span>
         <span class="c1"># dpnp.linalg.norm() only supports a single axis or two axes</span>
         <span class="c1"># for vector norm.</span>
-        <span class="n">normalized_axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-        <span class="n">rest</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normalized_axis</span><span class="p">)</span>
+        <span class="n">normalized_axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">x_ndim</span><span class="p">)</span>
+        <span class="n">rest</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">normalized_axis</span><span class="p">)</span>
         <span class="n">newshape</span> <span class="o">=</span> <span class="n">axis</span> <span class="o">+</span> <span class="n">rest</span>
         <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">newshape</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
             <span class="p">(</span>
-                <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span>
-                <span class="o">*</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rest</span><span class="p">],</span>
+                <span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">x_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">axis</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">),</span>
+                <span class="o">*</span><span class="p">[</span><span class="n">x_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">rest</span><span class="p">],</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">_axis</span> <span class="o">=</span> <span class="mi">0</span>

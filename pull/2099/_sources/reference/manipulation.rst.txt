@@ -149,6 +149,5 @@ Rearranging elements
    dpnp.flip
    dpnp.fliplr
    dpnp.flipud
-   dpnp.reshape
    dpnp.roll
    dpnp.rot90
