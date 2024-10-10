@@ -33,4 +33,15 @@ class TestRational(unittest.TestCase):
     def test_lcm_check_boundary_cases(self, xp, dtype):
         a = xp.array([0, -10, -5, 10, 410, 1, 6, 33])
         b = xp.array([0, 5, -10, -5, 20, 51, 6, 42])
-        return xp.lcm(a, b)
+        print()
+        print("debug test_lcm_check_boundary_cases")
+        print(xp)
+        print(a.dtype, b.dtype, xp.abs(a), xp.abs(b), xp.gcd(a, b))
+        v1 = xp.abs(a) / xp.gcd(a, b)
+        v2 = xp.abs(b)
+        print(v1, v2, v1 * v2)
+        res = xp.lcm(a, b)
+        print(res)
+        print("end debug")
+        return res
+        # return xp.lcm(a, b)

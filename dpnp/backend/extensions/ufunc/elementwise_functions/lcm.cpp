@@ -95,16 +95,6 @@ struct OutputType
                                         T2,
                                         std::int64_t,
                                         std::int64_t>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::uint64_t,
-                                        T2,
-                                        std::int64_t,
-                                        std::uint64_t>,
-        td_ns::BinaryTypeMapResultEntry<T1,
-                                        std::int64_t,
-                                        T2,
-                                        std::uint64_t,
-                                        std::int64_t>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
