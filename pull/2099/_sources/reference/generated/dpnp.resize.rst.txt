@@ -1,0 +1,6 @@
+﻿dpnp.resize
+===========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: resize
