@@ -848,7 +848,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     Return the cross product of two (arrays of) vectors.
 
     The cross product of `a` and `b` in :math:`R^3` is a vector perpendicular
-    to both `a` and `b`.  If `a` and `b` are arrays of vectors, the vectors
+    to both `a` and `b`. If `a` and `b` are arrays of vectors, the vectors
     are defined by the last axis of `a` and `b` by default, and these axes
     can have dimensions 2 or 3. Where the dimension of either `a` or `b` is
     2, the third component of the input vector is assumed to be zero and the
@@ -873,7 +873,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
         By default, the last axis.
     axis : {int, None}, optional
         If defined, the axis of `a`, `b` and `c` that defines the vector(s)
-        and cross product(s).  Overrides `axisa`, `axisb` and `axisc`.
+        and cross product(s). Overrides `axisa`, `axisb` and `axisc`.
         Default: ``None``.
 
     Returns

@@ -2170,7 +2170,7 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf]
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -2185,7 +2185,7 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf]
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -2419,7 +2419,7 @@ class TestNorm:
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf]
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
     )
     def test_vector_norm_0D(self, ord):
         a = numpy.array(2)
@@ -2431,7 +2431,7 @@ class TestNorm:
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf]
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -2449,7 +2449,9 @@ class TestNorm:
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf])
+    @pytest.mark.parametrize(
+        "ord", [None, -inp.inf, -2, -1, 1, 2, 3.5, inp.inf]
+    )
     @pytest.mark.parametrize(
         "axis",
         [-1, 0, (0, 1), (-1, -2), (0, 1, -2, -1), None],

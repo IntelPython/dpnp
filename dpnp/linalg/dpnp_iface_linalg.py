@@ -239,7 +239,7 @@ def cross(x1, x2, /, *, axis=-1):
         non-compute axes. The size of the axis over which to compute
         the cross-product must be the same size as the respective axis
         in `x1`.
-    axis : {int, None}, optional
+    axis : int, optional
         The axis (dimension) of `x1` and `x2` containing the vectors for
         which to compute the cross-product.
         Default: ``-1``.
@@ -361,6 +361,8 @@ def diagonal(x, /, *, offset=0):
             * offset = 0: the main diagonal.
             * offset > 0: off-diagonal above the main diagonal.
             * offset < 0: off-diagonal below the main diagonal.
+
+        Default: ``0``.
 
     Returns
     -------
@@ -1197,7 +1199,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
         Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless
         `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm
         of ``x.ravel`` will be returned.
-    ord : {int, inf, -inf, "fro", "nuc"}, optional
+    ord : {int, float, inf, -inf, "fro", "nuc"}, optional
         Norm type. inf means dpnp's `inf` object.
         Default: ``None``.
     axis : {None, int, 2-tuple of ints}, optional
@@ -2138,7 +2140,7 @@ def vector_norm(x, /, *, axis=None, keepdims=False, ord=2):
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
         Default: ``False``.
-    ord : {int, inf, -inf, 'fro', 'nuc'}, optional
+    ord : {int, float, inf, -inf, 'fro', 'nuc'}, optional
         The order of the norm. For details see the table under ``Notes``
         section in :obj:`dpnp.linalg.norm`.
         Default: ``2``.
@@ -2181,23 +2183,25 @@ def vector_norm(x, /, *, axis=None, keepdims=False, ord=2):
     array(0.8058837395885292)
 
     """
+
     dpnp.check_supported_arrays_type(x)
     x_shape = list(x.shape)
+    x_ndim = x.ndim
     if axis is None:
         # Note: dpnp.linalg.norm() doesn't handle 0-D arrays
-        x = x.ravel()
+        x = dpnp.ravel(x)
         _axis = 0
     elif isinstance(axis, tuple):
         # Note: The axis argument supports any number of axes, whereas
         # dpnp.linalg.norm() only supports a single axis or two axes
         # for vector norm.
-        normalized_axis = normalize_axis_tuple(axis, x.ndim)
-        rest = tuple(i for i in range(x.ndim) if i not in normalized_axis)
+        normalized_axis = normalize_axis_tuple(axis, x_ndim)
+        rest = tuple(i for i in range(x_ndim) if i not in normalized_axis)
         newshape = axis + rest
         x = dpnp.transpose(x, newshape).reshape(
             (
-                numpy.prod([x.shape[i] for i in axis], dtype=int),
-                *[x.shape[i] for i in rest],
+                numpy.prod([x_shape[i] for i in axis], dtype=int),
+                *[x_shape[i] for i in rest],
             )
         )
         _axis = 0
