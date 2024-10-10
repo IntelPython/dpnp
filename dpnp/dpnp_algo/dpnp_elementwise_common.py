@@ -36,6 +36,7 @@ import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
+    "acceptance_fn_gcd_lcm",
     "acceptance_fn_negative",
     "acceptance_fn_positive",
     "acceptance_fn_sign",
@@ -546,6 +547,18 @@ class DPNPRound(DPNPUnaryFunc):
             return dpnp_array._create_from_usm_ndarray(res_usm)
         else:
             return super().__call__(x, out=out, dtype=dtype)
+
+
+def acceptance_fn_gcd_lcm(
+    arg1_dtype, arg2_dtype, buf1_dt, buf2_dt, res_dt, sycl_dev
+):
+    # gcd/lcm are not defined for boolean data type
+    if arg1_dtype.char == "?" and arg2_dtype.char == "?":
+        raise ValueError(
+            "The function is not supported for inputs of data type bool"
+        )
+    else:
+        return True
 
 
 def acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):

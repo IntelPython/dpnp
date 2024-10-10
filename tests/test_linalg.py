@@ -3014,6 +3014,50 @@ class TestSvd:
         assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)
 
 
+# numpy.linalg.svdvals() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+class TestSvdvals:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(3, 5), (4, 2), (2, 3, 3), (3, 5, 2)],
+        ids=["(3,5)", "(4,2)", "(2,3,3)", "(3,5,2)"],
+    )
+    def test_svdvals(self, dtype, shape):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        dp_a = inp.array(a)
+
+        expected = numpy.linalg.svdvals(a)
+        result = inp.linalg.svdvals(dp_a)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (1, 0, 0), (0, 2, 2)],
+        ids=["(0,0)", "(1,0,0)", "(0,2,2)"],
+    )
+    def test_svdvals_empty(self, shape):
+        a = generate_random_numpy_array(shape, inp.default_float_type())
+        dp_a = inp.array(a)
+
+        expected = numpy.linalg.svdvals(a)
+        result = inp.linalg.svdvals(dp_a)
+
+        assert_dtype_allclose(result, expected)
+
+    def test_svdvals_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.svdvals, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.svdvals, a_dp_ndim_1)
+
+
 class TestPinv:
     def get_tol(self, dtype):
         tol = 1e-06

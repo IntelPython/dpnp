@@ -1724,6 +1724,64 @@ class TestProd:
             dpnp.prod(ia, initial=6)
 
 
+class TestRationalFunctions:
+    @pytest.mark.parametrize("func", ["gcd", "lcm"])
+    @pytest.mark.parametrize("dt1", get_integer_dtypes())
+    @pytest.mark.parametrize("dt2", get_integer_dtypes())
+    def test_basic(self, func, dt1, dt2):
+        a = numpy.array([12, 120], dtype=dt1)
+        b = numpy.array([20, 120], dtype=dt2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        expected = getattr(numpy, func)(a, b)
+        result = getattr(dpnp, func)(ia, ib)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["gcd", "lcm"])
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    def test_broadcasting(self, func, dt):
+        a = numpy.arange(6, dtype=dt)
+        ia = dpnp.array(a)
+        b = 20
+
+        expected = getattr(numpy, func)(a, b)
+        result = getattr(dpnp, func)(ia, b)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", [numpy.int32, numpy.int64])
+    def test_gcd_overflow(self, dt):
+        a = dt(numpy.iinfo(dt).min)  # negative power of two
+        ia = dpnp.array(a)
+        q = -(a // 4)
+
+        # verify that we don't overflow when taking abs(x)
+        # not relevant for lcm, where the result is unrepresentable anyway
+        expected = numpy.gcd(a, q)
+        result = dpnp.gcd(ia, q)
+        assert_array_equal(result, expected)
+
+    def test_lcm_overflow(self):
+        big = numpy.int32(numpy.iinfo(numpy.int32).max // 11)
+        a, b = 2 * big, 5 * big
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        # verify that we don't overflow when a*b does overflow
+        expected = numpy.lcm(a, b)
+        result = dpnp.lcm(ia, ib)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("func", ["gcd", "lcm"])
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_inf_and_nan(self, func, xp):
+        inf = xp.array([xp.inf])
+        assert_raises((TypeError, ValueError), getattr(xp, func), inf, 1)
+        assert_raises((TypeError, ValueError), getattr(xp, func), 1, inf)
+        assert_raises((TypeError, ValueError), getattr(xp, func), xp.nan, inf)
+        assert_raises(
+            (TypeError, ValueError), getattr(xp, func), 4, float(xp.inf)
+        )
+
+
 class TestRealIfClose:
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
     def test_basic(self, dt):
