@@ -903,8 +903,10 @@ class dpnp_array:
 
         """
 
-        for i in range(self.size):
-            self.flat[i] = value
+        # lazy import avoids circular imports
+        from .dpnp_algo.dpnp_fill import dpnp_fill
+
+        dpnp_fill(self, value)
 
     @property
     def flags(self):
