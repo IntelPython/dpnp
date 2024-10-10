@@ -83,6 +83,7 @@ __all__ = [
     "qr",
     "solve",
     "svd",
+    "svdvals",
     "slogdet",
     "tensorinv",
     "tensorsolve",
@@ -1313,6 +1314,62 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     assert_stacked_2d(a)
 
     return dpnp_svd(a, full_matrices, compute_uv, hermitian)
+
+
+def svdvals(x, /):
+    """
+    Returns the singular values of a matrix (or a stack of matrices) `x`.
+
+    When `x` is a stack of matrices, the function will compute
+    the singular values for each matrix in the stack.
+
+    Calling ``dpnp.linalg.svdvals(x)`` to get singular values is the same as
+    ``dpnp.linalg.svd(x, compute_uv=False, hermitian=False)``.
+
+    For full documentation refer to :obj:`numpy.linalg.svdvals`.
+
+    Parameters
+    ----------
+    x : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Input array with ``x.ndim >= 2`` and whose last two dimensions
+        form matrices on which to perform singular value decomposition.
+
+    Returns
+    -------
+    out : (..., K) dpnp.ndarray
+        Vector(s) of singular values of length K, where K = min(M, N).
+
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.svd` : Compute the singular value decomposition.
+
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[3, 0], [0, 4]])
+    >>> np.linalg.svdvals(a)
+    array([4., 3.])
+
+    This is equivalent to calling:
+
+    >>> np.linalg.svd(a, compute_uv=False, hermitian=False)
+    array([4., 3.])
+
+    Stack of matrices:
+
+    >>> b = np.array([[[6, 0], [0, 8]], [[9, 0], [0, 12]]])
+    >>> np.linalg.svdvals(b)
+    array([[ 8.,  6.],
+           [12.,  9.]])
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+    assert_stacked_2d(x)
+
+    return dpnp_svd(x, full_matrices=True, compute_uv=False, hermitian=False)
 
 
 def slogdet(a):
