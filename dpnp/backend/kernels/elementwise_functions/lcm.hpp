@@ -38,7 +38,22 @@ struct LcmFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return oneapi::dpl::lcm(in1, in2);
+        static_assert(std::is_same_v<argT1, argT2>,
+                      "Input types are expected to be the same");
+
+        if (in1 == 0 || in2 == 0)
+            return 0;
+
+        resT res = in1 / oneapi::dpl::gcd(in1, in2) * in2;
+        if constexpr (std::is_signed_v<argT1>) {
+            if (res < 0) {
+                return -res;
+            }
+        }
+        return res;
+
+        // TODO: address the issue to OneDPL team
+        // return oneapi::dpl::lcm(in1, in2);
     }
 };
 } // namespace dpnp::kernels::lcm
