@@ -26,6 +26,7 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
+#include "kernels/alignment.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_utils.hpp"
@@ -337,6 +338,12 @@ bool _is_lnl_bm_architecture(const sycl::device &dev)
     }
 #endif // !defined(USE_ONEMKL_CUBLAS)
     return false;
+}
+
+bool _is_16_bytes_aligned(const dpctl::tensor::usm_ndarray &a)
+{
+    return dpctl::tensor::kernels::alignment_utils::is_aligned<16>(
+        a.get_data());
 }
 
 template <typename fnT, typename Tab, typename Tc>
