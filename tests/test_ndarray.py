@@ -4,6 +4,7 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import (
     get_all_dtypes,
@@ -256,6 +257,38 @@ def test_array_as_index(shape, index_dtype):
     ind_arr = dpnp.ones(shape, dtype=index_dtype)
     a = numpy.arange(ind_arr.size + 1)
     assert a[tuple(ind_arr)] == a[1]
+
+
+# numpy.matrix_transpose() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+@pytest.mark.parametrize(
+    "shape",
+    [(3, 5), (2, 5, 2), (2, 3, 3, 6)],
+    ids=["(3,5)", "(2,5,2)", "(2,3,3,6)"],
+)
+def test_matrix_transpose(shape):
+    a = numpy.arange(numpy.prod(shape)).reshape(shape)
+    dp_a = dpnp.array(a)
+
+    expected = a.mT
+    result = dp_a.mT
+
+    assert_allclose(result, expected)
+
+    # result is a view of dp_a:
+    # changing result, modifies dp_a
+    first_elem = (0,) * dp_a.ndim
+
+    result[first_elem] = -1.0
+    assert dp_a[first_elem] == -1.0
+
+
+@testing.with_requires("numpy>=2.0")
+def test_matrix_transpose_error():
+    # 1D array
+    dp_a = dpnp.arange(6)
+    with pytest.raises(ValueError):
+        dp_a.mT
 
 
 def test_ravel():
