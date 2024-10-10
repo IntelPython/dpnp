@@ -173,6 +173,7 @@ def choose(x1, choices, out=None, mode="raise"):
     :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
 
     """
+
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
 
     choices_list = []
@@ -191,6 +192,8 @@ def choose(x1, choices, out=None, mode="raise"):
         elif any(not choices[0].dtype == choice.dtype for choice in choices):
             pass
         elif not choices_list:
+            pass
+        elif dpnp.is_cuda_backend(x1):
             pass
         else:
             size = x1_desc.size

@@ -685,6 +685,7 @@ class TestUfuncSlow(UfuncTestBase):
 class TestArithmeticModf:
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_modf(self, xp, dtype):
         a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
         b, c = xp.modf(a)
