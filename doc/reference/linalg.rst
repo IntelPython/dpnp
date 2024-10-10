@@ -1,7 +1,7 @@
 Linear Algebra
 ==============
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.linalg.html
+.. https://numpy.org/doc/stable/reference/routines.linalg.html
 
 Matrix and vector products
 --------------------------
@@ -13,14 +13,19 @@ Matrix and vector products
    dpnp.dot
    dpnp.linalg.multi_dot
    dpnp.vdot
+   dpnp.vecdot
+   dpnp.linalg.vecdot (Array API compatible)
    dpnp.inner
    dpnp.outer
    dpnp.matmul
+   dpnp.linalg.matmul (Array API compatible)
    dpnp.tensordot
+   dpnp.linalg.tensordot (Array API compatible)
    dpnp.einsum
    dpnp.einsum_path
    dpnp.linalg.matrix_power
    dpnp.kron
+   dpnp.linalg.cross (Array API compatible)
 
 Decompositions
 --------------
@@ -55,11 +60,14 @@ Norms and other numbers
    :nosignatures:
 
    dpnp.linalg.norm
+   dpnp.linalg.matrix_norm (Array API compatible)
+   dpnp.linalg.vector_norm (Array API compatible)
    dpnp.linalg.cond
    dpnp.linalg.det
    dpnp.linalg.matrix_rank
    dpnp.linalg.slogdet
    dpnp.trace
+   dpnp.linalg.trace (Array API compatible)
 
 
 Solving linear equations
@@ -75,3 +83,19 @@ Solving linear equations
    dpnp.linalg.inv
    dpnp.linalg.pinv
    dpnp.linalg.tensorinv
+
+Other matrix operations
+-----------------------
+.. autosummary::
+   :toctree: generated/
+
+   dpnp.diagonal
+   dpnp.linalg.diagonal (Array API compatible)
+   dpnp.linalg.matrix_tranpose (Array API compatible)
+
+Exceptions
+----------
+.. autosummary::
+   :toctree: generated/
+
+   dpnp.linalg.linAlgError

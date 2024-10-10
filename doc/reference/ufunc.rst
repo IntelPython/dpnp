@@ -3,7 +3,7 @@
 Universal Functions (ufunc)
 ===========================
 
-.. https://docs.scipy.org/doc/numpy/reference/ufuncs.html
+.. https://numpy.org/doc/stable/reference/ufuncs.html
 
 DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.
 
@@ -29,6 +29,7 @@ Math operations
    dpnp.negative
    dpnp.positive
    dpnp.power
+   dpnp.pow
    dpnp.float_power
    dpnp.remainder
    dpnp.mod
@@ -82,16 +83,23 @@ The ratio of degrees to radians is :math:`180^{\circ}/\pi.`
    dpnp.cos
    dpnp.tan
    dpnp.arcsin
+   dpnp.asin
    dpnp.arccos
+   dpnp.acos
    dpnp.arctan
+   dpnp.atan
    dpnp.arctan2
+   dpnp.atan2
    dpnp.hypot
    dpnp.sinh
    dpnp.cosh
    dpnp.tanh
    dpnp.arcsinh
+   dpnp.asinh
    dpnp.arccosh
+   dpnp.acosh
    dpnp.arctanh
+   dpnp.atanh
    dpnp.degrees
    dpnp.radians
    dpnp.deg2rad
@@ -106,11 +114,16 @@ Bit-twiddling functions
    :nosignatures:
 
    dpnp.bitwise_and
+   dpnp.bitwise_not
    dpnp.bitwise_or
    dpnp.bitwise_xor
    dpnp.invert
+   dpnp.bitwise_invert
    dpnp.left_shift
+   dpnp.bitwise_left_shift
    dpnp.right_shift
+   dpnp.bitwise_right_shift
+   dpnp.bitwise_count
 
 
 Comparison functions

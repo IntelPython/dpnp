@@ -405,6 +405,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
 
     See Also
     --------
+    :obj:`dpnp.linalg.diagonal` : Array API compatible version.
     :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
     :obj:`dpnp.diagflat` : Create a two-dimensional array
                            with the flattened input as a diagonal.
@@ -448,7 +449,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
            [5, 7]])
 
     The anti-diagonal can be obtained by reversing the order of elements
-    using either `dpnp.flipud` or `dpnp.fliplr`.
+    using either :obj:`dpnp.flipud` or :obj:`dpnp.fliplr`.
 
     >>> a = np.arange(9).reshape(3, 3)
     >>> a

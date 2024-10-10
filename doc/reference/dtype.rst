@@ -3,7 +3,7 @@
 Data type routines
 ==================
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.dtype.html
+.. https://numpy.org/doc/stable/reference/routines.dtype.html
 
 .. autosummary::
    :toctree: generated/

@@ -3874,13 +3874,16 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected, factor=24)
 
-    def test_matmul_alias(self):
-        a = dpnp.ones((3, 4))
-        b = dpnp.ones((4, 5))
+    @testing.with_requires("numpy>=2.0")
+    def test_linalg_matmul(self):
+        a = numpy.ones((3, 4))
+        b = numpy.ones((4, 5))
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
 
-        result1 = dpnp.matmul(a, b)
-        result2 = dpnp.linalg.matmul(a, b)
-        assert_array_equal(result1, result2)
+        result = dpnp.linalg.matmul(ia, ib)
+        expected = numpy.linalg.matmul(a, b)
+        assert_array_equal(result, expected)
 
 
 class TestMatmulInvalidCases:
