@@ -1,7 +1,7 @@
 Logic Functions
 ===============
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.logic.html
+.. https://numpy.org/doc/stable/reference/routines.logic.html
 
 Truth value testing
 -------------------
