@@ -14,6 +14,7 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from tests.third_party.cupy import testing
 
 from .helper import get_all_dtypes, get_integer_dtypes, has_support_aspect64
 
@@ -71,6 +72,15 @@ class TestDiagonal:
             expected = numpy.diagonal(a, axis1=axis1, axis2=axis2)
             result = dpnp.diagonal(a_dp, axis1=axis1, axis2=axis2)
             assert_array_equal(expected, result)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("offset", [-3, -1, 0, 1, 3])
+    def test_linalg_diagonal(self, offset):
+        a = numpy.arange(24).reshape(2, 2, 2, 3)
+        a_dp = dpnp.array(a)
+        expected = numpy.linalg.diagonal(a, offset=offset)
+        result = dpnp.linalg.diagonal(a_dp, offset=offset)
+        assert_array_equal(expected, result)
 
     def test_diagonal_errors(self):
         a = dpnp.arange(12).reshape(3, 4)
