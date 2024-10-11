@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+41.g10311c3eaa6 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+52.g170995067fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../../_static/documentation_options.js?v=b8493344"></script>
+        <script src="../../../_static/documentation_options.js?v=996d3070"></script>
         <script src="../../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+41.g10311c3eaa6
+                0.17.0dev0+52.g170995067fc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
@@ -167,12 +167,14 @@
     <span class="s2">&quot;matmul&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_power&quot;</span><span class="p">,</span>
     <span class="s2">&quot;matrix_rank&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;matrix_transpose&quot;</span><span class="p">,</span>
     <span class="s2">&quot;multi_dot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;norm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pinv&quot;</span><span class="p">,</span>
     <span class="s2">&quot;qr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;solve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;svd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;svdvals&quot;</span><span class="p">,</span>
     <span class="s2">&quot;slogdet&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tensorinv&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tensorsolve&quot;</span><span class="p">,</span>
@@ -994,6 +996,53 @@
 
 
 
+<div class="viewcode-block" id="matrix_transpose">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_transpose.html#dpnp.linalg.matrix_transpose">[docs]</a>
+<span class="k">def</span> <span class="nf">matrix_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Transposes a matrix (or a stack of matrices) `x`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.matrix_transpose`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array with ``x.ndim &gt;= 2` and whose two innermost</span>
+<span class="sd">        dimensions form ``MxN`` matrices.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        An array containing the transpose for each matrix and having shape</span>
+<span class="sd">        (..., N, M).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.transpose` : Returns an array with axes transposed.</span>
+<span class="sd">    :obj:`dpnp.matrix_transpose` : Equivalent function.</span>
+<span class="sd">    :obj:`dpnp.ndarray.mT` : Equivalent method.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.matrix_transpose(a)</span>
+<span class="sd">    array([[1, 3],</span>
+<span class="sd">           [2, 4]])</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.matrix_transpose(b)</span>
+<span class="sd">    array([[[1, 3],</span>
+<span class="sd">            [2, 4]],</span>
+<span class="sd">           [[5, 7],</span>
+<span class="sd">            [6, 8]]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="multi_dot">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.multi_dot.html#dpnp.linalg.multi_dot">[docs]</a>
 <span class="k">def</span> <span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -1453,6 +1502,65 @@
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="p">,</span> <span class="n">compute_uv</span><span class="p">,</span> <span class="n">hermitian</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="svdvals">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.svdvals.html#dpnp.linalg.svdvals">[docs]</a>
+<span class="k">def</span> <span class="nf">svdvals</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the singular values of a matrix (or a stack of matrices) `x`.</span>
+
+<span class="sd">    When `x` is a stack of matrices, the function will compute</span>
+<span class="sd">    the singular values for each matrix in the stack.</span>
+
+<span class="sd">    Calling ``dpnp.linalg.svdvals(x)`` to get singular values is the same as</span>
+<span class="sd">    ``dpnp.linalg.svd(x, compute_uv=False, hermitian=False)``.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.svdvals`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array with ``x.ndim &gt;= 2`` and whose last two dimensions</span>
+<span class="sd">        form matrices on which to perform singular value decomposition.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : (..., K) dpnp.ndarray</span>
+<span class="sd">        Vector(s) of singular values of length K, where K = min(M, N).</span>
+
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.svd` : Compute the singular value decomposition.</span>
+
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[3, 0], [0, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.svdvals(a)</span>
+<span class="sd">    array([4., 3.])</span>
+
+<span class="sd">    This is equivalent to calling:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.linalg.svd(a, compute_uv=False, hermitian=False)</span>
+<span class="sd">    array([4., 3.])</span>
+
+<span class="sd">    Stack of matrices:</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([[[6, 0], [0, 8]], [[9, 0], [0, 12]]])</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.svdvals(b)</span>
+<span class="sd">    array([[ 8.,  6.],</span>
+<span class="sd">           [12.,  9.]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_svd</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
 

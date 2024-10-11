@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev0+41.g10311c3eaa6 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev0+52.g170995067fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=b8493344"></script>
+        <script src="../../_static/documentation_options.js?v=996d3070"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+41.g10311c3eaa6
+                0.17.0dev0+52.g170995067fc
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -153,6 +153,7 @@
     <span class="n">DPNPReal</span><span class="p">,</span>
     <span class="n">DPNPRound</span><span class="p">,</span>
     <span class="n">DPNPUnaryFunc</span><span class="p">,</span>
+    <span class="n">acceptance_fn_gcd_lcm</span><span class="p">,</span>
     <span class="n">acceptance_fn_negative</span><span class="p">,</span>
     <span class="n">acceptance_fn_positive</span><span class="p">,</span>
     <span class="n">acceptance_fn_sign</span><span class="p">,</span>
@@ -189,9 +190,11 @@
     <span class="s2">&quot;fmax&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fmin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fmod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;gcd&quot;</span><span class="p">,</span>
     <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
     <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
     <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;lcm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;minimum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mod&quot;</span><span class="p">,</span>
@@ -2092,6 +2095,55 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_fmod&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
+<span class="n">_GCD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Returns the greatest common divisor of ``|x1|`` and ``|x2|``.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.gcd`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have an integer data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have an integer data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    An array of floats to be rounded.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The greatest common divisor of the absolute value of the inputs.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.lcm` : The lowest common multiple.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; np.gcd(np.array(12), 20)</span>
+<span class="s2">array(4)</span>
+<span class="s2">&gt;&gt;&gt; np.gcd(np.arange(6), 20)</span>
+<span class="s2">array([20,  1,  2,  1,  4,  5])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">gcd</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;gcd&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_gcd_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_gcd</span><span class="p">,</span>
+    <span class="n">_GCD_DOCSTRING</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_gcd_lcm</span><span class="p">,</span>
+<span class="p">)</span>
+
 
 <div class="viewcode-block" id="gradient">
 <a class="viewcode-back" href="../../reference/generated/dpnp.gradient.html#dpnp.gradient">[docs]</a>
@@ -2409,6 +2461,54 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_imag_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_imag</span><span class="p">,</span>
     <span class="n">_IMAG_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_LCM_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Returns the lowest common multiple of ``|x1|`` and ``|x2|``.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.lcm`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have an integer data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have an integer data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The lowest common multiple of the absolute value of the inputs.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.gcd` : The greatest common divisor.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; np.lcm(np.array(12), 20)</span>
+<span class="s2">array(60)</span>
+<span class="s2">&gt;&gt;&gt; np.lcm(np.arange(6), 20)</span>
+<span class="s2">array([ 0, 20, 20, 60, 20, 20])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">lcm</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;lcm&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_lcm_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_lcm</span><span class="p">,</span>
+    <span class="n">_LCM_DOCSTRING</span><span class="p">,</span>
+    <span class="n">acceptance_fn</span><span class="o">=</span><span class="n">acceptance_fn_gcd_lcm</span><span class="p">,</span>
 <span class="p">)</span>
 
 
