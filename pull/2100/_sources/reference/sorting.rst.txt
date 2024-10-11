@@ -1,7 +1,7 @@
 Sorting, Searching, and Counting
 ================================
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.sort.html
+.. https://numpy.org/doc/stable/reference/routines.sort.html
 
 Sorting
 -------
