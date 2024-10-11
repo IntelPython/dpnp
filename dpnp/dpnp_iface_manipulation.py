@@ -1754,7 +1754,7 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
 
 def matrix_transpose(x, /):
     """
-    Transposes a matrix (or a stack of matrices) ``x``.
+    Transposes a matrix (or a stack of matrices) `x`.
 
     For full documentation refer to :obj:`numpy.matrix_transpose`.
 
@@ -1773,6 +1773,8 @@ def matrix_transpose(x, /):
     See Also
     --------
     :obj:`dpnp.transpose` : Returns an array with axes transposed.
+    :obj:`dpnp.linalg.matrix_transpose` : Equivalent function.
+    :obj:`dpnp.ndarray.mT` : Equivalent method.
 
     Examples
     --------

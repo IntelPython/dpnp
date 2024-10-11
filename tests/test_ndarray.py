@@ -259,7 +259,7 @@ def test_array_as_index(shape, index_dtype):
     assert a[tuple(ind_arr)] == a[1]
 
 
-# numpy.matrix_transpose() is available since numpy >= 2.0
+# numpy.ndarray.mT is available since numpy >= 2.0
 @testing.with_requires("numpy>=2.0")
 @pytest.mark.parametrize(
     "shape",

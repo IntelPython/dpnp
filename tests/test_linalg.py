@@ -2127,8 +2127,6 @@ def test_matrix_transpose():
     ):
         inp.linalg.matrix_transpose(a_dp[:, 0])
 
-    assert_raises(ValueError, inp.linalg.matrix_transpose, a_dp[:, 0])
-
 
 class TestNorm:
     def setup_method(self):
