@@ -52,7 +52,7 @@ struct LcmFunctor
         }
         return res;
 
-        // TODO: address the issue to OneDPL team
+        // TODO: undo the w/a once ONEDPL-1320 is resolved
         // return oneapi::dpl::lcm(in1, in2);
     }
 };
