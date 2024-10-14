@@ -885,13 +885,16 @@ class dpnp_array:
         """
         Fill the array with a scalar value.
 
+        For full documentation refer to :obj:`numpy.ndarray.fill`.
+
         Parameters
         ----------
-        value : scalar
+        value : {dpnp.ndarray, usm_ndarray, scalar}
             All elements of `a` will be assigned this value.
 
         Examples
         --------
+        >>> import dpnp as np
         >>> a = np.array([1, 2])
         >>> a.fill(0)
         >>> a
