@@ -455,6 +455,22 @@ class TestAsarrayCheckFinite:
         assert_array_equal(b, a)
 
 
+class TestRavel:
+    def test_error(self):
+        ia = dpnp.arange(10).reshape(2, 5)
+        assert_raises(NotImplementedError, dpnp.ravel, ia, order="K")
+
+    @pytest.mark.parametrize("order", ["C", "F", "A"])
+    def test_non_contiguous(self, order):
+        a = numpy.arange(10)[::2]
+        ia = dpnp.arange(10)[::2]
+        expected = numpy.ravel(a, order=order)
+        result = dpnp.ravel(ia, order=order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_array_equal(result, expected)
+
+
 class TestRepeat:
     @pytest.mark.parametrize(
         "data",
@@ -795,6 +811,81 @@ class TestResize:
         new_shape = (-10, -1)
         with pytest.raises(ValueError, match=r"negative"):
             xp.resize(a, new_shape=new_shape)
+
+
+class TestReshape:
+    def test_error(self):
+        ia = dpnp.arange(10)
+        assert_raises(TypeError, dpnp.reshape, ia)
+        assert_raises(
+            TypeError, dpnp.reshape, ia, shape=(2, 5), newshape=(2, 5)
+        )
+
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
+    def test_newshape(self):
+        a = numpy.arange(10)
+        ia = dpnp.array(a)
+        expected = numpy.reshape(a, (2, 5))
+        result = dpnp.reshape(ia, newshape=(2, 5))
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("order", [None, "C", "F", "A"])
+    def test_order(self, order):
+        a = numpy.arange(10)
+        ia = dpnp.array(a)
+        expected = numpy.reshape(a, (2, 5), order)
+        result = dpnp.reshape(ia, (2, 5), order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_array_equal(result, expected)
+
+        # ndarray
+        result = ia.reshape(2, 5, order=order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_array_equal(result, expected)
+
+    def test_ndarray(self):
+        a = numpy.arange(10)
+        ia = dpnp.array(a)
+        expected = a.reshape(2, 5)
+        result = ia.reshape(2, 5)
+        assert_array_equal(result, expected)
+
+        # packed
+        result = ia.reshape((2, 5))
+        assert_array_equal(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    def test_copy(self):
+        a = numpy.arange(10).reshape(2, 5)
+        ia = dpnp.array(a)
+        expected = numpy.reshape(a, 10, copy=None)
+        expected[0] = -1
+        result = dpnp.reshape(ia, 10, copy=None)
+        result[0] = -1
+        assert a[0, 0] == expected[0]  # a is also modified, no copy
+        assert ia[0, 0] == result[0]  # ia is also modified, no copy
+        assert_array_equal(result, expected)
+
+        a = numpy.arange(10).reshape(2, 5)
+        ia = dpnp.array(a)
+        expected = numpy.reshape(a, 10, copy=True)
+        expected[0] = -1
+        result = dpnp.reshape(ia, 10, copy=True)
+        result[0] = -1
+        assert a[0, 0] != expected[0]  # a is not modified, copy is done
+        assert ia[0, 0] != result[0]  # ia is not modified, copy is done
+        assert_array_equal(result, expected)
+
+        a = numpy.arange(10).reshape(2, 5)
+        ia = dpnp.array(a)
+        assert_raises(
+            ValueError, dpnp.reshape, ia, (5, 2), order="F", copy=False
+        )
+        assert_raises(
+            ValueError, dpnp.reshape, ia, (5, 2), order="F", copy=False
+        )
 
 
 class TestRot90:
