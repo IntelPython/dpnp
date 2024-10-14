@@ -323,22 +323,6 @@ std::tuple<sycl::event, sycl::event, bool>
     return std::make_tuple(args_ev, gemm_ev, is_row_major);
 }
 
-bool _is_lnl_bm_architecture(const sycl::device &dev)
-{
-#if !defined(USE_ONEMKL_CUBLAS)
-    namespace syclex = sycl::ext::oneapi::experimental;
-    const auto arch = dev.get_info<syclex::info::device::architecture>();
-    switch (arch) {
-    case syclex::architecture::intel_gpu_lnl_m:   /* Lunar Lake */
-    case syclex::architecture::intel_gpu_bmg_g21: /* Battlemage G21 */
-        return true;
-    default:
-        return false;
-    }
-#endif // !defined(USE_ONEMKL_CUBLAS)
-    return false;
-}
-
 template <typename fnT, typename Tab, typename Tc>
 struct GemmContigFactory
 {
