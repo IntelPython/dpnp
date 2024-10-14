@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev0+52.g170995067fc documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev0+61.g422865a09b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=996d3070"></script>
+        <script src="../../_static/documentation_options.js?v=ab84e138"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+52.g170995067fc
+                0.17.0dev0+61.g422865a09b0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -887,6 +887,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.matmul` : Array API compatible version.</span>
 <span class="sd">    :obj:`dpnp.vdot` : Complex-conjugating dot product.</span>
 <span class="sd">    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.</span>
 <span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
@@ -984,15 +985,17 @@
 <span class="sd">    b : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Second input vector. Input is flattened if not already 1-dimensional.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        A location where the result is stored</span>
+<span class="sd">        A location where the result is stored.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        out[i, j] = a[i] * b[j]</span>
+<span class="sd">        ``out[i, j] = a[i] * b[j]``</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.outer` : Array API compatible version.</span>
 <span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention</span>
 <span class="sd">                         on the operands.</span>
 <span class="sd">    :obj:`dpnp.inner` : Returns the inner product of two arrays.</span>
@@ -1008,6 +1011,30 @@
 <span class="sd">    array([[1, 2, 3],</span>
 <span class="sd">           [1, 2, 3],</span>
 <span class="sd">           [1, 2, 3]])</span>
+
+<span class="sd">    Make a (*very* coarse) grid for computing a Mandelbrot set:</span>
+
+<span class="sd">    &gt;&gt;&gt; rl = np.outer(np.ones((5,)), np.linspace(-2, 2, 5))</span>
+<span class="sd">    &gt;&gt;&gt; rl</span>
+<span class="sd">    array([[-2., -1.,  0.,  1.,  2.],</span>
+<span class="sd">           [-2., -1.,  0.,  1.,  2.],</span>
+<span class="sd">           [-2., -1.,  0.,  1.,  2.],</span>
+<span class="sd">           [-2., -1.,  0.,  1.,  2.],</span>
+<span class="sd">           [-2., -1.,  0.,  1.,  2.]])</span>
+<span class="sd">    &gt;&gt;&gt; im = np.outer(1j*np.linspace(2, -2, 5), np.ones((5,)))</span>
+<span class="sd">    &gt;&gt;&gt; im</span>
+<span class="sd">    array([[0.+2.j, 0.+2.j, 0.+2.j, 0.+2.j, 0.+2.j],</span>
+<span class="sd">           [0.+1.j, 0.+1.j, 0.+1.j, 0.+1.j, 0.+1.j],</span>
+<span class="sd">           [0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j],</span>
+<span class="sd">           [0.-1.j, 0.-1.j, 0.-1.j, 0.-1.j, 0.-1.j],</span>
+<span class="sd">           [0.-2.j, 0.-2.j, 0.-2.j, 0.-2.j, 0.-2.j]])</span>
+<span class="sd">    &gt;&gt;&gt; grid = rl + im</span>
+<span class="sd">    &gt;&gt;&gt; grid</span>
+<span class="sd">    array([[-2.+2.j, -1.+2.j,  0.+2.j,  1.+2.j,  2.+2.j],</span>
+<span class="sd">           [-2.+1.j, -1.+1.j,  0.+1.j,  1.+1.j,  2.+1.j],</span>
+<span class="sd">           [-2.+0.j, -1.+0.j,  0.+0.j,  1.+0.j,  2.+0.j],</span>
+<span class="sd">           [-2.-1.j, -1.-1.j,  0.-1.j,  1.-1.j,  2.-1.j],</span>
+<span class="sd">           [-2.-2.j, -1.-2.j,  0.-2.j,  1.-2.j,  2.-2.j]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -1031,6 +1058,13 @@
 <span class="k">def</span> <span class="nf">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute tensor dot product along specified axes.</span>
+
+<span class="sd">    Given two tensors, `a` and `b`, and an array_like object containing</span>
+<span class="sd">    two array_like objects, ``(a_axes, b_axes)``, sum the products of</span>
+<span class="sd">    `a`&#39;s and `b`&#39;s elements (components) over the axes specified by</span>
+<span class="sd">    ``a_axes`` and ``b_axes``. The third argument can be a single non-negative</span>
+<span class="sd">    integer_like scalar, ``N``; if it is such, then the last ``N`` dimensions</span>
+<span class="sd">    of `a` and the first ``N`` dimensions of `b` are summed over.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.tensordot`.</span>
 
@@ -1057,6 +1091,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.tensordot` : Equivalent function.</span>
 <span class="sd">    :obj:`dpnp.dot` : Returns the dot product.</span>
 <span class="sd">    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention</span>
 <span class="sd">                         on the operands.</span>

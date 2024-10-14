@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+52.g170995067fc documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+61.g422865a09b0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="../../_static/jquery.js?v=5d32c60e"></script>
         <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=996d3070"></script>
+        <script src="../../_static/documentation_options.js?v=ab84e138"></script>
         <script src="../../_static/doctools.js?v=9a2dae69"></script>
         <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+52.g170995067fc
+                0.17.0dev0+61.g422865a09b0
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -1917,7 +1917,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array with ``x.ndim &gt;= 2` and whose two innermost</span>
+<span class="sd">        Input array with ``x.ndim &gt;= 2`` and whose two innermost</span>
 <span class="sd">        dimensions form ``MxN`` matrices.</span>
 
 <span class="sd">    Returns</span>
@@ -1954,7 +1954,10 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Input array must be at least 2-dimensional, but it is </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">)</span></div>
+
+    <span class="n">usm_x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">matrix_transpose</span><span class="p">(</span><span class="n">usm_x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
 
@@ -3636,7 +3639,7 @@
 <span class="sd">    Split an array into multiple sub-arrays vertically (row-wise).</span>
 
 <span class="sd">    Please refer to the :obj:`dpnp.split` documentation. ``vsplit``</span>
-<span class="sd">    is equivalent to ``split`` with ``axis=0``(default), the array</span>
+<span class="sd">    is equivalent to ``split`` with ``axis=0`` (default), the array</span>
 <span class="sd">    is always split along the first axis regardless of the array dimension.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.vsplit`.</span>
