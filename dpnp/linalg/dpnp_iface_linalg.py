@@ -40,6 +40,7 @@ it contains:
 # pylint: disable=no-member
 
 import numpy
+from dpctl.tensor._numpy_helper import normalize_axis_tuple
 
 import dpnp
 
@@ -67,7 +68,9 @@ from .dpnp_utils_linalg import (
 __all__ = [
     "cholesky",
     "cond",
+    "cross",
     "det",
+    "diagonal",
     "eig",
     "eigh",
     "eigvals",
@@ -75,19 +78,24 @@ __all__ = [
     "inv",
     "lstsq",
     "matmul",
+    "matrix_norm",
     "matrix_power",
     "matrix_rank",
     "matrix_transpose",
     "multi_dot",
     "norm",
+    "outer",
     "pinv",
     "qr",
     "solve",
     "svd",
     "svdvals",
     "slogdet",
+    "tensordot",
     "tensorinv",
     "tensorsolve",
+    "trace",
+    "vector_norm",
 ]
 
 
@@ -211,6 +219,81 @@ def cond(x, p=None):
     return dpnp_cond(x, p)
 
 
+def cross(x1, x2, /, *, axis=-1):
+    """
+    Returns the cross product of 3-element vectors.
+
+    If `x1` and/or `x2` are multi-dimensional arrays, then
+    the cross-product of each pair of corresponding 3-element vectors
+    is independently computed.
+
+    This function is Array API compatible, contrary to :obj:`dpnp.cross`.
+
+    For full documentation refer to :obj:`numpy.linalg.cross`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    b : {dpnp.ndarray, usm_ndarray}
+        Second input array. Must be compatible with `x1` for all
+        non-compute axes. The size of the axis over which to compute
+        the cross-product must be the same size as the respective axis
+        in `x1`.
+    axis : int, optional
+        The axis (dimension) of `x1` and `x2` containing the vectors for
+        which to compute the cross-product.
+        Default: ``-1``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+         An array containing the cross products.
+
+    See Also
+    --------
+    :obj:`dpnp.cross` : Similar function with support for more
+                    keyword arguments.
+
+    Examples
+    --------
+    Vector cross-product.
+
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3])
+    >>> y = np.array([4, 5, 6])
+    >>> np.linalg.cross(x, y)
+    array([-3,  6, -3])
+
+    Multiple vector cross-products. Note that the direction of the cross
+    product vector is defined by the *right-hand rule*.
+
+    >>> x = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> y = np.array([[4, 5, 6], [1, 2, 3]])
+    >>> np.linalg.cross(x, y)
+    array([[-3,  6, -3],
+           [ 3, -6,  3]])
+
+    >>> x = np.array([[1, 2], [3, 4], [5, 6]])
+    >>> y = np.array([[4, 5], [6, 1], [2, 3]])
+    >>> np.linalg.cross(x, y, axis=0)
+    array([[-24,  6],
+           [ 18, 24],
+           [-6,  -18]])
+
+    """
+
+    dpnp.check_supported_arrays_type(x1, x2)
+    if x1.shape[axis] != 3 or x2.shape[axis] != 3:
+        raise ValueError(
+            "Both input arrays must be (arrays of) 3-dimensional vectors, "
+            f"but they are {x1.shape[axis]} and {x2.shape[axis]} "
+            "dimensional instead."
+        )
+
+    return dpnp.cross(x1, x2, axis=axis)
+
+
 def det(a):
     """
     Compute the determinant of an array.
@@ -256,6 +339,101 @@ def det(a):
     assert_stacked_square(a)
 
     return dpnp_det(a)
+
+
+def diagonal(x, /, *, offset=0):
+    """
+    Returns specified diagonals of a matrix (or a stack of matrices) `x`.
+
+    This function is Array API compatible, contrary to :obj:`dpnp.diagonal`
+    the matrix is assumed to be defined by the last two dimensions.
+
+    For full documentation refer to :obj:`numpy.linalg.diagonal`.
+
+    Parameters
+    ----------
+    x : (...,M,N) {dpnp.ndarray, usm_ndarray}
+        Input array having shape (..., M, N) and whose innermost two
+        dimensions form ``MxN`` matrices.
+    offset : int, optional
+        Offset specifying the off-diagonal relative to the main diagonal,
+        where:
+
+            * offset = 0: the main diagonal.
+            * offset > 0: off-diagonal above the main diagonal.
+            * offset < 0: off-diagonal below the main diagonal.
+
+        Default: ``0``.
+
+    Returns
+    -------
+    out : (...,min(N,M)) dpnp.ndarray
+        An array containing the diagonals and whose shape is determined by
+        removing the last two dimensions and appending a dimension equal to
+        the size of the resulting diagonals. The returned array must have
+        the same data type as `x`.
+
+    See Also
+    --------
+    :obj:`dpnp.diagonal` : Similar function with support for more
+                    keyword arguments.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(4).reshape(2,2); a
+    array([[0, 1],
+           [2, 3]])
+    >>> np.linalg.diagonal(a)
+    array([0, 3])
+
+    A 3-D example:
+
+    >>> a = np.arange(8).reshape(2,2,2); a
+    array([[[0, 1],
+            [2, 3]],
+           [[4, 5],
+            [6, 7]]])
+    >>> np.linalg.diagonal(a)
+    array([[0, 3],
+           [4, 7]])
+
+    Diagonals adjacent to the main diagonal can be obtained by using the
+    `offset` argument:
+
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> np.linalg.diagonal(a, offset=1)  # First superdiagonal
+    array([1, 5])
+    >>> np.linalg.diagonal(a, offset=2)  # Second superdiagonal
+    array([2])
+    >>> np.linalg.diagonal(a, offset=-1)  # First subdiagonal
+    array([3, 7])
+    >>> np.linalg.diagonal(a, offset=-2)  # Second subdiagonal
+    array([6])
+
+    The anti-diagonal can be obtained by reversing the order of elements
+    using either :obj:`dpnp.flipud` or :obj:`dpnp.fliplr`.
+
+    >>> a = np.arange(9).reshape(3, 3)
+    >>> a
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> np.linalg.diagonal(np.fliplr(a))  # Horizontal flip
+    array([2, 4, 6])
+    >>> np.linalg.diagonal(np.flipud(a))  # Vertical flip
+    array([6, 4, 2])
+
+    Note that the order in which the diagonal is retrieved varies depending
+    on the flip function.
+
+    """
+
+    return dpnp.diagonal(x, offset, axis1=-2, axis2=-1)
 
 
 def eig(a):
@@ -706,8 +884,8 @@ def matmul(x1, x2, /):
 
     See Also
     --------
-    :obj:`dpnp.matmul` : similar function with support for more
-                    kwyeord arguments.
+    :obj:`dpnp.matmul` : Similar function with support for more
+                    keyword arguments.
 
     Examples
     --------
@@ -751,6 +929,73 @@ def matmul(x1, x2, /):
     """
 
     return dpnp.matmul(x1, x2)
+
+
+def matrix_norm(x, /, *, keepdims=False, ord="fro"):
+    """
+    Computes the matrix norm of a matrix (or a stack of matrices) `x`.
+
+    This function is Array API compatible.
+
+    For full documentation refer to :obj:`numpy.linalg.matrix_norm`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array having shape (..., M, N) and whose two innermost
+        dimensions form ``MxN`` matrices.
+    keepdims : bool, optional
+        If this is set to ``True``, the axes which are normed over are left in
+        the result as dimensions with size one. With this option the result
+        will broadcast correctly against the original `x`.
+        Default: ``False``.
+    ord : {None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro', 'nuc'}, optional
+        The order of the norm. For details see the table under ``Notes``
+        section in :obj:`dpnp.linalg.norm`.
+        Default: ``"fro"``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Norm of the matrix.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.norm` : Generic norm function.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(9) - 4
+    >>> a
+    array([-4, -3, -2, -1,  0,  1,  2,  3,  4])
+    >>> b = a.reshape((3, 3))
+    >>> b
+    array([[-4, -3, -2],
+           [-1,  0,  1],
+           [ 2,  3,  4]])
+
+    >>> np.linalg.matrix_norm(b)
+    array(7.74596669)
+    >>> np.linalg.matrix_norm(b, ord='fro')
+    array(7.74596669)
+    >>> np.linalg.matrix_norm(b, ord=np.inf)
+    array(9.)
+    >>> np.linalg.matrix_norm(b, ord=-np.inf)
+    array(2.)
+
+    >>> np.linalg.matrix_norm(b, ord=1)
+    array(7.)
+    >>> np.linalg.matrix_norm(b, ord=-1)
+    array(6.)
+    >>> np.linalg.matrix_norm(b, ord=2)
+    array(7.34846923)
+    >>> np.linalg.matrix_norm(b, ord=-2)
+    array(4.35106603e-18) # may vary
+
+    """
+
+    return dpnp.linalg.norm(x, axis=(-2, -1), keepdims=keepdims, ord=ord)
 
 
 def matrix_power(a, n):
@@ -984,8 +1229,12 @@ def multi_dot(arrays, *, out=None):
 
 
 def norm(x, ord=None, axis=None, keepdims=False):
-    """
+    r"""
     Matrix or vector norm.
+
+    This function is able to return one of eight different matrix norms,
+    or one of an infinite number of vector norms (described below), depending
+    on the value of the ``ord`` parameter.
 
     For full documentation refer to :obj:`numpy.linalg.norm`.
 
@@ -996,14 +1245,15 @@ def norm(x, ord=None, axis=None, keepdims=False):
         `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm
         of ``x.ravel`` will be returned.
     ord : {int, float, inf, -inf, "fro", "nuc"}, optional
-        Norm type. inf means dpnp's `inf` object. The default is ``None``.
+        Norm type. inf means dpnp's `inf` object.
+        Default: ``None``.
     axis : {None, int, 2-tuple of ints}, optional
         If `axis` is an integer, it specifies the axis of `x` along which to
-        compute the vector norms.  If `axis` is a 2-tuple, it specifies the
+        compute the vector norms. If `axis` is a 2-tuple, it specifies the
         axes that hold 2-D matrices, and the matrix norms of these matrices
         are computed. If `axis` is ``None`` then either a vector norm (when
         `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
-        Default: ``False``.
+        Default: ``None``.
     keepdims : bool, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
@@ -1014,6 +1264,49 @@ def norm(x, ord=None, axis=None, keepdims=False):
     -------
     out : dpnp.ndarray
         Norm of the matrix or vector(s).
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.matrix_norm` : Computes the matrix norm of a matrix.
+    :obj:`dpnp.linalg.vector_norm` : Computes the vector norm of a vector.
+
+    Notes
+    -----
+    For values of ``ord < 1``, the result is, strictly speaking, not a
+    mathematical 'norm', but it may still be useful for various numerical
+    purposes.
+
+    The following norms can be calculated:
+
+    =====  ============================  ==========================
+    ord    norm for matrices             norm for vectors
+    =====  ============================  ==========================
+    None   Frobenius norm                2-norm
+    'fro'  Frobenius norm                --
+    'nuc'  nuclear norm                  --
+    inf    max(sum(abs(x), axis=1))      max(abs(x))
+    -inf   min(sum(abs(x), axis=1))      min(abs(x))
+    0      --                            sum(x != 0)
+    1      max(sum(abs(x), axis=0))      as below
+    -1     min(sum(abs(x), axis=0))      as below
+    2      2-norm (largest sing. value)  as below
+    -2     smallest singular value       as below
+    other  --                            sum(abs(x)**ord)**(1./ord)
+    =====  ============================  ==========================
+
+    The Frobenius norm is given by [1]_:
+
+    :math:`||A||_F = [\sum_{i,j} abs(a_{i,j})^2]^{1/2}`
+
+    The nuclear norm is the sum of the singular values.
+
+    Both the Frobenius and nuclear norm orders are only defined for
+    matrices and raise a ValueError when ``x.ndim != 2``.
+
+    References
+    ----------
+    .. [1] G. H. Golub and C. F. Van Loan, *Matrix Computations*,
+           Baltimore, MD, Johns Hopkins University Press, 1985, pg. 15
 
     Examples
     --------
@@ -1087,6 +1380,80 @@ def norm(x, ord=None, axis=None, keepdims=False):
 
     dpnp.check_supported_arrays_type(x)
     return dpnp_norm(x, ord, axis, keepdims)
+
+
+def outer(x1, x2, /):
+    """
+    Compute the outer product of two vectors.
+
+    This function is Array API compatible. Compared to :obj:`dpnp.outer`,
+    it accepts 1-dimensional inputs only.
+
+    For full documentation refer to :obj:`numpy.linalg.outer`.
+
+    Parameters
+    ----------
+    a : (M,) {dpnp.ndarray, usm_ndarray}
+        One-dimensional input array of size ``M``.
+        Must have a numeric data type.
+    b : (N,) {dpnp.ndarray, usm_ndarray}
+        One-dimensional input array of size ``N``.
+        Must have a numeric data type.
+
+    Returns
+    -------
+    out : (M, N) dpnp.ndarray
+        ``out[i, j] = a[i] * b[j]``
+
+    See Also
+    --------
+    :obj:`dpnp.outer` : Similar function with support for more
+                    keyword arguments.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 1, 1])
+    >>> b = np.array([1, 2, 3])
+    >>> np.linalg.outer(a, b)
+    array([[1, 2, 3],
+           [1, 2, 3],
+           [1, 2, 3]])
+
+    Make a (*very* coarse) grid for computing a Mandelbrot set:
+
+    >>> rl = np.linalg.outer(np.ones((5,)), np.linspace(-2, 2, 5))
+    >>> rl
+    array([[-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.],
+           [-2., -1.,  0.,  1.,  2.]])
+    >>> im = np.linalg.outer(1j*np.linspace(2, -2, 5), np.ones((5,)))
+    >>> im
+    array([[0.+2.j, 0.+2.j, 0.+2.j, 0.+2.j, 0.+2.j],
+           [0.+1.j, 0.+1.j, 0.+1.j, 0.+1.j, 0.+1.j],
+           [0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j, 0.+0.j],
+           [0.-1.j, 0.-1.j, 0.-1.j, 0.-1.j, 0.-1.j],
+           [0.-2.j, 0.-2.j, 0.-2.j, 0.-2.j, 0.-2.j]])
+    >>> grid = rl + im
+    >>> grid
+    array([[-2.+2.j, -1.+2.j,  0.+2.j,  1.+2.j,  2.+2.j],
+           [-2.+1.j, -1.+1.j,  0.+1.j,  1.+1.j,  2.+1.j],
+           [-2.+0.j, -1.+0.j,  0.+0.j,  1.+0.j,  2.+0.j],
+           [-2.-1.j, -1.-1.j,  0.-1.j,  1.-1.j,  2.-1.j],
+           [-2.-2.j, -1.-2.j,  0.-2.j,  1.-2.j,  2.-2.j]])
+
+    """
+
+    dpnp.check_supported_arrays_type(x1, x2)
+    if x1.ndim != 1 or x2.ndim != 1:
+        raise ValueError(
+            "Input arrays must be one-dimensional, but they are "
+            f"{x1.ndim=} and {x2.ndim=}."
+        )
+
+    return dpnp.outer(x1, x2)
 
 
 def pinv(a, rcond=1e-15, hermitian=False):
@@ -1473,6 +1840,106 @@ def slogdet(a):
     return dpnp_slogdet(a)
 
 
+def tensordot(a, b, /, *, axes=2):
+    r"""
+    Compute tensor dot product along specified axes.
+
+    Given two tensors, `a` and `b`, and an array_like object containing
+    two array_like objects, ``(a_axes, b_axes)``, sum the products of
+    `a`'s and `b`'s elements (components) over the axes specified by
+    ``a_axes`` and ``b_axes``. The third argument can be a single non-negative
+    integer_like scalar, ``N``; if it is such, then the last ``N`` dimensions
+    of `a` and the first ``N`` dimensions of `b` are summed over.
+
+    For full documentation refer to :obj:`numpy.linalg.tensordot`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray, scalar}
+        First input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+    b : {dpnp.ndarray, usm_ndarray, scalar}
+        Second input array. Both inputs `a` and `b` can not be scalars
+        at the same time.
+    axes : int or (2,) array_like
+        * integer_like: If an int `N`, sum over the last `N` axes of `a` and
+          the first `N` axes of `b` in order. The sizes of the corresponding
+          axes must match.
+        * (2,) array_like: A list of axes to be summed over, first sequence
+          applying to `a`, second to `b`. Both elements array_like must be of
+          the same length.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns the tensor dot product of `a` and `b`.
+
+    See Also
+    --------
+    :obj:`dpnp.tensordot` : Equivalent function.
+    :obj:`dpnp.dot` : Returns the dot product.
+    :obj:`dpnp.einsum` : Evaluates the Einstein summation convention
+                         on the operands.
+
+    Notes
+    -----
+    Three common use cases are:
+        * ``axes = 0`` : tensor product :math:`a \otimes b`
+        * ``axes = 1`` : tensor dot product :math:`a \cdot b`
+        * ``axes = 2`` : (default) tensor double contraction :math:`a:b`
+
+    When `axes` is integer, the sequence for evaluation will be: first
+    the -Nth axis in `a` and 0th axis in `b`, and the -1th axis in `a` and
+    Nth axis in `b` last.
+
+    When there is more than one axis to sum over - and they are not the last
+    (first) axes of `a` (`b`) - the argument `axes` should consist of
+    two sequences of the same length, with the first axis to sum over given
+    first in both sequences, the second axis second, and so forth.
+
+    The shape of the result consists of the non-contracted axes of the
+    first tensor, followed by the non-contracted axes of the second.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    >>> b = np.array([1, 2, 3])
+    >>> np.linalg.tensordot(a, b, axes=1)
+    array([14, 32, 50])
+
+    >>> a = np.arange(60.).reshape(3,4,5)
+    >>> b = np.arange(24.).reshape(4,3,2)
+    >>> c = np.linalg.tensordot(a,b, axes=([1,0],[0,1]))
+    >>> c.shape
+    (5, 2)
+    >>> c
+    array([[4400., 4730.],
+           [4532., 4874.],
+           [4664., 5018.],
+           [4796., 5162.],
+           [4928., 5306.]])
+
+    A slower but equivalent way of computing the same...
+
+    >>> d = np.zeros((5,2))
+    >>> for i in range(5):
+    ...   for j in range(2):
+    ...     for k in range(3):
+    ...       for n in range(4):
+    ...         d[i,j] += a[k,n,i] * b[n,k,j]
+    >>> c == d
+    array([[ True,  True],
+           [ True,  True],
+           [ True,  True],
+           [ True,  True],
+           [ True,  True]])
+
+    """
+
+    return dpnp.tensordot(a, b, axes=axes)
+
+
 def tensorinv(a, ind=2):
     """
     Compute the 'inverse' of an N-dimensional array.
@@ -1605,3 +2072,197 @@ def tensorsolve(a, b, axes=None):
     b = dpnp.ravel(b)
     res = solve(a, b)
     return res.reshape(old_shape)
+
+
+def trace(x, /, *, offset=0, dtype=None):
+    """
+    Returns the sum along the specified diagonals of a matrix
+    (or a stack of matrices) `x`.
+
+    This function is Array API compatible, contrary to :obj:`dpnp.trace`.
+
+    For full documentation refer to :obj:`numpy.linalg.trace`.
+
+    Parameters
+    ----------
+    x : (...,M,N) {dpnp.ndarray, usm_ndarray}
+        Input array having shape (..., M, N) and whose innermost two
+        dimensions form ``MxN`` matrices.
+    offset : int, optional
+        Offset specifying the off-diagonal relative to the main diagonal,
+        where:
+
+            * offset = 0: the main diagonal.
+            * offset > 0: off-diagonal above the main diagonal.
+            * offset < 0: off-diagonal below the main diagonal.
+
+        Default: ``0``.
+    dtype : dtype, optional
+        Determines the data-type of the returned array and of the accumulator
+        where the elements are summed. If `dtype` has the value ``None`` and
+        `a` is of integer type of precision less than the default integer
+        precision, then the default integer precision is used. Otherwise, the
+        precision is the same as that of `a`.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the traces and whose shape is determined by
+        removing the last two dimensions and storing the traces in the last
+        array dimension. For example, if x has rank k and shape:
+        (I, J, K, ..., L, M, N), then an output array has rank k-2 and shape:
+        (I, J, K, ..., L) where:
+        ``out[i, j, k, ..., l] = dpnp.linalg.trace(a[i, j, k, ..., l, :, :])``
+
+        The returned array must have a data type as described by the dtype
+        parameter above.
+
+    See Also
+    --------
+    :obj:`dpnp.trace` : Similar function with support for more
+                    keyword arguments.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.linalg.trace(np.eye(3))
+    array(3.)
+    >>> a = np.arange(8).reshape((2, 2, 2))
+    >>> np.linalg.trace(a)
+    array([3, 11])
+
+    Trace is computed with the last two axes as the 2-d sub-arrays.
+    This behavior differs from :obj:`dpnp.trace` which uses the first two
+    axes by default.
+
+    >>> a = np.arange(24).reshape((3, 2, 2, 2))
+    >>> np.linalg.trace(a).shape
+    (3, 2)
+
+    Traces adjacent to the main diagonal can be obtained by using the
+    `offset` argument:
+
+    >>> a = np.arange(9).reshape((3, 3)); a
+    array([[0, 1, 2],
+           [3, 4, 5],
+           [6, 7, 8]])
+    >>> np.linalg.trace(a, offset=1)  # First superdiagonal
+    array(6)
+    >>> np.linalg.trace(a, offset=2)  # Second superdiagonal
+    array(2)
+    >>> np.linalg.trace(a, offset=-1)  # First subdiagonal
+    array(10)
+    >>> np.linalg.trace(a, offset=-2)  # Second subdiagonal
+    array(6)
+
+    """
+
+    return dpnp.trace(x, offset, axis1=-2, axis2=-1, dtype=dtype)
+
+
+def vector_norm(x, /, *, axis=None, keepdims=False, ord=2):
+    """
+    Computes the vector norm of a vector (or batch of vectors) `x`.
+
+    This function is Array API compatible.
+
+    For full documentation refer to :obj:`numpy.linalg.vector_norm`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int, n-tuple of ints}, optional
+        If an integer, `axis` specifies the axis (dimension) along which
+        to compute vector norms. If an n-tuple, `axis` specifies the axes
+        (dimensions) along which to compute batched vector norms. If ``None``,
+        the vector norm must be computed over all array values (i.e.,
+        equivalent to computing the vector norm of a flattened array).
+        Default: ``None``.
+    keepdims : bool, optional
+        If this is set to ``True``, the axes which are normed over are left in
+        the result as dimensions with size one. With this option the result
+        will broadcast correctly against the original `x`.
+        Default: ``False``.
+    ord : {int, float, inf, -inf, 'fro', 'nuc'}, optional
+        The order of the norm. For details see the table under ``Notes``
+        section in :obj:`dpnp.linalg.norm`.
+        Default: ``2``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Norm of the vector.
+
+    See Also
+    --------
+    :obj:`dpnp.linalg.norm` : Generic norm function.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(9) + 1
+    >>> a
+    array([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    >>> b = a.reshape((3, 3))
+    >>> b
+    array([[1, 2, 3],
+           [4, 5, 6],
+           [7, 8, 9]])
+
+    >>> np.linalg.vector_norm(b)
+    array(16.88194302)
+    >>> np.linalg.vector_norm(b, ord=np.inf)
+    array(9.)
+    >>> np.linalg.vector_norm(b, ord=-np.inf)
+    array(1.)
+
+    >>> np.linalg.vector_norm(b, ord=1)
+    array(45.)
+    >>> np.linalg.vector_norm(b, ord=-1)
+    array(0.35348576)
+    >>> np.linalg.vector_norm(b, ord=2)
+    array(16.881943016134134)
+    >>> np.linalg.vector_norm(b, ord=-2)
+    array(0.8058837395885292)
+
+    """
+
+    dpnp.check_supported_arrays_type(x)
+    x_shape = list(x.shape)
+    x_ndim = x.ndim
+    if axis is None:
+        # Note: dpnp.linalg.norm() doesn't handle 0-D arrays
+        x = dpnp.ravel(x)
+        _axis = 0
+    elif isinstance(axis, tuple):
+        # Note: The axis argument supports any number of axes, whereas
+        # dpnp.linalg.norm() only supports a single axis or two axes
+        # for vector norm.
+        normalized_axis = normalize_axis_tuple(axis, x_ndim)
+        rest = tuple(i for i in range(x_ndim) if i not in normalized_axis)
+        newshape = axis + rest
+        x = dpnp.transpose(x, newshape).reshape(
+            (
+                numpy.prod([x_shape[i] for i in axis], dtype=int),
+                *[x_shape[i] for i in rest],
+            )
+        )
+        _axis = 0
+    else:
+        _axis = axis
+
+    res = dpnp.linalg.norm(x, axis=_axis, ord=ord)
+
+    if keepdims:
+        # We can't reuse dpnp.linalg.norm(keepdims) because of the reshape hacks
+        # above to avoid matrix norm logic.
+        _axis = normalize_axis_tuple(
+            range(len(x_shape)) if axis is None else axis, len(x_shape)
+        )
+        for i in _axis:
+            x_shape[i] = 1
+        res = res.reshape(tuple(x_shape))
+
+    return res
