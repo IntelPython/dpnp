@@ -45,7 +45,7 @@ def dpnp_fill(arr, val):
     if dpnp.is_supported_array_type(val):
         val = dpnp.get_usm_ndarray(val)
         if val.shape != ():
-            raise ValueError("`val` must be a scalar")
+            raise ValueError("`val` must be a scalar or 0D-array")
         if dpu.get_execution_queue((exec_q, val.sycl_queue)) is None:
             raise dpu.ExecutionPlacementError(
                 "Input arrays have incompatible queues."
@@ -66,7 +66,7 @@ def dpnp_fill(arr, val):
         return
     elif not dpnp.isscalar(val):
         raise TypeError(
-            f"Expected `val` to be an array or Python scalar, got {type(val)}"
+            f"Expected `val` to be a 0D-array or Python scalar, got {type(val)}"
         )
 
     dt = arr.dtype
