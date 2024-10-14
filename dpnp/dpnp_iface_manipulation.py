@@ -3370,8 +3370,8 @@ def unstack(x, /, *, axis=0):
     Split an array into a sequence of arrays along the given axis.
 
     The `axis` parameter specifies the dimension along which the array will
-    be split. For example, if `axis=0` (the default) it will be the first
-    dimension and if `axis=-1` it will be the last dimension.
+    be split. For example, if ``axis=0`` (the default) it will be the first
+    dimension and if ``axis=-1`` it will be the last dimension.
 
     The result is a tuple of arrays split along `axis`.
 
@@ -3400,8 +3400,8 @@ def unstack(x, /, *, axis=0):
 
     Notes
     -----
-    ``unstack`` serves as the reverse operation of :obj:`dpnp.stack`, i.e.,
-    ``dpnp.stack(dpnp.unstack(x, axis=axis), axis=axis) == x``.
+    :obj:`dpnp.unstack` serves as the reverse operation of :obj:`dpnp.stack`,
+    i.e., ``dpnp.stack(dpnp.unstack(x, axis=axis), axis=axis) == x``.
 
     This function is equivalent to ``tuple(dpnp.moveaxis(x, axis, 0))``, since
     iterating on an array iterates along the first axis.

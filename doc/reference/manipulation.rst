@@ -95,7 +95,6 @@ Joining arrays
    dpnp.dstack
    dpnp.column_stack
    dpnp.row_stack
-   dpnp.unstack
 
 
 Splitting arrays
