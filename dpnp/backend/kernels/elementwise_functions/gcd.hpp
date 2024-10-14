@@ -38,6 +38,9 @@ struct GcdFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
+        static_assert(std::is_same_v<argT1, argT2>,
+                      "Input types are expected to be the same");
+
         return oneapi::dpl::gcd(in1, in2);
     }
 };

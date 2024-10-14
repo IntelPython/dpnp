@@ -12,6 +12,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
@@ -65,6 +66,18 @@ class TestTrace:
         result = ia.trace(out=iout)
         assert_equal(result, expected)
         assert result is iout
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    @pytest.mark.parametrize("offset", [0, 1, -1])
+    def test_linalg_trace(self, dtype, offset):
+        a = numpy.arange(12, dtype=dtype).reshape(3, 4)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.trace(ia, offset=offset, dtype=dtype)
+        expected = numpy.linalg.trace(a, offset=offset, dtype=dtype)
+        assert_equal(result, expected)
 
 
 @pytest.mark.parametrize(
