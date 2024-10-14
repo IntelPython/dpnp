@@ -3885,6 +3885,24 @@ class TestMatmul:
         expected = numpy.linalg.matmul(a, b)
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize(
+        "sh1, sh2",
+        [
+            ((2, 3, 3), (2, 3, 3)),
+            ((3, 3, 3, 3), (3, 3, 3, 3)),
+        ],
+        ids=["gemm", "gemm_batch"],
+    )
+    def test_matmul_with_offsets(self, sh1, sh2):
+        size1, size2 = numpy.prod(sh1, dtype=int), numpy.prod(sh2, dtype=int)
+        a = numpy.random.randint(-5, 5, size1).reshape(sh1).astype("f8")
+        b = numpy.random.randint(-5, 5, size2).reshape(sh2).astype("f8")
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = ia[1] @ ib[1]
+        expected = a[1] @ b[1]
+        assert_array_equal(result, expected)
+
 
 class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
