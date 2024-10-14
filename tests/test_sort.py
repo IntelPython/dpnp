@@ -82,15 +82,6 @@ class TestArgsort:
         expected = numpy.argsort(np_array, axis=None)
         assert_dtype_allclose(result, expected)
 
-    def test_sort_notimplemented(self):
-        dp_array = dpnp.arange(10)
-
-        with pytest.raises(NotImplementedError):
-            dpnp.argsort(dp_array, kind="quicksort")
-
-        with pytest.raises(NotImplementedError):
-            dpnp.argsort(dp_array, order=["age"])
-
 
 class TestSearchSorted:
     @pytest.mark.parametrize("side", ["left", "right"])
@@ -339,6 +330,9 @@ class TestSort:
 
         with pytest.raises(NotImplementedError):
             dpnp.sort(dp_array, order=["age"])
+
+        with pytest.raises(NotImplementedError):
+            dpnp.sort(dp_array, stable=False)
 
 
 class TestSortComplex:

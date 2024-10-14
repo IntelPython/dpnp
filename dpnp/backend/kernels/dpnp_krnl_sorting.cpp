@@ -109,15 +109,6 @@ void (*dpnp_argsort_default_c)(void *, void *, size_t) =
 // array1_in, void* result1, size_t size);
 
 template <typename _DataType>
-struct _sort_less
-{
-    inline bool operator()(const _DataType &val1, const _DataType &val2)
-    {
-        return (val1 < val2);
-    }
-};
-
-template <typename _DataType>
 class dpnp_partition_c_kernel;
 
 template <typename _DataType>
@@ -403,55 +394,6 @@ void (*dpnp_searchsorted_default_c)(void *,
                                     const size_t) =
     dpnp_searchsorted_c<_DataType, _IndexingType>;
 
-template <typename _DataType>
-class dpnp_sort_c_kernel;
-
-template <typename _DataType>
-DPCTLSyclEventRef dpnp_sort_c(DPCTLSyclQueueRef q_ref,
-                              void *array1_in,
-                              void *result1,
-                              size_t size,
-                              const DPCTLEventVectorRef dep_event_vec_ref)
-{
-    // avoid warning unused variable
-    (void)dep_event_vec_ref;
-
-    DPCTLSyclEventRef event_ref = nullptr;
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
-
-    DPNPC_ptr_adapter<_DataType> input1_ptr(q_ref, array1_in, size, true);
-    DPNPC_ptr_adapter<_DataType> result1_ptr(q_ref, result1, size, true, true);
-    _DataType *array_1 = input1_ptr.get_ptr();
-    _DataType *result = result1_ptr.get_ptr();
-
-    std::copy(array_1, array_1 + size, result);
-
-    auto policy = oneapi::dpl::execution::make_device_policy<
-        class dpnp_sort_c_kernel<_DataType>>(q);
-
-    // fails without explicitly specifying of comparator or with std::less
-    // during kernels compilation affects other kernels
-    std::sort(policy, result, result + size, _sort_less<_DataType>());
-
-    policy.queue().wait();
-
-    return event_ref;
-}
-
-template <typename _DataType>
-void dpnp_sort_c(void *array1_in, void *result1, size_t size)
-{
-    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
-    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_sort_c<_DataType>(
-        q_ref, array1_in, result1, size, dep_event_vec_ref);
-    DPCTLEvent_WaitAndThrow(event_ref);
-    DPCTLEvent_Delete(event_ref);
-}
-
-template <typename _DataType>
-void (*dpnp_sort_default_c)(void *, void *, size_t) = dpnp_sort_c<_DataType>;
-
 void func_map_init_sorting(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_ARGSORT][eft_INT][eft_INT] = {
@@ -495,15 +437,6 @@ void func_map_init_sorting(func_map_t &fmap)
         eft_FLT, (void *)dpnp_searchsorted_default_c<float, int64_t>};
     fmap[DPNPFuncName::DPNP_FN_SEARCHSORTED][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_searchsorted_default_c<double, int64_t>};
-
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_INT][eft_INT] = {
-        eft_INT, (void *)dpnp_sort_default_c<int32_t>};
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_LNG][eft_LNG] = {
-        eft_LNG, (void *)dpnp_sort_default_c<int64_t>};
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_sort_default_c<float>};
-    fmap[DPNPFuncName::DPNP_FN_SORT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_sort_default_c<double>};
 
     return;
 }

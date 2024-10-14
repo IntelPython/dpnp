@@ -36,7 +36,6 @@ cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this na
         DPNP_FN_CHOOSE_EXT
         DPNP_FN_CORRELATE_EXT
         DPNP_FN_ERF_EXT
-        DPNP_FN_MEDIAN_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
         DPNP_FN_RNG_BETA_EXT
