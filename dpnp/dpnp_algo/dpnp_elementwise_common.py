@@ -633,8 +633,10 @@ def resolve_weak_types_2nd_arg_int(o1_dtype, o2_dtype, sycl_dev):
         o1_kind_num = dtu._strong_dtype_num_kind(o1_dtype)
         o2_kind_num = dtu._weak_type_num_kind(o2_dtype)
         if o2_kind_num < o1_kind_num:
-            if isinstance(o2_dtype, (dtu.WeakBooleanType, dtu.WeakIntegralType)):
-                print()
-                print(o1_dtype, dpt.dtype(dti.default_device_int_type(sycl_dev)))
-                return o1_dtype, dpt.dtype(dti.default_device_int_type(sycl_dev))
+            if isinstance(
+                o2_dtype, (dtu.WeakBooleanType, dtu.WeakIntegralType)
+            ):
+                return o1_dtype, dpt.dtype(
+                    dti.default_device_int_type(sycl_dev)
+                )
     return dtu._resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)
