@@ -18,119 +18,6 @@ from .helper import (
 )
 
 
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
-@pytest.mark.parametrize("size", [2, 4, 8, 16, 3, 9, 27, 81])
-def test_median(dtype, size):
-    a = numpy.arange(size, dtype=dtype)
-    ia = dpnp.array(a)
-
-    np_res = numpy.median(a)
-    dpnp_res = dpnp.median(ia)
-
-    assert_allclose(dpnp_res, np_res)
-
-
-class TestMaxMin:
-    @pytest.mark.parametrize("func", ["max", "min"])
-    @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
-    @pytest.mark.parametrize("keepdims", [False, True])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_func(self, func, axis, keepdims, dtype):
-        a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
-        ia = dpnp.array(a)
-
-        np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
-        assert_dtype_allclose(dpnp_res, np_res)
-
-    @pytest.mark.parametrize("func", ["max", "min"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_strided(self, func, dtype):
-        a = numpy.arange(20, dtype=dtype)
-        ia = dpnp.array(a)
-
-        np_res = getattr(numpy, func)(a[::-1])
-        dpnp_res = getattr(dpnp, func)(ia[::-1])
-        assert_dtype_allclose(dpnp_res, np_res)
-
-        np_res = getattr(numpy, func)(a[::2])
-        dpnp_res = getattr(dpnp, func)(ia[::2])
-        assert_dtype_allclose(dpnp_res, np_res)
-
-    @pytest.mark.parametrize("func", ["max", "min"])
-    @pytest.mark.parametrize("axis", [None, 0, 1, -1])
-    @pytest.mark.parametrize("keepdims", [False, True])
-    def test_bool(self, func, axis, keepdims):
-        a = numpy.arange(2, dtype=numpy.bool_)
-        a = numpy.tile(a, (2, 2))
-        ia = dpnp.array(a)
-
-        np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
-        assert_dtype_allclose(dpnp_res, np_res)
-
-    @pytest.mark.parametrize("func", ["max", "min"])
-    def test_out(self, func):
-        a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
-        ia = dpnp.array(a)
-
-        # out is dpnp_array
-        np_res = getattr(numpy, func)(a, axis=0)
-        dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
-        dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
-        assert dpnp_out is dpnp_res
-        assert_allclose(dpnp_res, np_res)
-
-        # out is usm_ndarray
-        dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
-        dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
-        assert dpt_out is dpnp_res.get_array()
-        assert_allclose(dpnp_res, np_res)
-
-        # output is numpy array -> Error
-        dpnp_res = numpy.empty_like(np_res)
-        with pytest.raises(TypeError):
-            getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
-
-        # output has incorrect shape -> Error
-        dpnp_res = dpnp.array(numpy.zeros((4, 2)))
-        with pytest.raises(ValueError):
-            getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
-
-    @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("func", ["max", "min"])
-    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
-    def test_out_dtype(self, func, arr_dt, out_dt):
-        a = (
-            numpy.arange(12, dtype=numpy.float32)
-            .reshape((2, 2, 3))
-            .astype(dtype=arr_dt)
-        )
-        out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
-
-        ia = dpnp.array(a)
-        iout = dpnp.array(out)
-
-        result = getattr(dpnp, func)(ia, out=iout, axis=1)
-        expected = getattr(numpy, func)(a, out=out, axis=1)
-        assert_array_equal(expected, result)
-        assert result is iout
-
-    @pytest.mark.parametrize("func", ["max", "min"])
-    def test_error(self, func):
-        ia = dpnp.arange(5)
-        # where is not supported
-        with pytest.raises(NotImplementedError):
-            getattr(dpnp, func)(ia, where=False)
-
-        # initial is not supported
-        with pytest.raises(NotImplementedError):
-            getattr(dpnp, func)(ia, initial=6)
-
-
 class TestAverage:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1])
@@ -252,6 +139,91 @@ class TestAverage:
             dpnp.average(a, axis=0, weights=w)
 
 
+class TestMaxMin:
+    @pytest.mark.parametrize("func", ["max", "min"])
+    @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
+    @pytest.mark.parametrize("keepdims", [False, True])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_func(self, func, axis, keepdims, dtype):
+        a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
+        ia = dpnp.array(a)
+
+        np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
+        dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
+        assert_dtype_allclose(dpnp_res, np_res)
+
+    @pytest.mark.parametrize("func", ["max", "min"])
+    @pytest.mark.parametrize("axis", [None, 0, 1, -1])
+    @pytest.mark.parametrize("keepdims", [False, True])
+    def test_bool(self, func, axis, keepdims):
+        a = numpy.arange(2, dtype=numpy.bool_)
+        a = numpy.tile(a, (2, 2))
+        ia = dpnp.array(a)
+
+        np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
+        dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
+        assert_dtype_allclose(dpnp_res, np_res)
+
+    @pytest.mark.parametrize("func", ["max", "min"])
+    def test_out(self, func):
+        a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
+        ia = dpnp.array(a)
+
+        # out is dpnp_array
+        np_res = getattr(numpy, func)(a, axis=0)
+        dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
+        dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
+        assert dpnp_out is dpnp_res
+        assert_allclose(dpnp_res, np_res)
+
+        # out is usm_ndarray
+        dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
+        dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
+        assert dpt_out is dpnp_res.get_array()
+        assert_allclose(dpnp_res, np_res)
+
+        # output is numpy array -> Error
+        dpnp_res = numpy.empty_like(np_res)
+        with pytest.raises(TypeError):
+            getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+
+        # output has incorrect shape -> Error
+        dpnp_res = dpnp.array(numpy.zeros((4, 2)))
+        with pytest.raises(ValueError):
+            getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("func", ["max", "min"])
+    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
+    def test_out_dtype(self, func, arr_dt, out_dt):
+        a = (
+            numpy.arange(12, dtype=numpy.float32)
+            .reshape((2, 2, 3))
+            .astype(dtype=arr_dt)
+        )
+        out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
+
+        ia = dpnp.array(a)
+        iout = dpnp.array(out)
+
+        result = getattr(dpnp, func)(ia, out=iout, axis=1)
+        expected = getattr(numpy, func)(a, out=out, axis=1)
+        assert_array_equal(expected, result)
+        assert result is iout
+
+    @pytest.mark.parametrize("func", ["max", "min"])
+    def test_error(self, func):
+        ia = dpnp.arange(5)
+        # where is not supported
+        with pytest.raises(NotImplementedError):
+            getattr(dpnp, func)(ia, where=False)
+
+        # initial is not supported
+        with pytest.raises(NotImplementedError):
+            getattr(dpnp, func)(ia, initial=6)
+
+
 class TestMean:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
@@ -265,15 +237,18 @@ class TestMean:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
-    @pytest.mark.parametrize("axis", [0, 1])
-    def test_mean_out(self, dtype, axis):
-        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        np_array = dpnp.asnumpy(dp_array)
+    @pytest.mark.parametrize(
+        "axis, out_shape", [(0, (3,)), (1, (2,)), ((0, 1), ())]
+    )
+    def test_mean_out(self, dtype, axis, out_shape):
+        ia = dpnp.array([[5, 1, 2], [8, 4, 3]], dtype=dtype)
+        a = dpnp.asnumpy(ia)
 
-        expected = numpy.mean(np_array, axis=axis)
-        out = dpnp.empty_like(dpnp.asarray(expected))
-        result = dpnp.mean(dp_array, axis=axis, out=out)
-        assert result is out
+        out_np = numpy.empty_like(a, shape=out_shape)
+        out_dp = dpnp.empty_like(ia, shape=out_shape)
+        expected = numpy.mean(a, axis=axis, out=out_np)
+        result = dpnp.mean(ia, axis=axis, out=out_dp)
+        assert result is out_dp
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
@@ -310,19 +285,6 @@ class TestMean:
         expected = numpy.mean(np_array, axis=axis)
         assert_allclose(expected, result)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
-    def test_mean_strided(self, dtype):
-        dp_array = dpnp.array([-2, -1, 0, 1, 0, 2], dtype=dtype)
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.mean(dp_array[::-1])
-        expected = numpy.mean(np_array[::-1])
-        assert_allclose(expected, result)
-
-        result = dpnp.mean(dp_array[::2])
-        expected = numpy.mean(np_array[::2])
-        assert_allclose(expected, result)
-
     def test_mean_scalar(self):
         dp_array = dpnp.array(5)
         np_array = dpnp.asnumpy(dp_array)
@@ -335,6 +297,113 @@ class TestMean:
         ia = dpnp.arange(5)
         with pytest.raises(NotImplementedError):
             dpnp.mean(ia, where=False)
+
+
+class TestMedian:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("size", [1, 2, 3, 4, 8, 9])
+    def test_basic(self, dtype, size):
+        if dtype == dpnp.bool:
+            a = numpy.arange(2, dtype=dtype)
+            a = numpy.repeat(a, size)
+        else:
+            a = numpy.array(numpy.random.uniform(-5, 5, size), dtype=dtype)
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a)
+        result = dpnp.median(ia)
+
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1], (0, -2, -1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_axis(self, axis, keepdims):
+        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=axis, keepdims=keepdims)
+        result = dpnp.median(ia, axis=axis, keepdims=keepdims)
+
+        assert_allclose(result, expected)
+
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
+    def test_empty(self, axis, shape):
+        a = numpy.empty(shape)
+        ia = dpnp.array(a)
+
+        result = dpnp.median(ia, axis=axis)
+        expected = numpy.median(a, axis=axis)
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "axis, out_shape", [(0, (3,)), (1, (2,)), ((0, 1), ())]
+    )
+    def test_out(self, dtype, axis, out_shape):
+        a = numpy.array([[5, 1, 2], [8, 4, 3]], dtype=dtype)
+        ia = dpnp.array(a)
+
+        out_np = numpy.empty_like(a, shape=out_shape)
+        out_dp = dpnp.empty_like(ia, shape=out_shape)
+        expected = numpy.median(a, axis=axis, out=out_np)
+        result = dpnp.median(ia, axis=axis, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    def test_0d_array(self):
+        a = numpy.array(20)
+        ia = dpnp.array(a)
+
+        result = dpnp.median(ia)
+        expected = numpy.median(a)
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize("axis", [None, 0, (0, 1), (0, -2, -1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_nan(self, axis, keepdims):
+        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a[0, 0, 0] = a[-1, -1, -1] = numpy.nan
+        ia = dpnp.array(a)
+
+        expected = numpy.median(a, axis=axis, keepdims=keepdims)
+        result = dpnp.median(ia, axis=axis, keepdims=keepdims)
+
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [None, 0, -1, (0, -2, -1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_overwrite_input(self, axis, keepdims):
+        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        ia = dpnp.array(a)
+
+        b = a.copy()
+        ib = ia.copy()
+        expected = numpy.median(
+            b, axis=axis, keepdims=keepdims, overwrite_input=True
+        )
+        result = dpnp.median(
+            ib, axis=axis, keepdims=keepdims, overwrite_input=True
+        )
+        assert not numpy.all(a == b)
+        assert not dpnp.all(ia == ib)
+
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
+    @pytest.mark.parametrize("overwrite_input", [True, False])
+    def test_usm_ndarray(self, axis, overwrite_input):
+        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        ia = dpt.asarray(a)
+
+        expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
+        result = dpnp.median(ia, axis=axis, overwrite_input=overwrite_input)
+
+        assert_allclose(result, expected)
 
 
 class TestVar:
@@ -388,19 +457,6 @@ class TestVar:
 
         result = dpnp.var(dp_array, axis=axis)
         expected = numpy.var(np_array, axis=axis)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
-    def test_var_strided(self, dtype):
-        dp_array = dpnp.array([-2, -1, 0, 1, 0, 2], dtype=dtype)
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.var(dp_array[::-1])
-        expected = numpy.var(np_array[::-1])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.var(dp_array[::2])
-        expected = numpy.var(np_array[::2])
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
@@ -484,19 +540,6 @@ class TestStd:
 
         result = dpnp.std(dp_array, axis=axis)
         expected = numpy.std(np_array, axis=axis)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
-    def test_std_strided(self, dtype):
-        dp_array = dpnp.array([-2, -1, 0, 1, 0, 2], dtype=dtype)
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.std(dp_array[::-1])
-        expected = numpy.std(np_array[::-1])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.std(dp_array[::2])
-        expected = numpy.std(np_array[::2])
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_complex_warning")

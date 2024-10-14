@@ -74,9 +74,6 @@ enum class DPNPFuncName : size_t
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
                             impls  */
-    DPNP_FN_MEDIAN,      /**< Used in numpy.median() impl  */
-    DPNP_FN_MEDIAN_EXT,  /**< Used in numpy.median() impl, requires extra
-                            parameters */
     DPNP_FN_MODF,        /**< Used in numpy.modf() impl  */
     DPNP_FN_MODF_EXT,  /**< Used in numpy.modf() impl, requires extra parameters
                         */
@@ -203,7 +200,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_ZIPF,        /**< Used in numpy.random.zipf() impl  */
     DPNP_FN_RNG_ZIPF_EXT, /**< Used in numpy.random.zipf() impl, requires extra
                              parameters */
-    DPNP_FN_SORT,         /**< Used in numpy.sort() impl  */
     DPNP_FN_ZEROS,        /**< Used in numpy.zeros() impl */
     DPNP_FN_ZEROS_LIKE,   /**< Used in numpy.zeros_like() impl */
     DPNP_FN_LAST,         /**< The latest element of the enumeration */
