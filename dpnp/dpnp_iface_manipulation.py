@@ -1848,7 +1848,7 @@ def pad(array, pad_width, mode="constant", **kwargs):
     Parameters
     ----------
     array : {dpnp.ndarray, usm_ndarray}
-        The array to pad.
+        The array of rank ``N`` to pad.
     pad_width : {sequence, array_like, int}
         Number of values padded to the edges of each axis.
         ``((before_1, after_1), ... (before_N, after_N))`` unique pad widths
@@ -1893,21 +1893,17 @@ def pad(array, pad_width, mode="constant", **kwargs):
             Padding function, see Notes.
         Default: ``"constant"``.
     stat_length : {None, int, sequence of ints}, optional
-        Used in "maximum", "mean", and "minimum". Number of
+        Used in ``"maximum"``, ``"mean"``, and ``"minimum"``. Number of
         values at edge of each axis used to calculate the statistic value.
-
         ``((before_1, after_1), ... (before_N, after_N))`` unique statistic
         lengths for each axis.
-
         ``(before, after)`` or ``((before, after),)`` yields same before
         and after statistic lengths for each axis.
-
         ``(stat_length,)`` or ``int`` is a shortcut for
         ``before = after = statistic`` length for all axes.
-
        Default: ``None``, to use the entire axis.
     constant_values : {sequence, scalar}, optional
-        Used in "constant". The values to set the padded values for each
+        Used in ``"constant"``. The values to set the padded values for each
         axis.
         ``((before_1, after_1), ... (before_N, after_N))`` unique pad constants
         for each axis.
@@ -1917,7 +1913,7 @@ def pad(array, pad_width, mode="constant", **kwargs):
         ``before = after = constant`` for all axes.
         Default: ``0``.
     end_values : {sequence, scalar}, optional
-        Used in "linear_ramp". The values used for the ending value of the
+        Used in ``"linear_ramp"``. The values used for the ending value of the
         linear_ramp and that will form the edge of the padded array.
         ``((before_1, after_1), ... (before_N, after_N))`` unique end values
         for each axis.
@@ -1927,9 +1923,9 @@ def pad(array, pad_width, mode="constant", **kwargs):
         ``before = after = constant`` for all axes.
         Default: ``0``.
     reflect_type : {"even", "odd"}, optional
-        Used in "reflect", and "symmetric". The "even" style is the
+        Used in ``"reflect"``, and ``"symmetric"``. The ``"even"`` style is the
         default with an unaltered reflection around the edge value. For
-        the "odd" style, the extended part of the array is created by
+        the ``"odd"`` style, the extended part of the array is created by
         subtracting the reflected values from two times the edge value.
         Default: ``"even"``.
 

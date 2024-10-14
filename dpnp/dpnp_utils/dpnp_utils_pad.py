@@ -216,11 +216,11 @@ def _get_stats(padded, axis, width_pair, length_pair, stat_func):
         valid area in `padded` is considered.
     stat_func : function
         Function to compute statistic. The expected signature is
-        ``stat_func(x: ndarray, axis: int, keepdims: bool) -> ndarray``.
+        ``stat_func(x: dpnp.ndarray, axis: int, keepdims: bool) -> dpnp.ndarray``.
 
     Returns
     -------
-    left_stat, right_stat : ndarray
+    left_stat, right_stat : dpnp.ndarray
         Calculated statistic for both sides of `padded`.
 
     """
@@ -642,6 +642,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
 
             # compute indices for the iteration axes, and append a trailing
             # ellipsis to prevent 0d arrays decaying to scalars
+            # TODO: replace with dpnp.ndindex when implemented
             inds = numpy.ndindex(view.shape[:-1])
             inds = (ind + (Ellipsis,) for ind in inds)
             for ind in inds:
@@ -744,7 +745,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
 
     elif mode in {"reflect", "symmetric"}:
         method = kwargs.get("reflect_type", "even")
-        include_edge = True if mode == "symmetric" else False
+        include_edge = mode == "symmetric"
         for axis, (left_index, right_index) in zip(axes, pad_width):
             if array.shape[axis] == 1 and (left_index > 0 or right_index > 0):
                 # Extending singleton dimension for 'reflect' is legacy
@@ -769,7 +770,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
                     include_edge,
                 )
 
-    elif mode == "wrap":
+    else:  # mode == "wrap":
         for axis, (left_index, right_index) in zip(axes, pad_width):
             roi = _view_roi(padded, original_area_slice, axis)
             original_period = padded.shape[axis] - right_index - left_index
