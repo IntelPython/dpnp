@@ -108,6 +108,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Updated the test suit for `dpnp.fft` module [#2071](https://github.com/IntelPython/dpnp/pull/2071)
 * Reworked `dpnp.clip` implementation to align with Python Array API 2023.12 specification [#2048](https://github.com/IntelPython/dpnp/pull/2048)
 * Skipped outdated tests for `dpnp.linalg.solve` due to compatibility issues with NumPy 2.0 [#2074](https://github.com/IntelPython/dpnp/pull/2074)
+* Updated installation instructions [#2098](https://github.com/IntelPython/dpnp/pull/2098)
 
 ### Fixed
 
