@@ -275,8 +275,7 @@ class TestArrayFill:
         return a
 
     @pytest.mark.skip(
-        "asynchronous fill does not allow numpy scalar array for consistency"
-        "with dpnp.fill_diagonal"
+        "Numpy allows Numpy scalar arrays as fill value"
     )
     def test_fill_with_numpy_scalar_ndarray(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((2, 3, 4), xp, dtype1)
