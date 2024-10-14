@@ -102,6 +102,7 @@ class TestDot(unittest.TestCase):
     )
 )
 class TestCrossProduct(unittest.TestCase):
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_cross(self, xp, dtype_a, dtype_b):
