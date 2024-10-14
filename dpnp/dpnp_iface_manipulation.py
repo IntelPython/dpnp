@@ -1794,13 +1794,13 @@ def matrix_transpose(x, /):
 
     """
 
-    dpnp.check_supported_arrays_type(x)
-    if x.ndim < 2:
+    usm_x = dpnp.get_usm_ndarray(x)
+    if usm_x.ndim < 2:
         raise ValueError(
-            f"Input array must be at least 2-dimensional, but it is {x.ndim}"
+            "Input array must be at least 2-dimensional, "
+            f"but it is {usm_x.ndim}"
         )
 
-    usm_x = dpnp.get_usm_ndarray(x)
     usm_res = dpt.matrix_transpose(usm_x)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
