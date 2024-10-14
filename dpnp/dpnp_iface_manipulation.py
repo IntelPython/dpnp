@@ -1762,7 +1762,7 @@ def matrix_transpose(x, /):
     Parameters
     ----------
     x : (..., M, N) {dpnp.ndarray, usm_ndarray}
-        Input array with ``x.ndim >= 2` and whose two innermost
+        Input array with ``x.ndim >= 2`` and whose two innermost
         dimensions form ``MxN`` matrices.
 
     Returns
