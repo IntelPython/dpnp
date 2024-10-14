@@ -41,7 +41,15 @@ struct LdexpFunctor
 
     resT operator()(const argT1 &in1, const argT2 &in2) const
     {
-        return sycl::ldexp(in1, in2);
+        if (((int)in2) == in2) {
+            return sycl::ldexp(in1, in2);
+        }
+
+        // a separate handling for large integer values
+        if (in2 > 0) {
+            return std::numeric_limits<resT>::infinity();
+        }
+        return resT(0);
     }
 };
 } // namespace dpnp::kernels::ldexp
