@@ -12,7 +12,7 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Data Parallel Extension for NumPy 0.17.0dev0+42.g980a65c7c7 documentation</title>
+  <title>Index &mdash; Data Parallel Extension for NumPy 0.17.0dev0+57.g88bd98db2d1 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
 
@@ -23,7 +23,7 @@
   
         <script src="_static/jquery.js?v=5d32c60e"></script>
         <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="_static/documentation_options.js?v=65cfa882"></script>
+        <script src="_static/documentation_options.js?v=b4c87c1e"></script>
         <script src="_static/doctools.js?v=9a2dae69"></script>
         <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -43,7 +43,7 @@
             Data Parallel Extension for NumPy
           </a>
               <div class="version">
-                0.17.0dev0+42.g980a65c7c7
+                0.17.0dev0+57.g88bd98db2d1
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -455,11 +455,17 @@
 </li>
       <li><a href="reference/generated/dpnp.bitwise_and.html#dpnp.bitwise_and">bitwise_and() (in module dpnp)</a>
 </li>
-      <li><a href="reference/generated/dpnp.bitwise_not.html#dpnp.bitwise_not">bitwise_not() (in module dpnp)</a>
+      <li><a href="reference/generated/dpnp.bitwise_invert.html#dpnp.bitwise_invert">bitwise_invert() (in module dpnp)</a>
+</li>
+      <li><a href="reference/generated/dpnp.bitwise_left_shift.html#dpnp.bitwise_left_shift">bitwise_left_shift() (in module dpnp)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/generated/dpnp.bitwise_not.html#dpnp.bitwise_not">bitwise_not() (in module dpnp)</a>
+</li>
       <li><a href="reference/generated/dpnp.bitwise_or.html#dpnp.bitwise_or">bitwise_or() (in module dpnp)</a>
+</li>
+      <li><a href="reference/generated/dpnp.bitwise_right_shift.html#dpnp.bitwise_right_shift">bitwise_right_shift() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.bitwise_xor.html#dpnp.bitwise_xor">bitwise_xor() (in module dpnp)</a>
 </li>
@@ -558,7 +564,11 @@
       <li><a href="reference/generated/dpnp.cov.html#dpnp.cov">cov() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.cross.html#dpnp.cross">cross() (in module dpnp)</a>
+
+      <ul>
+        <li><a href="reference/generated/dpnp.linalg.cross.html#dpnp.linalg.cross">(in module dpnp.linalg)</a>
 </li>
+      </ul></li>
       <li><a href="reference/generated/dpnp.cumlogsumexp.html#dpnp.cumlogsumexp">cumlogsumexp() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.cumprod">cumprod() (dpnp.dpnp_array.dpnp_array method)</a>
@@ -608,15 +618,17 @@
 </li>
         <li><a href="reference/generated/dpnp.diagonal.html#dpnp.diagonal">(in module dpnp)</a>
 </li>
+        <li><a href="reference/generated/dpnp.linalg.diagonal.html#dpnp.linalg.diagonal">(in module dpnp.linalg)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.diff.html#dpnp.diff">diff() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.digitize.html#dpnp.digitize">digitize() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.random.dirichlet.html#dpnp.random.dirichlet">dirichlet() (in module dpnp.random)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.divide.html#dpnp.divide">divide() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.dot">dot() (dpnp.dpnp_array.dpnp_array method)</a>
@@ -630,20 +642,6 @@
 
       <ul>
         <li><a href="overview.html#module-dpnp">module</a>
-</li>
-      </ul></li>
-      <li>
-    dpnp.fft
-
-      <ul>
-        <li><a href="reference/fft.html#module-dpnp.fft">module</a>
-</li>
-      </ul></li>
-      <li>
-    dpnp.random
-
-      <ul>
-        <li><a href="reference/random.html#module-dpnp.random">module</a>
 </li>
       </ul></li>
       <li><a href="reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array">dpnp_array (class in dpnp.dpnp_array)</a>
@@ -806,6 +804,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.random.gamma.html#dpnp.random.gamma">gamma() (in module dpnp.random)</a>
 </li>
+      <li><a href="reference/generated/dpnp.gcd.html#dpnp.gcd">gcd() (in module dpnp)</a>
+</li>
       <li><a href="reference/generated/dpnp.random.geometric.html#dpnp.random.geometric">geometric() (in module dpnp.random)</a>
 </li>
       <li><a href="reference/generated/dpnp.geomspace.html#dpnp.geomspace">geomspace() (in module dpnp)</a>
@@ -814,10 +814,10 @@
 </li>
       <li><a href="reference/generated/dpnp.get_include.html#dpnp.get_include">get_include() (in module dpnp)</a>
 </li>
-      <li><a href="reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_state">get_state() (dpnp.random.RandomState method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_state">get_state() (dpnp.random.RandomState method)</a>
+</li>
       <li><a href="reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_device">get_sycl_device() (dpnp.random.RandomState method)</a>
 </li>
       <li><a href="reference/generated/dpnp.random.RandomState.html#dpnp.random.RandomState.get_sycl_queue">get_sycl_queue() (dpnp.random.RandomState method)</a>
@@ -966,6 +966,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.random.laplace.html#dpnp.random.laplace">laplace() (in module dpnp.random)</a>
 </li>
+      <li><a href="reference/generated/dpnp.lcm.html#dpnp.lcm">lcm() (in module dpnp)</a>
+</li>
       <li><a href="reference/generated/dpnp.left_shift.html#dpnp.left_shift">left_shift() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.less.html#dpnp.less">less() (in module dpnp)</a>
@@ -984,10 +986,10 @@
 </li>
       <li><a href="reference/generated/dpnp.log2.html#dpnp.log2">log2() (in module dpnp)</a>
 </li>
-      <li><a href="reference/generated/dpnp.logaddexp.html#dpnp.logaddexp">logaddexp() (in module dpnp)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/generated/dpnp.logaddexp.html#dpnp.logaddexp">logaddexp() (in module dpnp)</a>
+</li>
       <li><a href="reference/generated/dpnp.logaddexp2.html#dpnp.logaddexp2">logaddexp2() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.logical_and.html#dpnp.logical_and">logical_and() (in module dpnp)</a>
@@ -1019,6 +1021,12 @@
       <li><a href="reference/generated/dpnp.mask_indices.html#dpnp.mask_indices">mask_indices() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.matmul.html#dpnp.matmul">matmul() (in module dpnp)</a>
+
+      <ul>
+        <li><a href="reference/generated/dpnp.linalg.matmul.html#dpnp.linalg.matmul">(in module dpnp.linalg)</a>
+</li>
+      </ul></li>
+      <li><a href="reference/generated/dpnp.linalg.matrix_norm.html#dpnp.linalg.matrix_norm">matrix_norm() (in module dpnp.linalg)</a>
 </li>
       <li><a href="reference/generated/dpnp.linalg.matrix_power.html#dpnp.linalg.matrix_power">matrix_power() (in module dpnp.linalg)</a>
 </li>
@@ -1046,12 +1054,12 @@
 </li>
       <li><a href="reference/generated/dpnp.meshgrid.html#dpnp.meshgrid">meshgrid() (in module dpnp)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.dtype.html#dpnp.dtype.metadata">metadata (dpnp.dtype attribute)</a>
 </li>
       <li><a href="reference/generated/dpnp.mgrid.html#dpnp.mgrid">mgrid (in module dpnp)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.min">min() (dpnp.dpnp_array.dpnp_array method)</a>
 
       <ul>
@@ -1071,10 +1079,6 @@
 
       <ul>
         <li><a href="overview.html#module-dpnp">dpnp</a>
-</li>
-        <li><a href="reference/fft.html#module-dpnp.fft">dpnp.fft</a>
-</li>
-        <li><a href="reference/random.html#module-dpnp.random">dpnp.random</a>
 </li>
       </ul></li>
       <li><a href="reference/generated/dpnp.moveaxis.html#dpnp.moveaxis">moveaxis() (in module dpnp)</a>
@@ -1188,7 +1192,11 @@
       <li><a href="reference/generated/dpnp.ones_like.html#dpnp.ones_like">ones_like() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.outer.html#dpnp.outer">outer() (in module dpnp)</a>
+
+      <ul>
+        <li><a href="reference/generated/dpnp.linalg.outer.html#dpnp.linalg.outer">(in module dpnp.linalg)</a>
 </li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1453,8 +1461,6 @@
 </li>
       <li><a href="reference/generated/dpnp.square.html#dpnp.square">square() (in module dpnp)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.squeeze">squeeze() (dpnp.dpnp_array.dpnp_array method)</a>
 
       <ul>
@@ -1463,6 +1469,8 @@
         <li><a href="reference/generated/dpnp.squeeze.html#dpnp.squeeze">(in module dpnp)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.stack.html#dpnp.stack">stack() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.random.standard_cauchy.html#dpnp.random.standard_cauchy">standard_cauchy() (in module dpnp.random)</a>
@@ -1509,6 +1517,8 @@
       </ul></li>
       <li><a href="reference/generated/dpnp.linalg.svd.html#dpnp.linalg.svd">svd() (in module dpnp.linalg)</a>
 </li>
+      <li><a href="reference/generated/dpnp.linalg.svdvals.html#dpnp.linalg.svdvals">svdvals() (in module dpnp.linalg)</a>
+</li>
       <li><a href="reference/generated/dpnp.dpnp_array.dpnp_array.html#dpnp.dpnp_array.dpnp_array.swapaxes">swapaxes() (dpnp.dpnp_array.dpnp_array method)</a>
 
       <ul>
@@ -1550,7 +1560,11 @@
       <li><a href="reference/generated/dpnp.tanh.html#dpnp.tanh">tanh() (in module dpnp)</a>
 </li>
       <li><a href="reference/generated/dpnp.tensordot.html#dpnp.tensordot">tensordot() (in module dpnp)</a>
+
+      <ul>
+        <li><a href="reference/generated/dpnp.linalg.tensordot.html#dpnp.linalg.tensordot">(in module dpnp.linalg)</a>
 </li>
+      </ul></li>
       <li><a href="reference/generated/dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv">tensorinv() (in module dpnp.linalg)</a>
 </li>
       <li><a href="reference/generated/dpnp.linalg.tensorsolve.html#dpnp.linalg.tensorsolve">tensorsolve() (in module dpnp.linalg)</a>
@@ -1565,6 +1579,8 @@
         <li><a href="reference/generated/dpnp.ndarray.trace.html#dpnp.ndarray.trace">(dpnp.ndarray method)</a>
 </li>
         <li><a href="reference/generated/dpnp.trace.html#dpnp.trace">(in module dpnp)</a>
+</li>
+        <li><a href="reference/generated/dpnp.linalg.trace.html#dpnp.linalg.trace">(in module dpnp.linalg)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1644,6 +1660,8 @@
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/dpnp.vdot.html#dpnp.vdot">vdot() (in module dpnp)</a>
+</li>
+      <li><a href="reference/generated/dpnp.linalg.vector_norm.html#dpnp.linalg.vector_norm">vector_norm() (in module dpnp.linalg)</a>
 </li>
       <li><a href="reference/generated/dpnp.random.vonmises.html#dpnp.random.vonmises">vonmises() (in module dpnp.random)</a>
 </li>
