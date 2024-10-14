@@ -149,7 +149,7 @@ class dpnp_array:
         if self.ndim < 2:
             raise ValueError("matrix transpose with ndim < 2 is undefined")
 
-        return self.swapaxes(-1, -2)
+        return self._array_obj.mT
 
     def to_device(self, target_device):
         """Transfer array to target device."""

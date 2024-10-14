@@ -1799,7 +1799,10 @@ def matrix_transpose(x, /):
         raise ValueError(
             f"Input array must be at least 2-dimensional, but it is {x.ndim}"
         )
-    return dpnp.swapaxes(x, -1, -2)
+
+    usm_x = dpnp.get_usm_ndarray(x)
+    usm_res = dpt.matrix_transpose(usm_x)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def moveaxis(a, source, destination):
