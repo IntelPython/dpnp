@@ -1349,6 +1349,11 @@ class TestLdexp:
         expected = numpy.ldexp(mant[::stride], exp[::stride], out=out[::stride])
         assert_equal(result, expected)
 
+    def test_bool_exp(self):
+        result = dpnp.ldexp(3.7, dpnp.array(True))
+        expected = numpy.ldexp(3.7, numpy.array(True))
+        assert_almost_equal(result, expected)
+
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_uint64_exp(self, xp):
         x = xp.array(4, dtype=numpy.uint64)
