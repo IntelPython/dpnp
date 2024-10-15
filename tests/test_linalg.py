@@ -719,6 +719,10 @@ class TestEinsum:
         # different size for same label 5 != 4
         assert_raises(ValueError, inp.einsum, "ii", a)
 
+        a = inp.arange(25).reshape(5, 5)
+        # subscript is not within the valid range [0, 52)
+        assert_raises(ValueError, inp.einsum, a, [53, 53])
+
     @pytest.mark.parametrize("do_opt", [True, False])
     @pytest.mark.parametrize("xp", [numpy, inp])
     def test_einsum_error2(self, do_opt, xp):
@@ -1739,6 +1743,17 @@ class TestEinsum:
         for opt in [True, False]:
             tmp = inp.einsum("...ft,mf->...mt", d, c, order="a", optimize=opt)
             assert tmp.flags.c_contiguous
+
+    def test_einsum_path(self):
+        # Test einsum path for covergae
+        a = numpy.random.rand(1, 2, 3, 4)
+        b = numpy.random.rand(4, 3, 2, 1)
+        a_dp = inp.array(a)
+        b_dp = inp.array(b)
+        expected = numpy.einsum_path("ijkl,dcba->dcba", a, b)
+        result = inp.einsum_path("ijkl,dcba->dcba", a_dp, b_dp)
+        assert expected[0] == result[0]
+        assert expected[1] == result[1]
 
 
 class TestInv:

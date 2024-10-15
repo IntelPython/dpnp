@@ -109,29 +109,6 @@ def _compute_size_by_dict(indices, idx_dict):
     return ret
 
 
-def _compute_size(start, shape):
-    """
-    Compute the total size of a multi-dimensional array starting from a given index.
-
-    Parameters
-    ----------
-    start : int
-        The starting index from which to compute the size.
-    shape : tuple
-        The shape of the multi-dimensional array.
-
-    Returns
-    -------
-    out : int
-        The total size of the array.
-
-    """
-    ret = 1
-    for i in range(start, len(shape)):
-        ret *= shape[i]
-    return ret
-
-
 def _einsum_diagonals(input_subscripts, operands):
     """
     Adopted from _einsum_diagonals in cupy/core/_einsum.py
@@ -818,11 +795,11 @@ def _parse_int_subscript(list_subscript):
                     "For this input type lists must contain "
                     "either int or Ellipsis"
                 ) from e
-            if isinstance(s, int):
-                if not 0 <= s < len(_einsum_symbols):
-                    raise ValueError(
-                        f"subscript is not within the valid range [0, {len(_einsum_symbols)})."
-                    )
+
+            if not 0 <= s < len(_einsum_symbols):
+                raise ValueError(
+                    f"subscript is not within the valid range [0, {len(_einsum_symbols)})."
+                )
             str_subscript += _einsum_symbols[s]
     return str_subscript
 
@@ -1116,12 +1093,14 @@ def dpnp_einsum(
                     f"'{_chr(label)}' which never appeared in an input."
                 )
         if len(output_subscript) != len(set(output_subscript)):
+            repeated_subscript = []
             for label in output_subscript:
                 if output_subscript.count(label) >= 2:
-                    raise ValueError(
-                        "einstein sum subscripts string includes output "
-                        f"subscript '{_chr(label)}' multiple times."
-                    )
+                    repeated_subscript.append(_chr(label))
+            raise ValueError(
+                "einstein sum subscripts string includes output "
+                f"subscript {set(repeated_subscript)} multiple times."
+            )
 
     _einsum_diagonals(input_subscripts, operands)
 
