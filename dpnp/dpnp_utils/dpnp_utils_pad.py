@@ -771,6 +771,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
                 )
 
     else:  # mode == "wrap":
+        assert mode == "wrap"
         for axis, (left_index, right_index) in zip(axes, pad_width):
             roi = _view_roi(padded, original_area_slice, axis)
             original_period = padded.shape[axis] - right_index - left_index
