@@ -25,7 +25,7 @@
 
 
 import dpnp
-from dpnp.dpnp_utils import get_usm_allocations
+from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 __all__ = ["dpnp_cov"]
 
@@ -73,12 +73,7 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
             dtypes.append(y.dtype)
         dtype = dpnp.result_type(*dtypes)
         # TODO: remove when dpctl.result_type() is returned dtype based on fp64
-        fp64 = queue.sycl_device.has_aspect_fp64
-        if not fp64:
-            if dtype == dpnp.float64:
-                dtype = dpnp.float32
-            elif dtype == dpnp.complex128:
-                dtype = dpnp.complex64
+        dtype = map_dtype_to_device(dtype, queue.sycl_device)
 
     X = _get_2dmin_array(m, dtype)
     if y is not None:
