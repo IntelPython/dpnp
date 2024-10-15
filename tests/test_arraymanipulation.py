@@ -866,6 +866,85 @@ class TestStack:
             dpnp.stack(map(lambda x: x, dpnp.ones((3, 2))))
 
 
+# numpy.unstack() is available since numpy >= 2.1
+@testing.with_requires("numpy>=2.1")
+class TestUnstack:
+    def test_non_array_input(self):
+        with pytest.raises(TypeError):
+            dpnp.unstack(1)
+
+    @pytest.mark.parametrize(
+        "input", [([1, 2, 3],), [dpnp.int32(1), dpnp.int32(2), dpnp.int32(3)]]
+    )
+    def test_scalar_input(self, input):
+        with pytest.raises(TypeError):
+            dpnp.unstack(input)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_0d_array_input(self, dtype):
+        np_a = numpy.array(1, dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            numpy.unstack(np_a)
+        with pytest.raises(ValueError):
+            dpnp.unstack(dp_a)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_1d_array(self, dtype):
+        np_a = numpy.array([1, 2, 3], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a)
+        dp_res = dpnp.unstack(dp_a)
+        assert len(dp_res) == len(np_res)
+        for dp_arr, np_arr in zip(dp_res, np_res):
+            assert_array_equal(dp_arr.asnumpy(), np_arr)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_2d_array(self, dtype):
+        np_a = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a, axis=0)
+        dp_res = dpnp.unstack(dp_a, axis=0)
+        assert len(dp_res) == len(np_res)
+        for dp_arr, np_arr in zip(dp_res, np_res):
+            assert_array_equal(dp_arr.asnumpy(), np_arr)
+
+    @pytest.mark.parametrize("axis", [0, 1, -1])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_2d_array_axis(self, axis, dtype):
+        np_a = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a, axis=axis)
+        dp_res = dpnp.unstack(dp_a, axis=axis)
+        assert len(dp_res) == len(np_res)
+        for dp_arr, np_arr in zip(dp_res, np_res):
+            assert_array_equal(dp_arr.asnumpy(), np_arr)
+
+    @pytest.mark.parametrize("axis", [2, -3])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_invalid_axis(self, axis, dtype):
+        np_a = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        with pytest.raises(AxisError):
+            numpy.unstack(np_a, axis=axis)
+        with pytest.raises(AxisError):
+            dpnp.unstack(dp_a, axis=axis)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_empty_array(self, dtype):
+        np_a = numpy.array([], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a)
+        dp_res = dpnp.unstack(dp_a)
+        assert len(dp_res) == len(np_res)
+
+
 class TestVstack:
     def test_non_iterable(self):
         assert_raises(TypeError, dpnp.vstack, 1)
