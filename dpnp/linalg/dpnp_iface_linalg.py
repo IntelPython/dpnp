@@ -81,6 +81,7 @@ __all__ = [
     "matrix_norm",
     "matrix_power",
     "matrix_rank",
+    "matrix_transpose",
     "multi_dot",
     "norm",
     "outer",
@@ -1115,6 +1116,50 @@ def matrix_rank(A, tol=None, hermitian=False):
         )
 
     return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
+
+
+def matrix_transpose(x, /):
+    """
+    Transposes a matrix (or a stack of matrices) `x`.
+
+    For full documentation refer to :obj:`numpy.linalg.matrix_transpose`.
+
+    Parameters
+    ----------
+    x : (..., M, N) {dpnp.ndarray, usm_ndarray}
+        Input array with ``x.ndim >= 2`` and whose two innermost
+        dimensions form ``MxN`` matrices.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the transpose for each matrix and having shape
+        (..., N, M).
+
+    See Also
+    --------
+    :obj:`dpnp.transpose` : Returns an array with axes transposed.
+    :obj:`dpnp.matrix_transpose` : Equivalent function.
+    :obj:`dpnp.ndarray.mT` : Equivalent method.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.linalg.matrix_transpose(a)
+    array([[1, 3],
+           [2, 4]])
+
+    >>> b = np.array([[[1, 2], [3, 4]], [[5, 6], [7, 8]]])
+    >>> np.linalg.matrix_transpose(b)
+    array([[[1, 3],
+            [2, 4]],
+           [[5, 7],
+            [6, 8]]])
+
+    """
+
+    return dpnp.matrix_transpose(x)
 
 
 def multi_dot(arrays, *, out=None):
