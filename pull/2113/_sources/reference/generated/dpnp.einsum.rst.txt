@@ -1,6 +1,0 @@
-﻿dpnp.einsum
-===========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: einsum
