@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
-## [0.16.0] - 09/DD/2024
+## [0.16.0] - 10/14/2024
 
 This release reaches an important milestone by making offloading fully asynchronous. Calls to `dpnp` submit tasks for execution to DPC++ runtime and return without waiting for execution of these tasks to finish. The sequential semantics a user comes to expect from execution of Python script is preserved though.
 In addition, this release completes implementation of `dpnp.fft` module and adds several new array manipulation, indexing and elementwise routines. Moreover, it adds support to build `dpnp` for Nvidia GPUs.
@@ -117,6 +117,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Updated the test suit for `dpnp.fft` module [#2071](https://github.com/IntelPython/dpnp/pull/2071)
 * Reworked `dpnp.clip` implementation to align with Python Array API 2023.12 specification [#2048](https://github.com/IntelPython/dpnp/pull/2048)
 * Skipped outdated tests for `dpnp.linalg.solve` due to compatibility issues with NumPy 2.0 [#2074](https://github.com/IntelPython/dpnp/pull/2074)
+* Updated installation instructions [#2098](https://github.com/IntelPython/dpnp/pull/2098)
 
 ### Fixed
 

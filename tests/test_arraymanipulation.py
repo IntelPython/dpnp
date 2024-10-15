@@ -556,6 +556,50 @@ class TestHstack:
         assert_array_equal(res, a)
 
 
+# numpy.matrix_transpose() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+class TestMatrixtranspose:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(3, 5), (4, 2), (2, 5, 2), (2, 3, 3, 6)],
+        ids=["(3,5)", "(4,2)", "(2,5,2)", "(2,3,3,6)"],
+    )
+    def test_matrix_transpose(self, dtype, shape):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        dp_a = dpnp.array(a)
+
+        expected = numpy.matrix_transpose(a)
+        result = dpnp.matrix_transpose(dp_a)
+
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (1, 0, 0), (0, 2, 2), (0, 1, 0, 4)],
+        ids=["(0,0)", "(1,0,0)", "(0,2,2)", "(0, 1, 0, 4)"],
+    )
+    def test_matrix_transpose_empty(self, shape):
+        a = numpy.empty(shape, dtype=dpnp.default_float_type())
+        dp_a = dpnp.array(a)
+
+        expected = numpy.matrix_transpose(a)
+        result = dpnp.matrix_transpose(dp_a)
+
+        assert_allclose(result, expected)
+
+    def test_matrix_transpose_errors(self):
+        a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.matrix_transpose, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(ValueError, dpnp.matrix_transpose, a_dp_ndim_1)
+
+
 class TestRollaxis:
     data = [
         (0, 0),
