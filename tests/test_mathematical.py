@@ -1293,6 +1293,13 @@ class TestLdexp:
     @pytest.mark.parametrize("mant_dt", get_float_dtypes())
     @pytest.mark.parametrize("exp_dt", get_integer_dtypes())
     def test_basic(self, mant_dt, exp_dt):
+        if (
+            numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            and exp_dt == numpy.int64
+            and numpy.dtype("l") != numpy.int64
+        ):
+            pytest.skip("numpy.ldexp doesn't have a loop for the input types")
+
         mant = numpy.array(2.0, dtype=mant_dt)
         exp = numpy.array(3, dtype=exp_dt)
         imant, iexp = dpnp.array(mant), dpnp.array(exp)
