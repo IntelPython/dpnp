@@ -92,6 +92,7 @@ Other attributes
    :nosignatures:
 
    dpnp.ndarray.T
+   dpnp.ndarray.mT
    dpnp.ndarray.real
    dpnp.ndarray.imag
    dpnp.ndarray.flat

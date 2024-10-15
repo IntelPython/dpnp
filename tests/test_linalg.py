@@ -2124,6 +2124,25 @@ class TestMatrixRank:
         )
 
 
+# numpy.linalg.matrix_transpose() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+# dpnp.linalg.matrix_transpose() calls dpnp.matrix_transpose()
+# 1 test to increase code coverage
+def test_matrix_transpose():
+    a = numpy.arange(6).reshape((2, 3))
+    a_dp = inp.array(a)
+
+    expected = numpy.linalg.matrix_transpose(a)
+    result = inp.linalg.matrix_transpose(a_dp)
+
+    assert_allclose(expected, result)
+
+    with assert_raises_regex(
+        ValueError, "array must be at least 2-dimensional"
+    ):
+        inp.linalg.matrix_transpose(a_dp[:, 0])
+
+
 class TestNorm:
     def setup_method(self):
         numpy.random.seed(42)
