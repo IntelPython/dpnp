@@ -22,6 +22,7 @@ class TestPad:
         "linear_ramp": {"end_values": 0},
         "maximum": {"stat_length": None},
         "mean": {"stat_length": None},
+        "median": {"stat_length": None},
         "minimum": {"stat_length": None},
         "reflect": {"reflect_type": "even"},
         "symmetric": {"reflect_type": "even"},
@@ -303,7 +304,7 @@ class TestPad:
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("pad_width", [5, (25, 20)])
-    @pytest.mark.parametrize("mode", ["maximum", "minimum", "mean"])
+    @pytest.mark.parametrize("mode", ["maximum", "minimum", "mean", "median"])
     @pytest.mark.parametrize("stat_length", [10, (2, 3)])
     def test_stat_func_1d(self, pad_width, mode, stat_length):
         a_np = numpy.arange(100)
@@ -315,7 +316,7 @@ class TestPad:
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("pad_width", [((1,), (2,)), ((2, 3), (3, 2))])
-    @pytest.mark.parametrize("mode", ["maximum", "minimum", "mean"])
+    @pytest.mark.parametrize("mode", ["maximum", "minimum", "mean", "median"])
     @pytest.mark.parametrize("stat_length", [(3,), (2, 3)])
     def test_stat_func_2d(self, pad_width, mode, stat_length):
         a_np = numpy.arange(30).reshape(6, 5)
@@ -326,7 +327,7 @@ class TestPad:
         result = dpnp.pad(a_dp, pad_width, mode=mode, stat_length=stat_length)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("mode", ["mean", "minimum", "maximum"])
+    @pytest.mark.parametrize("mode", ["mean", "minimum", "maximum", "median"])
     def test_same_prepend_append(self, mode):
         """Test that appended and prepended values are equal"""
         a = dpnp.array([-1, 2, -1]) + dpnp.array(
@@ -335,14 +336,15 @@ class TestPad:
         result = dpnp.pad(a, (1, 1), mode)
         assert_equal(result[0], result[-1])
 
-    def test_mean_with_zero_stat_length(self):
+    @pytest.mark.parametrize("mode", ["mean", "median"])
+    def test_zero_stat_length_valid(self):
         a_np = numpy.array([1.0, 2.0])
         a_dp = dpnp.array(a_np)
-        expected = numpy.pad(a_np, (1, 2), "mean")
-        result = dpnp.pad(a_dp, (1, 2), "mean")
+        expected = numpy.pad(a_np, (1, 2), mode, stat_length=0)
+        result = dpnp.pad(a_dp, (1, 2), mode, stat_length=0)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("mode", ["mean", "minimum", "maximum"])
+    @pytest.mark.parametrize("mode", ["mean", "minimum", "maximum", "median"])
     @pytest.mark.parametrize(
         "stat_length", [-2, (-2,), (3, -1), ((5, 2), (-2, 3)), ((-4,), (2,))]
     )

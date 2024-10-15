@@ -1874,6 +1874,9 @@ def pad(array, pad_width, mode="constant", **kwargs):
         "mean"
             Pads with the mean value of all or part of the
             vector along each axis.
+        "median"
+            Pads with the median value of all or part of the
+            vector along each axis.
         "minimum"
             Pads with the minimum value of all or part of the
             vector along each axis.
@@ -1894,10 +1897,10 @@ def pad(array, pad_width, mode="constant", **kwargs):
             Padding function, see Notes.
         Default: ``"constant"``.
     stat_length : {None, int, sequence of ints}, optional
-        Used in ``"maximum"``, ``"mean"``, and ``"minimum"``. Number of
-        values at edge of each axis used to calculate the statistic value.
-        ``((before_1, after_1), ... (before_N, after_N))`` unique statistic
-        lengths for each axis.
+        Used in ``"maximum"``, ``"mean"``, ``"median"``, and ``"minimum"``.
+        Number of values at edge of each axis used to calculate the statistic
+        value. ``((before_1, after_1), ... (before_N, after_N))`` unique
+        statistic lengths for each axis.
         ``(before, after)`` or ``((before, after),)`` yields same before
         and after statistic lengths for each axis.
         ``(stat_length,)`` or ``int`` is a shortcut for
@@ -1935,11 +1938,6 @@ def pad(array, pad_width, mode="constant", **kwargs):
     padded array : dpnp.ndarray
         Padded array of rank equal to `array` with shape increased
         according to `pad_width`.
-
-    Limitations
-    -----------
-    Parameter `mode` as ``"median"`` is not currently supported and
-    ``NotImplementedError`` exception will be raised.
 
     Notes
     -----
@@ -1988,7 +1986,7 @@ def pad(array, pad_width, mode="constant", **kwargs):
     array([3, 3, 1, 2, 3, 4, 5, 3, 3])
 
     >>> np.pad(a, (2,), 'median')
-    NotImplementedError: Keyword argument `mode` does not support 'median'
+    array([3, 3, 1, 2, 3, 4, 5, 3, 3])
 
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.pad(a, ((3, 2), (2, 3)), 'minimum')
@@ -2040,10 +2038,6 @@ def pad(array, pad_width, mode="constant", **kwargs):
     """
 
     dpnp.check_supported_arrays_type(array)
-    if mode == "median":
-        raise NotImplementedError(
-            "Keyword argument `mode` does not support 'median'"
-        )
     return dpnp_pad(array, pad_width, mode=mode, **kwargs)
 
 

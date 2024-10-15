@@ -659,7 +659,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
         "linear_ramp": ["end_values"],
         "maximum": ["stat_length"],
         "mean": ["stat_length"],
-        # "median": ["stat_length"],  # TODO: dpnp.median is not implemented
+        "median": ["stat_length"],
         "minimum": ["stat_length"],
         "reflect": ["reflect_type"],
         "symmetric": ["reflect_type"],
@@ -684,11 +684,11 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
             # faster path for 1d arrays or small n-dimensional arrays
             return _pad_simple(array, pad_width, 0)[0]
 
-    # TODO: add "median": dpnp.median when dpnp.median is implemented
     stat_functions = {
         "maximum": dpnp.amax,
         "minimum": dpnp.amin,
         "mean": dpnp.mean,
+        "median": dpnp.median,
     }
 
     # Create array with final shape and original values
