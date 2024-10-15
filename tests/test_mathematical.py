@@ -1315,7 +1315,9 @@ class TestLdexp:
 
         result = dpnp.ldexp(dpnp.array(2.0), exp_val)
         with numpy.errstate(over="ignore"):
-            expected = numpy.ldexp(numpy.array(2.0), exp_val)
+            # we can't use here numpy.array(2.0), because NumPy 2.0 will cast
+            # `exp_val` to int32 dtype then and `OverflowError` will be raised
+            expected = numpy.ldexp(2.0, exp_val)
         assert_equal(result, expected)
 
     @pytest.mark.parametrize("val", [numpy.nan, numpy.inf, -numpy.inf])
