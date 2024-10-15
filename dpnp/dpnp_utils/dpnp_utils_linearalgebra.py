@@ -244,6 +244,7 @@ def _get_result_shape(x1, x2, out, func, np_flag):
             x1, x2, x1_ndim, x2_ndim
         )
     else:  # func == "vecdot"
+        assert func == "vecdot"
         x1, x2, result_shape = _get_result_shape_vecdot(
             x1, x2, x1_ndim, x2_ndim
         )
@@ -466,11 +467,15 @@ def _gemm_matmul(exec_q, x1, x2, res):
 
 
 def _shape_error(shape1, shape2, func, err_msg):
+    """Validate the shapes of input and output arrays."""
 
     if func == "matmul":
         signature = "(n?,k),(k,m?)->(n?,m?)"
-    else:  # func == "vecdot"
+    elif func == "vecdot":
         signature = "(n?,),(n?,)->()"
+    else:
+        # applicable when err_msg == 3
+        assert func is None
 
     if err_msg == 0:
         raise ValueError(
@@ -485,7 +490,8 @@ def _shape_error(shape1, shape2, func, err_msg):
             f"array has shape {shape2}. "
             f"These cannot be broadcast together for '{func}' function."
         )
-    elif err_msg == 2:
+    else:  # err_msg == 2:
+        assert err_msg == 2
         raise ValueError(
             f"Expected output array of shape {shape1}, but got {shape2}."
         )
@@ -557,6 +563,7 @@ def _validate_axes(x1, x2, axes, func):
         x1_ndim = x1.ndim
         x2_ndim = x2.ndim
     else:  # func == "vecdot"
+        assert func == "vecdot"
         x1_ndim = x2_ndim = 1
 
     axes[0] = _validate_internal(axes[0], 0, x1_ndim)
@@ -571,6 +578,16 @@ def _validate_axes(x1, x2, axes, func):
         axes[2] = _validate_internal(axes[2], 2, 2)
 
     return axes
+
+
+def _validate_out_array(out, exec_q):
+    """Validate out is supported array and has correct queue."""
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
 
 
 def dpnp_cross(a, b, cp):
@@ -660,13 +677,7 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
         )
 
     res_usm_type, exec_q = get_usm_allocations([a, b])
-    if (
-        out is not None
-        and dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None
-    ):
-        raise ExecutionPlacementError(
-            "Input and output allocation queues are not compatible"
-        )
+    _validate_out_array(out, exec_q)
 
     # Determine the appropriate data types
     dot_dtype, res_dtype = _compute_res_dtype(a, b, sycl_queue=exec_q)
@@ -755,18 +766,16 @@ def dpnp_matmul(
 
     dpnp.check_supported_arrays_type(x1, x2)
     res_usm_type, exec_q = get_usm_allocations([x1, x2])
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
-                "Input and output allocation queues are not compatible"
-            )
+    _validate_out_array(out, exec_q)
 
-    if order in ["a", "A"]:
+    if order in "aA":
         if x1.flags.fnc and x2.flags.fnc:
             order = "F"
         else:
             order = "C"
+
+    if order in "kK":
+        order = "C"
 
     x1_ndim = x1.ndim
     x2_ndim = x2.ndim
@@ -938,6 +947,7 @@ def dpnp_matmul(
                     result,
                 )
             else:  # call_flag == "gemm_batch"
+                assert call_flag == "gemm_batch"
                 result = _gemm_batch_matmul(
                     exec_q,
                     x1,
@@ -962,14 +972,7 @@ def dpnp_matmul(
                 result = dpnp.moveaxis(result, (-1,), axes_res)
             return dpnp.ascontiguousarray(result)
 
-        # If `order` was not passed as default
-        # we need to update it to match the passed `order`.
-        if order not in ["k", "K"]:
-            return dpnp.asarray(result, order=order)
-        # dpnp.ascontiguousarray changes 0-D array to 1-D array
-        if result.ndim == 0:
-            return result
-        return dpnp.ascontiguousarray(result)
+        return dpnp.asarray(result, order=order)
 
     result = dpnp.get_result_array(result, out, casting=casting)
     if axes is not None and out is result:
@@ -994,14 +997,9 @@ def dpnp_vecdot(
 
     dpnp.check_supported_arrays_type(x1, x2)
     res_usm_type, exec_q = get_usm_allocations([x1, x2])
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
-                "Input and output allocation queues are not compatible"
-            )
+    _validate_out_array(out, exec_q)
 
-    if order in ["a", "A"]:
+    if order in "aAkK":
         if x1.flags.fnc and x2.flags.fnc:
             order = "F"
         else:
@@ -1048,7 +1046,7 @@ def dpnp_vecdot(
     _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
     _, x2_is_1D, _ = _define_dim_flags(x2, axis=-1)
 
-    if numpy.prod(result_shape) == 0 or x1.size == 0 or x2.size == 0:
+    if x1.size == 0 or x2.size == 0:
         order = "C" if order in "kK" else order
         result = _create_result_array(
             x1,
@@ -1060,8 +1058,9 @@ def dpnp_vecdot(
             sycl_queue=exec_q,
             order=order,
         )
-        if x1.size == 0 or x2.size == 0:
-            result.fill(0)
+        if numpy.prod(result_shape) == 0:
+            return result
+        result.fill(0)
         return result
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
@@ -1079,6 +1078,7 @@ def dpnp_vecdot(
         else:
             result = dpnp_dot(x1, x2, out=out, conjugate=True)
     else:  # call_flag == "vecdot"
+        assert call_flag == "vecdot"
         x1_usm = dpnp.get_usm_ndarray(x1)
         x2_usm = dpnp.get_usm_ndarray(x2)
         result = dpnp_array._create_from_usm_ndarray(
@@ -1091,13 +1091,6 @@ def dpnp_vecdot(
         result = dpnp.reshape(result, result_shape)
 
     if out is None:
-        # If `order` was not passed as default
-        # we need to update it to match the passed `order`.
-        if order not in "kK":
-            return dpnp.asarray(result, order=order)
-        # dpnp.ascontiguousarray changes 0-D array to 1-D array
-        if result.ndim == 0:
-            return result
-        return dpnp.ascontiguousarray(result)
+        return dpnp.asarray(result, order=order)
 
     return dpnp.get_result_array(result, out, casting=casting)

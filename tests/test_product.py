@@ -1343,6 +1343,7 @@ class TestVecdot:
         "shape_pair",
         [
             ((4,), (4,)),  # call_flag: dot
+            ((1, 1, 4), (1, 1, 4)),  # call_flag: dot
             ((3, 1), (3, 1)),
             ((2, 0), (2, 0)),  # zero-size inputs, 1D output
             ((3, 0, 4), (3, 0, 4)),  # zero-size output
@@ -1353,6 +1354,7 @@ class TestVecdot:
             ((3, 4), (4,)),
             ((1, 4, 5), (3, 1, 5)),
             ((1, 1, 4, 5), (3, 1, 5)),
+            ((1, 4, 5), (1, 3, 1, 5)),
         ],
     )
     def test_basic(self, dtype, shape_pair):
@@ -1375,6 +1377,7 @@ class TestVecdot:
         "shape_pair",
         [
             ((4,), (4,)),  # call_flag: dot
+            ((1, 1, 4), (1, 1, 4)),  # call_flag: dot
             ((3, 1), (3, 1)),
             ((2, 0), (2, 0)),  # zero-size inputs, 1D output
             ((3, 0, 4), (3, 0, 4)),  # zero-size output
@@ -1385,6 +1388,7 @@ class TestVecdot:
             ((3, 4), (4,)),
             ((1, 4, 5), (3, 1, 5)),
             ((1, 1, 4, 5), (3, 1, 5)),
+            ((1, 4, 5), (1, 3, 1, 5)),
         ],
     )
     def test_complex(self, dtype, shape_pair):
@@ -1501,18 +1505,22 @@ class TestVecdot:
         expected = numpy.vecdot(a, b)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("order1", ["C", "F", "A"])
+    @pytest.mark.parametrize("order2", ["C", "F", "A"])
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
     @pytest.mark.parametrize(
         "shape",
-        [((4, 3)), ((4, 3, 5)), ((6, 7, 3, 5))],
-        ids=["((4, 3))", "((4, 3, 5))", "((6, 7, 3, 5))"],
+        [(4, 3), (4, 3, 5), (6, 7, 3, 5)],
+        ids=["(4, 3)", "(4, 3, 5)", "(6, 7, 3, 5)"],
     )
-    def test_order(self, order, shape):
-        a = numpy.arange(numpy.prod(shape)).reshape(shape)
-        b = dpnp.asarray(a)
+    def test_order(self, order1, order2, order, shape):
+        a = numpy.arange(numpy.prod(shape)).reshape(shape, order=order1)
+        b = numpy.arange(numpy.prod(shape)).reshape(shape, order=order2)
+        a_dp = dpnp.asarray(a)
+        b_dp = dpnp.asarray(b)
 
-        result = dpnp.vecdot(b, b, order=order)
-        expected = numpy.vecdot(a, a, order=order)
+        result = dpnp.vecdot(a_dp, b_dp, order=order)
+        expected = numpy.vecdot(a, b, order=order)
         assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
