@@ -561,28 +561,6 @@ INP_DLLEXPORT void dpnp_argmin_c(void *array, void *result, size_t size);
 
 #include <dpnp_gen_1arg_1type_tbl.hpp>
 
-#define MACRO_1ARG_2TYPES_OP(__name__, __operation1__, __operation2__)         \
-    template <typename _DataType_input, typename _DataType_output>             \
-    INP_DLLEXPORT DPCTLSyclEventRef __name__(                                  \
-        DPCTLSyclQueueRef q_ref, void *result_out, const size_t result_size,   \
-        const size_t result_ndim, const shape_elem_type *result_shape,         \
-        const shape_elem_type *result_strides, const void *input1_in,          \
-        const size_t input1_size, const size_t input1_ndim,                    \
-        const shape_elem_type *input1_shape,                                   \
-        const shape_elem_type *input1_strides, const size_t *where,            \
-        const DPCTLEventVectorRef dep_event_vec_ref);                          \
-                                                                               \
-    template <typename _DataType_input, typename _DataType_output>             \
-    INP_DLLEXPORT void __name__(                                               \
-        void *result_out, const size_t result_size, const size_t result_ndim,  \
-        const shape_elem_type *result_shape,                                   \
-        const shape_elem_type *result_strides, const void *input1_in,          \
-        const size_t input1_size, const size_t input1_ndim,                    \
-        const shape_elem_type *input1_shape,                                   \
-        const shape_elem_type *input1_strides, const size_t *where);
-
-#include <dpnp_gen_1arg_2type_tbl.hpp>
-
 #define MACRO_2ARG_3TYPES_OP(__name__, __operation__, __vec_operation__,       \
                              __vec_types__, __mkl_operation__, __mkl_types__)  \
     template <typename _DataType_output, typename _DataType_input1,            \
