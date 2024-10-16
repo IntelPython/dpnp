@@ -146,10 +146,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gac8a963ba01536cad42b8a42d8250314b"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gac8a963ba01536cad42b8a42d8250314b">dpnp_correlate_c</a> (DPCTLSyclQueueRef q_ref, void *result_out, const void *input1_in, const size_t input1_size, const shape_elem_type *input1_shape, const size_t input1_shape_ndim, const void *input2_in, const size_t input2_size, const shape_elem_type *input2_shape, const size_t input2_shape_ndim, const size_t *where, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gac8a963ba01536cad42b8a42d8250314b"><td class="mdescLeft">&#160;</td><td class="mdescRight">correlate function  <br /></td></tr>
 <tr class="separator:gac8a963ba01536cad42b8a42d8250314b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga49f8dd90da75b44e6b733e944c6e7b33" id="r_ga49f8dd90da75b44e6b733e944c6e7b33"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga49f8dd90da75b44e6b733e944c6e7b33"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga49f8dd90da75b44e6b733e944c6e7b33">dpnp_cov_c</a> (DPCTLSyclQueueRef q_ref, void *array1_in, void *result1, size_t nrows, size_t ncols, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:ga49f8dd90da75b44e6b733e944c6e7b33"><td class="mdescLeft">&#160;</td><td class="mdescRight">Custom implementation of cov function with math library and PSTL.  <br /></td></tr>
-<tr class="separator:ga49f8dd90da75b44e6b733e944c6e7b33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gade43dedf9297ae8a75c812cf1e59d2c1" id="r_gade43dedf9297ae8a75c812cf1e59d2c1"><td class="memTemplParams" colspan="2">template&lt;typename _DataType1 , typename _DataType2 &gt; </td></tr>
 <tr class="memitem:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#gade43dedf9297ae8a75c812cf1e59d2c1">dpnp_choose_c</a> (DPCTLSyclQueueRef q_ref, void *result1, void *array1_in, void **choices, size_t size, size_t choices_size, size_t choice_size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an array from an index array and a list of arrays to choose from.  <br /></td></tr>
@@ -581,73 +577,6 @@ template&lt;typename _DataType_output , typename _DataType_input1 , typename _Da
     <tr><td class="paramdir">[in]</td><td class="paramname">input2_shape</td><td>Shape of first input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">input2_shape_ndim</td><td>Number of second array dimensions. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">where</td><td>Mask array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga49f8dd90da75b44e6b733e944c6e7b33" name="ga49f8dd90da75b44e6b733e944c6e7b33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga49f8dd90da75b44e6b733e944c6e7b33">&#9670;&#160;</a></span>dpnp_cov_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_cov_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef&#160;</td>
-          <td class="paramname"><em>q_ref</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>array1_in</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>result1</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>nrows</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>ncols</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef&#160;</td>
-          <td class="paramname"><em>dep_event_vec_ref</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Custom implementation of cov function with math library and PSTL. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array</td><td>Input array. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">nrows</td><td>Number of rows in input array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ncols</td><td>Number of columns in input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
   </table>
   </dd>
