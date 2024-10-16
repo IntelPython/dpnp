@@ -413,30 +413,6 @@ INP_DLLEXPORT void dpnp_correlate_c(void *result_out,
 
 /**
  * @ingroup BACKEND_API
- * @brief Custom implementation of cov function with math library and PSTL
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array.
- * @param [out] result              Output array.
- * @param [in]  nrows               Number of rows in input array.
- * @param [in]  ncols               Number of columns in input array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_cov_c(DPCTLSyclQueueRef q_ref,
-               void *array1_in,
-               void *result1,
-               size_t nrows,
-               size_t ncols,
-               const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void
-    dpnp_cov_c(void *array1_in, void *result1, size_t nrows, size_t ncols);
-
-/**
- * @ingroup BACKEND_API
  * @brief Construct an array from an index array and a list of arrays to choose
  * from.
  *
