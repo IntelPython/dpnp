@@ -19,7 +19,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_queue_is_cpu_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d", null ],
     [ "dpnp_searchsorted_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga066e660d9841964898e1051cdd66f713", null ],
     [ "dpnp_sort_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga26e5f6303907fe4b4496fb2cc0685407", null ],
-    [ "dpnp_sqrt_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2e8ccd7745314eb662b47c41324076b0", null ],
     [ "dpnp_sum_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaba1f836500ed61109153fb4afef55c89", null ],
     [ "dpnp_zeros_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacd17ba5828ba92fae45ab9c3b82419ae", null ],
     [ "dpnp_zeros_like_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143", null ],

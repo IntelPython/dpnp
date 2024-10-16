@@ -54,9 +54,8 @@ var searchData=
   ['dpnp_5frng_5fzipf_5fc_51',['dpnp_rng_zipf_c',['../group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#gaa681bf7b3ffc6fdd431f1ec2f4dd6d64',1,'dpnp_iface_random.hpp']]],
   ['dpnp_5fsearchsorted_5fc_52',['dpnp_searchsorted_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga066e660d9841964898e1051cdd66f713',1,'dpnp_iface.hpp']]],
   ['dpnp_5fsort_5fc_53',['dpnp_sort_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga26e5f6303907fe4b4496fb2cc0685407',1,'dpnp_iface.hpp']]],
-  ['dpnp_5fsqrt_5fc_54',['dpnp_sqrt_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga2e8ccd7745314eb662b47c41324076b0',1,'dpnp_gen_1arg_2type_tbl.hpp']]],
-  ['dpnp_5fsum_5fc_55',['dpnp_sum_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaba1f836500ed61109153fb4afef55c89',1,'dpnp_iface.hpp']]],
-  ['dpnp_5fzeros_5fc_56',['dpnp_zeros_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gacd17ba5828ba92fae45ab9c3b82419ae',1,'dpnp_iface.hpp']]],
-  ['dpnp_5fzeros_5flike_5fc_57',['dpnp_zeros_like_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143',1,'dpnp_iface.hpp']]],
-  ['dpnpc_5fid_58',['dpnpc_id',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76',1,'DPNPC_id::DPNPC_id(pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape, const std::vector&lt; size_type &gt; &amp;__strides)'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga1e1d9e72e8f1a92a6e25d7f563562b11',1,'DPNPC_id::DPNPC_id(DPCTLSyclQueueRef q_ref, pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape)']]]
+  ['dpnp_5fsum_5fc_54',['dpnp_sum_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gaba1f836500ed61109153fb4afef55c89',1,'dpnp_iface.hpp']]],
+  ['dpnp_5fzeros_5fc_55',['dpnp_zeros_c',['../group___b_a_c_k_e_n_d___a_p_i.html#gacd17ba5828ba92fae45ab9c3b82419ae',1,'dpnp_iface.hpp']]],
+  ['dpnp_5fzeros_5flike_5fc_56',['dpnp_zeros_like_c',['../group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143',1,'dpnp_iface.hpp']]],
+  ['dpnpc_5fid_57',['dpnpc_id',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76',1,'DPNPC_id::DPNPC_id(pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape, const std::vector&lt; size_type &gt; &amp;__strides)'],['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga1e1d9e72e8f1a92a6e25d7f563562b11',1,'DPNPC_id::DPNPC_id(DPCTLSyclQueueRef q_ref, pointer __ptr, const std::vector&lt; size_type &gt; &amp;__shape)']]]
 ];

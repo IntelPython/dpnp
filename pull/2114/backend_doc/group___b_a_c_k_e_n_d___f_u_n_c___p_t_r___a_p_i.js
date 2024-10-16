@@ -103,8 +103,6 @@ var group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i =
       [ "DPNPFuncName::DPNP_FN_RNG_ZIPF_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558afca9175f1ea7f71a0cf585421ea66a27", null ],
       [ "DPNPFuncName::DPNP_FN_SEARCHSORTED", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a673b312ec7e9a40fa18483ed02d3649d", null ],
       [ "DPNPFuncName::DPNP_FN_SORT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a99dd510a742f3c15b48092cef64f8aa3", null ],
-      [ "DPNPFuncName::DPNP_FN_SQRT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558af8187e64cd7661fbf4bf2fd04f339e5c", null ],
-      [ "DPNPFuncName::DPNP_FN_SQRT_EXT", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558aece0d851a884f3b66f3d1e6c1f67a540", null ],
       [ "DPNPFuncName::DPNP_FN_SUM", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a5a5f78154de3845f234e34f22d870448", null ],
       [ "DPNPFuncName::DPNP_FN_ZEROS", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558a51216d8cda7e009964d71ddd8c7fbb1d", null ],
       [ "DPNPFuncName::DPNP_FN_ZEROS_LIKE", "group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gga8b20590525bff7c7ce4f728d2021b558ad22026553dca7a3084662acf657bba0d", null ],
