@@ -97,6 +97,82 @@ __all__ = [
 ]
 
 
+def _get_empty_array(
+    a,
+    /,
+    *,
+    dtype=None,
+    order="K",
+    shape=None,
+    device=None,
+    usm_type=None,
+    sycl_queue=None,
+):
+    """
+    Get an empty array as the base for empty_like, ones_like, zeros_like,
+    and full_like.
+
+    """
+    strides = None
+    if shape is None:
+        _shape = a.shape
+    elif dpnp.isscalar(shape):
+        _shape = (shape,)
+    else:
+        _shape = shape
+    _dtype = a.dtype if dtype is None else dtype
+    _usm_type = a.usm_type if usm_type is None else usm_type
+    _sycl_queue = dpnp.get_normalized_queue_device(
+        a, sycl_queue=sycl_queue, device=device
+    )
+
+    if order is None:
+        order = "K"
+    if order in "aA":
+        if a.flags.fnc:
+            order = "F"
+        else:
+            order = "C"
+    elif order in "kK":
+        if len(_shape) != a.ndim:
+            order = "C"
+        elif a.flags.f_contiguous:
+            order = "F"
+        elif a.flags.c_contiguous:
+            order = "C"
+        else:
+            strides = _get_strides_for_order_k(a, _shape)
+            order = "C"
+    elif order not in "cfCF":
+        raise ValueError(
+            f"order must be None, 'C', 'F', 'A', or 'K' (got '{order}')"
+        )
+
+    return dpnp_array(
+        _shape,
+        dtype=_dtype,
+        strides=strides,
+        order=order,
+        usm_type=_usm_type,
+        sycl_queue=_sycl_queue,
+    )
+
+
+def _get_strides_for_order_k(x, shape=None):
+    """
+    Calculate strides when order='K' for empty_like, ones_like, zeros_like,
+    and full_like where `shape` is ``None`` or len(shape) == x.ndim.
+
+    """
+    stride_and_index = sorted([(abs(s), -i) for i, s in enumerate(x.strides)])
+    strides = [0] * x.ndim
+    stride = 1
+    for _, i in stride_and_index:
+        strides[-i] = stride
+        stride *= shape[-i] if shape else x.shape[-i]
+    return strides
+
+
 def arange(
     start,
     /,
@@ -155,7 +231,7 @@ def arange(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -271,7 +347,7 @@ def array(
     Parameter `subok` is supported only with default value ``False``.
     Parameter `ndmin` is supported only with default value ``0``.
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -393,7 +469,7 @@ def asanyarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -505,7 +581,7 @@ def asarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -599,7 +675,7 @@ def ascontiguousarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -712,7 +788,7 @@ def asfortranarray(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -824,7 +900,7 @@ def copy(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Returns
     -------
@@ -1154,7 +1230,7 @@ def empty(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -1206,7 +1282,7 @@ def empty_like(
     /,
     *,
     dtype=None,
-    order="C",
+    order="K",
     subok=False,
     shape=None,
     device=None,
@@ -1227,9 +1303,10 @@ def empty_like(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {None, "C", "F"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
-        Default: ``"C"``.
+        ``order=None`` is an alias for ``order="K"``.
+        Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -1256,10 +1333,8 @@ def empty_like(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -1295,20 +1370,16 @@ def empty_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(subok=subok)
 
-    _shape = a.shape if shape is None else shape
-    _dtype = a.dtype if dtype is None else dtype
-    _usm_type = a.usm_type if usm_type is None else usm_type
-    _sycl_queue = dpnp.get_normalized_queue_device(
-        a, sycl_queue=sycl_queue, device=device
-    )
-    return dpnp_container.empty(
-        _shape,
-        dtype=_dtype,
+    return _get_empty_array(
+        a,
+        dtype=dtype,
         order=order,
-        usm_type=_usm_type,
-        sycl_queue=_sycl_queue,
+        shape=shape,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
     )
 
 
@@ -1374,7 +1445,7 @@ def eye(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -1483,7 +1554,7 @@ def frombuffer(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1597,7 +1668,7 @@ def fromfile(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1718,7 +1789,7 @@ def fromfunction(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1825,7 +1896,7 @@ def fromiter(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -1925,7 +1996,7 @@ def fromstring(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -2012,7 +2083,7 @@ def full(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -2063,7 +2134,7 @@ def full_like(
     fill_value,
     *,
     dtype=None,
-    order="C",
+    order="K",
     subok=False,
     shape=None,
     device=None,
@@ -2088,9 +2159,10 @@ def full_like(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {None, "C", "F"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
-        Default: ``"C"``.
+        ``order=None`` is an alias for ``order="K"``.
+        Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -2117,10 +2189,8 @@ def full_like(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -2156,23 +2226,19 @@ def full_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(subok=subok)
 
-    _shape = a.shape if shape is None else shape
-    _dtype = a.dtype if dtype is None else dtype
-    _usm_type = a.usm_type if usm_type is None else usm_type
-    _sycl_queue = dpnp.get_normalized_queue_device(
-        a, sycl_queue=sycl_queue, device=device
-    )
-
-    return dpnp_container.full(
-        _shape,
-        fill_value,
-        dtype=_dtype,
+    res = _get_empty_array(
+        a,
+        dtype=dtype,
         order=order,
-        usm_type=_usm_type,
-        sycl_queue=_sycl_queue,
+        shape=shape,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
     )
+    dpnp.copyto(res, fill_value, casting="unsafe")
+    return res
 
 
 def geomspace(
@@ -2348,7 +2414,7 @@ def identity(
     Limitations
     -----------
     Parameter `like` is currently not supported.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -2572,7 +2638,7 @@ def loadtxt(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     Notes
     -----
@@ -3054,7 +3120,7 @@ def ones(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -3112,7 +3178,7 @@ def ones_like(
     /,
     *,
     dtype=None,
-    order="C",
+    order="K",
     subok=False,
     shape=None,
     device=None,
@@ -3133,9 +3199,10 @@ def ones_like(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {None, "C", "F"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
-        Default: ``"C"``.
+        ``order=None`` is an alias for ``order="K"``.
+        Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -3162,10 +3229,8 @@ def ones_like(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -3202,21 +3267,19 @@ def ones_like(
 
     """
     dpnp.check_supported_arrays_type(a)
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(subok=subok)
 
-    _shape = a.shape if shape is None else shape
-    _dtype = a.dtype if dtype is None else dtype
-    _usm_type = a.usm_type if usm_type is None else usm_type
-    _sycl_queue = dpnp.get_normalized_queue_device(
-        a, sycl_queue=sycl_queue, device=device
-    )
-    return dpnp_container.ones(
-        _shape,
-        dtype=_dtype,
+    res = _get_empty_array(
+        a,
+        dtype=dtype,
         order=order,
-        usm_type=_usm_type,
-        sycl_queue=_sycl_queue,
+        shape=shape,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
     )
+    res.fill(1)
+    return res
 
 
 def trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):
@@ -3257,6 +3320,7 @@ def trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):
 
     See Also
     --------
+    :obj:`dpnp.linalg.trace` : Array API compatible version.
     :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
     :obj:`dpnp.diagonal` : Return specified diagonals.
     :obj:`dpnp.diagflat` : Create a 2-D array with the flattened input as
@@ -3701,7 +3765,7 @@ def zeros(
     Limitations
     -----------
     Parameter `like` is supported only with default value ``None``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -3759,7 +3823,7 @@ def zeros_like(
     /,
     *,
     dtype=None,
-    order="C",
+    order="K",
     subok=False,
     shape=None,
     device=None,
@@ -3780,9 +3844,10 @@ def zeros_like(
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    order : {None, "C", "F"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
-        Default: ``"C"``.
+        ``order=None`` is an alias for ``order="K"``.
+        Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
     device : {None, string, SyclDevice, SyclQueue}, optional
@@ -3809,10 +3874,8 @@ def zeros_like(
 
     Limitations
     -----------
-    Parameter `order` is supported only with values ``"C"``, ``"F"`` and
-    ``None``.
     Parameter `subok` is supported only with default value ``False``.
-    Otherwise, the function raises `NotImplementedError` exception.
+    Otherwise, the function raises ``NotImplementedError`` exception.
 
     See Also
     --------
@@ -3850,18 +3913,16 @@ def zeros_like(
     """
 
     dpnp.check_supported_arrays_type(a)
-    dpnp.check_limitations(order=order, subok=subok)
+    dpnp.check_limitations(subok=subok)
 
-    _shape = a.shape if shape is None else shape
-    _dtype = a.dtype if dtype is None else dtype
-    _usm_type = a.usm_type if usm_type is None else usm_type
-    _sycl_queue = dpnp.get_normalized_queue_device(
-        a, sycl_queue=sycl_queue, device=device
-    )
-    return dpnp_container.zeros(
-        _shape,
-        dtype=_dtype,
+    res = _get_empty_array(
+        a,
+        dtype=dtype,
         order=order,
-        usm_type=_usm_type,
-        sycl_queue=_sycl_queue,
+        shape=shape,
+        device=device,
+        usm_type=usm_type,
+        sycl_queue=sycl_queue,
     )
+    res.fill(0)
+    return res

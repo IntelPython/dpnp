@@ -719,6 +719,10 @@ class TestEinsum:
         # different size for same label 5 != 4
         assert_raises(ValueError, inp.einsum, "ii", a)
 
+        a = inp.arange(25).reshape(5, 5)
+        # subscript is not within the valid range [0, 52)
+        assert_raises(ValueError, inp.einsum, a, [53, 53])
+
     @pytest.mark.parametrize("do_opt", [True, False])
     @pytest.mark.parametrize("xp", [numpy, inp])
     def test_einsum_error2(self, do_opt, xp):
@@ -1740,6 +1744,17 @@ class TestEinsum:
             tmp = inp.einsum("...ft,mf->...mt", d, c, order="a", optimize=opt)
             assert tmp.flags.c_contiguous
 
+    def test_einsum_path(self):
+        # Test einsum path for covergae
+        a = numpy.random.rand(1, 2, 3, 4)
+        b = numpy.random.rand(4, 3, 2, 1)
+        a_dp = inp.array(a)
+        b_dp = inp.array(b)
+        expected = numpy.einsum_path("ijkl,dcba->dcba", a, b)
+        result = inp.einsum_path("ijkl,dcba->dcba", a_dp, b_dp)
+        assert expected[0] == result[0]
+        assert expected[1] == result[1]
+
 
 class TestInv:
     @pytest.mark.parametrize(
@@ -2109,21 +2124,36 @@ class TestMatrixRank:
         )
 
 
+# numpy.linalg.matrix_transpose() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+# dpnp.linalg.matrix_transpose() calls dpnp.matrix_transpose()
+# 1 test to increase code coverage
+def test_matrix_transpose():
+    a = numpy.arange(6).reshape((2, 3))
+    a_dp = inp.array(a)
+
+    expected = numpy.linalg.matrix_transpose(a)
+    result = inp.linalg.matrix_transpose(a_dp)
+
+    assert_allclose(expected, result)
+
+    with assert_raises_regex(
+        ValueError, "array must be at least 2-dimensional"
+    ):
+        inp.linalg.matrix_transpose(a_dp[:, 0])
+
+
 class TestNorm:
     def setup_method(self):
         numpy.random.seed(42)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize(
-        "shape", [(0,), (5, 0), (2, 0, 3)], ids=["(0,)", "(5,0)", "(2, 0, 3)"]
+        "shape", [(0,), (5, 0), (2, 0, 3)], ids=["(0,)", "(5, 0)", "(2, 0, 3)"]
     )
-    @pytest.mark.parametrize(
-        "ord",
-        [None, -2, -1, 0, 1, 2, 3],
-        ids=["None", "-2", "-1", "0", "1", "2", "3"],
-    )
-    @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("ord", [None, -2, -1, 0, 1, 2, 3])
+    @pytest.mark.parametrize("axis", [0, None])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_empty(self, shape, ord, axis, keepdims):
         a = numpy.empty(shape)
         ia = inp.array(a)
@@ -2153,11 +2183,9 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf],
-        ids=["None", "-dpnp.inf", "-2", "-1", "0", "1", "2", "3", "dpnp.inf"],
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf]
     )
-    @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
+    @pytest.mark.parametrize("axis", [0, None])
     def test_norm_0D(self, ord, axis):
         a = numpy.array(2)
         ia = inp.array(a)
@@ -2176,12 +2204,10 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf],
-        ids=["None", "-dpnp.inf", "-2", "-1", "0", "1", "2", "3", "dpnp.inf"],
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
     )
-    @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("axis", [0, None])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_1D(self, dtype, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype)
         ia = inp.array(a)
@@ -2193,12 +2219,10 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf],
-        ids=["None", "-dpnp.inf", "-2", "-1", "0", "1", "2", "3", "dpnp.inf"],
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
     )
-    @pytest.mark.parametrize("axis", [0, None], ids=["0", "None"])
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("axis", [0, None])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_1D_complex(self, dtype, ord, axis, keepdims):
         x1 = numpy.random.uniform(-5, 5, 10)
         x2 = numpy.random.uniform(-5, 5, 10)
@@ -2212,25 +2236,12 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
-        ids=[
-            "None",
-            "-dpnp.inf",
-            "-2",
-            "-1",
-            "1",
-            "2",
-            "3",
-            "dpnp.inf",
-            '"fro"',
-            '"nuc"',
-        ],
+        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis", [0, 1, (1, 0), None], ids=["0", "1", "(1, 0)", "None"]
     )
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_2D(self, dtype, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 15), dtype=dtype).reshape(
             3, 5
@@ -2252,25 +2263,12 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
-        ids=[
-            "None",
-            "-dpnp.inf",
-            "-2",
-            "-1",
-            "1",
-            "2",
-            "3",
-            "dpnp.inf",
-            '"fro"',
-            '"nuc"',
-        ],
+        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis", [0, 1, (1, 0), None], ids=["0", "1", "(1, 0)", "None"]
     )
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_2D_complex(self, dtype, ord, axis, keepdims):
         x1 = numpy.random.uniform(-5, 5, 15)
         x2 = numpy.random.uniform(-5, 5, 15)
@@ -2292,27 +2290,14 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
-        ids=[
-            "None",
-            "-dpnp.inf",
-            "-2",
-            "-1",
-            "1",
-            "2",
-            "3",
-            "dpnp.inf",
-            '"fro"',
-            '"nuc"',
-        ],
+        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis",
         [-1, 0, 1, (0, 1), (-1, -2), None],
         ids=["-1", "0", "1", "(0, 1)", "(-1, -2)", "None"],
     )
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_ND(self, dtype, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
             2, 3, 4, 5
@@ -2338,27 +2323,14 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
-        ids=[
-            "None",
-            "-dpnp.inf",
-            "-2",
-            "-1",
-            "1",
-            "2",
-            "3",
-            "dpnp.inf",
-            '"fro"',
-            '"nuc"',
-        ],
+        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis",
         [-1, 0, 1, (0, 1), (-1, -2), None],
         ids=["-1", "0", "1", "(0, 1)", "(-1, -2)", "None"],
     )
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_ND_complex(self, dtype, ord, axis, keepdims):
         x1 = numpy.random.uniform(-5, 5, 120)
         x2 = numpy.random.uniform(-5, 5, 120)
@@ -2384,27 +2356,14 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
-        "ord",
-        [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"],
-        ids=[
-            "None",
-            "-dpnp.inf",
-            "-2",
-            "-1",
-            "1",
-            "2",
-            "3",
-            "dpnp.inf",
-            '"fro"',
-            '"nuc"',
-        ],
+        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis",
         [-1, 0, 1, (0, 1), (-2, -1), None],
         ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
     )
-    @pytest.mark.parametrize("keepdims", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_usm_ndarray(self, dtype, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
             2, 3, 4, 5
@@ -2427,7 +2386,7 @@ class TestNorm:
             )
             assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("stride", [3, -1, -5], ids=["3", "-1", "-5"])
+    @pytest.mark.parametrize("stride", [3, -1, -5])
     def test_norm_strided_1D(self, stride):
         a = numpy.arange(25)
         ia = inp.array(a)
@@ -2476,6 +2435,73 @@ class TestNorm:
 
         result = inp.linalg.norm(b, axis=axis)
         expected = numpy.linalg.norm(a, axis=axis)
+        assert_dtype_allclose(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "ord",
+        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro", "nuc"],
+    )
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_matrix_norm(self, ord, keepdims):
+        a = numpy.array(numpy.random.uniform(-5, 5, 15)).reshape(3, 5)
+        ia = inp.array(a)
+
+        result = inp.linalg.matrix_norm(ia, ord=ord, keepdims=keepdims)
+        expected = numpy.linalg.matrix_norm(a, ord=ord, keepdims=keepdims)
+        assert_dtype_allclose(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
+    )
+    def test_vector_norm_0D(self, ord):
+        a = numpy.array(2)
+        ia = inp.array(a)
+
+        result = inp.linalg.vector_norm(ia, ord=ord)
+        expected = numpy.linalg.vector_norm(a, ord=ord)
+        assert_dtype_allclose(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
+    )
+    @pytest.mark.parametrize("axis", [0, None])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_vector_norm_1D(self, ord, axis, keepdims):
+        a = numpy.array(numpy.random.uniform(-5, 5, 10))
+        ia = inp.array(a)
+
+        result = inp.linalg.vector_norm(
+            ia, ord=ord, axis=axis, keepdims=keepdims
+        )
+        expected = numpy.linalg.vector_norm(
+            a, ord=ord, axis=axis, keepdims=keepdims
+        )
+        assert_dtype_allclose(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
+    @pytest.mark.parametrize(
+        "ord", [None, -inp.inf, -2, -1, 1, 2, 3.5, inp.inf]
+    )
+    @pytest.mark.parametrize(
+        "axis",
+        [-1, 0, (0, 1), (-1, -2), (0, 1, -2, -1), None],
+        ids=["-1", "0", "(0, 1)", "(-1, -2)", "(0, 1, -2, -1)", "None"],
+    )
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_vector_norm_ND(self, ord, axis, keepdims):
+        a = numpy.arange(120).reshape(2, 3, 4, 5)
+        ia = inp.array(a)
+
+        result = inp.linalg.vector_norm(
+            ia, ord=ord, axis=axis, keepdims=keepdims
+        )
+        expected = numpy.linalg.vector_norm(
+            a, ord=ord, axis=axis, keepdims=keepdims
+        )
         assert_dtype_allclose(result, expected)
 
     def test_norm_error(self):
@@ -2991,6 +3017,50 @@ class TestSvd:
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
         assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)
+
+
+# numpy.linalg.svdvals() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+class TestSvdvals:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(3, 5), (4, 2), (2, 3, 3), (3, 5, 2)],
+        ids=["(3,5)", "(4,2)", "(2,3,3)", "(3,5,2)"],
+    )
+    def test_svdvals(self, dtype, shape):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        dp_a = inp.array(a)
+
+        expected = numpy.linalg.svdvals(a)
+        result = inp.linalg.svdvals(dp_a)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (1, 0, 0), (0, 2, 2)],
+        ids=["(0,0)", "(1,0,0)", "(0,2,2)"],
+    )
+    def test_svdvals_empty(self, shape):
+        a = generate_random_numpy_array(shape, inp.default_float_type())
+        dp_a = inp.array(a)
+
+        expected = numpy.linalg.svdvals(a)
+        result = inp.linalg.svdvals(dp_a)
+
+        assert_dtype_allclose(result, expected)
+
+    def test_svdvals_errors(self):
+        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type
+        a_np = inp.asnumpy(a_dp)
+        assert_raises(TypeError, inp.linalg.svdvals, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(inp.linalg.LinAlgError, inp.linalg.svdvals, a_dp_ndim_1)
 
 
 class TestPinv:

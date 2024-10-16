@@ -130,8 +130,17 @@ class TestMisc:
     def test_clip_min_max_none(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp, dtype)
-            with pytest.raises(ValueError):
-                a.clip(None, None)
+            # According to Python Array API, clip() should return an array
+            # with the same elements in `a` if `min` and `max` are `None`.
+            # Numpy < 2.1 is not compatible with this and raises a ValueError
+            if (
+                xp is numpy
+                and numpy.lib.NumpyVersion(numpy.__version__) < "2.1.0"
+            ):
+                with pytest.raises(ValueError):
+                    a.clip(None, None)
+            else:
+                return a.clip(None, None)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -155,8 +164,18 @@ class TestMisc:
     def test_external_clip4(self, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3, 4), xp, dtype)
-            with pytest.raises(TypeError):
-                xp.clip(a, 3)
+            # Starting with numpy 2.1.0, it's possible to pass only one argument
+            # (min or max) as a keyword argument according to Python Array API.
+            # In older versions of numpy, both arguments must be positional;
+            # passing only one raises a TypeError.
+            if (
+                xp is numpy
+                and numpy.lib.NumpyVersion(numpy.__version__) < "2.1.0"
+            ):
+                with pytest.raises(TypeError):
+                    xp.clip(a, 3)
+            else:
+                return xp.clip(a, min=3)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()

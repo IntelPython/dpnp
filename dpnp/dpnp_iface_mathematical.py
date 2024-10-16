@@ -42,6 +42,8 @@ it contains:
 # pylint: disable=no-name-in-module
 
 
+import warnings
+
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu
@@ -63,6 +65,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPReal,
     DPNPRound,
     DPNPUnaryFunc,
+    acceptance_fn_gcd_lcm,
     acceptance_fn_negative,
     acceptance_fn_positive,
     acceptance_fn_sign,
@@ -99,9 +102,11 @@ __all__ = [
     "fmax",
     "fmin",
     "fmod",
+    "gcd",
     "gradient",
     "heaviside",
     "imag",
+    "lcm",
     "maximum",
     "minimum",
     "mod",
@@ -627,7 +632,7 @@ ceil = DPNPUnaryFunc(
 )
 
 
-def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
+def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
     """
     Clip (limit) the values in an array.
 
@@ -637,23 +642,27 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
-    a_min, a_max : {dpnp.ndarray, usm_ndarray, None}
+    min, max : {dpnp.ndarray, usm_ndarray, None}
         Minimum and maximum value. If ``None``, clipping is not performed on
-        the corresponding edge. Only one of `a_min` and `a_max` may be
-        ``None``. Both are broadcast against `a`.
+        the corresponding edge. If both `min` and `max` are ``None``,
+        the elements of the returned array stay the same.
+        Both are broadcast against `a`.
+        Default : ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array
         for in-place clipping. `out` must be of the right shape to hold the
         output. Its type is preserved.
+        Default : ``None``.
     order : {"C", "F", "A", "K", None}, optional
-        Memory layout of the newly output array, if parameter `out` is `None`.
+        Memory layout of the newly output array, if parameter `out` is ``None``.
         If `order` is ``None``, the default value ``"K"`` will be used.
+        Default: ``"K"``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array with the elements of `a`, but where values < `a_min` are
-        replaced with `a_min`, and those > `a_max` with `a_max`.
+        An array with the elements of `a`, but where values < `min` are
+        replaced with `min`, and those > `max` with `max`.
 
     Limitations
     -----------
@@ -687,15 +696,12 @@ def clip(a, a_min, a_max, *, out=None, order="K", **kwargs):
     if kwargs:
         raise NotImplementedError(f"kwargs={kwargs} is currently not supported")
 
-    if a_min is None and a_max is None:
-        raise ValueError("One of max or min must be given")
-
     if order is None:
         order = "K"
 
     usm_arr = dpnp.get_usm_ndarray(a)
-    usm_min = None if a_min is None else dpnp.get_usm_ndarray_or_scalar(a_min)
-    usm_max = None if a_max is None else dpnp.get_usm_ndarray_or_scalar(a_max)
+    usm_min = None if min is None else dpnp.get_usm_ndarray_or_scalar(min)
+    usm_max = None if max is None else dpnp.get_usm_ndarray_or_scalar(max)
 
     usm_out = None if out is None else dpnp.get_usm_ndarray(out)
     usm_res = dpt.clip(usm_arr, usm_min, usm_max, out=usm_out, order=order)
@@ -838,8 +844,16 @@ copysign = DPNPBinaryFunc(
 
 
 def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
-    """
+    r"""
     Return the cross product of two (arrays of) vectors.
+
+    The cross product of `a` and `b` in :math:`R^3` is a vector perpendicular
+    to both `a` and `b`. If `a` and `b` are arrays of vectors, the vectors
+    are defined by the last axis of `a` and `b` by default, and these axes
+    can have dimensions 2 or 3. Where the dimension of either `a` or `b` is
+    2, the third component of the input vector is assumed to be zero and the
+    cross product calculated accordingly. In cases where both input vectors
+    have dimension 2, the z-component of the cross product is returned.
 
     For full documentation refer to :obj:`numpy.cross`.
 
@@ -850,16 +864,17 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     b : {dpnp.ndarray, usm_ndarray}
         Second input array.
     axisa : int, optional
-        Axis of `a` that defines the vector(s).  By default, the last axis.
+        Axis of `a` that defines the vector(s). By default, the last axis.
     axisb : int, optional
-        Axis of `b` that defines the vector(s).  By default, the last axis.
+        Axis of `b` that defines the vector(s). By default, the last axis.
     axisc : int, optional
-        Axis of `c` containing the cross product vector(s).  Ignored if
+        Axis of `c` containing the cross product vector(s). Ignored if
         both input vectors have dimension 2, as the return is scalar.
         By default, the last axis.
     axis : {int, None}, optional
         If defined, the axis of `a`, `b` and `c` that defines the vector(s)
-        and cross product(s).  Overrides `axisa`, `axisb` and `axisc`.
+        and cross product(s). Overrides `axisa`, `axisb` and `axisc`.
+        Default: ``None``.
 
     Returns
     -------
@@ -868,6 +883,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
 
     See Also
     --------
+    :obj:`dpnp.linalg.cross` : Array API compatible version.
     :obj:`dpnp.inner` : Inner product.
     :obj:`dpnp.outer` : Outer product.
 
@@ -955,6 +971,14 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
         raise ValueError(
             "Incompatible vector dimensions for cross product\n"
             "(the dimension of vector used in cross product must be 2 or 3)"
+        )
+
+    if a.shape[-1] == 2 or b.shape[-1] == 2:
+        warnings.warn(
+            "Arrays of 2-dimensional vectors are deprecated. Use arrays of "
+            "3-dimensional vectors instead. (deprecated in dpnp 0.17.0)",
+            DeprecationWarning,
+            stacklevel=2,
         )
 
     # Modify the shape of input arrays if necessary
@@ -1977,6 +2001,55 @@ fmod = DPNPBinaryFunc(
     mkl_impl_fn="_fmod",
 )
 
+_GCD_DOCSTRING = """
+Returns the greatest common divisor of ``|x1|`` and ``|x2|``.
+
+For full documentation refer to :obj:`numpy.gcd`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x : {dpnp.ndarray, usm_ndarray}
+    An array of floats to be rounded.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The greatest common divisor of the absolute value of the inputs.
+
+See Also
+--------
+:obj:`dpnp.lcm` : The lowest common multiple.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.gcd(np.array(12), 20)
+array(4)
+>>> np.gcd(np.arange(6), 20)
+array([20,  1,  2,  1,  4,  5])
+"""
+
+gcd = DPNPBinaryFunc(
+    "gcd",
+    ufi._gcd_result_type,
+    ufi._gcd,
+    _GCD_DOCSTRING,
+    acceptance_fn=acceptance_fn_gcd_lcm,
+)
+
 
 def gradient(f, *varargs, axis=None, edge_order=1):
     """
@@ -2291,6 +2364,54 @@ imag = DPNPUnaryFunc(
     ti._imag_result_type,
     ti._imag,
     _IMAG_DOCSTRING,
+)
+
+
+_LCM_DOCSTRING = """
+Returns the lowest common multiple of ``|x1|`` and ``|x2|``.
+
+For full documentation refer to :obj:`numpy.lcm`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    First input array, expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Second input array, also expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The lowest common multiple of the absolute value of the inputs.
+
+See Also
+--------
+:obj:`dpnp.gcd` : The greatest common divisor.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.lcm(np.array(12), 20)
+array(60)
+>>> np.lcm(np.arange(6), 20)
+array([ 0, 20, 20, 60, 20, 20])
+"""
+
+lcm = DPNPBinaryFunc(
+    "lcm",
+    ufi._lcm_result_type,
+    ufi._lcm,
+    _LCM_DOCSTRING,
+    acceptance_fn=acceptance_fn_gcd_lcm,
 )
 
 

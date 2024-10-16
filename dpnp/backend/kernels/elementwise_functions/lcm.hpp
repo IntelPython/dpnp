@@ -23,41 +23,37 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "degrees.hpp"
-#include "fabs.hpp"
-#include "fix.hpp"
-#include "float_power.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "gcd.hpp"
-#include "heaviside.hpp"
-#include "lcm.hpp"
-#include "logaddexp2.hpp"
-#include "radians.hpp"
+#include <oneapi/dpl/numeric>
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+namespace dpnp::kernels::lcm
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+template <typename argT1, typename argT2, typename resT>
+struct LcmFunctor
 {
-    init_degrees(m);
-    init_fabs(m);
-    init_fix(m);
-    init_float_power(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_gcd(m);
-    init_heaviside(m);
-    init_lcm(m);
-    init_logaddexp2(m);
-    init_radians(m);
-}
-} // namespace dpnp::extensions::ufunc
+    using supports_sg_loadstore = typename std::true_type;
+    using supports_vec = typename std::false_type;
+
+    resT operator()(const argT1 &in1, const argT2 &in2) const
+    {
+        static_assert(std::is_same_v<argT1, argT2>,
+                      "Input types are expected to be the same");
+
+        if (in1 == 0 || in2 == 0)
+            return 0;
+
+        resT res = in1 / oneapi::dpl::gcd(in1, in2) * in2;
+        if constexpr (std::is_signed_v<argT1>) {
+            if (res < 0) {
+                return -res;
+            }
+        }
+        return res;
+
+        // TODO: undo the w/a once ONEDPL-1320 is resolved
+        // return oneapi::dpl::lcm(in1, in2);
+    }
+};
+} // namespace dpnp::kernels::lcm

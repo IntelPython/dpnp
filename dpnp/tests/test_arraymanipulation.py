@@ -556,6 +556,50 @@ class TestHstack:
         assert_array_equal(res, a)
 
 
+# numpy.matrix_transpose() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+class TestMatrixtranspose:
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(3, 5), (4, 2), (2, 5, 2), (2, 3, 3, 6)],
+        ids=["(3,5)", "(4,2)", "(2,5,2)", "(2,3,3,6)"],
+    )
+    def test_matrix_transpose(self, dtype, shape):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
+        dp_a = dpnp.array(a)
+
+        expected = numpy.matrix_transpose(a)
+        result = dpnp.matrix_transpose(dp_a)
+
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(0, 0), (1, 0, 0), (0, 2, 2), (0, 1, 0, 4)],
+        ids=["(0,0)", "(1,0,0)", "(0,2,2)", "(0, 1, 0, 4)"],
+    )
+    def test_matrix_transpose_empty(self, shape):
+        a = numpy.empty(shape, dtype=dpnp.default_float_type())
+        dp_a = dpnp.array(a)
+
+        expected = numpy.matrix_transpose(a)
+        result = dpnp.matrix_transpose(dp_a)
+
+        assert_allclose(result, expected)
+
+    def test_matrix_transpose_errors(self):
+        a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
+
+        # unsupported type
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.matrix_transpose, a_np)
+
+        # a.ndim < 2
+        a_dp_ndim_1 = a_dp.flatten()
+        assert_raises(ValueError, dpnp.matrix_transpose, a_dp_ndim_1)
+
+
 class TestRollaxis:
     data = [
         (0, 0),
@@ -820,6 +864,85 @@ class TestStack:
             dpnp.stack((dpnp.arange(3) for _ in range(2)))
         with pytest.raises(TypeError, match="arrays to stack must be"):
             dpnp.stack(map(lambda x: x, dpnp.ones((3, 2))))
+
+
+# numpy.unstack() is available since numpy >= 2.1
+@testing.with_requires("numpy>=2.1")
+class TestUnstack:
+    def test_non_array_input(self):
+        with pytest.raises(TypeError):
+            dpnp.unstack(1)
+
+    @pytest.mark.parametrize(
+        "input", [([1, 2, 3],), [dpnp.int32(1), dpnp.int32(2), dpnp.int32(3)]]
+    )
+    def test_scalar_input(self, input):
+        with pytest.raises(TypeError):
+            dpnp.unstack(input)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_0d_array_input(self, dtype):
+        np_a = numpy.array(1, dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        with pytest.raises(ValueError):
+            numpy.unstack(np_a)
+        with pytest.raises(ValueError):
+            dpnp.unstack(dp_a)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_1d_array(self, dtype):
+        np_a = numpy.array([1, 2, 3], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a)
+        dp_res = dpnp.unstack(dp_a)
+        assert len(dp_res) == len(np_res)
+        for dp_arr, np_arr in zip(dp_res, np_res):
+            assert_array_equal(dp_arr.asnumpy(), np_arr)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_2d_array(self, dtype):
+        np_a = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a, axis=0)
+        dp_res = dpnp.unstack(dp_a, axis=0)
+        assert len(dp_res) == len(np_res)
+        for dp_arr, np_arr in zip(dp_res, np_res):
+            assert_array_equal(dp_arr.asnumpy(), np_arr)
+
+    @pytest.mark.parametrize("axis", [0, 1, -1])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_2d_array_axis(self, axis, dtype):
+        np_a = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a, axis=axis)
+        dp_res = dpnp.unstack(dp_a, axis=axis)
+        assert len(dp_res) == len(np_res)
+        for dp_arr, np_arr in zip(dp_res, np_res):
+            assert_array_equal(dp_arr.asnumpy(), np_arr)
+
+    @pytest.mark.parametrize("axis", [2, -3])
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_invalid_axis(self, axis, dtype):
+        np_a = numpy.array([[1, 2, 3], [4, 5, 6]], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        with pytest.raises(AxisError):
+            numpy.unstack(np_a, axis=axis)
+        with pytest.raises(AxisError):
+            dpnp.unstack(dp_a, axis=axis)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    def test_empty_array(self, dtype):
+        np_a = numpy.array([], dtype=dtype)
+        dp_a = dpnp.array(np_a, dtype=dtype)
+
+        np_res = numpy.unstack(np_a)
+        dp_res = dpnp.unstack(dp_a)
+        assert len(dp_res) == len(np_res)
 
 
 class TestVstack:

@@ -38,6 +38,21 @@ class TestOuter(unittest.TestCase):
         a = xp.arange(27, dtype=dtype).reshape(3, 3, 3)
         return xp.outer(a, a)
 
+    @testing.with_requires("numpy>=2.0")
+    @testing.numpy_cupy_allclose()
+    def test_linalg_outer(self, xp):
+        a = xp.arange(10)
+        b = xp.arange(10) - 5
+
+        return xp.linalg.outer(a, b)
+
+    @testing.with_requires("numpy>=2.0")
+    def test_linalg_outer_error(self):
+        for xp in (np, dp):
+            a = xp.arange(9).reshape(3, 3)
+            with pytest.raises(ValueError):
+                xp.linalg.outer(a, a)
+
 
 class TestScalarOuter(unittest.TestCase):
     @testing.for_all_dtypes()
