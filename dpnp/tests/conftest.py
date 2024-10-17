@@ -50,6 +50,45 @@ def get_excluded_tests(test_exclude_file):
     return excluded_tests
 
 
+def pytest_configure(config):
+    # By default, tests marked as slow will be deselected.
+    # To run all tests, use -m "slow or not slow".
+    # To run only slow tests, use -m "slow".
+    # Equivalent to addopts = -m "not slow"
+    if not config.getoption("markexpr"):
+        config.option.markexpr = "not slow"
+    # Equivalent to addopts = --tb=short
+    if not config.getoption("tbstyle"):
+        config.option.tbstyle = "short"
+    # Equivalent to addopts = --strict-markers
+    if not config.getoption("strict_markers"):
+        config.option.strict_markers = True
+
+    # Register pytest markers
+    config.addinivalue_line(
+        "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
+    )
+    config.addinivalue_line(
+        "markers",
+        "multi_gpu: marks tests that require a specified number of GPUs",
+    )
+
+    # Add warning filters
+    # pkg_resources
+    config.addinivalue_line(
+        "filterwarnings",
+        "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
+    )
+    # NumPy arccosh
+    # Undefined behavior depends on the backend:
+    # NumPy with OpenBLAS for np.array[1.0] does not raise a warning
+    # while numpy with OneMKL raises RuntimeWarning
+    config.addinivalue_line(
+        "filterwarnings",
+        "ignore:invalid value encountered in arccosh:RuntimeWarning",
+    )
+
+
 def pytest_collection_modifyitems(config, items):
     test_path = os.path.split(__file__)[0]
     excluded_tests = []
@@ -94,6 +133,14 @@ def pytest_collection_modifyitems(config, items):
             # exact match of the test name with items from excluded_list
             if test_name == item_tbl_str:
                 item.add_marker(skip_mark)
+
+    # Handle the exclusion of tests marked as "slow"
+    selected_marker = config.getoption("markexpr")
+    if "not slow" in selected_marker:
+        skip_slow = pytest.mark.skip(reason="Skipping slow tests")
+        for item in items:
+            if "slow" in item.keywords:
+                item.add_marker(skip_slow)
 
 
 @pytest.fixture
