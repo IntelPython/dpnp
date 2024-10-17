@@ -32,9 +32,9 @@ repos:
     -   id: python-no-eval
         exclude: |
             (?x)^(
-                tests/test_arraycreation.py|
-                tests/test_sycl_queue.py|
-                tests/test_usm_type.py
+                dpnp/tests/test_arraycreation.py|
+                dpnp/tests/test_sycl_queue.py|
+                dpnp/tests/test_usm_type.py
             )$
     -   id: python-no-log-warn
     -   id: python-use-type-annotations
