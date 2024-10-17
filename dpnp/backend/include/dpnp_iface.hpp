@@ -165,52 +165,6 @@ INP_DLLEXPORT void dpnp_dot_c(void *result_out,
 
 /**
  * @ingroup BACKEND_API
- * @brief Compute summary of input array elements.
- *
- * Input array is expected as @ref _DataType_input type and assume result as
- * @ref _DataType_output type. The function creates no memory.
- *
- * Empty @ref input_shape means scalar.
- *
- * @param [in]  q_ref             Reference to SYCL queue.
- * @param [out] result_out        Output array pointer. @ref _DataType_output
- * type is expected
- * @param [in]  input_in          Input array pointer. @ref _DataType_input type
- * is expected
- * @param [in]  input_shape       Shape of @ref input_in
- * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
- * @param [in]  axes              Array of axes to apply to @ref input_shape
- * @param [in]  axes_ndim         Number of elements in @ref axes
- * @param [in]  initial           Pointer to initial value for the algorithm.
- * @ref _DataType_input is expected
- * @param [in]  where             mask array
- * @param [in]  dep_event_vec_ref Reference to vector of SYCL events.
- */
-template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_sum_c(DPCTLSyclQueueRef q_ref,
-               void *result_out,
-               const void *input_in,
-               const shape_elem_type *input_shape,
-               const size_t input_shape_ndim,
-               const shape_elem_type *axes,
-               const size_t axes_ndim,
-               const void *initial,
-               const long *where,
-               const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT void dpnp_sum_c(void *result_out,
-                              const void *input_in,
-                              const shape_elem_type *input_shape,
-                              const size_t input_shape_ndim,
-                              const shape_elem_type *axes,
-                              const size_t axes_ndim,
-                              const void *initial,
-                              const long *where);
-
-/**
- * @ingroup BACKEND_API
  * @brief Return a partitioned copy of an array.
  *
  * @param [in]  q_ref             Reference to SYCL queue.
@@ -240,107 +194,6 @@ INP_DLLEXPORT void dpnp_partition_c(void *array,
                                     const size_t kth,
                                     const shape_elem_type *shape,
                                     const size_t ndim);
-
-/**
- * @ingroup BACKEND_API
- * @brief Compute Product of input array elements.
- *
- * Input array is expected as @ref _DataType_input type and assume result as
- * @ref _DataType_output type. The function creates no memory.
- *
- * Empty @ref input_shape means scalar.
- *
- * @param [in]  q_ref             Reference to SYCL queue.
- * @param [out] result_out        Output array pointer. @ref _DataType_output
- * type is expected
- * @param [in]  input_in          Input array pointer. @ref _DataType_input type
- * is expected
- * @param [in]  input_shape       Shape of @ref input_in
- * @param [in]  input_shape_ndim  Number of elements in @ref input_shape
- * @param [in]  axes              Array of axes to apply to @ref input_shape
- * @param [in]  axes_ndim         Number of elements in @ref axes
- * @param [in]  initial           Pointer to initial value for the algorithm.
- * @ref _DataType_input is expected
- * @param [in]  where             mask array
- * @param [in]  dep_event_vec_ref Reference to vector of SYCL events.
- */
-template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_prod_c(DPCTLSyclQueueRef q_ref,
-                void *result_out,
-                const void *input_in,
-                const shape_elem_type *input_shape,
-                const size_t input_shape_ndim,
-                const shape_elem_type *axes,
-                const size_t axes_ndim,
-                const void *initial,
-                const long *where,
-                const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType_output, typename _DataType_input>
-INP_DLLEXPORT void dpnp_prod_c(void *result_out,
-                               const void *input_in,
-                               const shape_elem_type *input_shape,
-                               const size_t input_shape_ndim,
-                               const shape_elem_type *axes,
-                               const size_t axes_ndim,
-                               const void *initial,
-                               const long *where);
-
-/**
- * @ingroup BACKEND_API
-
- * @brief math library implementation of argsort function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indices.
- * @param [in]  size                Number of elements in input arrays.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_argsort_c(DPCTLSyclQueueRef q_ref,
-                   void *array,
-                   void *result,
-                   size_t size,
-                   const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void dpnp_argsort_c(void *array, void *result, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of searchsorted function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result              Output array.
- * @param [in]  array               Input array with data.
- * @param [in]  v                   Input values to insert into array.
- * @param [in]  side                Param for choosing a case of searching for
- * elements.
- * @param [in]  arr_size            Number of elements in input arrays.
- * @param [in]  v_size              Number of elements in input values arrays.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType, typename _IndexingType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_searchsorted_c(DPCTLSyclQueueRef q_ref,
-                        void *result,
-                        const void *array,
-                        const void *v,
-                        bool side,
-                        const size_t arr_size,
-                        const size_t v_size,
-                        const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType, typename _IndexingType>
-INP_DLLEXPORT void dpnp_searchsorted_c(void *result,
-                                       const void *array,
-                                       const void *v,
-                                       bool side,
-                                       const size_t arr_size,
-                                       const size_t v_size);
 
 /**
  * @ingroup BACKEND_API
@@ -496,48 +349,6 @@ INP_DLLEXPORT void dpnp_median_c(void *array,
                                  size_t ndim,
                                  const shape_elem_type *axis,
                                  size_t naxis);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of argmax function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indices.
- * @param [in]  size                Number of elements in input array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_argmax_c(DPCTLSyclQueueRef q_ref,
-                  void *array,
-                  void *result,
-                  size_t size,
-                  const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void dpnp_argmax_c(void *array, void *result, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of argmin function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indices.
- * @param [in]  size                Number of elements in input array.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_argmin_c(DPCTLSyclQueueRef q_ref,
-                  void *array,
-                  void *result,
-                  size_t size,
-                  const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType, typename _idx_DataType>
-INP_DLLEXPORT void dpnp_argmin_c(void *array, void *result, size_t size);
 
 #define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)          \
     template <typename _DataType>                                              \

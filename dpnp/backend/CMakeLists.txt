@@ -30,8 +30,6 @@ set(DPNP_SRC
     kernels/dpnp_krnl_indexing.cpp
     kernels/dpnp_krnl_mathematical.cpp
     kernels/dpnp_krnl_random.cpp
-    kernels/dpnp_krnl_reduction.cpp
-    kernels/dpnp_krnl_searching.cpp
     kernels/dpnp_krnl_sorting.cpp
     kernels/dpnp_krnl_statistics.cpp
     src/constants.cpp
