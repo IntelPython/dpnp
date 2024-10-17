@@ -69,10 +69,11 @@ setup(
     ],
     package_data={
         "dpnp": [
+            "backend/include/*.hpp",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",
         ]
     },
-    include_package_data=True,
+    include_package_data=False,
 )
