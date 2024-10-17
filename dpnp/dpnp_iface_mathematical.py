@@ -491,6 +491,9 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a complex-valued floating-point data type.
+deg : bool, optional
+    Return angle in degrees if ``True``, radians if ``False``.
+    Default: ``False``.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.

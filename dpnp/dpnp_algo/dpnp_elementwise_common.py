@@ -45,6 +45,7 @@ __all__ = [
     "acceptance_fn_subtract",
     "DPNPAngle",
     "DPNPBinaryFunc",
+    "DPNPImag",
     "DPNPReal",
     "DPNPRound",
     "DPNPUnaryFunc",
@@ -491,8 +492,8 @@ class DPNPAngle(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, deg=False):
-        res = super().__call__(x)
+    def __call__(self, x, deg=False, out=None, order="K"):
+        res = super().__call__(x, out=out, order=order)
         if deg is True:
             res *= 180 / dpnp.pi
         return res
@@ -515,7 +516,7 @@ class DPNPImag(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, out, order):
+    def __call__(self, x, out=None, order="K"):
         return super().__call__(x, out=out, order=order)
 
 
@@ -536,7 +537,7 @@ class DPNPReal(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, out, order):
+    def __call__(self, x, out=None, order="K"):
         if numpy.iscomplexobj(x):
             return super().__call__(x, out=out, order=order)
         return x
