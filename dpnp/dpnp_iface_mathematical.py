@@ -2432,7 +2432,7 @@ lcm = DPNPBinaryFunc(
 _LDEXP_DOCSTRING = """
 Returns x1 * 2**x2, element-wise.
 
-The mantissas `x1` and twos exponents `x2` are used to construct floating point
+The mantissas `x1` and exponents of two `x2` are used to construct floating point
 numbers ``x1 * 2**x2``.
 
 For full documentation refer to :obj:`numpy.ldexp`.
@@ -2443,7 +2443,7 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
     Array of multipliers.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Array of twos exponents.
+    Array of exponents of two.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
@@ -2466,11 +2466,11 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.frexp` : Return (y1, y2) from ``x = y1 * 2**y2``, inverse to `ldexp`.
+:obj:`dpnp.frexp` : Return (y1, y2) from ``x = y1 * 2**y2``, inverse to :obj:`dpnp.ldexp`.
 
 Notes
 -----
-Complex dtypes are not supported, they will raise a TypeError.
+Complex dtypes are not supported, they will raise a ``TypeError``.
 
 :obj:`dpnp.ldexp` is useful as the inverse of :obj:`dpnp.frexp`, if used by
 itself it is more clear to simply use the expression ``x1 * 2**x2``.
