@@ -69,6 +69,10 @@ setup(
     ],
     package_data={
         "dpnp": [
+            "tests/*.*",
+            "tests/testing/*.py",
+            "tests/third_party/cupy/*.py",
+            "tests/third_party/cupy/*/*.py",
             "backend/include/*.hpp",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
