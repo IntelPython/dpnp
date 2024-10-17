@@ -59,9 +59,6 @@
 enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE,          /**< Very first element of the enumeration */
-    DPNP_FN_ARGMAX,        /**< Used in numpy.argmax() impl  */
-    DPNP_FN_ARGMIN,        /**< Used in numpy.argmin() impl  */
-    DPNP_FN_ARGSORT,       /**< Used in numpy.argsort() impl  */
     DPNP_FN_CHOOSE,        /**< Used in numpy.choose() impl  */
     DPNP_FN_CHOOSE_EXT,    /**< Used in numpy.choose() impl, requires extra
                               parameters */
@@ -89,7 +86,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_PARTITION, /**< Used in numpy.partition() impl */
     DPNP_FN_PARTITION_EXT, /**< Used in numpy.partition() impl, requires extra
                               parameters */
-    DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
     DPNP_FN_RNG_BETA,      /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT,  /**< Used in numpy.random.beta() impl, requires extra
                               parameters */
@@ -207,9 +203,7 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_ZIPF,        /**< Used in numpy.random.zipf() impl  */
     DPNP_FN_RNG_ZIPF_EXT, /**< Used in numpy.random.zipf() impl, requires extra
                              parameters */
-    DPNP_FN_SEARCHSORTED, /**< Used in numpy.searchsorted() impl  */
     DPNP_FN_SORT,         /**< Used in numpy.sort() impl  */
-    DPNP_FN_SUM,          /**< Used in numpy.sum() impl  */
     DPNP_FN_ZEROS,        /**< Used in numpy.zeros() impl */
     DPNP_FN_ZEROS_LIKE,   /**< Used in numpy.zeros_like() impl */
     DPNP_FN_LAST,         /**< The latest element of the enumeration */
