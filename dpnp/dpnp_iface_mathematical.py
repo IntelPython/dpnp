@@ -509,6 +509,12 @@ Notes
 -----
 Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
 
+Limitations
+-----------
+Parameters `where' and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
@@ -1452,6 +1458,12 @@ out : dpnp.ndarray
     will have a data type that depends on the capabilities of the device
     on which the array resides.
 
+Limitations
+-----------
+Parameters `where' and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.absolute` : Absolute values including `complex` types.
@@ -1503,6 +1515,12 @@ out : dpnp.ndarray
     If `out` is ``None`` then a float array is returned with the rounded values.
     Otherwise the result is stored there and the return value `out` is
     a reference to that array.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2342,6 +2360,12 @@ out : dpnp.ndarray
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
+
+Limitations
+-----------
+Parameters `where' and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -3323,6 +3347,12 @@ out : dpnp.ndarray
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
 
+Limitations
+-----------
+Parameters `where' and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.real_if_close` : Return the real part of the input is complex
@@ -3524,6 +3554,7 @@ out : dpnp.ndarray
 
 Limitations
 -----------
+Parameters `where' and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -3579,6 +3610,12 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise rounded values.
+
+Limitations
+-----------
+Parameters `where' and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
