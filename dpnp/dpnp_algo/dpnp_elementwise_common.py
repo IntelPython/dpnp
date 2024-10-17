@@ -498,6 +498,27 @@ class DPNPAngle(DPNPUnaryFunc):
         return res
 
 
+class DPNPImag(DPNPUnaryFunc):
+    """Class that implements dpnp.imag unary element-wise functions."""
+
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        unary_dp_impl_fn,
+        docs,
+    ):
+        super().__init__(
+            name,
+            result_type_resolver_fn,
+            unary_dp_impl_fn,
+            docs,
+        )
+
+    def __call__(self, x, out, order):
+        return super().__call__(x, out=out, order=order)
+
+
 class DPNPReal(DPNPUnaryFunc):
     """Class that implements dpnp.real unary element-wise functions."""
 
@@ -515,9 +536,9 @@ class DPNPReal(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x):
+    def __call__(self, x, out, order):
         if numpy.iscomplexobj(x):
-            return super().__call__(x)
+            return super().__call__(x, out=out, order=order)
         return x
 
 

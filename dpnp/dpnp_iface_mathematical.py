@@ -62,6 +62,7 @@ from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
+    DPNPImag,
     DPNPReal,
     DPNPRound,
     DPNPUnaryFunc,
@@ -2355,12 +2356,6 @@ out : dpnp.ndarray
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
 
-Limitations
------------
-Parameters `where' and `subok` are supported with their default values.
-Keyword argument `kwargs` is currently unsupported.
-Otherwise ``NotImplementedError`` exception will be raised.
-
 See Also
 --------
 :obj:`dpnp.real` : Return the real part of the complex argument.
@@ -2385,7 +2380,7 @@ array([1. +8.j, 3.+10.j, 5.+12.j])
 array(1.)
 """
 
-imag = DPNPUnaryFunc(
+imag = DPNPImag(
     "imag",
     ti._imag_result_type,
     ti._imag,
@@ -3331,6 +3326,13 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
 
 Returns
 -------
