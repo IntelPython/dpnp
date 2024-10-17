@@ -1,5 +1,5 @@
 Bit-wise operations
-=================
+===================
 
 .. https://numpy.org/doc/stable/reference/routines.bitwise.html
 
@@ -22,7 +22,6 @@ Element-wise bit operations
    dpnp.bitwise_right_shift
    dpnp.bitwise_count
 
-
 Bit packing
 -----------
 
@@ -32,7 +31,6 @@ Bit packing
 
    dpnp.packbits
    dpnp.unpackbits
-
 
 Output formatting
 -----------------
