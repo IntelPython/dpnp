@@ -91,6 +91,16 @@ void validate(const usm_ndarray &sample,
                               " parameter is not c-contiguos");
     }
 
+    if (bins.get_size() < 2) {
+        throw py::value_error(get_name(&bins) +
+                              " parameter must have at least 2 elements");
+    }
+
+    if (histogram.get_size() < 1) {
+        throw py::value_error(get_name(&histogram) +
+                              " parameter must have at least 1 element");
+    }
+
     if (histogram.get_ndim() != 1) {
         throw py::value_error(get_name(&histogram) +
                               " parameter must be 1d. Actual " +
