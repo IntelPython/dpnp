@@ -5,7 +5,49 @@ Universal Functions (ufunc)
 
 .. https://numpy.org/doc/stable/reference/ufuncs.html
 
-DPNP provides universal functions (a.k.a. ufuncs) to support various element-wise operations.
+A universal function (or ufunc for short) is a function that operates on ndarrays in an element-by-element fashion, \
+supporting array broadcasting, type casting, and several other standard features. That is, a ufunc is a “vectorized” \
+wrapper for a function that takes a fixed number of specific inputs and produces a fixed number of specific outputs. \
+For full documentation refer to :obj:`numpy.ufunc`.
+
+ufuncs
+------
+.. autosummary::
+   :toctree: generated/
+
+   dpnp.ufunc
+
+Attributes
+~~~~~~~~~~
+
+There are some informational attributes that universal functions
+possess. None of the attributes can be set.
+
+============  =================================================================
+**__doc__**   A docstring for each ufunc. The first part of the docstring is
+              dynamically generated from the number of outputs, the name, and
+              the number of inputs. The second part of the docstring is
+              provided at creation time and stored with the ufunc.
+
+**__name__**  The name of the ufunc.
+============  =================================================================
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.ufunc.nin
+   dpnp.ufunc.nout
+   dpnp.ufunc.nargs
+   dpnp.ufunc.types
+   dpnp.ufunc.ntypes
+
+Methods
+~~~~~~~
+.. autosummary::
+   :toctree: generated/
+
+   dpnp.ufunc.outer
 
 Available ufuncs
 ----------------

@@ -73,6 +73,7 @@ __all__ = [
     "is_supported_array_or_scalar",
     "is_supported_array_type",
     "synchronize_array_data",
+    "ufunc",
 ]
 
 from dpnp import float64
@@ -796,3 +797,7 @@ def synchronize_array_data(a):
 
     check_supported_arrays_type(a)
     dpu.SequentialOrderManager[a.sycl_queue].wait()
+
+
+# short namespace for Universal Functions
+ufunc = dpnp.dpnp_algo.dpnp_elementwise_common.ufunc
