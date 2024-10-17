@@ -28,7 +28,6 @@
 #include <sycl/sycl.hpp>
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-// using dpctl::tensor::type_dispatch::num_types;
 
 namespace sycl_ext
 {
@@ -36,7 +35,7 @@ namespace histogram
 {
 struct Histogram
 {
-    using FnT = sycl::event (*)(sycl::queue,
+    using FnT = sycl::event (*)(sycl::queue &,
                                 const void *,
                                 const void *,
                                 const void *,

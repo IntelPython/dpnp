@@ -44,7 +44,12 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.sycl_ext._sycl_ext_impl as sycl_ext  # pylint: disable=C0301,E0611
+
+# pylint: disable=no-name-in-module
+import dpnp.backend.extensions.sycl_ext._sycl_ext_impl as sycl_ext
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import map_dtype_to_device
 
 __all__ = [
     "digitize",
@@ -318,19 +323,14 @@ def _find_supported_dtype(dt, supported):
     return None
 
 
-def _result_type(dtype1, dtype2, has_fp64):
+def _result_type_for_device(dtype1, dtype2, device):
     rt = dpnp.result_type(dtype1, dtype2)
-    if rt == dpnp.float64 and not has_fp64:
-        return dpnp.float32
-
-    if rt == dpnp.complex128 and not has_fp64:
-        return dpnp.complex64
-
-    return rt
+    return map_dtype_to_device(rt, device)
 
 
-def _align_dtypes(a_dtype, bins_dtype, ntype, has_fp64):
-    a_bin_dtype = _result_type(a_dtype, bins_dtype, has_fp64)
+def _align_dtypes(a_dtype, bins_dtype, ntype, device):
+    has_fp64 = device.has_aspect_fp64
+    a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
 
     supported_types = (dpnp.float32, dpnp.int64, numpy.uint64, dpnp.complex64)
     if has_fp64:
@@ -347,7 +347,7 @@ def _align_dtypes(a_dtype, bins_dtype, ntype, has_fp64):
     if (a_bin_dtype in float_types and hist_dtype in float_types) or (
         a_bin_dtype in complex_types and hist_dtype in complex_types
     ):
-        common_type = _result_type(a_bin_dtype, hist_dtype, has_fp64)
+        common_type = _result_type_for_device(a_bin_dtype, hist_dtype, device)
         a_bin_dtype = common_type
         hist_dtype = common_type
 
@@ -463,10 +463,10 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         ntype = weights.dtype
 
     queue = a.sycl_queue
-    has_fp64 = queue.sycl_device.has_aspect_fp64
+    device = queue.sycl_device
 
     a_bin_dtype, hist_dtype = _align_dtypes(
-        a.dtype, bin_edges.dtype, ntype, has_fp64
+        a.dtype, bin_edges.dtype, ntype, device
     )
 
     if a_bin_dtype is None or hist_dtype is None:
@@ -487,7 +487,10 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         else None
     )
 
+    # histogram implementation uses atomics, but atomics doesn't work with
+    # host usm memory
     n_usm_type = "device" if usm_type == "host" else usm_type
+
     n_casted = dpnp.zeros(
         bin_edges.size - 1,
         dtype=hist_dtype,
@@ -521,7 +524,6 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         n = dpnp.astype(n_casted, ntype, copy=False)
 
     if density:
-        # pylint: disable=possibly-used-before-assignment
         db = dpnp.diff(bin_edges).astype(
             dpnp.default_float_type(sycl_queue=queue)
         )

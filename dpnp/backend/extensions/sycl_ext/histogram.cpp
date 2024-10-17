@@ -50,7 +50,7 @@ namespace
 {
 
 template <typename T, typename BinsT, typename HistType = size_t>
-static sycl::event histogram_impl(sycl::queue exec_q,
+static sycl::event histogram_impl(sycl::queue &exec_q,
                                   const void *vin,
                                   const void *vbins_edges,
                                   const void *vweights,
@@ -71,7 +71,7 @@ static sycl::event histogram_impl(sycl::queue exec_q,
             ? 256
             : device.get_info<sycl::info::device::max_work_group_size>();
 
-    uint32_t WorkPI = 128; // empirically found number
+    constexpr uint32_t WorkPI = 128; // empirically found number
     auto global_size = Align(CeilDiv(size, WorkPI), local_size);
 
     auto nd_range =
@@ -79,7 +79,7 @@ static sycl::event histogram_impl(sycl::queue exec_q,
 
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
-        uint32_t dims = 1;
+        constexpr uint32_t dims = 1;
 
         auto dispatch_edges = [&](uint32_t local_mem, auto &weights,
                                   auto &hist) {
@@ -239,7 +239,7 @@ std::tuple<sycl::event, sycl::event>
             exec_q, {sample, bins, histogram}, {ev});
     }
 
-    return {ev, args_ev};
+    return {args_ev, ev};
 }
 
 std::unique_ptr<Histogram> hist;
