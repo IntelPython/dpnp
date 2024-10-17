@@ -34,6 +34,20 @@ set(_module_src
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
 
+if(_dpnp_sycl_targets)
+    # make fat binary
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+    target_link_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+endif()
+
 if (WIN32)
     if (${CMAKE_VERSION} VERSION_LESS "3.27")
         # this is a work-around for target_link_options inserting option after -link option, cause

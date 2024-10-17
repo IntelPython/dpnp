@@ -43,13 +43,13 @@ namespace histogram
 {
 
 template <typename N, typename D>
-N CeilDiv(N n, D d)
+constexpr auto CeilDiv(N n, D d)
 {
     return (n + d - 1) / d;
 }
 
 template <typename N, typename D>
-N Align(N n, D d)
+constexpr auto Align(N n, D d)
 {
     return CeilDiv(n, d) * d;
 }
