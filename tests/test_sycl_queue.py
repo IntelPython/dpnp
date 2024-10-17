@@ -741,6 +741,11 @@ def test_reduce_hypot(device):
             [0, 1, 2, 3, 4, 5],
             [20, 20, 20, 20, 20, 20],
         ),
+        pytest.param(
+            "ldexp",
+            [5, 5, 5, 5, 5],
+            [0, 1, 2, 3, 4],
+        ),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
