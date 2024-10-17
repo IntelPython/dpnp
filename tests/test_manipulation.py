@@ -4,9 +4,16 @@ import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
+
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+    from numpy.lib._arraypad_impl import _as_pairs as numpy_as_pairs
+else:
+    from numpy.lib.arraypad import _as_pairs as numpy_as_pairs
+
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+from dpnp.dpnp_utils.dpnp_utils_pad import _as_pairs as dpnp_as_pairs
 from tests.third_party.cupy import testing
 
 from .helper import (
@@ -731,7 +738,7 @@ class TestRequire:
         assert expected.flags["F"] == result.flags["F"]
         assert expected.flags["W"] == result.flags["W"]
         assert expected.dtype == result.dtype
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
 
     def test_C_and_F_simul(self):
         a = self.generate_all_false("f4")
@@ -747,7 +754,7 @@ class TestRequire:
         result = dpnp.require(a_dp, requirements=["W", "C"])
         # copy is done
         assert result is not a_dp
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
 
 
 class TestResize:
