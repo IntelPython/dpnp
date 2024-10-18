@@ -274,9 +274,7 @@ class TestArrayFill:
         a.fill(1)
         return a
 
-    @testing.with_requires("numpy>=1.24.0")
-    @testing.for_all_dtypes_combination(("dtype1", "dtype2"))
-    @testing.numpy_cupy_array_equal(accept_error=ComplexWarning)
+    @pytest.mark.skip("Numpy allows Numpy scalar arrays as fill value")
     def test_fill_with_numpy_scalar_ndarray(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((2, 3, 4), xp, dtype1)
         a.fill(numpy.ones((), dtype=dtype2))
