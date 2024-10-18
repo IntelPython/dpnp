@@ -129,23 +129,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
                                                      const size_t,
                                                      const long * ,
                                                      const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_strides_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                             void *,
-                                                             const size_t,
-                                                             const size_t,
-                                                             const shape_elem_type * ,
-                                                             const shape_elem_type * ,
-                                                             void *,
-                                                             const size_t,
-                                                             const size_t,
-                                                             const shape_elem_type * ,
-                                                             const shape_elem_type * ,
-                                                             void *,
-                                                             const size_t, const size_t,
-                                                             const shape_elem_type * ,
-                                                             const shape_elem_type * ,
-                                                             const long * ,
-                                                             const c_dpctl.DPCTLEventVectorRef) except +
 
 
 """
