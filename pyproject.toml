@@ -50,13 +50,13 @@ source = [
     "dpnp",
 ]
 omit = [
-    "tests/*",
+    "dpnp/tests/*",
     "dpnp/_version.py",
 ]
 
 [tool.coverage.report]
 omit = [
-    "tests/*",
+    "dpnp/tests/*",
     "dpnp/_version.py",
 ]
 
