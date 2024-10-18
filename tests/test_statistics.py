@@ -313,7 +313,7 @@ class TestMedian:
         expected = numpy.median(a)
         result = dpnp.median(ia)
 
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1], (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -324,7 +324,7 @@ class TestMedian:
         expected = numpy.median(a, axis=axis, keepdims=keepdims)
         result = dpnp.median(ia, axis=axis, keepdims=keepdims)
 
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures(
         "suppress_invalid_numpy_warnings",
@@ -338,7 +338,7 @@ class TestMedian:
 
         result = dpnp.median(ia, axis=axis)
         expected = numpy.median(a, axis=axis)
-        assert_allclose(expected, result)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
@@ -361,7 +361,7 @@ class TestMedian:
 
         result = dpnp.median(ia)
         expected = numpy.median(a)
-        assert_allclose(expected, result)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, (0, 1), (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -373,7 +373,7 @@ class TestMedian:
         expected = numpy.median(a, axis=axis, keepdims=keepdims)
         result = dpnp.median(ia, axis=axis, keepdims=keepdims)
 
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, -1, (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
@@ -392,7 +392,7 @@ class TestMedian:
         assert not numpy.all(a == b)
         assert not dpnp.all(ia == ib)
 
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
     @pytest.mark.parametrize("overwrite_input", [True, False])
@@ -403,7 +403,7 @@ class TestMedian:
         expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
         result = dpnp.median(ia, axis=axis, overwrite_input=overwrite_input)
 
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
 
 class TestVar:
