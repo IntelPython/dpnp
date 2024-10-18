@@ -332,6 +332,124 @@ class TestAsarrayCheckFinite:
         assert_array_equal(b, a)
 
 
+class TestDelete:
+    def _check_inverse_of_slicing(self, indices):
+        a = numpy.arange(5)
+        b = numpy.arange(10).reshape(1, 5, 2)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
+
+        expected1 = numpy.delete(a, indices)
+        expected2 = numpy.delete(b, indices, axis=1)
+        result1 = dpnp.delete(a_dp, indices)
+        result2 = dpnp.delete(b_dp, indices, axis=1)
+        assert_array_equal(result1, expected1)
+        assert_array_equal(result2, expected2)
+
+    def test_slices(self):
+        lims = [-6, -2, 0, 1, 2, 4, 5]
+        steps = [-3, -1, 1, 3]
+        for start in lims:
+            for stop in lims:
+                for step in steps:
+                    s = slice(start, stop, step)
+                    self._check_inverse_of_slicing(s)
+
+    def test_obj(self):
+        self._check_inverse_of_slicing([0, -1, 2, 2])
+        self._check_inverse_of_slicing([True, False, False, True, False])
+        self._check_inverse_of_slicing(0)
+        self._check_inverse_of_slicing(-4)
+        self._check_inverse_of_slicing([])
+
+    def test_obj_ndarray(self):
+        # 1D array
+        a = numpy.arange(5)
+        ind = numpy.array([[0, 1], [2, 1]])
+        a_dp = dpnp.array(a)
+        ind_dp = dpnp.array(ind)
+
+        expected = numpy.delete(a, ind)
+        # both numpy.ndarray and dpnp.ndarray are supported for obj in dpnp
+        for indices in [ind, ind_dp]:
+            result = dpnp.delete(a_dp, indices)
+            assert_array_equal(result, expected)
+
+        # N-D array
+        b = numpy.arange(10).reshape(1, 5, 2)
+        b_dp = dpnp.array(b)
+        expected = numpy.delete(b, ind, axis=1)
+        for indices in [ind, ind_dp]:
+            result = dpnp.delete(b_dp, indices, axis=1)
+            assert_array_equal(result, expected)
+
+    def test_error(self):
+        a = dpnp.arange(5)
+        # out of bounds index
+        with pytest.raises(IndexError):
+            dpnp.delete(a, [100])
+        with pytest.raises(IndexError):
+            dpnp.delete(a, [-100])
+
+        # boolean array argument obj must be one dimensional
+        with pytest.raises(ValueError):
+            dpnp.delete(a, True)
+
+        # not enough items
+        with pytest.raises(ValueError):
+            dpnp.delete(a, [False] * 4)
+
+        # 0-D array
+        a = dpnp.array(1)
+        with pytest.raises(AxisError):
+            dpnp.delete(a, [], axis=0)
+        with pytest.raises(TypeError):
+            dpnp.delete(a, [], axis="nonsense")
+
+        # index float
+        a = dpnp.array([1, 2, 3])
+        with pytest.raises(IndexError):
+            dpnp.delete(a, dpnp.array([1.0, 2.0]))
+        with pytest.raises(IndexError):
+            dpnp.delete(a, dpnp.array([], dtype=float))
+
+    def test_order(self):
+        a = numpy.arange(10).reshape(2, 5, order="F")
+        a_dp = dpnp.array(a)
+
+        expected = numpy.delete(a, slice(3, None), axis=1)
+        result = dpnp.delete(a_dp, slice(3, None), axis=1)
+
+        assert_equal(result.flags.c_contiguous, expected.flags.c_contiguous)
+        assert_equal(result.flags.f_contiguous, expected.flags.f_contiguous)
+
+    @pytest.mark.parametrize("indexer", [1, dpnp.array([1]), [1]])
+    def test_single_item_array(self, indexer):
+        a = numpy.arange(5)
+        a_dp = dpnp.array(a)
+        expected = numpy.delete(a, 1)
+        result = dpnp.delete(a_dp, indexer)
+        assert_equal(result, expected)
+
+        b = numpy.arange(10).reshape(1, 5, 2)
+        b_dp = dpnp.array(b)
+        expected = numpy.delete(b, 1, axis=1)
+        result = dpnp.delete(b_dp, indexer, axis=1)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("flag", [True, False])
+    def test_boolean_obj(self, flag):
+        expected = numpy.delete(numpy.ones(1), numpy.array([flag]))
+        result = dpnp.delete(dpnp.ones(1), dpnp.array([flag]))
+        assert_array_equal(result, expected)
+
+        expected = numpy.delete(
+            numpy.ones((3, 1)), numpy.array([flag]), axis=-1
+        )
+        result = dpnp.delete(dpnp.ones((3, 1)), dpnp.array([flag]), axis=-1)
+        assert_array_equal(result, expected)
+
+
 class TestDsplit:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_error(self, xp):

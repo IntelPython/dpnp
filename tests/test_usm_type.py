@@ -830,6 +830,18 @@ def test_cond(usm_type, p):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "obj", [slice(None, None, 2), 3, [2, 3]], ids=["slice", "int", "list"]
+)
+def test_delete(usm_type_x, usm_type_y):
+    x = dpnp.arange(5, usm_type=usm_type)
+    result = dpnp.delete(x, obj)
+
+    assert x.usm_type == usm_type
+    assert result.usm_type == usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_multi_dot(usm_type):
     numpy_array_list = []
     dpnp_array_list = []

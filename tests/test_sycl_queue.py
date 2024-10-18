@@ -2047,6 +2047,20 @@ def test_concat_stack(func, data1, data2, device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "obj", [slice(None, None, 2), 3, [2, 3]], ids=["slice", "int", "list"]
+)
+def test_delete(device, obj):
+    x = dpnp.arange(5, device=device)
+    result = dpnp.delete(x, obj)
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "func,data1",
     [
         pytest.param("array_split", [1, 2, 3, 4]),

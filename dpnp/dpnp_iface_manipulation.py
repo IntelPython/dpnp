@@ -66,6 +66,7 @@ __all__ = [
     "concat",
     "concatenate",
     "copyto",
+    "delete",
     "dsplit",
     "dstack",
     "expand_dims",
@@ -113,6 +114,135 @@ def _check_stack_arrays(arrays):
             'arrays to stack must be passed as a "sequence" type '
             "such as list or tuple."
         )
+
+
+def _delete_with_slice(a, obj, axis):
+    """Utility function for ``dpnp.delete`` when obj is slice."""
+
+    a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    start, stop, step = obj.indices(n)
+    xr = range(start, stop, step)
+    num_del = len(xr)
+
+    if num_del <= 0:
+        return a.copy(order=order)
+
+    # Invert if step is negative:
+    if step < 0:
+        step = -step
+        start = xr[-1]
+        stop = xr[0] + 1
+
+    a_shape[axis] -= num_del
+    new = dpnp.empty(
+        a_shape,
+        dtype=a.dtype,
+        order=order,
+        sycl_queue=a.sycl_queue,
+        usm_type=a.usm_type,
+    )
+    # copy initial chunk
+    if start == 0:
+        pass
+    else:
+        slobj[axis] = slice(None, start)
+        new[tuple(slobj)] = a[tuple(slobj)]
+    # copy end chunk
+    if stop == n:
+        pass
+    else:
+        slobj[axis] = slice(stop - num_del, None)
+        slobj2 = [slice(None)] * a_ndim
+        slobj2[axis] = slice(stop, None)
+        new[tuple(slobj)] = a[tuple(slobj2)]
+    # copy middle pieces
+    if step == 1:
+        pass
+    else:  # use array indexing.
+        keep = dpnp.ones(
+            stop - start,
+            dtype=dpnp.bool,
+            sycl_queue=a.sycl_queue,
+            usm_type=a.usm_type,
+        )
+        keep[: stop - start : step] = False
+        slobj[axis] = slice(start, stop - num_del)
+        slobj2 = [slice(None)] * a_ndim
+        slobj2[axis] = slice(start, stop)
+        a = a[tuple(slobj2)]
+        slobj2[axis] = keep
+        new[tuple(slobj)] = a[tuple(slobj2)]
+
+    return new
+
+
+def _delete_without_slice(a, obj, axis, single_value):
+    """Utility function for ``dpnp.delete`` when obj is int or array of int."""
+
+    a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    if single_value:
+        # optimization for a single value
+        if obj < -n or obj >= n:
+            raise IndexError(
+                f"index {obj} is out of bounds for axis {axis} with "
+                f"size {n}"
+            )
+        if obj < 0:
+            obj += n
+        a_shape[axis] -= 1
+        new = dpnp.empty(
+            a_shape,
+            dtype=a.dtype,
+            order=order,
+            sycl_queue=a.sycl_queue,
+            usm_type=a.usm_type,
+        )
+        slobj[axis] = slice(None, obj)
+        new[tuple(slobj)] = a[tuple(slobj)]
+        slobj[axis] = slice(obj, None)
+        slobj2 = [slice(None)] * a_ndim
+        slobj2[axis] = slice(obj + 1, None)
+        new[tuple(slobj)] = a[tuple(slobj2)]
+    else:
+        if obj.dtype == dpnp.bool:
+            if obj.shape != (n,):
+                raise ValueError(
+                    "boolean array argument `obj` to delete must be "
+                    f"one-dimensional and match the axis length of {n}"
+                )
+
+            # optimization, the other branch is slower
+            keep = ~obj
+        else:
+            keep = dpnp.ones(
+                n, dtype=dpnp.bool, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+            )
+            keep[obj,] = False
+
+        slobj[axis] = keep
+        new = a[tuple(slobj)]
+
+    return new
+
+
+def _calc_parameters(a, axis):
+    """Utility function for ``dpnp.delete`` and ``dpnp.insert``."""
+
+    a_ndim = a.ndim
+    order = "F" if a.flags.fnc else "C"
+    if axis is None:
+        if a_ndim != 1:
+            a = dpnp.ravel(a)
+        a_ndim = 1
+        axis = 0
+    else:
+        axis = normalize_axis_index(axis, a_ndim)
+
+    slobj = [slice(None)] * a_ndim
+    n = a.shape[axis]
+    a_shape = list(a.shape)
+
+    return a_ndim, order, axis, slobj, n, a_shape
 
 
 def _unique_1d(
@@ -1204,6 +1334,100 @@ def copyto(dst, src, casting="same_kind", where=True):
             dpnp.get_usm_ndarray(where),
         )
         dst_usm[mask_usm] = src_usm[mask_usm]
+
+
+def delete(arr, obj, axis=None):
+    """
+    Return a new array with sub-arrays along an axis deleted. For a one
+    dimensional array, this returns those entries not returned by
+    ``arr[obj]``.
+
+    For full documentation refer to :obj:`numpy.delete`.
+
+    Parameters
+    ----------
+    arr : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    obj : {slice, int, array-like of ints or boolean}
+        Indicate indices of sub-arrays to remove along the specified axis.
+        Boolean indices are treated as a mask of elements to remove.
+    axis : int, optional
+        The axis along which to delete the subarray defined by `obj`.
+        If `axis` is ``None``, `obj` is applied to the flattened array.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of `arr` with the elements specified by `obj` removed. Note
+        that `delete` does not occur in-place. If `axis` is ``None``, `out` is
+        a flattened array.
+
+    See Also
+    --------
+    :obj:`dpnp.insert` : Insert elements into an array.
+    :obj:`dpnp.append` : Append elements at the end of an array.
+
+    Notes
+    -----
+    Often it is preferable to use a boolean mask. For example:
+
+    >>> import dpnp as np
+    >>> arr = np.arange(12) + 1
+    >>> mask = np.ones(len(arr), dtype=np.bool)
+    >>> mask[0] = mask[2] = mask[4] = False
+    >>> result = arr[mask,...]
+
+    is equivalent to ``np.delete(arr, [0,2,4], axis=0)``, but allows further
+    use of `mask`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> arr = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+    >>> arr
+    array([[ 1,  2,  3,  4],
+           [ 5,  6,  7,  8],
+           [ 9, 10, 11, 12]])
+    >>> np.delete(arr, 1, 0)
+    array([[ 1,  2,  3,  4],
+           [ 9, 10, 11, 12]])
+
+    >>> np.delete(arr, slice(None, None, 2), 1)
+    array([[ 2,  4],
+           [ 6,  8],
+           [10, 12]])
+    >>> np.delete(arr, [1, 3, 5], None)
+    array([ 1,  3,  5,  7,  8,  9, 10, 11, 12])
+
+    """
+
+    dpnp.check_supported_arrays_type(arr)
+
+    if isinstance(obj, slice):
+        return _delete_with_slice(arr, obj, axis)
+
+    if isinstance(obj, (int, dpnp.integer)) and not isinstance(obj, bool):
+        single_value = True
+    else:
+        single_value = False
+        is_array = isinstance(obj, (dpnp_array, numpy.ndarray, dpt.usm_ndarray))
+        obj = dpnp.asarray(
+            obj, sycl_queue=arr.sycl_queue, usm_type=arr.usm_type
+        )
+        # if `obj` is originally an empty list, after converting it into
+        # an array, it will have float dtype, so we need to change its dtype
+        # to integer. However, if `obj` is originally an empty array with
+        # float dtype, it is a mistake by user and it will raise an error later
+        if obj.size == 0 and not is_array:
+            obj = obj.astype(dpnp.intp)
+        elif obj.size == 1 and obj.dtype.kind in "ui":
+            # For a size 1 integer array we can use the single-value path
+            # (most dtypes, except boolean, should just fail later).
+            obj = obj.item()
+            single_value = True
+
+    return _delete_without_slice(arr, obj, axis, single_value)
 
 
 def dsplit(ary, indices_or_sections):
