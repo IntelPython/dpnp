@@ -5,9 +5,9 @@ from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
-from tests.third_party.cupy import testing
 
 from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
+from .third_party.cupy import testing
 
 
 def _assert_selective_dtype_allclose(result, expected, dtype):

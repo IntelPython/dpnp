@@ -4,7 +4,6 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
-from tests.third_party.cupy import testing
 
 from .helper import (
     get_all_dtypes,
@@ -12,6 +11,7 @@ from .helper import (
     get_float_dtypes,
     has_support_aspect64,
 )
+from .third_party.cupy import testing
 
 
 @pytest.mark.usefixtures("suppress_complex_warning")

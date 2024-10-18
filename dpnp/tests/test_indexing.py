@@ -14,9 +14,9 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
-from tests.third_party.cupy import testing
 
 from .helper import get_all_dtypes, get_integer_dtypes, has_support_aspect64
+from .third_party.cupy import testing
 
 
 def _add_keepdims(func):
