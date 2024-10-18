@@ -79,6 +79,9 @@ var annotated_dup =
         [ "lcm", null, [
           [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]
         ] ],
+        [ "ldexp", null, [
+          [ "LdexpFunctor", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ]
+        ] ],
         [ "logaddexp2", null, [
           [ "Logaddexp2Functor", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ]
         ] ],

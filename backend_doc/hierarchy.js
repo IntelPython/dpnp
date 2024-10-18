@@ -51,6 +51,7 @@ var hierarchy =
       [ "is_complex< _Tp >", "structis__complex.html", null ]
     ] ],
     [ "dpnp::kernels::lcm::LcmFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ],
+    [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html", null ],
