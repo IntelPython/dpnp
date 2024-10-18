@@ -1458,7 +1458,7 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where' and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -3293,7 +3293,7 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where' and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -3547,7 +3547,7 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where' and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
