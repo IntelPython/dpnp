@@ -2456,10 +2456,10 @@ For full documentation refer to :obj:`numpy.ldexp`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    Array of multipliers.
+    Array of multipliers, expected to have floating-point data types.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Array of exponents of two.
+    Array of exponents of two, expected to have an integer data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
