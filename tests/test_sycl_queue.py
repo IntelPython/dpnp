@@ -2078,6 +2078,70 @@ class TestDelete:
         assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
 
 
+class TestInsert:
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_basic(self, obj, device):
+        x = dpnp.arange(5, device=device)
+        result = dpnp.insert(x, obj, 3)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 3), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_values_ndarray(self, obj, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        result = dpnp.insert(x, obj, y)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+    @pytest.mark.parametrize("values", [-2, [-1, -2]], ids=["scalar", "list"])
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_obj_ndarray(self, values, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        result = dpnp.insert(x, y, values)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_obj_values_ndarray(self, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        z = dpnp.array([-1, -3], device=device)
+        result = dpnp.insert(x, y, z)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, z.sycl_queue)
+
+        
 @pytest.mark.parametrize(
     "func,data1",
     [
