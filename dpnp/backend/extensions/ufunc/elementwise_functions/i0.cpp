@@ -60,7 +60,8 @@ template <typename T>
 struct OutputType
 {
     using value_type =
-        typename std::disjunction<td_ns::TypeMapResultEntry<T, float>,
+        typename std::disjunction<td_ns::TypeMapResultEntry<T, sycl::half>,
+                                  td_ns::TypeMapResultEntry<T, float>,
                                   td_ns::TypeMapResultEntry<T, double>,
                                   td_ns::DefaultResultEntry<void>>::result_type;
 };
@@ -88,8 +89,7 @@ using ew_cmn_ns::unary_strided_impl_fn_ptr_t;
 
 static unary_contig_impl_fn_ptr_t i0_contig_dispatch_vector[td_ns::num_types];
 static int i0_output_typeid_vector[td_ns::num_types];
-static unary_strided_impl_fn_ptr_t
-    i0_strided_dispatch_vector[td_ns::num_types];
+static unary_strided_impl_fn_ptr_t i0_strided_dispatch_vector[td_ns::num_types];
 
 MACRO_POPULATE_DISPATCH_VECTORS(i0);
 } // namespace impl
@@ -105,8 +105,8 @@ void init_i0(py::module_ m)
         using impl::i0_strided_dispatch_vector;
 
         auto i0_pyapi = [&](const arrayT &src, const arrayT &dst,
-                              sycl::queue &exec_q,
-                              const event_vecT &depends = {}) {
+                            sycl::queue &exec_q,
+                            const event_vecT &depends = {}) {
             return py_int::py_unary_ufunc(
                 src, dst, exec_q, depends, i0_output_typeid_vector,
                 i0_contig_dispatch_vector, i0_strided_dispatch_vector);
@@ -115,8 +115,8 @@ void init_i0(py::module_ m)
               py::arg("sycl_queue"), py::arg("depends") = py::list());
 
         auto i0_result_type_pyapi = [&](const py::dtype &dtype) {
-            return py_int::py_unary_ufunc_result_type(
-                dtype, i0_output_typeid_vector);
+            return py_int::py_unary_ufunc_result_type(dtype,
+                                                      i0_output_typeid_vector);
         };
         m.def("_i0_result_type", i0_result_type_pyapi);
     }

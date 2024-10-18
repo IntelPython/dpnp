@@ -180,8 +180,6 @@ inline void bessel_ik_0(Tp x, Tp &Inu, Tp &Knu, Tp &Ipnu, Tp &Kpnu)
         return;
     }
 
-    constexpr Tp __nu = Tp(0);
-
     constexpr Tp eps = std::numeric_limits<Tp>::epsilon();
     constexpr Tp fp_min = Tp(10) * eps;
     constexpr int max_iter = 15000;
@@ -350,11 +348,11 @@ inline Tp cyl_bessel_0(Tp x)
     x = sycl::fabs(x);
 
     if (x * x < Tp(10)) {
-        return cyl_bessel_ij_0_series(x, +Tp(1), 200);
+        return cyl_bessel_ij_0_series<Tp>(x, +Tp(1), 200);
     }
     else {
         Tp I_nu, K_nu, Ip_nu, Kp_nu;
-        bessel_ik_0(x, I_nu, K_nu, Ip_nu, Kp_nu);
+        bessel_ik_0<Tp>(x, I_nu, K_nu, Ip_nu, Kp_nu);
         return I_nu;
     }
 }
@@ -377,6 +375,9 @@ struct I0Functor
 #if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
         return sycl::ext::intel::math::cyl_bessel_i0(x);
 #else
+        if constexpr (std::is_same_v<resT, sycl::half>) {
+            return static_cast<resT>(impl::cyl_bessel_0<float>(float(x)));
+        }
         return impl::cyl_bessel_0(x);
 #endif
     }
