@@ -188,6 +188,8 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
             pass
         elif order is not None:
             pass
+        elif dpnp.is_cuda_backend(x1):
+            pass
         else:
             return dpnp_partition(x1_desc, kth, axis, kind, order).get_pyobj()
 
