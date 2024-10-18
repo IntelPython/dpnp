@@ -667,7 +667,8 @@ def test_1in_1out(func, data, usm_type):
             [[1.2, -0.0], [-7, 2.34567]],
             [[1.2, 0.0], [-7, 2.34567]],
         ),
-        pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
+        pytest.param("append", [1, 2, 3], [4, 5, 6]),
+        pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
@@ -810,10 +811,11 @@ def test_split(func, data1, usm_type):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-def test_append(usm_type_x, usm_type_y):
+def test_delete(usm_type_x, usm_type_y):
+    # 3 cases are needed
     x = dp.array([1, 2, 3], usm_type=usm_type_x)
     y = dp.array([4, 5, 6], usm_type=usm_type_y)
-    z = dp.append(x, y)
+    z = dp.delete(x, y)
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y

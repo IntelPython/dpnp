@@ -688,7 +688,8 @@ def test_reduce_hypot(device):
         pytest.param(
             "allclose", [1.0, dpnp.inf, -dpnp.inf], [1.0, dpnp.inf, -dpnp.inf]
         ),
-        pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
+        pytest.param("append", [1, 2, 3], [4, 5, 6]),
+        pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
@@ -2017,16 +2018,12 @@ def test_concat_stack(func, data1, data2, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-def test_append(device):
-    x1_orig = numpy.array([1, 2, 3])
-    x2_orig = numpy.array([4, 5, 6])
-    expected = numpy.append(x1_orig, x2_orig)
+def test_delete(device):
+    # 3 cases are needed
+    x1 = dpnp.array([1, 2, 3], device=device)
+    x2 = dpnp.array([4, 5, 6], device=device)
+    result = dpnp.delete(x1, x2)
 
-    x1 = dpnp.array(x1_orig, device=device)
-    x2 = dpnp.array(x2_orig, device=device)
-    result = dpnp.append(x1, x2)
-
-    assert_allclose(result, expected)
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
