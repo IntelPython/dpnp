@@ -62,6 +62,7 @@ from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
     DPNPAngle,
     DPNPBinaryFunc,
+    DPNPImag,
     DPNPReal,
     DPNPRound,
     DPNPUnaryFunc,
@@ -70,6 +71,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     acceptance_fn_positive,
     acceptance_fn_sign,
     acceptance_fn_subtract,
+    resolve_weak_types_2nd_arg_int,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import call_origin, get_usm_allocations
@@ -107,6 +109,7 @@ __all__ = [
     "heaviside",
     "imag",
     "lcm",
+    "ldexp",
     "maximum",
     "minimum",
     "mod",
@@ -488,6 +491,9 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a complex-valued floating-point data type.
+deg : bool, optional
+    Return angle in degrees if ``True``, radians if ``False``.
+    Default: ``False``.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1450,6 +1456,12 @@ out : dpnp.ndarray
     will have a data type that depends on the capabilities of the device
     on which the array resides.
 
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.absolute` : Absolute values including `complex` types.
@@ -1501,6 +1513,12 @@ out : dpnp.ndarray
     If `out` is ``None`` then a float array is returned with the rounded values.
     Otherwise the result is stored there and the return value `out` is
     a reference to that array.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -2029,6 +2047,12 @@ Returns
 out : dpnp.ndarray
     The greatest common divisor of the absolute value of the inputs.
 
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.lcm` : The lowest common multiple.
@@ -2359,7 +2383,7 @@ array([1. +8.j, 3.+10.j, 5.+12.j])
 array(1.)
 """
 
-imag = DPNPUnaryFunc(
+imag = DPNPImag(
     "imag",
     ti._imag_result_type,
     ti._imag,
@@ -2393,6 +2417,12 @@ Returns
 out : dpnp.ndarray
     The lowest common multiple of the absolute value of the inputs.
 
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
 See Also
 --------
 :obj:`dpnp.gcd` : The greatest common divisor.
@@ -2412,6 +2442,68 @@ lcm = DPNPBinaryFunc(
     ufi._lcm,
     _LCM_DOCSTRING,
     acceptance_fn=acceptance_fn_gcd_lcm,
+)
+
+
+_LDEXP_DOCSTRING = """
+Returns x1 * 2**x2, element-wise.
+
+The mantissas `x1` and exponents of two `x2` are used to construct floating point
+numbers ``x1 * 2**x2``.
+
+For full documentation refer to :obj:`numpy.ldexp`.
+
+Parameters
+----------
+x1 : {dpnp.ndarray, usm_ndarray, scalar}
+    Array of multipliers, expected to have floating-point data types.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+x2 : {dpnp.ndarray, usm_ndarray, scalar}
+    Array of exponents of two, expected to have an integer data type.
+    Both inputs `x1` and `x2` can not be scalars at the same time.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate. Array must have the correct shape and
+    the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The result of ``x1 * 2**x2``.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+See Also
+--------
+:obj:`dpnp.frexp` : Return (y1, y2) from ``x = y1 * 2**y2``, inverse to :obj:`dpnp.ldexp`.
+
+Notes
+-----
+Complex dtypes are not supported, they will raise a ``TypeError``.
+
+:obj:`dpnp.ldexp` is useful as the inverse of :obj:`dpnp.frexp`, if used by
+itself it is more clear to simply use the expression ``x1 * 2**x2``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> np.ldexp(5, np.arange(4))
+array([ 5., 10., 20., 40.])
+"""
+
+ldexp = DPNPBinaryFunc(
+    "_ldexp",
+    ufi._ldexp_result_type,
+    ufi._ldexp,
+    _LDEXP_DOCSTRING,
+    weak_type_resolver=resolve_weak_types_2nd_arg_int,
 )
 
 
@@ -3201,7 +3293,7 @@ out : dpnp.ndarray
 
 Limitations
 -----------
-Parameters `where' and `subok` are supported with their default values.
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -3237,6 +3329,13 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
 
 Returns
 -------
@@ -3448,6 +3547,7 @@ out : dpnp.ndarray
 
 Limitations
 -----------
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
