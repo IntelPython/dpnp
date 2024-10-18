@@ -126,6 +126,112 @@ def test_size():
     assert dpnp.size(ia, 0) == exp
 
 
+class TestInsert:
+    def test_basic(self):
+        a = [1, 2, 3]
+        assert_equal(insert(a, 0, 1), [1, 1, 2, 3])
+        assert_equal(insert(a, 3, 1), [1, 2, 3, 1])
+        assert_equal(insert(a, [1, 1, 1], [1, 2, 3]), [1, 1, 2, 3, 2, 3])
+        assert_equal(insert(a, 1, [1, 2, 3]), [1, 1, 2, 3, 2, 3])
+        assert_equal(insert(a, [1, -1, 3], 9), [1, 9, 2, 9, 3, 9])
+        assert_equal(insert(a, slice(-1, None, -1), 9), [9, 1, 9, 2, 9, 3])
+        assert_equal(insert(a, [-1, 1, 3], [7, 8, 9]), [1, 8, 2, 7, 3, 9])
+        b = np.array([0, 1], dtype=np.float64)
+        assert_equal(insert(b, 0, b[0]), [0., 0., 1.])
+        assert_equal(insert(b, [], []), b)
+        assert_equal(insert(a, np.array([True]*4), 9), [9, 1, 9, 2, 9, 3, 9])
+        assert_equal(insert(a, np.array([True, False, True, False]), 9),
+                     [9, 1, 2, 9, 3])
+
+    def test_multidim(self):
+        a = [[1, 1, 1]]
+        r = [[2, 2, 2],
+             [1, 1, 1]]
+        assert_equal(insert(a, 0, [1]), [1, 1, 1, 1])
+        assert_equal(insert(a, 0, [2, 2, 2], axis=0), r)
+        assert_equal(insert(a, 0, 2, axis=0), r)
+        assert_equal(insert(a, 2, 2, axis=1), [[1, 1, 2, 1]])
+
+        a = np.array([[1, 1], [2, 2], [3, 3]])
+        b = np.arange(1, 4).repeat(3).reshape(3, 3)
+        c = np.concatenate(
+            (a[:, 0:1], np.arange(1, 4).repeat(3).reshape(3, 3).T,
+             a[:, 1:2]), axis=1)
+        assert_equal(insert(a, [1], [[1], [2], [3]], axis=1), b)
+        assert_equal(insert(a, [1], [1, 2, 3], axis=1), c)
+        # scalars behave differently, in this case exactly opposite:
+        assert_equal(insert(a, 1, [1, 2, 3], axis=1), b)
+        assert_equal(insert(a, 1, [[1], [2], [3]], axis=1), c)
+
+        a = np.arange(4).reshape(2, 2)
+        assert_equal(insert(a[:, :1], 1, a[:, 1], axis=1), a)
+        assert_equal(insert(a[:1,:], 1, a[1,:], axis=0), a)
+
+        # negative axis value
+        a = np.arange(24).reshape((2, 3, 4))
+        assert_equal(insert(a, 1, a[:,:, 3], axis=-1),
+                     insert(a, 1, a[:,:, 3], axis=2))
+        assert_equal(insert(a, 1, a[:, 2,:], axis=-2),
+                     insert(a, 1, a[:, 2,:], axis=1))
+
+        # invalid axis value
+        assert_raises(AxisError, insert, a, 1, a[:, 2, :], axis=3)
+        assert_raises(AxisError, insert, a, 1, a[:, 2, :], axis=-4)
+
+        # negative axis value
+        a = np.arange(24).reshape((2, 3, 4))
+        assert_equal(insert(a, 1, a[:, :, 3], axis=-1),
+                     insert(a, 1, a[:, :, 3], axis=2))
+        assert_equal(insert(a, 1, a[:, 2, :], axis=-2),
+                     insert(a, 1, a[:, 2, :], axis=1))
+
+    def test_0d(self):
+        a = np.array(1)
+        with pytest.raises(AxisError):
+            insert(a, [], 2, axis=0)
+        with pytest.raises(TypeError):
+            insert(a, [], 2, axis="nonsense")
+
+    def test_subclass(self):
+        class SubClass(np.ndarray):
+            pass
+        a = np.arange(10).view(SubClass)
+        assert_(isinstance(np.insert(a, 0, [0]), SubClass))
+        assert_(isinstance(np.insert(a, [], []), SubClass))
+        assert_(isinstance(np.insert(a, [0, 1], [1, 2]), SubClass))
+        assert_(isinstance(np.insert(a, slice(1, 2), [1, 2]), SubClass))
+        assert_(isinstance(np.insert(a, slice(1, -2, -1), []), SubClass))
+        # This is an error in the future:
+        a = np.array(1).view(SubClass)
+        assert_(isinstance(np.insert(a, 0, [0]), SubClass))
+
+    def test_index_array_copied(self):
+        x = np.array([1, 1, 1])
+        np.insert([0, 1, 2], x, [3, 4, 5])
+        assert_equal(x, np.array([1, 1, 1]))
+
+    def test_structured_array(self):
+        a = np.array([(1, 'a'), (2, 'b'), (3, 'c')],
+                     dtype=[('foo', 'i'), ('bar', 'S1')])
+        val = (4, 'd')
+        b = np.insert(a, 0, val)
+        assert_array_equal(b[0], np.array(val, dtype=b.dtype))
+        val = [(4, 'd')] * 2
+        b = np.insert(a, [0, 2], val)
+        assert_array_equal(b[[0, 3]], np.array(val, dtype=b.dtype))
+
+    def test_index_floats(self):
+        with pytest.raises(IndexError):
+            np.insert([0, 1, 2], np.array([1.0, 2.0]), [10, 20])
+        with pytest.raises(IndexError):
+            np.insert([0, 1, 2], np.array([], dtype=float), [])
+
+    @pytest.mark.parametrize('idx', [4, -4])
+    def test_index_out_of_bounds(self, idx):
+        with pytest.raises(IndexError, match='out of bounds'):
+            np.insert([0, 1, 2], [idx], [3, 4])
+
+
 class TestAppend:
     @pytest.mark.parametrize(
         "arr",
