@@ -73,6 +73,7 @@ __all__ = [
     "flipud",
     "hsplit",
     "hstack",
+    "insert",
     "matrix_transpose",
     "moveaxis",
     "ndim",
@@ -1754,6 +1755,150 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     if arrs and arrs[0].ndim == 1:
         return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
     return dpnp.concatenate(arrs, axis=1, dtype=dtype, casting=casting)
+
+
+def insert(arr, obj, values, axis=None):
+    """
+    insert.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 1], [2, 2], [3, 3]])
+    >>> a
+    array([[1, 1],
+           [2, 2],
+           [3, 3]])
+    >>> np.insert(a, 1, 5)
+    array([1, 5, 1, 2, 2, 3, 3])
+    >>> np.insert(a, 1, 5, axis=1)
+    array([[1, 5, 1],
+           [2, 5, 2],
+           [3, 5, 3]])
+
+    Difference between sequence and scalars:
+
+    >>> np.insert(a, [1], [[1],[2],[3]], axis=1)
+    array([[1, 1, 1],
+           [2, 2, 2],
+           [3, 3, 3]])
+    >>> np.array_equal(np.insert(a, 1, [1, 2, 3], axis=1),
+    ...                np.insert(a, [1], [[1],[2],[3]], axis=1))
+    array(True)
+
+    >>> b = a.flatten()
+    >>> b
+    array([1, 1, 2, 2, 3, 3])
+    >>> np.insert(b, [2, 2], [5, 6])
+    array([1, 1, 5, 6, 2, 2, 3, 3])
+
+    >>> np.insert(b, slice(2, 4), [5, 6])
+    array([1, 1, 5, 2, 6, 2, 3, 3])
+
+    >>> np.insert(b, [2, 2], [7.13, False]) # type casting
+    array([1, 1, 7, 0, 2, 2, 3, 3])
+
+    >>> x = np.arange(8).reshape(2, 4)
+    >>> idx = (1, 3)
+    >>> np.insert(x, idx, 999, axis=1)
+    array([[  0, 999,   1,   2, 999,   3],
+           [  4, 999,   5,   6, 999,   7]])
+
+    """
+
+    #conv = _array_converter(arr)
+    #arr, = conv.as_arrays(subok=False)
+
+    ndim = arr.ndim
+    arrorder = 'F' if arr.flags.fnc else 'C'
+    if axis is None:
+        if ndim != 1:
+            arr = arr.ravel()
+        # needed for np.matrix, which is still not 1d after being ravelled
+        ndim = arr.ndim
+        axis = ndim - 1
+    else:
+        axis = normalize_axis_index(axis, ndim)
+    slobj = [slice(None)]*ndim
+    N = arr.shape[axis]
+    newshape = list(arr.shape)
+
+    if isinstance(obj, slice):
+        # turn it into a range object
+        indices = dpnp.arange(*obj.indices(N), dtype=dpnp.intp) #CFD
+    else:
+        # need to copy obj, because indices will be changed in-place
+        indices = dpnp.array(obj) #CFD
+        if indices.dtype == bool:
+            # See also delete
+            # 2012-10-11, NumPy 1.8
+            warnings.warn(
+                "in the future insert will treat boolean arrays and "
+                "array-likes as a boolean index instead of casting it to "
+                "integer", FutureWarning, stacklevel=2)
+            indices = indices.astype(intp)
+            # Code after warning period:
+            #if obj.ndim != 1:
+            #    raise ValueError('boolean array argument obj to insert '
+            #                     'must be one dimensional')
+            #indices = np.flatnonzero(obj)
+        elif indices.ndim > 1:
+            raise ValueError(
+                "index array argument obj to insert must be one dimensional "
+                "or scalar")
+    if indices.size == 1:
+        index = indices.item()
+        if index < -N or index > N:
+            raise IndexError(f"index {obj} is out of bounds for axis {axis} "
+                             f"with size {N}")
+        if (index < 0):
+            index += N
+
+        # There are some object array corner cases here, but we cannot avoid
+        # that:
+        values_np = numpy.array(values, copy=None, ndmin=arr.ndim, dtype=arr.dtype) #CFD
+        values = dpnp.asarray(values_np)
+        if indices.ndim == 0:
+            # broadcasting is very different here, since a[:,0,:] = ... behaves
+            # very different from a[:,[0],:] = ...! This changes values so that
+            # it works likes the second case. (here a[:,0:1,:])
+            values = dpnp.moveaxis(values, 0, axis)
+        numnew = values.shape[axis]
+        newshape[axis] += numnew
+        new = dpnp.empty(newshape, dtype=arr.dtype, order=arrorder) #  CFD
+        slobj[axis] = slice(None, index)
+        new[tuple(slobj)] = arr[tuple(slobj)]
+        slobj[axis] = slice(index, index+numnew)
+        new[tuple(slobj)] = values
+        slobj[axis] = slice(index+numnew, None)
+        slobj2 = [slice(None)] * ndim
+        slobj2[axis] = slice(index, None)
+        new[tuple(slobj)] = arr[tuple(slobj2)]
+
+        return new # conv.wrap(new, to_scalar=False)
+
+    elif indices.size == 0 and not isinstance(obj, dpnp.ndarray):
+        # Can safely cast the empty list to intp
+        indices = indices.astype(intp)
+
+    indices[indices < 0] += N
+
+    numnew = len(indices)
+    order = indices.argsort(kind="stable") # (kind='mergesort')   # stable sort
+    indices[order] += dpnp.arange(numnew)  #CFD
+
+    newshape[axis] += numnew
+    old_mask = dpnp.ones(newshape[axis], dtype=bool) # CFD
+    old_mask[indices] = False
+
+    new = dpnp.empty(newshape, dtype=arr.dtype, order=arrorder) # CFD
+    slobj2 = [slice(None)]*ndim
+    slobj[axis] = indices
+    slobj2[axis] = old_mask
+    new[tuple(slobj)] = values
+    new[tuple(slobj2)] = arr
+
+    return new #conv.wrap(new, to_scalar=False)
 
 
 def matrix_transpose(x, /):
