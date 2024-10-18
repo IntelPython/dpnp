@@ -1,0 +1,126 @@
+\documentclass{article}
+\usepackage{ifthen}
+\usepackage{epsfig}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\color{white}
+\pagecolor{black}
+\usepackage{newunicodechar}
+  \makeatletter
+    \def\doxynewunicodechar#1#2{%
+    \@tempswafalse
+    \edef\nuc@tempa{\detokenize{#1}}%
+    \if\relax\nuc@tempa\relax
+      \nuc@emptyargerr
+    \else
+      \edef\@tempb{\expandafter\@car\nuc@tempa\@nil}%
+      \nuc@check
+      \if@tempswa
+        \@namedef{u8:\nuc@tempa}{#2}%
+      \fi
+    \fi
+  }
+  \makeatother
+  \doxynewunicodechar{⁻}{${}^{-}$}% Superscript minus
+  \doxynewunicodechar{²}{${}^{2}$}% Superscript two
+  \doxynewunicodechar{³}{${}^{3}$}% Superscript three
+
+\pagestyle{empty}
+\begin{document}
+$ J_0 $
+\pagebreak
+
+$ I_0 $
+\pagebreak
+
+\[
+ Z_0(x) = \sum_{k=0}^{\infty}
+          \frac{\sigma^k (x/2)^{2k}}{k!\Gamma(k+1)}
+\]
+\pagebreak
+
+$ \sigma = +1 $
+\pagebreak
+
+$  -1 $
+\pagebreak
+
+$ Z = I $
+\pagebreak
+
+$ J $
+\pagebreak
+
+$ I_0(0) $
+\pagebreak
+
+$ K_0(0) $
+\pagebreak
+
+$ I'_0(0) $
+\pagebreak
+
+$ K'_0(0) $
+\pagebreak
+
+$ N_\nu(x) $
+\pagebreak
+
+$ K_\nu(x) $
+\pagebreak
+
+\[
+  \Gamma_1 = \frac{1}{2\mu}
+             [\frac{1}{\Gamma(1 - \mu)} - \frac{1}{\Gamma(1 + \mu)}]
+\]
+\pagebreak
+
+\[
+  \Gamma_2 = \frac{1}{2}
+             [\frac{1}{\Gamma(1 - \mu)} + \frac{1}{\Gamma(1 + \mu)}]
+\]
+\pagebreak
+
+$ -1/2 <= \mu <= 1/2 $
+\pagebreak
+
+$ \mu = \nu - N $
+\pagebreak
+
+$ N $
+\pagebreak
+
+$ \nu $
+\pagebreak
+
+$ \Gamma(1 + \mu) $
+\pagebreak
+
+$ \Gamma(1 - \mu) $
+\pagebreak
+
+$ \Gamma_1(\mu) $
+\pagebreak
+
+$ \Gamma_2(\mu) $
+\pagebreak
+
+$ I_0(x) $
+\pagebreak
+
+$ K_0(x) $
+\pagebreak
+
+$ I'_0(x) $
+\pagebreak
+
+$ K'_0(x) $
+\pagebreak
+
+\[
+   I_0(x) = \sum_{k=0}^{\infty}
+                \frac{(x/2)^{2k}}{k!\Gamma(k+1)}
+ \]
+\pagebreak
+
+\end{document}
