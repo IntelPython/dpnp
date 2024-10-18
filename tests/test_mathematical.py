@@ -1289,6 +1289,58 @@ def test_op_multiple_dtypes(dtype1, func, dtype2, data):
         assert_allclose(result, expected)
 
 
+class TestI0:
+    def test_0d(self):
+        a = dpnp.array(0.5)
+        na = a.asnumpy()
+        assert_dtype_allclose(dpnp.i0(a), numpy.i0(na))
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    def test_1d(self, dt):
+        a = numpy.array(
+            [0.49842636, 0.6969809, 0.22011976, 0.0155549, 10.0], dtype=dt
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.i0(ia)
+        expected = numpy.i0(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_2d(self, dt):
+        a = numpy.array(
+            [
+                [0.827002, 0.99959078],
+                [0.89694769, 0.39298162],
+                [0.37954418, 0.05206293],
+                [0.36465447, 0.72446427],
+                [0.48164949, 0.50324519],
+            ],
+            dtype=dt,
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.i0(ia)
+        expected = numpy.i0(a)
+        assert_dtype_allclose(result, expected)
+
+    # dpnp.i0 returns float16, but numpy.i0 returns float64
+    def test_bool(self):
+        a = numpy.array([False, True, False])
+        ia = dpnp.array(a)
+
+        result = dpnp.i0(ia)
+        expected = numpy.i0(a)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_complex(self, xp):
+        a = xp.array([0, 1 + 2j])
+        assert_raises((ValueError, TypeError), xp.i0, a)
+
+
 class TestLdexp:
     @pytest.mark.parametrize("mant_dt", get_float_dtypes())
     @pytest.mark.parametrize("exp_dt", get_integer_dtypes())
