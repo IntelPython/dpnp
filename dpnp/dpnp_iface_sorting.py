@@ -57,7 +57,9 @@ from .dpnp_utils import (
 __all__ = ["argsort", "partition", "sort", "sort_complex"]
 
 
-def _wrap_sort_argsort(a, _sorting_fn, axis=-1, kind=None, order=None):
+def _wrap_sort_argsort(
+    a, _sorting_fn, axis=-1, kind=None, order=None, stable=True
+):
     """Wrap a sorting call from dpctl.tensor interface."""
 
     if order is not None:
@@ -68,6 +70,10 @@ def _wrap_sort_argsort(a, _sorting_fn, axis=-1, kind=None, order=None):
         raise NotImplementedError(
             "kind keyword argument can only be None or 'stable'."
         )
+    if stable is None or not stable:
+        raise NotImplementedError(
+            "stable keyword argument is only supported with its default value."
+        )
 
     usm_a = dpnp.get_usm_ndarray(a)
     if axis is None:
@@ -75,11 +81,11 @@ def _wrap_sort_argsort(a, _sorting_fn, axis=-1, kind=None, order=None):
         axis = -1
 
     axis = normalize_axis_index(axis, ndim=usm_a.ndim)
-    usm_res = _sorting_fn(usm_a, axis=axis)
+    usm_res = _sorting_fn(usm_a, axis=axis, stable=stable)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
-def argsort(a, axis=-1, kind=None, order=None):
+def argsort(a, axis=-1, kind=None, order=None, *, stable=True):
     """
     Returns the indices that would sort an array.
 
@@ -89,12 +95,12 @@ def argsort(a, axis=-1, kind=None, order=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be sorted.
-    axis : int or None, optional
+    axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
-        sorting. The default is -1, which sorts along the last axis.
+        sorting. The default is ``-1``, which sorts along the last axis.
     kind : {None, "stable"}, optional
-        Default is ``None``, which is equivalent to `"stable"`.
-        Unlike NumPy, no other option is accepted here.
+        Sorting algorithm. Default is ``None``, which is equivalent to
+         ``"stable"``. Unlike NumPy, no other option is accepted here.
 
     Returns
     -------
@@ -107,16 +113,14 @@ def argsort(a, axis=-1, kind=None, order=None):
 
     Notes
     -----
-    For zero-dimensional arrays, if `axis=None`, output is a one-dimensional
+    For zero-dimensional arrays, if ``axis=None``, output is a one-dimensional
     array with a single zero element. Otherwise, an ``AxisError`` is raised.
 
     Limitations
     -----------
-    Parameters `order` is only supported with its default value.
-    Parameters `kind` can only be ``None`` or ``"stable"`` which
-    are equivalent.
-    Otherwise ``NotImplementedError`` exception will be raised.
-
+    Parameters `order` and `stable` are only supported with their default
+    values. Parameter `kind` can only be ``None`` or ``"stable"`` which are
+    equivalent. Otherwise ``NotImplementedError`` exception will be raised.
     See Also
     --------
     :obj:`dpnp.ndarray.argsort` : Equivalent method.
@@ -156,7 +160,9 @@ def argsort(a, axis=-1, kind=None, order=None):
 
     """
 
-    return _wrap_sort_argsort(a, dpt.argsort, axis=axis, kind=kind, order=order)
+    return _wrap_sort_argsort(
+        a, dpt.argsort, axis=axis, kind=kind, order=order, stable=stable
+    )
 
 
 def partition(x1, kth, axis=-1, kind="introselect", order=None):
@@ -194,7 +200,7 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
     return call_origin(numpy.partition, x1, kth, axis, kind, order)
 
 
-def sort(a, axis=-1, kind=None, order=None):
+def sort(a, axis=-1, kind=None, order=None, *, stable=True):
     """
     Return a sorted copy of an array.
 
@@ -204,12 +210,12 @@ def sort(a, axis=-1, kind=None, order=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be sorted.
-    axis : int or None, optional
+    axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
-        sorting. The default is -1, which sorts along the last axis.
+        sorting. The default is ``-1``, which sorts along the last axis.
     kind : {None, "stable"}, optional
-        Default is ``None``, which is equivalent to `"stable"`.
-        Unlike in NumPy any other options are not accepted here.
+        Sorting algorithm. Default is ``None``, which is equivalent to
+        ``"stable"``. Unlike NumPy, no other option is accepted here.
 
     Returns
     -------
@@ -218,15 +224,14 @@ def sort(a, axis=-1, kind=None, order=None):
 
     Notes
     -----
-    For zero-dimensional arrays, if `axis=None`, output is the input array
+    For zero-dimensional arrays, if ``axis=None``, output is the input array
     returned as a one-dimensional array. Otherwise, an ``AxisError`` is raised.
 
     Limitations
     -----------
-    Parameters `order` is only supported with its default value.
-    Parameters `kind` can only be ``None`` or ``"stable"`` which
-    are equivalent.
-    Otherwise ``NotImplementedError`` exception will be raised.
+    Parameters `order` and `stable` are only supported with their default
+    values. Parameter `kind` can only be ``None`` or ``"stable"`` which are
+    equivalent. Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
@@ -251,7 +256,9 @@ def sort(a, axis=-1, kind=None, order=None):
 
     """
 
-    return _wrap_sort_argsort(a, dpt.sort, axis=axis, kind=kind, order=order)
+    return _wrap_sort_argsort(
+        a, dpt.sort, axis=axis, kind=kind, order=order, stable=stable
+    )
 
 
 def sort_complex(a):

@@ -197,27 +197,6 @@ INP_DLLEXPORT void dpnp_partition_c(void *array,
 
 /**
  * @ingroup BACKEND_API
- * @brief math library implementation of sort function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array with indices.
- * @param [in]  size                Number of elements in input arrays.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_sort_c(DPCTLSyclQueueRef q_ref,
-                void *array,
-                void *result,
-                size_t size,
-                const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType>
-INP_DLLEXPORT void dpnp_sort_c(void *array, void *result, size_t size);
-
-/**
- * @ingroup BACKEND_API
  * @brief correlate function
  *
  * @param [in]  q_ref               Reference to SYCL queue.
@@ -317,38 +296,6 @@ INP_DLLEXPORT DPCTLSyclEventRef
 
 template <typename _DataType>
 INP_DLLEXPORT void dpnp_initval_c(void *result1, void *value, size_t size);
-
-/**
- * @ingroup BACKEND_API
- * @brief math library implementation of median function
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [in]  array               Input array with data.
- * @param [out] result              Output array.
- * @param [in]  shape               Shape of input array.
- * @param [in]  ndim                Number of elements in shape.
- * @param [in]  axis                Axis.
- * @param [in]  naxis               Number of elements in axis.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_median_c(DPCTLSyclQueueRef q_ref,
-                  void *array,
-                  void *result,
-                  const shape_elem_type *shape,
-                  size_t ndim,
-                  const shape_elem_type *axis,
-                  size_t naxis,
-                  const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType, typename _ResultType>
-INP_DLLEXPORT void dpnp_median_c(void *array,
-                                 void *result,
-                                 const shape_elem_type *shape,
-                                 size_t ndim,
-                                 const shape_elem_type *axis,
-                                 size_t naxis);
 
 #define MACRO_1ARG_1TYPE_OP(__name__, __operation1__, __operation2__)          \
     template <typename _DataType>                                              \

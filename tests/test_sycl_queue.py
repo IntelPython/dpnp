@@ -473,6 +473,7 @@ def test_meshgrid(device):
         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("median", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanargmax", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanargmin", [1.0, 2.0, 4.0, dpnp.nan]),
