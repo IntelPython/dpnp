@@ -31,7 +31,7 @@ class TestMedian:
         return xp.median(a, axis=2)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_overwrite_input(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, overwrite_input=True)
