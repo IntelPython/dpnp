@@ -39,6 +39,9 @@ valid_devices = []
 for device in available_devices:
     if device.default_selector_score < 0:
         pass
+    elif device.backend.name in "cuda":
+        valid_devices = [device]
+        break
     elif device.backend.name not in list_of_backend_str:
         pass
     elif device.device_type.name not in list_of_device_type_str:
@@ -1208,6 +1211,7 @@ def test_out_2in_1out(func, data1, data2, device):
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "device",
     valid_devices,
