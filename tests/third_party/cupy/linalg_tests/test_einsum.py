@@ -475,13 +475,12 @@ class TestEinSumBinaryOperation:
 
 
 class TestEinSumBinaryOperationWithScalar:
-    # with an scalar, NumPy < 2.0.0 uses the other input arrays to determine
-    # the output type while for NumPy > 2.0.0 the scalar with default machine
-    # dtype is used to determine the output type
+    # NumPy >= 2.0 follows NEP-50 to determine the output dtype when one of
+    # the inputs is a scalar while NumPy < 2.0 does not
     if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-        type_check = has_support_aspect64()
-    else:
         type_check = False
+    else:
+        type_check = has_support_aspect64()
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(contiguous_check=False, type_check=type_check)
