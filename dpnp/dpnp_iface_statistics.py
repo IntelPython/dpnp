@@ -668,8 +668,8 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     overwrite_input : bool, optional
        If ``True``, then allow use of memory of input array `a` for
        calculations. The input array will be modified by the call to
-       ``median``. This will save memory when you do not need to preserve
-       the contents of the input array. Treat the input as undefined,
+      :obj:`dpnp.median`. This will save memory when you do not need to
+       preserve the contents of the input array. Treat the input as undefined,
        but it will probably be fully or partially sorted.
        Default: ``False``.
     keepdims : {None, bool}, optional
@@ -711,18 +711,21 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
            [ 3,  2,  1]])
     >>> np.median(a)
     array(3.5)
+
     >>> np.median(a, axis=0)
     array([6.5, 4.5, 2.5])
     >>> np.median(a, axis=1)
     array([7.,  2.])
     >>> np.median(a, axis=(0, 1))
     array(3.5)
+
     >>> m = np.median(a, axis=0)
     >>> out = np.zeros_like(m)
     >>> np.median(a, axis=0, out=m)
     array([6.5,  4.5,  2.5])
     >>> m
     array([6.5,  4.5,  2.5])
+
     >>> b = a.copy()
     >>> np.median(b, axis=1, overwrite_input=True)
     array([7.,  2.])

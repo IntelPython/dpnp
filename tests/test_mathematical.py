@@ -2470,7 +2470,7 @@ class TestRoundingFuncs:
         # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
         # NumPy < 2.0.0 while output has the dtype of input for NumPy >= 2.0.0
         # (dpnp follows the latter behavior except for boolean dtype where it
-        # return int8)
+        # returns int8)
         if (
             numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
             or dtype == numpy.bool

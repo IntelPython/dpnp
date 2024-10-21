@@ -70,10 +70,6 @@ def _wrap_sort_argsort(
         raise NotImplementedError(
             "kind keyword argument can only be None or 'stable'."
         )
-    if stable is None or not stable:
-        raise NotImplementedError(
-            "stable keyword argument is only supported with its default value."
-        )
 
     usm_a = dpnp.get_usm_ndarray(a)
     if axis is None:
@@ -101,6 +97,12 @@ def argsort(a, axis=-1, kind=None, order=None, *, stable=True):
     kind : {None, "stable"}, optional
         Sorting algorithm. Default is ``None``, which is equivalent to
          ``"stable"``. Unlike NumPy, no other option is accepted here.
+    stable : {None, bool}, optional
+        Sort stability. If ``True``, the returned array will maintain
+        the relative order of ``a`` values which compare as equal.
+        The same behavior applies when set to ``False`` or ``None``.
+        Internally, this option selects ``kind="stable"``.
+        Default: ``None``.
 
     Returns
     -------
@@ -118,9 +120,10 @@ def argsort(a, axis=-1, kind=None, order=None, *, stable=True):
 
     Limitations
     -----------
-    Parameters `order` and `stable` are only supported with their default
-    values. Parameter `kind` can only be ``None`` or ``"stable"`` which are
-    equivalent. Otherwise ``NotImplementedError`` exception will be raised.
+    Parameters `order` is only supported with its default value.
+    Parameter `kind` can only be ``None`` or ``"stable"`` which are equivalent.
+    Otherwise ``NotImplementedError`` exception will be raised.
+
     See Also
     --------
     :obj:`dpnp.ndarray.argsort` : Equivalent method.
@@ -216,6 +219,12 @@ def sort(a, axis=-1, kind=None, order=None, *, stable=True):
     kind : {None, "stable"}, optional
         Sorting algorithm. Default is ``None``, which is equivalent to
         ``"stable"``. Unlike NumPy, no other option is accepted here.
+    stable : {None, bool}, optional
+        Sort stability. If ``True``, the returned array will maintain
+        the relative order of ``a`` values which compare as equal.
+        The same behavior applies when set to ``False`` or ``None``.
+        Internally, this option selects ``kind="stable"``.
+        Default: ``None``.
 
     Returns
     -------
@@ -229,9 +238,9 @@ def sort(a, axis=-1, kind=None, order=None, *, stable=True):
 
     Limitations
     -----------
-    Parameters `order` and `stable` are only supported with their default
-    values. Parameter `kind` can only be ``None`` or ``"stable"`` which are
-    equivalent. Otherwise ``NotImplementedError`` exception will be raised.
+    Parameters `order` is only supported with its default value.
+    Parameter `kind` can only be ``None`` or ``"stable"`` which are equivalent.
+    Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
