@@ -60,6 +60,7 @@ import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 
 from .dpnp_algo import dpnp_modf
 from .dpnp_algo.dpnp_elementwise_common import (
+    DPNPI0,
     DPNPAngle,
     DPNPBinaryFunc,
     DPNPImag,
@@ -108,6 +109,7 @@ __all__ = [
     "gradient",
     "heaviside",
     "imag",
+    "i0",
     "lcm",
     "ldexp",
     "maximum",
@@ -2330,6 +2332,50 @@ heaviside = DPNPBinaryFunc(
     ufi._heaviside_result_type,
     ufi._heaviside,
     _HEAVISIDE_DOCSTRING,
+)
+
+
+_I0_DOCSTRING = """
+Modified Bessel function of the first kind, order 0.
+
+Usually denoted :math:`I_0`.
+
+For full documentation refer to :obj:`numpy.i0`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Argument of the Bessel function, expected to have floating-point data type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The modified Bessel function evaluated at each of the elements of `x`.
+    If the input is of either boolean or integer data type, the returned array
+    will have the default floating point data type of a device where `x` has
+    been allocated. Otherwise the returned array has the same data type.
+
+Examples
+--------
+>>> import numpy as np
+>>> np.i0(np.array(0.0))
+array(1.)
+>>> np.i0(np.array([0, 1, 2, 3]))
+array([1.        , 1.26606588, 2.2795853 , 4.88079259])
+"""
+
+i0 = DPNPI0(
+    "i0",
+    ufi._i0_result_type,
+    ufi._i0,
+    _I0_DOCSTRING,
 )
 
 
