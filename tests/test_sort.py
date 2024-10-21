@@ -331,9 +331,6 @@ class TestSort:
         with pytest.raises(NotImplementedError):
             dpnp.sort(dp_array, order=["age"])
 
-        with pytest.raises(NotImplementedError):
-            dpnp.sort(dp_array, stable=False)
-
 
 class TestSortComplex:
     @pytest.mark.parametrize(
