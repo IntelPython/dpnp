@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev0+59.g605cdeeacf8 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev0+62.g57e984404bc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9fd2ff68"></script>
+      <script src="../../_static/documentation_options.js?v=ba6d78db"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -146,7 +146,6 @@
     <span class="s2">&quot;as_usm_ndarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;check_limitations&quot;</span><span class="p">,</span>
     <span class="s2">&quot;check_supported_arrays_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;convert_single_elem_array_to_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
@@ -496,15 +495,6 @@
             <span class="s2">&quot;but got all scalars.&quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="kc">True</span>
-
-
-<span class="k">def</span> <span class="nf">convert_single_elem_array_to_scalar</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert array with single element to scalar.&quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">keepdims</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">type</span><span class="p">(</span><span class="n">obj</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-
-    <span class="k">return</span> <span class="n">obj</span>
 
 
 <span class="k">def</span> <span class="nf">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
