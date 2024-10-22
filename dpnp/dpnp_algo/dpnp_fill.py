@@ -40,7 +40,6 @@ def dpnp_fill(arr, val):
     arr = dpnp.get_usm_ndarray(arr)
     exec_q = arr.sycl_queue
 
-    dpnp.check_supported_arrays_type(val, scalar_type=True, all_scalars=True)
     # if val is an array, process it
     if dpnp.is_supported_array_type(val):
         val = dpnp.get_usm_ndarray(val)
