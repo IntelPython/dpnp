@@ -22,21 +22,45 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._lapack_impl extensions
-//
-//*****************************************************************************
 
+#pragma once
+
+#include "dispatch_table.hpp"
+#include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "sliding_dot_product1d.hpp"
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-PYBIND11_MODULE(_statistics_impl, m)
+namespace statistics
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-}
+namespace sliding_window1d
+{
+struct SlidingDotProduct1d
+{
+    using FnT = sycl::event (*)(sycl::queue &,
+                                const void *,
+                                const void *,
+                                void *,
+                                const size_t,
+                                const size_t,
+                                const size_t,
+                                const size_t,
+                                const std::vector<sycl::event> &);
+
+    common::DispatchTable<FnT> dispatch_table;
+
+    SlidingDotProduct1d();
+
+    std::tuple<sycl::event, sycl::event>
+        call(const dpctl::tensor::usm_ndarray &a,
+             const dpctl::tensor::usm_ndarray &v,
+             dpctl::tensor::usm_ndarray &output,
+             const size_t l_pad,
+             const size_t r_pad,
+             const std::vector<sycl::event> &depends);
+};
+
+void populate_sliding_dot_product1d(py::module_ m);
+} // namespace sliding_window1d
+} // namespace statistics

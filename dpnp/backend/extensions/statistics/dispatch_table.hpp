@@ -99,6 +99,32 @@ using SupportedDTypeList2 = std::vector<DTypePair>;
 
 template <typename FnT,
           typename SupportedTypes,
+          template <typename>
+          typename Func>
+struct TableBuilder
+{
+    template <typename _FnT, typename T>
+    struct impl
+    {
+        static constexpr bool is_defined = one_of_v<T, SupportedTypes>;
+
+        _FnT get()
+        {
+            if constexpr (is_defined) {
+                return Func<T>::impl;
+            }
+            else {
+                return nullptr;
+            }
+        }
+    };
+
+    using type =
+        dpctl_td_ns::DispatchVectorBuilder<FnT, impl, dpctl_td_ns::num_types>;
+};
+
+template <typename FnT,
+          typename SupportedTypes,
           template <typename, typename>
           typename Func>
 struct TableBuilder2
@@ -122,6 +148,78 @@ struct TableBuilder2
 
     using type =
         dpctl_td_ns::DispatchTableBuilder<FnT, impl, dpctl_td_ns::num_types>;
+};
+
+template <typename FnT>
+class DispatchTable
+{
+public:
+    DispatchTable(std::string name) : name(name) {}
+
+    template <typename SupportedTypes, template <typename> typename Func>
+    void populate_dispatch_table()
+    {
+        using TBulder = typename TableBuilder<FnT, SupportedTypes, Func>::type;
+        TBulder builder;
+
+        builder.populate_dispatch_vector(table);
+        populate_supported_types();
+    }
+
+    FnT get_unsafe(int _typenum) const
+    {
+        auto array_types = dpctl_td_ns::usm_ndarray_types();
+        const int type_id = array_types.typenum_to_lookup_id(_typenum);
+
+        return table[type_id];
+    }
+
+    FnT get(int _typenum) const
+    {
+        auto fn = get_unsafe(_typenum);
+
+        if (fn == nullptr) {
+            auto array_types = dpctl_td_ns::usm_ndarray_types();
+            const int _type_id = array_types.typenum_to_lookup_id(_typenum);
+
+            py::dtype _dtype = dtype_from_typenum(_type_id);
+            auto _type_pos = std::find(supported_types.begin(),
+                                       supported_types.end(), _dtype);
+            if (_type_pos == supported_types.end()) {
+                py::str types = py::str(py::cast(supported_types));
+                py::str dtype = py::str(_dtype);
+
+                py::str err_msg =
+                    py::str("'" + name + "' has unsupported type '") + dtype +
+                    py::str("'."
+                            " Supported types are: ") +
+                    types;
+
+                throw py::value_error(static_cast<std::string>(err_msg));
+            }
+        }
+
+        return fn;
+    }
+
+    const SupportedDTypeList &get_all_supported_types() const
+    {
+        return supported_types;
+    }
+
+private:
+    void populate_supported_types()
+    {
+        for (int i = 0; i < dpctl_td_ns::num_types; ++i) {
+            if (table[i] != nullptr) {
+                supported_types.emplace_back(dtype_from_typenum(i));
+            }
+        }
+    }
+
+    std::string name;
+    SupportedDTypeList supported_types;
+    Table<FnT> table;
 };
 
 template <typename FnT>
