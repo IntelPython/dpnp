@@ -59,17 +59,12 @@
 enum class DPNPFuncName : size_t
 {
     DPNP_FN_NONE,          /**< Very first element of the enumeration */
-    DPNP_FN_ARGMAX,        /**< Used in numpy.argmax() impl  */
-    DPNP_FN_ARGMIN,        /**< Used in numpy.argmin() impl  */
-    DPNP_FN_ARGSORT,       /**< Used in numpy.argsort() impl  */
     DPNP_FN_CHOOSE,        /**< Used in numpy.choose() impl  */
     DPNP_FN_CHOOSE_EXT,    /**< Used in numpy.choose() impl, requires extra
                               parameters */
     DPNP_FN_CORRELATE,     /**< Used in numpy.correlate() impl  */
     DPNP_FN_CORRELATE_EXT, /**< Used in numpy.correlate() impl, requires extra
                               parameters */
-    DPNP_FN_COUNT_NONZERO, /**< Used in numpy.count_nonzero() impl  */
-    DPNP_FN_COV,           /**< Used in numpy.cov() impl  */
     DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
     DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
     DPNP_FN_ERF,     /**< Used in scipy.special.erf impl  */
@@ -79,23 +74,15 @@ enum class DPNPFuncName : size_t
                       */
     DPNP_FN_INITVAL_EXT, /**< Used in numpy ones, ones_like, zeros, zeros_like
                             impls  */
-    DPNP_FN_MAX,         /**< Used in numpy.max() impl  */
-    DPNP_FN_MEAN,        /**< Used in numpy.mean() impl  */
-    DPNP_FN_MEDIAN,      /**< Used in numpy.median() impl  */
-    DPNP_FN_MEDIAN_EXT,  /**< Used in numpy.median() impl, requires extra
-                            parameters */
-    DPNP_FN_MIN,         /**< Used in numpy.min() impl  */
     DPNP_FN_MODF,        /**< Used in numpy.modf() impl  */
     DPNP_FN_MODF_EXT,  /**< Used in numpy.modf() impl, requires extra parameters
                         */
     DPNP_FN_MULTIPLY,  /**< Used in numpy.multiply() impl  */
-    DPNP_FN_NANVAR,    /**< Used in numpy.nanvar() impl  */
     DPNP_FN_ONES,      /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE, /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION, /**< Used in numpy.partition() impl */
     DPNP_FN_PARTITION_EXT, /**< Used in numpy.partition() impl, requires extra
                               parameters */
-    DPNP_FN_PROD,          /**< Used in numpy.prod() impl  */
     DPNP_FN_RNG_BETA,      /**< Used in numpy.random.beta() impl  */
     DPNP_FN_RNG_BETA_EXT,  /**< Used in numpy.random.beta() impl, requires extra
                               parameters */
@@ -213,17 +200,9 @@ enum class DPNPFuncName : size_t
     DPNP_FN_RNG_ZIPF,        /**< Used in numpy.random.zipf() impl  */
     DPNP_FN_RNG_ZIPF_EXT, /**< Used in numpy.random.zipf() impl, requires extra
                              parameters */
-    DPNP_FN_SEARCHSORTED, /**< Used in numpy.searchsorted() impl  */
-    DPNP_FN_SORT,         /**< Used in numpy.sort() impl  */
-    DPNP_FN_SQRT,         /**< Used in numpy.sqrt() impl  */
-    DPNP_FN_SQRT_EXT, /**< Used in numpy.sqrt() impl, requires extra parameters
-                       */
-    DPNP_FN_STD,      /**< Used in numpy.std() impl  */
-    DPNP_FN_SUM,      /**< Used in numpy.sum() impl  */
-    DPNP_FN_VAR,      /**< Used in numpy.var() impl  */
-    DPNP_FN_ZEROS,    /**< Used in numpy.zeros() impl */
-    DPNP_FN_ZEROS_LIKE, /**< Used in numpy.zeros_like() impl */
-    DPNP_FN_LAST,       /**< The latest element of the enumeration */
+    DPNP_FN_ZEROS,        /**< Used in numpy.zeros() impl */
+    DPNP_FN_ZEROS_LIKE,   /**< Used in numpy.zeros_like() impl */
+    DPNP_FN_LAST,         /**< The latest element of the enumeration */
 };
 
 /**

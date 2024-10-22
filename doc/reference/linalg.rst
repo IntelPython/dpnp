@@ -69,7 +69,6 @@ Norms and other numbers
    dpnp.trace
    dpnp.linalg.trace (Array API compatible)
 
-
 Solving linear equations
 --------------------------
 
