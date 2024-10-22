@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -13,20 +15,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.17.0dev0+58.g09eb3410b63 documentation</title>
+  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.17.0dev0+70.g2c7e383238f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=d8e16363"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=ed67235a"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -45,9 +43,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.17.0dev0+58.g09eb3410b63
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -161,6 +156,9 @@ vector along each axis.</p>
 <dt>&quot;mean&quot;</dt><dd><p>Pads with the mean value of all or part of the
 vector along each axis.</p>
 </dd>
+<dt>&quot;median&quot;</dt><dd><p>Pads with the median value of all or part of the
+vector along each axis.</p>
+</dd>
 <dt>&quot;minimum&quot;</dt><dd><p>Pads with the minimum value of all or part of the
 vector along each axis.</p>
 </dd>
@@ -183,9 +181,9 @@ end values are used to pad the beginning.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;constant&quot;</span></code>.</p>
 </p></li>
 <li><p><strong>stat_length</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>sequence</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <dl class="simple">
-<dt>Used in <code class="docutils literal notranslate"><span class="pre">&quot;maximum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;minimum&quot;</span></code>. Number of</dt><dd><p>values at edge of each axis used to calculate the statistic value.
-<code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique statistic
-lengths for each axis.
+<dt>Used in <code class="docutils literal notranslate"><span class="pre">&quot;maximum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;minimum&quot;</span></code>.</dt><dd><p>Number of values at edge of each axis used to calculate the statistic
+value. <code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique
+statistic lengths for each axis.
 <code class="docutils literal notranslate"><span class="pre">(before,</span> <span class="pre">after)</span></code> or <code class="docutils literal notranslate"><span class="pre">((before,</span> <span class="pre">after),)</span></code> yields same before
 and after statistic lengths for each axis.
 <code class="docutils literal notranslate"><span class="pre">(stat_length,)</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code> is a shortcut for
@@ -227,9 +225,6 @@ according to <cite>pad_width</cite>.</p>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
-<p class="rubric">Limitations</p>
-<p>Parameter <cite>mode</cite> as <code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code> is not currently supported and
-<code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
 <p class="rubric">Notes</p>
 <p>For an array with rank greater than 1, some of the padding of later
 axes is calculated from padding of previous axes. This is easiest to
@@ -279,7 +274,7 @@ the end of vector.</p>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">pad</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,),</span> <span class="s1">&#39;median&#39;</span><span class="p">)</span>
-<span class="go">NotImplementedError: Keyword argument `mode` does not support &#39;median&#39;</span>
+<span class="go">array([3, 3, 1, 2, 3, 4, 5, 3, 3])</span>
 </pre></div>
 </div>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
