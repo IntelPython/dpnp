@@ -59,3 +59,20 @@ def test_fill_memset(order):
     a.fill(0)
 
     assert_array_equal(a, 0)
+
+
+def test_fill_float_complex_to_int():
+    a = dnp.ones((10, 10), dtype="i4")
+
+    a.fill(complex(2, 0))
+    assert_array_equal(a, 2)
+
+    a.fill(float(3))
+    assert_array_equal(a, 3)
+
+
+def test_fill_complex_to_float():
+    a = dnp.ones((10, 10), dtype="f4")
+
+    a.fill(complex(2, 0))
+    assert_array_equal(a, 2)
