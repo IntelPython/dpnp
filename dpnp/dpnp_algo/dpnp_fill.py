@@ -50,12 +50,7 @@ def dpnp_fill(arr, val):
             raise dpu.ExecutionPlacementError(
                 "Input arrays have incompatible queues."
             )
-        a_val = dpt.asarray(
-            val,
-            dtype=arr.dtype,
-            usm_type=arr.usm_type,
-            sycl_queue=exec_q,
-        )
+        a_val = dpt.astype(val, arr.dtype)
         a_val = dpt.broadcast_to(a_val, arr.shape)
         _manager = dpu.SequentialOrderManager[exec_q]
         dep_evs = _manager.submitted_events
