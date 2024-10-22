@@ -336,8 +336,12 @@ class TestPad:
         result = dpnp.pad(a, (1, 1), mode)
         assert_equal(result[0], result[-1])
 
+    @pytest.mark.usefixtures(
+        "suppress_invalid_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
     @pytest.mark.parametrize("mode", ["mean", "median"])
-    def test_zero_stat_length_valid(self):
+    def test_zero_stat_length_valid(self, mode):
         a_np = numpy.array([1.0, 2.0])
         a_dp = dpnp.array(a_np)
         expected = numpy.pad(a_np, (1, 2), mode, stat_length=0)
