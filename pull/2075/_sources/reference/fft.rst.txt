@@ -1,9 +1,7 @@
-.. module:: dpnp.fft
-
 FFT Functions
 =============
 
-.. https://docs.scipy.org/doc/numpy/reference/routines.fft.html
+.. https://numpy.org/doc/stable/reference/routines.fft.html
 
 Standard FFTs
 -------------
@@ -12,12 +10,12 @@ Standard FFTs
    :toctree: generated/
    :nosignatures:
 
-   fft
-   ifft
-   fft2
-   ifft2
-   fftn
-   ifftn
+   dpnp.fft.fft
+   dpnp.fft.ifft
+   dpnp.fft.fft2
+   dpnp.fft.ifft2
+   dpnp.fft.fftn
+   dpnp.fft.ifftn
 
 
 Real FFTs
@@ -27,12 +25,12 @@ Real FFTs
    :toctree: generated/
    :nosignatures:
 
-   rfft
-   irfft
-   rfft2
-   irfft2
-   rfftn
-   irfftn
+   dpnp.fft.rfft
+   dpnp.fft.irfft
+   dpnp.fft.rfft2
+   dpnp.fft.irfft2
+   dpnp.fft.rfftn
+   dpnp.fft.irfftn
 
 
 Hermitian FFTs
@@ -42,8 +40,8 @@ Hermitian FFTs
    :toctree: generated/
    :nosignatures:
 
-   hfft
-   ihfft
+   dpnp.fft.hfft
+   dpnp.fft.ihfft
 
 
 Helper routines
@@ -53,10 +51,10 @@ Helper routines
    :toctree: generated/
    :nosignatures:
 
-   fftfreq
-   rfftfreq
-   fftshift
-   ifftshift
+   dpnp.fft.fftfreq
+   dpnp.fft.rfftfreq
+   dpnp.fft.fftshift
+   dpnp.fft.ifftshift
 
    .. fft.config module is not implemented yet
    .. dpnp.fft.config.set_cufft_callbacks

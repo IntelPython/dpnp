@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -13,24 +15,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.trace &mdash; Data Parallel Extension for NumPy 0.17.0dev0+32.gc8c6bd4cbf6 documentation</title>
+  <title>dpnp.trace &mdash; Data Parallel Extension for NumPy 0.17.0dev0+63.g19fe4340c59 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=4ffc1a0c"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=373d2aa0"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.linalg.solve" href="dpnp.linalg.solve.html" />
+    <link rel="next" title="dpnp.linalg.trace" href="dpnp.linalg.trace.html" />
     <link rel="prev" title="dpnp.linalg.slogdet" href="dpnp.linalg.slogdet.html" /> 
 </head>
 
@@ -45,9 +43,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.17.0dev0+32.gc8c6bd4cbf6
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -66,7 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Binary Operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../binary.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
@@ -75,6 +70,8 @@
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="../linalg.html#norms-and-other-numbers">Norms and other numbers</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#solving-linear-equations">Solving linear equations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#other-matrix-operations">Other matrix operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../linalg.html#exceptions">Exceptions</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
@@ -134,13 +131,13 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, from which the diagonals are taken.</p></li>
-<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Offset of the diagonal from the main diagonal. Can be both positive and
+<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- Offset of the diagonal from the main diagonal. Can be both positive and
 negative.
 Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
-<li><p><strong>axis1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Axes to be used as the first and second axis of the 2-D sub-arrays from
+<li><p><strong>axis1</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- Axes to be used as the first and second axis of the 2-D sub-arrays from
 which the diagonals should be taken. Defaults are the first two axes of
 <cite>a</cite>.</p></li>
-<li><p><strong>axis2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em>, </em><em>optional</em>) -- Axes to be used as the first and second axis of the 2-D sub-arrays from
+<li><p><strong>axis2</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- Axes to be used as the first and second axis of the 2-D sub-arrays from
 which the diagonals should be taken. Defaults are the first two axes of
 <cite>a</cite>.</p></li>
 <li><p><strong>dtype</strong> (<a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a><em>, </em><em>optional</em>) -- Determines the data-type of the returned array and of the accumulator
@@ -165,6 +162,8 @@ larger dimensions, then an array of sums along diagonals is returned.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
+<dt><a class="reference internal" href="dpnp.linalg.trace.html#dpnp.linalg.trace" title="dpnp.linalg.trace"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.trace</span></code></a></dt><dd><p>Array API compatible version.</p>
+</dd>
 <dt><a class="reference internal" href="dpnp.diag.html#dpnp.diag" title="dpnp.diag"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diag</span></code></a></dt><dd><p>Extract a diagonal or construct a diagonal array.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.diagonal</span></code></a></dt><dd><p>Return specified diagonals.</p>
@@ -196,7 +195,7 @@ larger dimensions, then an array of sums along diagonals is returned.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dpnp.linalg.slogdet.html" class="btn btn-neutral float-left" title="dpnp.linalg.slogdet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.linalg.solve.html" class="btn btn-neutral float-right" title="dpnp.linalg.solve" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.linalg.trace.html" class="btn btn-neutral float-right" title="dpnp.linalg.trace" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

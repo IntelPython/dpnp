@@ -70,8 +70,17 @@ var annotated_dup =
         [ "fmod", null, [
           [ "FmodFunctor", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ]
         ] ],
+        [ "gcd", null, [
+          [ "GcdFunctor", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ]
+        ] ],
         [ "heaviside", null, [
           [ "HeavisideFunctor", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ]
+        ] ],
+        [ "lcm", null, [
+          [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]
+        ] ],
+        [ "ldexp", null, [
+          [ "LdexpFunctor", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ]
         ] ],
         [ "logaddexp2", null, [
           [ "Logaddexp2Functor", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ]
@@ -92,7 +101,6 @@ var annotated_dup =
     [ "func_type_map_factory_t", "structfunc__type__map__factory__t.html", null ],
     [ "func_type_pair_t", "structfunc__type__pair__t.html", null ],
     [ "is_any", "structis__any.html", null ],
-    [ "is_complex", "structis__complex.html", null ],
     [ "mcg59_struct", "structmcg59__struct.html", null ],
     [ "mt19937_struct", "structmt19937__struct.html", null ],
     [ "python_constants", "structpython__constants.html", null ]

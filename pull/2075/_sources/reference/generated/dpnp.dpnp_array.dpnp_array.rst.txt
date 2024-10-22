@@ -199,6 +199,7 @@
    .. autoattribute:: flat
    .. autoattribute:: imag
    .. autoattribute:: itemsize
+   .. autoattribute:: mT
    .. autoattribute:: nbytes
    .. autoattribute:: ndim
    .. autoattribute:: real
