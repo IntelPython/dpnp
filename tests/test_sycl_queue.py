@@ -1313,6 +1313,7 @@ def test_pad(device):
         "linear_ramp",
         "maximum",
         "mean",
+        "median",
         "minimum",
         "reflect",
         "symmetric",

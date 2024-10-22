@@ -1031,6 +1031,7 @@ def test_pad(usm_type):
         "linear_ramp",
         "maximum",
         "mean",
+        "median",
         "minimum",
         "reflect",
         "symmetric",
