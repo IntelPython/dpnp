@@ -564,10 +564,13 @@ class TestFftn:
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     def test_negative_s(self):
-        # stock NumPy 2.0, if s is -1, the whole input is used (no padding/trimming).
-        a_np = numpy.empty((3, 4, 5), dtype=numpy.complex64)
+        x1 = numpy.random.uniform(-10, 10, 60)
+        x2 = numpy.random.uniform(-10, 10, 60)
+        a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(3, 4, 5)
         a = dpnp.array(a_np)
 
+        # For dpnp and stock NumPy 2.0, if s is -1, the whole input is used
+        # (no padding or trimming).
         result = dpnp.fft.fftn(a, s=(-1, -1), axes=(0, 2))
         expected = numpy.fft.fftn(a_np, s=(3, 5), axes=(0, 2))
         assert_dtype_allclose(result, expected, check_only_type_kind=True)

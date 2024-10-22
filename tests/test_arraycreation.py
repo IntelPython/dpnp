@@ -12,6 +12,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
@@ -66,6 +67,18 @@ class TestTrace:
         assert_equal(result, expected)
         assert result is iout
 
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    @pytest.mark.parametrize("offset", [0, 1, -1])
+    def test_linalg_trace(self, dtype, offset):
+        a = numpy.arange(12, dtype=dtype).reshape(3, 4)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.trace(ia, offset=offset, dtype=dtype)
+        expected = numpy.linalg.trace(a, offset=offset, dtype=dtype)
+        assert_equal(result, expected)
+
 
 @pytest.mark.parametrize(
     "func, args",
@@ -74,18 +87,6 @@ class TestTrace:
         pytest.param("full_like", [dpnp.ones(10), 7]),
         pytest.param("ones_like", [dpnp.ones(10)]),
         pytest.param("zeros_like", [dpnp.ones(10)]),
-    ],
-)
-def test_exception_order1(func, args):
-    with pytest.raises(NotImplementedError):
-        getattr(dpnp, func)(*args, order="K")
-    with pytest.raises(ValueError):
-        getattr(dpnp, func)(*args, order="S")
-
-
-@pytest.mark.parametrize(
-    "func, args",
-    [
         pytest.param("empty", [3]),
         pytest.param("eye", [3]),
         pytest.param("full", [3, 7]),
@@ -93,7 +94,7 @@ def test_exception_order1(func, args):
         pytest.param("zeros", [3]),
     ],
 )
-def test_exception_order2(func, args):
+def test_exception_order(func, args):
     with pytest.raises(ValueError):
         getattr(dpnp, func)(*args, order="S")
 
@@ -552,7 +553,7 @@ def test_full(shape, fill_value, dtype, order):
     "fill_value", [1.5, 2, 1.5 + 0.0j], ids=["1.5", "2", "1.5+0.j"]
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F", "A", "K"])
 def test_full_like(array, fill_value, dtype, order):
     func = lambda xp, x: xp.full_like(x, fill_value, dtype=dtype, order=order)
 
@@ -611,7 +612,7 @@ def test_zeros(shape, dtype, order):
     ids=["[]", "0", "[1, 2, 3]", "[[1, 2], [3, 4]]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F", "A", "K"])
 def test_zeros_like(array, dtype, order):
     func = lambda xp, x: xp.zeros_like(x, dtype=dtype, order=order)
 
@@ -638,7 +639,7 @@ def test_empty(shape, dtype, order):
     ids=["[]", "0", "[1, 2, 3]", "[[1, 2], [3, 4]]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F", "A", "K"])
 def test_empty_like(array, dtype, order):
     func = lambda xp, x: xp.empty_like(x, dtype=dtype, order=order)
 
@@ -665,7 +666,7 @@ def test_ones(shape, dtype, order):
     ids=["[]", "0", "[1, 2, 3]", "[[1, 2], [3, 4]]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F", "A", "K"])
 def test_ones_like(array, dtype, order):
     func = lambda xp, x: xp.ones_like(x, dtype=dtype, order=order)
 

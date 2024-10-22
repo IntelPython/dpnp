@@ -25,6 +25,8 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as dti
+import dpctl.tensor._type_utils as dtu
 import numpy
 from dpctl.tensor._elementwise_common import (
     BinaryElementwiseFunc,
@@ -36,15 +38,18 @@ import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
+    "acceptance_fn_gcd_lcm",
     "acceptance_fn_negative",
     "acceptance_fn_positive",
     "acceptance_fn_sign",
     "acceptance_fn_subtract",
     "DPNPAngle",
     "DPNPBinaryFunc",
+    "DPNPImag",
     "DPNPReal",
     "DPNPRound",
     "DPNPUnaryFunc",
+    "resolve_weak_types_2nd_arg_int",
 ]
 
 
@@ -243,6 +248,14 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         The function is only called when both arguments of the binary
         function require casting, e.g. both arguments of
         `dpctl.tensor.logaddexp` are arrays with integral data type.
+    weak_type_resolver : {callable}, optional
+        Function to influence type promotion behavior for Python scalar types
+        of this binary function. The function takes 3 arguments:
+            o1_dtype - Data type or Python scalar type of the first argument
+            o2_dtype - Data type or Python scalar type of of the second argument
+            sycl_dev - The :class:`dpctl.SyclDevice` where the function
+                evaluation is carried out.
+        One of `o1_dtype` and `o2_dtype` must be a ``dtype`` instance.
     """
 
     def __init__(
@@ -255,6 +268,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         mkl_impl_fn=None,
         binary_inplace_fn=None,
         acceptance_fn=None,
+        weak_type_resolver=None,
     ):
         def _call_func(src1, src2, dst, sycl_queue, depends=None):
             """
@@ -280,6 +294,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             docs,
             binary_inplace_fn,
             acceptance_fn=acceptance_fn,
+            weak_type_resolver=weak_type_resolver,
         )
         self.__name__ = "DPNPBinaryFunc"
 
@@ -477,11 +492,32 @@ class DPNPAngle(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x, deg=False):
-        res = super().__call__(x)
+    def __call__(self, x, deg=False, out=None, order="K"):
+        res = super().__call__(x, out=out, order=order)
         if deg is True:
             res *= 180 / dpnp.pi
         return res
+
+
+class DPNPImag(DPNPUnaryFunc):
+    """Class that implements dpnp.imag unary element-wise functions."""
+
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        unary_dp_impl_fn,
+        docs,
+    ):
+        super().__init__(
+            name,
+            result_type_resolver_fn,
+            unary_dp_impl_fn,
+            docs,
+        )
+
+    def __call__(self, x, out=None, order="K"):
+        return super().__call__(x, out=out, order=order)
 
 
 class DPNPReal(DPNPUnaryFunc):
@@ -501,9 +537,9 @@ class DPNPReal(DPNPUnaryFunc):
             docs,
         )
 
-    def __call__(self, x):
+    def __call__(self, x, out=None, order="K"):
         if numpy.iscomplexobj(x):
-            return super().__call__(x)
+            return super().__call__(x, out=out, order=order)
         return x
 
 
@@ -546,6 +582,18 @@ class DPNPRound(DPNPUnaryFunc):
             return dpnp_array._create_from_usm_ndarray(res_usm)
         else:
             return super().__call__(x, out=out, dtype=dtype)
+
+
+def acceptance_fn_gcd_lcm(
+    arg1_dtype, arg2_dtype, buf1_dt, buf2_dt, res_dt, sycl_dev
+):
+    # gcd/lcm are not defined for boolean data type
+    if arg1_dtype.char == "?" and arg2_dtype.char == "?":
+        raise ValueError(
+            "The function is not supported for inputs of data type bool"
+        )
+    else:
+        return True
 
 
 def acceptance_fn_negative(arg_dtype, buf_dt, res_dt, sycl_dev):
@@ -593,3 +641,24 @@ def acceptance_fn_subtract(
         )
     else:
         return True
+
+
+def resolve_weak_types_2nd_arg_int(o1_dtype, o2_dtype, sycl_dev):
+    """
+    The second weak dtype has to be upcasting up to default integer dtype
+    for a SYCL device where it is possible.
+    For other cases the default weak types resolving will be applied.
+
+    """
+
+    if dtu._is_weak_dtype(o2_dtype):
+        o1_kind_num = dtu._strong_dtype_num_kind(o1_dtype)
+        o2_kind_num = dtu._weak_type_num_kind(o2_dtype)
+        if o2_kind_num < o1_kind_num:
+            if isinstance(
+                o2_dtype, (dtu.WeakBooleanType, dtu.WeakIntegralType)
+            ):
+                return o1_dtype, dpt.dtype(
+                    dti.default_device_int_type(sycl_dev)
+                )
+    return dtu._resolve_weak_types(o1_dtype, o2_dtype, sycl_dev)

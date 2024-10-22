@@ -111,18 +111,6 @@ size_t operator-(DPNPFuncType lhs, DPNPFuncType rhs)
     return result;
 }
 
-void *get_dpnp_function_ptr1(DPNPFuncType &result_type,
-                             DPNPFuncName name,
-                             DPNPFuncType first_type,
-                             DPNPFuncType second_type)
-{
-    DPNPFuncData_t result =
-        get_dpnp_function_ptr(name, first_type, second_type);
-
-    result_type = result.return_type;
-    return result.ptr;
-}
-
 static func_map_t func_map_init()
 {
     func_map_t fmap;
@@ -133,8 +121,6 @@ static func_map_t func_map_init()
     func_map_init_linalg(fmap);
     func_map_init_mathematical(fmap);
     func_map_init_random(fmap);
-    func_map_init_reduction(fmap);
-    func_map_init_searching(fmap);
     func_map_init_sorting(fmap);
     func_map_init_statistics(fmap);
 

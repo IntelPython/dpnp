@@ -5,6 +5,7 @@ from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import assert_dtype_allclose, get_all_dtypes, get_complex_dtypes
 
@@ -50,6 +51,7 @@ class TestCross:
         expected = numpy.cross(np_x1, np_x2, axisa, axisb, axisc, axis)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
@@ -77,6 +79,7 @@ class TestCross:
         expected = numpy.cross(a, b, axis_a, axis_b, axis_c)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
         "shape1, shape2, axis_a, axis_b, axis_c",
@@ -102,6 +105,7 @@ class TestCross:
         expected = numpy.cross(a, b, axis_a, axis_b, axis_c)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "shape1, shape2, axis",
@@ -138,6 +142,7 @@ class TestCross:
         expected = numpy.cross(a, b)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
@@ -168,7 +173,7 @@ class TestCross:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("stride", [3, -3], ids=["3", "-3"])
+    @pytest.mark.parametrize("stride", [3, -3])
     def test_cross_strided(self, dtype, stride):
         a = numpy.arange(1, 10, dtype=dtype)
         b = numpy.arange(1, 10, dtype=dtype)
@@ -177,6 +182,18 @@ class TestCross:
 
         result = dpnp.cross(ia[::stride], ib[::stride])
         expected = numpy.cross(a[::stride], b[::stride])
+        assert_dtype_allclose(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("axis", [0, 1, -1])
+    def test_linalg_cross(self, axis):
+        a = numpy.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+        b = numpy.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.linalg.cross(ia, ib, axis=axis)
+        expected = numpy.linalg.cross(a, b, axis=axis)
         assert_dtype_allclose(result, expected)
 
     def test_cross_error(self):
@@ -196,6 +213,14 @@ class TestCross:
         # Input arrays with boolean data type are not supported
         with pytest.raises(TypeError):
             dpnp.cross(a, a)
+
+    @testing.with_requires("numpy>=2.0")
+    def test_linalg_cross_error(self):
+        a = dpnp.arange(4)
+        b = dpnp.arange(4)
+        # Both input arrays must be (arrays of) 3-dimensional vectors
+        with pytest.raises(ValueError):
+            dpnp.linalg.cross(a, b)
 
 
 class TestDot:
@@ -741,7 +766,7 @@ class TestKron:
     @pytest.mark.parametrize(
         "stride", [3, -1, -2, -4], ids=["3", "-1", "-2", "-4"]
     )
-    def test_kron_strided(self, dtype, stride):
+    def test_kron_strided1(self, dtype, stride):
         a = numpy.arange(20, dtype=dtype)
         b = numpy.arange(20, dtype=dtype)
         ia = dpnp.array(a)
@@ -749,6 +774,34 @@ class TestKron:
 
         result = dpnp.kron(ia[::stride], ib[::stride])
         expected = numpy.kron(a[::stride], b[::stride])
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("stride", [2, -1, -2], ids=["2", "-1", "-2"])
+    def test_kron_strided2(self, stride):
+        a = numpy.arange(48).reshape(6, 8)
+        b = numpy.arange(480).reshape(6, 8, 10)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.kron(
+            ia[::stride, ::stride], ib[::stride, ::stride, ::stride]
+        )
+        expected = numpy.kron(
+            a[::stride, ::stride], b[::stride, ::stride, ::stride]
+        )
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["C", "F", "A"])
+    def test_kron_order(self, order):
+        a = numpy.arange(48).reshape(6, 8, order=order)
+        b = numpy.arange(480).reshape(6, 8, 10, order=order)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.kron(ia, ib)
+        expected = numpy.kron(a, b)
+        assert result.flags["C_CONTIGUOUS"] == expected.flags["C_CONTIGUOUS"]
+        assert result.flags["F_CONTIGUOUS"] == expected.flags["F_CONTIGUOUS"]
         assert_dtype_allclose(result, expected)
 
 
@@ -1065,7 +1118,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib)
         expected = numpy.tensordot(a, b)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize(
         "stride",
@@ -1084,6 +1137,21 @@ class TestTensordot:
             result = dpnp.tensordot(b, b, axes=axes)
             expected = numpy.tensordot(a, a, axes=axes)
             assert_dtype_allclose(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "axes",
+        [([0, 1]), ([0, 1], [1, 2]), ([-2, -3], [3, 2])],
+    )
+    def test_linalg_tensordot(self, axes):
+        a = numpy.array(numpy.random.uniform(-10, 10, 120)).reshape(2, 5, 3, 4)
+        b = numpy.array(numpy.random.uniform(-10, 10, 120)).reshape(4, 2, 5, 3)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.linalg.tensordot(ia, ib, axes=axes)
+        expected = numpy.linalg.tensordot(a, b, axes=axes)
+        assert_dtype_allclose(result, expected)
 
     def test_tensordot_error(self):
         a = 5

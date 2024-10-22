@@ -264,6 +264,8 @@ def _copy_array(x, complex_input):
     dtype = x.dtype
     if numpy.min(x.strides) < 0:
         # negative stride is not allowed in OneMKL FFT
+        # TODO: support for negative strides will be added in the future
+        # versions of OneMKL, see discussion in MKLD-17597
         copy_flag = True
     elif complex_input and not dpnp.issubdtype(dtype, dpnp.complexfloating):
         # c2c/c2r FFT, if input is not complex, convert to complex
@@ -443,8 +445,6 @@ def _truncate_or_pad(a, shape, axes):
         else:
             # zero-padding
             exec_q = a.sycl_queue
-            _manager = dpu.SequentialOrderManager[exec_q]
-            dep_evs = _manager.submitted_events
             index[axis] = slice(0, a_shape[axis])  # orig shape
             a_shape[axis] = s  # modified shape
             order = "F" if a.flags.fnc else "C"
@@ -455,6 +455,8 @@ def _truncate_or_pad(a, shape, axes):
                 usm_type=a.usm_type,
                 sycl_queue=exec_q,
             )
+            _manager = dpu.SequentialOrderManager[exec_q]
+            dep_evs = _manager.submitted_events
             ht_copy_ev, copy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
                 src=dpnp.get_usm_ndarray(a),
                 dst=z.get_array()[tuple(index)],

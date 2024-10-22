@@ -598,6 +598,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("logsumexp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("median", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanargmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanargmin", [1.0, 2.0, 4.0, dp.nan]),
@@ -686,6 +687,11 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("fmin", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("fmod", [5, 3], [2, 2.0]),
         pytest.param(
+            "gcd",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
+        pytest.param(
             "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
         ),
         pytest.param("heaviside", [-1.5, 0, 2.0], [1]),
@@ -694,6 +700,16 @@ def test_1in_1out(func, data, usm_type):
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
+        pytest.param(
+            "lcm",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
+        pytest.param(
+            "ldexp",
+            [5, 5, 5, 5, 5],
+            [0, 1, 2, 3, 4],
+        ),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),

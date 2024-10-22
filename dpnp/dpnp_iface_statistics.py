@@ -37,17 +37,18 @@ it contains:
 
 """
 
-
 import dpctl.tensor as dpt
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_index
+from dpctl.tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 import dpnp
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
     dpnp_correlate,
-    dpnp_median,
 )
 from .dpnp_array import dpnp_array
 from .dpnp_utils import (
@@ -117,6 +118,22 @@ def _count_reduce_items(arr, axis, where=True):
             "where keyword argument is only supported with its default value."
         )
     return items
+
+
+def _flatten_array_along_axes(arr, axes_to_flatten):
+    """Flatten an array along a specific set of axes."""
+
+    axes_to_keep = (
+        axis for axis in range(arr.ndim) if axis not in axes_to_flatten
+    )
+
+    # Move the axes_to_flatten to the front
+    arr_moved = dpnp.moveaxis(arr, axes_to_flatten, range(len(axes_to_flatten)))
+
+    new_shape = (-1,) + tuple(arr.shape[axis] for axis in axes_to_keep)
+    flattened_arr = arr_moved.reshape(new_shape)
+
+    return flattened_arr
 
 
 def _get_comparison_res_dt(a, _dtype, _out):
@@ -571,13 +588,15 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
-        values) will be cast if necessary. Default: ``None``.
+        values) will be cast if necessary.
+        Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        the returned array.
+        Default: ``False``.
 
     Returns
     -------
@@ -623,24 +642,54 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     if dtype is not None:
         usm_res = dpt.astype(usm_res, dtype)
 
-    return dpnp.get_result_array(usm_res, out, casting="same_kind")
+    return dpnp.get_result_array(usm_res, out, casting="unsafe")
 
 
-def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
+def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
     Compute the median along the specified axis.
 
     For full documentation refer to :obj:`numpy.median`.
 
-    Limitations
-    -----------
-    Input array is supported as :obj:`dpnp.ndarray`.
-    Parameter `axis` is supported only with default value ``None``.
-    Parameter `out` is supported only with default value ``None``.
-    Parameter `overwrite_input` is supported only with default value ``False``.
-    Parameter `keepdims` is supported only with default value ``False``.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int, tuple or list of ints}, optional
+        Axis or axes along which the medians are computed. The default,
+        ``axis=None``, will compute the median along a flattened version of
+        the array. If a sequence of axes, the array is first flattened along
+        the given axes, then the median is computed along the resulting
+        flattened axis.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the calculated
+        values) will be cast if necessary.
+        Default: ``None``.
+    overwrite_input : bool, optional
+       If ``True``, then allow use of memory of input array `a` for
+       calculations. The input array will be modified by the call to
+       :obj:`dpnp.median`. This will save memory when you do not need to
+       preserve the contents of the input array. Treat the input as undefined,
+       but it will probably be fully or partially sorted.
+       Default: ``False``.
+    keepdims : {None, bool}, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array.
+        Default: ``False``.
+
+    Returns
+    -------
+    dpnp.median : dpnp.ndarray
+        A new array holding the result. If `a` has a floating-point data type,
+        the returned array will have the same data type as `a`. If `a` has a
+        boolean or integral data type, the returned array will have the
+        default floating point data type for the device where input array `a`
+        is allocated.
 
     See Also
     --------
@@ -648,34 +697,105 @@ def median(x1, axis=None, out=None, overwrite_input=False, keepdims=False):
     :obj:`dpnp.percentile` : Compute the q-th percentile of the data
                              along the specified axis.
 
+    Notes
+    -----
+    Given a vector ``V`` of length ``N``, the median of ``V`` is the
+    middle value of a sorted copy of ``V``, ``V_sorted`` - i.e.,
+    ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
+    two middle values of ``V_sorted`` when ``N`` is even.
+
     Examples
     --------
     >>> import dpnp as np
     >>> a = np.array([[10, 7, 4], [3, 2, 1]])
+    >>> a
+    array([[10,  7,  4],
+           [ 3,  2,  1]])
     >>> np.median(a)
-    3.5
+    array(3.5)
+
+    >>> np.median(a, axis=0)
+    array([6.5, 4.5, 2.5])
+    >>> np.median(a, axis=1)
+    array([7.,  2.])
+    >>> np.median(a, axis=(0, 1))
+    array(3.5)
+
+    >>> m = np.median(a, axis=0)
+    >>> out = np.zeros_like(m)
+    >>> np.median(a, axis=0, out=m)
+    array([6.5,  4.5,  2.5])
+    >>> m
+    array([6.5,  4.5,  2.5])
+
+    >>> b = a.copy()
+    >>> np.median(b, axis=1, overwrite_input=True)
+    array([7.,  2.])
+    >>> assert not np.all(a==b)
+    >>> b = a.copy()
+    >>> np.median(b, axis=None, overwrite_input=True)
+    array(3.5)
+    >>> assert not np.all(a==b)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc:
-        if axis is not None:
-            pass
-        elif out is not None:
-            pass
-        elif overwrite_input:
-            pass
-        elif keepdims:
-            pass
-        elif dpnp.is_cuda_backend(x1):
-            pass
+    dpnp.check_supported_arrays_type(a)
+    a_ndim = a.ndim
+    a_shape = a.shape
+    _axis = range(a_ndim) if axis is None else axis
+    _axis = normalize_axis_tuple(_axis, a_ndim)
+
+    if isinstance(axis, (tuple, list)):
+        if len(axis) == 1:
+            axis = axis[0]
         else:
-            result_obj = dpnp_median(x1_desc).get_pyobj()
-            result = dpnp.convert_single_elem_array_to_scalar(result_obj)
+            # Need to flatten if `axis` is a sequence of axes since `dpnp.sort`
+            # only accepts integer `axis`
+            # Note that the output of _flatten_array_along_axes is not
+            # necessarily a view of the input since `reshape` is used there.
+            # If this is the case, using overwrite_input is meaningless
+            a = _flatten_array_along_axes(a, _axis)
+            axis = 0
 
-            return result
+    if overwrite_input:
+        if axis is None:
+            a_sorted = dpnp.ravel(a)
+            a_sorted.sort()
+        else:
+            if isinstance(a, dpt.usm_ndarray):
+                # dpnp.ndarray.sort only works with dpnp_array
+                a = dpnp_array._create_from_usm_ndarray(a)
+            a.sort(axis=axis)
+            a_sorted = a
+    else:
+        a_sorted = dpnp.sort(a, axis=axis)
 
-    return call_origin(numpy.median, x1, axis, out, overwrite_input, keepdims)
+    if axis is None:
+        axis = 0
+    indexer = [slice(None)] * a_sorted.ndim
+    index, remainder = divmod(a_sorted.shape[axis], 2)
+    if remainder == 1:
+        # index with slice to allow mean (below) to work
+        indexer[axis] = slice(index, index + 1)
+    else:
+        indexer[axis] = slice(index - 1, index + 1)
+
+    # Use `mean` in odd and even case to coerce data type and use `out` array
+    res = dpnp.mean(a_sorted[tuple(indexer)], axis=axis, out=out)
+    nan_mask = dpnp.isnan(a_sorted).any(axis=axis)
+    if nan_mask.any():
+        res[nan_mask] = dpnp.nan
+
+    if keepdims:
+        # We can't use dpnp.mean(..., keepdims) and dpnp.any(..., keepdims)
+        # above because of the reshape hack might have been used in
+        # `_flatten_array_along_axes` to handle cases when axis is a tuple.
+        res_shape = list(a_shape)
+        for i in _axis:
+            res_shape[i] = 1
+        res = res.reshape(tuple(res_shape))
+
+    return res
 
 
 def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):

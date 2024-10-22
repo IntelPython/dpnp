@@ -32,7 +32,7 @@ class TestMedian:
         return xp.median(a, axis=2)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_overwrite_input(self, xp, dtype):
         a = testing.shaped_random((3, 4, 5), xp, dtype)
         return xp.median(a, overwrite_input=True)
@@ -62,14 +62,16 @@ class TestMedian:
                 return xp.median(a, (-a.ndim - 1, 1), keepdims=False)
 
             with pytest.raises(AxisError):
-                return xp.median(
-                    a,
-                    (
-                        0,
-                        a.ndim,
-                    ),
-                    keepdims=False,
-                )
+                return xp.median(a, (0, a.ndim), keepdims=False)
+
+    @testing.for_dtypes("efdFD")
+    @testing.numpy_cupy_allclose()
+    def test_median_nan(self, xp, dtype):
+        a = xp.array(
+            [[xp.nan, 1, 2, 3], [4, 5, 6, 7], [8, 9, 10, xp.nan]],
+            dtype=dtype,
+        )
+        return xp.median(a, axis=1)
 
 
 @testing.parameterize(
@@ -81,7 +83,6 @@ class TestMedian:
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestMedianAxis:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())

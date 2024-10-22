@@ -4,6 +4,7 @@ from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
+from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
@@ -61,12 +62,24 @@ class TestArgsort:
         expected = np_array.argsort(axis=axis)
         assert_dtype_allclose(result, expected)
 
-    def test_argsort_stable(self):
+    @pytest.mark.parametrize("kind", [None, "stable"])
+    def test_sort_kind(self, kind):
         np_array = numpy.repeat(numpy.arange(10), 10)
         dp_array = dpnp.array(np_array)
 
-        result = dpnp.argsort(dp_array, kind="stable")
+        result = dpnp.argsort(dp_array, kind=kind)
         expected = numpy.argsort(np_array, kind="stable")
+        assert_dtype_allclose(result, expected)
+
+    # `stable` keyword is supported in numpy 2.0 and above
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("stable", [None, False, True])
+    def test_sort_stable(self, stable):
+        np_array = numpy.repeat(numpy.arange(10), 10)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.argsort(dp_array, stable="stable")
+        expected = numpy.argsort(np_array, stable=True)
         assert_dtype_allclose(result, expected)
 
     def test_argsort_zero_dim(self):
@@ -81,15 +94,6 @@ class TestArgsort:
         result = dpnp.argsort(dp_array, axis=None)
         expected = numpy.argsort(np_array, axis=None)
         assert_dtype_allclose(result, expected)
-
-    def test_sort_notimplemented(self):
-        dp_array = dpnp.arange(10)
-
-        with pytest.raises(NotImplementedError):
-            dpnp.argsort(dp_array, kind="quicksort")
-
-        with pytest.raises(NotImplementedError):
-            dpnp.argsort(dp_array, order=["age"])
 
 
 class TestSearchSorted:
@@ -304,12 +308,24 @@ class TestSort:
         np_array.sort(axis=axis)
         assert_dtype_allclose(dp_array, np_array)
 
-    def test_sort_stable(self):
+    @pytest.mark.parametrize("kind", [None, "stable"])
+    def test_sort_kind(self, kind):
         np_array = numpy.repeat(numpy.arange(10), 10)
         dp_array = dpnp.array(np_array)
 
-        result = dpnp.sort(dp_array, kind="stable")
+        result = dpnp.sort(dp_array, kind=kind)
         expected = numpy.sort(np_array, kind="stable")
+        assert_dtype_allclose(result, expected)
+
+    # `stable` keyword is supported in numpy 2.0 and above
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("stable", [None, False, True])
+    def test_sort_stable(self, stable):
+        np_array = numpy.repeat(numpy.arange(10), 10)
+        dp_array = dpnp.array(np_array)
+
+        result = dpnp.sort(dp_array, stable="stable")
+        expected = numpy.sort(np_array, stable=True)
         assert_dtype_allclose(result, expected)
 
     def test_sort_ndarray_axis_none(self):

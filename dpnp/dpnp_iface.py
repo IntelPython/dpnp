@@ -61,7 +61,6 @@ __all__ = [
     "as_usm_ndarray",
     "check_limitations",
     "check_supported_arrays_type",
-    "convert_single_elem_array_to_scalar",
     "default_float_type",
     "from_dlpack",
     "get_dpnp_descriptor",
@@ -321,14 +320,10 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     )
 
 
-def check_limitations(
-    order=None, subok=False, like=None, initial=None, where=True
-):
+def check_limitations(subok=False, like=None, initial=None, where=True):
     """
     Checking limitation kwargs for their supported values.
 
-    Parameter `order` is only supported with values ``"C"``, ``"F"``,
-    and ``None``.
     Parameter `subok` is only supported with default value ``False``.
     Parameter `like` is only supported with default value ``None``.
     Parameter `initial` is only supported with default value ``None``.
@@ -341,16 +336,6 @@ def check_limitations(
 
     """
 
-    if order in ("A", "a", "K", "k"):
-        raise NotImplementedError(
-            "Keyword argument `order` is supported only with "
-            f"values 'C' and 'F', but got '{order}'"
-        )
-    if order not in ("C", "c", "F", "f", None):
-        raise ValueError(
-            "Unrecognized `order` keyword value, expecting "
-            f"'C' or 'F', but got '{order}'"
-        )
     if like is not None:
         raise NotImplementedError(
             "Keyword argument `like` is supported only with "
@@ -420,15 +405,6 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
             "but got all scalars."
         )
     return True
-
-
-def convert_single_elem_array_to_scalar(obj, keepdims=False):
-    """Convert array with single element to scalar."""
-
-    if (obj.ndim > 0) and (obj.size == 1) and (keepdims is False):
-        return obj.dtype.type(obj[0])
-
-    return obj
 
 
 def default_float_type(device=None, sycl_queue=None):

@@ -476,6 +476,7 @@ def test_meshgrid(device):
         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("median", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("nanargmax", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanargmin", [1.0, 2.0, 4.0, dpnp.nan]),
@@ -719,6 +720,11 @@ def test_reduce_hypot(device):
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
         pytest.param(
+            "gcd",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
+        pytest.param(
             "gradient",
             [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
             [0.0, 1.0, 1.5, 3.5, 4.0, 6.0],
@@ -734,6 +740,16 @@ def test_reduce_hypot(device):
         ),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
+        pytest.param(
+            "lcm",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
+        pytest.param(
+            "ldexp",
+            [5, 5, 5, 5, 5],
+            [0, 1, 2, 3, 4],
+        ),
         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
         pytest.param(
@@ -1035,7 +1051,10 @@ def test_random(func, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
+    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # TODO: remove the w/a once resolved
+    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
     kwargs["device"] = None
     kwargs["sycl_queue"] = sycl_queue
 
@@ -1078,7 +1097,10 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
-    sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # SAT-7414: w/a to avoid crash on Windows (observing on LNL and ARL)
+    # sycl_queue = dpctl.SyclQueue(device, property="in_order")
+    # TODO: remove the w/a once resolved
+    sycl_queue = dpctl.SyclQueue(device, property="enable_profiling")
 
     # test with in-order SYCL queue per a device and passed as argument
     seed = (147, 56, 896) if device.is_cpu else 987654

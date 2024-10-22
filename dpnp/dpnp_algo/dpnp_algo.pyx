@@ -65,15 +65,6 @@ include "dpnp_algo_special.pxi"
 include "dpnp_algo_statistics.pxi"
 
 
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_flatten_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                         void *, const size_t, const size_t,
-                                                         const shape_elem_type * , const shape_elem_type * ,
-                                                         void *, const size_t, const size_t,
-                                                         const shape_elem_type * , const shape_elem_type * ,
-                                                         const long * ,
-                                                         const c_dpctl.DPCTLEventVectorRef)
-
-
 cpdef dpnp_queue_initialize():
     """
     Initialize SYCL queue which will be used for any library operations.

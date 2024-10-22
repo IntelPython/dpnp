@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,43 +23,33 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example 9.
- *
- * This example shows simple usage of the DPNP C++ Backend library
- * to calculate sum of the given elements vector
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include
- * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
- *
- */
+#pragma once
 
-#include <iostream>
+#include <sycl/sycl.hpp>
 
-#include "dpnp_iface.hpp"
+// dpctl tensor headers
+#include "utils/math_utils.hpp"
+#include "utils/type_utils.hpp"
 
-int main(int, char **)
+namespace dpnp::kernels::ldexp
 {
-    const size_t size = 2097152;
-    long result = 0;
-    long result_verification = 0;
+template <typename argT1, typename argT2, typename resT>
+struct LdexpFunctor
+{
+    using supports_sg_loadstore = typename std::true_type;
+    using supports_vec = typename std::false_type;
 
-    long *array =
-        reinterpret_cast<long *>(dpnp_memory_alloc_c(size * sizeof(long)));
+    resT operator()(const argT1 &in1, const argT2 &in2) const
+    {
+        if (((int)in2) == in2) {
+            return sycl::ldexp(in1, in2);
+        }
 
-    for (size_t i = 0; i < size; ++i) {
-        array[i] = i;
-        result_verification += i;
+        // a separate handling for large integer values
+        if (in2 > 0) {
+            return std::numeric_limits<resT>::infinity();
+        }
+        return resT(0);
     }
-
-    dpnp_sum_c<long, long>(&result, array, &size, 1, NULL, 0, NULL, NULL);
-
-    std::cout << "SUM() value: " << result
-              << " verification value: " << result_verification << std::endl;
-
-    dpnp_memory_free_c(array);
-
-    return 0;
-}
+};
+} // namespace dpnp::kernels::ldexp

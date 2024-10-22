@@ -27,8 +27,8 @@
 
 #include "dpctl4pybind11.hpp"
 
-#include "heaviside.hpp"
-#include "kernels/elementwise_functions/heaviside.hpp"
+#include "kernels/elementwise_functions/ldexp.hpp"
+#include "ldexp.hpp"
 #include "populate.hpp"
 
 // include a local copy of elementwise common header from dpctl tensor:
@@ -38,6 +38,7 @@
 
 // dpctl tensor headers
 #include "kernels/elementwise_functions/common.hpp"
+#include "kernels/elementwise_functions/maximum.hpp"
 #include "utils/type_dispatch.hpp"
 
 namespace dpnp::extensions::ufunc
@@ -49,7 +50,11 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 namespace impl
 {
 namespace ew_cmn_ns = dpctl::tensor::kernels::elementwise_common;
+namespace max_ns = dpctl::tensor::kernels::maximum;
 
+// Supports the same types table as for maximum function in dpctl
+// template <typename T1, typename T2>
+// using OutputType = max_ns::MaximumOutputType<T1, T2>;
 template <typename T1, typename T2>
 struct OutputType
 {
@@ -58,14 +63,35 @@ struct OutputType
         td_ns::BinaryTypeMapResultEntry<T1,
                                         sycl::half,
                                         T2,
-                                        sycl::half,
+                                        std::int8_t,
                                         sycl::half>,
-        td_ns::BinaryTypeMapResultEntry<T1, float, T2, float, float>,
-        td_ns::BinaryTypeMapResultEntry<T1, double, T2, double, double>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        sycl::half,
+                                        T2,
+                                        std::int16_t,
+                                        sycl::half>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        sycl::half,
+                                        T2,
+                                        std::int32_t,
+                                        sycl::half>,
+        td_ns::BinaryTypeMapResultEntry<T1,
+                                        sycl::half,
+                                        T2,
+                                        std::int64_t,
+                                        sycl::half>,
+        td_ns::BinaryTypeMapResultEntry<T1, float, T2, std::int8_t, float>,
+        td_ns::BinaryTypeMapResultEntry<T1, float, T2, std::int16_t, float>,
+        td_ns::BinaryTypeMapResultEntry<T1, float, T2, std::int32_t, float>,
+        td_ns::BinaryTypeMapResultEntry<T1, float, T2, std::int64_t, float>,
+        td_ns::BinaryTypeMapResultEntry<T1, double, T2, std::int8_t, double>,
+        td_ns::BinaryTypeMapResultEntry<T1, double, T2, std::int16_t, double>,
+        td_ns::BinaryTypeMapResultEntry<T1, double, T2, std::int32_t, double>,
+        td_ns::BinaryTypeMapResultEntry<T1, double, T2, std::int64_t, double>,
         td_ns::DefaultResultEntry<void>>::result_type;
 };
 
-using dpnp::kernels::heaviside::HeavisideFunctor;
+using dpnp::kernels::ldexp::LdexpFunctor;
 
 template <typename argT1,
           typename argT2,
@@ -77,7 +103,7 @@ using ContigFunctor =
     ew_cmn_ns::BinaryContigFunctor<argT1,
                                    argT2,
                                    resT,
-                                   HeavisideFunctor<argT1, argT2, resT>,
+                                   LdexpFunctor<argT1, argT2, resT>,
                                    vec_sz,
                                    n_vecs,
                                    enable_sg_loadstore>;
@@ -88,7 +114,7 @@ using StridedFunctor =
                                     argT2,
                                     resT,
                                     IndexerT,
-                                    HeavisideFunctor<argT1, argT2, resT>>;
+                                    LdexpFunctor<argT1, argT2, resT>>;
 
 using ew_cmn_ns::binary_contig_impl_fn_ptr_t;
 using ew_cmn_ns::binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t;
@@ -96,32 +122,31 @@ using ew_cmn_ns::binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t;
 using ew_cmn_ns::binary_strided_impl_fn_ptr_t;
 
 static binary_contig_impl_fn_ptr_t
-    heaviside_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
-static int heaviside_output_typeid_table[td_ns::num_types][td_ns::num_types];
+    ldexp_contig_dispatch_table[td_ns::num_types][td_ns::num_types];
+static int ldexp_output_typeid_table[td_ns::num_types][td_ns::num_types];
 static binary_strided_impl_fn_ptr_t
-    heaviside_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
+    ldexp_strided_dispatch_table[td_ns::num_types][td_ns::num_types];
 
-MACRO_POPULATE_DISPATCH_TABLES(heaviside);
+MACRO_POPULATE_DISPATCH_TABLES(ldexp);
 } // namespace impl
 
-void init_heaviside(py::module_ m)
+void init_ldexp(py::module_ m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
     {
-        impl::populate_heaviside_dispatch_tables();
-        using impl::heaviside_contig_dispatch_table;
-        using impl::heaviside_output_typeid_table;
-        using impl::heaviside_strided_dispatch_table;
+        impl::populate_ldexp_dispatch_tables();
+        using impl::ldexp_contig_dispatch_table;
+        using impl::ldexp_output_typeid_table;
+        using impl::ldexp_strided_dispatch_table;
 
-        auto heaviside_pyapi = [&](const arrayT &src1, const arrayT &src2,
-                                   const arrayT &dst, sycl::queue &exec_q,
-                                   const event_vecT &depends = {}) {
+        auto ldexp_pyapi = [&](const arrayT &src1, const arrayT &src2,
+                               const arrayT &dst, sycl::queue &exec_q,
+                               const event_vecT &depends = {}) {
             return py_int::py_binary_ufunc(
-                src1, src2, dst, exec_q, depends, heaviside_output_typeid_table,
-                heaviside_contig_dispatch_table,
-                heaviside_strided_dispatch_table,
-                // no dedicated kernel for C-contig row with broadcasting
+                src1, src2, dst, exec_q, depends, ldexp_output_typeid_table,
+                ldexp_contig_dispatch_table, ldexp_strided_dispatch_table,
+                // no support of C-contig row with broadcasting in OneMKL
                 td_ns::NullPtrTable<
                     impl::
                         binary_contig_matrix_contig_row_broadcast_impl_fn_ptr_t>{},
@@ -129,16 +154,16 @@ void init_heaviside(py::module_ m)
                     impl::
                         binary_contig_row_contig_matrix_broadcast_impl_fn_ptr_t>{});
         };
-        m.def("_heaviside", heaviside_pyapi, "", py::arg("src1"),
-              py::arg("src2"), py::arg("dst"), py::arg("sycl_queue"),
+        m.def("_ldexp", ldexp_pyapi, "", py::arg("src1"), py::arg("src2"),
+              py::arg("dst"), py::arg("sycl_queue"),
               py::arg("depends") = py::list());
 
-        auto heaviside_result_type_pyapi = [&](const py::dtype &dtype1,
-                                               const py::dtype &dtype2) {
+        auto ldexp_result_type_pyapi = [&](const py::dtype &dtype1,
+                                           const py::dtype &dtype2) {
             return py_int::py_binary_ufunc_result_type(
-                dtype1, dtype2, heaviside_output_typeid_table);
+                dtype1, dtype2, ldexp_output_typeid_table);
         };
-        m.def("_heaviside_result_type", heaviside_result_type_pyapi);
+        m.def("_ldexp_result_type", ldexp_result_type_pyapi);
     }
 }
 } // namespace dpnp::extensions::ufunc

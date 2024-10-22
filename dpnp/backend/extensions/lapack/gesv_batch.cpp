@@ -39,6 +39,8 @@ namespace mkl_lapack = oneapi::mkl::lapack;
 namespace py = pybind11;
 namespace type_utils = dpctl::tensor::type_utils;
 
+using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+
 typedef sycl::event (*gesv_batch_impl_fn_ptr_t)(
     sycl::queue &,
     const std::int64_t,
@@ -106,7 +108,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         ipiv = helper::alloc_ipiv(batch_size * n, exec_q);
     } catch (const std::exception &e) {
         if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
+            sycl_free_noexcept(scratchpad, exec_q);
         throw;
     }
 
@@ -172,9 +174,9 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         error_msg << ".";
 
         if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
+            sycl_free_noexcept(scratchpad, exec_q);
         if (ipiv != nullptr)
-            sycl::free(ipiv, exec_q);
+            sycl_free_noexcept(ipiv, exec_q);
 
         throw LinAlgError(error_msg.str().c_str());
     } catch (mkl_lapack::exception const &e) {
@@ -218,7 +220,7 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
         ipiv = helper::alloc_ipiv_batch<T>(n, n_linear_streams, exec_q);
     } catch (const std::exception &e) {
         if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
+            sycl_free_noexcept(scratchpad, exec_q);
         throw;
     }
 
@@ -281,9 +283,9 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
     if (is_exception_caught) // an unexpected error occurs
     {
         if (scratchpad != nullptr)
-            sycl::free(scratchpad, exec_q);
+            sycl_free_noexcept(scratchpad, exec_q);
         if (ipiv != nullptr)
-            sycl::free(ipiv, exec_q);
+            sycl_free_noexcept(ipiv, exec_q);
         throw std::runtime_error(error_msg.str());
     }
 
@@ -297,8 +299,8 @@ static sycl::event gesv_batch_impl(sycl::queue &exec_q,
 #endif // USE_ONEMKL_INTERFACES
         auto ctx = exec_q.get_context();
         cgh.host_task([ctx, scratchpad, ipiv]() {
-            sycl::free(scratchpad, ctx);
-            sycl::free(ipiv, ctx);
+            sycl_free_noexcept(scratchpad, ctx);
+            sycl_free_noexcept(ipiv, ctx);
         });
     });
 

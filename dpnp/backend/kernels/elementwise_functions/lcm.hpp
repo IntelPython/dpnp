@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,45 +23,37 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example 9.
- *
- * TODO explanation of the example
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example8.cpp -Idpnp -Idpnp/backend/include
- * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example8
- *
- */
-#include <iostream>
+#pragma once
 
-#include "dpnp_iface.hpp"
+#include <oneapi/dpl/numeric>
+#include <sycl/sycl.hpp>
 
-int main(int, char **)
+namespace dpnp::kernels::lcm
 {
-    const size_t size = 16;
+template <typename argT1, typename argT2, typename resT>
+struct LcmFunctor
+{
+    using supports_sg_loadstore = typename std::true_type;
+    using supports_vec = typename std::false_type;
 
-    double *array = (double *)dpnp_memory_alloc_c(size * sizeof(double));
-    long *result = (long *)dpnp_memory_alloc_c(size * sizeof(long));
+    resT operator()(const argT1 &in1, const argT2 &in2) const
+    {
+        static_assert(std::is_same_v<argT1, argT2>,
+                      "Input types are expected to be the same");
 
-    std::cout << "array" << std::endl;
-    for (size_t i = 0; i < size; ++i) {
-        array[i] = (double)(size - i) / 2;
-        std::cout << array[i] << ", ";
+        if (in1 == 0 || in2 == 0)
+            return 0;
+
+        resT res = in1 / oneapi::dpl::gcd(in1, in2) * in2;
+        if constexpr (std::is_signed_v<argT1>) {
+            if (res < 0) {
+                return -res;
+            }
+        }
+        return res;
+
+        // TODO: undo the w/a once ONEDPL-1320 is resolved
+        // return oneapi::dpl::lcm(in1, in2);
     }
-    std::cout << std::endl;
-
-    dpnp_argsort_c<double, long>(array, result, size);
-
-    std::cout << "array with 'sorted' indices" << std::endl;
-    for (size_t i = 0; i < size; ++i) {
-        std::cout << result[i] << ", ";
-    }
-    std::cout << std::endl;
-
-    dpnp_memory_free_c(result);
-    dpnp_memory_free_c(array);
-
-    return 0;
-}
+};
+} // namespace dpnp::kernels::lcm
