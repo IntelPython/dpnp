@@ -61,7 +61,6 @@ __all__ = [
     "as_usm_ndarray",
     "check_limitations",
     "check_supported_arrays_type",
-    "convert_single_elem_array_to_scalar",
     "default_float_type",
     "from_dlpack",
     "get_dpnp_descriptor",
@@ -405,15 +404,6 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
             "but got all scalars."
         )
     return True
-
-
-def convert_single_elem_array_to_scalar(obj, keepdims=False):
-    """Convert array with single element to scalar."""
-
-    if (obj.ndim > 0) and (obj.size == 1) and (keepdims is False):
-        return obj.dtype.type(obj[0])
-
-    return obj
 
 
 def default_float_type(device=None, sycl_queue=None):

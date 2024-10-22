@@ -37,15 +37,7 @@ and the rest of the library
 
 __all__ += [
     "dpnp_correlate",
-    "dpnp_median",
 ]
-
-
-# C function pointer to the C library template functions
-ctypedef c_dpctl.DPCTLSyclEventRef(*custom_statistic_1in_1out_func_ptr_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                                          void *, void * , shape_elem_type * , size_t,
-                                                                          shape_elem_type * , size_t,
-                                                                          const c_dpctl.DPCTLEventVectorRef)
 
 
 cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_descriptor x2):
@@ -84,50 +76,6 @@ cpdef utils.dpnp_descriptor dpnp_correlate(utils.dpnp_descriptor x1, utils.dpnp_
                                                     x2_shape.data(),
                                                     x2_shape.size(),
                                                     NULL,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return result
-
-
-cpdef utils.dpnp_descriptor dpnp_median(utils.dpnp_descriptor array1):
-    cdef shape_type_c x1_shape = array1.shape
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(array1.dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MEDIAN_EXT, param1_type, param1_type)
-
-    array1_obj = array1.get_array()
-
-    cdef (DPNPFuncType, void *) ret_type_and_func = utils.get_ret_type_and_func(kernel_data,
-                                                                                array1_obj.sycl_device.has_aspect_fp64)
-    cdef DPNPFuncType return_type = ret_type_and_func[0]
-    cdef custom_statistic_1in_1out_func_ptr_t func = < custom_statistic_1in_1out_func_ptr_t > ret_type_and_func[1]
-
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor((1,),
-                                                                       return_type,
-                                                                       None,
-                                                                       device=array1_obj.sycl_device,
-                                                                       usm_type=array1_obj.usm_type,
-                                                                       sycl_queue=array1_obj.sycl_queue)
-
-    result_sycl_queue = result.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    # stub for interface support
-    cdef shape_type_c axis
-    cdef Py_ssize_t axis_size = 0
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    array1.get_data(),
-                                                    result.get_data(),
-                                                    x1_shape.data(),
-                                                    array1.ndim,
-                                                    axis.data(),
-                                                    axis_size,
                                                     NULL)  # dep_events_ref
 
     with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)

@@ -128,88 +128,6 @@ DPCTLSyclEventRef (*dpnp_correlate_ext_c)(DPCTLSyclQueueRef,
                                           const DPCTLEventVectorRef) =
     dpnp_correlate_c<_DataType_output, _DataType_input1, _DataType_input2>;
 
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef dpnp_median_c(DPCTLSyclQueueRef q_ref,
-                                void *array1_in,
-                                void *result1,
-                                const shape_elem_type *shape,
-                                size_t ndim,
-                                const shape_elem_type *axis,
-                                size_t naxis,
-                                const DPCTLEventVectorRef dep_event_vec_ref)
-{
-    // avoid warning unused variable
-    (void)dep_event_vec_ref;
-
-    __attribute__((unused)) void *tmp = (void *)(axis + naxis);
-
-    DPCTLSyclEventRef event_ref = nullptr;
-
-    const size_t size = std::accumulate(shape, shape + ndim, 1,
-                                        std::multiplies<shape_elem_type>());
-    if (!size) {
-        return event_ref;
-    }
-
-    sycl::queue q = *(reinterpret_cast<sycl::queue *>(q_ref));
-
-    DPNPC_ptr_adapter<_ResultType> result_ptr(q_ref, result1, 1, true, true);
-    _ResultType *result = result_ptr.get_ptr();
-
-    _DataType *sorted = reinterpret_cast<_DataType *>(
-        sycl::malloc_shared(size * sizeof(_DataType), q));
-
-    dpnp_sort_c<_DataType>(array1_in, sorted, size);
-
-    if (size % 2 == 0) {
-        result[0] =
-            static_cast<_ResultType>(sorted[size / 2] + sorted[size / 2 - 1]) /
-            2;
-    }
-    else {
-        result[0] = sorted[(size - 1) / 2];
-    }
-
-    sycl::free(sorted, q);
-
-    return event_ref;
-}
-
-template <typename _DataType, typename _ResultType>
-void dpnp_median_c(void *array1_in,
-                   void *result1,
-                   const shape_elem_type *shape,
-                   size_t ndim,
-                   const shape_elem_type *axis,
-                   size_t naxis)
-{
-    DPCTLSyclQueueRef q_ref = reinterpret_cast<DPCTLSyclQueueRef>(&DPNP_QUEUE);
-    DPCTLEventVectorRef dep_event_vec_ref = nullptr;
-    DPCTLSyclEventRef event_ref = dpnp_median_c<_DataType, _ResultType>(
-        q_ref, array1_in, result1, shape, ndim, axis, naxis, dep_event_vec_ref);
-    DPCTLEvent_WaitAndThrow(event_ref);
-    DPCTLEvent_Delete(event_ref);
-}
-
-template <typename _DataType, typename _ResultType>
-void (*dpnp_median_default_c)(void *,
-                              void *,
-                              const shape_elem_type *,
-                              size_t,
-                              const shape_elem_type *,
-                              size_t) = dpnp_median_c<_DataType, _ResultType>;
-
-template <typename _DataType, typename _ResultType>
-DPCTLSyclEventRef (*dpnp_median_ext_c)(DPCTLSyclQueueRef,
-                                       void *,
-                                       void *,
-                                       const shape_elem_type *,
-                                       size_t,
-                                       const shape_elem_type *,
-                                       size_t,
-                                       const DPCTLEventVectorRef) =
-    dpnp_median_c<_DataType, _ResultType>;
-
 void func_map_init_statistics(func_map_t &fmap)
 {
     fmap[DPNPFuncName::DPNP_FN_CORRELATE][eft_INT][eft_INT] = {
@@ -277,36 +195,6 @@ void func_map_init_statistics(func_map_t &fmap)
         eft_DBL, (void *)dpnp_correlate_ext_c<double, double, float>};
     fmap[DPNPFuncName::DPNP_FN_CORRELATE_EXT][eft_DBL][eft_DBL] = {
         eft_DBL, (void *)dpnp_correlate_ext_c<double, double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_INT][eft_INT] = {
-        eft_DBL, (void *)dpnp_median_default_c<int32_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_LNG][eft_LNG] = {
-        eft_DBL, (void *)dpnp_median_default_c<int64_t, double>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_median_default_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_median_default_c<double, double>};
-
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN_EXT][eft_INT][eft_INT] = {
-        get_default_floating_type(),
-        (void *)dpnp_median_ext_c<
-            int32_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_median_ext_c<
-            int32_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN_EXT][eft_LNG][eft_LNG] = {
-        get_default_floating_type(),
-        (void *)dpnp_median_ext_c<
-            int64_t, func_type_map_t::find_type<get_default_floating_type()>>,
-        get_default_floating_type<std::false_type>(),
-        (void *)dpnp_median_ext_c<
-            int64_t, func_type_map_t::find_type<
-                         get_default_floating_type<std::false_type>()>>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN_EXT][eft_FLT][eft_FLT] = {
-        eft_FLT, (void *)dpnp_median_ext_c<float, float>};
-    fmap[DPNPFuncName::DPNP_FN_MEDIAN_EXT][eft_DBL][eft_DBL] = {
-        eft_DBL, (void *)dpnp_median_ext_c<double, double>};
 
     return;
 }
