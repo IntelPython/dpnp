@@ -26,7 +26,7 @@
 
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
-import numpy as np
+from dpctl.tensor._ctors import _cast_fill_val
 from dpctl.tensor._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
     _full_usm_ndarray,
@@ -70,7 +70,7 @@ def dpnp_fill(arr, val):
     elif val_type is complex and dpnp.issubdtype(dt, dpnp.floating):
         val = val.real
     elif val_type is int and dpnp.issubdtype(dt, dpnp.integer):
-        val = np.asarray(val, dtype=dt)[()]
+        val = _cast_fill_val(val, dt)
 
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
