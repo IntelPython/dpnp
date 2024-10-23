@@ -24,6 +24,8 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+from numbers import Number
+
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
 from dpctl.tensor._ctors import _cast_fill_val
@@ -58,9 +60,9 @@ def dpnp_fill(arr, val):
         )
         _manager.add_event_pair(h_ev, c_ev)
         return
-    elif not dpnp.isscalar(val):
+    elif not isinstance(val, Number):
         raise TypeError(
-            f"Expected `val` to be a 0D-array or Python scalar, got {type(val)}"
+            f"Array cannot be filled with `val` of type {type(val)}"
         )
 
     dt = arr.dtype
