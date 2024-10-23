@@ -276,7 +276,7 @@ def _pad_simple(array, pad_width, fill_value=None):
 
     Parameters
     ----------
-    array : ndarray
+    array : dpnp.ndarray
         Array to grow.
     pad_width : sequence of tuple[int, int]
         Pad width on both sides for each dimension in `arr`.
@@ -286,8 +286,8 @@ def _pad_simple(array, pad_width, fill_value=None):
 
     Returns
     -------
-    padded : ndarray
-        The padded array with the same dtype as`array`. Its order will default
+    padded : dpnp.ndarray
+        The padded array with the same dtype as `array`. Its order will default
         to C-style if `array` is not F-contiguous.
     original_area_slice : tuple
         A tuple of slices pointing to the area of the original array.
@@ -299,7 +299,7 @@ def _pad_simple(array, pad_width, fill_value=None):
         left + size + right
         for size, (left, right) in zip(array.shape, pad_width)
     )
-    order = "F" if array.flags.fnc else "C"  # Fortran and not also C-order
+    order = "F" if array.flags.fnc else "C"
     padded = dpnp.empty(
         new_shape,
         dtype=array.dtype,
@@ -598,7 +598,7 @@ def _view_roi(array, original_area_slice, axis):
 
     Returns
     -------
-    roi : ndarray
+    roi : dpnp.ndarray
         The region of interest of the original `array`.
 
     """
@@ -679,7 +679,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
         if (
             dpnp.isscalar(values)
             and values == 0
-            and (array.ndim == 1 or array.size < 4e6)
+            and (array.ndim == 1 or array.size < 3e7)
         ):
             # faster path for 1d arrays or small n-dimensional arrays
             return _pad_simple(array, pad_width, 0)[0]
