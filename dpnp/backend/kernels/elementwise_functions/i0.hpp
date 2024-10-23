@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <sycl/ext/intel/math.hpp>
 #include <sycl/sycl.hpp>
 
 /**
@@ -35,6 +34,10 @@
 #ifndef __SYCL_COMPILER_BESSEL_I0_SUPPORT
 // TODO: update with proper version
 #define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241030L
+#endif
+
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
+#include <sycl/ext/intel/math.hpp>
 #endif
 
 namespace dpnp::kernels::i0
@@ -215,7 +218,7 @@ inline Tp bessel_ik_0(Tp x)
  * @return The output regular modified Bessel function.
  */
 template <typename Tp>
-inline Tp cyl_bessel_0(Tp x)
+inline Tp cyl_bessel_i0(Tp x)
 {
     if (sycl::isnan(x)) {
         return std::numeric_limits<Tp>::quiet_NaN();
@@ -252,13 +255,17 @@ struct I0Functor
     resT operator()(const argT &x) const
     {
 #if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT
-        return sycl::ext::intel::math::cyl_bessel_i0(x);
+        using sycl::ext::intel::math::cyl_bessel_i0;
 #else
-        if constexpr (std::is_same_v<resT, sycl::half>) {
-            return static_cast<resT>(impl::cyl_bessel_0<float>(float(x)));
-        }
-        return impl::cyl_bessel_0(x);
+        using impl::cyl_bessel_i0;
 #endif
+
+        if constexpr (std::is_same_v<resT, sycl::half>) {
+            return static_cast<resT>(cyl_bessel_i0<float>(float(x)));
+        }
+        else {
+            return cyl_bessel_i0(x);
+        }
     }
 };
 } // namespace dpnp::kernels::i0
