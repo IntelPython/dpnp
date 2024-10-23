@@ -1326,6 +1326,21 @@ class TestI0:
         expected = numpy.i0(a)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    def test_nan(self):
+        a = numpy.array(numpy.nan)
+        ia = dpnp.array(a)
+
+        result = dpnp.i0(ia)
+        expected = numpy.i0(a)
+        assert_equal(result, expected)
+
+    # numpy.i0(numpy.inf) returns NaN, but expected Inf
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_infs(self, dt):
+        a = dpnp.array([dpnp.inf, -dpnp.inf], dtype=dt)
+        assert (dpnp.i0(a) == dpnp.inf).all()
+
     # dpnp.i0 returns float16, but numpy.i0 returns float64
     def test_bool(self):
         a = numpy.array([False, True, False])
