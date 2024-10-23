@@ -24,11 +24,11 @@
 # *****************************************************************************
 
 
-set(python_module_name _sycl_ext_impl)
+set(python_module_name _statistics_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram_common.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sycl_ext_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/statistics_py.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
@@ -83,5 +83,5 @@ if (DPNP_GENERATE_COVERAGE)
 endif()
 
 install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/sycl_ext"
+  DESTINATION "dpnp/backend/extensions/statistics"
 )

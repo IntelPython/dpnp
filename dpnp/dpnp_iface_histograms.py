@@ -44,9 +44,7 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-
-# pylint: disable=no-name-in-module
-import dpnp.backend.extensions.sycl_ext._sycl_ext_impl as sycl_ext
+import dpnp.backend.extensions.statistics as statistics_ext
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import map_dtype_to_device
@@ -205,19 +203,6 @@ def _get_bin_edges(a, bins, range, usm_type):
         )
         return bin_edges, (first_edge, last_edge, n_equal_bins)
     return bin_edges, None
-
-
-def _search_sorted_inclusive(a, v):
-    """
-    Like :obj:`dpnp.searchsorted`, but where the last item in `v` is placed
-    on the right.
-    In the context of a histogram, this makes the last bin edge inclusive
-
-    """
-
-    return dpnp.concatenate(
-        (a.searchsorted(v[:-1], "left"), a.searchsorted(v[-1:], "right"))
-    )
 
 
 def digitize(x, bins, right=False):
@@ -509,7 +494,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     )
     n_usm = dpnp.get_usm_ndarray(n_casted)
 
-    ht_ev, mem_ev = sycl_ext.histogram(
+    ht_ev, mem_ev = statistics_ext.histogram(
         a_usm,
         bins_usm,
         weights_usm,

@@ -29,7 +29,7 @@
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace sycl_ext
+namespace statistics
 {
 namespace histogram
 {
@@ -58,4 +58,4 @@ struct Histogram
 
 void populate_histogram(py::module_ m);
 } // namespace histogram
-} // namespace sycl_ext
+} // namespace statistics

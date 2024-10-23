@@ -39,6 +39,8 @@ class usm_ndarray;
 
 using dpctl::tensor::usm_ndarray;
 
+namespace statistics
+{
 namespace histogram
 {
 
@@ -466,3 +468,4 @@ void validate(const usm_ndarray &sample,
               std::optional<const dpctl::tensor::usm_ndarray> &weights,
               const usm_ndarray &histogram);
 } // namespace histogram
+} // namespace statistics

@@ -44,7 +44,7 @@
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 
-using namespace histogram;
+using namespace statistics::histogram;
 
 namespace
 {
@@ -175,7 +175,7 @@ struct ContigFactory
     }
 };
 
-using sycl_ext::histogram::Histogram;
+using statistics::histogram::Histogram;
 
 Histogram::FnT
     dispatch(Histogram *hist, int data_typenum, int, int hist_typenum)
@@ -248,7 +248,7 @@ std::tuple<sycl::event, sycl::event>
 
 std::unique_ptr<Histogram> hist;
 
-void sycl_ext::histogram::populate_histogram(py::module_ m)
+void statistics::histogram::populate_histogram(py::module_ m)
 {
     using namespace std::placeholders;
 

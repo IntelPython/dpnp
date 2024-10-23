@@ -58,7 +58,7 @@ add_subdirectory(backend/extensions/fft)
 add_subdirectory(backend/extensions/lapack)
 add_subdirectory(backend/extensions/vm)
 add_subdirectory(backend/extensions/ufunc)
-add_subdirectory(backend/extensions/sycl_ext)
+add_subdirectory(backend/extensions/statistics)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)

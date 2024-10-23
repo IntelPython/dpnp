@@ -32,7 +32,7 @@
 
 #include "histogram.hpp"
 
-PYBIND11_MODULE(_sycl_ext_impl, m)
+PYBIND11_MODULE(_statistics_impl, m)
 {
-    sycl_ext::histogram::populate_histogram(m);
+    statistics::histogram::populate_histogram(m);
 }

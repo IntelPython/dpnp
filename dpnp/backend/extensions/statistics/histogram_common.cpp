@@ -39,6 +39,8 @@ namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 using dpctl_td_ns::typenum_t;
 
+namespace statistics
+{
 namespace histogram
 {
 
@@ -194,3 +196,4 @@ void validate(const usm_ndarray &sample,
 }
 
 } // namespace histogram
+} // namespace statistics
