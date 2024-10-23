@@ -34,11 +34,13 @@ class TestCanCast(unittest.TestCase):
     @testing.for_all_dtypes_combination(names=("from_dtype", "to_dtype"))
     @testing.numpy_cupy_equal()
     def test_can_cast(self, xp, from_dtype, to_dtype):
-        if self.obj_type == "scalar":
+        if (
+            self.obj_type == "scalar"
+            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+        ):
             pytest.skip("to be aligned with NEP-50")
 
         from_obj = _generate_type_routines_input(xp, from_dtype, self.obj_type)
-
         ret = xp.can_cast(from_obj, to_dtype)
         assert isinstance(ret, bool)
         return ret
@@ -92,37 +94,40 @@ class TestResultType(unittest.TestCase):
     @testing.for_all_dtypes_combination(names=("dtype1", "dtype2"))
     @testing.numpy_cupy_equal()
     def test_result_type(self, xp, dtype1, dtype2):
-        if "scalar" in {self.obj_type1, self.obj_type2}:
+        if (
+            "scalar" in {self.obj_type1, self.obj_type2}
+            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+        ):
             pytest.skip("to be aligned with NEP-50")
 
         input1 = _generate_type_routines_input(xp, dtype1, self.obj_type1)
-
         input2 = _generate_type_routines_input(xp, dtype2, self.obj_type2)
 
-        flag1 = isinstance(input1, (numpy.ndarray, cupy.ndarray))
-        flag2 = isinstance(input2, (numpy.ndarray, cupy.ndarray))
-        dt1 = cupy.dtype(input1) if not flag1 else None
-        dt2 = cupy.dtype(input2) if not flag2 else None
-        # dpnp takes into account device capabilities only if one of the
-        # inputs is an array, for such a case, if the other dtype is not
-        # supported by device, dpnp raise ValueError. So, we skip the test.
-        if flag1 or flag2:
-            if (
-                dt1 in [cupy.float64, cupy.complex128]
-                or dt2 in [cupy.float64, cupy.complex128]
-            ) and not has_support_aspect64():
-                pytest.skip("No fp64 support by device.")
+        # dpnp.result_type takes into account device capabilities, when one of
+        # the inputs is an array. If dtype is `float32` and the object is
+        # primitive, the final dtype is `float` which needs a device with
+        # double precision support. so we skip the test for such a case on a
+        # device that does not support fp64
+        flag1 = self.obj_type1 == "array" or self.obj_type2 == "array"
+        flag2 = (self.obj_type1 == "primitive" and input1 == float) or (
+            self.obj_type2 == "primitive" and input2 == float
+        )
+        if flag1 and flag2 and not has_support_aspect64():
+            pytest.skip("No fp64 support by device.")
 
         ret = xp.result_type(input1, input2)
 
-        # dpnp takes into account device capabilities if one of the inputs
-        # is an array, for such a case, we have to modify the results for
-        # NumPy to align it with device capabilities.
-        if (flag1 or flag2) and xp == numpy and not has_support_aspect64():
-            ret = numpy.dtype(numpy.float32) if ret == numpy.float64 else ret
-            ret = (
-                numpy.dtype(numpy.complex64) if ret == numpy.complex128 else ret
-            )
+        # dpnp.result_type takes into account device capabilities, when one of the inputs
+        # is an array.
+        # So, we have to modify the results for NumPy to align it with
+        # device capabilities.
+        flag1 = isinstance(input1, numpy.ndarray)
+        flag2 = isinstance(input2, numpy.ndarray)
+        if (flag1 or flag2) and not has_support_aspect64():
+            if ret == numpy.float64:
+                ret = numpy.dtype(numpy.float32)
+            elif ret == numpy.complex128:
+                ret = numpy.dtype(numpy.complex64)
 
         assert isinstance(ret, numpy.dtype)
         return ret
