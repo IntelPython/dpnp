@@ -2364,7 +2364,7 @@ out : dpnp.ndarray
 
 Examples
 --------
->>> import numpy as np
+>>> import dpnp as np
 >>> np.i0(np.array(0.0))
 array(1.)
 >>> np.i0(np.array([0, 1, 2, 3]))
