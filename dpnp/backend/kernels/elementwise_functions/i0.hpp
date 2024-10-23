@@ -47,49 +47,26 @@ namespace impl
 {
 /**
  * @brief This routine returns the cylindrical Bessel functions
- *        of order 0: \f$ J_0 \f$ or \f$ I_0 \f$
- *        by series expansion.
+ *        of order 0 by series expansion.
  *
- * The modified cylindrical Bessel function is:
- * @f[
- *  Z_0(x) = \sum_{k=0}^{\infty}
- *           \frac{\sigma^k (x/2)^{2k}}{k!\Gamma(k+1)}
- * @f]
- * where \f$ \sigma = +1 \f$ or\f$  -1 \f$ for
- * \f$ Z = I \f$ or \f$ J \f$ respectively.
- *
- * See Abramowitz & Stegun, 9.1.10
- *     Abramowitz & Stegun, 9.6.7
- * (1) Handbook of Mathematical Functions,
- *     ed. Milton Abramowitz and Irene A. Stegun,
- *     Dover Publications,
- *     Equation 9.1.10 p. 360 and Equation 9.6.10 p. 375
- *
- * @param x   The argument of the Bessel function.
- * @param sgn The sign of the alternate terms
- *              -1 for the Bessel function of the first kind.
- *              +1 for the modified Bessel function of the first kind.
+ * @param x The argument of the Bessel function.
  * @return The output Bessel function.
  */
 template <typename Tp>
-inline Tp cyl_bessel_ij_0_series(Tp x, Tp sgn, unsigned int max_iter)
+inline Tp cyl_bessel_ij_0_series(const Tp x, const unsigned int max_iter)
 {
-    if (x == Tp(0)) {
-        return Tp(1);
-    }
-
     const Tp x2 = x / Tp(2);
-    Tp fact = -sycl::lgamma(Tp(1));
-    fact = std::exp(fact);
+    const Tp fact = sycl::exp(-sycl::lgamma(Tp(1)));
 
-    const Tp xx4 = sgn * x2 * x2;
+    const Tp xx4 = x2 * x2;
     Tp Jn = Tp(1);
     Tp term = Tp(1);
+    constexpr Tp eps = std::numeric_limits<Tp>::epsilon();
 
     for (unsigned int i = 1; i < max_iter; ++i) {
         term *= xx4 / (Tp(i) * Tp(i));
         Jn += term;
-        if (sycl::fabs(term / Jn) < std::numeric_limits<Tp>::epsilon()) {
+        if (sycl::fabs(term / Jn) < eps) {
             break;
         }
     }
@@ -97,97 +74,20 @@ inline Tp cyl_bessel_ij_0_series(Tp x, Tp sgn, unsigned int max_iter)
 }
 
 /**
- * @brief  Compute the modified Bessel functions @f$ I_0(0) @f$ and
- *         @f$ K_0(0) @f$ and their first derivatives
- *         @f$ I'_0(0) @f$ and @f$ K'_0(0) @f$ respectively.
+ * @brief Compute the modified Bessel functions.
  *
- * @param  Inu  The output regular modified Bessel function.
- * @param  Knu  The output irregular modified Bessel function.
- * @param  Ipnu The output derivative of the regular
- *                modified Bessel function.
- * @param  Kpnu The output derivative of the irregular
- *                modified Bessel function.
+ * @param x The argument of the Bessel functions.
+ * @return The output Bessel function.
  */
 template <typename Tp>
-inline void bessel_ik_0_x_0(Tp &Inu, Tp &Knu, Tp &Ipnu, Tp &Kpnu)
+inline Tp bessel_ik_0(Tp x)
 {
-    Inu = Tp(1);
-    Ipnu = Tp(0);
-    Knu = std::numeric_limits<Tp>::infinity();
-    Kpnu = -std::numeric_limits<Tp>::infinity();
-}
-
-/**
- * @brief Compute the gamma functions required by the Temme series
- *        expansions of @f$ N_\nu(x) @f$ and @f$ K_\nu(x) @f$.
- * @f[
- *   \Gamma_1 = \frac{1}{2\mu}
- *              [\frac{1}{\Gamma(1 - \mu)} - \frac{1}{\Gamma(1 + \mu)}]
- * @f]
- * and
- * @f[
- *   \Gamma_2 = \frac{1}{2}
- *              [\frac{1}{\Gamma(1 - \mu)} + \frac{1}{\Gamma(1 + \mu)}]
- * @f]
- * where @f$ -1/2 <= \mu <= 1/2 @f$ is @f$ \mu = \nu - N @f$ and @f$ N @f$.
- * is the nearest integer to @f$ \nu @f$.
- * The values of \f$ \Gamma(1 + \mu) \f$ and \f$ \Gamma(1 - \mu) \f$
- * are returned as well.
- *
- * The accuracy requirements on this are exquisite.
- *
- * @param mu     The input parameter of the gamma functions.
- * @param gam1   The output function \f$ \Gamma_1(\mu) \f$
- * @param gam2   The output function \f$ \Gamma_2(\mu) \f$
- * @param gampl  The output function \f$ \Gamma(1 + \mu) \f$
- * @param gammi  The output function \f$ \Gamma(1 - \mu) \f$
- */
-template <typename Tp>
-inline void gamma_temme(Tp mu, Tp &gam1, Tp &gam2, Tp &gampl, Tp &gammi)
-{
-    gampl = Tp(1) / sycl::tgamma(Tp(1) + mu);
-    gammi = Tp(1) / sycl::tgamma(Tp(1) - mu);
-
-    if (sycl::fabs(mu) < std::numeric_limits<Tp>::epsilon())
-        // constant Euler's constant @f$ \gamma_E @f$.
-        gam1 = -static_cast<Tp>(0.5772156649015328606065120900824024L);
-    else
-        gam1 = (gammi - gampl) / (Tp(2) * mu);
-
-    gam2 = (gammi + gampl) / (Tp(2));
-}
-
-/**
- * @brief  Compute the modified Bessel functions @f$ I_0(x) @f$ and
- *         @f$ K_0(x) @f$ and their first derivatives
- *         @f$ I'_0(x) @f$ and @f$ K'_0(x) @f$ respectively.
- *         These four functions are computed together for numerical
- *         stability.
- *
- * @param  x    The argument of the Bessel functions.
- * @param  Inu  The output regular modified Bessel function.
- * @param  Knu  The output irregular modified Bessel function.
- * @param  Ipnu The output derivative of the regular
- *                modified Bessel function.
- * @param  Kpnu The output derivative of the irregular
- *                modified Bessel function.
- */
-template <typename Tp>
-inline void bessel_ik_0(Tp x, Tp &Inu, Tp &Knu, Tp &Ipnu, Tp &Kpnu)
-{
-    if (x == Tp(0)) {
-        bessel_ik_0_x_0(Inu, Knu, Ipnu, Kpnu);
-        return;
-    }
-
     constexpr Tp eps = std::numeric_limits<Tp>::epsilon();
     constexpr Tp fp_min = Tp(10) * eps;
     constexpr int max_iter = 15000;
     constexpr Tp x_min = Tp(2);
 
-    constexpr int nl = int(0.5L);
-
-    const Tp mu = -nl;
+    const Tp mu = Tp(0);
     const Tp mu2 = mu * mu;
     const Tp xi = Tp(1) / x;
     const Tp xi2 = Tp(2) * xi;
@@ -210,21 +110,12 @@ inline void bessel_ik_0(Tp x, Tp &Inu, Tp &Knu, Tp &Ipnu, Tp &Kpnu)
     }
     if (i > max_iter) {
         // argument `x` is too large
-        bessel_ik_0_x_0(Inu, Knu, Ipnu, Kpnu);
-        return;
+        return std::numeric_limits<Tp>::infinity();
     }
 
     Tp Inul = fp_min;
-    Tp Ipnul = h * Inul;
-    Tp Inul1 = Inul;
-    Tp Ipnu1 = Ipnul;
-    Tp fact = Tp(0);
-    for (int l = nl; l >= 1; --l) {
-        const Tp Inutemp = fact * Inul + Ipnul;
-        fact -= xi;
-        Ipnul = fact * Inutemp + Inul;
-        Inul = Inutemp;
-    }
+    const Tp Inul1 = Inul;
+    const Tp Ipnul = h * Inul;
 
     constexpr Tp pi = static_cast<Tp>(3.1415926535897932384626433832795029L);
     Tp f = Ipnul / Inul;
@@ -239,15 +130,17 @@ inline void bessel_ik_0(Tp x, Tp &Inu, Tp &Knu, Tp &Ipnu, Tp &Kpnu)
         Tp e = mu * d;
         const Tp fact2 = (sycl::fabs(e) < eps ? Tp(1) : sycl::sinh(e) / e);
 
-        Tp gam1, gam2, gampl, gammi;
-        gamma_temme(mu, gam1, gam2, gampl, gammi);
+        // compute the gamma functions required by the Temme series expansions
+        constexpr Tp gam1 =
+            -static_cast<Tp>(0.5772156649015328606065120900824024L);
+        const Tp gam2 = Tp(1) / sycl::tgamma(Tp(1));
 
         Tp ff = fact * (gam1 * sycl::cosh(e) + gam2 * fact2 * d);
         Tp sum = ff;
         e = sycl::exp(e);
 
-        Tp p = e / (Tp(2) * gampl);
-        Tp q = Tp(1) / (Tp(2) * e * gammi);
+        Tp p = e / (Tp(2) * gam2);
+        Tp q = Tp(1) / (Tp(2) * e * gam2);
         Tp c = Tp(1);
         d = x2 * x2;
         Tp sum1 = p;
@@ -267,8 +160,7 @@ inline void bessel_ik_0(Tp x, Tp &Inu, Tp &Knu, Tp &Ipnu, Tp &Kpnu)
         }
         if (i > max_iter) {
             // Bessel k series failed to converge
-            bessel_ik_0_x_0(Inu, Knu, Ipnu, Kpnu);
-            return;
+            return std::numeric_limits<Tp>::quiet_NaN();
         }
         Kmu = sum;
         Knu1 = sum1 * xi2;
@@ -304,36 +196,20 @@ inline void bessel_ik_0(Tp x, Tp &Inu, Tp &Knu, Tp &Ipnu, Tp &Kpnu)
         }
         if (i > max_iter) {
             // Steed's method failed
-            bessel_ik_0_x_0(Inu, Knu, Ipnu, Kpnu);
-            return;
+            return std::numeric_limits<Tp>::quiet_NaN();
         }
         h = a1 * h;
-        Kmu = std::sqrt(pi / (Tp(2) * x)) * std::exp(-x) / s;
+        Kmu = sycl::sqrt(pi / (Tp(2) * x)) * sycl::exp(-x) / s;
         Knu1 = Kmu * (mu + x + Tp(0.5L) - h) * xi;
     }
 
     Tp Kpmu = mu * xi * Kmu - Knu1;
     Tp Inumu = xi / (f * Kmu - Kpmu);
-    Inu = Inumu * Inul1 / Inul;
-    Ipnu = Inumu * Ipnu1 / Inul;
-    for (i = 1; i <= nl; ++i) {
-        const Tp Knutemp = (mu + i) * xi2 * Knu1 + Kmu;
-        Kmu = Knu1;
-        Knu1 = Knutemp;
-    }
-    Knu = Kmu;
-    Kpnu = -Knu1;
+    return Inumu * Inul1 / Inul;
 }
 
 /**
- * @brief Return the regular modified Bessel function of order 0:
- *        \f$ I_0(x) \f$.
- *
- *  The regular modified cylindrical Bessel function is:
- *  @f[
- *    I_0(x) = \sum_{k=0}^{\infty}
- *                 \frac{(x/2)^{2k}}{k!\Gamma(k+1)}
- *  @f]
+ * @brief Return the regular modified Bessel function of order 0.
  *
  * @param x The argument of the regular modified Bessel function.
  * @return The output regular modified Bessel function.
@@ -345,16 +221,19 @@ inline Tp cyl_bessel_0(Tp x)
         return std::numeric_limits<Tp>::quiet_NaN();
     }
 
-    x = sycl::fabs(x);
+    if (sycl::isinf(x)) {
+        // return +inf per any input infinity
+        return std::numeric_limits<Tp>::infinity();
+    }
+
+    if (x == Tp(0)) {
+        return Tp(1);
+    }
 
     if (x * x < Tp(10)) {
-        return cyl_bessel_ij_0_series<Tp>(x, +Tp(1), 200);
+        return cyl_bessel_ij_0_series<Tp>(x, 200);
     }
-    else {
-        Tp I_nu, K_nu, Ip_nu, Kp_nu;
-        bessel_ik_0<Tp>(x, I_nu, K_nu, Ip_nu, Kp_nu);
-        return I_nu;
-    }
+    return bessel_ik_0(sycl::fabs(x));
 }
 } // namespace impl
 
