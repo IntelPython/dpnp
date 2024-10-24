@@ -1014,6 +1014,35 @@ def test_matmul(device, shape_pair):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((4,), (4,)),  # call_flag: dot
+        ((3, 1), (3, 1)),
+        ((2, 0), (2, 0)),  # zero-size inputs, 1D output
+        ((3, 0, 4), (3, 0, 4)),  # zero-size output
+        ((3, 4), (3, 4)),  # call_flag: vecdot
+    ],
+)
+def test_vecdot(device, shape_pair):
+    shape1, shape2 = shape_pair
+    a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    b1 = dpnp.asarray(a1, device=device)
+    b2 = dpnp.asarray(a2, device=device)
+
+    result = dpnp.vecdot(b1, b2)
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, b1.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b2.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "func, kwargs",
     [
         pytest.param("normal", {"loc": 1.0, "scale": 3.4, "size": (5, 12)}),

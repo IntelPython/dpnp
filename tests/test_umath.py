@@ -73,11 +73,9 @@ def get_id(val):
 
 
 # implement missing umaths and to remove the list
-# SAT-7324 vecdot
 # SAT-7323 bitwise_count
 new_umaths_numpy_20 = [
     "bitwise_count",
-    "vecdot",
 ]
 
 
