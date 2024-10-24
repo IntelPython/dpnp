@@ -28,7 +28,6 @@ from numbers import Number
 
 import dpctl.tensor as dpt
 import dpctl.utils as dpu
-import numpy as np
 from dpctl.tensor._ctors import _cast_fill_val
 from dpctl.tensor._tensor_impl import (
     _copy_usm_ndarray_into_usm_ndarray,
@@ -61,7 +60,7 @@ def dpnp_fill(arr, val):
         )
         _manager.add_event_pair(h_ev, c_ev)
         return
-    elif not isinstance(val, Number) and not isinstance(val, np.bool_):
+    elif not isinstance(val, (Number, dpnp.bool)):
         raise TypeError(
             f"array cannot be filled with `val` of type {type(val)}"
         )
