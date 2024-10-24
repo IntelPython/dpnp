@@ -99,7 +99,7 @@ __all__ = [
 ]
 
 
-def cholesky(a, upper=False):
+def cholesky(a, /, *, upper=False):
     """
     Cholesky decomposition.
 
@@ -1062,7 +1062,7 @@ def matrix_power(a, n):
     return dpnp_matrix_power(a, n)
 
 
-def matrix_rank(A, tol=None, hermitian=False):
+def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
     """
     Return matrix rank of array using SVD method.
 
@@ -1074,20 +1074,26 @@ def matrix_rank(A, tol=None, hermitian=False):
     A : {(M,), (..., M, N)} {dpnp.ndarray, usm_ndarray}
         Input vector or stack of matrices.
     tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
-        Threshold below which SVD values are considered zero. If `tol` is
-        ``None``, and ``S`` is an array with singular values for `M`, and
-        ``eps`` is the epsilon value for datatype of ``S``, then `tol` is
-        set to ``S.max() * max(M.shape) * eps``.
+        Threshold below which SVD values are considered zero. Only `tol` or
+        `rtol` can be set at a time. If none of them are provided, defaults
+        to ``S.max() * max(M, N) * eps`` where `S` is an array with singular
+        values for `A`, and `eps` is the epsilon value for datatype of `S`.
         Default: ``None``.
     hermitian : bool, optional
         If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Default: ``False``.
+    rtol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
+        Parameter for the relative tolerance component. Only `tol` or `rtol`
+        can be set at a time. If none of them are provided, defaults to
+        ``max(M, N) * eps`` where `eps` is the epsilon value for datatype
+        of `S` (an array with singular values for `A`).
+        Default: ``None``.
 
     Returns
     -------
     rank : (...) dpnp.ndarray
-        Rank of A.
+        Rank of `A`.
 
     See Also
     --------
@@ -1114,8 +1120,12 @@ def matrix_rank(A, tol=None, hermitian=False):
         dpnp.check_supported_arrays_type(
             tol, scalar_type=True, all_scalars=True
         )
+    if rtol is not None:
+        dpnp.check_supported_arrays_type(
+            rtol, scalar_type=True, all_scalars=True
+        )
 
-    return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian)
+    return dpnp_matrix_rank(A, tol=tol, hermitian=hermitian, rtol=rtol)
 
 
 def matrix_transpose(x, /):
@@ -1456,7 +1466,7 @@ def outer(x1, x2, /):
     return dpnp.outer(x1, x2)
 
 
-def pinv(a, rcond=1e-15, hermitian=False):
+def pinv(a, rcond=None, hermitian=False, *, rtol=None):
     """
     Compute the (Moore-Penrose) pseudo-inverse of a matrix.
 
@@ -1469,20 +1479,27 @@ def pinv(a, rcond=1e-15, hermitian=False):
     ----------
     a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Matrix or stack of matrices to be pseudo-inverted.
-    rcond : {float, dpnp.ndarray, usm_ndarray}, optional
+    rcond : (...) {float, dpnp.ndarray, usm_ndarray}, optional
         Cutoff for small singular values.
         Singular values less than or equal to ``rcond * largest_singular_value``
         are set to zero. Broadcasts against the stack of matrices.
-        Default: ``1e-15``.
+        Only `rcond` or `rtol` can be set at a time. If none of them are
+        provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.
+        Default: ``None``.
     hermitian : bool, optional
         If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Default: ``False``.
+    rtol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
+        Same as `rcond`, but it's an Array API compatible parameter name.
+        Only `rcond` or `rtol` can be set at a time. If none of them are
+        provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.
+        Default: ``None``.
 
     Returns
     -------
     out : (..., N, M) dpnp.ndarray
-        The pseudo-inverse of a.
+        The pseudo-inverse of `a`.
 
     Examples
     --------
@@ -1493,17 +1510,24 @@ def pinv(a, rcond=1e-15, hermitian=False):
     >>> a = np.random.randn(9, 6)
     >>> B = np.linalg.pinv(a)
     >>> np.allclose(a, np.dot(a, np.dot(B, a)))
-    array([ True])
+    array(True)
     >>> np.allclose(B, np.dot(B, np.dot(a, B)))
-    array([ True])
+    array(True)
 
     """
 
     dpnp.check_supported_arrays_type(a)
-    dpnp.check_supported_arrays_type(rcond, scalar_type=True, all_scalars=True)
+    if rcond is not None:
+        dpnp.check_supported_arrays_type(
+            rcond, scalar_type=True, all_scalars=True
+        )
+    if rtol is not None:
+        dpnp.check_supported_arrays_type(
+            rtol, scalar_type=True, all_scalars=True
+        )
     assert_stacked_2d(a)
 
-    return dpnp_pinv(a, rcond=rcond, hermitian=hermitian)
+    return dpnp_pinv(a, rcond=rcond, hermitian=hermitian, rtol=rtol)
 
 
 def qr(a, mode="reduced"):
