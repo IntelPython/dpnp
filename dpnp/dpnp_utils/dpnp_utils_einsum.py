@@ -33,9 +33,8 @@ import numpy
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
-from dpnp.dpnp_utils import get_usm_allocations
-
-from ..dpnp_array import dpnp_array
+from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 _einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -106,29 +105,6 @@ def _compute_size_by_dict(indices, idx_dict):
     ret = 1
     for i in indices:
         ret *= idx_dict[i]
-    return ret
-
-
-def _compute_size(start, shape):
-    """
-    Compute the total size of a multi-dimensional array starting from a given index.
-
-    Parameters
-    ----------
-    start : int
-        The starting index from which to compute the size.
-    shape : tuple
-        The shape of the multi-dimensional array.
-
-    Returns
-    -------
-    out : int
-        The total size of the array.
-
-    """
-    ret = 1
-    for i in range(start, len(shape)):
-        ret *= shape[i]
     return ret
 
 
@@ -818,11 +794,11 @@ def _parse_int_subscript(list_subscript):
                     "For this input type lists must contain "
                     "either int or Ellipsis"
                 ) from e
-            if isinstance(s, int):
-                if not 0 <= s < len(_einsum_symbols):
-                    raise ValueError(
-                        f"subscript is not within the valid range [0, {len(_einsum_symbols)})."
-                    )
+
+            if not 0 <= s < len(_einsum_symbols):
+                raise ValueError(
+                    f"subscript is not within the valid range [0, {len(_einsum_symbols)})."
+                )
             str_subscript += _einsum_symbols[s]
     return str_subscript
 
@@ -1050,17 +1026,16 @@ def dpnp_einsum(
                 "Input and output allocation queues are not compatible"
             )
 
-    result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
     for id, a in enumerate(operands):
         if dpnp.isscalar(a):
+            scalar_dtype = map_dtype_to_device(type(a), exec_q.sycl_device)
             operands[id] = dpnp.array(
-                a, dtype=result_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+                a, dtype=scalar_dtype, usm_type=res_usm_type, sycl_queue=exec_q
             )
+            arrays.append(operands[id])
     result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
-    if order in ["a", "A"]:
-        order = (
-            "F" if not any(arr.flags.c_contiguous for arr in arrays) else "C"
-        )
+    if order in "aA":
+        order = "F" if all(arr.flags.fnc for arr in arrays) else "C"
 
     input_subscripts = [
         _parse_ellipsis_subscript(sub, idx, ndim=arr.ndim)
@@ -1116,12 +1091,14 @@ def dpnp_einsum(
                     f"'{_chr(label)}' which never appeared in an input."
                 )
         if len(output_subscript) != len(set(output_subscript)):
+            repeated_subscript = []
             for label in output_subscript:
                 if output_subscript.count(label) >= 2:
-                    raise ValueError(
-                        "einstein sum subscripts string includes output "
-                        f"subscript '{_chr(label)}' multiple times."
-                    )
+                    repeated_subscript.append(_chr(label))
+            raise ValueError(
+                "einstein sum subscripts string includes output "
+                f"subscript {set(repeated_subscript)} multiple times."
+            )
 
     _einsum_diagonals(input_subscripts, operands)
 

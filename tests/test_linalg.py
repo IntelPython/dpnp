@@ -719,6 +719,10 @@ class TestEinsum:
         # different size for same label 5 != 4
         assert_raises(ValueError, inp.einsum, "ii", a)
 
+        a = inp.arange(25).reshape(5, 5)
+        # subscript is not within the valid range [0, 52)
+        assert_raises(ValueError, inp.einsum, a, [53, 53])
+
     @pytest.mark.parametrize("do_opt", [True, False])
     @pytest.mark.parametrize("xp", [numpy, inp])
     def test_einsum_error2(self, do_opt, xp):
@@ -1135,14 +1139,12 @@ class TestEinsum:
         result = inp.einsum(*args, dtype="?", casting="unsafe", optimize=do_opt)
         assert_dtype_allclose(result, expected)
 
-        # with an scalar, NumPy < 2.0.0 uses the other input arrays to
-        # determine the output type while for NumPy > 2.0.0 the scalar
-        # with default machine dtype is used to determine the output
-        # data type
+        # NumPy >= 2.0 follows NEP-50 to determine the output dtype when one of
+        # the inputs is a scalar while NumPy < 2.0 does not
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-            check_type = True
-        else:
             check_type = False
+        else:
+            check_type = True
         a = numpy.arange(9, dtype=dtype)
         a_dp = inp.array(a)
         expected = numpy.einsum(",i->", 3, a)
@@ -1708,7 +1710,7 @@ class TestEinsum:
 
     def test_output_order(self):
         # Ensure output order is respected for optimize cases, the below
-        # conraction should yield a reshaped tensor view
+        # contraction should yield a reshaped tensor view
         a = inp.ones((2, 3, 5), order="F")
         b = inp.ones((4, 3), order="F")
 
@@ -1739,6 +1741,17 @@ class TestEinsum:
         for opt in [True, False]:
             tmp = inp.einsum("...ft,mf->...mt", d, c, order="a", optimize=opt)
             assert tmp.flags.c_contiguous
+
+    def test_einsum_path(self):
+        # Test einsum path for covergae
+        a = numpy.random.rand(1, 2, 3, 4)
+        b = numpy.random.rand(4, 3, 2, 1)
+        a_dp = inp.array(a)
+        b_dp = inp.array(b)
+        expected = numpy.einsum_path("ijkl,dcba->dcba", a, b)
+        result = inp.einsum_path("ijkl,dcba->dcba", a_dp, b_dp)
+        assert expected[0] == result[0]
+        assert expected[1] == result[1]
 
 
 class TestInv:
@@ -2107,6 +2120,25 @@ class TestMatrixRank:
             a_dp_q,
             tol_dp_q,
         )
+
+
+# numpy.linalg.matrix_transpose() is available since numpy >= 2.0
+@testing.with_requires("numpy>=2.0")
+# dpnp.linalg.matrix_transpose() calls dpnp.matrix_transpose()
+# 1 test to increase code coverage
+def test_matrix_transpose():
+    a = numpy.arange(6).reshape((2, 3))
+    a_dp = inp.array(a)
+
+    expected = numpy.linalg.matrix_transpose(a)
+    result = inp.linalg.matrix_transpose(a_dp)
+
+    assert_allclose(expected, result)
+
+    with assert_raises_regex(
+        ValueError, "array must be at least 2-dimensional"
+    ):
+        inp.linalg.matrix_transpose(a_dp[:, 0])
 
 
 class TestNorm:

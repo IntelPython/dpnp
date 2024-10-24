@@ -185,34 +185,6 @@ _DataType get_xyz_id_by_id_inkernel(size_t global_id,
 
 /**
  * @ingroup BACKEND_UTILS
- * @brief Calculate linear index from ids array
- *
- * Calculates linear index from ids array by given offsets. This is reverse
- * operation of @ref get_xyz_by_id_inkernel for example: xyz array ids should be
- * [0, 1, 0] input_array_shape_offsets[20, 5, 1] global_id == 5
- *
- * @param [in] xyz       array with array indexes.
- * @param [in] xyz_size  array size for @ref xyz parameter.
- * @param [in] offsets   array with input offsets.
- * @return               linear index id of the element in multy-D array.
- */
-template <typename _DataType>
-size_t get_id_by_xyz_inkernel(const _DataType *xyz,
-                              size_t xyz_size,
-                              const _DataType *offsets)
-{
-    size_t global_id = 0;
-
-    /* calculate linear index based on reconstructed [x][y][z] */
-    for (size_t it = 0; it < xyz_size; ++it) {
-        global_id += (xyz[it] * offsets[it]);
-    }
-
-    return global_id;
-}
-
-/**
- * @ingroup BACKEND_UTILS
  * @brief Check input shape is broadcastable to output one.
  *
  * @param [in] input_shape        Input shape.
@@ -304,57 +276,6 @@ namespace
     return event_vec;
 }
 } // namespace
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Get common shape based on input shapes.
- *
- * Example:
- *   Input1 shape A[8, 1, 6, 1]
- *   Input2 shape B[7, 1, 5]
- *   Output shape will be C[8, 7, 6, 5]
- *
- * @param [in] input1_shape        Input1 shape.
- * @param [in] input1_shape_size   Input1 shape size.
- * @param [in] input2_shape        Input2 shape.
- * @param [in] input2_shape_size   Input2 shape size.
- *
- * @exception std::domain_error    Input shapes are not broadcastable.
- * @return                         Common shape.
- */
-template <typename _DataType>
-static inline std::vector<_DataType>
-    get_result_shape(const _DataType *input1_shape,
-                     const size_t input1_shape_size,
-                     const _DataType *input2_shape,
-                     const size_t input2_shape_size)
-{
-    const size_t result_shape_size = (input2_shape_size > input1_shape_size)
-                                         ? input2_shape_size
-                                         : input1_shape_size;
-    std::vector<_DataType> result_shape;
-    result_shape.reserve(result_shape_size);
-
-    for (int irit1 = input1_shape_size - 1, irit2 = input2_shape_size - 1;
-         irit1 >= 0 || irit2 >= 0; --irit1, --irit2)
-    {
-        _DataType input1_val = (irit1 >= 0) ? input1_shape[irit1] : 1;
-        _DataType input2_val = (irit2 >= 0) ? input2_shape[irit2] : 1;
-
-        if (input1_val == input2_val || input1_val == 1) {
-            result_shape.insert(result_shape.begin(), input2_val);
-        }
-        else if (input2_val == 1) {
-            result_shape.insert(result_shape.begin(), input1_val);
-        }
-        else {
-            throw std::domain_error("DPNP Error: get_common_shape() failed "
-                                    "with input shapes check");
-        }
-    }
-
-    return result_shape;
-}
 
 /**
  * @ingroup BACKEND_UTILS

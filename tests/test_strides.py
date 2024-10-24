@@ -56,46 +56,46 @@ def test_strides(func_name, dtype):
         "arctan",
         "arctanh",
         "argsort",
-        "cbrt",
-        "ceil",
+        "conjugate",
         "copy",
         "cos",
         "cosh",
         "conjugate",
-        "degrees",
         "ediff1d",
         "exp",
         "exp2",
         "expm1",
-        "fabs",
-        "floor",
+        "imag",
         "log",
         "log10",
         "log1p",
         "log2",
+        "max",
+        "min",
+        "mean",
+        "median",
         "negative",
         "positive",
-        "radians",
+        "real",
         "sign",
         "sin",
         "sinh",
         "sort",
         "sqrt",
         "square",
+        "std",
         "tan",
         "tanh",
-        "trunc",
-        "unwrap",
+        "var",
     ],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
-def test_strides_1arg(func_name, dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a[::2]
-
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa[::2]
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_strides_1arg_support_complex(func_name, dtype, stride):
+    a = numpy.arange(10, dtype=dtype)
+    dpa = dpnp.array(a)
+    b = a[::stride]
+    dpb = dpa[::stride]
 
     dpnp_func = _getattr(dpnp, func_name)
     result = dpnp_func(dpb)
@@ -103,7 +103,45 @@ def test_strides_1arg(func_name, dtype, shape):
     numpy_func = _getattr(numpy, func_name)
     expected = numpy_func(b)
 
-    assert_allclose(result, expected, rtol=1e-06)
+    assert_dtype_allclose(result, expected)
+
+
+@pytest.mark.parametrize(
+    "func_name",
+    [
+        "cbrt",
+        "ceil",
+        "degrees",
+        "fabs",
+        "floor",
+        "radians",
+        "trunc",
+        "unwrap",
+    ],
+)
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_strides_1arg(func_name, dtype, stride):
+    a = numpy.arange(10, dtype=dtype)
+    dpa = dpnp.array(a)
+    b = a[::stride]
+    dpb = dpa[::stride]
+
+    dpnp_func = _getattr(dpnp, func_name)
+    result = dpnp_func(dpb)
+
+    numpy_func = _getattr(numpy, func_name)
+    expected = numpy_func(b)
+
+    # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for NumPy < 2.0.0
+    # while for NumPy >= 2.0.0, output has the dtype of input (dpnp follows this behavior)
+    if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+        check_type = False
+    else:
+        check_type = True
+    assert_dtype_allclose(result, expected, check_type=check_type)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -144,32 +182,6 @@ def test_reduce_hypot(dtype):
     result = dpnp.reduce_hypot(dpa)
     expected = numpy.hypot.reduce(a)
     assert_allclose(result, expected)
-
-
-@pytest.mark.parametrize(
-    "func_name",
-    [
-        "conjugate",
-        "imag",
-        "real",
-    ],
-)
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
-def test_strides_1arg_complex(func_name, dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a[::2]
-
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa[::2]
-
-    dpnp_func = _getattr(dpnp, func_name)
-    result = dpnp_func(dpb)
-
-    numpy_func = _getattr(numpy, func_name)
-    expected = numpy_func(b)
-
-    assert_allclose(result, expected, rtol=1e-06)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
