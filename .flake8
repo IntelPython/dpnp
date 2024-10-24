@@ -56,7 +56,7 @@ exclude =
     build,
     dpnp/to_numba/*.py,
     conda.recipe,
-    dpnp/tests/*.py,
+    tests/*.py,
     tests_external/*.py,
     versioneer.py,
 
