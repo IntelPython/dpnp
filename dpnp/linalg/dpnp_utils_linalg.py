@@ -2214,13 +2214,16 @@ def dpnp_matrix_power(a, n):
     return result
 
 
-def dpnp_matrix_rank(A, tol=None, hermitian=False):
+def dpnp_matrix_rank(A, tol=None, hermitian=False, rtol=None):
     """
-    dpnp_matrix_rank(A, tol=None, hermitian=False)
+    dpnp_matrix_rank(A, tol=None, hermitian=False, rtol=None)
 
     Return matrix rank of array using SVD method.
 
     """
+
+    if rtol is not None and tol is not None:
+        raise ValueError("`tol` and `rtol` can't be both set.")
 
     if A.ndim < 2:
         return (A != 0).any().astype(int)
@@ -2228,7 +2231,10 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False):
     S = dpnp_svd(A, compute_uv=False, hermitian=hermitian)
 
     if tol is None:
-        rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
+        if rtol is None:
+            rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
+        elif not dpnp.isscalar(rtol):
+            rtol = rtol[..., None]
         tol = S.max(axis=-1, keepdims=True) * rtol
     elif not dpnp.isscalar(tol):
         # Add a new axis to match NumPy's output
@@ -2320,9 +2326,9 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
     raise ValueError("Improper number of dimensions to norm.")
 
 
-def dpnp_pinv(a, rcond=1e-15, hermitian=False):
+def dpnp_pinv(a, rcond=None, hermitian=False, rtol=None):
     """
-    dpnp_pinv(a, rcond=1e-15, hermitian=False):
+    dpnp_pinv(a, rcond=None, hermitian=False, rtol=None)
 
     Compute the Moore-Penrose pseudoinverse of `a` matrix.
 
@@ -2330,6 +2336,15 @@ def dpnp_pinv(a, rcond=1e-15, hermitian=False):
     of the inverse matrix with Singular Value Decomposition (SVD).
 
     """
+
+    if rcond is None:
+        if rtol is None:
+            dtype = dpnp.result_type(a.dtype, dpnp.default_float_type(a.device))
+            rcond = max(a.shape[-2:]) * dpnp.finfo(dtype).eps
+        else:
+            rcond = rtol
+    elif rtol is not None:
+        raise ValueError("`rtol` and `rcond` can't be both set.")
 
     if _is_empty_2d(a):
         m, n = a.shape[-2:]
