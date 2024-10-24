@@ -40,6 +40,9 @@
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
+using sycl::ext::oneapi::experimental::group_load;
+using sycl::ext::oneapi::experimental::group_store;
+
 template <typename T>
 constexpr T dispatch_erf_op(T elem)
 {
@@ -522,33 +525,41 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                                               _DataType_input2,                \
                                               _DataType_output>)               \
                             {                                                  \
-                                sycl::vec<_DataType_input1, vec_sz> x1 =       \
-                                    sg.load<vec_sz>(input1_multi_ptr);         \
-                                sycl::vec<_DataType_input2, vec_sz> x2 =       \
-                                    sg.load<vec_sz>(input2_multi_ptr);         \
+                                sycl::vec<_DataType_input1, vec_sz> x1{};      \
+                                sycl::vec<_DataType_input2, vec_sz> x2{};      \
+                                                                               \
+                                group_load(sg, input1_multi_ptr, x1);          \
+                                group_load(sg, input2_multi_ptr, x2);          \
                                                                                \
                                 res_vec = __vec_operation__;                   \
                             }                                                  \
                             else /* input types don't match result type, so    \
                                     explicit casting is required */            \
                             {                                                  \
+                                sycl::vec<_DataType_input1, vec_sz> tmp_x1{};  \
+                                sycl::vec<_DataType_input2, vec_sz> tmp_x2{};  \
+                                                                               \
+                                group_load(sg, input1_multi_ptr, tmp_x1);      \
+                                group_load(sg, input2_multi_ptr, tmp_x2);      \
+                                                                               \
                                 sycl::vec<_DataType_output, vec_sz> x1 =       \
                                     dpnp_vec_cast<_DataType_output,            \
                                                   _DataType_input1, vec_sz>(   \
-                                        sg.load<vec_sz>(input1_multi_ptr));    \
+                                        tmp_x1);                               \
                                 sycl::vec<_DataType_output, vec_sz> x2 =       \
                                     dpnp_vec_cast<_DataType_output,            \
                                                   _DataType_input2, vec_sz>(   \
-                                        sg.load<vec_sz>(input2_multi_ptr));    \
+                                        tmp_x2);                               \
                                                                                \
                                 res_vec = __vec_operation__;                   \
                             }                                                  \
                         }                                                      \
                         else {                                                 \
-                            sycl::vec<_DataType_input1, vec_sz> x1 =           \
-                                sg.load<vec_sz>(input1_multi_ptr);             \
-                            sycl::vec<_DataType_input2, vec_sz> x2 =           \
-                                sg.load<vec_sz>(input2_multi_ptr);             \
+                            sycl::vec<_DataType_input1, vec_sz> x1{};          \
+                            sycl::vec<_DataType_input2, vec_sz> x2{};          \
+                                                                               \
+                            group_load(sg, input1_multi_ptr, x1);              \
+                            group_load(sg, input2_multi_ptr, x2);              \
                                                                                \
                             for (size_t k = 0; k < vec_sz; ++k) {              \
                                 const _DataType_output input1_elem = x1[k];    \
@@ -556,7 +567,7 @@ static void func_map_init_elemwise_1arg_1type(func_map_t &fmap)
                                 res_vec[k] = __operation__;                    \
                             }                                                  \
                         }                                                      \
-                        sg.store<vec_sz>(result_multi_ptr, res_vec);           \
+                        group_store(sg, res_vec, result_multi_ptr);            \
                     }                                                          \
                     else {                                                     \
                         for (size_t k = start + sg.get_local_id()[0];          \
