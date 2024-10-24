@@ -7,15 +7,18 @@ from numpy.testing import assert_array_equal
 import dpnp as dnp
 
 
-def test_fill_non_scalar():
+@pytest.mark.parametrize(
+    "val, error",
+    [
+        pytest.param(dnp.ones(2, dtype="i4"), ValueError, id="array"),
+        pytest.param(dict(), TypeError, id="dictionary"),
+        pytest.param("0", TypeError, id="string"),
+    ],
+)
+def test_fill_non_scalar(val, error):
     a = dnp.ones(5, dtype="i4")
-    val = dnp.ones(2, dtype="i4")
-
-    with pytest.raises(ValueError):
+    with pytest.raises(error):
         a.fill(val)
-
-    with pytest.raises(TypeError):
-        a.fill(dict())
 
 
 def test_fill_compute_follows_data():
@@ -76,3 +79,9 @@ def test_fill_complex_to_float():
 
     a.fill(complex(2, 0))
     assert_array_equal(a, 2)
+
+
+def test_fill_bool():
+    a = dnp.full(5, fill_value=7, dtype="i4")
+    a.fill(True)
+    assert_array_equal(a, 1)
