@@ -64,18 +64,11 @@ def dpnp_fill(arr, val):
         raise TypeError(
             f"array cannot be filled with `val` of type {type(val)}"
         )
-
-    dt = arr.dtype
-    val_type = type(val)
-    if val_type in [float, complex] and dpnp.issubdtype(dt, dpnp.integer):
-        val = int(val.real)
-    elif val_type is complex and dpnp.issubdtype(dt, dpnp.floating):
-        val = val.real
-    elif val_type is int and dpnp.issubdtype(dt, dpnp.integer):
-        val = _cast_fill_val(val, dt)
+    val = _cast_fill_val(val, arr.dtype)
 
     _manager = dpu.SequentialOrderManager[exec_q]
     dep_evs = _manager.submitted_events
+
     # can leverage efficient memset when val is 0
     if arr.flags["FORC"] and val == 0:
         h_ev, zeros_ev = _zeros_usm_ndarray(arr, exec_q, depends=dep_evs)
