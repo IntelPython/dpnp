@@ -10,6 +10,7 @@ from tests.third_party.cupy import testing
 from tests.third_party.cupy.testing import _condition, _hypothesis
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRandint(unittest.TestCase):
     def test_lo_hi_reversed(self):
         with self.assertRaises(ValueError):
@@ -52,7 +53,7 @@ class TestRandint2(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @_condition.repeat(3, 10)
     def test_bound_2(self):
-        vals = [random.randint(0, 2) for _ in range(20)]
+        vals = [random.randint(0, 2, ()) for _ in range(20)]
         for val in vals:
             self.assertEqual(val.shape, ())
         self.assertEqual(min(_.min() for _ in vals), 0)
@@ -106,6 +107,7 @@ class TestRandint2(unittest.TestCase):
         self.assertTrue(_hypothesis.chi_square_test(counts, expected))
 
 
+@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRandintDtype(unittest.TestCase):
     # numpy.int8, numpy.uint8, numpy.int16, numpy.uint16, numpy.int32])
     @testing.for_dtypes([numpy.int32])
@@ -131,11 +133,11 @@ class TestRandintDtype(unittest.TestCase):
         self.assertLessEqual(max(x), iinfo.max)
 
         # Lower bound check
-        with self.assertRaises(OverflowError):
+        with self.assertRaises((OverflowError, ValueError)):
             random.randint(iinfo.min - 1, iinfo.min + 10, size, dtype)
 
         # Upper bound check
-        with self.assertRaises(OverflowError):
+        with self.assertRaises((OverflowError, ValueError)):
             random.randint(iinfo.max - 10, iinfo.max + 2, size, dtype)
 
 

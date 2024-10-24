@@ -397,6 +397,8 @@ def correlate(x1, x2, mode="valid"):
             pass
         elif mode != "valid":
             pass
+        elif dpnp.is_cuda_backend(x1) or dpnp.is_cuda_backend(x2):
+            pass
         else:
             return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
 

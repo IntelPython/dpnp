@@ -140,7 +140,7 @@ class TestHistogram(unittest.TestCase):
         return h
 
     def test_histogram_weights_basic(self):
-        v = cupy.random.rand(100)
+        v = cupy.asarray(numpy.random.rand(100))
         w = cupy.ones(100) * 5
         a, b = cupy.histogram(v)
         na, nb = cupy.histogram(v, density=True)
