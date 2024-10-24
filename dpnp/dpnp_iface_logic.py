@@ -1014,9 +1014,9 @@ def isfortran(a):
 
     Examples
     --------
-    dpnp.array allows to specify whether the array is written in C-contiguous
-    order (last index varies the fastest), or FORTRAN-contiguous order in
-    memory (first index varies the fastest).
+    :obj:`dpnp.array` allows to specify whether the array is written in
+    C-contiguous order (last index varies the fastest), or FORTRAN-contiguous
+    order in memory (first index varies the fastest).
 
     >>> import dpnp as np
     >>> a = np.array([[1, 2, 3], [4, 5, 6]], order='C')
