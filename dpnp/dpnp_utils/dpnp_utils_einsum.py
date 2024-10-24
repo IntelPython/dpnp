@@ -33,9 +33,8 @@ import numpy
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
-from dpnp.dpnp_utils import get_usm_allocations
-
-from ..dpnp_array import dpnp_array
+from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 _einsum_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -1027,17 +1026,16 @@ def dpnp_einsum(
                 "Input and output allocation queues are not compatible"
             )
 
-    result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
     for id, a in enumerate(operands):
         if dpnp.isscalar(a):
+            scalar_dtype = map_dtype_to_device(type(a), exec_q.sycl_device)
             operands[id] = dpnp.array(
-                a, dtype=result_dtype, usm_type=res_usm_type, sycl_queue=exec_q
+                a, dtype=scalar_dtype, usm_type=res_usm_type, sycl_queue=exec_q
             )
+            arrays.append(operands[id])
     result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
-    if order in ["a", "A"]:
-        order = (
-            "F" if not any(arr.flags.c_contiguous for arr in arrays) else "C"
-        )
+    if order in "aA":
+        order = "F" if all(arr.flags.fnc for arr in arrays) else "C"
 
     input_subscripts = [
         _parse_ellipsis_subscript(sub, idx, ndim=arr.ndim)
