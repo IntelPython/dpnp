@@ -106,8 +106,8 @@ class TestResultType(unittest.TestCase):
         # dpnp.result_type takes into account device capabilities, when one of
         # the inputs is an array. If dtype is `float32` and the object is
         # primitive, the final dtype is `float` which needs a device with
-        # double precision support. so we skip the test for such a case on a
-        # device that does not support fp64
+        # double precision support. So we have to skip the test for such a case
+        # on a device that does not support fp64
         flag1 = self.obj_type1 == "array" or self.obj_type2 == "array"
         flag2 = (self.obj_type1 == "primitive" and input1 == float) or (
             self.obj_type2 == "primitive" and input2 == float
