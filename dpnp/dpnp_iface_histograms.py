@@ -44,6 +44,10 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
+import dpnp.backend.extensions.statistics as statistics_ext
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import map_dtype_to_device
 
 __all__ = [
     "digitize",
@@ -201,19 +205,6 @@ def _get_bin_edges(a, bins, range, usm_type):
     return bin_edges, None
 
 
-def _search_sorted_inclusive(a, v):
-    """
-    Like :obj:`dpnp.searchsorted`, but where the last item in `v` is placed
-    on the right.
-    In the context of a histogram, this makes the last bin edge inclusive
-
-    """
-
-    return dpnp.concatenate(
-        (a.searchsorted(v[:-1], "left"), a.searchsorted(v[-1:], "right"))
-    )
-
-
 def digitize(x, bins, right=False):
     """
     Return the indices of the bins to which each value in input array belongs.
@@ -306,6 +297,61 @@ def digitize(x, bins, right=False):
     return bins.size - dpnp.searchsorted(bins[::-1], x, side=side)
 
 
+def _find_supported_dtype(dt, supported):
+    if dt in supported:
+        return dt
+
+    for t in supported:
+        if dpnp.can_cast(dt, t):
+            return t
+
+    return None
+
+
+def _result_type_for_device(dtype1, dtype2, device):
+    rt = dpnp.result_type(dtype1, dtype2)
+    return map_dtype_to_device(rt, device)
+
+
+def _align_dtypes(a_dtype, bins_dtype, ntype, device):
+    has_fp64 = device.has_aspect_fp64
+    a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
+
+    supported_types = (dpnp.float32, dpnp.int64, numpy.uint64, dpnp.complex64)
+    if has_fp64:
+        supported_types += (dpnp.float64, dpnp.complex128)
+
+    float_types = [dpnp.float32, dpnp.float64]
+    complex_types = [dpnp.complex64, dpnp.complex128]
+
+    a_bin_dtype = _find_supported_dtype(a_bin_dtype, supported_types)
+    hist_dtype = _find_supported_dtype(ntype, supported_types)
+    if hist_dtype == numpy.uint64:
+        hist_dtype = dpnp.int64
+
+    if (a_bin_dtype in float_types and hist_dtype in float_types) or (
+        a_bin_dtype in complex_types and hist_dtype in complex_types
+    ):
+        common_type = _result_type_for_device(a_bin_dtype, hist_dtype, device)
+        a_bin_dtype = common_type
+        hist_dtype = common_type
+
+    if (a_bin_dtype in float_types and hist_dtype in complex_types) or (
+        a_bin_dtype in complex_types and hist_dtype in float_types
+    ):
+        if a_bin_dtype == dpnp.complex128:
+            hist_dtype = dpnp.float64
+        elif a_bin_dtype == dpnp.float64:
+            hist_dtype = dpnp.complex128
+
+        if hist_dtype == dpnp.complex128:
+            a_bin_dtype = dpnp.float64
+        elif hist_dtype == dpnp.float64:
+            a_bin_dtype = dpnp.complex128
+
+    return a_bin_dtype, hist_dtype
+
+
 def histogram(a, bins=10, range=None, density=None, weights=None):
     """
     Compute the histogram of a data set.
@@ -393,7 +439,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
 
-    bin_edges, uniform_bins = _get_bin_edges(a, bins, range, usm_type)
+    bin_edges, _ = _get_bin_edges(a, bins, range, usm_type)
 
     # Histogram is an integer or a float array depending on the weights.
     if weights is None:
@@ -401,40 +447,71 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     else:
         ntype = weights.dtype
 
-    # The fast path uses bincount, but that only works for certain types
-    # of weight
-    # simple_weights = (
-    #     weights is None or
-    #     dpnp.can_cast(weights.dtype, dpnp.double) or
-    #     dpnp.can_cast(weights.dtype, complex)
-    # )
-    # TODO: implement a fast path
-    simple_weights = False
+    queue = a.sycl_queue
+    device = queue.sycl_device
 
-    if uniform_bins is not None and simple_weights:
-        # TODO: implement fast algorithm for equal bins
-        pass
+    a_bin_dtype, hist_dtype = _align_dtypes(
+        a.dtype, bin_edges.dtype, ntype, device
+    )
+
+    if a_bin_dtype is None or hist_dtype is None:
+        raise ValueError(
+            f"function '{histogram}' does not support input types "
+            f"({a.dtype}, {bin_edges.dtype}, {ntype}), "
+            "and the inputs could not be coerced to any "
+            "supported types"
+        )
+
+    a_casted = dpnp.astype(a, a_bin_dtype, order="C", copy=False)
+    bin_edges_casted = dpnp.astype(
+        bin_edges, a_bin_dtype, order="C", copy=False
+    )
+    weights_casted = (
+        dpnp.astype(weights, hist_dtype, order="C", copy=False)
+        if weights is not None
+        else None
+    )
+
+    # histogram implementation uses atomics, but atomics doesn't work with
+    # host usm memory
+    n_usm_type = "device" if usm_type == "host" else usm_type
+
+    n_casted = dpnp.zeros(
+        bin_edges.size - 1,
+        dtype=hist_dtype,
+        sycl_queue=a.sycl_queue,
+        usm_type=n_usm_type,
+    )
+
+    _manager = dpu.SequentialOrderManager[queue]
+
+    a_usm = dpnp.get_usm_ndarray(a_casted)
+    bins_usm = dpnp.get_usm_ndarray(bin_edges_casted)
+    weights_usm = (
+        dpnp.get_usm_ndarray(weights_casted)
+        if weights_casted is not None
+        else None
+    )
+    n_usm = dpnp.get_usm_ndarray(n_casted)
+
+    ht_ev, mem_ev = statistics_ext.histogram(
+        a_usm,
+        bins_usm,
+        weights_usm,
+        n_usm,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(ht_ev, mem_ev)
+
+    if usm_type != n_usm_type:
+        n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
     else:
-        # Compute via cumulative histogram
-        if weights is None:
-            sa = dpnp.sort(a)
-            cum_n = _search_sorted_inclusive(sa, bin_edges)
-        else:
-            zero = dpnp.zeros(
-                1, dtype=ntype, sycl_queue=a.sycl_queue, usm_type=usm_type
-            )
-            sorting_index = dpnp.argsort(a)
-            sa = a[sorting_index]
-            sw = weights[sorting_index]
-            cw = dpnp.concatenate((zero, sw.cumsum(dtype=ntype)))
-            bin_index = _search_sorted_inclusive(sa, bin_edges)
-            cum_n = cw[bin_index]
-
-        n = dpnp.diff(cum_n)
+        n = dpnp.astype(n_casted, ntype, copy=False)
 
     if density:
-        # pylint: disable=possibly-used-before-assignment
-        db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
+        db = dpnp.diff(bin_edges).astype(
+            dpnp.default_float_type(sycl_queue=queue)
+        )
         return n / db / n.sum(), bin_edges
 
     return n, bin_edges
