@@ -29,6 +29,7 @@ env:
       test_copy.py
       test_counting.py
       test_fft.py
+      test_fill.py
       test_flat.py
       test_histogram.py
       test_indexing.py
