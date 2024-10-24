@@ -62,7 +62,7 @@ class TestArgsort:
         expected = np_array.argsort(axis=axis)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("kind", [None, "stable"])
+    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     def test_sort_kind(self, kind):
         np_array = numpy.repeat(numpy.arange(10), 10)
         dp_array = dpnp.array(np_array)
@@ -308,7 +308,7 @@ class TestSort:
         np_array.sort(axis=axis)
         assert_dtype_allclose(dp_array, np_array)
 
-    @pytest.mark.parametrize("kind", [None, "stable"])
+    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     def test_sort_kind(self, kind):
         np_array = numpy.repeat(numpy.arange(10), 10)
         dp_array = dpnp.array(np_array)
@@ -347,14 +347,19 @@ class TestSort:
         expected = numpy.sort(np_array, axis=None)
         assert_dtype_allclose(result, expected)
 
-    def test_sort_notimplemented(self):
+    def test_sort_error(self):
         dp_array = dpnp.arange(10)
 
-        with pytest.raises(NotImplementedError):
+        # quicksort is currently not supported
+        with pytest.raises(ValueError):
             dpnp.sort(dp_array, kind="quicksort")
 
         with pytest.raises(NotImplementedError):
             dpnp.sort(dp_array, order=["age"])
+
+        # both kind and stable are given
+        with pytest.raises(ValueError):
+            dpnp.sort(dp_array, kind="mergesort", stable=True)
 
 
 class TestSortComplex:
