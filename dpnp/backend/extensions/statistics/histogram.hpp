@@ -23,6 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#pragma once
+
 #include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>

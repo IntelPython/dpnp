@@ -45,9 +45,69 @@ namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 
 using namespace statistics::histogram;
+using namespace statistics::common;
 
 namespace
 {
+
+template <typename T, typename DataStorage>
+struct HistogramEdges
+{
+    static constexpr bool const sync_after_init = DataStorage::sync_after_init;
+    using boundsT = std::tuple<T, T>;
+
+    HistogramEdges(const T *global_data, size_t size, sycl::handler &cgh)
+        : data(global_data, sycl::range<1>(size), cgh)
+    {
+    }
+
+    template <int _Dims>
+    void init(const sycl::nd_item<_Dims> &item) const
+    {
+        data.init(item);
+    }
+
+    boundsT get_bounds() const
+    {
+        auto min = data.get_ptr()[0];
+        auto max = data.get_ptr()[data.size() - 1];
+        return {min, max};
+    }
+
+    template <int _Dims, typename dT>
+    size_t get_bin(const sycl::nd_item<_Dims> &,
+                   const dT *val,
+                   const boundsT &) const
+    {
+        uint32_t edges_count = data.size();
+        uint32_t bins_count = edges_count - 1;
+        const auto *bins = data.get_ptr();
+
+        uint32_t bin =
+            std::upper_bound(bins, bins + edges_count, val[0], Less<dT>{}) -
+            bins - 1;
+        bin = std::min(bin, bins_count - 1);
+
+        return bin;
+    }
+
+    template <typename dT>
+    bool in_bounds(const dT *val, const boundsT &bounds) const
+    {
+        Less<dT> _less;
+        return !_less(val[0], std::get<0>(bounds)) &&
+               !_less(std::get<1>(bounds), val[0]) && !IsNan<dT>::isnan(val[0]);
+    }
+
+private:
+    DataStorage data;
+};
+
+template <typename T>
+using CachedEdges = HistogramEdges<T, CachedData<const T, 1>>;
+
+template <typename T>
+using UncachedEdges = HistogramEdges<T, UncachedData<const T, 1>>;
 
 template <typename T, typename BinsT, typename HistType = size_t>
 static sycl::event histogram_impl(sycl::queue &exec_q,
@@ -65,17 +125,11 @@ static sycl::event histogram_impl(sycl::queue &exec_q,
     HistType *out = static_cast<HistType *>(vout);
 
     auto device = exec_q.get_device();
-
-    uint32_t local_size =
-        device.is_cpu()
-            ? 256
-            : device.get_info<sycl::info::device::max_work_group_size>();
+    const auto local_size = get_max_local_size(device);
 
     constexpr uint32_t WorkPI = 128; // empirically found number
-    auto global_size = Align(CeilDiv(size, WorkPI), local_size);
 
-    auto nd_range =
-        sycl::nd_range(sycl::range<1>(global_size), sycl::range<1>(local_size));
+    const auto nd_range = make_ndrange(size, local_size, WorkPI);
 
     return exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -96,21 +150,14 @@ static sycl::event histogram_impl(sycl::queue &exec_q,
         };
 
         auto dispatch_bins = [&](auto &weights) {
-            auto local_mem_size =
-                device.get_info<sycl::info::device::local_mem_size>() /
-                sizeof(T);
+            const auto local_mem_size = get_local_mem_size_in_items<T>(device);
             if (local_mem_size >= bins_count) {
-                uint32_t max_local_copies = local_mem_size / bins_count;
-                uint32_t local_hist_count = std::max(
-                    std::min(
-                        int(std::ceil((float(4 * local_size) / bins_count))),
-                        16),
-                    1);
-                local_hist_count = std::min(local_hist_count, max_local_copies);
+                const auto local_hist_count = get_local_hist_copies_count(
+                    local_mem_size, local_size, bins_count);
 
                 auto hist = HistWithLocalCopies<HistType>(
                     out, bins_count, local_hist_count, cgh);
-                uint32_t free_local_mem = local_mem_size - hist.size();
+                const auto free_local_mem = local_mem_size - hist.size();
 
                 dispatch_edges(free_local_mem, weights, hist);
             }

@@ -195,5 +195,19 @@ void validate(const usm_ndarray &sample,
     }
 }
 
+uint32_t get_local_hist_copies_count(uint32_t loc_mem_size_in_items,
+                                     uint32_t local_size,
+                                     uint32_t hist_size_in_items)
+{
+    uint32_t max_local_copies = loc_mem_size_in_items / hist_size_in_items;
+    uint32_t local_hist_count = std::max(
+        std::min(int(std::ceil((float(4 * local_size) / hist_size_in_items))),
+                 16),
+        1);
+    local_hist_count = std::min(local_hist_count, max_local_copies);
+
+    return local_hist_count;
+}
+
 } // namespace histogram
 } // namespace statistics

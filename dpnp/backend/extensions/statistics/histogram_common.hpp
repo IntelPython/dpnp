@@ -23,11 +23,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "utils/math_utils.hpp"
-#include <complex>
+#pragma once
+
 #include <sycl/sycl.hpp>
-#include <tuple>
-#include <type_traits>
+
+#include "common.hpp"
 
 namespace dpctl
 {
@@ -41,20 +41,12 @@ using dpctl::tensor::usm_ndarray;
 
 namespace statistics
 {
+using common::AtomicOp;
+using common::IsNan;
+using common::Less;
+
 namespace histogram
 {
-
-template <typename N, typename D>
-constexpr auto CeilDiv(N n, D d)
-{
-    return (n + d - 1) / d;
-}
-
-template <typename N, typename D>
-constexpr auto Align(N n, D d)
-{
-    return CeilDiv(n, d) * d;
-}
 
 template <typename T, int Dims>
 struct CachedData
@@ -149,30 +141,6 @@ template <>
 struct HistLocalType<int64_t>
 {
     using type = int32_t;
-};
-
-template <typename T, sycl::memory_order Order, sycl::memory_scope Scope>
-struct AtomicOp
-{
-    static void add(T &lhs, const T value)
-    {
-        sycl::atomic_ref<T, Order, Scope> lh(lhs);
-        lh += value;
-    }
-};
-
-template <typename T, sycl::memory_order Order, sycl::memory_scope Scope>
-struct AtomicOp<std::complex<T>, Order, Scope>
-{
-    static void add(std::complex<T> &lhs, const std::complex<T> value)
-    {
-        T *_lhs = reinterpret_cast<T(&)[2]>(lhs);
-        const T *_val = reinterpret_cast<const T(&)[2]>(value);
-        sycl::atomic_ref<T, Order, Scope> lh0(_lhs[0]);
-        lh0 += _val[0];
-        sycl::atomic_ref<T, Order, Scope> lh1(_lhs[1]);
-        lh1 += _val[1];
-    }
 };
 
 template <typename T, typename localT = typename HistLocalType<T>::type>
@@ -310,108 +278,6 @@ private:
     T *data = nullptr;
 };
 
-template <typename T>
-struct less
-{
-    bool operator()(const T &lhs, const T &rhs) const
-    {
-        return std::less{}(lhs, rhs);
-    }
-};
-
-template <typename T>
-struct less<std::complex<T>>
-{
-    bool operator()(const std::complex<T> &lhs,
-                    const std::complex<T> &rhs) const
-    {
-        return dpctl::tensor::math_utils::less_complex(lhs, rhs);
-    }
-};
-
-template <typename T>
-struct IsNan
-{
-    static bool isnan(const T &v)
-    {
-        if constexpr (std::is_floating_point<T>::value) {
-            return sycl::isnan(v);
-        }
-
-        return false;
-    }
-};
-
-template <typename T>
-struct IsNan<std::complex<T>>
-{
-    static bool isnan(const std::complex<T> &v)
-    {
-        T real1 = std::real(v);
-        T imag1 = std::imag(v);
-        return sycl::isnan(real1) || sycl::isnan(imag1);
-    }
-};
-
-template <typename T, typename DataStorage>
-struct Edges
-{
-    static constexpr bool const sync_after_init = DataStorage::sync_after_init;
-    using boundsT = std::tuple<T, T>;
-
-    Edges(const T *global_data, size_t size, sycl::handler &cgh)
-        : data(global_data, sycl::range<1>(size), cgh)
-    {
-    }
-
-    template <int _Dims>
-    void init(const sycl::nd_item<_Dims> &item) const
-    {
-        data.init(item);
-    }
-
-    boundsT get_bounds() const
-    {
-        auto min = data.get_ptr()[0];
-        auto max = data.get_ptr()[data.size() - 1];
-        return {min, max};
-    }
-
-    template <int _Dims, typename dT>
-    size_t get_bin(const sycl::nd_item<_Dims> &,
-                   const dT *val,
-                   const boundsT &) const
-    {
-        uint32_t edges_count = data.size();
-        uint32_t bins_count = edges_count - 1;
-        const auto *bins = data.get_ptr();
-
-        uint32_t bin =
-            std::upper_bound(bins, bins + edges_count, val[0], less<dT>{}) -
-            bins - 1;
-        bin = std::min(bin, bins_count - 1);
-
-        return bin;
-    }
-
-    template <typename dT>
-    bool in_bounds(const dT *val, const boundsT &bounds) const
-    {
-        less<dT> _less;
-        return !_less(val[0], std::get<0>(bounds)) &&
-               !_less(std::get<1>(bounds), val[0]) && !IsNan<dT>::isnan(val[0]);
-    }
-
-private:
-    DataStorage data;
-};
-
-template <typename T>
-using CachedEdges = Edges<T, CachedData<const T, 1>>;
-
-template <typename T>
-using UncachedEdges = Edges<T, UncachedData<const T, 1>>;
-
 template <typename T, typename HistImpl, typename Edges, typename Weights>
 class histogram_kernel;
 
@@ -467,5 +333,10 @@ void validate(const usm_ndarray &sample,
               const usm_ndarray &bins,
               std::optional<const dpctl::tensor::usm_ndarray> &weights,
               const usm_ndarray &histogram);
+
+uint32_t get_local_hist_copies_count(uint32_t loc_mem_size_in_items,
+                                     uint32_t local_size,
+                                     uint32_t hist_size_in_items);
+
 } // namespace histogram
 } // namespace statistics

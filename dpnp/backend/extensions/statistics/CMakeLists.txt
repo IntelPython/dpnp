@@ -26,6 +26,7 @@
 
 set(python_module_name _statistics_impl)
 set(_module_src
+    ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram_common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics_py.cpp
