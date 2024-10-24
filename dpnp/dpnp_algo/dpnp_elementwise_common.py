@@ -38,17 +38,18 @@ import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_array import dpnp_array
 
 __all__ = [
-    "acceptance_fn_gcd_lcm",
-    "acceptance_fn_negative",
-    "acceptance_fn_positive",
-    "acceptance_fn_sign",
-    "acceptance_fn_subtract",
+    "DPNPI0",
     "DPNPAngle",
     "DPNPBinaryFunc",
     "DPNPImag",
     "DPNPReal",
     "DPNPRound",
     "DPNPUnaryFunc",
+    "acceptance_fn_gcd_lcm",
+    "acceptance_fn_negative",
+    "acceptance_fn_positive",
+    "acceptance_fn_sign",
+    "acceptance_fn_subtract",
     "resolve_weak_types_2nd_arg_int",
 ]
 
@@ -497,6 +498,27 @@ class DPNPAngle(DPNPUnaryFunc):
         if deg is True:
             res *= 180 / dpnp.pi
         return res
+
+
+class DPNPI0(DPNPUnaryFunc):
+    """Class that implements dpnp.i0 unary element-wise functions."""
+
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        unary_dp_impl_fn,
+        docs,
+    ):
+        super().__init__(
+            name,
+            result_type_resolver_fn,
+            unary_dp_impl_fn,
+            docs,
+        )
+
+    def __call__(self, x, out=None, order="K"):
+        return super().__call__(x, out=out, order=order)
 
 
 class DPNPImag(DPNPUnaryFunc):
