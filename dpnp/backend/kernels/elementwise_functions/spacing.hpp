@@ -53,7 +53,7 @@ struct SpacingFunctor
 
         constexpr argT inf = std::numeric_limits<argT>::infinity();
         if constexpr (std::is_same_v<argT, sycl::half>) {
-            // numpy laways computes spacing towards +inf for float16 dtype
+            // numpy always computes spacing towards +inf for float16 dtype
             return sycl::nextafter(x, inf) - x;
         }
         else {
