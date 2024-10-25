@@ -6,11 +6,11 @@ import pytest
 import dpnp as cupy
 
 from ....helper import has_support_aspect64
-from ...testing._loops import (
+from .. import testing
+from ..testing._loops import (
     _complex_dtypes,
     _regular_float_dtypes,
 )
-from .. import testing
 
 
 @pytest.mark.skip("delete() is not implemented yet")
