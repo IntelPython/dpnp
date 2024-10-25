@@ -4,12 +4,13 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
-from dpnp.tests.third_party.cupy import testing
-from dpnp.tests.third_party.cupy.testing._loops import (
+
+from ....helper import has_support_aspect64
+from ...testing._loops import (
     _complex_dtypes,
     _regular_float_dtypes,
 )
+from .. import testing
 
 
 @pytest.mark.skip("delete() is not implemented yet")

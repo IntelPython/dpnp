@@ -6,7 +6,8 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.third_party.cupy import testing
+
+from .. import testing
 
 
 def _gen_array(dtype, alloc_q=None):

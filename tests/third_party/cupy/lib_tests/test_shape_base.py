@@ -5,7 +5,8 @@ import pytest
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
-from dpnp.tests.third_party.cupy import testing
+
+from .. import testing
 
 
 @testing.parameterize(*(testing.product({"axis": [0, 1, -1]})))

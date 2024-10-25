@@ -7,8 +7,9 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
-from dpnp.tests.third_party.cupy import testing
+
+from ....helper import has_support_aspect64
+from .. import testing
 
 
 def skip_int_equality_before_numpy_1_20(names=("dtype",)):

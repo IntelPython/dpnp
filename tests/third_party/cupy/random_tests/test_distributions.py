@@ -5,8 +5,9 @@ import pytest
 
 import dpnp as cupy
 from dpnp import random as _distributions
-from dpnp.tests.third_party.cupy import testing
-from dpnp.tests.third_party.cupy.testing import _helper, _loops
+
+from .. import testing
+from ..testing import _helper, _loops
 
 _regular_float_dtypes = (numpy.float64, numpy.float32)
 _float_dtypes = _regular_float_dtypes + (numpy.float16,)

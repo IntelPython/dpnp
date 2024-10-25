@@ -4,12 +4,13 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import (
+
+from ....helper import (
     assert_dtype_allclose,
     has_support_aspect64,
 )
-from dpnp.tests.third_party.cupy import testing
-from dpnp.tests.third_party.cupy.testing import _condition
+from .. import testing
+from ..testing import _condition
 
 
 @testing.parameterize(

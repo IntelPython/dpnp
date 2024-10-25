@@ -1,6 +1,6 @@
 import unittest
 
-from dpnp.tests.third_party.cupy import testing
+from .. import testing
 
 
 class TestOps(unittest.TestCase):

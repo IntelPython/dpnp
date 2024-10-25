@@ -1,7 +1,7 @@
 import unittest
 
-from dpnp.tests.helper import has_support_aspect64
-from dpnp.tests.third_party.cupy import testing
+from ....helper import has_support_aspect64
+from .. import testing
 
 
 class TestHyperbolic(unittest.TestCase):

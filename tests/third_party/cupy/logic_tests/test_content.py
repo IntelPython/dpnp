@@ -2,7 +2,7 @@ import unittest
 
 import numpy
 
-from dpnp.tests.third_party.cupy import testing
+from .. import testing
 
 
 class TestContent(unittest.TestCase):
