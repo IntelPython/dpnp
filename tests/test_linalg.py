@@ -2100,25 +2100,28 @@ class TestMatrixRank:
     # rtol kwarg was added in numpy 2.0
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
-        "rtol",
-        [0.99e-6, numpy.array(1.01e-6), numpy.array([0.99e-6])],
+        "tol",
+        [0.99e-6, numpy.array(1.01e-6), numpy.ones(4) * [0.99e-6]],
         ids=["float", "0-D array", "1-D array"],
     )
-    def test_matrix_rank_rtol(self, rtol):
-        a = numpy.eye(4)
-        a[-1, -1] = 1e-6
+    def test_matrix_rank_tol(self, tol):
+        a = numpy.zeros((4, 3, 2))
         a_dp = inp.array(a)
 
-        if isinstance(rtol, numpy.ndarray):
-            dp_rtol = inp.array(
-                rtol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
+        if isinstance(tol, numpy.ndarray):
+            dp_tol = inp.array(
+                tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
             )
         else:
-            dp_rtol = rtol
+            dp_tol = tol
 
-        expected = numpy.linalg.matrix_rank(a, rtol=rtol)
-        result = inp.linalg.matrix_rank(a_dp, rtol=dp_rtol)
-        assert expected == result
+        expected = numpy.linalg.matrix_rank(a, rtol=tol)
+        result = inp.linalg.matrix_rank(a_dp, rtol=dp_tol)
+        assert_dtype_allclose(result, expected)
+
+        expected = numpy.linalg.matrix_rank(a, tol=tol)
+        result = inp.linalg.matrix_rank(a_dp, tol=dp_tol)
+        assert_dtype_allclose(result, expected)
 
     def test_matrix_rank_errors(self):
         a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")

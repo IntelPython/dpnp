@@ -2234,10 +2234,13 @@ def dpnp_matrix_rank(A, tol=None, hermitian=False, rtol=None):
         if rtol is None:
             rtol = max(A.shape[-2:]) * dpnp.finfo(S.dtype).eps
         elif not dpnp.isscalar(rtol):
+            # Add a new axis to make it broadcastable against S
+            # needed for S > tol comparison below
             rtol = rtol[..., None]
         tol = S.max(axis=-1, keepdims=True) * rtol
     elif not dpnp.isscalar(tol):
-        # Add a new axis to match NumPy's output
+        # Add a new axis to make it broadcastable against S,
+        # needed for S > tol comparison below
         tol = tol[..., None]
 
     return dpnp.count_nonzero(S > tol, axis=-1)

@@ -1073,7 +1073,7 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
     ----------
     A : {(M,), (..., M, N)} {dpnp.ndarray, usm_ndarray}
         Input vector or stack of matrices.
-    tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
+    tol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Threshold below which SVD values are considered zero. Only `tol` or
         `rtol` can be set at a time. If none of them are provided, defaults
         to ``S.max() * max(M, N) * eps`` where `S` is an array with singular
@@ -1083,7 +1083,7 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
         If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Default: ``False``.
-    rtol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
+    rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Parameter for the relative tolerance component. Only `tol` or `rtol`
         can be set at a time. If none of them are provided, defaults to
         ``max(M, N) * eps`` where `eps` is the epsilon value for datatype
@@ -1479,7 +1479,7 @@ def pinv(a, rcond=None, hermitian=False, *, rtol=None):
     ----------
     a : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Matrix or stack of matrices to be pseudo-inverted.
-    rcond : (...) {float, dpnp.ndarray, usm_ndarray}, optional
+    rcond : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Cutoff for small singular values.
         Singular values less than or equal to ``rcond * largest_singular_value``
         are set to zero. Broadcasts against the stack of matrices.
@@ -1490,7 +1490,7 @@ def pinv(a, rcond=None, hermitian=False, *, rtol=None):
         If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
         Default: ``False``.
-    rtol : (...) {float, dpnp.ndarray, usm_ndarray}, optional
+    rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Same as `rcond`, but it's an Array API compatible parameter name.
         Only `rcond` or `rtol` can be set at a time. If none of them are
         provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.
