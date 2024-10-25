@@ -1,6 +1,0 @@
-﻿dpnp.log10
-==========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: log10
