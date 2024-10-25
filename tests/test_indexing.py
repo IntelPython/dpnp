@@ -728,6 +728,8 @@ class TestTakeAlongAxis:
         ],
     )
     def test_argequivalent(self, func, argfunc, kwargs):
+        # TODO: to roll back the change once the issue with CUDA support is resolved for random
+        # a = dpnp.random.random(size=(3, 4, 5))
         a = dpnp.asarray(numpy.random.random(size=(3, 4, 5)))
 
         for axis in list(range(a.ndim)) + [None]:
