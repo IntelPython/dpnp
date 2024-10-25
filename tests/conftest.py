@@ -47,7 +47,23 @@ def get_excluded_tests(test_exclude_file):
     if os.path.exists(test_exclude_file):
         with open(test_exclude_file) as skip_names_file:
             excluded_tests = skip_names_file.readlines()
-    return excluded_tests
+    # Remove whitespace and filter out empty lines
+    return [line.strip() for line in excluded_tests if line.strip()]
+
+
+# Normalize the nodeid to a relative path starting
+# from the "tests/" directory
+def normalize_test_name(nodeid):
+    nodeid = nodeid.replace("\n", "").strip()
+
+    if "tests/" in nodeid:
+        nodeid = nodeid.split("tests/")[-1]
+
+    # Add the "tests/"" prefix to ensure the nodeid matches
+    # the paths in the skipped tests files.
+    normalized_nodeid = "tests/" + nodeid
+
+    return normalized_nodeid
 
 
 def pytest_configure(config):
@@ -124,14 +140,11 @@ def pytest_collection_modifyitems(config, items):
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
 
     for item in items:
-        # some test name contains '\n' in the parameters
-        test_name = item.nodeid.replace("\n", "").strip()
+        test_name = normalize_test_name(item.nodeid)
 
         for item_tbl in excluded_tests:
-            # remove end-of-line character
-            item_tbl_str = item_tbl.strip()
             # exact match of the test name with items from excluded_list
-            if test_name == item_tbl_str:
+            if test_name == item_tbl:
                 item.add_marker(skip_mark)
 
     # Handle the exclusion of tests marked as "slow"
