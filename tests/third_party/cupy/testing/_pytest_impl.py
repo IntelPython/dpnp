@@ -1,6 +1,6 @@
 import unittest
 
-import dpnp.tests.third_party.cupy.testing._parameterized
+from . import _parameterized
 
 try:
     import _pytest
@@ -49,9 +49,7 @@ if is_available():
 def parameterize(*params, _ids=True):
     check_available("parameterize")
     if _ids:
-        param_name = (
-            dpnp.tests.third_party.cupy.testing._parameterized._make_class_name
-        )
+        param_name = _parameterized._make_class_name
     else:
 
         def param_name(_, i, param):

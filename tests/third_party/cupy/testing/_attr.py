@@ -1,6 +1,6 @@
 import os
 
-from dpnp.tests.third_party.cupy.testing._pytest_impl import (
+from ._pytest_impl import (
     check_available,
     is_available,
 )

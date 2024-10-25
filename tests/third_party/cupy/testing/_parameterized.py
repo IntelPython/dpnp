@@ -2,7 +2,7 @@ import itertools
 import types
 import unittest
 
-from dpnp.tests.third_party.cupy.testing import _bundle, _pytest_impl
+from . import _bundle, _pytest_impl
 
 
 def _param_to_str(obj):
