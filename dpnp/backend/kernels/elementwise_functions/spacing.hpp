@@ -51,8 +51,14 @@ struct SpacingFunctor
             return std::numeric_limits<resT>::quiet_NaN();
         }
 
-        const argT y = sycl::copysign(std::numeric_limits<argT>::infinity(), x);
-        return sycl::nextafter(x, y) - x;
+        constexpr argT inf = std::numeric_limits<argT>::infinity();
+        if constexpr (std::is_same_v<argT, sycl::half>) {
+            // numpy laways computes spacing towards +inf for float16 dtype
+            return sycl::nextafter(x, inf) - x;
+        }
+        else {
+            return sycl::nextafter(x, sycl::copysign(inf, x)) - x;
+        }
     }
 };
 } // namespace dpnp::kernels::spacing

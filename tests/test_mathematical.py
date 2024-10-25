@@ -1898,11 +1898,13 @@ class TestRealIfClose:
 
 
 class TestSpacing:
+    @pytest.mark.parametrize("sign", [1, -1])
     @pytest.mark.parametrize("dt", get_float_dtypes())
-    def test_basic(self, dt):
+    def test_basic(self, sign, dt):
         a = numpy.array(
-            [1, numpy.nan, numpy.inf, 0.0, 1e10, 1e-5, 1000, 10500], dtype=dt
+            [1, numpy.nan, numpy.inf, 1e10, 1e-5, 1000, 10500], dtype=dt
         )
+        a *= sign
         ia = dpnp.array(a)
 
         result = dpnp.spacing(ia)
@@ -1913,6 +1915,22 @@ class TestSpacing:
         result = dpnp.spacing(-ia)
         expected = numpy.spacing(-a)
         assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_zeros(self, dt):
+        a = numpy.array([0.0, -0.0], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            assert_equal(result, expected)
+        else:
+            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
+            # positive value, while for any other negative input the result
+            # will be negative value (looks as a bug in NumPy)
+            expected[1] *= -1
+            assert_equal(result, expected)
 
     @pytest.mark.parametrize("dt", get_float_dtypes(no_float16=False))
     @pytest.mark.parametrize("val", [1, 1e-5, 1000])
