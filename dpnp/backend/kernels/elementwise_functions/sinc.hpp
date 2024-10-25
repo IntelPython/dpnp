@@ -23,47 +23,34 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "degrees.hpp"
-#include "fabs.hpp"
-#include "fix.hpp"
-#include "float_power.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "gcd.hpp"
-#include "heaviside.hpp"
-#include "lcm.hpp"
-#include "ldexp.hpp"
-#include "logaddexp2.hpp"
-#include "radians.hpp"
-#include "sinc.hpp"
-#include "spacing.hpp"
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+namespace dpnp::kernels::sinc
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+template <typename argT, typename resT>
+struct SincFunctor
 {
-    init_degrees(m);
-    init_fabs(m);
-    init_fix(m);
-    init_float_power(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_gcd(m);
-    init_heaviside(m);
-    init_lcm(m);
-    init_ldexp(m);
-    init_logaddexp2(m);
-    init_radians(m);
-    init_sinc(m);
-    init_spacing(m);
-}
-} // namespace dpnp::extensions::ufunc
+    // is function constant for given argT
+    using is_constant = typename std::false_type;
+    // constant value, if constant
+    // constexpr resT constant_value = resT{};
+    // is function defined for sycl::vec
+    using supports_vec = typename std::false_type;
+    // do both argT and resT support subgroup store/load operation
+    using supports_sg_loadstore = typename std::true_type;
+
+    resT operator()(const argT &x) const
+    {
+        constexpr argT pi =
+            static_cast<argT>(3.1415926535897932384626433832795029L);
+        const argT y = pi * x;
+
+        if (y == argT(0)) {
+            return argT(1);
+        }
+        return sycl::sinpi(x) / y;
+    }
+};
+} // namespace dpnp::kernels::sinc
