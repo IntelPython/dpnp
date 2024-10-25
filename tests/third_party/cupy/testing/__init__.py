@@ -9,7 +9,7 @@ from ._array import (
 )
 from ._attr import multi_gpu, slow
 
-# from dpnp.tests.third_party.cupy.testing._helper import shaped_sparse_random
+# from ._helper import shaped_sparse_random
 from ._helper import (
     AssertFunctionIsCalled,
     NumpyAliasBasicTestBase,
