@@ -189,7 +189,7 @@ def _define_contig_flag(x):
 
 def _define_dim_flags(x, axis):
     """
-    Define useful flags for the main calculation in dpnp_matmul.
+    Define useful flags for the calculations in dpnp_matmul and dpnp_vecdot.
     x_is_1D: `x` is 1D array or inherently 1D (all dimensions are equal to one
     except for one of them), for instance, if x.shape = (1, 1, 1, 2),
     then x_is_1D = True
@@ -220,7 +220,7 @@ def _define_dim_flags(x, axis):
     return x_is_2D, x_is_1D, x_base_is_1D
 
 
-def _get_result_shape(x1, x2, out, func, np_flag):
+def _get_result_shape(x1, x2, out, _get_result_shape_fn, np_flag):
     """
     Three task are completed in this function:
         - Get the shape of the result array.
@@ -239,15 +239,7 @@ def _get_result_shape(x1, x2, out, func, np_flag):
             "The second input array does not have enough dimensions (has 0, but requires at least 1)"
         )
 
-    if func == "matmul":
-        x1, x2, result_shape = _get_result_shape_matmul(
-            x1, x2, x1_ndim, x2_ndim
-        )
-    else:  # func == "vecdot"
-        assert func == "vecdot"
-        x1, x2, result_shape = _get_result_shape_vecdot(
-            x1, x2, x1_ndim, x2_ndim
-        )
+    x1, x2, result_shape = _get_result_shape_fn(x1, x2, x1_ndim, x2_ndim)
 
     if out is not None:
         out_shape = out.shape
@@ -474,7 +466,7 @@ def _shape_error(shape1, shape2, func, err_msg):
     elif func == "vecdot":
         signature = "(n?,),(n?,)->()"
     else:
-        # applicable when err_msg == 3
+        # applicable when err_msg == 2
         assert func is None
 
     if err_msg == 0:
@@ -655,7 +647,7 @@ def dpnp_cross(a, b, cp):
     return cp
 
 
-def dpnp_dot(a, b, /, out=None, *, conjugate=False):
+def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
     """
     Return the dot product of two arrays.
 
@@ -717,8 +709,7 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     if dot_dtype != res_dtype:
         result = result.astype(res_dtype, copy=False)
 
-    # numpy.dot does not allow casting even if it is safe
-    return dpnp.get_result_array(result, out, casting="no")
+    return dpnp.get_result_array(result, out, casting=casting)
 
 
 def dpnp_kron(a, b, a_ndim, b_ndim):
@@ -773,8 +764,10 @@ def dpnp_matmul(
             order = "F"
         else:
             order = "C"
-
-    if order in "kK":
+    elif order in "kK":
+        # For order="K", we return order="C" to align with NumPy behavior
+        # It is different than logic used in dpnp_vecdot because NumPy
+        # behaves differently for matmul and vecdot
         order = "C"
 
     x1_ndim = x1.ndim
@@ -806,7 +799,7 @@ def dpnp_matmul(
     )
 
     x1, x2, result_shape = _get_result_shape(
-        x1, x2, out, "matmul", NumPy_special_behavior
+        x1, x2, out, _get_result_shape_matmul, NumPy_special_behavior
     )
 
     # Determine the appropriate data types
@@ -1000,6 +993,9 @@ def dpnp_vecdot(
     _validate_out_array(out, exec_q)
 
     if order in "aAkK":
+        # This logic is also used for order="K" to align with NumPy behavior.
+        # It is different than logic used in dpnp_matmul because NumPy
+        # behaves differently for matmul and vecdot
         if x1.flags.fnc and x2.flags.fnc:
             order = "F"
         else:
@@ -1035,7 +1031,7 @@ def dpnp_vecdot(
     )
 
     x1, x2, result_shape = _get_result_shape(
-        x1, x2, out, "vecdot", NumPy_special_behavior
+        x1, x2, out, _get_result_shape_vecdot, NumPy_special_behavior
     )
 
     # Determine the appropriate data types
@@ -1047,21 +1043,7 @@ def dpnp_vecdot(
     _, x2_is_1D, _ = _define_dim_flags(x2, axis=-1)
 
     if x1.size == 0 or x2.size == 0:
-        order = "C" if order in "kK" else order
-        result = _create_result_array(
-            x1,
-            x2,
-            out,
-            shape=result_shape,
-            dtype=res_dtype,
-            usm_type=res_usm_type,
-            sycl_queue=exec_q,
-            order=order,
-        )
-        if numpy.prod(result_shape) == 0:
-            return result
-        result.fill(0)
-        return result
+        call_flag = "trivial"
     elif x1_is_1D and x2_is_1D:
         call_flag = "dot"
         # arrays are inehrently 1D, make them 1D
@@ -1072,7 +1054,20 @@ def dpnp_vecdot(
         call_flag = "vecdot"
 
     # dispatch to proper function call
-    if call_flag == "dot":
+    if call_flag == "trivial":
+        result = _create_result_array(
+            x1,
+            x2,
+            out,
+            shape=result_shape,
+            dtype=res_dtype,
+            usm_type=res_usm_type,
+            sycl_queue=exec_q,
+            order=order,
+        )
+        if numpy.prod(result_shape) != 0:
+            result.fill(0)
+    elif call_flag == "dot":
         if out is not None and out.shape != ():
             result = dpnp_dot(x1, x2, out=None, conjugate=True)
         else:

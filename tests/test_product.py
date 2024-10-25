@@ -1525,6 +1525,27 @@ class TestVecdot:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
+    @pytest.mark.parametrize(
+        "shape", [(2, 4, 0), (4, 0, 5)], ids=["(2, 4, 0)", "(4, 0, 5)"]
+    )
+    def test_order_trivial(self, order, shape):
+        # input is both c-contiguous and f-contiguous
+        a = numpy.ones(shape)
+        a_dp = dpnp.asarray(a)
+
+        result = dpnp.vecdot(a_dp, a_dp, order=order)
+        expected = numpy.vecdot(a, a, order=order)
+        if shape == (2, 4, 0) and order == "A":
+            # NumPy does not behave correctly for this case, for order="A",
+            # if input is both c- and f-contiguous, output is c-contiguous
+            assert result.flags.c_contiguous
+            assert not result.flags.f_contiguous
+        else:
+            assert result.flags.c_contiguous == expected.flags.c_contiguous
+            assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize(
         "order1, order2, out_order",
         [
@@ -1538,7 +1559,7 @@ class TestVecdot:
             ("F", "F", "C"),
         ],
     )
-    def test_out(self, order1, order2, out_order):
+    def test_out_order(self, order1, order2, out_order):
         a1 = numpy.arange(20).reshape(5, 4, order=order1)
         a2 = numpy.arange(20).reshape(5, 4, order=order2)
 
@@ -1554,6 +1575,34 @@ class TestVecdot:
         assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype2", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), ()),
+            ((1, 1, 4), (1, 1)),
+            ((6, 7, 4, 3), (6, 7, 4)),
+            ((2, 0), (2,)),  # zero-size inputs, 1D output
+            ((3, 0, 4), (3, 0)),  # zero-size output
+        ],
+    )
+    def test_out_dtype(self, dtype1, dtype2, shape_pair):
+        shape1, shape2 = shape_pair
+        a = numpy.ones(shape1, dtype=dtype1)
+        b = dpnp.asarray(a)
+
+        out_np = numpy.empty(shape2, dtype=dtype2)
+        out_dp = dpnp.asarray(out_np)
+
+        if dpnp.can_cast(dtype1, dtype2, casting="same_kind"):
+            result = dpnp.vecdot(b, b, out=out_dp)
+            expected = numpy.vecdot(a, a, out=out_np)
+            assert_dtype_allclose(result, expected)
+        else:
+            with pytest.raises(TypeError):
+                dpnp.vecdot(b, b, out=out_dp)
 
     @pytest.mark.parametrize(
         "out_shape",

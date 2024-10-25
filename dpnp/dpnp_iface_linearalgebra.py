@@ -147,11 +147,11 @@ def dot(a, b, out=None):
         # TODO: use specific scalar-vector kernel
         return dpnp.multiply(a, b, out=out)
 
-    if a_ndim == 1 and b_ndim == 1:
-        return dpnp_dot(a, b, out=out)
-
-    # NumPy does not allow casting even if it is safe
+    # numpy.dot does not allow casting even if it is safe
     # casting="no" is used in the following
+    if a_ndim == 1 and b_ndim == 1:
+        return dpnp_dot(a, b, out=out, casting="no")
+
     if a_ndim == 2 and b_ndim == 2:
         return dpnp.matmul(a, b, out=out, casting="no")
 
@@ -753,6 +753,7 @@ def matmul(
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
+        Default: ``None``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
         Default: ``"same_kind"``.
@@ -1203,7 +1204,7 @@ def vecdot(
     .. math::
        \mathbf{a} \cdot \mathbf{b} = \sum_{i=0}^{n-1} \overline{a_i}b_i
 
-    where the sum is over the last dimension (unless axis is specified) and
+    where the sum is over the last dimension (unless `axis` is specified) and
     where :math:`\overline{a_i}` denotes the complex conjugate if :math:`a_i`
     is complex and the identity otherwise.
 
@@ -1221,16 +1222,17 @@ def vecdot(
         removed. If not provided or ``None``, a freshly-allocated array is
         used.
         Default: ``None``.
-    dtype : {None, dtype}, optional
-        Type to use in computing the vector dot product. By default, the
-        returned array will have data type that is determined by considering
-        Promotion Type Rule and device capabilities.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
         Default: ``"same_kind"``.
     order : {"C", "F", "A", "K", None}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
         Default: ``"K"``.
+    dtype : {None, dtype}, optional
+        Type to use in computing the vector dot product. By default, the
+        returned array will have data type that is determined by considering
+        Promotion Type Rule and device capabilities.
+        Default: ``None``.
     axes : {None, list of tuples}, optional
         A list of tuples with indices of axes the matrix product should operate
         on. For instance, for the signature of ``(i),(i)->()``, the base
