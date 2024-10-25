@@ -141,7 +141,7 @@ class TestHistogram(unittest.TestCase):
 
     def test_histogram_weights_basic(self):
         # TODO: to roll back the change once the issue with CUDA support is resolved for random
-        # v = cupy.random.rand(100))
+        # v = cupy.random.rand(100)
         v = cupy.asarray(numpy.random.rand(100))
         w = cupy.ones(100) * 5
         a, b = cupy.histogram(v)
