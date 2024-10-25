@@ -1289,6 +1289,86 @@ def test_op_multiple_dtypes(dtype1, func, dtype2, data):
         assert_allclose(result, expected)
 
 
+class TestLdexp:
+    @pytest.mark.parametrize("mant_dt", get_float_dtypes())
+    @pytest.mark.parametrize("exp_dt", get_integer_dtypes())
+    def test_basic(self, mant_dt, exp_dt):
+        if (
+            numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            and exp_dt == numpy.int64
+            and numpy.dtype("l") != numpy.int64
+        ):
+            pytest.skip("numpy.ldexp doesn't have a loop for the input types")
+
+        mant = numpy.array(2.0, dtype=mant_dt)
+        exp = numpy.array(3, dtype=exp_dt)
+        imant, iexp = dpnp.array(mant), dpnp.array(exp)
+
+        result = dpnp.ldexp(imant, iexp)
+        expected = numpy.ldexp(mant, exp)
+        assert_almost_equal(result, expected)
+
+    def test_float_scalar(self):
+        a = numpy.array(3)
+        ia = dpnp.array(a)
+
+        result = dpnp.ldexp(2.0, ia)
+        expected = numpy.ldexp(2.0, a)
+        assert_almost_equal(result, expected)
+
+    @pytest.mark.parametrize("max_min", ["max", "min"])
+    def test_overflow(self, max_min):
+        exp_val = getattr(numpy.iinfo(numpy.dtype("l")), max_min)
+
+        result = dpnp.ldexp(dpnp.array(2.0), exp_val)
+        with numpy.errstate(over="ignore"):
+            # we can't use here numpy.array(2.0), because NumPy 2.0 will cast
+            # `exp_val` to int32 dtype then and `OverflowError` will be raised
+            expected = numpy.ldexp(2.0, exp_val)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("val", [numpy.nan, numpy.inf, -numpy.inf])
+    def test_nan_int_mant(self, val):
+        mant = numpy.array(val)
+        imant = dpnp.array(mant)
+
+        result = dpnp.ldexp(imant, 5)
+        expected = numpy.ldexp(mant, 5)
+        assert_equal(result, expected)
+
+    def test_zero_exp(self):
+        exp = numpy.array(0)
+        iexp = dpnp.array(exp)
+
+        result = dpnp.ldexp(-2.5, iexp)
+        expected = numpy.ldexp(-2.5, exp)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("stride", [-4, -2, -1, 1, 2, 4])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_strides(self, stride, dt):
+        mant = numpy.array(
+            [0.125, 0.25, 0.5, 1.0, 1.0, 2.0, 4.0, 8.0], dtype=dt
+        )
+        exp = numpy.array([3, 2, 1, 0, 0, -1, -2, -3], dtype="i")
+        out = numpy.zeros(8, dtype=dt)
+        imant, iexp, iout = dpnp.array(mant), dpnp.array(exp), dpnp.array(out)
+
+        result = dpnp.ldexp(imant[::stride], iexp[::stride], out=iout[::stride])
+        expected = numpy.ldexp(mant[::stride], exp[::stride], out=out[::stride])
+        assert_equal(result, expected)
+
+    def test_bool_exp(self):
+        result = dpnp.ldexp(3.7, dpnp.array(True))
+        expected = numpy.ldexp(3.7, numpy.array(True))
+        assert_almost_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_uint64_exp(self, xp):
+        x = xp.array(4, dtype=numpy.uint64)
+        assert_raises((ValueError, TypeError), xp.ldexp, 7.3, x)
+
+
 @pytest.mark.parametrize(
     "rhs", [[[1, 2, 3], [4, 5, 6]], [2.0, 1.5, 1.0], 3, 0.3]
 )
@@ -2387,7 +2467,17 @@ class TestRoundingFuncs:
         result = getattr(dpnp, func_name)(dp_array, out=dp_out)
 
         assert result is dp_out
-        check_type = True if dpnp.issubdtype(dtype, dpnp.floating) else False
+        # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
+        # NumPy < 2.0.0 while output has the dtype of input for NumPy >= 2.0.0
+        # (dpnp follows the latter behavior except for boolean dtype where it
+        # returns int8)
+        if (
+            numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            or dtype == numpy.bool
+        ):
+            check_type = False
+        else:
+            check_type = True
         assert_dtype_allclose(result, expected, check_type=check_type)
 
     @pytest.mark.parametrize(

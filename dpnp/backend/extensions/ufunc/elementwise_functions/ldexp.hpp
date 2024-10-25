@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,43 +23,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-/**
- * Example 9.
- *
- * This example shows simple usage of the DPNP C++ Backend library
- * to calculate sum of the given elements vector
- *
- * Possible compile line:
- * . /opt/intel/oneapi/setvars.sh
- * g++ -g dpnp/backend/examples/example9.cpp -Idpnp -Idpnp/backend/include
- * -Ldpnp -Wl,-rpath='$ORIGIN'/dpnp -ldpnp_backend_c -o example9
- *
- */
+#pragma once
 
-#include <iostream>
+#include <pybind11/pybind11.h>
 
-#include "dpnp_iface.hpp"
+namespace py = pybind11;
 
-int main(int, char **)
+namespace dpnp::extensions::ufunc
 {
-    const size_t size = 2097152;
-    long result = 0;
-    long result_verification = 0;
-
-    long *array =
-        reinterpret_cast<long *>(dpnp_memory_alloc_c(size * sizeof(long)));
-
-    for (size_t i = 0; i < size; ++i) {
-        array[i] = i;
-        result_verification += i;
-    }
-
-    dpnp_sum_c<long, long>(&result, array, &size, 1, NULL, 0, NULL, NULL);
-
-    std::cout << "SUM() value: " << result
-              << " verification value: " << result_verification << std::endl;
-
-    dpnp_memory_free_c(array);
-
-    return 0;
-}
+void init_ldexp(py::module_ m);
+} // namespace dpnp::extensions::ufunc

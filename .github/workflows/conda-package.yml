@@ -29,6 +29,7 @@ env:
       tests/test_copy.py
       tests/test_counting.py
       tests/test_fft.py
+      tests/test_fill.py
       tests/test_flat.py
       tests/test_histogram.py
       tests/test_indexing.py
@@ -63,6 +64,7 @@ env:
       tests/third_party/cupy/statistics_tests/test_histogram.py
       tests/third_party/cupy/statistics_tests/test_meanvar.py
       tests/third_party/cupy/test_ndim.py
+      tests/third_party/cupy/test_type_routines.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"

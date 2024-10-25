@@ -99,8 +99,18 @@ def test_umaths(test_cases):
     args = get_args(args_str, sh, xp=numpy)
     iargs = get_args(args_str, sh, xp=dpnp)
 
-    if umath == "reciprocal" and args[0].dtype in [numpy.int32, numpy.int64]:
-        pytest.skip("For integer input array, numpy.reciprocal returns zero.")
+    if umath == "reciprocal":
+        if args[0].dtype in [numpy.int32, numpy.int64]:
+            pytest.skip(
+                "For integer input array, numpy.reciprocal returns zero."
+            )
+    elif umath == "ldexp":
+        if (
+            numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            and args[1].dtype == numpy.int64
+            and numpy.dtype("l") != numpy.int64
+        ):
+            pytest.skip("numpy.ldexp doesn't have a loop for the input types")
 
     # original
     expected = getattr(numpy, umath)(*args)

@@ -1139,14 +1139,12 @@ class TestEinsum:
         result = inp.einsum(*args, dtype="?", casting="unsafe", optimize=do_opt)
         assert_dtype_allclose(result, expected)
 
-        # with an scalar, NumPy < 2.0.0 uses the other input arrays to
-        # determine the output type while for NumPy > 2.0.0 the scalar
-        # with default machine dtype is used to determine the output
-        # data type
+        # NumPy >= 2.0 follows NEP-50 to determine the output dtype when one of
+        # the inputs is a scalar while NumPy < 2.0 does not
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-            check_type = True
-        else:
             check_type = False
+        else:
+            check_type = True
         a = numpy.arange(9, dtype=dtype)
         a_dp = inp.array(a)
         expected = numpy.einsum(",i->", 3, a)
@@ -1712,7 +1710,7 @@ class TestEinsum:
 
     def test_output_order(self):
         # Ensure output order is respected for optimize cases, the below
-        # conraction should yield a reshaped tensor view
+        # contraction should yield a reshaped tensor view
         a = inp.ones((2, 3, 5), order="F")
         b = inp.ones((4, 3), order="F")
 
