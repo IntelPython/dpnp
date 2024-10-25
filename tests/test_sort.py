@@ -4,7 +4,6 @@ from dpctl.tensor._numpy_helper import AxisError
 from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
-from tests.third_party.cupy import testing
 
 from .helper import (
     assert_dtype_allclose,
@@ -12,6 +11,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_dtypes,
 )
+from .third_party.cupy import testing
 
 
 class TestArgsort:
