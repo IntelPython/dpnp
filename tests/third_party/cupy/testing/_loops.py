@@ -565,7 +565,7 @@ def numpy_cupy_allclose(
     should return same value.
 
     >>> import unittest
-    >>> from dpnp.tests.third_party.cupy import testing
+    >>> from tests.third_party.cupy import testing
     >>> class TestFoo(unittest.TestCase):
     ...
     ...     @testing.numpy_cupy_allclose()
@@ -1083,7 +1083,7 @@ def for_all_dtypes(
     ``dtype`` is an argument inserted by the decorator.
 
     >>> import unittest
-    >>> from dpnp.tests.third_party.cupy import testing
+    >>> from tests.third_party.cupy import testing
     >>> class TestNpz(unittest.TestCase):
     ...
     ...     @testing.for_all_dtypes()
@@ -1099,7 +1099,7 @@ def for_all_dtypes(
     The following is such an example.
 
     >>> import unittest
-    >>> from dpnp.tests.third_party.cupy import testing
+    >>> from tests.third_party.cupy import testing
     >>> class TestMean(unittest.TestCase):
     ...
     ...     @testing.for_all_dtypes()
