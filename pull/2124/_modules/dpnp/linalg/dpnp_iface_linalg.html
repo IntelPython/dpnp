@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+61.g06e00ab87c0 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+63.gac64f4e394 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=7ab3649f" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=90d4bf2a"></script>
+      <script src="../../../_static/documentation_options.js?v=baefe7e1"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -1203,8 +1203,8 @@
 <span class="sd">    A : {(M,), (..., M, N)} {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input vector or stack of matrices.</span>
 <span class="sd">    tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Threshold below which SVD values are considered zero. Only ``tol`` or</span>
-<span class="sd">        ``rtol`` can be set at a time. If none of them are provided, defaults</span>
+<span class="sd">        Threshold below which SVD values are considered zero. Only `tol` or</span>
+<span class="sd">        `rtol` can be set at a time. If none of them are provided, defaults</span>
 <span class="sd">        to ``S.max() * max(M, N) * eps`` where `S` is an array with singular</span>
 <span class="sd">        values for `A`, and `eps` is the epsilon value for datatype of `S`.</span>
 <span class="sd">        Default: ``None``.</span>
@@ -1213,16 +1213,16 @@
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    rtol : (...) {float, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Parameter for the relative tolerance component. Only ``tol`` or</span>
-<span class="sd">        ``rtol`` can be set at a time. If none of them are provided, defaults</span>
-<span class="sd">        to ``max(M, N) * eps`` where `eps` is the epsilon value for datatype</span>
+<span class="sd">        Parameter for the relative tolerance component. Only `tol` or `rtol`</span>
+<span class="sd">        can be set at a time. If none of them are provided, defaults to</span>
+<span class="sd">        ``max(M, N) * eps`` where `eps` is the epsilon value for datatype</span>
 <span class="sd">        of `S` (an array with singular values for `A`).</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    rank : (...) dpnp.ndarray</span>
-<span class="sd">        Rank of A.</span>
+<span class="sd">        Rank of `A`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1640,7 +1640,7 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : (..., N, M) dpnp.ndarray</span>
-<span class="sd">        The pseudo-inverse of a.</span>
+<span class="sd">        The pseudo-inverse of `a`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1651,9 +1651,9 @@
 <span class="sd">    &gt;&gt;&gt; a = np.random.randn(9, 6)</span>
 <span class="sd">    &gt;&gt;&gt; B = np.linalg.pinv(a)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(a, np.dot(B, a)))</span>
-<span class="sd">    array([ True])</span>
+<span class="sd">    array(True)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(B, np.dot(B, np.dot(a, B)))</span>
-<span class="sd">    array([ True])</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
