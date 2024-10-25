@@ -1927,8 +1927,8 @@ class TestSpacing:
             assert_equal(result, expected)
         else:
             # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
-            # positive value, while for any other negative input the result
-            # will be negative value (looks as a bug in NumPy)
+            # positive value (looks as a bug in NumPy), because for any other
+            # negative input the NumPy result will be also a negative value.
             expected[1] *= -1
             assert_equal(result, expected)
 
