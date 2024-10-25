@@ -46,10 +46,13 @@ struct SpacingFunctor
         if (sycl::isnan(x)) {
             return x;
         }
-        else if (sycl::isinf(x)) {
+
+        if (sycl::isinf(x)) {
             return std::numeric_limits<resT>::quiet_NaN();
         }
-        return sycl::nextafter(x, x + 1) - x;
+
+        const argT y = sycl::copysign(std::numeric_limits<argT>::infinity(), x);
+        return sycl::nextafter(x, y) - x;
     }
 };
 } // namespace dpnp::kernels::spacing

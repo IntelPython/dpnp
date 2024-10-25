@@ -3799,7 +3799,7 @@ array(True)
 """
 
 spacing = DPNPUnaryFunc(
-    "fabs",
+    "spacing",
     ufi._spacing_result_type,
     ufi._spacing,
     _SPACING_DOCSTRING,
