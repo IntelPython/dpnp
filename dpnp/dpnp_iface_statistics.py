@@ -370,7 +370,7 @@ def correlate(x1, x2, mode="valid"):
     -----------
     Input arrays are supported as :obj:`dpnp.ndarray`.
     Size and shape of input arrays are supported to be equal.
-    Parameter `mode` is supported only with default value ``"valid``.
+    Parameter `mode` is supported only with default value ``"valid"``.
     Otherwise the function will be executed sequentially on CPU.
     Input array data types are limited by supported DPNP :ref:`Data types`.
 
