@@ -70,7 +70,7 @@ def run(
             "--cov-report",
             "term-missing",
             "--pyargs",
-            "dpnp",
+            "tests",
             "-vv",
             *pytest_opts.split(),
         ],
