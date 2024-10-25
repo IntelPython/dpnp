@@ -80,6 +80,9 @@ def pytest_configure(config):
     if not config.getoption("strict_markers"):
         config.option.strict_markers = True
 
+    # Equivalent to norecursedirs = tests_perf
+    config.addinivalue_line("norecursedirs", "tests_perf")
+
     # Register pytest markers
     config.addinivalue_line(
         "markers", "slow: marks tests as slow (deselect with '-m \"not slow\"')"
