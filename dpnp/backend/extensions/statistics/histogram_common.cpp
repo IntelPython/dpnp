@@ -41,6 +41,8 @@ using dpctl_td_ns::typenum_t;
 
 namespace statistics
 {
+using common::CeilDiv;
+
 namespace histogram
 {
 
@@ -199,12 +201,17 @@ uint32_t get_local_hist_copies_count(uint32_t loc_mem_size_in_items,
                                      uint32_t local_size,
                                      uint32_t hist_size_in_items)
 {
-    uint32_t max_local_copies = loc_mem_size_in_items / hist_size_in_items;
-    uint32_t local_hist_count = std::max(
-        std::min(int(std::ceil((float(4 * local_size) / hist_size_in_items))),
-                 16),
-        1);
-    local_hist_count = std::min(local_hist_count, max_local_copies);
+    constexpr uint32_t local_copies_limit = 16;
+    constexpr uint32_t atomics_per_work_item = 4;
+
+    const uint32_t preferred_local_copies =
+        CeilDiv(atomics_per_work_item * local_size, hist_size_in_items);
+    const uint32_t local_copies_fit_memory =
+        loc_mem_size_in_items / hist_size_in_items;
+
+    uint32_t local_hist_count =
+        std::min(preferred_local_copies, local_copies_limit);
+    local_hist_count = std::min(local_hist_count, local_copies_fit_memory);
 
     return local_hist_count;
 }

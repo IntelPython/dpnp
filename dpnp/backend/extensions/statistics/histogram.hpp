@@ -25,9 +25,9 @@
 
 #pragma once
 
-#include "utils/type_dispatch.hpp"
-#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
+
+#include "dispatch_table.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
@@ -46,7 +46,7 @@ struct Histogram
                                 const size_t,
                                 const std::vector<sycl::event> &);
 
-    FnT dispatch_table[dpctl_td_ns::num_types][dpctl_td_ns::num_types];
+    common::DispatchTable2<FnT> dispatch_table;
 
     Histogram();
 

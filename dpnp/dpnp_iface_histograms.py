@@ -44,7 +44,9 @@ import dpctl.utils as dpu
 import numpy
 
 import dpnp
-import dpnp.backend.extensions.statistics as statistics_ext
+
+# pylint: disable=no-name-in-module
+import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import map_dtype_to_device
@@ -297,59 +299,48 @@ def digitize(x, bins, right=False):
     return bins.size - dpnp.searchsorted(bins[::-1], x, side=side)
 
 
-def _find_supported_dtype(dt, supported):
-    if dt in supported:
-        return dt
-
-    for t in supported:
-        if dpnp.can_cast(dt, t):
-            return t
-
-    return None
-
-
 def _result_type_for_device(dtype1, dtype2, device):
     rt = dpnp.result_type(dtype1, dtype2)
     return map_dtype_to_device(rt, device)
 
 
-def _align_dtypes(a_dtype, bins_dtype, ntype, device):
-    has_fp64 = device.has_aspect_fp64
+def _supported_by_device(dtype, device):
+    if dtype in [dpnp.float64, dpnp.complex128]:
+        return device.has_aspect_fp64
+
+    if dtype == dpnp.float16:
+        return device.has_aspect_fp16
+
+    return True
+
+
+def _can_cast(dtype1, dtype2, device):
+    if not _supported_by_device(dtype1, device) or not _supported_by_device(
+        dtype2, device
+    ):
+        return False
+
+    return dpnp.can_cast(dtype1, dtype2)
+
+
+def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
     a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
 
-    supported_types = (dpnp.float32, dpnp.int64, numpy.uint64, dpnp.complex64)
-    if has_fp64:
-        supported_types += (dpnp.float64, dpnp.complex128)
+    # histogram implementation doesn't support uint64 as histogram type
+    # we can use int64 instead. Result would be correct even in case of overflow
+    if ntype == numpy.uint64:
+        ntype = dpnp.int64
 
-    float_types = [dpnp.float32, dpnp.float64]
-    complex_types = [dpnp.complex64, dpnp.complex128]
+    if (a_bin_dtype, ntype) in supported_types:
+        return a_bin_dtype, ntype
 
-    a_bin_dtype = _find_supported_dtype(a_bin_dtype, supported_types)
-    hist_dtype = _find_supported_dtype(ntype, supported_types)
-    if hist_dtype == numpy.uint64:
-        hist_dtype = dpnp.int64
+    for sample_type, hist_type in supported_types:
+        if _can_cast(a_bin_dtype, sample_type, device) and _can_cast(
+            ntype, hist_type, device
+        ):
+            return sample_type, hist_type
 
-    if (a_bin_dtype in float_types and hist_dtype in float_types) or (
-        a_bin_dtype in complex_types and hist_dtype in complex_types
-    ):
-        common_type = _result_type_for_device(a_bin_dtype, hist_dtype, device)
-        a_bin_dtype = common_type
-        hist_dtype = common_type
-
-    if (a_bin_dtype in float_types and hist_dtype in complex_types) or (
-        a_bin_dtype in complex_types and hist_dtype in float_types
-    ):
-        if a_bin_dtype == dpnp.complex128:
-            hist_dtype = dpnp.float64
-        elif a_bin_dtype == dpnp.float64:
-            hist_dtype = dpnp.complex128
-
-        if hist_dtype == dpnp.complex128:
-            a_bin_dtype = dpnp.float64
-        elif hist_dtype == dpnp.float64:
-            a_bin_dtype = dpnp.complex128
-
-    return a_bin_dtype, hist_dtype
+    return None, None
 
 
 def histogram(a, bins=10, range=None, density=None, weights=None):
@@ -450,8 +441,9 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     queue = a.sycl_queue
     device = queue.sycl_device
 
+    supported_types = statistics_ext.histogram_dtypes()
     a_bin_dtype, hist_dtype = _align_dtypes(
-        a.dtype, bin_edges.dtype, ntype, device
+        a.dtype, bin_edges.dtype, ntype, supported_types, device
     )
 
     if a_bin_dtype is None or hist_dtype is None:

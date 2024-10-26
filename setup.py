@@ -66,7 +66,6 @@ setup(
         "dpnp.fft",
         "dpnp.linalg",
         "dpnp.random",
-        "dpnp.backend.extensions.statistics",
     ],
     package_data={
         "dpnp": [

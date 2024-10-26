@@ -26,13 +26,15 @@
 #pragma once
 
 #include <complex>
-#include <functional>
-#include <tuple>
-#include <type_traits>
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
 
+// clang-format off
+// math_utils.hpp doesn't include sycl header but uses sycl types
+// so sycl.hpp must be included before math_utils.hpp
 #include <sycl/sycl.hpp>
-
 #include "utils/math_utils.hpp"
+// clang-format on
 
 namespace statistics
 {
@@ -179,6 +181,10 @@ sycl::nd_range<Dims> make_ndrange(const sycl::range<Dims> &global_range,
 
 sycl::nd_range<1>
     make_ndrange(size_t global_size, size_t local_range, size_t work_per_item);
+
+// This function is a copy from dpctl because it is not available in the public
+// headers of dpctl.
+pybind11::dtype dtype_from_typenum(int dst_typenum);
 
 } // namespace common
 } // namespace statistics

@@ -41,6 +41,8 @@
 #include "histogram.hpp"
 #include "histogram_common.hpp"
 
+#include <iostream>
+
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 
@@ -110,144 +112,109 @@ template <typename T>
 using UncachedEdges = HistogramEdges<T, UncachedData<const T, 1>>;
 
 template <typename T, typename BinsT, typename HistType = size_t>
-static sycl::event histogram_impl(sycl::queue &exec_q,
-                                  const void *vin,
-                                  const void *vbins_edges,
-                                  const void *vweights,
-                                  void *vout,
-                                  const size_t bins_count,
-                                  const size_t size,
-                                  const std::vector<sycl::event> &depends)
+struct histogram_kernel
 {
-    const T *in = static_cast<const T *>(vin);
-    const BinsT *bins_edges = static_cast<const BinsT *>(vbins_edges);
-    const HistType *weights = static_cast<const HistType *>(vweights);
-    HistType *out = static_cast<HistType *>(vout);
-
-    auto device = exec_q.get_device();
-    const auto local_size = get_max_local_size(device);
-
-    constexpr uint32_t WorkPI = 128; // empirically found number
-
-    const auto nd_range = make_ndrange(size, local_size, WorkPI);
-
-    return exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(depends);
-        constexpr uint32_t dims = 1;
-
-        auto dispatch_edges = [&](uint32_t local_mem, auto &weights,
-                                  auto &hist) {
-            if (device.is_gpu() && (local_mem >= bins_count + 1)) {
-                auto edges = CachedEdges(bins_edges, bins_count + 1, cgh);
-                submit_histogram(in, size, dims, WorkPI, hist, edges, weights,
-                                 nd_range, cgh);
-            }
-            else {
-                auto edges = UncachedEdges(bins_edges, bins_count + 1, cgh);
-                submit_histogram(in, size, dims, WorkPI, hist, edges, weights,
-                                 nd_range, cgh);
-            }
-        };
-
-        auto dispatch_bins = [&](auto &weights) {
-            const auto local_mem_size = get_local_mem_size_in_items<T>(device);
-            if (local_mem_size >= bins_count) {
-                const auto local_hist_count = get_local_hist_copies_count(
-                    local_mem_size, local_size, bins_count);
-
-                auto hist = HistWithLocalCopies<HistType>(
-                    out, bins_count, local_hist_count, cgh);
-                const auto free_local_mem = local_mem_size - hist.size();
-
-                dispatch_edges(free_local_mem, weights, hist);
-            }
-            else {
-                auto hist = HistGlobalMemory<HistType>(out);
-                auto edges = UncachedEdges(bins_edges, bins_count + 1, cgh);
-                submit_histogram(in, size, dims, WorkPI, hist, edges, weights,
-                                 nd_range, cgh);
-            }
-        };
-
-        if (weights) {
-            auto _weights = Weights(weights);
-            dispatch_bins(_weights);
-        }
-        else {
-            auto _weights = NoWeights();
-            dispatch_bins(_weights);
-        }
-    });
-}
-
-template <typename fnT, typename dT, typename hT>
-struct ContigFactory
-{
-    static constexpr bool is_defined = std::disjunction<
-        dpctl_td_ns::TypePairDefinedEntry<dT, uint64_t, hT, int64_t>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, int64_t, hT, int64_t>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, uint64_t, hT, float>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, int64_t, hT, float>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, uint64_t, hT, double>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, int64_t, hT, double>,
-        dpctl_td_ns::
-            TypePairDefinedEntry<dT, uint64_t, hT, std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, int64_t, hT, std::complex<float>>,
-        dpctl_td_ns::
-            TypePairDefinedEntry<dT, uint64_t, hT, std::complex<double>>,
-        dpctl_td_ns::
-            TypePairDefinedEntry<dT, int64_t, hT, std::complex<double>>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, float, hT, int64_t>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, double, hT, int64_t>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, float, hT, float>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, double, hT, double>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, float, hT, std::complex<float>>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, double, hT, std::complex<double>>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, std::complex<float>, hT, int64_t>,
-        dpctl_td_ns::
-            TypePairDefinedEntry<dT, std::complex<double>, hT, int64_t>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, std::complex<float>, hT, float>,
-        dpctl_td_ns::TypePairDefinedEntry<dT, std::complex<double>, hT, double>,
-        // fall-through
-        dpctl_td_ns::NotDefinedEntry>::is_defined;
-
-    fnT get()
+    static sycl::event impl(sycl::queue &exec_q,
+                            const void *vin,
+                            const void *vbins_edges,
+                            const void *vweights,
+                            void *vout,
+                            const size_t bins_count,
+                            const size_t size,
+                            const std::vector<sycl::event> &depends)
     {
-        if constexpr (is_defined) {
-            return histogram_impl<dT, dT, hT>;
-        }
-        else {
-            return nullptr;
-        }
+        const T *in = static_cast<const T *>(vin);
+        const BinsT *bins_edges = static_cast<const BinsT *>(vbins_edges);
+        const HistType *weights = static_cast<const HistType *>(vweights);
+        HistType *out = static_cast<HistType *>(vout);
+
+        auto device = exec_q.get_device();
+        const auto local_size = get_max_local_size(device);
+
+        constexpr uint32_t WorkPI = 128; // empirically found number
+
+        const auto nd_range = make_ndrange(size, local_size, WorkPI);
+
+        return exec_q.submit([&](sycl::handler &cgh) {
+            cgh.depends_on(depends);
+            constexpr uint32_t dims = 1;
+
+            auto dispatch_edges = [&](uint32_t local_mem, auto &weights,
+                                      auto &hist) {
+                if (device.is_gpu() && (local_mem >= bins_count + 1)) {
+                    auto edges = CachedEdges(bins_edges, bins_count + 1, cgh);
+                    submit_histogram(in, size, dims, WorkPI, hist, edges,
+                                     weights, nd_range, cgh);
+                }
+                else {
+                    auto edges = UncachedEdges(bins_edges, bins_count + 1, cgh);
+                    submit_histogram(in, size, dims, WorkPI, hist, edges,
+                                     weights, nd_range, cgh);
+                }
+            };
+
+            auto dispatch_bins = [&](auto &weights) {
+                const auto local_mem_size =
+                    get_local_mem_size_in_items<T>(device);
+                if (local_mem_size >= bins_count) {
+                    const auto local_hist_count = get_local_hist_copies_count(
+                        local_mem_size, local_size, bins_count);
+
+                    auto hist = HistWithLocalCopies<HistType>(
+                        out, bins_count, local_hist_count, cgh);
+                    const auto free_local_mem = local_mem_size - hist.size();
+
+                    dispatch_edges(free_local_mem, weights, hist);
+                }
+                else {
+                    auto hist = HistGlobalMemory<HistType>(out);
+                    auto edges = UncachedEdges(bins_edges, bins_count + 1, cgh);
+                    submit_histogram(in, size, dims, WorkPI, hist, edges,
+                                     weights, nd_range, cgh);
+                }
+            };
+
+            if (weights) {
+                auto _weights = Weights(weights);
+                dispatch_bins(_weights);
+            }
+            else {
+                auto _weights = NoWeights();
+                dispatch_bins(_weights);
+            }
+        });
     }
 };
 
-using statistics::histogram::Histogram;
-
-Histogram::FnT
-    dispatch(Histogram *hist, int data_typenum, int, int hist_typenum)
-{
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
-    const int data_type_id = array_types.typenum_to_lookup_id(data_typenum);
-    const int hist_type_id = array_types.typenum_to_lookup_id(hist_typenum);
-
-    auto histogram_fn = hist->dispatch_table[data_type_id][hist_type_id];
-
-    if (histogram_fn == nullptr) {
-        throw py::value_error("Unsupported data types"); // report types?
-    }
-
-    return histogram_fn;
-}
+template <typename SampleType, typename HistType>
+using histogram_kernel_ = histogram_kernel<SampleType, SampleType, HistType>;
 
 } // namespace
 
-Histogram::Histogram()
+using SupportedTypes = std::tuple<std::tuple<uint64_t, int64_t>,
+                                  std::tuple<int64_t, int64_t>,
+                                  std::tuple<uint64_t, float>,
+                                  std::tuple<int64_t, float>,
+                                  std::tuple<uint64_t, double>,
+                                  std::tuple<int64_t, double>,
+                                  std::tuple<uint64_t, std::complex<float>>,
+                                  std::tuple<int64_t, std::complex<float>>,
+                                  std::tuple<uint64_t, std::complex<double>>,
+                                  std::tuple<int64_t, std::complex<double>>,
+                                  std::tuple<float, int64_t>,
+                                  std::tuple<double, int64_t>,
+                                  std::tuple<float, float>,
+                                  std::tuple<double, double>,
+                                  std::tuple<float, std::complex<float>>,
+                                  std::tuple<double, std::complex<double>>,
+                                  std::tuple<std::complex<float>, int64_t>,
+                                  std::tuple<std::complex<double>, int64_t>,
+                                  std::tuple<std::complex<float>, float>,
+                                  std::tuple<std::complex<double>, double>>;
+
+Histogram::Histogram() : dispatch_table("sample", "histogram")
 {
-    dpctl_td_ns::DispatchTableBuilder<FnT, ContigFactory,
-                                      dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_table(dispatch_table);
+    dispatch_table.populate_dispatch_table<SupportedTypes, histogram_kernel_>();
 }
 
 std::tuple<sycl::event, sycl::event>
@@ -264,11 +231,9 @@ std::tuple<sycl::event, sycl::event>
     }
 
     const int sample_typenum = sample.get_typenum();
-    const int bins_typenum = bins.get_typenum();
     const int hist_typenum = histogram.get_typenum();
 
-    auto histogram_func =
-        dispatch(this, sample_typenum, bins_typenum, hist_typenum);
+    auto histogram_func = dispatch_table.get(sample_typenum, hist_typenum);
 
     auto exec_q = sample.get_queue();
 
@@ -314,4 +279,11 @@ void statistics::histogram::populate_histogram(py::module_ m)
     m.def("histogram", hist_func, "Compute the histogram of a dataset.",
           py::arg("sample"), py::arg("bins"), py::arg("weights"),
           py::arg("histogram"), py::arg("depends") = py::list());
+
+    auto histogram_dtypes = [histp = hist.get()]() {
+        return histp->dispatch_table.get_all_supported_types();
+    };
+
+    m.def("histogram_dtypes", histogram_dtypes,
+          "Get the supported data types for histogram.");
 }
