@@ -59,11 +59,13 @@ namespace td_ns = dpctl::tensor::type_dispatch;
 template <typename T>
 struct OutputType
 {
-    using value_type =
-        typename std::disjunction<td_ns::TypeMapResultEntry<T, sycl::half>,
-                                  td_ns::TypeMapResultEntry<T, float>,
-                                  td_ns::TypeMapResultEntry<T, double>,
-                                  td_ns::DefaultResultEntry<void>>::result_type;
+    using value_type = typename std::disjunction<
+        td_ns::TypeMapResultEntry<T, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::DefaultResultEntry<void>>::result_type;
 };
 
 using dpnp::kernels::sinc::SincFunctor;
