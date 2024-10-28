@@ -20,51 +20,51 @@ env:
   RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
   TEST_SCOPE: >-
-      tests/test_absolute.py
-      tests/test_amin_amax.py
-      tests/test_arithmetic.py
-      tests/test_arraycreation.py
-      tests/test_arraymanipulation.py
-      tests/test_bitwise.py
-      tests/test_copy.py
-      tests/test_counting.py
-      tests/test_fft.py
-      tests/test_fill.py
-      tests/test_flat.py
-      tests/test_histogram.py
-      tests/test_indexing.py
-      tests/test_linalg.py
-      tests/test_logic.py
-      tests/test_manipulation.py
-      tests/test_mathematical.py
-      tests/test_mixins.py
-      tests/test_nanfunctions.py
-      tests/test_ndarray.py
-      tests/test_outer.py
-      tests/test_product.py
-      tests/test_random_state.py
-      tests/test_search.py
-      tests/test_sort.py
-      tests/test_special.py
-      tests/test_statistics.py
-      tests/test_sum.py
-      tests/test_sycl_queue.py
-      tests/test_umath.py
-      tests/test_usm_type.py
-      tests/third_party/cupy/core_tests
-      tests/third_party/cupy/fft_tests
-      tests/third_party/cupy/creation_tests
-      tests/third_party/cupy/indexing_tests
-      tests/third_party/cupy/lib_tests
-      tests/third_party/cupy/linalg_tests
-      tests/third_party/cupy/logic_tests
-      tests/third_party/cupy/manipulation_tests
-      tests/third_party/cupy/math_tests
-      tests/third_party/cupy/sorting_tests
-      tests/third_party/cupy/statistics_tests/test_histogram.py
-      tests/third_party/cupy/statistics_tests/test_meanvar.py
-      tests/third_party/cupy/test_ndim.py
-      tests/third_party/cupy/test_type_routines.py
+      test_absolute.py
+      test_amin_amax.py
+      test_arithmetic.py
+      test_arraycreation.py
+      test_arraymanipulation.py
+      test_bitwise.py
+      test_copy.py
+      test_counting.py
+      test_fft.py
+      test_fill.py
+      test_flat.py
+      test_histogram.py
+      test_indexing.py
+      test_linalg.py
+      test_logic.py
+      test_manipulation.py
+      test_mathematical.py
+      test_mixins.py
+      test_nanfunctions.py
+      test_ndarray.py
+      test_outer.py
+      test_product.py
+      test_random_state.py
+      test_search.py
+      test_sort.py
+      test_special.py
+      test_statistics.py
+      test_sum.py
+      test_sycl_queue.py
+      test_umath.py
+      test_usm_type.py
+      third_party/cupy/core_tests
+      third_party/cupy/fft_tests
+      third_party/cupy/creation_tests
+      third_party/cupy/indexing_tests
+      third_party/cupy/lib_tests
+      third_party/cupy/linalg_tests
+      third_party/cupy/logic_tests
+      third_party/cupy/manipulation_tests
+      third_party/cupy/math_tests
+      third_party/cupy/sorting_tests
+      third_party/cupy/statistics_tests/test_histogram.py
+      third_party/cupy/statistics_tests/test_meanvar.py
+      third_party/cupy/test_ndim.py
+      third_party/cupy/test_type_routines.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -179,7 +179,6 @@ jobs:
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       extracted-pkg-path: '${{ github.workspace }}/pkg/'
-      # tests-path: '${{ github.workspace }}/pkg/info/test/tests/'
       ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
@@ -256,11 +255,16 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
+      - name: Set tests_path for installed package
+        run: |
+          tests_path=$(python -c "import site; import os; print(os.path.join(site.getsitepackages()[0], 'dpnp', 'tests'))")
+          echo "tests_path=$tests_path" >> $GITHUB_ENV
+
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        # working-directory: ${{ env.tests-path }}
+        working-directory: ${{ env.tests_path }}
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
@@ -274,7 +278,7 @@ jobs:
           command: |
             . $CONDA/etc/profile.d/conda.sh
             conda activate ${{ env.TEST_ENV_NAME }}
-            cd ${{ env.tests-path }}
+            cd ${{ env.tests_path }}
             python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   test_windows:
@@ -299,7 +303,6 @@ jobs:
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       extracted-pkg-path: '${{ github.workspace }}\pkg'
-      tests-path: '${{ github.workspace }}\pkg\info\test\tests\'
       ver-json-path: '${{ github.workspace }}\version.json'
 
     steps:
@@ -411,11 +414,16 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
+      - name: Set tests_path for installed package
+        run: |
+          tests_path=$(python -c "import site; import os; print(os.path.join(site.getsitepackages()[0], 'dpnp', 'tests'))")
+          echo "tests_path=$tests_path" >> $GITHUB_ENV
+
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.tests-path }}
+        working-directory: ${{ env.tests_path }}
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
@@ -428,7 +436,7 @@ jobs:
           retry_on: any
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
-            & cd ${{ env.tests-path }}
+            & cd ${{ env.tests_path }}
             & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
