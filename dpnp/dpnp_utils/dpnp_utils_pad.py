@@ -79,7 +79,7 @@ def _as_pairs(x, ndim, as_index=False):
         x = numpy.asarray(numpy.round(x), dtype=numpy.intp)
 
     if x.ndim < 3:
-        # Optimization: Possibly use faster paths for cases where `x` has
+        # Optimization: Using faster paths for cases where `x` has
         # only 1 or 2 elements. `numpy.broadcast_to` could handle these as well
         # but is currently slower
 
@@ -116,7 +116,7 @@ def _get_edges(padded, axis, width_pair):
 
     Parameters
     ----------
-    padded : ndarray
+    padded : dpnp.ndarray
         Empty-padded array.
     axis : int
         Dimension in which the edges are considered.
@@ -126,7 +126,7 @@ def _get_edges(padded, axis, width_pair):
 
     Returns
     -------
-    left_edge, right_edge : ndarray
+    left_edge, right_edge : dpnp.ndarray
         Edge values of the valid area in `padded` in the given dimension. Its
         shape will always match `padded` except for the dimension given by
         `axis` which will have a length of 1.
@@ -151,7 +151,7 @@ def _get_linear_ramps(padded, axis, width_pair, end_value_pair):
 
     Parameters
     ----------
-    padded : ndarray
+    padded : dpnp.ndarray
         Empty-padded array.
     axis : int
         Dimension in which the ramps are constructed.
@@ -164,7 +164,7 @@ def _get_linear_ramps(padded, axis, width_pair, end_value_pair):
 
     Returns
     -------
-    left_ramp, right_ramp : ndarray
+    left_ramp, right_ramp : dpnp.ndarray
         Linear ramps to set on both sides of `padded`.
 
     """
@@ -203,7 +203,7 @@ def _get_stats(padded, axis, width_pair, length_pair, stat_func):
 
     Parameters
     ----------
-    padded : ndarray
+    padded : dpnp.ndarray
         Empty-padded array.
     axis : int
         Dimension in which the statistic is calculated.
