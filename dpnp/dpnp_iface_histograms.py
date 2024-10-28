@@ -486,14 +486,14 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     )
     n_usm = dpnp.get_usm_ndarray(n_casted)
 
-    ht_ev, mem_ev = statistics_ext.histogram(
+    mem_ev, ht_ev = statistics_ext.histogram(
         a_usm,
         bins_usm,
         weights_usm,
         n_usm,
         depends=_manager.submitted_events,
     )
-    _manager.add_event_pair(ht_ev, mem_ev)
+    _manager.add_event_pair(mem_ev, ht_ev)
 
     if usm_type != n_usm_type:
         n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
@@ -501,10 +501,10 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         n = dpnp.astype(n_casted, ntype, copy=False)
 
     if density:
-        db = dpnp.diff(bin_edges).astype(
-            dpnp.default_float_type(sycl_queue=queue)
+        db = dpnp.astype(
+            dpnp.diff(bin_edges), dpnp.default_float_type(sycl_queue=queue)
         )
-        return n / db / n.sum(), bin_edges
+        return n / db / dpnp.sum(n), bin_edges
 
     return n, bin_edges
 

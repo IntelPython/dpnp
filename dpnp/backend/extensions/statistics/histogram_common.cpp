@@ -30,7 +30,10 @@
 #include <vector>
 
 #include "dpctl4pybind11.hpp"
+#include "utils/memory_overlap.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
+
 #include <pybind11/pybind11.h>
 
 #include "histogram_common.hpp"
@@ -73,6 +76,8 @@ void validate(const usm_ndarray &sample,
         return "'" + name_it->second + "'";
     };
 
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(histogram);
+
     auto unequal_queue =
         std::find_if(arrays.cbegin(), arrays.cend(), [&](const array_ptr &arr) {
             return arr->get_queue() != exec_q;
@@ -94,6 +99,21 @@ void validate(const usm_ndarray &sample,
         throw py::value_error(get_name(*non_contig_array) +
                               " parameter is not c-contiguos");
     }
+
+    auto check_overlaping = [&](const array_ptr &first,
+                                const array_ptr &second) {
+        const auto &overlap = dpctl::tensor::overlap::MemoryOverlap();
+
+        if (overlap(sample, histogram)) {
+            throw py::value_error(get_name(first) +
+                                  " has overlapping memory segments with " +
+                                  get_name(second));
+        }
+    };
+
+    check_overlaping(&sample, &histogram);
+    check_overlaping(&bins, &histogram);
+    check_overlaping(weights_ptr, &histogram);
 
     if (bins.get_size() < 2) {
         throw py::value_error(get_name(&bins) +
