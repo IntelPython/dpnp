@@ -143,14 +143,11 @@ def pytest_collection_modifyitems(config, items):
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
 
     for item in items:
-        print(f"Running test: {item.nodeid}")
         test_name = normalize_test_name(item.nodeid)
-        print(f"Running test (normalized): {test_name}")
 
         for item_tbl in excluded_tests:
             # exact match of the test name with items from excluded_list
             if test_name == item_tbl:
-                print(f"Exact match found! Skipping test: {test_name}")
                 item.add_marker(skip_mark)
 
     # Handle the exclusion of tests marked as "slow"
