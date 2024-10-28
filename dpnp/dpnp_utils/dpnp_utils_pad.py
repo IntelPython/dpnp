@@ -30,7 +30,7 @@ import dpnp
 __all__ = ["dpnp_pad"]
 
 
-def _as_pairs(x, ndim, as_index=False):
+def _as_pairs(x, ndim, as_index=False, sycl_queue=None, usm_type=None):
     """
     Copied from numpy/lib/_arraypad_impl.py
 
@@ -64,7 +64,7 @@ def _as_pairs(x, ndim, as_index=False):
     """
 
     if x is None:
-        # Pass through None as a special case, otherwise numpy.round(x) fails
+        # Pass through None as a special case, otherwise dpnp.round(x) fails
         # with an TypeError
         return ((None, None),) * ndim
     elif dpnp.isscalar(x):
@@ -74,13 +74,19 @@ def _as_pairs(x, ndim, as_index=False):
             x = round(x)
         return ((x, x),) * ndim
 
-    x = numpy.array(x)
+    x = dpnp.array(x, sycl_queue=sycl_queue, usm_type=usm_type)
     if as_index:
-        x = numpy.asarray(numpy.round(x), dtype=numpy.intp)
+        x = dpnp.asarray(
+            dpnp.round(x),
+            dtype=dpnp.intp,
+            sycl_queue=sycl_queue,
+            usm_type=usm_type,
+        )
 
+    # x=x.asnumpy()
     if x.ndim < 3:
         # Optimization: Possibly use faster paths for cases where `x` has
-        # only 1 or 2 elements. `numpy.broadcast_to` could handle these as well
+        # only 1 or 2 elements. `dpnp.broadcast_to` could handle these as well
         # but is currently slower
 
         if x.size == 1:
@@ -88,7 +94,8 @@ def _as_pairs(x, ndim, as_index=False):
             x = x.ravel()  # Ensure x[0] works for x.ndim == 0, 1, 2
             if as_index and x < 0:
                 raise ValueError("index can't contain negative values")
-            return ((x[0], x[0]),) * ndim
+            x0 = x.item()
+            return ((x0, x0),) * ndim
 
         if x.size == 2 and x.shape != (2, 1):
             # x was supplied with a single value for each side
@@ -98,14 +105,14 @@ def _as_pairs(x, ndim, as_index=False):
             x = x.ravel()  # Ensure x[0], x[1] works
             if as_index and (x[0] < 0 or x[1] < 0):
                 raise ValueError("index can't contain negative values")
-            return ((x[0], x[1]),) * ndim
+            return ((x.item(0), x.item(1)),) * ndim
 
     if as_index and x.min() < 0:
         raise ValueError("index can't contain negative values")
 
     # Converting the array with `tolist` seems to improve performance
     # when iterating and indexing the result (see usage in `pad`)
-    return numpy.broadcast_to(x, (ndim, 2)).tolist()
+    return dpnp.broadcast_to(x, (ndim, 2)).tolist()
 
 
 def _get_edges(padded, axis, width_pair):
@@ -625,7 +632,13 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
             raise TypeError("`pad_width` must be of integral type.")
 
         # Broadcast to shape (array.ndim, 2)
-        pad_width = _as_pairs(pad_width, array.ndim, as_index=True)
+        pad_width = _as_pairs(
+            pad_width,
+            array.ndim,
+            as_index=True,
+            sycl_queue=array.sycl_queue,
+            usm_type=array.usm_type,
+        )
 
     if callable(mode):
         function = mode
@@ -699,7 +712,12 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
     axes = range(padded.ndim)
 
     if mode == "constant":
-        values = _as_pairs(values, padded.ndim)
+        values = _as_pairs(
+            values,
+            padded.ndim,
+            sycl_queue=array.sycl_queue,
+            usm_type=array.usm_type,
+        )
         for axis, width_pair, value_pair in zip(axes, pad_width, values):
             roi = _view_roi(padded, original_area_slice, axis)
             _set_pad_area(roi, axis, width_pair, value_pair)
@@ -728,7 +746,12 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
 
     elif mode == "linear_ramp":
         end_values = kwargs.get("end_values", 0)
-        end_values = _as_pairs(end_values, padded.ndim)
+        end_values = _as_pairs(
+            end_values,
+            padded.ndim,
+            sycl_queue=array.sycl_queue,
+            usm_type=array.usm_type,
+        )
         for axis, width_pair, value_pair in zip(axes, pad_width, end_values):
             roi = _view_roi(padded, original_area_slice, axis)
             ramp_pair = _get_linear_ramps(roi, axis, width_pair, value_pair)
@@ -737,7 +760,13 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
     elif mode in stat_functions:
         func = stat_functions[mode]
         length = kwargs.get("stat_length", None)
-        length = _as_pairs(length, padded.ndim, as_index=True)
+        length = _as_pairs(
+            length,
+            padded.ndim,
+            as_index=True,
+            sycl_queue=array.sycl_queue,
+            usm_type=array.usm_type,
+        )
         for axis, width_pair, length_pair in zip(axes, pad_width, length):
             roi = _view_roi(padded, original_area_slice, axis)
             stat_pair = _get_stats(roi, axis, width_pair, length_pair, func)
@@ -755,7 +784,6 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
                     padded, axis, (left_index, right_index), edge_pair
                 )
                 continue
-
             roi = _view_roi(padded, original_area_slice, axis)
             while left_index > 0 or right_index > 0:
                 # Iteratively pad until dimension is filled with reflected
