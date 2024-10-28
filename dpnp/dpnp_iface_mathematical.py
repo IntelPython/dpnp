@@ -3763,7 +3763,7 @@ For full documentation refer to :obj:`numpy.sinc`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have floating-point type.
+    Input array, expected to have floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
