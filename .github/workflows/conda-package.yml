@@ -30,6 +30,7 @@ env:
       test_copy.py
       test_counting.py
       test_fft.py
+      test_fill.py
       test_flat.py
       test_histogram.py
       test_indexing.py
@@ -65,6 +66,7 @@ env:
       third_party/cupy/statistics_tests/test_histogram.py
       third_party/cupy/statistics_tests/test_meanvar.py
       third_party/cupy/test_ndim.py
+      third_party/cupy/test_type_routines.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -144,6 +146,8 @@ jobs:
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
+        env:
+          MAX_BUILD_CMPL_MKL_VERSION: '2024.3a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
