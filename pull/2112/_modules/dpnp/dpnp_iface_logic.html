@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -12,20 +14,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.17.0dev0+53.ga854a7f8ec7 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.17.0dev0+67.gabedb010c96 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=9a190538"></script>
-        <script src="../../_static/doctools.js?v=9a2dae69"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=10b25cb2"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -42,9 +40,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.17.0dev0+53.ga854a7f8ec7
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -154,6 +149,7 @@
     <span class="s2">&quot;iscomplex&quot;</span><span class="p">,</span>
     <span class="s2">&quot;iscomplexobj&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isfinite&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isfortran&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isinf&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isnan&quot;</span><span class="p">,</span>
     <span class="s2">&quot;isneginf&quot;</span><span class="p">,</span>
@@ -1103,6 +1099,79 @@
     <span class="n">tei</span><span class="o">.</span><span class="n">_isfinite</span><span class="p">,</span>
     <span class="n">_ISFINITE_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<div class="viewcode-block" id="isfortran">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isfortran.html#dpnp.isfortran">[docs]</a>
+<span class="k">def</span> <span class="nf">isfortran</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the array is Fortran contiguous but *not* C contiguous.</span>
+
+<span class="sd">    This function is obsolete. If you only want to check if an array is Fortran</span>
+<span class="sd">    contiguous use ``a.flags.f_contiguous`` instead.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.isfortran`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    isfortran : bool</span>
+<span class="sd">        Returns ``True`` if the array is Fortran contiguous</span>
+<span class="sd">        but *not* C contiguous.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.array` allows to specify whether the array is written in</span>
+<span class="sd">    C-contiguous order (last index varies the fastest), or FORTRAN-contiguous</span>
+<span class="sd">    order in memory (first index varies the fastest).</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]], order=&#39;C&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.isfortran(a)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]], order=&#39;F&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; b</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.isfortran(b)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    The transpose of a C-ordered array is a FORTRAN-ordered array.</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2, 3], [4, 5, 6]], order=&#39;C&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.isfortran(a)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; b = a.T</span>
+<span class="sd">    &gt;&gt;&gt; b</span>
+<span class="sd">    array([[1, 4],</span>
+<span class="sd">           [2, 5],</span>
+<span class="sd">           [3, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.isfortran(b)</span>
+<span class="sd">    True</span>
+
+<span class="sd">    C-ordered arrays evaluate as ``False`` even if they are also</span>
+<span class="sd">    FORTRAN-ordered.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.isfortran(np.array([1, 2], order=&#39;F&#39;))</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span></div>
+
 
 
 <span class="n">_ISINF_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
