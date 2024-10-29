@@ -418,8 +418,8 @@ jobs:
 
       - name: Set tests_path for installed package
         run: |
-          tests_path=$(python -c "import site; import os; print(os.path.join(site.getsitepackages()[0], 'dpnp', 'tests'))")
-          echo "tests_path=$tests_path" >> $GITHUB_ENV
+          FOR /F "delims=" %i IN ('python -c "import site, os; print(os.path.join(site.getsitepackages()[0], 'dpnp', 'tests'))"') DO SET tests_path=%i
+          echo tests_path=%tests_path%>>%GITHUB_ENV%
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
