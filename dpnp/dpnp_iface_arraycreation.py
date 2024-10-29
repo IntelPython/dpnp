@@ -319,6 +319,11 @@ def array(
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: ``"K"``.
+    ndmin : int, optional
+        Specifies the minimum number of dimensions that the resulting array
+        should have. Ones will be prepended to the shape as needed to meet
+        this requirement.
+        Default: ``0``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -345,7 +350,6 @@ def array(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Parameter `ndmin` is supported only with default value ``0``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises ``NotImplementedError`` exception.
 
@@ -399,13 +403,10 @@ def array(
     """
 
     dpnp.check_limitations(subok=subok, like=like)
-    if ndmin != 0:
-        raise NotImplementedError(
-            "Keyword argument `ndmin` is supported only with "
-            f"default value ``0``, but got {ndmin}"
-        )
+    if not isinstance(ndmin, (int, dpnp.integer)):
+        raise TypeError(f"`ndmin` should be an integer, got {type(ndmin)}")
 
-    return dpnp_container.asarray(
+    result = dpnp_container.asarray(
         a,
         dtype=dtype,
         copy=copy,
@@ -414,6 +415,13 @@ def array(
         usm_type=usm_type,
         sycl_queue=sycl_queue,
     )
+
+    res_ndim = result.ndim
+    if res_ndim >= ndmin:
+        return result
+
+    num_axes = ndmin - res_ndim
+    return result[(dpnp.newaxis,) * num_axes + (slice(None),)]
 
 
 def asanyarray(
