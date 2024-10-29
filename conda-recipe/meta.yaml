@@ -58,6 +58,7 @@ test:
     commands:
       - python -c "import dpnp; print(dpnp.__version__)"
       - python -m dpctl -f
+      - python -c "import dpnp as np; x = np.array((1,2,3), dtype=np.float32, device='opencl:gpu'); print(x**2)"
       - pytest -s
 
 about:
