@@ -56,12 +56,19 @@ def get_excluded_tests(test_exclude_file):
 def normalize_test_name(nodeid):
     nodeid = nodeid.replace("\n", "").strip()
 
-    if "tests/" in nodeid:
-        nodeid = nodeid.split("tests/", 1)[-1]
+    # case if run pytest from dpnp folder
+    if nodeid.startswith("tests/"):
+        return nodeid
 
-    # Add the "tests/"" prefix to ensure the nodeid matches
-    # the paths in the skipped tests files.
-    normalized_nodeid = "tests/" + nodeid
+    # case if run pytest --pyargs
+    if "/tests/" in nodeid:
+        nodeid = nodeid.split("tests/", 1)[-1]
+        # Add the "tests/" prefix to ensure the nodeid matches
+        # the paths in the skipped tests files.
+        normalized_nodeid = "tests/" + nodeid
+    # case if run pytest from tests folder
+    else:
+        normalized_nodeid = "tests/" + nodeid
 
     return normalized_nodeid
 
