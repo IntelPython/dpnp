@@ -594,38 +594,51 @@ class TestPutAlongAxis:
         ],
     )
     def test_values(self, arr_dt, idx_dt, ndim, values):
-        np_a = numpy.arange(4**ndim, dtype=arr_dt).reshape((4,) * ndim)
-        np_ai = numpy.array([3, 0, 2, 1], dtype=idx_dt).reshape(
+        a = numpy.arange(4**ndim, dtype=arr_dt).reshape((4,) * ndim)
+        ind = numpy.array([3, 0, 2, 1], dtype=idx_dt).reshape(
             (1,) * (ndim - 1) + (4,)
         )
-
-        dp_a = dpnp.array(np_a, dtype=arr_dt)
-        dp_ai = dpnp.array(np_ai, dtype=idx_dt)
+        ia, iind = dpnp.array(a), dpnp.array(ind)
 
         for axis in range(ndim):
-            numpy.put_along_axis(np_a, np_ai, values, axis)
-            dpnp.put_along_axis(dp_a, dp_ai, values, axis)
-            assert_array_equal(np_a, dp_a)
+            numpy.put_along_axis(a, ind, values, axis)
+            dpnp.put_along_axis(ia, iind, values, axis)
+            assert_array_equal(ia, a)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("dt", [bool, numpy.float32])
     def test_invalid_indices_dtype(self, xp, dt):
         a = xp.ones((10, 10))
-        ind = xp.ones(10, dtype=dt)
+        ind = xp.ones_like(a, dtype=dt)
         assert_raises(IndexError, xp.put_along_axis, a, ind, 7, axis=1)
 
     @pytest.mark.parametrize("arr_dt", get_all_dtypes())
     @pytest.mark.parametrize("idx_dt", get_integer_dtypes())
     def test_broadcast(self, arr_dt, idx_dt):
-        np_a = numpy.ones((3, 4, 1), dtype=arr_dt)
-        np_ai = numpy.arange(10, dtype=idx_dt).reshape((1, 2, 5)) % 4
+        a = numpy.ones((3, 4, 1), dtype=arr_dt)
+        ind = numpy.arange(10, dtype=idx_dt).reshape((1, 2, 5)) % 4
+        ia, iind = dpnp.array(a), dpnp.array(ind)
 
-        dp_a = dpnp.array(np_a, dtype=arr_dt)
-        dp_ai = dpnp.array(np_ai, dtype=idx_dt)
+        numpy.put_along_axis(a, ind, 20, axis=1)
+        dpnp.put_along_axis(ia, iind, 20, axis=1)
+        assert_array_equal(ia, a)
 
-        numpy.put_along_axis(np_a, np_ai, 20, axis=1)
-        dpnp.put_along_axis(dp_a, dp_ai, 20, axis=1)
-        assert_array_equal(np_a, dp_a)
+    def test_mode_wrap(self):
+        a = numpy.array([-2, -1, 0, 1, 2])
+        ind = numpy.array([-2, 2, -5, 4])
+        ia, iind = dpnp.array(a), dpnp.array(ind)
+
+        dpnp.put_along_axis(ia, iind, 3, axis=0, mode="wrap")
+        numpy.put_along_axis(a, ind, 3, axis=0)
+        assert_array_equal(ia, a)
+
+    def test_mode_clip(self):
+        a = dpnp.array([-2, -1, 0, 1, 2])
+        ind = dpnp.array([-2, 2, -5, 4])
+
+        # numpy does not support keyword `mode`
+        dpnp.put_along_axis(a, ind, 4, axis=0, mode="clip")
+        assert (a == dpnp.array([4, -1, 4, 1, 4])).all()
 
 
 class TestTake:

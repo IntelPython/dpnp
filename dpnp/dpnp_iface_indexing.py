@@ -84,57 +84,6 @@ __all__ = [
 ]
 
 
-def _build_along_axis_index(a, ind, axis):
-    """
-    Build a fancy index used by a family of `_along_axis` functions.
-
-    The fancy index consists of orthogonal arranges, with the
-    requested index inserted at the right location.
-
-    The resulting index is going to be used inside `dpnp.put_along_axis`
-    and `dpnp.take_along_axis` implementations.
-
-    """
-
-    if not dpnp.issubdtype(ind.dtype, dpnp.integer):
-        raise IndexError("`indices` must be an integer array")
-
-    # normalize array shape and input axis
-    if axis is None:
-        a_shape = (a.size,)
-        axis = 0
-    else:
-        a_shape = a.shape
-        axis = normalize_axis_index(axis, a.ndim)
-
-    if len(a_shape) != ind.ndim:
-        raise ValueError(
-            "`indices` and `a` must have the same number of dimensions"
-        )
-
-    # compute dimensions to iterate over
-    dest_dims = list(range(axis)) + [None] + list(range(axis + 1, ind.ndim))
-    shape_ones = (1,) * ind.ndim
-
-    # build the index
-    fancy_index = []
-    for dim, n in zip(dest_dims, a_shape):
-        if dim is None:
-            fancy_index.append(ind)
-        else:
-            ind_shape = shape_ones[:dim] + (-1,) + shape_ones[dim + 1 :]
-            fancy_index.append(
-                dpnp.arange(
-                    n,
-                    dtype=ind.dtype,
-                    usm_type=ind.usm_type,
-                    sycl_queue=ind.sycl_queue,
-                ).reshape(ind_shape)
-            )
-
-    return tuple(fancy_index)
-
-
 def _ravel_multi_index_checks(multi_index, dims, order):
     dpnp.check_supported_arrays_type(*multi_index)
     ndim = len(dims)
@@ -1371,7 +1320,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
         in_usm_a[:] = dpt.reshape(usm_a, in_usm_a.shape, copy=False)
 
 
-def put_along_axis(a, ind, values, axis):
+def put_along_axis(a, ind, values, axis, mode="wrap"):
     """
     Put values into the destination array by matching 1d index and data slices.
 
@@ -1395,9 +1344,16 @@ def put_along_axis(a, ind, values, axis):
     values : {scalar, array_like}, (Ni..., J, Nk...)
         Values to insert at those indices. Its shape and dimension are
         broadcast to match that of `ind`.
-    axis : int
+    axis : {None, int}
         The axis to take 1d slices along. If axis is ``None``, the destination
         array is treated as if a flattened 1d view had been created of it.
+    mode : {"wrap", "clip"}, optional
+        Specifies how out-of-bounds indices will be handled. Possible values
+        are:
+        - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+          negative indices.
+        - ``"clip"``: clips indices to (``0 <= i < n``).
+        Default: ``"wrap"``.
 
     See Also
     --------
@@ -1426,12 +1382,26 @@ def put_along_axis(a, ind, values, axis):
 
     """
 
-    dpnp.check_supported_arrays_type(a, ind)
-
     if axis is None:
-        a = a.ravel()
+        dpnp.check_supported_arrays_type(ind)
+        if ind.ndim != 1:
+            raise ValueError(
+                "when axis=None, `ind` must have a single dimension."
+            )
 
-    a[_build_along_axis_index(a, ind, axis)] = values
+        a = dpnp.ravel(a)
+        axis = 0
+
+    usm_a = dpnp.get_usm_ndarray(a)
+    usm_ind = dpnp.get_usm_ndarray(ind)
+    if dpnp.is_supported_array_type(values):
+        usm_vals = dpnp.get_usm_ndarray(values)
+    else:
+        usm_vals = dpt.asarray(
+            values, usm_type=a.usm_type, sycl_queue=a.sycl_queue
+        )
+
+    dpt.put_along_axis(usm_a, usm_ind, usm_vals, axis=axis, mode=mode)
 
 
 def putmask(x1, mask, values):
