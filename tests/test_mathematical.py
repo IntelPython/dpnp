@@ -1915,23 +1915,11 @@ class TestSinc:
 
         result = dpnp.sinc(ia)
         expected = numpy.sinc(a)
-        # numpy 1.26 promotes result to float64 dtype, but expected float16
-        assert_dtype_allclose(
-            result,
-            expected,
-            check_only_type_kind=(
-                numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
-            ),
-        )
+        # numpy promotes result to float64 dtype, but expected float16
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
     def test_zero(self, dt):
-        if (
-            dt == numpy.float16
-            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
-        ):
-            pytest.skip("numpy.sinc return NaN")
-
         a = numpy.array([0.0], dtype=dt)
         ia = dpnp.array(a)
 
@@ -1939,13 +1927,15 @@ class TestSinc:
         expected = numpy.sinc(a)
         assert_dtype_allclose(result, expected)
 
+    # TODO: add a proper NumPY version once resolved
     @testing.with_requires("numpy>=2.0.0")
     def test_zero_fp16(self):
         a = numpy.array([0.0], dtype=numpy.float16)
         ia = dpnp.array(a)
 
         result = dpnp.sinc(ia)
-        expected = numpy.sinc(a)
+        # expected = numpy.sinc(a) # numpy returns NaN, but expected 1.0
+        expected = numpy.ones_like(a)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
