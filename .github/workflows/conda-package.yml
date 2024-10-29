@@ -421,11 +421,17 @@ jobs:
           FOR /F "delims=" %%i IN ('python -c "import site, os; print(os.path.join(site.getsitepackages()[0], 'dpnp', 'tests'))"') DO SET tests_path=%%i
           echo tests_path=%tests_path%>>%GITHUB_ENV%
 
-      - name: Check working directory and files
+      - name: Check site-packages
         run: |
-          echo Current working directory: %tests_path%
-          dir %tests_path%
-        working-directory: ${{ env.tests_path }}
+          echo "DIR site-packages folder:"
+          DIR %CONDA_PREFIX%\Lib\site-packages\dpnp
+          echo "Expected tests_path: %tests_path%"
+
+      # - name: Check working directory and files
+      #   run: |
+      #     echo Current working directory: %tests_path%
+      #     dir %tests_path%
+      #   working-directory: ${{ env.tests_path }}
 
       - name: echo TEST_SCOPE
         run: |
