@@ -640,6 +640,12 @@ class TestPutAlongAxis:
         dpnp.put_along_axis(a, ind, 4, axis=0, mode="clip")
         assert (a == dpnp.array([4, -1, 4, 1, 4])).all()
 
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_indices_ndim_axis_none(self, xp):
+        a = xp.ones((10, 10))
+        ind = xp.ones((10, 2), dtype=xp.intp)
+        assert_raises(ValueError, xp.put_along_axis, a, ind, -1, axis=None)
+
 
 class TestTake:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
