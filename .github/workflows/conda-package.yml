@@ -418,7 +418,7 @@ jobs:
 
       - name: Set tests_path for installed package
         run: |
-          FOR /F "delims=" %%i IN ('python -c "import site, os; print(os.path.join(site.getsitepackages()[0], 'dpnp', 'tests'))"') DO SET tests_path=%%i
+          FOR /F "delims=" %%i IN ('python -c "import sysconfig, os; print(os.path.join(sysconfig.get_paths()[\"purelib\"], 'dpnp', 'tests'))"') DO SET tests_path=%%i
           echo tests_path=%tests_path%>>%GITHUB_ENV%
 
       - name: Check site-packages
