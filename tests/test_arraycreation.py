@@ -860,10 +860,8 @@ def test_geomspace(sign, dtype, num, endpoint):
         assert_allclose(dpnp_res, np_res, rtol=1e-04)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("start", [1j, 1 + 1j])
 @pytest.mark.parametrize("stop", [10j, 10 + 10j])
-# dpnp.sign raise numpy fall back for complex dtype
 def test_geomspace_complex(start, stop):
     func = lambda xp: xp.geomspace(start, stop, num=10)
     np_res = func(numpy)
@@ -922,7 +920,7 @@ def test_logspace_axis(axis):
 @pytest.mark.parametrize(
     "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
 )
-def test_ascontiguousarray(data):
+def test_ascontiguousarray1(data):
     result = dpnp.ascontiguousarray(data)
     expected = numpy.ascontiguousarray(data)
     assert_dtype_allclose(result, expected)
@@ -930,7 +928,7 @@ def test_ascontiguousarray(data):
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
-def test_ascontiguousarray1(data):
+def test_ascontiguousarray2(data):
     result = dpnp.ascontiguousarray(dpnp.array(data))
     expected = numpy.ascontiguousarray(numpy.array(data))
     assert_dtype_allclose(result, expected)
@@ -940,7 +938,7 @@ def test_ascontiguousarray1(data):
 @pytest.mark.parametrize(
     "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
 )
-def test_asfortranarray(data):
+def test_asfortranarray1(data):
     result = dpnp.asfortranarray(data)
     expected = numpy.asfortranarray(data)
     assert_dtype_allclose(result, expected)
@@ -948,7 +946,7 @@ def test_asfortranarray(data):
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
-def test_asfortranarray1(data):
+def test_asfortranarray2(data):
     result = dpnp.asfortranarray(dpnp.array(data))
     expected = numpy.asfortranarray(numpy.array(data))
     assert_dtype_allclose(result, expected)

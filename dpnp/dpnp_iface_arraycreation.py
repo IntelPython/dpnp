@@ -643,7 +643,7 @@ def ascontiguousarray(
     a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
-    Return a contiguous array in memory (C order).
+    Return a contiguous array ``(ndim >= 1)`` in memory (C order).
 
     For full documentation refer to :obj:`numpy.ascontiguousarray`.
 
@@ -739,14 +739,12 @@ def ascontiguousarray(
 
     dpnp.check_limitations(like=like)
 
-    # at least 1-d array has to be returned
-    if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
-        a = [a]
-
-    return asarray(
+    return dpnp.array(
         a,
         dtype=dtype,
+        copy=None,
         order="C",
+        ndmin=1,
         device=device,
         usm_type=usm_type,
         sycl_queue=sycl_queue,
@@ -857,14 +855,12 @@ def asfortranarray(
 
     dpnp.check_limitations(like=like)
 
-    # at least 1-d array has to be returned
-    if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
-        a = [a]
-
-    return asarray(
+    return dpnp.array(
         a,
         dtype=dtype,
+        copy=None,
         order="F",
+        ndmin=1,
         device=device,
         usm_type=usm_type,
         sycl_queue=sycl_queue,

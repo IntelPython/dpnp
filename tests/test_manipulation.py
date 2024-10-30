@@ -686,62 +686,6 @@ class TestRequire:
         assert_array_equal(expected, result)
 
 
-class TestResize:
-    @pytest.mark.parametrize(
-        "data, shape",
-        [
-            pytest.param([[1, 2], [3, 4]], (2, 4)),
-            pytest.param([[1, 2], [3, 4], [1, 2], [3, 4]], (4, 2)),
-            pytest.param([[1, 2, 3], [4, 1, 2], [3, 4, 1], [2, 3, 4]], (4, 3)),
-        ],
-    )
-    def test_copies(self, data, shape):
-        a = numpy.array(data)
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
-
-    @pytest.mark.parametrize("newshape", [(2, 4), [2, 4], (10,), 10])
-    def test_newshape_type(self, newshape):
-        a = numpy.array([[1, 2], [3, 4]])
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, newshape), numpy.resize(a, newshape))
-
-    @pytest.mark.parametrize(
-        "data, shape",
-        [
-            pytest.param([1, 2, 3], (2, 4)),
-            pytest.param([[1, 2], [3, 1], [2, 3], [1, 2]], (4, 2)),
-            pytest.param([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]], (4, 3)),
-        ],
-    )
-    def test_repeats(self, data, shape):
-        a = numpy.array(data)
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
-
-    def test_zeroresize(self):
-        a = numpy.array([[1, 2], [3, 4]])
-        ia = dpnp.array(a)
-        assert_array_equal(dpnp.resize(ia, (0,)), numpy.resize(a, (0,)))
-        assert_equal(a.dtype, ia.dtype)
-
-        assert_equal(dpnp.resize(ia, (0, 2)), numpy.resize(a, (0, 2)))
-        assert_equal(dpnp.resize(ia, (2, 0)), numpy.resize(a, (2, 0)))
-
-    def test_reshape_from_zero(self):
-        a = numpy.zeros(0, dtype=numpy.float32)
-        ia = dpnp.array(a)
-        assert_array_equal(dpnp.resize(ia, (2, 1)), numpy.resize(a, (2, 1)))
-        assert_equal(a.dtype, ia.dtype)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_negative_resize(self, xp):
-        a = xp.arange(0, 10, dtype=xp.float32)
-        new_shape = (-10, -1)
-        with pytest.raises(ValueError, match=r"negative"):
-            xp.resize(a, new_shape=new_shape)
-
-
 class TestReshape:
     def test_error(self):
         ia = dpnp.arange(10)
@@ -815,6 +759,62 @@ class TestReshape:
         assert_raises(
             ValueError, dpnp.reshape, ia, (5, 2), order="F", copy=False
         )
+
+
+class TestResize:
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([[1, 2], [3, 4]], (2, 4)),
+            pytest.param([[1, 2], [3, 4], [1, 2], [3, 4]], (4, 2)),
+            pytest.param([[1, 2, 3], [4, 1, 2], [3, 4, 1], [2, 3, 4]], (4, 3)),
+        ],
+    )
+    def test_copies(self, data, shape):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
+
+    @pytest.mark.parametrize("newshape", [(2, 4), [2, 4], (10,), 10])
+    def test_newshape_type(self, newshape):
+        a = numpy.array([[1, 2], [3, 4]])
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, newshape), numpy.resize(a, newshape))
+
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([1, 2, 3], (2, 4)),
+            pytest.param([[1, 2], [3, 1], [2, 3], [1, 2]], (4, 2)),
+            pytest.param([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]], (4, 3)),
+        ],
+    )
+    def test_repeats(self, data, shape):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
+
+    def test_zeroresize(self):
+        a = numpy.array([[1, 2], [3, 4]])
+        ia = dpnp.array(a)
+        assert_array_equal(dpnp.resize(ia, (0,)), numpy.resize(a, (0,)))
+        assert_equal(a.dtype, ia.dtype)
+
+        assert_equal(dpnp.resize(ia, (0, 2)), numpy.resize(a, (0, 2)))
+        assert_equal(dpnp.resize(ia, (2, 0)), numpy.resize(a, (2, 0)))
+
+    def test_reshape_from_zero(self):
+        a = numpy.zeros(0, dtype=numpy.float32)
+        ia = dpnp.array(a)
+        assert_array_equal(dpnp.resize(ia, (2, 1)), numpy.resize(a, (2, 1)))
+        assert_equal(a.dtype, ia.dtype)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_negative_resize(self, xp):
+        a = xp.arange(0, 10, dtype=xp.float32)
+        new_shape = (-10, -1)
+        with pytest.raises(ValueError, match=r"negative"):
+            xp.resize(a, new_shape=new_shape)
 
 
 class TestRot90:
