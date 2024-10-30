@@ -24,7 +24,8 @@ from .helper import (
 
 class TestArray:
     @pytest.mark.parametrize(
-        "x", [numpy.ones((3, 4)), numpy.ones((0, 4)), [1, 2, 3], []]
+        "x",
+        [numpy.ones(5), numpy.ones((3, 4)), numpy.ones((0, 4)), [1, 2, 3], []],
     )
     @pytest.mark.parametrize("ndmin", [-5, -1, 0, 1, 2, 3, 4, 9, 21])
     def test_ndmin(self, x, ndmin):

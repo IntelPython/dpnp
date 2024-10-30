@@ -421,7 +421,8 @@ def array(
         return result
 
     num_axes = ndmin - res_ndim
-    return result[(dpnp.newaxis,) * num_axes + (slice(None),)]
+    new_shape = (1,) * num_axes + result.shape
+    return result.reshape(new_shape)
 
 
 def asanyarray(
