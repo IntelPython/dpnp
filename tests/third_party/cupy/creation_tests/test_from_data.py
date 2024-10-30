@@ -514,14 +514,14 @@ class TestFromData(unittest.TestCase):
         a[1] = 1
         return b
 
-    @pytest.mark.skip("`device` argument isn't supported")
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
     def test_copy_multigpu(self, dtype, order):
-        with cuda.Device(0):
-            src = cupy.random.uniform(-1, 1, (2, 3)).astype(dtype)
-        with cuda.Device(1):
-            dst = cupy.copy(src, order)
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+
+        src = cupy.random.uniform(-1, 1, (2, 3), device=q1).astype(dtype)
+        dst = cupy.copy(src, order, device=q2)
         testing.assert_allclose(src, dst, rtol=0, atol=0)
 
     @testing.for_CF_orders()
@@ -804,10 +804,13 @@ class TestArrayPreservationOfShape(unittest.TestCase):
         assert a.shape == shape
 
 
-# TODO: ndmin=3 is removed since it needs ndarray.base
 @testing.parameterize(
     *testing.product(
-        {"ndmin": [0, 1, 2], "copy": [True, False, None], "xp": [numpy, cupy]}
+        {
+            "ndmin": [0, 1, 2, 3],
+            "copy": [True, False, None],
+            "xp": [numpy, cupy],
+        }
     )
 )
 class TestArrayCopy(unittest.TestCase):
@@ -823,8 +826,8 @@ class TestArrayCopy(unittest.TestCase):
         # TODO(Kenta Oono): Better determination of copy.
         is_copied = not (
             (actual is a)
-            #    or (actual.base is a)
-            #    or (actual.base is a.base and a.base is not None)
+            or (self.xp is cupy)
+            and (a.get_array()._pointer == actual.get_array()._pointer)
         )
         assert should_copy == is_copied
 

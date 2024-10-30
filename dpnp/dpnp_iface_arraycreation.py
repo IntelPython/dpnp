@@ -377,6 +377,11 @@ def array(
     >>> x
     array([1, 2, 3])
 
+    Upcasting:
+
+    >>> np.array([1, 2, 3.0])
+    array([ 1.,  2.,  3.])
+
     More than one dimension:
 
     >>> x2 = np.array([[1, 2], [3, 4]])
@@ -385,6 +390,16 @@ def array(
     >>> x2
     array([[1, 2],
            [3, 4]])
+
+    Minimum dimensions 2:
+
+    >>> np.array([1, 2, 3], ndmin=2)
+    array([[1, 2, 3]])
+
+    Type provided:
+
+    >>> np.array([1, 2, 3], dtype=complex)
+    array([ 1.+0.j,  2.+0.j,  3.+0.j])
 
     Creating an array on a different device or with a specified usm_type
 
