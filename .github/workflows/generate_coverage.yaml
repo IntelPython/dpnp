@@ -17,7 +17,7 @@ jobs:
 
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -el {0}
 
     env:
       python-ver: '3.12'
