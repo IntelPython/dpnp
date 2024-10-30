@@ -2252,8 +2252,13 @@ def test_solve(matrix, vector, device):
     a_dp = dpnp.array(a_np, device=device)
     b_dp = dpnp.array(b_np, device=device)
 
-    if a_dp.ndim > 2 and a_dp.device.sycl_device.is_cpu:
-        pytest.skip("SAT-6842: reported hanging in public CI")
+    # In numpy 2.0 the broadcast ambiguity has been removed and now
+    # b is treaded as a single vector if and only if it is 1-dimensional;
+    # for other cases this signature must be followed
+    # (..., m, m), (..., m, n) -> (..., m, n)
+    # https://github.com/numpy/numpy/pull/25914
+    if a_dp.ndim > 2 and numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("SAT-6928")
 
     result = dpnp.linalg.solve(a_dp, b_dp)
     expected = numpy.linalg.solve(a_np, b_np)
