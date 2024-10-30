@@ -37,6 +37,8 @@ it contains:
 
 """
 
+import warnings
+
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import (
@@ -65,6 +67,7 @@ __all__ = [
     "amin",
     "average",
     "bincount",
+    "corrcoef",
     "correlate",
     "cov",
     "max",
@@ -401,6 +404,69 @@ def correlate(x1, x2, mode="valid"):
             return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
 
     return call_origin(numpy.correlate, x1, x2, mode=mode)
+
+
+def corrcoef(x, y=None, rowvar=True, bias=None, ddof=None, *, dtype=None):
+    """
+    Return Pearson product-moment correlation coefficients.
+
+    For full documentation refer to :obj:`numpy.corrcoef`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        A 1-D or 2-D array containing multiple variables and observations.
+        Each row of `x` represents a variable, and each column a single
+        observation of all those variables. Also see `rowvar` below.
+    y : {dpnp.ndarray, usm_ndarray}, optional
+        An additional set of variables and observations. `y` has the same
+        shape as `x`.
+    rowvar : {bool}, optional
+        If `rowvar` is True (default), then each row represents a
+        variable, with observations in the columns. Otherwise, the relationship
+        is transposed: each column represents a variable, while the rows
+        contain observations.
+    bias : {None}, optional
+        Has no effect, do not use.
+    ddof : {None}, optional
+        Has no effect, do not use.
+    dtype : data-type, optional
+        Data-type of the result.
+
+    Returns
+    -------
+    R : dpnp.ndarray
+        The correlation coefficient matrix of the variables.
+
+    See Also
+    --------
+    :obj:`dpnp.cov` : Covariance matrix.
+    """
+    if bias is not None or ddof is not None:
+        warnings.warn(
+            "bias and ddof have no effect and are deprecated",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+    out = dpnp.cov(x, y, rowvar, dtype=dtype)
+    try:
+        d = dpnp.diag(out)
+    except ValueError:
+        return out / out
+
+    stddev = dpnp.sqrt(d.real)
+    out /= stddev[:, None]
+    out /= stddev[None, :]
+
+    # Clip real and imaginary parts to [-1, 1].  This does not guarantee
+    # abs(a[i,j]) <= 1 for complex arrays, but is the best we can do without
+    # excessive work.
+    dpnp.clip(out.real, -1, 1, out=out.real)
+    if dpnp.iscomplexobj(out):
+        dpnp.clip(out.imag, -1, 1, out=out.imag)
+
+    return out
 
 
 def cov(
