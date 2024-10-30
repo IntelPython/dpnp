@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+68.g6ba840a8a2e documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+69.gb617d6c15c1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=039b7214"></script>
+      <script src="../../_static/documentation_options.js?v=22b71704"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -409,6 +409,11 @@
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
+<span class="sd">    ndmin : int, optional</span>
+<span class="sd">        Specifies the minimum number of dimensions that the resulting array</span>
+<span class="sd">        should have. Ones will be prepended to the shape as needed to meet</span>
+<span class="sd">        this requirement.</span>
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
@@ -435,7 +440,6 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameter `subok` is supported only with default value ``False``.</span>
-<span class="sd">    Parameter `ndmin` is supported only with default value ``0``.</span>
 <span class="sd">    Parameter `like` is supported only with default value ``None``.</span>
 <span class="sd">    Otherwise, the function raises ``NotImplementedError`` exception.</span>
 
@@ -463,6 +467,11 @@
 <span class="sd">    &gt;&gt;&gt; x</span>
 <span class="sd">    array([1, 2, 3])</span>
 
+<span class="sd">    Upcasting:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.array([1, 2, 3.0])</span>
+<span class="sd">    array([ 1.,  2.,  3.])</span>
+
 <span class="sd">    More than one dimension:</span>
 
 <span class="sd">    &gt;&gt;&gt; x2 = np.array([[1, 2], [3, 4]])</span>
@@ -471,6 +480,16 @@
 <span class="sd">    &gt;&gt;&gt; x2</span>
 <span class="sd">    array([[1, 2],</span>
 <span class="sd">           [3, 4]])</span>
+
+<span class="sd">    Minimum dimensions 2:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.array([1, 2, 3], ndmin=2)</span>
+<span class="sd">    array([[1, 2, 3]])</span>
+
+<span class="sd">    Type provided:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.array([1, 2, 3], dtype=complex)</span>
+<span class="sd">    array([ 1.+0.j,  2.+0.j,  3.+0.j])</span>
 
 <span class="sd">    Creating an array on a different device or with a specified usm_type</span>
 
@@ -489,13 +508,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">ndmin</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;Keyword argument `ndmin` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``0``, but got </span><span class="si">{</span><span class="n">ndmin</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ndmin</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`ndmin` should be an integer, got </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">ndmin</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp_container</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span>
@@ -503,7 +519,15 @@
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="p">)</span>
+
+    <span class="n">res_ndim</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">res_ndim</span> <span class="o">&gt;=</span> <span class="n">ndmin</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">result</span>
+
+    <span class="n">num_axes</span> <span class="o">=</span> <span class="n">ndmin</span> <span class="o">-</span> <span class="n">res_ndim</span>
+    <span class="n">new_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">num_axes</span> <span class="o">+</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">return</span> <span class="n">result</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span></div>
 
 
 
@@ -734,7 +758,7 @@
     <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Return a contiguous array in memory (C order).</span>
+<span class="sd">    Return a contiguous array ``(ndim &gt;= 1)`` in memory (C order).</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.ascontiguousarray`.</span>
 
@@ -830,14 +854,12 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
-    <span class="c1"># at least 1-d array has to be returned</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span>
+        <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
@@ -951,14 +973,12 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">like</span><span class="o">=</span><span class="n">like</span><span class="p">)</span>
 
-    <span class="c1"># at least 1-d array has to be returned</span>
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="s2">&quot;ndim&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">asarray</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="s2">&quot;F&quot;</span><span class="p">,</span>
+        <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
