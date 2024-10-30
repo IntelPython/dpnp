@@ -23,6 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <stdexcept>
+
 #include "dpnp_random_state.hpp"
 #include <oneapi/mkl/rng.hpp>
 
