@@ -456,7 +456,7 @@ jobs:
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
             & cd ${{ env.tests_path }}
-            & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+            & python -m pytest --rootdir=${{ env.tests_path }} -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
