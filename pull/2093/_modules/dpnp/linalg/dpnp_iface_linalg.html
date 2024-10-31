@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+82.g8216d23867b documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev0+88.g8a8b3bbdb52 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=651849cb"></script>
+      <script src="../../../_static/documentation_options.js?v=7096ade7"></script>
       <script src="../../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -180,13 +180,14 @@
     <span class="s2">&quot;tensorinv&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tensorsolve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trace&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vecdot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;vector_norm&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
 <div class="viewcode-block" id="cholesky">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky">[docs]</a>
-<span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cholesky decomposition.</span>
 
@@ -1191,7 +1192,7 @@
 
 <div class="viewcode-block" id="matrix_rank">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_rank.html#dpnp.linalg.matrix_rank">[docs]</a>
-<span class="k">def</span> <span class="nf">matrix_rank</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">matrix_rank</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return matrix rank of array using SVD method.</span>
 
@@ -1202,21 +1203,27 @@
 <span class="sd">    ----------</span>
 <span class="sd">    A : {(M,), (..., M, N)} {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input vector or stack of matrices.</span>
-<span class="sd">    tol : (...) {float, dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Threshold below which SVD values are considered zero. If `tol` is</span>
-<span class="sd">        ``None``, and ``S`` is an array with singular values for `M`, and</span>
-<span class="sd">        ``eps`` is the epsilon value for datatype of ``S``, then `tol` is</span>
-<span class="sd">        set to ``S.max() * max(M.shape) * eps``.</span>
+<span class="sd">    tol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Threshold below which SVD values are considered zero. Only `tol` or</span>
+<span class="sd">        `rtol` can be set at a time. If none of them are provided, defaults</span>
+<span class="sd">        to ``S.max() * max(M, N) * eps`` where `S` is an array with singular</span>
+<span class="sd">        values for `A`, and `eps` is the epsilon value for datatype of `S`.</span>
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    hermitian : bool, optional</span>
 <span class="sd">        If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
 <span class="sd">        Default: ``False``.</span>
+<span class="sd">    rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Parameter for the relative tolerance component. Only `tol` or `rtol`</span>
+<span class="sd">        can be set at a time. If none of them are provided, defaults to</span>
+<span class="sd">        ``max(M, N) * eps`` where `eps` is the epsilon value for datatype</span>
+<span class="sd">        of `S` (an array with singular values for `A`).</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    rank : (...) dpnp.ndarray</span>
-<span class="sd">        Rank of A.</span>
+<span class="sd">        Rank of `A`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1243,8 +1250,12 @@
         <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
             <span class="n">tol</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
+    <span class="k">if</span> <span class="n">rtol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
+            <span class="n">rtol</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp_matrix_rank</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_matrix_rank</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="n">tol</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">)</span></div>
 
 
 
@@ -1597,7 +1608,7 @@
 
 <div class="viewcode-block" id="pinv">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv">[docs]</a>
-<span class="k">def</span> <span class="nf">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="mf">1e-15</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the (Moore-Penrose) pseudo-inverse of a matrix.</span>
 
@@ -1610,20 +1621,27 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Matrix or stack of matrices to be pseudo-inverted.</span>
-<span class="sd">    rcond : {float, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    rcond : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Cutoff for small singular values.</span>
 <span class="sd">        Singular values less than or equal to ``rcond * largest_singular_value``</span>
 <span class="sd">        are set to zero. Broadcasts against the stack of matrices.</span>
-<span class="sd">        Default: ``1e-15``.</span>
+<span class="sd">        Only `rcond` or `rtol` can be set at a time. If none of them are</span>
+<span class="sd">        provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    hermitian : bool, optional</span>
 <span class="sd">        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
 <span class="sd">        Default: ``False``.</span>
+<span class="sd">    rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Same as `rcond`, but it&#39;s an Array API compatible parameter name.</span>
+<span class="sd">        Only `rcond` or `rtol` can be set at a time. If none of them are</span>
+<span class="sd">        provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : (..., N, M) dpnp.ndarray</span>
-<span class="sd">        The pseudo-inverse of a.</span>
+<span class="sd">        The pseudo-inverse of `a`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1634,17 +1652,24 @@
 <span class="sd">    &gt;&gt;&gt; a = np.random.randn(9, 6)</span>
 <span class="sd">    &gt;&gt;&gt; B = np.linalg.pinv(a)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(a, np.dot(a, np.dot(B, a)))</span>
-<span class="sd">    array([ True])</span>
+<span class="sd">    array(True)</span>
 <span class="sd">    &gt;&gt;&gt; np.allclose(B, np.dot(B, np.dot(a, B)))</span>
-<span class="sd">    array([ True])</span>
+<span class="sd">    array(True)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">rcond</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rcond</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
+            <span class="n">rcond</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">rtol</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span>
+            <span class="n">rtol</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp_pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="n">rcond</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="n">hermitian</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">)</span></div>
 
 
 
@@ -2327,6 +2352,64 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">offset</span><span class="p">,</span> <span class="n">axis1</span><span class="o">=-</span><span class="mi">2</span><span class="p">,</span> <span class="n">axis2</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="vecdot">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.vecdot.html#dpnp.linalg.vecdot">[docs]</a>
+<span class="k">def</span> <span class="nf">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the vector dot product.</span>
+
+<span class="sd">    This function is restricted to arguments compatible with the Array API,</span>
+<span class="sd">    contrary to :obj:`dpnp.vecdot`.</span>
+
+<span class="sd">    Let :math:`\mathbf{a}` be a vector in `x1` and :math:`\mathbf{b}` be</span>
+<span class="sd">    a corresponding vector in `x2`. The dot product is defined as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{a} \cdot \mathbf{b} = \sum_{i=0}^{n-1} \overline{a_i}b_i</span>
+
+<span class="sd">    over the dimension specified by `axis` and where :math:`\overline{a_i}`</span>
+<span class="sd">    denotes the complex conjugate if :math:`a_i` is complex and the identity</span>
+<span class="sd">    otherwise.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.linalg.vecdot`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
+<span class="sd">    axis : int, optional</span>
+<span class="sd">        Axis over which to compute the dot product.</span>
+<span class="sd">        Default: ``-1``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The vector dot product of the inputs.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.vecdot` : Similar function with support for more</span>
+<span class="sd">                    keyword arguments.</span>
+<span class="sd">    :obj:`dpnp.vdot` : Complex-conjugating dot product.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Get the projected size along a given normal for an array of vectors.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; v = np.array([[0., 5., 0.], [0., 0., 10.], [0., 6., 8.]])</span>
+<span class="sd">    &gt;&gt;&gt; n = np.array([0., 0.6, 0.8])</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.vecdot(v, n)</span>
+<span class="sd">    array([ 3.,  8., 10.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span></div>
 
 
 
