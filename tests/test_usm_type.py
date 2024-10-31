@@ -833,9 +833,9 @@ def test_cond(usm_type, p):
 @pytest.mark.parametrize(
     "obj", [slice(None, None, 2), 3, [2, 3]], ids=["slice", "int", "list"]
 )
-def test_delete(usm_type_x, usm_type_y):
-    x = dpnp.arange(5, usm_type=usm_type)
-    result = dpnp.delete(x, obj)
+def test_delete(usm_type, obj):
+    x = dp.arange(5, usm_type=usm_type)
+    result = dp.delete(x, obj)
 
     assert x.usm_type == usm_type
     assert result.usm_type == usm_type
