@@ -432,7 +432,10 @@ class TestPad:
         a_dp = dpnp.array(a_np)
         expected = numpy.pad(a_np, [(0,), (2,), (1,)], mode)
         result = dpnp.pad(a_dp, [(0,), (2,), (1,)], mode)
-        assert_dtype_allclose(result, expected)
+        assert result.shape == expected.shape
+        if mode == "constant":
+            # In "empty" mode, arrays are uninitialized and comparing may fail
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "mode",
