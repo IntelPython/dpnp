@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev0+71.g97121023d42 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev0+83.gd321c7c0fa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=05423b36"></script>
+      <script src="../../_static/documentation_options.js?v=3b921c15"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -133,6 +133,7 @@
     <span class="n">dpnp_dot</span><span class="p">,</span>
     <span class="n">dpnp_kron</span><span class="p">,</span>
     <span class="n">dpnp_matmul</span><span class="p">,</span>
+    <span class="n">dpnp_vecdot</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -145,6 +146,7 @@
     <span class="s2">&quot;outer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;tensordot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;vdot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;vecdot&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -232,11 +234,11 @@
         <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
-
-    <span class="c1"># NumPy does not allow casting even if it is safe</span>
+    <span class="c1"># numpy.dot does not allow casting even if it is safe</span>
     <span class="c1"># casting=&quot;no&quot; is used in the following</span>
+    <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">==</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
 
@@ -830,7 +832,6 @@
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">extobj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
 <span class="p">):</span>
@@ -854,18 +855,19 @@
 <span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
 <span class="sd">        array will have data type that is determined by considering</span>
 <span class="sd">        Promotion Type Rule and device capabilities.</span>
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur.</span>
 <span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
-<span class="sd">    axes : {list of tuples}, optional</span>
+<span class="sd">    axes : {None, list of tuples}, optional</span>
 <span class="sd">        A list of tuples with indices of axes the matrix product should operate</span>
 <span class="sd">        on. For instance, for the signature of ``(i,j),(j,k)-&gt;(i,k)``, the base</span>
 <span class="sd">        elements are 2d matrices and these are taken to be stored in the two</span>
 <span class="sd">        last axes of each argument. The corresponding axes keyword would be</span>
-<span class="sd">        [(-2, -1), (-2, -1), (-2, -1)].</span>
+<span class="sd">        ``[(-2, -1), (-2, -1), (-2, -1)]``.</span>
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -876,8 +878,8 @@
 
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
-<span class="sd">    Keyword arguments `subok`, `signature`, `extobj`, and `axis` are</span>
-<span class="sd">    only supported with their default value.</span>
+<span class="sd">    Keyword arguments `subok`, `signature`, and `axis` are only supported with</span>
+<span class="sd">    their default values.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="sd">    See Also</span>
@@ -936,17 +938,13 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">subok</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;subok keyword argument is only supported by its default value.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;signature keyword argument is only supported by its default value.&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="n">extobj</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;extobj keyword argument is only supported by its default value.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
@@ -1246,6 +1244,9 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.dot` : Returns the dot product.</span>
 <span class="sd">    :obj:`dpnp.matmul` : Returns the matrix product.</span>
+<span class="sd">    :obj:`dpnp.vecdot` : Vector dot product of two arrays.</span>
+<span class="sd">    :obj:`dpnp.linalg.vecdot` : Array API compatible version of</span>
+<span class="sd">                    :obj:`dpnp.vecdot`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1289,6 +1290,126 @@
 
     <span class="c1"># dot product of flatten arrays</span>
     <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conjugate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="vecdot">
+<a class="viewcode-back" href="../../reference/generated/dpnp.vecdot.html#dpnp.vecdot">[docs]</a>
+<span class="k">def</span> <span class="nf">vecdot</span><span class="p">(</span>
+    <span class="n">x1</span><span class="p">,</span>
+    <span class="n">x2</span><span class="p">,</span>
+    <span class="o">/</span><span class="p">,</span>
+    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span>
+    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the vector dot product.</span>
+
+<span class="sd">    Let :math:`\mathbf{a}` be a vector in `x1` and :math:`\mathbf{b}` be</span>
+<span class="sd">    a corresponding vector in `x2`. The dot product is defined as:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">       \mathbf{a} \cdot \mathbf{b} = \sum_{i=0}^{n-1} \overline{a_i}b_i</span>
+
+<span class="sd">    where the sum is over the last dimension (unless `axis` is specified) and</span>
+<span class="sd">    where :math:`\overline{a_i}` denotes the complex conjugate if :math:`a_i`</span>
+<span class="sd">    is complex and the identity otherwise.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.vecdot`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    x2 : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        A location into which the result is stored. If provided, it must have</span>
+<span class="sd">        a shape that the broadcasted shape of `x1` and `x2` with the last axis</span>
+<span class="sd">        removed. If not provided or ``None``, a freshly-allocated array is</span>
+<span class="sd">        used.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
+<span class="sd">        Controls what kind of data casting may occur.</span>
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
+<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
+<span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="sd">        Default: ``&quot;K&quot;``.</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">        Type to use in computing the vector dot product. By default, the</span>
+<span class="sd">        returned array will have data type that is determined by considering</span>
+<span class="sd">        Promotion Type Rule and device capabilities.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    axes : {None, list of tuples}, optional</span>
+<span class="sd">        A list of tuples with indices of axes the matrix product should operate</span>
+<span class="sd">        on. For instance, for the signature of ``(i),(i)-&gt;()``, the base</span>
+<span class="sd">        elements are vectors and these are taken to be stored in the last axes</span>
+<span class="sd">        of each argument. The corresponding axes keyword would be</span>
+<span class="sd">        ``[(-1,), (-1), ()]``.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis over which to compute the dot product. This is a short-cut for</span>
+<span class="sd">        passing in axes with entries of ``(axis,)`` for each</span>
+<span class="sd">        single-core-dimension argument and ``()`` for all others. For instance,</span>
+<span class="sd">        for a signature ``(i),(i)-&gt;()``, it is equivalent to passing in</span>
+<span class="sd">        ``axes=[(axis,), (axis,), ()]``.</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The vector dot product of the inputs.</span>
+<span class="sd">        This is a 0-d array only when both `x1`, `x2` are 1-d vectors.</span>
+
+<span class="sd">    Limitations</span>
+<span class="sd">    -----------</span>
+<span class="sd">    Keyword arguments `subok`, and `signature` are only supported with their</span>
+<span class="sd">    default values. Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.linalg.vecdot` : Array API compatible version.</span>
+<span class="sd">    :obj:`dpnp.vdot` : Complex-conjugating dot product.</span>
+<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Get the projected size along a given normal for an array of vectors.</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; v = np.array([[0., 5., 0.], [0., 0., 10.], [0., 6., 8.]])</span>
+<span class="sd">    &gt;&gt;&gt; n = np.array([0., 0.6, 0.8])</span>
+<span class="sd">    &gt;&gt;&gt; np.vecdot(v, n)</span>
+<span class="sd">    array([ 3.,  8., 10.])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">subok</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;subok keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;signature keyword argument is only supported by its default value.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp_vecdot</span><span class="p">(</span>
+        <span class="n">x1</span><span class="p">,</span>
+        <span class="n">x2</span><span class="p">,</span>
+        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
+        <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">,</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
