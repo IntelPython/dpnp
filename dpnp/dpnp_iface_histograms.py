@@ -42,6 +42,7 @@ import warnings
 
 import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._type_utils import _can_cast
 
 import dpnp
 
@@ -304,26 +305,10 @@ def _result_type_for_device(dtype1, dtype2, device):
     return map_dtype_to_device(rt, device)
 
 
-def _supported_by_device(dtype, device):
-    if dtype in [dpnp.float64, dpnp.complex128]:
-        return device.has_aspect_fp64
-
-    if dtype == dpnp.float16:
-        return device.has_aspect_fp16
-
-    return True
-
-
-def _can_cast(dtype1, dtype2, device):
-    if not _supported_by_device(dtype1, device) or not _supported_by_device(
-        dtype2, device
-    ):
-        return False
-
-    return dpnp.can_cast(dtype1, dtype2)
-
-
 def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
+    has_fp64 = device.has_aspect_fp64
+    has_fp16 = device.has_aspect_fp16
+
     a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
 
     # histogram implementation doesn't support uint64 as histogram type
@@ -335,11 +320,12 @@ def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
         return a_bin_dtype, ntype
 
     for sample_type, hist_type in supported_types:
-        if _can_cast(a_bin_dtype, sample_type, device) and _can_cast(
-            ntype, hist_type, device
-        ):
+        if _can_cast(
+            a_bin_dtype, sample_type, has_fp16, has_fp64
+        ) and _can_cast(ntype, hist_type, has_fp16, has_fp64):
             return sample_type, hist_type
 
+    # should not happen
     return None, None
 
 
@@ -468,6 +454,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     # host usm memory
     n_usm_type = "device" if usm_type == "host" else usm_type
 
+    # histogram implementation requires output array to be filled with zeros
     n_casted = dpnp.zeros(
         bin_edges.size - 1,
         dtype=hist_dtype,

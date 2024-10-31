@@ -102,9 +102,13 @@ void validate(const usm_ndarray &sample,
 
     auto check_overlaping = [&](const array_ptr &first,
                                 const array_ptr &second) {
+        if (first == nullptr || second == nullptr) {
+            return;
+        }
+
         const auto &overlap = dpctl::tensor::overlap::MemoryOverlap();
 
-        if (overlap(sample, histogram)) {
+        if (overlap(*first, *second)) {
             throw py::value_error(get_name(first) +
                                   " has overlapping memory segments with " +
                                   get_name(second));

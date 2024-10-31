@@ -41,8 +41,6 @@
 #include "histogram.hpp"
 #include "histogram_common.hpp"
 
-#include <iostream>
-
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 
@@ -139,7 +137,7 @@ struct histogram_kernel
             cgh.depends_on(depends);
             constexpr uint32_t dims = 1;
 
-            auto dispatch_edges = [&](uint32_t local_mem, auto &weights,
+            auto dispatch_edges = [&](uint32_t local_mem, const auto &weights,
                                       auto &hist) {
                 if (device.is_gpu() && (local_mem >= bins_count + 1)) {
                     auto edges = CachedEdges(bins_edges, bins_count + 1, cgh);
@@ -153,7 +151,7 @@ struct histogram_kernel
                 }
             };
 
-            auto dispatch_bins = [&](auto &weights) {
+            auto dispatch_bins = [&](const auto &weights) {
                 const auto local_mem_size =
                     get_local_mem_size_in_items<T>(device);
                 if (local_mem_size >= bins_count) {

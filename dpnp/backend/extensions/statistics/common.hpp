@@ -101,7 +101,8 @@ struct IsNan
 {
     static bool isnan(const T &v)
     {
-        if constexpr (std::is_floating_point_v<T>) {
+        if constexpr (std::is_floating_point_v<T> ||
+                      std::is_same_v<T, sycl::half>) {
             return sycl::isnan(v);
         }
 
