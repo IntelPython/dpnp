@@ -1350,10 +1350,11 @@ def put_along_axis(a, ind, values, axis, mode="wrap"):
     mode : {"wrap", "clip"}, optional
         Specifies how out-of-bounds indices will be handled. Possible values
         are:
-        
+
         - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
           negative indices.
         - ``"clip"``: clips indices to (``0 <= i < n``).
+
         Default: ``"wrap"``.
 
     See Also
