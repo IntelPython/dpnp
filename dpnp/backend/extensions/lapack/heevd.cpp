@@ -23,6 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <stdexcept>
+
 #include <pybind11/stl.h>
 
 #include "evd_common.hpp"

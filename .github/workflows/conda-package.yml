@@ -25,6 +25,7 @@ env:
       test_arithmetic.py
       test_arraycreation.py
       test_arraymanipulation.py
+      test_arraypad.py
       test_bitwise.py
       test_copy.py
       test_counting.py
@@ -60,6 +61,7 @@ env:
       third_party/cupy/logic_tests
       third_party/cupy/manipulation_tests
       third_party/cupy/math_tests
+      third_party/cupy/padding_tests
       third_party/cupy/sorting_tests
       third_party/cupy/statistics_tests/test_histogram.py
       third_party/cupy/statistics_tests/test_meanvar.py

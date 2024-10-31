@@ -23,6 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <stdexcept>
+
 #include <oneapi/mkl.hpp>
 #include <sycl/sycl.hpp>
 
