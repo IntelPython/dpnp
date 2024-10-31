@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.partition
+======================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.partition
