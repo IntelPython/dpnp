@@ -989,7 +989,7 @@ class dpnp_array:
 
         Returns
         -------
-        out: dpnp.ndarray
+        out : dpnp.ndarray
             A copy of the input array, flattened to one dimension.
 
         See Also
@@ -1052,40 +1052,55 @@ class dpnp_array:
         else:
             raise TypeError("array does not have imaginary part to set")
 
-    def item(self, id=None):
+    def item(self, *args):
         """
         Copy an element of an array to a standard Python scalar and return it.
 
         For full documentation refer to :obj:`numpy.ndarray.item`.
 
+        Parameters
+        ----------
+        *args : {none, int, tuple of ints}
+            - none: in this case, the method only works for arrays with
+              one element (``a.size == 1``), which element is copied into a
+              standard Python scalar object and returned.
+            - int: this argument is interpreted as a flat index into the array,
+              specifying which element to copy and return.
+            - tuple of ints: functions as does a single int argument, except
+              that the argument is interpreted as an nd-index into the array.
+
+        Returns
+        -------
+        out : Standard Python scalar object
+            A copy of the specified element of the array as a suitable Python scalar.
+
         Examples
         --------
+        >>> import dpnp as np
         >>> np.random.seed(123)
         >>> x = np.random.randint(9, size=(3, 3))
         >>> x
-        array([[2, 2, 6],
-               [1, 3, 6],
-               [1, 0, 1]])
+        array([[0, 0, 7],
+               [6, 6, 6],
+               [0, 7, 1]])
         >>> x.item(3)
-        1
+        6
         >>> x.item(7)
-        0
+        7
         >>> x.item((0, 1))
-        2
+        0
         >>> x.item((2, 2))
         1
 
+        >>> x = np.array(5)
+        >>> x.item()
+        5
+
         """
 
-        if id is None:
-            if self.size != 1:
-                raise ValueError(
-                    "DPNP ndarray::item(): can only convert an array of size 1 to a Python scalar"
-                )
-            else:
-                id = 0
-
-        return self.flat[id]
+        # TODO: implement a more efficient way to avoid copying to host
+        # for large arrays using `asnumpy()`
+        return self.asnumpy().item(*args)
 
     @property
     def itemsize(self):
