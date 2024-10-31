@@ -1342,6 +1342,33 @@ def test_out_multi_dot(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_pad(device):
+    all_modes = [
+        "constant",
+        "edge",
+        "linear_ramp",
+        "maximum",
+        "mean",
+        "median",
+        "minimum",
+        "reflect",
+        "symmetric",
+        "wrap",
+        "empty",
+    ]
+    dpnp_data = dpnp.arange(100, device=device)
+    expected_queue = dpnp_data.sycl_queue
+    for mode in all_modes:
+        result = dpnp.pad(dpnp_data, (25, 20), mode=mode)
+        result_queue = result.sycl_queue
+        assert_sycl_queue_equal(result_queue, expected_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_require(device):
     dpnp_data = dpnp.arange(10, device=device).reshape(2, 5)
     result = dpnp.require(dpnp_data, dtype="f4", requirements=["F"])
