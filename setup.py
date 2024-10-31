@@ -46,36 +46,6 @@ Operating System :: POSIX
 Operating System :: Unix
 """
 
-EXCLUDED_DIRS = ["tests_perf"]
-
-
-def find_tests_files():
-    files_by_destination = {}
-    for root, dirs, files in os.walk("tests"):
-        # Exclude specified directories
-        dirs[:] = [dir for dir in dirs if dir not in EXCLUDED_DIRS]
-
-        for file in files:
-            file_path = os.path.join(root, file)
-            # Get the path relative to `tests`` to keep folder structure
-            relative_path = os.path.relpath(file_path, "tests")
-            destination = os.path.join(
-                "dpnp/tests", os.path.dirname(relative_path)
-            )
-
-            # Add the file to the correct destination folder in the dictionary
-            if destination not in files_by_destination:
-                files_by_destination[destination] = []
-            files_by_destination[destination].append(file_path)
-
-    # Convert the dictionary to the format expected by data_files:
-    # [(destination_folder, [list_of_files])]
-    tests_files = [
-        (dest, files) for dest, files in files_by_destination.items()
-    ]
-
-    return tests_files
-
 
 setup(
     name="dpnp",
@@ -98,13 +68,16 @@ setup(
         "dpnp.linalg",
         "dpnp.random",
     ],
-    data_files=find_tests_files(),
     package_data={
         "dpnp": [
             "backend/include/*.hpp",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",
+            "tests/*.*",
+            "tests/testing/*.py",
+            "tests/third_party/cupy/*.py",
+            "tests/third_party/cupy/*/*.py",
         ]
     },
     include_package_data=False,
