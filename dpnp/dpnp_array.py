@@ -1102,8 +1102,6 @@ class dpnp_array:
         # for large arrays using `asnumpy()`
         return self.asnumpy().item(*args)
 
-    # 'itemset',
-
     @property
     def itemsize(self):
         """Size of one array element in bytes."""
@@ -1207,8 +1205,6 @@ class dpnp_array:
         """
 
         return self._array_obj.ndim
-
-    # 'newbyteorder',
 
     def nonzero(self):
         """
