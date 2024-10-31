@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,22 +24,40 @@
 //*****************************************************************************
 
 #pragma once
-#include <cstring>
-#include <exception>
 
-namespace dpnp::extensions::lapack
+#include <sycl/sycl.hpp>
+
+#include "dispatch_table.hpp"
+
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+
+namespace statistics
 {
-class LinAlgError : public std::exception
+namespace histogram
 {
-public:
-    explicit LinAlgError(const char *message) : msg_(message) {}
+struct Histogram
+{
+    using FnT = sycl::event (*)(sycl::queue &,
+                                const void *,
+                                const void *,
+                                const void *,
+                                void *,
+                                const size_t,
+                                const size_t,
+                                const std::vector<sycl::event> &);
 
-    const char *what() const noexcept override
-    {
-        return msg_.c_str();
-    }
+    common::DispatchTable2<FnT> dispatch_table;
 
-private:
-    std::string msg_;
+    Histogram();
+
+    std::tuple<sycl::event, sycl::event>
+        call(const dpctl::tensor::usm_ndarray &input,
+             const dpctl::tensor::usm_ndarray &bins_edges,
+             std::optional<const dpctl::tensor::usm_ndarray> &weights,
+             dpctl::tensor::usm_ndarray &output,
+             const std::vector<sycl::event> &depends);
 };
-} // namespace dpnp::extensions::lapack
+
+void populate_histogram(py::module_ m);
+} // namespace histogram
+} // namespace statistics

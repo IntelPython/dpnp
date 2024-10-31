@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023-2024, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -22,24 +22,17 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
+//
+// This file defines functions of dpnp.backend._lapack_impl extensions
+//
+//*****************************************************************************
 
-#pragma once
-#include <cstring>
-#include <exception>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-namespace dpnp::extensions::lapack
+#include "histogram.hpp"
+
+PYBIND11_MODULE(_statistics_impl, m)
 {
-class LinAlgError : public std::exception
-{
-public:
-    explicit LinAlgError(const char *message) : msg_(message) {}
-
-    const char *what() const noexcept override
-    {
-        return msg_.c_str();
-    }
-
-private:
-    std::string msg_;
-};
-} // namespace dpnp::extensions::lapack
+    statistics::histogram::populate_histogram(m);
+}

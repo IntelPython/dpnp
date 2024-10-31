@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <stdexcept>
+
 #include <oneapi/mkl.hpp>
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
