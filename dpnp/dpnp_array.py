@@ -1098,14 +1098,8 @@ class dpnp_array:
 
         """
 
-        if args is None:
-            if self.size != 1:
-                raise ValueError(
-                    "can only convert an array of size 1 to a Python scalar"
-                )
-            else:
-                args = 0
-
+        # TODO: implement a more efficient way to avoid copying to host
+        # for large arrays using `asnumpy()`
         return self.asnumpy().item(*args)
 
     # 'itemset',
