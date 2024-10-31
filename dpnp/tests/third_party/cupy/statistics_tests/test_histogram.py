@@ -5,9 +5,8 @@ import numpy
 import pytest
 
 import dpnp as cupy
-
-from ....helper import has_support_aspect64
-from .. import testing
+from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 # Note that numpy.bincount does not support uint64 on 64-bit environment
 # as it casts an input array to intp.

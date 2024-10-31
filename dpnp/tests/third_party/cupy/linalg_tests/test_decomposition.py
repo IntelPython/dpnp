@@ -4,14 +4,13 @@ import numpy
 import pytest
 
 import dpnp as cupy
-
-from ....helper import (
+from dpnp.tests.helper import (
     has_support_aspect64,
     is_cpu_device,
     is_win_platform,
 )
-from .. import testing
-from ..testing import _condition
+from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing import _condition
 
 
 def random_matrix(shape, dtype, scale, sym=False):

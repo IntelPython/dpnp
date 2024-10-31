@@ -10,9 +10,8 @@ else:
     from numpy import ComplexWarning
 
 import dpnp as cupy
-
-from ....helper import has_support_aspect16, has_support_aspect64
-from .. import testing
+from dpnp.tests.helper import has_support_aspect16, has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 float_types = [numpy.float16, numpy.float32, numpy.float64]
 complex_types = [numpy.complex64, numpy.complex128]

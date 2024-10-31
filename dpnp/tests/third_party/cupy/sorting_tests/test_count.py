@@ -3,8 +3,7 @@ import unittest
 import numpy
 
 import dpnp as cupy
-
-from .. import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestCount(unittest.TestCase):

@@ -4,8 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-
-from .. import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestIsScalar(testing.NumpyAliasBasicTestBase):

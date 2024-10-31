@@ -5,8 +5,7 @@ import pytest
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
-
-from .. import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestDims(unittest.TestCase):

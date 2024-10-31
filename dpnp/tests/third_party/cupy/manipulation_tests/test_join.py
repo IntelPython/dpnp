@@ -7,9 +7,8 @@ else:
     from numpy import AxisError, ComplexWarning
 
 import dpnp as cupy
-
-from ....helper import has_support_aspect64
-from .. import testing
+from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestJoin:

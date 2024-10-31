@@ -6,7 +6,7 @@ import pytest
 import dpnp as cupy
 
 # from cupy.core import _accelerator
-from .. import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 @testing.parameterize(

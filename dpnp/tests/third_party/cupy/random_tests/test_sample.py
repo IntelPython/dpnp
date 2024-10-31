@@ -6,9 +6,8 @@ import pytest
 
 import dpnp as cupy
 from dpnp import random
-
-from .. import testing
-from ..testing import _condition, _hypothesis
+from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing import _condition, _hypothesis
 
 
 class TestRandint(unittest.TestCase):

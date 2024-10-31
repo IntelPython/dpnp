@@ -2,7 +2,7 @@ import unittest
 
 import numpy
 
-from .. import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 def _calc_out_shape(shape, axis, keepdims):

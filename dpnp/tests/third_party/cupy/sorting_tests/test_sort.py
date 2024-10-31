@@ -5,9 +5,8 @@ import pytest
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
-
-from ....helper import has_support_aspect64
-from .. import testing
+from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.third_party.cupy import testing
 
 
 def get_array_module(*args):
