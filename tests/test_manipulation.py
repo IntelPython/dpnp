@@ -667,7 +667,7 @@ class TestRequire:
         assert expected.flags["F"] == result.flags["F"]
         assert expected.flags["W"] == result.flags["W"]
         assert expected.dtype == result.dtype
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
 
     def test_C_and_F_simul(self):
         a = self.generate_all_false("f4")
@@ -683,7 +683,7 @@ class TestRequire:
         result = dpnp.require(a_dp, requirements=["W", "C"])
         # copy is done
         assert result is not a_dp
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
 
 
 class TestReshape:
