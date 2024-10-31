@@ -42,8 +42,15 @@ import warnings
 
 import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._type_utils import _can_cast
 
 import dpnp
+
+# pylint: disable=no-name-in-module
+import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import map_dtype_to_device
 
 __all__ = [
     "digitize",
@@ -201,19 +208,6 @@ def _get_bin_edges(a, bins, range, usm_type):
     return bin_edges, None
 
 
-def _search_sorted_inclusive(a, v):
-    """
-    Like :obj:`dpnp.searchsorted`, but where the last item in `v` is placed
-    on the right.
-    In the context of a histogram, this makes the last bin edge inclusive
-
-    """
-
-    return dpnp.concatenate(
-        (a.searchsorted(v[:-1], "left"), a.searchsorted(v[-1:], "right"))
-    )
-
-
 def digitize(x, bins, right=False):
     """
     Return the indices of the bins to which each value in input array belongs.
@@ -306,6 +300,35 @@ def digitize(x, bins, right=False):
     return bins.size - dpnp.searchsorted(bins[::-1], x, side=side)
 
 
+def _result_type_for_device(dtype1, dtype2, device):
+    rt = dpnp.result_type(dtype1, dtype2)
+    return map_dtype_to_device(rt, device)
+
+
+def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
+    has_fp64 = device.has_aspect_fp64
+    has_fp16 = device.has_aspect_fp16
+
+    a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
+
+    # histogram implementation doesn't support uint64 as histogram type
+    # we can use int64 instead. Result would be correct even in case of overflow
+    if ntype == numpy.uint64:
+        ntype = dpnp.int64
+
+    if (a_bin_dtype, ntype) in supported_types:
+        return a_bin_dtype, ntype
+
+    for sample_type, hist_type in supported_types:
+        if _can_cast(
+            a_bin_dtype, sample_type, has_fp16, has_fp64
+        ) and _can_cast(ntype, hist_type, has_fp16, has_fp64):
+            return sample_type, hist_type
+
+    # should not happen
+    return None, None
+
+
 def histogram(a, bins=10, range=None, density=None, weights=None):
     """
     Compute the histogram of a data set.
@@ -393,7 +416,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
 
-    bin_edges, uniform_bins = _get_bin_edges(a, bins, range, usm_type)
+    bin_edges, _ = _get_bin_edges(a, bins, range, usm_type)
 
     # Histogram is an integer or a float array depending on the weights.
     if weights is None:
@@ -401,41 +424,74 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     else:
         ntype = weights.dtype
 
-    # The fast path uses bincount, but that only works for certain types
-    # of weight
-    # simple_weights = (
-    #     weights is None or
-    #     dpnp.can_cast(weights.dtype, dpnp.double) or
-    #     dpnp.can_cast(weights.dtype, complex)
-    # )
-    # TODO: implement a fast path
-    simple_weights = False
+    queue = a.sycl_queue
+    device = queue.sycl_device
 
-    if uniform_bins is not None and simple_weights:
-        # TODO: implement fast algorithm for equal bins
-        pass
+    supported_types = statistics_ext.histogram_dtypes()
+    a_bin_dtype, hist_dtype = _align_dtypes(
+        a.dtype, bin_edges.dtype, ntype, supported_types, device
+    )
+
+    if a_bin_dtype is None or hist_dtype is None:
+        raise ValueError(
+            f"function '{histogram}' does not support input types "
+            f"({a.dtype}, {bin_edges.dtype}, {ntype}), "
+            "and the inputs could not be coerced to any "
+            "supported types"
+        )
+
+    a_casted = dpnp.astype(a, a_bin_dtype, order="C", copy=False)
+    bin_edges_casted = dpnp.astype(
+        bin_edges, a_bin_dtype, order="C", copy=False
+    )
+    weights_casted = (
+        dpnp.astype(weights, hist_dtype, order="C", copy=False)
+        if weights is not None
+        else None
+    )
+
+    # histogram implementation uses atomics, but atomics doesn't work with
+    # host usm memory
+    n_usm_type = "device" if usm_type == "host" else usm_type
+
+    # histogram implementation requires output array to be filled with zeros
+    n_casted = dpnp.zeros(
+        bin_edges.size - 1,
+        dtype=hist_dtype,
+        sycl_queue=a.sycl_queue,
+        usm_type=n_usm_type,
+    )
+
+    _manager = dpu.SequentialOrderManager[queue]
+
+    a_usm = dpnp.get_usm_ndarray(a_casted)
+    bins_usm = dpnp.get_usm_ndarray(bin_edges_casted)
+    weights_usm = (
+        dpnp.get_usm_ndarray(weights_casted)
+        if weights_casted is not None
+        else None
+    )
+    n_usm = dpnp.get_usm_ndarray(n_casted)
+
+    mem_ev, ht_ev = statistics_ext.histogram(
+        a_usm,
+        bins_usm,
+        weights_usm,
+        n_usm,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(mem_ev, ht_ev)
+
+    if usm_type != n_usm_type:
+        n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
     else:
-        # Compute via cumulative histogram
-        if weights is None:
-            sa = dpnp.sort(a)
-            cum_n = _search_sorted_inclusive(sa, bin_edges)
-        else:
-            zero = dpnp.zeros(
-                1, dtype=ntype, sycl_queue=a.sycl_queue, usm_type=usm_type
-            )
-            sorting_index = dpnp.argsort(a)
-            sa = a[sorting_index]
-            sw = weights[sorting_index]
-            cw = dpnp.concatenate((zero, sw.cumsum(dtype=ntype)))
-            bin_index = _search_sorted_inclusive(sa, bin_edges)
-            cum_n = cw[bin_index]
-
-        n = dpnp.diff(cum_n)
+        n = dpnp.astype(n_casted, ntype, copy=False)
 
     if density:
-        # pylint: disable=possibly-used-before-assignment
-        db = dpnp.diff(bin_edges).astype(dpnp.default_float_type())
-        return n / db / n.sum(), bin_edges
+        db = dpnp.astype(
+            dpnp.diff(bin_edges), dpnp.default_float_type(sycl_queue=queue)
+        )
+        return n / db / dpnp.sum(n), bin_edges
 
     return n, bin_edges
 
