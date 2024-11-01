@@ -3779,12 +3779,6 @@ out : dpnp.ndarray
     The data type of the returned array is determined by the Type Promotion
     Rules.
 
-Limitations
------------
-Parameters `where` and `subok` are supported with their default values.
-Keyword argument `kwargs` is currently unsupported.
-Otherwise ``NotImplementedError`` exception will be raised.
-
 Notes
 -----
 The name sinc is short for "sine cardinal" or "sinus cardinalis".
