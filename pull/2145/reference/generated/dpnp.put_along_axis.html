@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.put_along_axis &mdash; Data Parallel Extension for NumPy 0.17.0dev0+80.g7428dfb25a4 documentation</title>
+  <title>dpnp.put_along_axis &mdash; Data Parallel Extension for NumPy 0.17.0dev0+83.g8d1fceb97b5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8f61ae77"></script>
+      <script src="../../_static/documentation_options.js?v=b22ac114"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -121,7 +121,7 @@
 <h1>dpnp.put_along_axis<a class="headerlink" href="#dpnp-put-along-axis" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.put_along_axis">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">put_along_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#put_along_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.put_along_axis" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">put_along_axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'wrap'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#put_along_axis"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.put_along_axis" title="Link to this definition"></a></dt>
 <dd><p>Put values into the destination array by matching 1d index and data slices.</p>
 <p>This iterates over matching 1d slices oriented along the specified axis in
 the index and data arrays, and uses the former to place values into the
@@ -138,8 +138,17 @@ dimension of input array, but dimensions in <code class="docutils literal notran
 may be 1 to broadcast against <cite>a</cite>.</p></li>
 <li><p><strong>values</strong> (<em>{scalar</em><em>, </em><em>array_like}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>J</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) -- Values to insert at those indices. Its shape and dimension are
 broadcast to match that of <cite>ind</cite>.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) -- The axis to take 1d slices along. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the destination
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em>) -- The axis to take 1d slices along. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>, the destination
 array is treated as if a flattened 1d view had been created of it.</p></li>
+<li><p><strong>mode</strong> (<em>{&quot;wrap&quot;</em><em>, </em><em>&quot;clip&quot;}</em><em>, </em><em>optional</em>) -- <p>Specifies how out-of-bounds indices will be handled. Possible values
+are:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>: clamps indices to (<code class="docutils literal notranslate"><span class="pre">-n</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>), then wraps
+negative indices.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;clip&quot;</span></code>: clips indices to (<code class="docutils literal notranslate"><span class="pre">0</span> <span class="pre">&lt;=</span> <span class="pre">i</span> <span class="pre">&lt;</span> <span class="pre">n</span></code>).</p></li>
+</ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 </dl>
