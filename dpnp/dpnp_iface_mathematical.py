@@ -130,6 +130,7 @@ __all__ = [
     "round",
     "sign",
     "signbit",
+    "spacing",
     "subtract",
     "sum",
     "trapezoid",
@@ -3746,6 +3747,62 @@ signbit = DPNPUnaryFunc(
     ti._signbit_result_type,
     ti._signbit,
     _SIGNBIT_DOCSTRING,
+)
+
+
+_SPACING_DOCSTRING = """
+Return the distance between `x` and the nearest adjacent number.
+
+For full documentation refer to :obj:`numpy.spacing`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    The array of values to find the spacing of, expected to have a real-valued
+    data type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The spacing of values of `x`. The data type of the returned array is
+    determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Notes
+-----
+It can be considered as a generalization of EPS:
+``dpnp.spacing(dpnp.float64(1)) == dpnp.finfo(dpnp.float64).eps``, and there
+should not be any representable number between ``x + spacing(x)`` and `x` for
+any finite `x`.
+
+Spacing of +- inf and NaN is ``NaN``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array(1)
+>>> b = np.spacing(a)
+>>> b == np.finfo(b.dtype).eps
+array(True)
+"""
+
+spacing = DPNPUnaryFunc(
+    "spacing",
+    ufi._spacing_result_type,
+    ufi._spacing,
+    _SPACING_DOCSTRING,
 )
 
 

@@ -1897,6 +1897,93 @@ class TestRealIfClose:
         assert_raises(TypeError, xp.real_if_close, a, tol=tol_val)
 
 
+class TestSpacing:
+    @pytest.mark.parametrize("sign", [1, -1])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_basic(self, sign, dt):
+        a = numpy.array(
+            [1, numpy.nan, numpy.inf, 1e10, 1e-5, 1000, 10500], dtype=dt
+        )
+        a *= sign
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_equal(result, expected)
+
+        # switch to negatives
+        result = dpnp.spacing(-ia)
+        expected = numpy.spacing(-a)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_zeros(self, dt):
+        a = numpy.array([0.0, -0.0], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            assert_equal(result, expected)
+        else:
+            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
+            # positive value (looks as a bug in NumPy), because for any other
+            # negative input the NumPy result will be also a negative value.
+            expected[1] *= -1
+            assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes(no_float16=False))
+    @pytest.mark.parametrize("val", [1, 1e-5, 1000])
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_vs_nextafter(self, val, dt, xp):
+        a = xp.array(val, dtype=dt)
+        a1 = xp.array(val + 1, dtype=dt)
+        assert (xp.nextafter(a, a1) - a) == xp.spacing(a)
+
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    def test_fp16(self):
+        a = numpy.arange(0x7C00, dtype=numpy.uint16)
+
+        # all values are non-negative finites
+        b = a.view(dtype=numpy.float16)
+        ib = dpnp.array(b)
+
+        result = dpnp.spacing(ib)
+        expected = numpy.spacing(b)
+        assert_equal(result, expected)
+
+        # switch to negatives
+        a |= 0x8000
+        ib = dpnp.array(b)
+
+        result = dpnp.spacing(ib)
+        expected = numpy.spacing(b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    def test_integer(self, dt):
+        a = numpy.array([1, 0, -3], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_dtype_allclose(result, expected)
+
+    def test_bool(self):
+        a = numpy.array([True, False])
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_complex(self, xp):
+        a = xp.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+        assert_raises((TypeError, ValueError), xp.spacing, a)
+
+
 class TestTrapezoid:
     def get_numpy_func(self):
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
