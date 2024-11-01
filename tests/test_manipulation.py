@@ -433,7 +433,7 @@ class TestDelete:
         with pytest.raises(IndexError):
             dpnp.delete(a, dpnp.array([1.0, 2.0]))
         with pytest.raises(IndexError):
-            dpnp.delete(a, dpnp.array([], dtype=float))
+            dpnp.delete(a, dpnp.array([], dtype=dpnp.float32))
 
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_order(self, order):
