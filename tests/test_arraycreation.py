@@ -9,6 +9,7 @@ from numpy.testing import (
     assert_allclose,
     assert_array_equal,
     assert_equal,
+    assert_raises,
 )
 
 import dpnp
@@ -19,6 +20,41 @@ from .helper import (
     get_all_dtypes,
     has_support_aspect64,
 )
+
+
+class TestArray:
+    @pytest.mark.parametrize(
+        "x",
+        [numpy.ones(5), numpy.ones((3, 4)), numpy.ones((0, 4)), [1, 2, 3], []],
+    )
+    @pytest.mark.parametrize("ndmin", [-5, -1, 0, 1, 2, 3, 4, 9, 21])
+    def test_ndmin(self, x, ndmin):
+        a = numpy.array(x, ndmin=ndmin)
+        ia = dpnp.array(x, ndmin=ndmin)
+        assert_array_equal(ia, a)
+
+    @pytest.mark.parametrize(
+        "x",
+        [
+            numpy.ones((2, 3, 4, 5)),
+            numpy.ones((3, 4)),
+            numpy.ones((0, 4)),
+            [1, 2, 3],
+            [],
+        ],
+    )
+    @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
+    @pytest.mark.parametrize("ndmin", [1, 2, 3, 4, 9, 21])
+    def test_ndmin_order(self, x, order, ndmin):
+        a = numpy.array(x, order=order, ndmin=ndmin)
+        ia = dpnp.array(x, order=order, ndmin=ndmin)
+        assert a.flags.c_contiguous == ia.flags.c_contiguous
+        assert a.flags.f_contiguous == ia.flags.f_contiguous
+        assert_array_equal(ia, a)
+
+    def test_error(self):
+        x = numpy.ones((3, 4))
+        assert_raises(TypeError, dpnp.array, x, ndmin=3.0)
 
 
 class TestTrace:
@@ -140,17 +176,9 @@ def test_exception_subok(func, args):
         getattr(dpnp, func)(x, *args, subok=True)
 
 
-@pytest.mark.parametrize(
-    "start", [0, -5, 10, -2.5, 9.7], ids=["0", "-5", "10", "-2.5", "9.7"]
-)
-@pytest.mark.parametrize(
-    "stop",
-    [None, 10, -2, 20.5, 1000],
-    ids=["None", "10", "-2", "20.5", "10**5"],
-)
-@pytest.mark.parametrize(
-    "step", [None, 1, 2.7, -1.6, 100], ids=["None", "1", "2.7", "-1.6", "100"]
-)
+@pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
+@pytest.mark.parametrize("stop", [None, 10, -2, 20.5, 1000])
+@pytest.mark.parametrize("step", [None, 1, 2.7, -1.6, 100])
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )
@@ -188,11 +216,7 @@ def test_arange(start, stop, step, dtype):
 
 
 @pytest.mark.parametrize("func", ["diag", "diagflat"])
-@pytest.mark.parametrize(
-    "k",
-    [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6],
-    ids=["-6", "-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5", "6"],
-)
+@pytest.mark.parametrize("k", [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6])
 @pytest.mark.parametrize(
     "v",
     [
@@ -251,17 +275,11 @@ def test_diag_diagflat_seq(func, seq):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("N", [0, 1, 2, 3], ids=["0", "1", "2", "3"])
-@pytest.mark.parametrize(
-    "M", [None, 0, 1, 2, 3], ids=["None", "0", "1", "2", "3"]
-)
-@pytest.mark.parametrize(
-    "k",
-    [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-    ids=["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"],
-)
+@pytest.mark.parametrize("N", [0, 1, 2, 3])
+@pytest.mark.parametrize("M", [None, 0, 1, 2, 3])
+@pytest.mark.parametrize("k", [-4, -3, -2, -1, 0, 1, 2, 3, 4])
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F"])
 def test_eye(N, M, k, dtype, order):
     func = lambda xp: xp.eye(N, M, k=k, dtype=dtype, order=order)
     assert_array_equal(func(numpy), func(dpnp))
@@ -317,7 +335,7 @@ def test_fromstring(dtype):
     assert_array_equal(func(dpnp), func(numpy))
 
 
-@pytest.mark.parametrize("n", [0, 1, 4], ids=["0", "1", "4"])
+@pytest.mark.parametrize("n", [0, 1, 4])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_identity(n, dtype):
     func = lambda xp: xp.identity(n, dtype=dtype)
@@ -340,15 +358,9 @@ def test_loadtxt(dtype):
     assert_array_equal(dpnp_res, np_res)
 
 
-@pytest.mark.parametrize("N", [0, 1, 2, 3, 4], ids=["0", "1", "2", "3", "4"])
-@pytest.mark.parametrize(
-    "M", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
-)
-@pytest.mark.parametrize(
-    "k",
-    [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5],
-    ids=["-5", "-4", "-3", "-2", "-1", "0", "1", "2", "3", "4", "5"],
-)
+@pytest.mark.parametrize("N", [0, 1, 2, 3, 4])
+@pytest.mark.parametrize("M", [None, 0, 1, 2, 3, 4])
+@pytest.mark.parametrize("k", [-5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_tri(N, M, k, dtype):
     func = lambda xp: xp.tri(N, M, k, dtype=dtype)
@@ -409,7 +421,6 @@ def test_tri_default_dtype():
         "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
     ],
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_tril(m, k, dtype):
     a = numpy.array(m, dtype=dtype)
@@ -463,7 +474,6 @@ def test_tril(m, k, dtype):
         "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
     ],
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_triu(m, k, dtype):
     a = numpy.array(m, dtype=dtype)
@@ -473,11 +483,7 @@ def test_triu(m, k, dtype):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize(
-    "k",
-    [-4, -3, -2, -1, 0, 1, 2, 3, 4],
-    ids=["-4", "-3", "-2", "-1", "0", "1", "2", "3", "4"],
-)
+@pytest.mark.parametrize("k", [-4, -3, -2, -1, 0, 1, 2, 3, 4])
 def test_triu_size_null(k):
     a = numpy.ones(shape=(1, 2, 0))
     ia = dpnp.array(a)
@@ -492,8 +498,8 @@ def test_triu_size_null(k):
     ids=["[1, 2, 3, 4]", "[]", "[0, 3, 5]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes())
-@pytest.mark.parametrize("n", [0, 1, 4, None], ids=["0", "1", "4", "None"])
-@pytest.mark.parametrize("increase", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("n", [0, 1, 4, None])
+@pytest.mark.parametrize("increase", [True, False])
 def test_vander(array, dtype, n, increase):
     if dtype in [dpnp.complex64, dpnp.complex128] and array == [0, 3, 5]:
         pytest.skip(
@@ -537,7 +543,7 @@ def test_vander_seq(sequence):
     "fill_value", [1.5, 2, 1.5 + 0.0j], ids=["1.5", "2", "1.5+0.j"]
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F"])
 def test_full(shape, fill_value, dtype, order):
     func = lambda xp: xp.full(shape, fill_value, dtype=dtype, order=order)
     assert_array_equal(func(numpy), func(dpnp))
@@ -562,8 +568,8 @@ def test_full_like(array, fill_value, dtype, order):
     assert_array_equal(func(numpy, a), func(dpnp, ia))
 
 
-@pytest.mark.parametrize("order1", ["F", "C"], ids=["F", "C"])
-@pytest.mark.parametrize("order2", ["F", "C"], ids=["F", "C"])
+@pytest.mark.parametrize("order1", ["F", "C"])
+@pytest.mark.parametrize("order2", ["F", "C"])
 def test_full_order(order1, order2):
     array = numpy.array([1, 2, 3], order=order1)
     a = numpy.full((3, 3), array, order=order2)
@@ -600,7 +606,7 @@ def test_full_invalid_fill_value(fill_value):
     ids=["()", "0", "(0,)", "(2, 0, 3)", "(3, 2)"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F"])
 def test_zeros(shape, dtype, order):
     func = lambda xp: xp.zeros(shape, dtype=dtype, order=order)
     assert_array_equal(func(numpy), func(dpnp))
@@ -627,7 +633,7 @@ def test_zeros_like(array, dtype, order):
     ids=["()", "0", "(0,)", "(2, 0, 3)", "(3, 2)"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F"])
 def test_empty(shape, dtype, order):
     func = lambda xp: xp.empty(shape, dtype=dtype, order=order)
     assert func(numpy).shape == func(dpnp).shape
@@ -654,7 +660,7 @@ def test_empty_like(array, dtype, order):
     ids=["()", "0", "(0,)", "(2, 0, 3)", "(3, 2)"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("order", [None, "C", "F"], ids=["None", "C", "F"])
+@pytest.mark.parametrize("order", [None, "C", "F"])
 def test_ones(shape, dtype, order):
     func = lambda xp: xp.ones(shape, dtype=dtype, order=order)
     assert_array_equal(func(numpy), func(dpnp))
@@ -695,12 +701,8 @@ def test_dpctl_tensor_input(func, args):
         assert_array_equal(X, Y)
 
 
-@pytest.mark.parametrize(
-    "start", [0, -5, 10, -2.5, 9.7], ids=["0", "-5", "10", "-2.5", "9.7"]
-)
-@pytest.mark.parametrize(
-    "stop", [0, 10, -2, 20.5, 1000], ids=["0", "10", "-2", "20.5", "1000"]
-)
+@pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
+@pytest.mark.parametrize("stop", [0, 10, -2, 20.5, 1000])
 @pytest.mark.parametrize(
     "num",
     [1, 5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
@@ -709,7 +711,7 @@ def test_dpctl_tensor_input(func, args):
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )
-@pytest.mark.parametrize("retstep", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("retstep", [True, False])
 def test_linspace(start, stop, num, dtype, retstep):
     res_np = numpy.linspace(start, stop, num, dtype=dtype, retstep=retstep)
     res_dp = dpnp.linspace(start, stop, num, dtype=dtype, retstep=retstep)
@@ -803,7 +805,7 @@ def test_linspace_retstep(start, stop):
     ids=["[]", "[[1]]", "[[1, 2, 3], [4, 5, 6]]", "[[1, 2], [3, 4], [5, 6]]"],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
-@pytest.mark.parametrize("indexing", ["ij", "xy"], ids=["ij", "xy"])
+@pytest.mark.parametrize("indexing", ["ij", "xy"])
 def test_meshgrid(arrays, dtype, indexing):
     func = lambda xp, xi: xp.meshgrid(*xi, indexing=indexing)
     a = tuple(numpy.array(array, dtype=dtype) for array in arrays)
@@ -859,10 +861,8 @@ def test_geomspace(sign, dtype, num, endpoint):
         assert_allclose(dpnp_res, np_res, rtol=1e-04)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize("start", [1j, 1 + 1j])
 @pytest.mark.parametrize("stop", [10j, 10 + 10j])
-# dpnp.sign raise numpy fall back for complex dtype
 def test_geomspace_complex(start, stop):
     func = lambda xp: xp.geomspace(start, stop, num=10)
     np_res = func(numpy)
@@ -921,7 +921,7 @@ def test_logspace_axis(axis):
 @pytest.mark.parametrize(
     "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
 )
-def test_ascontiguousarray(data):
+def test_ascontiguousarray1(data):
     result = dpnp.ascontiguousarray(data)
     expected = numpy.ascontiguousarray(data)
     assert_dtype_allclose(result, expected)
@@ -929,7 +929,7 @@ def test_ascontiguousarray(data):
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
-def test_ascontiguousarray1(data):
+def test_ascontiguousarray2(data):
     result = dpnp.ascontiguousarray(dpnp.array(data))
     expected = numpy.ascontiguousarray(numpy.array(data))
     assert_dtype_allclose(result, expected)
@@ -939,7 +939,7 @@ def test_ascontiguousarray1(data):
 @pytest.mark.parametrize(
     "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
 )
-def test_asfortranarray(data):
+def test_asfortranarray1(data):
     result = dpnp.asfortranarray(data)
     expected = numpy.asfortranarray(data)
     assert_dtype_allclose(result, expected)
@@ -947,7 +947,7 @@ def test_asfortranarray(data):
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
-def test_asfortranarray1(data):
+def test_asfortranarray2(data):
     result = dpnp.asfortranarray(dpnp.array(data))
     expected = numpy.asfortranarray(numpy.array(data))
     assert_dtype_allclose(result, expected)

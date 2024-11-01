@@ -25,6 +25,9 @@
 
 #pragma once
 
+#include <exception>
+#include <stdexcept>
+
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"

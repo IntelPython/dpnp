@@ -32,6 +32,7 @@
 #include <complex>
 #include <iostream>
 #include <iterator>
+#include <stdexcept>
 
 #include <sycl/sycl.hpp>
 
