@@ -119,7 +119,7 @@ def _check_stack_arrays(arrays):
 def _delete_with_slice(a, obj, axis):
     """Utility function for ``dpnp.delete`` when obj is slice."""
 
-    a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    a, a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
     start, stop, step = obj.indices(n)
     xr = range(start, stop, step)
     num_del = len(xr)
@@ -179,7 +179,7 @@ def _delete_with_slice(a, obj, axis):
 def _delete_without_slice(a, obj, axis, single_value):
     """Utility function for ``dpnp.delete`` when obj is int or array of int."""
 
-    a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    a, a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
     if single_value:
         # optimization for a single value
         if obj < -n or obj >= n:
@@ -242,7 +242,7 @@ def _calc_parameters(a, axis):
     n = a.shape[axis]
     a_shape = list(a.shape)
 
-    return a_ndim, order, axis, slobj, n, a_shape
+    return a, a_ndim, order, axis, slobj, n, a_shape
 
 
 def _unique_1d(
