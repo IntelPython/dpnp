@@ -1,6 +1,0 @@
-﻿dpnp.vdot
-=========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: vdot
