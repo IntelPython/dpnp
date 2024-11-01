@@ -15,5 +15,6 @@ var dir_4f4d020a650a668743abea55668e1676 =
     [ "logaddexp2.hpp", "extensions_2ufunc_2elementwise__functions_2logaddexp2_8hpp_source.html", null ],
     [ "populate.hpp", "populate_8hpp_source.html", null ],
     [ "radians.hpp", "extensions_2ufunc_2elementwise__functions_2radians_8hpp_source.html", null ],
-    [ "sinc.hpp", "extensions_2ufunc_2elementwise__functions_2sinc_8hpp_source.html", null ]
+    [ "sinc.hpp", "extensions_2ufunc_2elementwise__functions_2sinc_8hpp_source.html", null ],
+    [ "spacing.hpp", "extensions_2ufunc_2elementwise__functions_2spacing_8hpp_source.html", null ]
 ];
