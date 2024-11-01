@@ -3799,7 +3799,7 @@ kernel is proportional to the sinc function.
 Examples
 --------
 >>> import dpnp as np
->>> x = np.linspace(-4, 4, 41, dtype=dpnp.float64)
+>>> x = np.linspace(-4, 4, 41, dtype=np.float64)
 >>> np.sinc(x) # result may vary
     array([ 0.        , -0.04923628, -0.08409186, -0.08903844, -0.05846808,
             0.        ,  0.06682066,  0.11643488,  0.12613779,  0.08504448,
