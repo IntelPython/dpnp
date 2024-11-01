@@ -1,6 +1,9 @@
 var hierarchy =
 [
+    [ "statistics::common::AtomicOp< T, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op.html", null ],
+    [ "statistics::common::AtomicOp< std::complex< T >, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op_3_01std_1_1complex_3_01_t_01_4_00_01_order_00_01_scope_01_4.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
+    [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
     ] ],
@@ -9,6 +12,7 @@ var hierarchy =
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
     ] ],
+    [ "statistics::common::DispatchTable2< FnT >", "classstatistics_1_1common_1_1_dispatch_table2.html", null ],
     [ "dpnp::extensions::blas::DotcContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
     [ "dpnp::extensions::blas::DotContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
     [ "dpnp::extensions::blas::types::DotcTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html", null ],
@@ -47,9 +51,26 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::GetrsTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
     [ "dpnp::kernels::heaviside::HeavisideFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ],
     [ "dpnp::extensions::lapack::types::HeevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
+    [ "statistics::histogram::HistGlobalMemory< T >", "structstatistics_1_1histogram_1_1_hist_global_memory.html", null ],
+    [ "statistics::histogram::HistLocalType< T >", "structstatistics_1_1histogram_1_1_hist_local_type.html", null ],
+    [ "statistics::histogram::HistLocalType< int64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01int64__t_01_4.html", null ],
+    [ "statistics::histogram::HistLocalType< uint64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html", null ],
+    [ "statistics::histogram::Histogram", "structstatistics_1_1histogram_1_1_histogram.html", null ],
+    [ "statistics::histogram::histogram_kernel< T, HistImpl, Edges, Weights >", "classstatistics_1_1histogram_1_1histogram__kernel.html", null ],
+    [ "statistics::histogram::HistWithLocalCopies< T, localT >", "structstatistics_1_1histogram_1_1_hist_with_local_copies.html", null ],
+    [ "statistics::common::TableBuilder2< FnT, SupportedTypes, Func >::impl< _FnT, T1, T2 >", "structstatistics_1_1common_1_1_table_builder2_1_1impl.html", null ],
+    [ "statistics::common::int_pair_hash", "structstatistics_1_1common_1_1int__pair__hash.html", null ],
+    [ "statistics::common::IsNan< T >", "structstatistics_1_1common_1_1_is_nan.html", null ],
+    [ "statistics::common::IsNan< std::complex< T > >", "structstatistics_1_1common_1_1_is_nan_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::kernels::lcm::LcmFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ],
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
+    [ "statistics::common::Less< T >", "structstatistics_1_1common_1_1_less.html", null ],
+    [ "statistics::common::Less< std::complex< T > >", "structstatistics_1_1common_1_1_less_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
+    [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
+    [ "statistics::common::one_of< T, Rest >", "structstatistics_1_1common_1_1one__of.html", null ],
+    [ "statistics::common::one_of< T, std::tuple< Top > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
+    [ "statistics::common::one_of< T, std::tuple< Top, Rest... > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::OrgqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::PotrfBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html", null ],
@@ -65,10 +86,13 @@ var hierarchy =
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::REAL, true >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01true_01_4.html", null ],
     [ "dpnp::kernels::spacing::SpacingFunctor< argT, resT >", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
+    [ "statistics::common::TableBuilder2< FnT, SupportedTypes, Func >", "structstatistics_1_1common_1_1_table_builder2.html", null ],
+    [ "statistics::histogram::UncachedData< T, Dims >", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],
     [ "dpnp::extensions::lapack::types::UngqrBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::UngqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< T >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
+    [ "statistics::histogram::Weights< T >", "structstatistics_1_1histogram_1_1_weights.html", null ],
     [ "Ps", null, [
       [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]
     ] ]

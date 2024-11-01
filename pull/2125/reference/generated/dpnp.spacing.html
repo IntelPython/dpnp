@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.spacing &mdash; Data Parallel Extension for NumPy 0.17.0dev0+78.g068988241e4 documentation</title>
+  <title>dpnp.spacing &mdash; Data Parallel Extension for NumPy 0.17.0dev0+90.g1e5ace9e217 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9ec6c7b1"></script>
+      <script src="../../_static/documentation_options.js?v=30ce8598"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -139,7 +139,7 @@ Keyword argument <cite>kwargs</cite> is currently unsupported.
 Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
 <p class="rubric">Notes</p>
 <p>It can be considered as a generalization of EPS:
-<code class="docutils literal notranslate"><span class="pre">sdpnp.pacing(dpnp.float64(1))</span> <span class="pre">==</span> <span class="pre">dpnp.finfo(dpnp.float64).eps</span></code>, and there
+<code class="docutils literal notranslate"><span class="pre">dpnp.spacing(dpnp.float64(1))</span> <span class="pre">==</span> <span class="pre">dpnp.finfo(dpnp.float64).eps</span></code>, and there
 should not be any representable number between <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">+</span> <span class="pre">spacing(x)</span></code> and <cite>x</cite> for
 any finite <cite>x</cite>.</p>
 <p>Spacing of +- inf and NaN is <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
