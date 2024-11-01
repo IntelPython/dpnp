@@ -87,6 +87,9 @@ var annotated_dup =
         ] ],
         [ "radians", null, [
           [ "RadiansFunctor", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ]
+        ] ],
+        [ "spacing", null, [
+          [ "SpacingFunctor", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ]
         ] ]
       ] ]
     ] ],
