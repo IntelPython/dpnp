@@ -3783,7 +3783,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 Notes
 -----
 It can be considered as a generalization of EPS:
-``sdpnp.pacing(dpnp.float64(1)) == dpnp.finfo(dpnp.float64).eps``, and there
+``dpnp.spacing(dpnp.float64(1)) == dpnp.finfo(dpnp.float64).eps``, and there
 should not be any representable number between ``x + spacing(x)`` and `x` for
 any finite `x`.
 
