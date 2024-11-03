@@ -34,6 +34,7 @@
 
 #include <complex>
 #include <map>
+#include <stdexcept>
 
 #include <sycl/sycl.hpp>
 

@@ -38,6 +38,7 @@
 #include "ldexp.hpp"
 #include "logaddexp2.hpp"
 #include "radians.hpp"
+#include "spacing.hpp"
 
 namespace py = pybind11;
 
@@ -61,5 +62,6 @@ void init_elementwise_functions(py::module_ m)
     init_ldexp(m);
     init_logaddexp2(m);
     init_radians(m);
+    init_spacing(m);
 }
 } // namespace dpnp::extensions::ufunc

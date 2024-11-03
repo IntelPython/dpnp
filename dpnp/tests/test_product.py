@@ -1329,3 +1329,343 @@ class TestVdot:
         # The second array should be of size one
         with pytest.raises(ValueError):
             dpnp.vdot(b, a)
+
+
+@testing.with_requires("numpy>=2.0")
+class TestVecdot:
+    def setup_method(self):
+        numpy.random.seed(42)
+
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), (4,)),  # call_flag: dot
+            ((1, 1, 4), (1, 1, 4)),  # call_flag: dot
+            ((3, 1), (3, 1)),
+            ((2, 0), (2, 0)),  # zero-size inputs, 1D output
+            ((3, 0, 4), (3, 0, 4)),  # zero-size output
+            ((3, 4), (3, 4)),
+            ((1, 4), (3, 4)),
+            ((4,), (3, 4)),
+            ((3, 4), (1, 4)),
+            ((3, 4), (4,)),
+            ((1, 4, 5), (3, 1, 5)),
+            ((1, 1, 4, 5), (3, 1, 5)),
+            ((1, 4, 5), (1, 3, 1, 5)),
+        ],
+    )
+    def test_basic(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        x1 = numpy.random.uniform(-5, 5, size1)
+        x2 = numpy.random.uniform(-5, 5, size2)
+        a = numpy.array(x1, dtype=dtype).reshape(shape1)
+        b = numpy.array(x2, dtype=dtype).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), (4,)),  # call_flag: dot
+            ((1, 1, 4), (1, 1, 4)),  # call_flag: dot
+            ((3, 1), (3, 1)),
+            ((2, 0), (2, 0)),  # zero-size inputs, 1D output
+            ((3, 0, 4), (3, 0, 4)),  # zero-size output
+            ((3, 4), (3, 4)),
+            ((1, 4), (3, 4)),
+            ((4,), (3, 4)),
+            ((3, 4), (1, 4)),
+            ((3, 4), (4,)),
+            ((1, 4, 5), (3, 1, 5)),
+            ((1, 1, 4, 5), (3, 1, 5)),
+            ((1, 4, 5), (1, 3, 1, 5)),
+        ],
+    )
+    def test_complex(self, dtype, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        x11 = numpy.random.uniform(-5, 5, size1)
+        x12 = numpy.random.uniform(-5, 5, size1)
+        x21 = numpy.random.uniform(-5, 5, size2)
+        x22 = numpy.random.uniform(-5, 5, size2)
+        a = numpy.array(x11 + 1j * x12, dtype=dtype).reshape(shape1)
+        b = numpy.array(x21 + 1j * x22, dtype=dtype).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [0, 2, -2])
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [((4,), (4, 4, 4)), ((3, 4, 5), (3, 4, 5))],
+    )
+    def test_axis1(self, axis, shape_pair):
+        shape1, shape2 = shape_pair
+        size1 = numpy.prod(shape1, dtype=int)
+        size2 = numpy.prod(shape2, dtype=int)
+        a = numpy.array(numpy.random.uniform(-5, 5, size1)).reshape(shape1)
+        b = numpy.array(numpy.random.uniform(-5, 5, size2)).reshape(shape2)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    def test_axis2(self):
+        # This is a special case, `a`` cannot be broadcast_to `b`
+        a = numpy.arange(4).reshape(1, 4)
+        b = numpy.arange(60).reshape(3, 4, 5)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib, axis=1)
+        expected = numpy.vecdot(a, b, axis=1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "axes",
+        [
+            [(1,), (1,), ()],
+            [(0), (0), ()],
+            [0, 1, ()],
+            [-2, -1, ()],
+        ],
+    )
+    def test_axes(self, axes):
+        a = numpy.array(numpy.random.uniform(-10, 10, 125)).reshape(5, 5, 5)
+        ia = dpnp.array(a)
+
+        result = dpnp.vecdot(ia, ia, axes=axes)
+        expected = numpy.vecdot(a, a, axes=axes)
+        assert_dtype_allclose(result, expected)
+
+        out = dpnp.empty((5, 5), dtype=ia.dtype)
+        result = dpnp.vecdot(ia, ia, axes=axes, out=out)
+        assert out is result
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "axes, b_shape",
+        [
+            ([1, 0, ()], (3,)),
+            ([1, 0, ()], (3, 1)),
+            ([1, 1, ()], (1, 3)),
+        ],
+    )
+    def test_axes_out_1D(self, axes, b_shape):
+        a = numpy.arange(60).reshape(4, 3, 5)
+        b = numpy.arange(3).reshape(b_shape)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        out_dp = dpnp.empty((4, 5))
+        out_np = numpy.empty((4, 5))
+        result = dpnp.vecdot(ia, ib, axes=axes, out=out_dp)
+        assert result is out_dp
+        expected = numpy.vecdot(a, b, axes=axes, out=out_np)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("stride", [2, -1, -2])
+    def test_strided(self, stride):
+        a = numpy.arange(100).reshape(10, 10)
+        b = numpy.arange(100).reshape(10, 10)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia[::stride, ::stride], ib[::stride, ::stride])
+        expected = numpy.vecdot(a[::stride, ::stride], b[::stride, ::stride])
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes())
+    @pytest.mark.parametrize("dtype2", get_all_dtypes())
+    def test_input_dtype_matrix(self, dtype1, dtype2):
+        x1 = numpy.random.uniform(-5, 5, 10)
+        x2 = numpy.random.uniform(-5, 5, 10)
+        a = numpy.array(x1, dtype=dtype1).reshape(2, 5)
+        b = numpy.array(x2, dtype=dtype2).reshape(2, 5)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.vecdot(ia, ib)
+        expected = numpy.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order1", ["C", "F", "A"])
+    @pytest.mark.parametrize("order2", ["C", "F", "A"])
+    @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
+    @pytest.mark.parametrize(
+        "shape",
+        [(4, 3), (4, 3, 5), (6, 7, 3, 5)],
+        ids=["(4, 3)", "(4, 3, 5)", "(6, 7, 3, 5)"],
+    )
+    def test_order(self, order1, order2, order, shape):
+        a = numpy.arange(numpy.prod(shape)).reshape(shape, order=order1)
+        b = numpy.arange(numpy.prod(shape)).reshape(shape, order=order2)
+        a_dp = dpnp.asarray(a)
+        b_dp = dpnp.asarray(b)
+
+        result = dpnp.vecdot(a_dp, b_dp, order=order)
+        expected = numpy.vecdot(a, b, order=order)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
+    @pytest.mark.parametrize(
+        "shape", [(2, 4, 0), (4, 0, 5)], ids=["(2, 4, 0)", "(4, 0, 5)"]
+    )
+    def test_order_trivial(self, order, shape):
+        # input is both c-contiguous and f-contiguous
+        a = numpy.ones(shape)
+        a_dp = dpnp.asarray(a)
+
+        result = dpnp.vecdot(a_dp, a_dp, order=order)
+        expected = numpy.vecdot(a, a, order=order)
+        if shape == (2, 4, 0) and order == "A":
+            # NumPy does not behave correctly for this case, for order="A",
+            # if input is both c- and f-contiguous, output is c-contiguous
+            assert result.flags.c_contiguous
+            assert not result.flags.f_contiguous
+        else:
+            assert result.flags.c_contiguous == expected.flags.c_contiguous
+            assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "order1, order2, out_order",
+        [
+            ("C", "C", "C"),
+            ("C", "C", "F"),
+            ("C", "F", "C"),
+            ("C", "F", "F"),
+            ("F", "C", "C"),
+            ("F", "C", "F"),
+            ("F", "F", "F"),
+            ("F", "F", "C"),
+        ],
+    )
+    def test_out_order(self, order1, order2, out_order):
+        a1 = numpy.arange(20).reshape(5, 4, order=order1)
+        a2 = numpy.arange(20).reshape(5, 4, order=order2)
+
+        b1 = dpnp.asarray(a1)
+        b2 = dpnp.asarray(a2)
+
+        dpnp_out = dpnp.empty(5, order=out_order)
+        result = dpnp.vecdot(b1, b2, out=dpnp_out)
+        assert result is dpnp_out
+
+        out = numpy.empty(5, order=out_order)
+        expected = numpy.vecdot(a1, a2, out=out)
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype2", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "shape_pair",
+        [
+            ((4,), ()),
+            ((1, 1, 4), (1, 1)),
+            ((6, 7, 4, 3), (6, 7, 4)),
+            ((2, 0), (2,)),  # zero-size inputs, 1D output
+            ((3, 0, 4), (3, 0)),  # zero-size output
+        ],
+    )
+    def test_out_dtype(self, dtype1, dtype2, shape_pair):
+        shape1, shape2 = shape_pair
+        a = numpy.ones(shape1, dtype=dtype1)
+        b = dpnp.asarray(a)
+
+        out_np = numpy.empty(shape2, dtype=dtype2)
+        out_dp = dpnp.asarray(out_np)
+
+        if dpnp.can_cast(dtype1, dtype2, casting="same_kind"):
+            result = dpnp.vecdot(b, b, out=out_dp)
+            expected = numpy.vecdot(a, a, out=out_np)
+            assert_dtype_allclose(result, expected)
+        else:
+            with pytest.raises(TypeError):
+                dpnp.vecdot(b, b, out=out_dp)
+
+    @pytest.mark.parametrize(
+        "out_shape",
+        [
+            ((4, 5)),
+            ((6,)),
+            ((4, 7, 2)),
+        ],
+    )
+    def test_out_0D(self, out_shape):
+        # for vecdot of 1-D arrays, output is 0-D and if out keyword is given
+        # NumPy repeats the data to match the shape of output array
+        a = numpy.arange(3)
+        b = dpnp.asarray(a)
+
+        out_np = numpy.empty(out_shape)
+        out_dp = dpnp.empty(out_shape)
+        result = dpnp.vecdot(b, b, out=out_dp)
+        expected = numpy.vecdot(a, a, out=out_np)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [0, 1, 2, -1, -2, -3])
+    def test_linalg_vecdot(self, axis):
+        x11 = numpy.random.uniform(-5, 5, 4)
+        x12 = numpy.random.uniform(-5, 5, 4)
+        x21 = numpy.random.uniform(-5, 5, 64)
+        x22 = numpy.random.uniform(-5, 5, 64)
+        a = numpy.array(x11 + 1j * x12, dtype=numpy.complex64)
+        b = numpy.array(x21 + 1j * x22, dtype=numpy.complex64).reshape(4, 4, 4)
+        ia = dpnp.array(a)
+        ib = dpnp.array(b)
+
+        result = dpnp.linalg.vecdot(ia, ib)
+        expected = numpy.linalg.vecdot(a, b)
+        assert_dtype_allclose(result, expected)
+
+    def test_error(self):
+        a = dpnp.ones((5, 4))
+        b = dpnp.ones((5, 5))
+        # core dimension differs
+        assert_raises(ValueError, dpnp.vecdot, a, b)
+
+        a = dpnp.ones((5, 4))
+        b = dpnp.ones((3, 4))
+        # input array not compatible
+        assert_raises(ValueError, dpnp.vecdot, a, b)
+
+        a = dpnp.ones((3, 4))
+        b = dpnp.ones((3, 4))
+        c = dpnp.empty((5,))
+        # out array shape is incorrect
+        assert_raises(ValueError, dpnp.vecdot, a, b, out=c)
+
+        # both axes and axis cannot be specified
+        a = dpnp.ones((5, 5))
+        assert_raises(TypeError, dpnp.vecdot, a, a, axes=[0, 0, ()], axis=-1)
+
+        # subok keyword is not supported
+        assert_raises(NotImplementedError, dpnp.vecdot, a, a, subok=False)
+
+        # signature keyword is not supported
+        signature = (dpnp.float32, dpnp.float32, dpnp.float32)
+        assert_raises(
+            NotImplementedError, dpnp.vecdot, a, a, signature=signature
+        )

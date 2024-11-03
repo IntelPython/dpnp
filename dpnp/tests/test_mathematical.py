@@ -1897,6 +1897,93 @@ class TestRealIfClose:
         assert_raises(TypeError, xp.real_if_close, a, tol=tol_val)
 
 
+class TestSpacing:
+    @pytest.mark.parametrize("sign", [1, -1])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_basic(self, sign, dt):
+        a = numpy.array(
+            [1, numpy.nan, numpy.inf, 1e10, 1e-5, 1000, 10500], dtype=dt
+        )
+        a *= sign
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_equal(result, expected)
+
+        # switch to negatives
+        result = dpnp.spacing(-ia)
+        expected = numpy.spacing(-a)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_zeros(self, dt):
+        a = numpy.array([0.0, -0.0], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            assert_equal(result, expected)
+        else:
+            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
+            # positive value (looks as a bug in NumPy), because for any other
+            # negative input the NumPy result will be also a negative value.
+            expected[1] *= -1
+            assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes(no_float16=False))
+    @pytest.mark.parametrize("val", [1, 1e-5, 1000])
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_vs_nextafter(self, val, dt, xp):
+        a = xp.array(val, dtype=dt)
+        a1 = xp.array(val + 1, dtype=dt)
+        assert (xp.nextafter(a, a1) - a) == xp.spacing(a)
+
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    def test_fp16(self):
+        a = numpy.arange(0x7C00, dtype=numpy.uint16)
+
+        # all values are non-negative finites
+        b = a.view(dtype=numpy.float16)
+        ib = dpnp.array(b)
+
+        result = dpnp.spacing(ib)
+        expected = numpy.spacing(b)
+        assert_equal(result, expected)
+
+        # switch to negatives
+        a |= 0x8000
+        ib = dpnp.array(b)
+
+        result = dpnp.spacing(ib)
+        expected = numpy.spacing(b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    def test_integer(self, dt):
+        a = numpy.array([1, 0, -3], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_dtype_allclose(result, expected)
+
+    def test_bool(self):
+        a = numpy.array([True, False])
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_complex(self, xp):
+        a = xp.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+        assert_raises((TypeError, ValueError), xp.spacing, a)
+
+
 class TestTrapezoid:
     def get_numpy_func(self):
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
@@ -3648,6 +3735,8 @@ class TestMatmul:
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("order1", ["C", "F", "A"])
+    @pytest.mark.parametrize("order2", ["C", "F", "A"])
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
     @pytest.mark.parametrize(
         "shape_pair",
@@ -3662,17 +3751,26 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_order(self, order, shape_pair):
+    def test_matmul_order(self, order1, order2, order, shape_pair):
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1, order=order1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
 
         result = dpnp.matmul(b1, b2, order=order)
         expected = numpy.matmul(a1, a2, order=order)
-        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        # For the special case of shape_pair == ((6, 7, 4, 3), (6, 7, 3, 5))
+        # and order1 == "F" and order2 == "F", NumPy result is not c-contiguous
+        # nor f-contiguous, while dpnp (and cupy) results are c-contiguous
+        if not (
+            shape_pair == ((6, 7, 4, 3), (6, 7, 3, 5))
+            and order1 == "F"
+            and order2 == "F"
+            and order == "K"
+        ):
+            assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
@@ -3929,9 +4027,8 @@ class TestMatmul:
         ],
     )
     def test_matmul_out_0D(self, out_shape):
-        # for matmul of 0-D arrays with out keyword,
-        # NumPy repeats the data to match the shape
-        # of output array
+        # for matmul of 1-D arrays, output is 0-D and if out keyword is given
+        # NumPy repeats the data to match the shape of output array
         a = numpy.arange(3)
         b = dpnp.asarray(a)
 
@@ -4093,15 +4190,8 @@ class TestMatmulInvalidCases:
             dpnp.matmul(a1, a2, subok=False)
 
         with pytest.raises(NotImplementedError):
-            dpnp.matmul(
-                a1, a2, signature=(dpnp.float32, dpnp.float32, dpnp.float32)
-            )
-
-        def custom_error_callback(err):
-            print("Custom error callback triggered with error:", err)
-
-        with pytest.raises(NotImplementedError):
-            dpnp.matmul(a1, a2, extobj=[32, 1, custom_error_callback])
+            signature = (dpnp.float32, dpnp.float32, dpnp.float32)
+            dpnp.matmul(a1, a2, signature=signature)
 
         with pytest.raises(NotImplementedError):
             dpnp.matmul(a1, a2, axis=2)

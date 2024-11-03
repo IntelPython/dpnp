@@ -17,8 +17,6 @@ tests/test_umath.py::test_umaths[('divmod', 'ff')]
 tests/test_umath.py::test_umaths[('divmod', 'dd')]
 tests/test_umath.py::test_umaths[('frexp', 'f')]
 tests/test_umath.py::test_umaths[('frexp', 'd')]
-tests/test_umath.py::test_umaths[('spacing', 'f')]
-tests/test_umath.py::test_umaths[('spacing', 'd')]
 
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_0_{shape=()}::test_item
 tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_1_{shape=(1,)}::test_item

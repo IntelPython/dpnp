@@ -55,7 +55,7 @@ def test_flatten(arr, arr_dtype):
     [(), 0, (0,), (2), (5, 2), (5, 0, 2), (5, 3, 2)],
     ids=["()", "0", "(0,)", "(2)", "(5, 2)", "(5, 0, 2)", "(5, 3, 2)"],
 )
-@pytest.mark.parametrize("order", ["C", "F"], ids=["C", "F"])
+@pytest.mark.parametrize("order", ["C", "F"])
 def test_flags(shape, order):
     usm_array = dpt.usm_ndarray(shape, order=order)
     numpy_array = numpy.ndarray(shape, order=order)
@@ -71,7 +71,7 @@ def test_flags(shape, order):
     ids=["complex64", "float32", "int64", "int32", "bool"],
 )
 @pytest.mark.parametrize("strides", [(1, 4), (4, 1)], ids=["(1, 4)", "(4, 1)"])
-@pytest.mark.parametrize("order", ["C", "F"], ids=["C", "F"])
+@pytest.mark.parametrize("order", ["C", "F"])
 def test_flags_strides(dtype, order, strides):
     itemsize = numpy.dtype(dtype).itemsize
     numpy_strides = tuple([el * itemsize for el in strides])
@@ -102,6 +102,32 @@ def test_flags_writable():
 
     assert not a.real.flags.writable
     assert not a.imag.flags.writable
+
+
+class TestItem:
+    @pytest.mark.parametrize("args", [2, 7, (1, 2), (2, 0)])
+    def test_basic(self, args):
+        a = numpy.arange(12).reshape(3, 4)
+        ia = dpnp.array(a)
+
+        expected = a.item(args)
+        result = ia.item(args)
+        assert isinstance(result, int)
+        assert expected == result
+
+    def test_0D(self):
+        a = numpy.array(5)
+        ia = dpnp.array(a)
+
+        expected = a.item()
+        result = ia.item()
+        assert isinstance(result, int)
+        assert expected == result
+
+    def test_error(self):
+        ia = dpnp.arange(12).reshape(3, 4)
+        with pytest.raises(ValueError):
+            ia.item()
 
 
 def test_print_dpnp_int():
@@ -165,9 +191,7 @@ def test_print_dpnp_boolean():
     assert result == expected
 
 
-@pytest.mark.parametrize(
-    "character", [dpnp.nan, dpnp.inf], ids=["dpnp.nan", "dpnp.inf"]
-)
+@pytest.mark.parametrize("character", [dpnp.nan, dpnp.inf])
 def test_print_dpnp_special_character(character):
     result = repr(dpnp.array([1.0, 0.0, character, 3.0]))
     expected = f"array([ 1.,  0., {character},  3.])"
@@ -264,7 +288,7 @@ def test_array_as_index(shape, index_dtype):
 @pytest.mark.parametrize(
     "shape",
     [(3, 5), (2, 5, 2), (2, 3, 3, 6)],
-    ids=["(3,5)", "(2,5,2)", "(2,3,3,6)"],
+    ids=["(3, 5)", "(2, 5, 2)", "(2, 3, 3, 6)"],
 )
 def test_matrix_transpose(shape):
     a = numpy.arange(numpy.prod(shape)).reshape(shape)
