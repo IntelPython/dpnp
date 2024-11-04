@@ -456,11 +456,11 @@ jobs:
           retry_on: any
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
-            & cd ${{ env.tests_path }}
+            & cd %tests_path%
             & echo Current dir: %cd%
             & echo Dir contents:
             & dir
-            & python -m pytest --rootdir=${{ env.tests_path }} -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
+            & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
