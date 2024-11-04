@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+113.gf19eb9a4ac8 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+132.g306271ef56a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=753ad088"></script>
+      <script src="../../_static/documentation_options.js?v=897ced14"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -134,6 +134,7 @@
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 <span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_pad</span> <span class="kn">import</span> <span class="n">dpnp_pad</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;append&quot;</span><span class="p">,</span>
@@ -161,6 +162,7 @@
     <span class="s2">&quot;matrix_transpose&quot;</span><span class="p">,</span>
     <span class="s2">&quot;moveaxis&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ndim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pad&quot;</span><span class="p">,</span>
     <span class="s2">&quot;permute_dims&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ravel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
@@ -2048,6 +2050,210 @@
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="pad">
+<a class="viewcode-back" href="../../reference/generated/dpnp.pad.html#dpnp.pad">[docs]</a>
+<span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pad an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.pad`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The array of rank ``N`` to pad.</span>
+<span class="sd">    pad_width : {sequence, array_like, int}</span>
+<span class="sd">        Number of values padded to the edges of each axis.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique pad widths</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after pad for each axis.</span>
+<span class="sd">        ``(pad,)`` or ``int`` is a shortcut for ``before = after = pad`` width</span>
+<span class="sd">        for all axes.</span>
+<span class="sd">    mode : {str, function}, optional</span>
+<span class="sd">        One of the following string values or a user supplied function.</span>
+
+<span class="sd">        &quot;constant&quot;</span>
+<span class="sd">            Pads with a constant value.</span>
+<span class="sd">        &quot;edge&quot;</span>
+<span class="sd">            Pads with the edge values of array.</span>
+<span class="sd">        &quot;linear_ramp&quot;</span>
+<span class="sd">            Pads with the linear ramp between `end_value` and the</span>
+<span class="sd">            array edge value.</span>
+<span class="sd">        &quot;maximum&quot;</span>
+<span class="sd">            Pads with the maximum value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;mean&quot;</span>
+<span class="sd">            Pads with the mean value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;median&quot;</span>
+<span class="sd">            Pads with the median value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;minimum&quot;</span>
+<span class="sd">            Pads with the minimum value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;reflect&quot;</span>
+<span class="sd">            Pads with the reflection of the vector mirrored on</span>
+<span class="sd">            the first and last values of the vector along each</span>
+<span class="sd">            axis.</span>
+<span class="sd">        &quot;symmetric&quot;</span>
+<span class="sd">            Pads with the reflection of the vector mirrored</span>
+<span class="sd">            along the edge of the array.</span>
+<span class="sd">        &quot;wrap&quot;</span>
+<span class="sd">            Pads with the wrap of the vector along the axis.</span>
+<span class="sd">            The first values are used to pad the end and the</span>
+<span class="sd">            end values are used to pad the beginning.</span>
+<span class="sd">        &quot;empty&quot;</span>
+<span class="sd">            Pads with undefined values.</span>
+<span class="sd">        &lt;function&gt;</span>
+<span class="sd">            Padding function, see Notes.</span>
+<span class="sd">        Default: ``&quot;constant&quot;``.</span>
+<span class="sd">    stat_length : {None, int, sequence of ints}, optional</span>
+<span class="sd">        Used in ``&quot;maximum&quot;``, ``&quot;mean&quot;``, ``&quot;median&quot;``, and ``&quot;minimum&quot;``.</span>
+<span class="sd">        Number of values at edge of each axis used to calculate the statistic</span>
+<span class="sd">        value. ``((before_1, after_1), ... (before_N, after_N))`` unique</span>
+<span class="sd">        statistic lengths for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after statistic lengths for each axis.</span>
+<span class="sd">        ``(stat_length,)`` or ``int`` is a shortcut for</span>
+<span class="sd">        ``before = after = statistic`` length for all axes.</span>
+<span class="sd">       Default: ``None``, to use the entire axis.</span>
+<span class="sd">    constant_values : {sequence, scalar}, optional</span>
+<span class="sd">        Used in ``&quot;constant&quot;``. The values to set the padded values for each</span>
+<span class="sd">        axis.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique pad constants</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after constants for each axis.</span>
+<span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for</span>
+<span class="sd">        ``before = after = constant`` for all axes.</span>
+<span class="sd">        Default: ``0``.</span>
+<span class="sd">    end_values : {sequence, scalar}, optional</span>
+<span class="sd">        Used in ``&quot;linear_ramp&quot;``. The values used for the ending value of the</span>
+<span class="sd">        linear_ramp and that will form the edge of the padded array.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique end values</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after end values for each axis.</span>
+<span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for</span>
+<span class="sd">        ``before = after = constant`` for all axes.</span>
+<span class="sd">        Default: ``0``.</span>
+<span class="sd">    reflect_type : {&quot;even&quot;, &quot;odd&quot;}, optional</span>
+<span class="sd">        Used in ``&quot;reflect&quot;``, and ``&quot;symmetric&quot;``. The ``&quot;even&quot;`` style is the</span>
+<span class="sd">        default with an unaltered reflection around the edge value. For</span>
+<span class="sd">        the ``&quot;odd&quot;`` style, the extended part of the array is created by</span>
+<span class="sd">        subtracting the reflected values from two times the edge value.</span>
+<span class="sd">        Default: ``&quot;even&quot;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    padded array : dpnp.ndarray</span>
+<span class="sd">        Padded array of rank equal to `array` with shape increased</span>
+<span class="sd">        according to `pad_width`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For an array with rank greater than 1, some of the padding of later</span>
+<span class="sd">    axes is calculated from padding of previous axes. This is easiest to</span>
+<span class="sd">    think about with a rank 2 array where the corners of the padded array</span>
+<span class="sd">    are calculated by using padded values from the first axis.</span>
+
+<span class="sd">    The padding function, if used, should modify a rank 1 array in-place. It</span>
+<span class="sd">    has the following signature::</span>
+
+<span class="sd">        padding_func(vector, iaxis_pad_width, iaxis, kwargs)</span>
+
+<span class="sd">    where</span>
+
+<span class="sd">    vector : dpnp.ndarray</span>
+<span class="sd">        A rank 1 array already padded with zeros. Padded values are</span>
+<span class="sd">        vector[:iaxis_pad_width[0]] and vector[-iaxis_pad_width[1]:].</span>
+<span class="sd">    iaxis_pad_width : tuple</span>
+<span class="sd">        A 2-tuple of ints, iaxis_pad_width[0] represents the number of</span>
+<span class="sd">        values padded at the beginning of vector where</span>
+<span class="sd">        iaxis_pad_width[1] represents the number of values padded at</span>
+<span class="sd">        the end of vector.</span>
+<span class="sd">    iaxis : int</span>
+<span class="sd">        The axis currently being calculated.</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        Any keyword arguments the function requires.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;constant&#39;, constant_values=(4, 6))</span>
+<span class="sd">    array([4, 4, 1, 2, 3, 4, 5, 6, 6, 6])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;edge&#39;)</span>
+<span class="sd">    array([1, 1, 1, 2, 3, 4, 5, 5, 5, 5])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;linear_ramp&#39;, end_values=(5, -4))</span>
+<span class="sd">    array([ 5,  3,  1,  2,  3,  4,  5,  2, -1, -4])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2,), &#39;maximum&#39;)</span>
+<span class="sd">    array([5, 5, 1, 2, 3, 4, 5, 5, 5])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2,), &#39;mean&#39;)</span>
+<span class="sd">    array([3, 3, 1, 2, 3, 4, 5, 3, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2,), &#39;median&#39;)</span>
+<span class="sd">    array([3, 3, 1, 2, 3, 4, 5, 3, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, ((3, 2), (2, 3)), &#39;minimum&#39;)</span>
+<span class="sd">    array([[1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [3, 3, 3, 4, 3, 3, 3],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;reflect&#39;)</span>
+<span class="sd">    array([3, 2, 1, 2, 3, 4, 5, 4, 3, 2])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;reflect&#39;, reflect_type=&#39;odd&#39;)</span>
+<span class="sd">    array([-1,  0,  1,  2,  3,  4,  5,  6,  7,  8])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;symmetric&#39;)</span>
+<span class="sd">    array([2, 1, 1, 2, 3, 4, 5, 5, 4, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;symmetric&#39;, reflect_type=&#39;odd&#39;)</span>
+<span class="sd">    array([0, 1, 1, 2, 3, 4, 5, 5, 6, 7])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;wrap&#39;)</span>
+<span class="sd">    array([4, 5, 1, 2, 3, 4, 5, 1, 2, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; def pad_width(vector, pad_width, iaxis, kwargs):</span>
+<span class="sd">    ...     pad_value = kwargs.get(&#39;padder&#39;, 10)</span>
+<span class="sd">    ...     vector[:pad_width[0]] = pad_value</span>
+<span class="sd">    ...     vector[-pad_width[1]:] = pad_value</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(6)</span>
+<span class="sd">    &gt;&gt;&gt; a = a.reshape((2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, 2, pad_width)</span>
+<span class="sd">    array([[10, 10, 10, 10, 10, 10, 10],</span>
+<span class="sd">           [10, 10, 10, 10, 10, 10, 10],</span>
+<span class="sd">           [10, 10,  0,  1,  2, 10, 10],</span>
+<span class="sd">           [10, 10,  3,  4,  5, 10, 10],</span>
+<span class="sd">           [10, 10, 10, 10, 10, 10, 10],</span>
+<span class="sd">           [10, 10, 10, 10, 10, 10, 10]])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, 2, pad_width, padder=100)</span>
+<span class="sd">    array([[100, 100, 100, 100, 100, 100, 100],</span>
+<span class="sd">           [100, 100, 100, 100, 100, 100, 100],</span>
+<span class="sd">           [100, 100,   0,   1,   2, 100, 100],</span>
+<span class="sd">           [100, 100,   3,   4,   5, 100, 100],</span>
+<span class="sd">           [100, 100, 100, 100, 100, 100, 100],</span>
+<span class="sd">           [100, 100, 100, 100, 100, 100, 100]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_pad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
