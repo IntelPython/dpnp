@@ -456,6 +456,7 @@ jobs:
           retry_on: any
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
+            & C:
             & cd %tests_path%
             & echo Tests dir: %tests_path%
             & echo Current dir: %cd%
