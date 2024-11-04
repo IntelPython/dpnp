@@ -641,9 +641,11 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "sin", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
+        pytest.param("sinc", [-5.0, -3.5, 0.0, 2.5, 4.3]),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
         pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
+        pytest.param("spacing", [1, 2, -3, 0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
