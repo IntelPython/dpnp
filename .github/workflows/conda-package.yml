@@ -77,7 +77,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-22.04, windows-2019]
 
     permissions:
@@ -298,7 +298,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.11']
+        python: ['3.9', '3.10', '3.11', '3.12']
 
     continue-on-error: true
 
@@ -423,25 +423,9 @@ jobs:
           FOR /F "delims=" %%i IN ('python -c "import sysconfig, os; print(os.path.join(sysconfig.get_paths()[\"purelib\"], 'dpnp', 'tests'))"') DO SET tests_path=%%i
           echo tests_path=%tests_path%>>%GITHUB_ENV%
 
-      - name: Check site-packages
-        run: |
-          echo "DIR site-packages folder:"
-          DIR %CONDA_PREFIX%\Lib\site-packages\dpnp
-          echo "Expected tests_path: %tests_path%"
-
-      - name: Check working directory and files
-        run: |
-          echo Current working directory: %tests_path%
-          dir %tests_path%
-
-      - name: echo TEST_SCOPE
-        run: |
-          echo TEST_SCOPE value: ${{ env.TEST_SCOPE }}
-
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          echo Running tests in working-directory: %cd%
           python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
         working-directory: ${{ env.tests_path }}
 
@@ -457,13 +441,7 @@ jobs:
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
             & C:
-            & cd %tests_path%
-            & echo Tests dir: %tests_path%
-            & echo Current dir: %cd%
-            & echo Dir contents:
-            & dir
-            & pushd %tests_path%
-            & echo Current dir: %cd%
+            & cd ${{ env.tests_path }}
             & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
