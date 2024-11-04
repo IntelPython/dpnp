@@ -7,10 +7,10 @@ else:
     from numpy.lib.arraypad import _as_pairs as numpy_as_pairs
 
 from numpy.testing import assert_array_equal, assert_equal
-from tests.third_party.cupy import testing
 
 import dpnp
 from dpnp.dpnp_utils.dpnp_utils_pad import _as_pairs as dpnp_as_pairs
+from dpnp.tests.third_party.cupy import testing
 
 from .helper import assert_dtype_allclose, get_all_dtypes
 
