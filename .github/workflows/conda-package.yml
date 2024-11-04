@@ -457,9 +457,12 @@ jobs:
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
             & cd %tests_path%
+            & echo Tests dir: %tests_path%
             & echo Current dir: %cd%
             & echo Dir contents:
             & dir
+            & pushd %tests_path%
+            & echo Current dir: %cd%
             & python -m pytest -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
