@@ -49,6 +49,9 @@ from dpctl.tensor._numpy_helper import AxisError, normalize_axis_index
 import dpnp
 
 from .dpnp_array import dpnp_array
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
 
 __all__ = [
@@ -176,7 +179,7 @@ def _delete_with_slice(a, obj, axis):
     return new
 
 
-def _delete_without_slice(a, obj, axis, single_value):
+def _delete_without_slice(a, obj, axis, single_value, exec_q, usm_type):
     """Utility function for ``dpnp.delete`` when obj is int or array of int."""
 
     a, a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
@@ -194,8 +197,8 @@ def _delete_without_slice(a, obj, axis, single_value):
             a_shape,
             dtype=a.dtype,
             order=order,
-            sycl_queue=a.sycl_queue,
-            usm_type=a.usm_type,
+            sycl_queue=exec_q,
+            usm_type=usm_type,
         )
         slobj[axis] = slice(None, obj)
         new[tuple(slobj)] = a[tuple(slobj)]
@@ -215,7 +218,7 @@ def _delete_without_slice(a, obj, axis, single_value):
             keep = ~obj
         else:
             keep = dpnp.ones(
-                n, dtype=dpnp.bool, sycl_queue=a.sycl_queue, usm_type=a.usm_type
+                n, dtype=dpnp.bool, sycl_queue=exec_q, usm_type=usm_type
             )
             keep[obj,] = False
 
@@ -1351,7 +1354,7 @@ def delete(arr, obj, axis=None):
     obj : {slice, int, array-like of ints or boolean}
         Indicate indices of sub-arrays to remove along the specified axis.
         Boolean indices are treated as a mask of elements to remove.
-    axis : int, optional
+    axis : {None, int}, optional
         The axis along which to delete the subarray defined by `obj`.
         If `axis` is ``None``, `obj` is applied to the flattened array.
         Default: ``None``.
@@ -1378,7 +1381,7 @@ def delete(arr, obj, axis=None):
     >>> mask[0] = mask[2] = mask[4] = False
     >>> result = arr[mask,...]
 
-    is equivalent to ``np.delete(arr, [0,2,4], axis=0)``, but allows further
+    is equivalent to ``np.delete(arr, [0, 2, 4], axis=0)``, but allows further
     use of `mask`.
 
     Examples
@@ -1407,14 +1410,17 @@ def delete(arr, obj, axis=None):
     if isinstance(obj, slice):
         return _delete_with_slice(arr, obj, axis)
 
+    if dpnp.is_supported_array_type(obj):
+        usm_type, exec_q = get_usm_allocations([arr, obj])
+    else:
+        usm_type, exec_q = arr.usm_type, arr.sycl_queue
+
     if isinstance(obj, (int, dpnp.integer)) and not isinstance(obj, bool):
         single_value = True
     else:
         single_value = False
         is_array = isinstance(obj, (dpnp_array, numpy.ndarray, dpt.usm_ndarray))
-        obj = dpnp.asarray(
-            obj, sycl_queue=arr.sycl_queue, usm_type=arr.usm_type
-        )
+        obj = dpnp.asarray(obj, sycl_queue=exec_q, usm_type=usm_type)
         # if `obj` is originally an empty list, after converting it into
         # an array, it will have float dtype, so we need to change its dtype
         # to integer. However, if `obj` is originally an empty array with
@@ -1427,7 +1433,7 @@ def delete(arr, obj, axis=None):
             obj = obj.item()
             single_value = True
 
-    return _delete_without_slice(arr, obj, axis, single_value)
+    return _delete_without_slice(arr, obj, axis, single_value, exec_q, usm_type)
 
 
 def dsplit(ary, indices_or_sections):
