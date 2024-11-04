@@ -1897,6 +1897,83 @@ class TestRealIfClose:
         assert_raises(TypeError, xp.real_if_close, a, tol=tol_val)
 
 
+class TestSinc:
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_bool=True, no_float16=False)
+    )
+    def test_basic(self, dt):
+        a = numpy.linspace(-1, 1, 100, dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_dtype_allclose(result, expected)
+
+    def test_bool(self):
+        a = numpy.array([True, False, True])
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        # numpy promotes result to float64 dtype, but expected float16
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_zero(self, dt):
+        a = numpy.array([0.0], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_dtype_allclose(result, expected)
+
+    # TODO: add a proper NumPY version once resolved
+    @testing.with_requires("numpy>=2.0.0")
+    def test_zero_fp16(self):
+        a = numpy.array([0.0], dtype=numpy.float16)
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        # expected = numpy.sinc(a) # numpy returns NaN, but expected 1.0
+        expected = numpy.ones_like(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    def test_nan_infs(self):
+        a = numpy.array([numpy.inf, -numpy.inf, numpy.nan])
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_equal(result, expected)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    def test_nan_infs_complex(self):
+        a = numpy.array(
+            [
+                numpy.inf,
+                -numpy.inf,
+                numpy.nan,
+                complex(numpy.nan),
+                complex(numpy.nan, numpy.nan),
+                complex(0, numpy.nan),
+                complex(numpy.inf, numpy.nan),
+                complex(numpy.nan, numpy.inf),
+                complex(-numpy.inf, numpy.nan),
+                complex(numpy.nan, -numpy.inf),
+                complex(numpy.inf, numpy.inf),
+                complex(numpy.inf, -numpy.inf),
+                complex(-numpy.inf, numpy.inf),
+                complex(-numpy.inf, -numpy.inf),
+            ]
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_equal(result, expected)
+
+
 class TestSpacing:
     @pytest.mark.parametrize("sign", [1, -1])
     @pytest.mark.parametrize("dt", get_float_dtypes())
