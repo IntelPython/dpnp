@@ -12,5 +12,6 @@ var dir_2dc4cca66e7325a4fed455b9bcd79a3e =
     [ "ldexp.hpp", "kernels_2elementwise__functions_2ldexp_8hpp_source.html", null ],
     [ "logaddexp2.hpp", "kernels_2elementwise__functions_2logaddexp2_8hpp_source.html", null ],
     [ "radians.hpp", "kernels_2elementwise__functions_2radians_8hpp_source.html", null ],
+    [ "sinc.hpp", "kernels_2elementwise__functions_2sinc_8hpp_source.html", null ],
     [ "spacing.hpp", "kernels_2elementwise__functions_2spacing_8hpp_source.html", null ]
 ];

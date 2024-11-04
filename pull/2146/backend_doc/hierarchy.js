@@ -84,6 +84,7 @@ var hierarchy =
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::REAL, false >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01false_01_4.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::REAL, true >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01true_01_4.html", null ],
+    [ "dpnp::kernels::sinc::SincFunctor< argT, Tp >", "structdpnp_1_1kernels_1_1sinc_1_1_sinc_functor.html", null ],
     [ "dpnp::kernels::spacing::SpacingFunctor< argT, resT >", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "statistics::common::TableBuilder2< FnT, SupportedTypes, Func >", "structstatistics_1_1common_1_1_table_builder2.html", null ],
