@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga78ffe853157e336c03a2773b0713eaa7":[0,2,8],
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga80937d0842dd407149ff8a21e5754c2c":[0,2,13],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga841854c7f53246b62719074088bd0b5b":[0,2,4],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga8d3046514e4bccb6d869f1052c4f4406":[0,2,33],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga94731fce32598fffe43cb617a684c83a":[0,2,6],
@@ -50,6 +52,8 @@ var NAVTREEINDEX1 =
 "kernels_2elementwise__functions_2ldexp_8hpp_source.html":[2,0,2,0,9],
 "kernels_2elementwise__functions_2logaddexp2_8hpp_source.html":[2,0,2,0,10],
 "kernels_2elementwise__functions_2radians_8hpp_source.html":[2,0,2,0,11],
+"kernels_2elementwise__functions_2sinc_8hpp_source.html":[2,0,2,0,12],
+"kernels_2elementwise__functions_2spacing_8hpp_source.html":[2,0,2,0,13],
 "lapack_2types__matrix_8hpp_source.html":[2,0,0,3,19],
 "linalg__exceptions_8hpp_source.html":[2,0,0,3,14],
 "ln_8hpp_source.html":[2,0,0,6,24],
@@ -124,6 +128,8 @@ var NAVTREEINDEX1 =
 "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html":[1,0,0,1,9,0],
 "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html":[1,0,0,1,10,0],
 "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html":[1,0,0,1,11,0],
+"structdpnp_1_1kernels_1_1sinc_1_1_sinc_functor.html":[1,0,0,1,12,0],
+"structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html":[1,0,0,1,13,0],
 "structengine__struct.html":[1,0,9],
 "structfunc__type__map__factory__t.html":[1,0,10],
 "structfunc__type__pair__t.html":[1,0,11],
