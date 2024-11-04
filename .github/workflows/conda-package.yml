@@ -429,11 +429,10 @@ jobs:
           DIR %CONDA_PREFIX%\Lib\site-packages\dpnp
           echo "Expected tests_path: %tests_path%"
 
-      # - name: Check working directory and files
-      #   run: |
-      #     echo Current working directory: %tests_path%
-      #     dir %tests_path%
-      #   working-directory: ${{ env.tests_path }}
+      - name: Check working directory and files
+        run: |
+          echo Current working directory: %tests_path%
+          dir %tests_path%
 
       - name: echo TEST_SCOPE
         run: |
@@ -458,6 +457,9 @@ jobs:
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
             & cd ${{ env.tests_path }}
+            & echo Current dir: %cd%
+            & echo Dir contents:
+            & dir
             & python -m pytest --rootdir=${{ env.tests_path }} -q -ra --disable-warnings -vv ${{ env.TEST_SCOPE }}
 
   upload:
