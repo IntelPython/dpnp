@@ -65,6 +65,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPImag,
     DPNPReal,
     DPNPRound,
+    DPNPSinc,
     DPNPUnaryFunc,
     acceptance_fn_gcd_lcm,
     acceptance_fn_negative,
@@ -3806,7 +3807,7 @@ Examples
             0.        ])
 """
 
-sinc = DPNPUnaryFunc(
+sinc = DPNPSinc(
     "sinc",
     ufi._sinc_result_type,
     ufi._sinc,
