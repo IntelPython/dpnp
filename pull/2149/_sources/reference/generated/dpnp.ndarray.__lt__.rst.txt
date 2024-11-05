@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_lt\_\_
+=======================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__lt__
