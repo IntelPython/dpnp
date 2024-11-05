@@ -2141,7 +2141,7 @@ class TestInsert:
         assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, z.sycl_queue)
 
-        
+
 @pytest.mark.parametrize(
     "func,data1",
     [
