@@ -205,6 +205,7 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
     # '__class__',
+    # `__class_getitem__`,
 
     def __complex__(self):
         return self._array_obj.__complex__()
@@ -335,6 +336,8 @@ class dpnp_array:
         res._array_obj = item
         return res
 
+    # '__getstate__',
+
     def __gt__(self, other):
         """Return ``self>value``."""
         return dpnp.greater(self, other)
@@ -361,7 +364,25 @@ class dpnp_array:
         dpnp.left_shift(self, other, out=self)
         return self
 
-    # '__imatmul__',
+    def __imatmul__(self, other):
+        """Return ``self@=value``."""
+
+        """
+        Unlike `matmul(a, b, out=a)` we ensure that the result is not broadcast
+        if the result without `out` would have less dimensions than `a`.
+        Since the signature of matmul is '(n?,k),(k,m?)->(n?,m?)' this is the
+        case exactly when the second operand has both core dimensions.
+
+        The error here will be confusing, but for now, we enforce this by
+        passing the correct `axes=`.
+        """
+        if self.ndim == 1:
+            axes = [(-1,), (-2, -1), (-1,)]
+        else:
+            axes = [(-2, -1), (-2, -1), (-2, -1)]
+
+        dpnp.matmul(self, other, out=self, axes=axes)
+        return self
 
     def __imod__(self, other):
         """Return ``self%=value``."""

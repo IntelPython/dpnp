@@ -4168,6 +4168,65 @@ class TestMatmul:
         assert_array_equal(result, expected)
 
 
+class TestMatmulInplace:
+    ALL_DTYPES = get_all_dtypes(no_none=True)
+    DTYPES = {}
+    for i in ALL_DTYPES:
+        for j in ALL_DTYPES:
+            if numpy.can_cast(j, i):
+                DTYPES[f"{i}-{j}"] = (i, j)
+
+    @pytest.mark.parametrize("dtype1, dtype2", DTYPES.values())
+    def test_basic(self, dtype1, dtype2):
+        a = numpy.arange(10).reshape(5, 2).astype(dtype1)
+        b = numpy.ones((2, 2), dtype=dtype2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+        ia_id = id(ia)
+
+        a @= b
+        ia @= ib
+        assert id(ia) == ia_id
+        assert_dtype_allclose(ia, a)
+
+    @pytest.mark.parametrize(
+        "a_sh, b_sh",
+        [
+            pytest.param((10**5, 10), (10, 10), id="2d_large"),
+            pytest.param((10**4, 10, 10), (1, 10, 10), id="3d_large"),
+            pytest.param((3,), (3,), id="1d"),
+            pytest.param((3, 3), (3,), id="2d_1d"),
+            pytest.param((3,), (3, 3), id="1d_2d"),
+            pytest.param((3, 3), (3, 1), id="2d_broadcast"),
+            pytest.param((1, 3), (3, 3), id="2d_broadcast_reverse"),
+            pytest.param((3, 3, 3), (1, 3, 1), id="3d_broadcast1"),
+            pytest.param((3, 3, 3), (1, 3, 3), id="3d_broadcast2"),
+            pytest.param((3, 3, 3), (3, 3, 1), id="3d_broadcast3"),
+            pytest.param((1, 3, 3), (3, 3, 3), id="3d_broadcast_reverse1"),
+            pytest.param((3, 1, 3), (3, 3, 3), id="3d_broadcast_reverse2"),
+            pytest.param((1, 1, 3), (3, 3, 3), id="3d_broadcast_reverse3"),
+        ],
+    )
+    def test_shapes(self, a_sh, b_sh):
+        a_sz, b_sz = numpy.prod(a_sh), numpy.prod(b_sh)
+        a = numpy.arange(a_sz).reshape(a_sh).astype(numpy.float64)
+        b = numpy.arange(b_sz).reshape(b_sh)
+
+        ia, ib = dpnp.array(a), dpnp.array(b)
+        ia_id = id(ia)
+
+        expected = a @ b
+        if expected.shape != a_sh:
+            with pytest.raises(ValueError):
+                a @= b
+
+            with pytest.raises(ValueError):
+                ia @= ib
+        else:
+            ia @= ib
+            assert id(ia) == ia_id
+            assert_dtype_allclose(ia, expected)
+
+
 class TestMatmulInvalidCases:
     @pytest.mark.parametrize(
         "shape_pair",
