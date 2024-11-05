@@ -386,7 +386,8 @@ class dpnp_array:
             # AxisError should indicate that the axes argument didn't work out
             # which should mean the second operand not being 2 dimensional.
             raise ValueError(
-                "inplace matrix multiplication requires the first operand to have at least one and the second at least two dimensions."
+                "inplace matrix multiplication requires the first operand to "
+                "have at least one and the second at least two dimensions."
             )
         return self
 
