@@ -488,9 +488,11 @@ class dpnp_array:
         return dpnp.power(self, other)
 
     def __radd__(self, other):
+        """Return ``value+self``."""
         return dpnp.add(other, self)
 
     def __rand__(self, other):
+        """Return ``value&self``."""
         return dpnp.bitwise_and(other, self)
 
     # '__rdivmod__',
@@ -502,27 +504,35 @@ class dpnp_array:
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
     def __rfloordiv__(self, other):
+        """Return ``value//self``."""
         return dpnp.floor_divide(self, other)
 
     def __rlshift__(self, other):
+        """Return ``value<<self``."""
         return dpnp.left_shift(other, self)
 
     def __rmatmul__(self, other):
+        """Return ``value@self``."""
         return dpnp.matmul(other, self)
 
     def __rmod__(self, other):
+        """Return ``value%self``."""
         return dpnp.remainder(other, self)
 
     def __rmul__(self, other):
+        """Return ``value*self``."""
         return dpnp.multiply(other, self)
 
     def __ror__(self, other):
+        """Return ``value|self``."""
         return dpnp.bitwise_or(other, self)
 
     def __rpow__(self, other):
+        """Return ``value**self``."""
         return dpnp.power(other, self)
 
     def __rrshift__(self, other):
+        """Return ``value>>self``."""
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
@@ -530,12 +540,15 @@ class dpnp_array:
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
+        """Return ``value-self``."""
         return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
+        """Return ``value/self``."""
         return dpnp.true_divide(other, self)
 
     def __rxor__(self, other):
+        """Return ``value^self``."""
         return dpnp.bitwise_xor(other, self)
 
     # '__setattr__',
