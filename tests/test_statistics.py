@@ -574,7 +574,10 @@ class TestStd:
 
 
 class TestCorrcoef:
-    @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+    )
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("rowvar", [True, False])
     def test_corrcoef(self, dtype, rowvar):
@@ -586,7 +589,11 @@ class TestCorrcoef:
 
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
     @pytest.mark.parametrize("shape", [(2, 0), (0, 2)])
     def test_corrcoef_empty(self, shape):
         dp_array = dpnp.empty(shape, dtype=dpnp.int64)
@@ -608,7 +615,10 @@ class TestCorrcoef:
         assert expected.dtype == result.dtype
         assert_allclose(result, expected, rtol=1e-6)
 
-    @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+    )
     def test_corrcoef_scalar(self):
         dp_array = dpnp.array(5)
         np_array = dpnp.asnumpy(dp_array)
