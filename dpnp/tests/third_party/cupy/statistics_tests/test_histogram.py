@@ -42,6 +42,7 @@ def for_all_dtypes_combination_bincount(names):
 
 
 class TestHistogram(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-6, type_check=has_support_aspect64())
     def test_histogram(self, xp, dtype):
@@ -94,7 +95,7 @@ class TestHistogram(unittest.TestCase):
         return h
 
     @testing.for_float_dtypes()
-    @testing.numpy_cupy_allclose(atol=1e-6, type_check=False)
+    @testing.numpy_cupy_allclose(atol=1e-6, type_check=has_support_aspect64())
     def test_histogram_range_with_weights_and_density(self, xp, dtype):
         a = xp.arange(10, dtype=dtype) + 0.5
         w = xp.arange(10, dtype=dtype) + 0.5
@@ -135,7 +136,9 @@ class TestHistogram(unittest.TestCase):
     def test_histogram_float_weights_dtype(self, xp, dtype):
         # Check the type of the returned histogram
         a = xp.arange(10, dtype=dtype)
-        h, b = xp.histogram(a, weights=xp.ones(10, dtype=xp.float32))
+        h, b = xp.histogram(
+            a, weights=xp.ones(10, dtype=cupy.default_float_type())
+        )
         assert xp.issubdtype(h.dtype, xp.floating)
         return h
 
@@ -355,6 +358,7 @@ class TestHistogram(unittest.TestCase):
     )
 )
 class TestDigitize:
+
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_digitize(self, xp, dtype):
@@ -369,6 +373,7 @@ class TestDigitize:
 
 @testing.parameterize({"right": True}, {"right": False})
 class TestDigitizeNanInf(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_digitize_nan(self, xp):
         x = testing.shaped_arange((14,), xp, xp.float32)
@@ -438,6 +443,7 @@ class TestDigitizeNanInf(unittest.TestCase):
 
 
 class TestDigitizeInvalid(unittest.TestCase):
+
     def test_digitize_complex(self):
         for xp in (numpy, cupy):
             x = testing.shaped_arange((14,), xp, xp.complex64)
@@ -454,6 +460,7 @@ class TestDigitizeInvalid(unittest.TestCase):
 
 
 @pytest.mark.skip("histogramdd() is not implemented yet")
+# @pytest.mark.skip(reason="XXX: NP2.0: histogramdd dtype")
 @testing.parameterize(
     *testing.product(
         {
@@ -473,6 +480,7 @@ class TestDigitizeInvalid(unittest.TestCase):
     )
 )
 class TestHistogramdd:
+
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-7, rtol=1e-7)
     def test_histogramdd(self, xp, dtype):
@@ -499,6 +507,7 @@ class TestHistogramdd:
 
 @pytest.mark.skip("histogramdd() is not implemented yet")
 class TestHistogramddErrors(unittest.TestCase):
+
     def test_histogramdd_invalid_bins(self):
         for xp in (numpy, cupy):
             x = testing.shaped_random((16, 2), xp, scale=100)
@@ -544,6 +553,7 @@ class TestHistogramddErrors(unittest.TestCase):
 
 
 @pytest.mark.skip("histogram2d() is not implemented yet")
+# @pytest.mark.skip(reason="XXX: NP2.0: histogram2d dtype")
 @testing.parameterize(
     *testing.product(
         {
@@ -556,11 +566,13 @@ class TestHistogramddErrors(unittest.TestCase):
     )
 )
 class TestHistogram2d:
+
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-7, rtol=1e-7)
+    @testing.numpy_cupy_allclose(atol=1e-2, rtol=1e-7)
     def test_histogram2d(self, xp, dtype):
         x = testing.shaped_random((100,), xp, dtype, scale=100)
         y = testing.shaped_random((100,), xp, dtype, scale=100)
+
         if self.bins == "array_list":
             bins = [xp.arange(0, 100, 4), xp.arange(0, 100, 10)]
         elif self.bins == "array":
@@ -584,6 +596,7 @@ class TestHistogram2d:
 
 @pytest.mark.skip("histogram2d() is not implemented yet")
 class TestHistogram2dErrors(unittest.TestCase):
+
     def test_histogram2d_disallow_arraylike_bins(self):
         x = testing.shaped_random((16,), cupy, scale=100)
         y = testing.shaped_random((16,), cupy, scale=100)
