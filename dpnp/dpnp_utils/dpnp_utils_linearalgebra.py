@@ -28,7 +28,7 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_tuple
+from dpctl.tensor._numpy_helper import AxisError, normalize_axis_tuple
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
@@ -525,7 +525,7 @@ def _validate_axes(x1, x2, axes, func):
                 )
 
             if len(axes) != 1:
-                raise ValueError(
+                raise AxisError(
                     f"Axes item {i} should be a tuple with a single element, or an integer."
                 )
         else:
@@ -533,7 +533,7 @@ def _validate_axes(x1, x2, axes, func):
             if not isinstance(axes, tuple):
                 raise TypeError(f"Axes item {i} should be a tuple.")
             if len(axes) != 2:
-                raise ValueError(
+                raise AxisError(
                     f"Axes item {i} should be a tuple with 2 elements."
                 )
 
@@ -563,7 +563,7 @@ def _validate_axes(x1, x2, axes, func):
 
     if x1_ndim == 1 and x2_ndim == 1:
         if axes[2] != ():
-            raise TypeError("Axes item 2 should be an empty tuple.")
+            raise AxisError("Axes item 2 should be an empty tuple.")
     elif x1_ndim == 1 or x2_ndim == 1:
         axes[2] = _validate_internal(axes[2], 2, 1)
     else:
