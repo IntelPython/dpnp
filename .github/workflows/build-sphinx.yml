@@ -6,8 +6,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
-permissions: read-all
-
+permissions: write-all
 
 env:
   GH_BOT_NAME: 'github-actions[bot]'
