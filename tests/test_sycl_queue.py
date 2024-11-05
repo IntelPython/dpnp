@@ -2048,6 +2048,36 @@ def test_concat_stack(func, data1, data2, device):
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
+class TestDelete:
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_delete(self, obj, device):
+        x = dpnp.arange(5, device=device)
+        result = dpnp.delete(x, obj)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_obj_ndarray(self, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        result = dpnp.delete(x, y)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+
 @pytest.mark.parametrize(
     "func,data1",
     [
