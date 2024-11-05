@@ -1,6 +1,8 @@
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
@@ -400,6 +402,121 @@ class TestNanMean:
         res = dpnp.empty((1,), dtype=dpnp.int32)
         with pytest.raises(TypeError):
             dpnp.nanmean(ia, out=res)
+
+
+class TestNanMedian:
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1], (0, -2, -1)])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_basic(self, dtype, axis, keepdims):
+        x = numpy.random.uniform(-5, 5, 24)
+        a = numpy.array(x, dtype=dtype).reshape(2, 3, 4)
+        a[0, 0, 0] = a[-2, -2, -2] = numpy.nan
+        ia = dpnp.array(a)
+
+        expected = numpy.nanmedian(a, axis=axis, keepdims=keepdims)
+        result = dpnp.nanmedian(ia, axis=axis, keepdims=keepdims)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures(
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
+    @pytest.mark.parametrize("shape", [(2, 0), (0, 3)])
+    def test_empty(self, axis, shape):
+        a = numpy.empty(shape)
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia, axis=axis)
+        expected = numpy.nanmedian(a, axis=axis)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1], (0, -2, -1)])
+    def test_no_nan(self, dtype, axis):
+        x = numpy.random.uniform(-5, 5, 24)
+        a = numpy.array(x, dtype=dtype).reshape(2, 3, 4)
+        ia = dpnp.array(a)
+
+        expected = numpy.nanmedian(a, axis=axis)
+        result = dpnp.nanmedian(ia, axis=axis)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.filterwarnings("ignore:All-NaN slice:RuntimeWarning")
+    def test_all_nan(self):
+        a = numpy.array(numpy.nan)
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia)
+        expected = numpy.nanmedian(a)
+        assert_dtype_allclose(result, expected)
+
+        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a[:, :, 2] = numpy.nan
+        ia = dpnp.array(a)
+
+        result = dpnp.nanmedian(ia, axis=1)
+        expected = numpy.nanmedian(a, axis=1)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [None, 0, -1, (0, -2, -1)])
+    def test_overwrite_input(self, axis):
+        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a[0, 0, 0] = a[-2, -2, -2] = numpy.nan
+        ia = dpnp.array(a)
+
+        b = a.copy()
+        ib = ia.copy()
+        expected = numpy.nanmedian(b, axis=axis, overwrite_input=True)
+        result = dpnp.nanmedian(ib, axis=axis, overwrite_input=True)
+        assert not numpy.all(a == b)
+        assert not dpnp.all(ia == ib)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
+    @pytest.mark.parametrize("overwrite_input", [True, False])
+    def test_usm_ndarray(self, axis, overwrite_input):
+        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a[0, 0, 0] = a[-2, -2, -2] = numpy.nan
+        ia = dpt.asarray(a)
+
+        expected = numpy.nanmedian(
+            a, axis=axis, overwrite_input=overwrite_input
+        )
+        result = dpnp.nanmedian(ia, axis=axis, overwrite_input=overwrite_input)
+
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize(
+        "axis, out_shape", [(0, (3,)), (1, (2,)), ((0, 1), ())]
+    )
+    def test_out(self, dtype, axis, out_shape):
+        a = numpy.array([[5, numpy.nan, 2], [8, 4, numpy.nan]], dtype=dtype)
+        ia = dpnp.array(a)
+
+        out_np = numpy.empty_like(a, shape=out_shape)
+        out_dp = dpnp.empty_like(ia, shape=out_shape)
+        expected = numpy.nanmedian(a, axis=axis, out=out_np)
+        result = dpnp.nanmedian(ia, axis=axis, out=out_dp)
+        assert result is out_dp
+        assert_dtype_allclose(result, expected)
+
+    def test_error(self):
+        a = dpnp.arange(6.0).reshape(2, 3)
+        a[0, 0] = a[-1, -1] = numpy.nan
+
+        # out shape is incorrect
+        res = dpnp.empty(3, dtype=a.dtype)
+        with pytest.raises(ValueError):
+            dpnp.nanmedian(a, axis=1, out=res)
+
+        # out has a different queue
+        exec_q = dpctl.SyclQueue()
+        res = dpnp.empty(2, dtype=a.dtype, sycl_queue=exec_q)
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.nanmedian(a, axis=1, out=res)
 
 
 class TestNanProd:

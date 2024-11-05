@@ -765,7 +765,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
        preserve the contents of the input array. Treat the input as undefined,
        but it will probably be fully or partially sorted.
        Default: ``False``.
-    keepdims : {None, bool}, optional
+    keepdims : bool, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
@@ -775,7 +775,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
 
     Returns
     -------
-    dpnp.median : dpnp.ndarray
+    out : dpnp.ndarray
         A new array holding the result. If `a` has a floating-point data type,
         the returned array will have the same data type as `a`. If `a` has a
         boolean or integral data type, the returned array will have the
@@ -808,20 +808,20 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     >>> np.median(a, axis=0)
     array([6.5, 4.5, 2.5])
     >>> np.median(a, axis=1)
-    array([7.,  2.])
+    array([7., 2.])
     >>> np.median(a, axis=(0, 1))
     array(3.5)
 
     >>> m = np.median(a, axis=0)
     >>> out = np.zeros_like(m)
     >>> np.median(a, axis=0, out=m)
-    array([6.5,  4.5,  2.5])
+    array([6.5, 4.5, 2.5])
     >>> m
-    array([6.5,  4.5,  2.5])
+    array([6.5, 4.5, 2.5])
 
     >>> b = a.copy()
     >>> np.median(b, axis=1, overwrite_input=True)
-    array([7.,  2.])
+    array([7., 2.])
     >>> assert not np.all(a==b)
     >>> b = a.copy()
     >>> np.median(b, axis=None, overwrite_input=True)

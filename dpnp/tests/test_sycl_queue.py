@@ -499,6 +499,7 @@ def test_meshgrid(device):
         pytest.param("nancumsum", [1.0, dpnp.nan]),
         pytest.param("nanmax", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanmean", [1.0, 2.0, 4.0, dpnp.nan]),
+        pytest.param("nanmedian", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanmin", [1.0, 2.0, 4.0, dpnp.nan]),
         pytest.param("nanprod", [1.0, dpnp.nan]),
         pytest.param("nanstd", [1.0, 2.0, 4.0, dpnp.nan]),

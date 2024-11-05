@@ -331,7 +331,7 @@ class TestMedian:
         "suppress_mean_empty_slice_numpy_warnings",
     )
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
-    @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
+    @pytest.mark.parametrize("shape", [(2, 0), (0, 3)])
     def test_empty(self, axis, shape):
         a = numpy.empty(shape)
         ia = dpnp.array(a)
