@@ -1417,23 +1417,29 @@ def delete(arr, obj, axis=None):
 
     if isinstance(obj, (int, dpnp.integer)) and not isinstance(obj, bool):
         single_value = True
+        indices = obj
     else:
         single_value = False
         is_array = isinstance(obj, (dpnp_array, numpy.ndarray, dpt.usm_ndarray))
-        obj = dpnp.asarray(obj, sycl_queue=exec_q, usm_type=usm_type)
+        indices = dpnp.asarray(obj, sycl_queue=exec_q, usm_type=usm_type)
         # if `obj` is originally an empty list, after converting it into
         # an array, it will have float dtype, so we need to change its dtype
         # to integer. However, if `obj` is originally an empty array with
         # float dtype, it is a mistake by user and it will raise an error later
-        if obj.size == 0 and not is_array:
-            obj = obj.astype(dpnp.intp)
-        elif obj.size == 1 and obj.dtype.kind in "ui":
+        if indices.size == 0 and not is_array:
+            indices = indices.astype(dpnp.intp)
+        elif indices.size == 1 and indices.dtype.kind in "ui":
             # For a size 1 integer array we can use the single-value path
             # (most dtypes, except boolean, should just fail later).
-            obj = obj.item()
+            if isinstance(obj, (dpnp_array, dpt.usm_ndarray)):
+                indices = indices.item()
+            else:
+                indices = numpy.asarray(obj).item()
             single_value = True
 
-    return _delete_without_slice(arr, obj, axis, single_value, exec_q, usm_type)
+    return _delete_without_slice(
+        arr, indices, axis, single_value, exec_q, usm_type
+    )
 
 
 def dsplit(ary, indices_or_sections):
