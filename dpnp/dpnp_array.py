@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 
@@ -379,7 +380,14 @@ class dpnp_array:
         else:
             axes = [(-2, -1), (-2, -1), (-2, -1)]
 
-        dpnp.matmul(self, other, out=self, axes=axes)
+        try:
+            dpnp.matmul(self, other, out=self, axes=axes)
+        except AxisError:
+            # AxisError should indicate that the axes argument didn't work out
+            # which should mean the second operand not being 2 dimensional.
+            raise ValueError(
+                "inplace matrix multiplication requires the first operand to have at least one and the second at least two dimensions."
+            )
         return self
 
     def __imod__(self, other):

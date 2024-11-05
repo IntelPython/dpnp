@@ -4216,10 +4216,16 @@ class TestMatmulInplace:
 
         expected = a @ b
         if expected.shape != a_sh:
-            with pytest.raises(ValueError):
+            if len(b_sh) == 1:
+                # check the exception matches NumPy
+                match = "inplace matrix multiplication requires"
+            else:
+                match = None
+
+            with pytest.raises(ValueError, match=match):
                 a @= b
 
-            with pytest.raises(ValueError):
+            with pytest.raises(ValueError, match=match):
                 ia @= ib
         else:
             ia @= ib
@@ -4356,7 +4362,7 @@ class TestMatmulInvalidCases:
 
         # axes item should be a tuple with 2 elements
         axes = [(3, 1), (2, 0), (0, 1, 2)]
-        with pytest.raises(ValueError):
+        with pytest.raises(AxisError):
             xp.matmul(a1, a2, axes=axes)
 
         # axes must be an integer
@@ -4367,7 +4373,7 @@ class TestMatmulInvalidCases:
         # axes item 2 should be an empty tuple
         a = xp.arange(3)
         axes = [0, 0, 0]
-        with pytest.raises(ValueError):
+        with pytest.raises(AxisError):
             xp.matmul(a, a, axes=axes)
 
         a = xp.arange(3 * 4 * 5).reshape(3, 4, 5)
@@ -4379,7 +4385,7 @@ class TestMatmulInvalidCases:
 
         # axes item should be a tuple with a single element, or an integer
         axes = [(1, 0), (0), (0, 1)]
-        with pytest.raises(ValueError):
+        with pytest.raises(AxisError):
             xp.matmul(a, b, axes=axes)
 
 
