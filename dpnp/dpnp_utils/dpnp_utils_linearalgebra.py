@@ -563,7 +563,7 @@ def _validate_axes(x1, x2, axes, func):
 
     if x1_ndim == 1 and x2_ndim == 1:
         if axes[2] != ():
-            raise TypeError("Axes item 2 should be an empty tuple.")
+            raise ValueError("Axes item 2 should be an empty tuple.")
     elif x1_ndim == 1 or x2_ndim == 1:
         axes[2] = _validate_internal(axes[2], 2, 1)
     else:

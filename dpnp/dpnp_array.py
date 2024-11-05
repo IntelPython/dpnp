@@ -372,9 +372,7 @@ class dpnp_array:
         if the result without `out` would have less dimensions than `a`.
         Since the signature of matmul is '(n?,k),(k,m?)->(n?,m?)' this is the
         case exactly when the second operand has both core dimensions.
-
-        The error here will be confusing, but for now, we enforce this by
-        passing the correct `axes=`.
+        We have to enforce this check by passing the correct `axes=`.
         """
         if self.ndim == 1:
             axes = [(-1,), (-2, -1), (-1,)]
