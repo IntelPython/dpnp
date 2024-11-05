@@ -7,6 +7,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestNdim(unittest.TestCase):
+
     @testing.numpy_cupy_equal()
     def test_ndim_ndarray1d(self, xp):
         return xp.ndim(xp.arange(5))
