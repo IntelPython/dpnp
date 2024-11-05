@@ -145,6 +145,7 @@ class TestAliases(unittest.TestCase):
             assert xp.bitwise_not is xp.invert
 
 
+@pytest.mark.skip("dpnp.exceptions is not implemented")
 @testing.with_requires("numpy>=2.0")
 @pytest.mark.parametrize(
     "name",

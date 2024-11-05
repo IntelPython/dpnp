@@ -145,7 +145,7 @@ class TestArrayUfuncOptout:
 class TestAsnumpy:
 
     def test_asnumpy(self):
-        x = testing.shaped_random((2, 3, 4), cupy, cupy.float64)
+        x = testing.shaped_random((2, 3, 4), cupy, cupy.default_float_type())
         y = cupy.asnumpy(x)
         testing.assert_array_equal(x, y)
 
