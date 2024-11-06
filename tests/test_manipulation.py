@@ -126,186 +126,6 @@ def test_size():
     assert dpnp.size(ia, 0) == exp
 
 
-class TestInsert:
-    @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize(
-        "obj", [slice(0, 4, 2), 3, [2, 3]], ids=["slice", "scalar", "list"]
-    )
-    @pytest.mark.parametrize("dt1", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("dt2", get_all_dtypes(no_none=True))
-    def test_dtype(self, obj, dt1, dt2):
-        a = numpy.array([0, 1, 2, 3, 4, 5], dtype=dt1)
-        a_dp = dpnp.array(a)
-
-        values = numpy.array(3, dtype=dt2)
-
-        expected = numpy.insert(a, obj, values)
-        result = dpnp.insert(a_dp, obj, values)
-        assert result.dtype == dt1
-        assert_array_equal(result, expected)
-
-    @pytest.mark.parametrize("order", ["C", "F"])
-    def test_order(self, order):
-        a = numpy.arange(10).reshape(2, 5, order=order)
-        a_dp = dpnp.array(a)
-
-        expected = numpy.insert(a, slice(3, None), -1, axis=1)
-        result = dpnp.insert(a_dp, slice(3, None), -1, axis=1)
-
-        assert_equal(result.flags.c_contiguous, expected.flags.c_contiguous)
-        assert_equal(result.flags.f_contiguous, expected.flags.f_contiguous)
-
-    @pytest.mark.parametrize(
-        "obj",
-        [numpy.array([2]), dpnp.array([0, 2]), dpnp.asarray([1])],
-    )
-    @pytest.mark.parametrize(
-        "values",
-        [numpy.array([-1]), dpnp.array([-2, -3])],
-    )
-    def test_ndarray_obj_values(self, obj, values):
-        a = numpy.array([1, 2, 3])
-        ia = dpnp.array(a)
-
-        values_np = (
-            values if isinstance(values, numpy.ndarray) else values.asnumpy()
-        )
-        obj_np = obj if isinstance(obj, numpy.ndarray) else obj.asnumpy()
-        expected = numpy.insert(a, obj_np, values_np)
-        result = dpnp.insert(ia, obj, values)
-        assert_equal(result, expected)
-
-    @pytest.mark.filterwarnings("ignore::FutureWarning")
-    @pytest.mark.parametrize(
-        "obj",
-        [True, [False], numpy.array([True] * 4), [True, False, True, False]],
-    )
-    def test_boolean_obj(self, obj):
-        a = numpy.array([1, 2, 3])
-        ia = dpnp.array(a)
-        assert_equal(dpnp.insert(ia, obj, 9), numpy.insert(a, obj, 9))
-
-    def test_1D_array(self):
-        a = numpy.array([1, 2, 3])
-        ia = dpnp.array(a)
-
-        assert_equal(dpnp.insert(ia, 0, 1), numpy.insert(a, 0, 1))
-        assert_equal(dpnp.insert(ia, 3, 1), numpy.insert(a, 3, 1))
-        assert_equal(
-            dpnp.insert(ia, -1, [1, 2, 3]), numpy.insert(a, -1, [1, 2, 3])
-        )
-        assert_equal(
-            dpnp.insert(ia, [1, -1, 3], 9), numpy.insert(a, [1, -1, 3], 9)
-        )
-
-        expected = numpy.insert(a, [1, 1, 1], [1, 2, 3])
-        result = dpnp.insert(ia, [1, 1, 1], [1, 2, 3])
-        assert_equal(result, expected)
-
-        expected = numpy.insert(a, slice(-1, None, -1), 9)
-        result = dpnp.insert(ia, slice(-1, None, -1), 9)
-        assert_equal(result, expected)
-
-        expected = numpy.insert(a, [-1, 1, 3], [7, 8, 9])
-        result = dpnp.insert(ia, [-1, 1, 3], [7, 8, 9])
-        assert_equal(result, expected)
-
-        b = numpy.array([0, 1], dtype=numpy.float32)
-        ib = dpnp.array(b)
-        assert_equal(dpnp.insert(ib, 0, ib[0]), numpy.insert(b, 0, b[0]))
-        assert_equal(dpnp.insert(ib, [], []), numpy.insert(b, [], []))
-
-    def test_ND_array(self):
-        a = numpy.array([[1, 1, 1]])
-        ia = dpnp.array(a)
-
-        assert_equal(dpnp.insert(ia, 0, [1]), numpy.insert(a, 0, [1]))
-        assert_equal(
-            dpnp.insert(ia, 0, 2, axis=0), numpy.insert(a, 0, 2, axis=0)
-        )
-        assert_equal(
-            dpnp.insert(ia, 2, 2, axis=1), numpy.insert(a, 2, 2, axis=1)
-        )
-        expected = numpy.insert(a, 0, [2, 2, 2], axis=0)
-        result = dpnp.insert(ia, 0, [2, 2, 2], axis=0)
-        assert_equal(result, expected)
-
-        a = numpy.array([[1, 1], [2, 2], [3, 3]])
-        ia = dpnp.array(a)
-        expected = numpy.insert(a, [1], [[1], [2], [3]], axis=1)
-        result = dpnp.insert(ia, [1], [[1], [2], [3]], axis=1)
-        assert_equal(result, expected)
-
-        expected = numpy.insert(a, [1], [1, 2, 3], axis=1)
-        result = dpnp.insert(ia, [1], [1, 2, 3], axis=1)
-        assert_equal(result, expected)
-        # scalars behave differently
-        expected = numpy.insert(a, 1, [1, 2, 3], axis=1)
-        result = dpnp.insert(ia, 1, [1, 2, 3], axis=1)
-        assert_equal(result, expected)
-
-        expected = numpy.insert(a, 1, [[1], [2], [3]], axis=1)
-        result = dpnp.insert(ia, 1, [[1], [2], [3]], axis=1)
-        assert_equal(result, expected)
-
-        a = numpy.arange(4).reshape(2, 2)
-        ia = dpnp.array(a)
-        expected = numpy.insert(a[:, :1], 1, a[:, 1], axis=1)
-        result = dpnp.insert(ia[:, :1], 1, ia[:, 1], axis=1)
-        assert_equal(result, expected)
-
-        expected = numpy.insert(a[:1, :], 1, a[1, :], axis=0)
-        result = dpnp.insert(ia[:1, :], 1, ia[1, :], axis=0)
-        assert_equal(result, expected)
-
-        # negative axis value
-        a = numpy.arange(24).reshape((2, 3, 4))
-        ia = dpnp.array(a)
-        expected = numpy.insert(a, 1, a[:, :, 3], axis=-1)
-        result = dpnp.insert(ia, 1, ia[:, :, 3], axis=-1)
-        assert_equal(result, expected)
-
-        expected = numpy.insert(a, 1, a[:, 2, :], axis=-2)
-        result = dpnp.insert(ia, 1, ia[:, 2, :], axis=-2)
-        assert_equal(result, expected)
-
-        # invalid axis value
-        assert_raises(AxisError, dpnp.insert, ia, 1, ia[:, 2, :], axis=3)
-        assert_raises(AxisError, dpnp.insert, ia, 1, ia[:, 2, :], axis=-4)
-
-    def test_index_array_copied(self):
-        a = dpnp.array([0, 1, 2])
-        x = dpnp.array([1, 1, 1])
-        dpnp.insert(a, x, [3, 4, 5])
-        assert_equal(x, dpnp.array([1, 1, 1]))
-
-    def test_error(self):
-        a = dpnp.array([0, 1, 2])
-
-        # index float
-        with pytest.raises(IndexError):
-            dpnp.insert(a, dpnp.array([1.0, 2.0]), [10, 20])
-        with pytest.raises(IndexError):
-            dpnp.insert(a, dpnp.array([], dtype=dpnp.float32), [])
-
-        # index 2d
-        with pytest.raises(ValueError):
-            dpnp.insert(a, dpnp.array([[1.0], [2.0]]), [10, 20])
-
-        # incorrect axis
-        a = dpnp.array(1)
-        with pytest.raises(AxisError):
-            dpnp.insert(a, [], 2, axis=0)
-        with pytest.raises(TypeError):
-            dpnp.insert(a, [], 2, axis="nonsense")
-
-    @pytest.mark.parametrize("idx", [4, -4])
-    def test_index_out_of_bounds(self, idx):
-        a = dpnp.array([0, 1, 2])
-        with pytest.raises(IndexError, match="out of bounds"):
-            dpnp.insert(a, [idx], [3, 4])
-
-
 class TestAppend:
     @pytest.mark.parametrize(
         "arr",
@@ -677,6 +497,190 @@ class TestDsplit:
         expected = numpy.dsplit(a, 2)
         result = dpnp.dsplit(a_dp, 2)
         _compare_results(result, expected)
+
+
+class TestInsert:
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize(
+        "obj", [slice(0, 4, 2), 3, [2, 3]], ids=["slice", "scalar", "list"]
+    )
+    @pytest.mark.parametrize("dt1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dt2", get_all_dtypes(no_none=True))
+    def test_dtype(self, obj, dt1, dt2):
+        a = numpy.array([0, 1, 2, 3, 4, 5], dtype=dt1)
+        a_dp = dpnp.array(a)
+
+        values = numpy.array(3, dtype=dt2)
+
+        expected = numpy.insert(a, obj, values)
+        result = dpnp.insert(a_dp, obj, values)
+        assert result.dtype == dt1
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_order(self, order):
+        a = numpy.arange(10).reshape(2, 5, order=order)
+        a_dp = dpnp.array(a)
+
+        expected = numpy.insert(a, slice(3, None), -1, axis=1)
+        result = dpnp.insert(a_dp, slice(3, None), -1, axis=1)
+
+        assert_equal(result.flags.c_contiguous, expected.flags.c_contiguous)
+        assert_equal(result.flags.f_contiguous, expected.flags.f_contiguous)
+
+    @pytest.mark.parametrize(
+        "obj",
+        [numpy.array([2]), dpnp.array([0, 2]), dpnp.asarray([1])],
+    )
+    @pytest.mark.parametrize(
+        "values",
+        [numpy.array([-1]), dpnp.array([-2, -3])],
+    )
+    def test_ndarray_obj_values(self, obj, values):
+        a = numpy.array([1, 2, 3])
+        ia = dpnp.array(a)
+
+        values_np = (
+            values if isinstance(values, numpy.ndarray) else values.asnumpy()
+        )
+        obj_np = obj if isinstance(obj, numpy.ndarray) else obj.asnumpy()
+        expected = numpy.insert(a, obj_np, values_np)
+        result = dpnp.insert(ia, obj, values)
+        assert_equal(result, expected)
+
+    @pytest.mark.filterwarnings("ignore::FutureWarning")
+    @pytest.mark.parametrize(
+        "obj",
+        [True, [False], numpy.array([True] * 4), [True, False, True, False]],
+    )
+    def test_boolean_obj(self, obj):
+        a = numpy.array([1, 2, 3])
+        ia = dpnp.array(a)
+        assert_equal(dpnp.insert(ia, obj, 9), numpy.insert(a, obj, 9))
+
+    def test_1D_array(self):
+        a = numpy.array([1, 2, 3])
+        ia = dpnp.array(a)
+
+        assert_equal(dpnp.insert(ia, 0, 1), numpy.insert(a, 0, 1))
+        assert_equal(dpnp.insert(ia, 3, 1), numpy.insert(a, 3, 1))
+        assert_equal(
+            dpnp.insert(ia, -1, [1, 2, 3]), numpy.insert(a, -1, [1, 2, 3])
+        )
+        assert_equal(
+            dpnp.insert(ia, [1, -1, 3], 9), numpy.insert(a, [1, -1, 3], 9)
+        )
+
+        expected = numpy.insert(a, [1, 1, 1], [1, 2, 3])
+        result = dpnp.insert(ia, [1, 1, 1], [1, 2, 3])
+        assert_equal(result, expected)
+
+        expected = numpy.insert(a, slice(-1, None, -1), 9)
+        result = dpnp.insert(ia, slice(-1, None, -1), 9)
+        assert_equal(result, expected)
+
+        expected = numpy.insert(a, slice(None, 1, None), 9)
+        result = dpnp.insert(ia, slice(None, 1, None), 9)
+        assert_equal(result, expected)
+
+        expected = numpy.insert(a, [-1, 1, 3], [7, 8, 9])
+        result = dpnp.insert(ia, [-1, 1, 3], [7, 8, 9])
+        assert_equal(result, expected)
+
+        b = numpy.array([0, 1], dtype=numpy.float32)
+        ib = dpnp.array(b)
+        assert_equal(dpnp.insert(ib, 0, ib[0]), numpy.insert(b, 0, b[0]))
+        assert_equal(dpnp.insert(ib, [], []), numpy.insert(b, [], []))
+
+    def test_ND_array(self):
+        a = numpy.array([[1, 1, 1]])
+        ia = dpnp.array(a)
+
+        assert_equal(dpnp.insert(ia, 0, [1]), numpy.insert(a, 0, [1]))
+        assert_equal(
+            dpnp.insert(ia, 0, 2, axis=0), numpy.insert(a, 0, 2, axis=0)
+        )
+        assert_equal(
+            dpnp.insert(ia, 2, 2, axis=1), numpy.insert(a, 2, 2, axis=1)
+        )
+        expected = numpy.insert(a, 0, [2, 2, 2], axis=0)
+        result = dpnp.insert(ia, 0, [2, 2, 2], axis=0)
+        assert_equal(result, expected)
+
+        a = numpy.array([[1, 1], [2, 2], [3, 3]])
+        ia = dpnp.array(a)
+        expected = numpy.insert(a, [1], [[1], [2], [3]], axis=1)
+        result = dpnp.insert(ia, [1], [[1], [2], [3]], axis=1)
+        assert_equal(result, expected)
+
+        expected = numpy.insert(a, [1], [1, 2, 3], axis=1)
+        result = dpnp.insert(ia, [1], [1, 2, 3], axis=1)
+        assert_equal(result, expected)
+        # scalars behave differently
+        expected = numpy.insert(a, 1, [1, 2, 3], axis=1)
+        result = dpnp.insert(ia, 1, [1, 2, 3], axis=1)
+        assert_equal(result, expected)
+
+        expected = numpy.insert(a, 1, [[1], [2], [3]], axis=1)
+        result = dpnp.insert(ia, 1, [[1], [2], [3]], axis=1)
+        assert_equal(result, expected)
+
+        a = numpy.arange(4).reshape(2, 2)
+        ia = dpnp.array(a)
+        expected = numpy.insert(a[:, :1], 1, a[:, 1], axis=1)
+        result = dpnp.insert(ia[:, :1], 1, ia[:, 1], axis=1)
+        assert_equal(result, expected)
+
+        expected = numpy.insert(a[:1, :], 1, a[1, :], axis=0)
+        result = dpnp.insert(ia[:1, :], 1, ia[1, :], axis=0)
+        assert_equal(result, expected)
+
+        # negative axis value
+        a = numpy.arange(24).reshape((2, 3, 4))
+        ia = dpnp.array(a)
+        expected = numpy.insert(a, 1, a[:, :, 3], axis=-1)
+        result = dpnp.insert(ia, 1, ia[:, :, 3], axis=-1)
+        assert_equal(result, expected)
+
+        expected = numpy.insert(a, 1, a[:, 2, :], axis=-2)
+        result = dpnp.insert(ia, 1, ia[:, 2, :], axis=-2)
+        assert_equal(result, expected)
+
+        # invalid axis value
+        assert_raises(AxisError, dpnp.insert, ia, 1, ia[:, 2, :], axis=3)
+        assert_raises(AxisError, dpnp.insert, ia, 1, ia[:, 2, :], axis=-4)
+
+    def test_index_array_copied(self):
+        a = dpnp.array([0, 1, 2])
+        x = dpnp.array([1, 1, 1])
+        dpnp.insert(a, x, [3, 4, 5])
+        assert_equal(x, dpnp.array([1, 1, 1]))
+
+    def test_error(self):
+        a = dpnp.array([0, 1, 2])
+
+        # index float
+        with pytest.raises(IndexError):
+            dpnp.insert(a, dpnp.array([1.0, 2.0]), [10, 20])
+        with pytest.raises(IndexError):
+            dpnp.insert(a, dpnp.array([], dtype=dpnp.float32), [])
+
+        # index 2d
+        with pytest.raises(ValueError):
+            dpnp.insert(a, dpnp.array([[1.0], [2.0]]), [10, 20])
+
+        # incorrect axis
+        a = dpnp.array(1)
+        with pytest.raises(AxisError):
+            dpnp.insert(a, [], 2, axis=0)
+        with pytest.raises(TypeError):
+            dpnp.insert(a, [], 2, axis="nonsense")
+
+    @pytest.mark.parametrize("idx", [4, -4])
+    def test_index_out_of_bounds(self, idx):
+        a = dpnp.array([0, 1, 2])
+        with pytest.raises(IndexError, match="out of bounds"):
+            dpnp.insert(a, [idx], [3, 4])
 
 
 # array_split has more comprehensive test of splitting.
