@@ -259,16 +259,11 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      - name: Create test temp dir
-        # create temporary empty folder to runs tests from
-        # https://github.com/pytest-dev/pytest/issues/11904
-        run: mkdir -p ${GITHUB_WORKSPACE}/test_tmp
-
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          python -m pytest -q -ra --disable-warnings -vv --pyargs ${{ env.TEST_SCOPE }}
-        working-directory: ${{ github.workspace }}/test_tmp
+          python -m pytest -ra -v --disable-warnings --pyargs ${{ env.TEST_SCOPE }}
+        working-directory: ${{ github.workspace }}
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
@@ -282,8 +277,8 @@ jobs:
           command: |
             . $CONDA/etc/profile.d/conda.sh
             conda activate ${{ env.TEST_ENV_NAME }}
-            cd ${{ github.workspace }}/test_tmp
-            python -m pytest -q -ra --disable-warnings -vv --pyargs ${{ env.TEST_SCOPE }}
+            cd ${{ github.workspace }}
+            pytest -ra -v --disable-warnings --pyargs ${{ env.TEST_SCOPE }}
 
   test_windows:
     name: Test ['windows-2019', python='${{ matrix.python }}']
@@ -419,17 +414,11 @@ jobs:
           python -c "import dpnp, dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      - name: Create empty temporary directory to run tests from
-        # create temporary empty folder to runs tests from
-        # https://github.com/pytest-dev/pytest/issues/11904
-        run: |
-          mkdir "${{ env.workdir }}\test_tmp"
-
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          python -m pytest -q -ra --disable-warnings -vv --pyargs ${{ env.TEST_SCOPE }}
-        working-directory: ${{ env.workdir }}\test_tmp
+          pytest -ra -v --disable-warnings --pyargs ${{ env.TEST_SCOPE }}
+        working-directory: ${{ env.workdir }}
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
@@ -442,8 +431,8 @@ jobs:
           retry_on: any
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
-            & cd ${{ env.workdir }}\test_tmp
-            & python -m pytest -q -ra --disable-warnings -vv --pyargs ${{ env.TEST_SCOPE }}
+            & cd ${{ env.workdir }}
+            & pytest -ra -v --disable-warnings --pyargs ${{ env.TEST_SCOPE }}
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
