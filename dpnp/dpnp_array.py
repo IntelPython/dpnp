@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 
@@ -205,6 +206,7 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
     # '__class__',
+    # `__class_getitem__`,
 
     def __complex__(self):
         return self._array_obj.__complex__()
@@ -335,6 +337,8 @@ class dpnp_array:
         res._array_obj = item
         return res
 
+    # '__getstate__',
+
     def __gt__(self, other):
         """Return ``self>value``."""
         return dpnp.greater(self, other)
@@ -361,7 +365,31 @@ class dpnp_array:
         dpnp.left_shift(self, other, out=self)
         return self
 
-    # '__imatmul__',
+    def __imatmul__(self, other):
+        """Return ``self@=value``."""
+
+        """
+        Unlike `matmul(a, b, out=a)` we ensure that the result is not broadcast
+        if the result without `out` would have less dimensions than `a`.
+        Since the signature of matmul is '(n?,k),(k,m?)->(n?,m?)' this is the
+        case exactly when the second operand has both core dimensions.
+        We have to enforce this check by passing the correct `axes=`.
+        """
+        if self.ndim == 1:
+            axes = [(-1,), (-2, -1), (-1,)]
+        else:
+            axes = [(-2, -1), (-2, -1), (-2, -1)]
+
+        try:
+            dpnp.matmul(self, other, out=self, axes=axes)
+        except AxisError:
+            # AxisError should indicate that the axes argument didn't work out
+            # which should mean the second operand not being 2 dimensional.
+            raise ValueError(
+                "inplace matrix multiplication requires the first operand to "
+                "have at least one and the second at least two dimensions."
+            )
+        return self
 
     def __imod__(self, other):
         """Return ``self%=value``."""
@@ -469,9 +497,11 @@ class dpnp_array:
         return dpnp.power(self, other)
 
     def __radd__(self, other):
+        """Return ``value+self``."""
         return dpnp.add(other, self)
 
     def __rand__(self, other):
+        """Return ``value&self``."""
         return dpnp.bitwise_and(other, self)
 
     # '__rdivmod__',
@@ -483,27 +513,35 @@ class dpnp_array:
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
     def __rfloordiv__(self, other):
+        """Return ``value//self``."""
         return dpnp.floor_divide(self, other)
 
     def __rlshift__(self, other):
+        """Return ``value<<self``."""
         return dpnp.left_shift(other, self)
 
     def __rmatmul__(self, other):
+        """Return ``value@self``."""
         return dpnp.matmul(other, self)
 
     def __rmod__(self, other):
+        """Return ``value%self``."""
         return dpnp.remainder(other, self)
 
     def __rmul__(self, other):
+        """Return ``value*self``."""
         return dpnp.multiply(other, self)
 
     def __ror__(self, other):
+        """Return ``value|self``."""
         return dpnp.bitwise_or(other, self)
 
     def __rpow__(self, other):
+        """Return ``value**self``."""
         return dpnp.power(other, self)
 
     def __rrshift__(self, other):
+        """Return ``value>>self``."""
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
@@ -511,12 +549,15 @@ class dpnp_array:
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
+        """Return ``value-self``."""
         return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
+        """Return ``value/self``."""
         return dpnp.true_divide(other, self)
 
     def __rxor__(self, other):
+        """Return ``value^self``."""
         return dpnp.bitwise_xor(other, self)
 
     # '__setattr__',

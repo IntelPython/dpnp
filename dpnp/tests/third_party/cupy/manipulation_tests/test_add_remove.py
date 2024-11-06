@@ -12,7 +12,6 @@ from dpnp.tests.third_party.cupy.testing._loops import (
 )
 
 
-@pytest.mark.skip("delete() is not implemented yet")
 class TestDelete(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_delete_with_no_axis(self, xp):
@@ -54,8 +53,8 @@ class TestDelete(unittest.TestCase):
     def test_delete_with_indices_as_int(self, xp):
         arr = xp.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
         indices = 5
-        if cupy.cuda.runtime.is_hip:
-            pytest.xfail("HIP may have a bug")
+        # if cupy.cuda.runtime.is_hip:
+        #    pytest.xfail("HIP may have a bug")
         return xp.delete(arr, indices)
 
 
