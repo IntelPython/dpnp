@@ -157,7 +157,7 @@ class TestInsert:
 
     @pytest.mark.parametrize(
         "obj",
-        [numpy.array([2]), dpnp.array([0, 2])],
+        [numpy.array([2]), dpnp.array([0, 2]), dpnp.asarray([1])],
     )
     @pytest.mark.parametrize(
         "values",
@@ -192,7 +192,7 @@ class TestInsert:
         assert_equal(dpnp.insert(ia, 0, 1), numpy.insert(a, 0, 1))
         assert_equal(dpnp.insert(ia, 3, 1), numpy.insert(a, 3, 1))
         assert_equal(
-            dpnp.insert(ia, 1, [1, 2, 3]), numpy.insert(a, 1, [1, 2, 3])
+            dpnp.insert(ia, -1, [1, 2, 3]), numpy.insert(a, -1, [1, 2, 3])
         )
         assert_equal(
             dpnp.insert(ia, [1, -1, 3], 9), numpy.insert(a, [1, -1, 3], 9)
@@ -273,25 +273,31 @@ class TestInsert:
         assert_raises(AxisError, dpnp.insert, ia, 1, ia[:, 2, :], axis=3)
         assert_raises(AxisError, dpnp.insert, ia, 1, ia[:, 2, :], axis=-4)
 
-    def test_0d(self):
-        a = dpnp.array(1)
-        with pytest.raises(AxisError):
-            dpnp.insert(a, [], 2, axis=0)
-        with pytest.raises(TypeError):
-            dpnp.insert(a, [], 2, axis="nonsense")
-
     def test_index_array_copied(self):
         a = dpnp.array([0, 1, 2])
         x = dpnp.array([1, 1, 1])
         dpnp.insert(a, x, [3, 4, 5])
         assert_equal(x, dpnp.array([1, 1, 1]))
 
-    def test_index_floats(self):
+    def test_error(self):
         a = dpnp.array([0, 1, 2])
+
+        # index float
         with pytest.raises(IndexError):
             dpnp.insert(a, dpnp.array([1.0, 2.0]), [10, 20])
         with pytest.raises(IndexError):
             dpnp.insert(a, dpnp.array([], dtype=dpnp.float32), [])
+
+        # index 2d
+        with pytest.raises(ValueError):
+            dpnp.insert(a, dpnp.array([[1.0], [2.0]]), [10, 20])
+
+        # incorrect axis
+        a = dpnp.array(1)
+        with pytest.raises(AxisError):
+            dpnp.insert(a, [], 2, axis=0)
+        with pytest.raises(TypeError):
+            dpnp.insert(a, [], 2, axis="nonsense")
 
     @pytest.mark.parametrize("idx", [4, -4])
     def test_index_out_of_bounds(self, idx):
