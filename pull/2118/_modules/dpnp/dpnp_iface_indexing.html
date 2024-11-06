@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev0+69.g9e14f0191a3 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev1+15.g935761fe492 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1a35811d"></script>
+      <script src="../../_static/documentation_options.js?v=12bf9a0f"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -167,57 +167,6 @@
     <span class="s2">&quot;triu_indices_from&quot;</span><span class="p">,</span>
     <span class="s2">&quot;unravel_index&quot;</span><span class="p">,</span>
 <span class="p">]</span>
-
-
-<span class="k">def</span> <span class="nf">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Build a fancy index used by a family of `_along_axis` functions.</span>
-
-<span class="sd">    The fancy index consists of orthogonal arranges, with the</span>
-<span class="sd">    requested index inserted at the right location.</span>
-
-<span class="sd">    The resulting index is going to be used inside `dpnp.put_along_axis`</span>
-<span class="sd">    and `dpnp.take_along_axis` implementations.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;`indices` must be an integer array&quot;</span><span class="p">)</span>
-
-    <span class="c1"># normalize array shape and input axis</span>
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">,)</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a_shape</span><span class="p">)</span> <span class="o">!=</span> <span class="n">ind</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="s2">&quot;`indices` and `a` must have the same number of dimensions&quot;</span>
-        <span class="p">)</span>
-
-    <span class="c1"># compute dimensions to iterate over</span>
-    <span class="n">dest_dims</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">axis</span><span class="p">))</span> <span class="o">+</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ind</span><span class="o">.</span><span class="n">ndim</span><span class="p">))</span>
-    <span class="n">shape_ones</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span> <span class="o">*</span> <span class="n">ind</span><span class="o">.</span><span class="n">ndim</span>
-
-    <span class="c1"># build the index</span>
-    <span class="n">fancy_index</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">dim</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">dest_dims</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">dim</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">fancy_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">ind_shape</span> <span class="o">=</span> <span class="n">shape_ones</span><span class="p">[:</span><span class="n">dim</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="n">shape_ones</span><span class="p">[</span><span class="n">dim</span> <span class="o">+</span> <span class="mi">1</span> <span class="p">:]</span>
-            <span class="n">fancy_index</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
-                    <span class="n">n</span><span class="p">,</span>
-                    <span class="n">dtype</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
-                    <span class="n">usm_type</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-                    <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ind</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
-                <span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ind_shape</span><span class="p">)</span>
-            <span class="p">)</span>
-
-    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">fancy_index</span><span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">_ravel_multi_index_checks</span><span class="p">(</span><span class="n">multi_index</span><span class="p">,</span> <span class="n">dims</span><span class="p">,</span> <span class="n">order</span><span class="p">):</span>
@@ -1497,7 +1446,7 @@
 
 <div class="viewcode-block" id="put_along_axis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.put_along_axis.html#dpnp.put_along_axis">[docs]</a>
-<span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">put_along_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Put values into the destination array by matching 1d index and data slices.</span>
 
@@ -1521,9 +1470,18 @@
 <span class="sd">    values : {scalar, array_like}, (Ni..., J, Nk...)</span>
 <span class="sd">        Values to insert at those indices. Its shape and dimension are</span>
 <span class="sd">        broadcast to match that of `ind`.</span>
-<span class="sd">    axis : int</span>
+<span class="sd">    axis : {None, int}</span>
 <span class="sd">        The axis to take 1d slices along. If axis is ``None``, the destination</span>
 <span class="sd">        array is treated as if a flattened 1d view had been created of it.</span>
+<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
+<span class="sd">        are:</span>
+
+<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">          negative indices.</span>
+<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+
+<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1552,12 +1510,26 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">)</span>
-
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ind</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;when axis=None, `ind` must have a single dimension.&quot;</span>
+            <span class="p">)</span>
 
-    <span class="n">a</span><span class="p">[</span><span class="n">_build_along_axis_index</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="p">,</span> <span class="n">axis</span><span class="p">)]</span> <span class="o">=</span> <span class="n">values</span></div>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_ind</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">ind</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+        <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_vals</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
+            <span class="n">values</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+        <span class="p">)</span>
+
+    <span class="n">dpt</span><span class="o">.</span><span class="n">put_along_axis</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">usm_ind</span><span class="p">,</span> <span class="n">usm_vals</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
 
 
 

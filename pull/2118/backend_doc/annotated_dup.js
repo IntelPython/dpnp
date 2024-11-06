@@ -90,7 +90,42 @@ var annotated_dup =
         ] ],
         [ "radians", null, [
           [ "RadiansFunctor", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ]
+        ] ],
+        [ "sinc", null, [
+          [ "SincFunctor", "structdpnp_1_1kernels_1_1sinc_1_1_sinc_functor.html", null ]
+        ] ],
+        [ "spacing", null, [
+          [ "SpacingFunctor", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ]
         ] ]
+      ] ]
+    ] ],
+    [ "statistics", null, [
+      [ "common", null, [
+        [ "AtomicOp", "structstatistics_1_1common_1_1_atomic_op.html", null ],
+        [ "AtomicOp< std::complex< T >, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op_3_01std_1_1complex_3_01_t_01_4_00_01_order_00_01_scope_01_4.html", null ],
+        [ "DispatchTable2", "classstatistics_1_1common_1_1_dispatch_table2.html", null ],
+        [ "int_pair_hash", "structstatistics_1_1common_1_1int__pair__hash.html", null ],
+        [ "IsNan", "structstatistics_1_1common_1_1_is_nan.html", null ],
+        [ "IsNan< std::complex< T > >", "structstatistics_1_1common_1_1_is_nan_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
+        [ "Less", "structstatistics_1_1common_1_1_less.html", null ],
+        [ "Less< std::complex< T > >", "structstatistics_1_1common_1_1_less_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
+        [ "one_of", "structstatistics_1_1common_1_1one__of.html", null ],
+        [ "one_of< T, std::tuple< Top > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
+        [ "one_of< T, std::tuple< Top, Rest... > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
+        [ "TableBuilder2", "structstatistics_1_1common_1_1_table_builder2.html", "structstatistics_1_1common_1_1_table_builder2" ]
+      ] ],
+      [ "histogram", null, [
+        [ "CachedData", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
+        [ "HistGlobalMemory", "structstatistics_1_1histogram_1_1_hist_global_memory.html", null ],
+        [ "HistLocalType", "structstatistics_1_1histogram_1_1_hist_local_type.html", null ],
+        [ "HistLocalType< int64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01int64__t_01_4.html", null ],
+        [ "HistLocalType< uint64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html", null ],
+        [ "Histogram", "structstatistics_1_1histogram_1_1_histogram.html", null ],
+        [ "histogram_kernel", "classstatistics_1_1histogram_1_1histogram__kernel.html", null ],
+        [ "HistWithLocalCopies", "structstatistics_1_1histogram_1_1_hist_with_local_copies.html", null ],
+        [ "NoWeights", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
+        [ "UncachedData", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],
+        [ "Weights", "structstatistics_1_1histogram_1_1_weights.html", null ]
       ] ]
     ] ],
     [ "are_same", "structare__same.html", null ],

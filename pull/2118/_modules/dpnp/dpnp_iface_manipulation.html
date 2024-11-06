@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev0+69.g9e14f0191a3 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev1+15.g935761fe492 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1a35811d"></script>
+      <script src="../../_static/documentation_options.js?v=12bf9a0f"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -135,6 +135,10 @@
 
 <span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
 
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">get_usm_allocations</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_pad</span> <span class="kn">import</span> <span class="n">dpnp_pad</span>
+
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;append&quot;</span><span class="p">,</span>
     <span class="s2">&quot;array_split&quot;</span><span class="p">,</span>
@@ -150,6 +154,7 @@
     <span class="s2">&quot;concat&quot;</span><span class="p">,</span>
     <span class="s2">&quot;concatenate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;copyto&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;delete&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dsplit&quot;</span><span class="p">,</span>
     <span class="s2">&quot;dstack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;expand_dims&quot;</span><span class="p">,</span>
@@ -161,6 +166,7 @@
     <span class="s2">&quot;matrix_transpose&quot;</span><span class="p">,</span>
     <span class="s2">&quot;moveaxis&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ndim&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pad&quot;</span><span class="p">,</span>
     <span class="s2">&quot;permute_dims&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ravel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;repeat&quot;</span><span class="p">,</span>
@@ -196,6 +202,135 @@
             <span class="s1">&#39;arrays to stack must be passed as a &quot;sequence&quot; type &#39;</span>
             <span class="s2">&quot;such as list or tuple.&quot;</span>
         <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_delete_with_slice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` when obj is slice.&quot;&quot;&quot;</span>
+
+    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span> <span class="o">=</span> <span class="n">_calc_parameters</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">xr</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="n">num_del</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">xr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">num_del</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+
+    <span class="c1"># Invert if step is negative:</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="o">-</span><span class="n">step</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">xr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">stop</span> <span class="o">=</span> <span class="n">xr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-=</span> <span class="n">num_del</span>
+    <span class="n">new</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">a_shape</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="c1"># copy initial chunk</span>
+    <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">start</span><span class="p">)</span>
+        <span class="n">new</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span>
+    <span class="c1"># copy end chunk</span>
+    <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="n">n</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">num_del</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">slobj2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">a_ndim</span>
+        <span class="n">slobj2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">stop</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">new</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj2</span><span class="p">)]</span>
+    <span class="c1"># copy middle pieces</span>
+    <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># use array indexing.</span>
+        <span class="n">keep</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">keep</span><span class="p">[:</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">start</span> <span class="p">:</span> <span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">num_del</span><span class="p">)</span>
+        <span class="n">slobj2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">a_ndim</span>
+        <span class="n">slobj2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj2</span><span class="p">)]</span>
+        <span class="n">slobj2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">keep</span>
+        <span class="n">new</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj2</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">new</span>
+
+
+<span class="k">def</span> <span class="nf">_delete_without_slice</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">single_value</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` when obj is int or array of int.&quot;&quot;&quot;</span>
+
+    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span> <span class="o">=</span> <span class="n">_calc_parameters</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">single_value</span><span class="p">:</span>
+        <span class="c1"># optimization for a single value</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">n</span> <span class="ow">or</span> <span class="n">obj</span> <span class="o">&gt;=</span> <span class="n">n</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">obj</span><span class="si">}</span><span class="s2"> is out of bounds for axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> with &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;size </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">obj</span> <span class="o">+=</span> <span class="n">n</span>
+        <span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">a_shape</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
+            <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">obj</span><span class="p">)</span>
+        <span class="n">new</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span>
+        <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">slobj2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">a_ndim</span>
+        <span class="n">slobj2</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">obj</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">new</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj2</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">obj</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">n</span><span class="p">,):</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;boolean array argument `obj` to delete must be &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;one-dimensional and match the axis length of </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="c1"># optimization, the other branch is slower</span>
+            <span class="n">keep</span> <span class="o">=</span> <span class="o">~</span><span class="n">obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">keep</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+                <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+            <span class="p">)</span>
+            <span class="n">keep</span><span class="p">[</span><span class="n">obj</span><span class="p">,]</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="n">keep</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span>
+
+    <span class="k">return</span> <span class="n">new</span>
+
+
+<span class="k">def</span> <span class="nf">_calc_parameters</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` and ``dpnp.insert``.&quot;&quot;&quot;</span>
+
+    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;F&quot;</span> <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">fnc</span> <span class="k">else</span> <span class="s2">&quot;C&quot;</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">a_ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">a_ndim</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">)</span>
+
+    <span class="n">slobj</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">a_ndim</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
+    <span class="n">a_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span>
 
 
 <span class="k">def</span> <span class="nf">_unique_1d</span><span class="p">(</span>
@@ -1328,6 +1463,112 @@
 
 
 
+<div class="viewcode-block" id="delete">
+<a class="viewcode-back" href="../../reference/generated/dpnp.delete.html#dpnp.delete">[docs]</a>
+<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return a new array with sub-arrays along an axis deleted. For a one</span>
+<span class="sd">    dimensional array, this returns those entries not returned by</span>
+<span class="sd">    ``arr[obj]``.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.delete`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    obj : {slice, int, array-like of ints or boolean}</span>
+<span class="sd">        Indicate indices of sub-arrays to remove along the specified axis.</span>
+<span class="sd">        Boolean indices are treated as a mask of elements to remove.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        The axis along which to delete the subarray defined by `obj`.</span>
+<span class="sd">        If `axis` is ``None``, `obj` is applied to the flattened array.</span>
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A copy of `arr` with the elements specified by `obj` removed. Note</span>
+<span class="sd">        that `delete` does not occur in-place. If `axis` is ``None``, `out` is</span>
+<span class="sd">        a flattened array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.insert` : Insert elements into an array.</span>
+<span class="sd">    :obj:`dpnp.append` : Append elements at the end of an array.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Often it is preferable to use a boolean mask. For example:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; arr = np.arange(12) + 1</span>
+<span class="sd">    &gt;&gt;&gt; mask = np.ones(len(arr), dtype=np.bool)</span>
+<span class="sd">    &gt;&gt;&gt; mask[0] = mask[2] = mask[4] = False</span>
+<span class="sd">    &gt;&gt;&gt; result = arr[mask,...]</span>
+
+<span class="sd">    is equivalent to ``np.delete(arr, [0, 2, 4], axis=0)``, but allows further</span>
+<span class="sd">    use of `mask`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; arr = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])</span>
+<span class="sd">    &gt;&gt;&gt; arr</span>
+<span class="sd">    array([[ 1,  2,  3,  4],</span>
+<span class="sd">           [ 5,  6,  7,  8],</span>
+<span class="sd">           [ 9, 10, 11, 12]])</span>
+<span class="sd">    &gt;&gt;&gt; np.delete(arr, 1, 0)</span>
+<span class="sd">    array([[ 1,  2,  3,  4],</span>
+<span class="sd">           [ 9, 10, 11, 12]])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.delete(arr, slice(None, None, 2), 1)</span>
+<span class="sd">    array([[ 2,  4],</span>
+<span class="sd">           [ 6,  8],</span>
+<span class="sd">           [10, 12]])</span>
+<span class="sd">    &gt;&gt;&gt; np.delete(arr, [1, 3, 5], None)</span>
+<span class="sd">    array([ 1,  3,  5,  7,  8,  9, 10, 11, 12])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_delete_with_slice</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">arr</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">arr</span><span class="o">.</span><span class="n">sycl_queue</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+        <span class="n">single_value</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">obj</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">single_value</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="n">is_array</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="c1"># if `obj` is originally an empty list, after converting it into</span>
+        <span class="c1"># an array, it will have float dtype, so we need to change its dtype</span>
+        <span class="c1"># to integer. However, if `obj` is originally an empty array with</span>
+        <span class="c1"># float dtype, it is a mistake by user and it will raise an error later</span>
+        <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_array</span><span class="p">:</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">kind</span> <span class="ow">in</span> <span class="s2">&quot;ui&quot;</span><span class="p">:</span>
+            <span class="c1"># For a size 1 integer array we can use the single-value path</span>
+            <span class="c1"># (most dtypes, except boolean, should just fail later).</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">indices</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">single_value</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="n">_delete_without_slice</span><span class="p">(</span>
+        <span class="n">arr</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">single_value</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span>
+    <span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="dsplit">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dsplit.html#dpnp.dsplit">[docs]</a>
 <span class="k">def</span> <span class="nf">dsplit</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">):</span>
@@ -2048,6 +2289,210 @@
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">a</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="pad">
+<a class="viewcode-back" href="../../reference/generated/dpnp.pad.html#dpnp.pad">[docs]</a>
+<span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Pad an array.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.pad`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    array : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        The array of rank ``N`` to pad.</span>
+<span class="sd">    pad_width : {sequence, array_like, int}</span>
+<span class="sd">        Number of values padded to the edges of each axis.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique pad widths</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after pad for each axis.</span>
+<span class="sd">        ``(pad,)`` or ``int`` is a shortcut for ``before = after = pad`` width</span>
+<span class="sd">        for all axes.</span>
+<span class="sd">    mode : {str, function}, optional</span>
+<span class="sd">        One of the following string values or a user supplied function.</span>
+
+<span class="sd">        &quot;constant&quot;</span>
+<span class="sd">            Pads with a constant value.</span>
+<span class="sd">        &quot;edge&quot;</span>
+<span class="sd">            Pads with the edge values of array.</span>
+<span class="sd">        &quot;linear_ramp&quot;</span>
+<span class="sd">            Pads with the linear ramp between `end_value` and the</span>
+<span class="sd">            array edge value.</span>
+<span class="sd">        &quot;maximum&quot;</span>
+<span class="sd">            Pads with the maximum value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;mean&quot;</span>
+<span class="sd">            Pads with the mean value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;median&quot;</span>
+<span class="sd">            Pads with the median value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;minimum&quot;</span>
+<span class="sd">            Pads with the minimum value of all or part of the</span>
+<span class="sd">            vector along each axis.</span>
+<span class="sd">        &quot;reflect&quot;</span>
+<span class="sd">            Pads with the reflection of the vector mirrored on</span>
+<span class="sd">            the first and last values of the vector along each</span>
+<span class="sd">            axis.</span>
+<span class="sd">        &quot;symmetric&quot;</span>
+<span class="sd">            Pads with the reflection of the vector mirrored</span>
+<span class="sd">            along the edge of the array.</span>
+<span class="sd">        &quot;wrap&quot;</span>
+<span class="sd">            Pads with the wrap of the vector along the axis.</span>
+<span class="sd">            The first values are used to pad the end and the</span>
+<span class="sd">            end values are used to pad the beginning.</span>
+<span class="sd">        &quot;empty&quot;</span>
+<span class="sd">            Pads with undefined values.</span>
+<span class="sd">        &lt;function&gt;</span>
+<span class="sd">            Padding function, see Notes.</span>
+<span class="sd">        Default: ``&quot;constant&quot;``.</span>
+<span class="sd">    stat_length : {None, int, sequence of ints}, optional</span>
+<span class="sd">        Used in ``&quot;maximum&quot;``, ``&quot;mean&quot;``, ``&quot;median&quot;``, and ``&quot;minimum&quot;``.</span>
+<span class="sd">        Number of values at edge of each axis used to calculate the statistic</span>
+<span class="sd">        value. ``((before_1, after_1), ... (before_N, after_N))`` unique</span>
+<span class="sd">        statistic lengths for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after statistic lengths for each axis.</span>
+<span class="sd">        ``(stat_length,)`` or ``int`` is a shortcut for</span>
+<span class="sd">        ``before = after = statistic`` length for all axes.</span>
+<span class="sd">       Default: ``None``, to use the entire axis.</span>
+<span class="sd">    constant_values : {sequence, scalar}, optional</span>
+<span class="sd">        Used in ``&quot;constant&quot;``. The values to set the padded values for each</span>
+<span class="sd">        axis.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique pad constants</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after constants for each axis.</span>
+<span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for</span>
+<span class="sd">        ``before = after = constant`` for all axes.</span>
+<span class="sd">        Default: ``0``.</span>
+<span class="sd">    end_values : {sequence, scalar}, optional</span>
+<span class="sd">        Used in ``&quot;linear_ramp&quot;``. The values used for the ending value of the</span>
+<span class="sd">        linear_ramp and that will form the edge of the padded array.</span>
+<span class="sd">        ``((before_1, after_1), ... (before_N, after_N))`` unique end values</span>
+<span class="sd">        for each axis.</span>
+<span class="sd">        ``(before, after)`` or ``((before, after),)`` yields same before</span>
+<span class="sd">        and after end values for each axis.</span>
+<span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for</span>
+<span class="sd">        ``before = after = constant`` for all axes.</span>
+<span class="sd">        Default: ``0``.</span>
+<span class="sd">    reflect_type : {&quot;even&quot;, &quot;odd&quot;}, optional</span>
+<span class="sd">        Used in ``&quot;reflect&quot;``, and ``&quot;symmetric&quot;``. The ``&quot;even&quot;`` style is the</span>
+<span class="sd">        default with an unaltered reflection around the edge value. For</span>
+<span class="sd">        the ``&quot;odd&quot;`` style, the extended part of the array is created by</span>
+<span class="sd">        subtracting the reflected values from two times the edge value.</span>
+<span class="sd">        Default: ``&quot;even&quot;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    padded array : dpnp.ndarray</span>
+<span class="sd">        Padded array of rank equal to `array` with shape increased</span>
+<span class="sd">        according to `pad_width`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For an array with rank greater than 1, some of the padding of later</span>
+<span class="sd">    axes is calculated from padding of previous axes. This is easiest to</span>
+<span class="sd">    think about with a rank 2 array where the corners of the padded array</span>
+<span class="sd">    are calculated by using padded values from the first axis.</span>
+
+<span class="sd">    The padding function, if used, should modify a rank 1 array in-place. It</span>
+<span class="sd">    has the following signature::</span>
+
+<span class="sd">        padding_func(vector, iaxis_pad_width, iaxis, kwargs)</span>
+
+<span class="sd">    where</span>
+
+<span class="sd">    vector : dpnp.ndarray</span>
+<span class="sd">        A rank 1 array already padded with zeros. Padded values are</span>
+<span class="sd">        vector[:iaxis_pad_width[0]] and vector[-iaxis_pad_width[1]:].</span>
+<span class="sd">    iaxis_pad_width : tuple</span>
+<span class="sd">        A 2-tuple of ints, iaxis_pad_width[0] represents the number of</span>
+<span class="sd">        values padded at the beginning of vector where</span>
+<span class="sd">        iaxis_pad_width[1] represents the number of values padded at</span>
+<span class="sd">        the end of vector.</span>
+<span class="sd">    iaxis : int</span>
+<span class="sd">        The axis currently being calculated.</span>
+<span class="sd">    kwargs : dict</span>
+<span class="sd">        Any keyword arguments the function requires.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;constant&#39;, constant_values=(4, 6))</span>
+<span class="sd">    array([4, 4, 1, 2, 3, 4, 5, 6, 6, 6])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;edge&#39;)</span>
+<span class="sd">    array([1, 1, 1, 2, 3, 4, 5, 5, 5, 5])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;linear_ramp&#39;, end_values=(5, -4))</span>
+<span class="sd">    array([ 5,  3,  1,  2,  3,  4,  5,  2, -1, -4])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2,), &#39;maximum&#39;)</span>
+<span class="sd">    array([5, 5, 1, 2, 3, 4, 5, 5, 5])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2,), &#39;mean&#39;)</span>
+<span class="sd">    array([3, 3, 1, 2, 3, 4, 5, 3, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2,), &#39;median&#39;)</span>
+<span class="sd">    array([3, 3, 1, 2, 3, 4, 5, 3, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, ((3, 2), (2, 3)), &#39;minimum&#39;)</span>
+<span class="sd">    array([[1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [3, 3, 3, 4, 3, 3, 3],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1],</span>
+<span class="sd">           [1, 1, 1, 2, 1, 1, 1]])</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3, 4, 5])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;reflect&#39;)</span>
+<span class="sd">    array([3, 2, 1, 2, 3, 4, 5, 4, 3, 2])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;reflect&#39;, reflect_type=&#39;odd&#39;)</span>
+<span class="sd">    array([-1,  0,  1,  2,  3,  4,  5,  6,  7,  8])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;symmetric&#39;)</span>
+<span class="sd">    array([2, 1, 1, 2, 3, 4, 5, 5, 4, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;symmetric&#39;, reflect_type=&#39;odd&#39;)</span>
+<span class="sd">    array([0, 1, 1, 2, 3, 4, 5, 5, 6, 7])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.pad(a, (2, 3), &#39;wrap&#39;)</span>
+<span class="sd">    array([4, 5, 1, 2, 3, 4, 5, 1, 2, 3])</span>
+
+<span class="sd">    &gt;&gt;&gt; def pad_width(vector, pad_width, iaxis, kwargs):</span>
+<span class="sd">    ...     pad_value = kwargs.get(&#39;padder&#39;, 10)</span>
+<span class="sd">    ...     vector[:pad_width[0]] = pad_value</span>
+<span class="sd">    ...     vector[-pad_width[1]:] = pad_value</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(6)</span>
+<span class="sd">    &gt;&gt;&gt; a = a.reshape((2, 3))</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, 2, pad_width)</span>
+<span class="sd">    array([[10, 10, 10, 10, 10, 10, 10],</span>
+<span class="sd">           [10, 10, 10, 10, 10, 10, 10],</span>
+<span class="sd">           [10, 10,  0,  1,  2, 10, 10],</span>
+<span class="sd">           [10, 10,  3,  4,  5, 10, 10],</span>
+<span class="sd">           [10, 10, 10, 10, 10, 10, 10],</span>
+<span class="sd">           [10, 10, 10, 10, 10, 10, 10]])</span>
+<span class="sd">    &gt;&gt;&gt; np.pad(a, 2, pad_width, padder=100)</span>
+<span class="sd">    array([[100, 100, 100, 100, 100, 100, 100],</span>
+<span class="sd">           [100, 100, 100, 100, 100, 100, 100],</span>
+<span class="sd">           [100, 100,   0,   1,   2, 100, 100],</span>
+<span class="sd">           [100, 100,   3,   4,   5, 100, 100],</span>
+<span class="sd">           [100, 100, 100, 100, 100, 100, 100],</span>
+<span class="sd">           [100, 100, 100, 100, 100, 100, 100]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp_pad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
 
