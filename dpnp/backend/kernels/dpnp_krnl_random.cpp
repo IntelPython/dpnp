@@ -25,6 +25,7 @@
 
 #include <cassert>
 #include <cmath>
+#include <exception>
 #include <mkl_vsl.h>
 #include <stdexcept>
 #include <vector>

@@ -50,6 +50,10 @@ import dpnp
 
 from .dpnp_array import dpnp_array
 
+# pylint: disable=no-name-in-module
+from .dpnp_utils import get_usm_allocations
+from .dpnp_utils.dpnp_utils_pad import dpnp_pad
+
 __all__ = [
     "append",
     "array_split",
@@ -65,6 +69,7 @@ __all__ = [
     "concat",
     "concatenate",
     "copyto",
+    "delete",
     "dsplit",
     "dstack",
     "expand_dims",
@@ -76,6 +81,7 @@ __all__ = [
     "matrix_transpose",
     "moveaxis",
     "ndim",
+    "pad",
     "permute_dims",
     "ravel",
     "repeat",
@@ -111,6 +117,135 @@ def _check_stack_arrays(arrays):
             'arrays to stack must be passed as a "sequence" type '
             "such as list or tuple."
         )
+
+
+def _delete_with_slice(a, obj, axis):
+    """Utility function for ``dpnp.delete`` when obj is slice."""
+
+    a, a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    start, stop, step = obj.indices(n)
+    xr = range(start, stop, step)
+    num_del = len(xr)
+
+    if num_del <= 0:
+        return a.copy(order=order)
+
+    # Invert if step is negative:
+    if step < 0:
+        step = -step
+        start = xr[-1]
+        stop = xr[0] + 1
+
+    a_shape[axis] -= num_del
+    new = dpnp.empty(
+        a_shape,
+        dtype=a.dtype,
+        order=order,
+        sycl_queue=a.sycl_queue,
+        usm_type=a.usm_type,
+    )
+    # copy initial chunk
+    if start == 0:
+        pass
+    else:
+        slobj[axis] = slice(None, start)
+        new[tuple(slobj)] = a[tuple(slobj)]
+    # copy end chunk
+    if stop == n:
+        pass
+    else:
+        slobj[axis] = slice(stop - num_del, None)
+        slobj2 = [slice(None)] * a_ndim
+        slobj2[axis] = slice(stop, None)
+        new[tuple(slobj)] = a[tuple(slobj2)]
+    # copy middle pieces
+    if step == 1:
+        pass
+    else:  # use array indexing.
+        keep = dpnp.ones(
+            stop - start,
+            dtype=dpnp.bool,
+            sycl_queue=a.sycl_queue,
+            usm_type=a.usm_type,
+        )
+        keep[: stop - start : step] = False
+        slobj[axis] = slice(start, stop - num_del)
+        slobj2 = [slice(None)] * a_ndim
+        slobj2[axis] = slice(start, stop)
+        a = a[tuple(slobj2)]
+        slobj2[axis] = keep
+        new[tuple(slobj)] = a[tuple(slobj2)]
+
+    return new
+
+
+def _delete_without_slice(a, obj, axis, single_value, exec_q, usm_type):
+    """Utility function for ``dpnp.delete`` when obj is int or array of int."""
+
+    a, a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    if single_value:
+        # optimization for a single value
+        if obj < -n or obj >= n:
+            raise IndexError(
+                f"index {obj} is out of bounds for axis {axis} with "
+                f"size {n}"
+            )
+        if obj < 0:
+            obj += n
+        a_shape[axis] -= 1
+        new = dpnp.empty(
+            a_shape,
+            dtype=a.dtype,
+            order=order,
+            sycl_queue=exec_q,
+            usm_type=usm_type,
+        )
+        slobj[axis] = slice(None, obj)
+        new[tuple(slobj)] = a[tuple(slobj)]
+        slobj[axis] = slice(obj, None)
+        slobj2 = [slice(None)] * a_ndim
+        slobj2[axis] = slice(obj + 1, None)
+        new[tuple(slobj)] = a[tuple(slobj2)]
+    else:
+        if obj.dtype == dpnp.bool:
+            if obj.shape != (n,):
+                raise ValueError(
+                    "boolean array argument `obj` to delete must be "
+                    f"one-dimensional and match the axis length of {n}"
+                )
+
+            # optimization, the other branch is slower
+            keep = ~obj
+        else:
+            keep = dpnp.ones(
+                n, dtype=dpnp.bool, sycl_queue=exec_q, usm_type=usm_type
+            )
+            keep[obj,] = False
+
+        slobj[axis] = keep
+        new = a[tuple(slobj)]
+
+    return new
+
+
+def _calc_parameters(a, axis):
+    """Utility function for ``dpnp.delete`` and ``dpnp.insert``."""
+
+    a_ndim = a.ndim
+    order = "F" if a.flags.fnc else "C"
+    if axis is None:
+        if a_ndim != 1:
+            a = dpnp.ravel(a)
+        a_ndim = 1
+        axis = 0
+    else:
+        axis = normalize_axis_index(axis, a_ndim)
+
+    slobj = [slice(None)] * a_ndim
+    n = a.shape[axis]
+    a_shape = list(a.shape)
+
+    return a, a_ndim, order, axis, slobj, n, a_shape
 
 
 def _unique_1d(
@@ -1204,6 +1339,109 @@ def copyto(dst, src, casting="same_kind", where=True):
         dst_usm[mask_usm] = src_usm[mask_usm]
 
 
+def delete(arr, obj, axis=None):
+    """
+    Return a new array with sub-arrays along an axis deleted. For a one
+    dimensional array, this returns those entries not returned by
+    ``arr[obj]``.
+
+    For full documentation refer to :obj:`numpy.delete`.
+
+    Parameters
+    ----------
+    arr : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    obj : {slice, int, array-like of ints or boolean}
+        Indicate indices of sub-arrays to remove along the specified axis.
+        Boolean indices are treated as a mask of elements to remove.
+    axis : {None, int}, optional
+        The axis along which to delete the subarray defined by `obj`.
+        If `axis` is ``None``, `obj` is applied to the flattened array.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of `arr` with the elements specified by `obj` removed. Note
+        that `delete` does not occur in-place. If `axis` is ``None``, `out` is
+        a flattened array.
+
+    See Also
+    --------
+    :obj:`dpnp.insert` : Insert elements into an array.
+    :obj:`dpnp.append` : Append elements at the end of an array.
+
+    Notes
+    -----
+    Often it is preferable to use a boolean mask. For example:
+
+    >>> import dpnp as np
+    >>> arr = np.arange(12) + 1
+    >>> mask = np.ones(len(arr), dtype=np.bool)
+    >>> mask[0] = mask[2] = mask[4] = False
+    >>> result = arr[mask,...]
+
+    is equivalent to ``np.delete(arr, [0, 2, 4], axis=0)``, but allows further
+    use of `mask`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> arr = np.array([[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]])
+    >>> arr
+    array([[ 1,  2,  3,  4],
+           [ 5,  6,  7,  8],
+           [ 9, 10, 11, 12]])
+    >>> np.delete(arr, 1, 0)
+    array([[ 1,  2,  3,  4],
+           [ 9, 10, 11, 12]])
+
+    >>> np.delete(arr, slice(None, None, 2), 1)
+    array([[ 2,  4],
+           [ 6,  8],
+           [10, 12]])
+    >>> np.delete(arr, [1, 3, 5], None)
+    array([ 1,  3,  5,  7,  8,  9, 10, 11, 12])
+
+    """
+
+    dpnp.check_supported_arrays_type(arr)
+
+    if isinstance(obj, slice):
+        return _delete_with_slice(arr, obj, axis)
+
+    if dpnp.is_supported_array_type(obj):
+        usm_type, exec_q = get_usm_allocations([arr, obj])
+    else:
+        usm_type, exec_q = arr.usm_type, arr.sycl_queue
+
+    if isinstance(obj, (int, dpnp.integer)) and not isinstance(obj, bool):
+        single_value = True
+        indices = obj
+    else:
+        single_value = False
+        is_array = isinstance(obj, (dpnp_array, numpy.ndarray, dpt.usm_ndarray))
+        indices = dpnp.asarray(obj, sycl_queue=exec_q, usm_type=usm_type)
+        # if `obj` is originally an empty list, after converting it into
+        # an array, it will have float dtype, so we need to change its dtype
+        # to integer. However, if `obj` is originally an empty array with
+        # float dtype, it is a mistake by user and it will raise an error later
+        if indices.size == 0 and not is_array:
+            indices = indices.astype(dpnp.intp)
+        elif indices.size == 1 and indices.dtype.kind in "ui":
+            # For a size 1 integer array we can use the single-value path
+            # (most dtypes, except boolean, should just fail later).
+            if isinstance(obj, (dpnp_array, dpt.usm_ndarray)):
+                indices = indices.item()
+            else:
+                indices = numpy.asarray(obj).item()
+            single_value = True
+
+    return _delete_without_slice(
+        arr, indices, axis, single_value, exec_q, usm_type
+    )
+
+
 def dsplit(ary, indices_or_sections):
     """
     Split array into multiple sub-arrays along the 3rd axis (depth).
@@ -1892,6 +2130,207 @@ def ndim(a):
     if dpnp.is_supported_array_type(a):
         return a.ndim
     return numpy.ndim(a)
+
+
+def pad(array, pad_width, mode="constant", **kwargs):
+    """
+    Pad an array.
+
+    For full documentation refer to :obj:`numpy.pad`.
+
+    Parameters
+    ----------
+    array : {dpnp.ndarray, usm_ndarray}
+        The array of rank ``N`` to pad.
+    pad_width : {sequence, array_like, int}
+        Number of values padded to the edges of each axis.
+        ``((before_1, after_1), ... (before_N, after_N))`` unique pad widths
+        for each axis.
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after pad for each axis.
+        ``(pad,)`` or ``int`` is a shortcut for ``before = after = pad`` width
+        for all axes.
+    mode : {str, function}, optional
+        One of the following string values or a user supplied function.
+
+        "constant"
+            Pads with a constant value.
+        "edge"
+            Pads with the edge values of array.
+        "linear_ramp"
+            Pads with the linear ramp between `end_value` and the
+            array edge value.
+        "maximum"
+            Pads with the maximum value of all or part of the
+            vector along each axis.
+        "mean"
+            Pads with the mean value of all or part of the
+            vector along each axis.
+        "median"
+            Pads with the median value of all or part of the
+            vector along each axis.
+        "minimum"
+            Pads with the minimum value of all or part of the
+            vector along each axis.
+        "reflect"
+            Pads with the reflection of the vector mirrored on
+            the first and last values of the vector along each
+            axis.
+        "symmetric"
+            Pads with the reflection of the vector mirrored
+            along the edge of the array.
+        "wrap"
+            Pads with the wrap of the vector along the axis.
+            The first values are used to pad the end and the
+            end values are used to pad the beginning.
+        "empty"
+            Pads with undefined values.
+        <function>
+            Padding function, see Notes.
+        Default: ``"constant"``.
+    stat_length : {None, int, sequence of ints}, optional
+        Used in ``"maximum"``, ``"mean"``, ``"median"``, and ``"minimum"``.
+        Number of values at edge of each axis used to calculate the statistic
+        value. ``((before_1, after_1), ... (before_N, after_N))`` unique
+        statistic lengths for each axis.
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after statistic lengths for each axis.
+        ``(stat_length,)`` or ``int`` is a shortcut for
+        ``before = after = statistic`` length for all axes.
+       Default: ``None``, to use the entire axis.
+    constant_values : {sequence, scalar}, optional
+        Used in ``"constant"``. The values to set the padded values for each
+        axis.
+        ``((before_1, after_1), ... (before_N, after_N))`` unique pad constants
+        for each axis.
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after constants for each axis.
+        ``(constant,)`` or ``constant`` is a shortcut for
+        ``before = after = constant`` for all axes.
+        Default: ``0``.
+    end_values : {sequence, scalar}, optional
+        Used in ``"linear_ramp"``. The values used for the ending value of the
+        linear_ramp and that will form the edge of the padded array.
+        ``((before_1, after_1), ... (before_N, after_N))`` unique end values
+        for each axis.
+        ``(before, after)`` or ``((before, after),)`` yields same before
+        and after end values for each axis.
+        ``(constant,)`` or ``constant`` is a shortcut for
+        ``before = after = constant`` for all axes.
+        Default: ``0``.
+    reflect_type : {"even", "odd"}, optional
+        Used in ``"reflect"``, and ``"symmetric"``. The ``"even"`` style is the
+        default with an unaltered reflection around the edge value. For
+        the ``"odd"`` style, the extended part of the array is created by
+        subtracting the reflected values from two times the edge value.
+        Default: ``"even"``.
+
+    Returns
+    -------
+    padded array : dpnp.ndarray
+        Padded array of rank equal to `array` with shape increased
+        according to `pad_width`.
+
+    Notes
+    -----
+    For an array with rank greater than 1, some of the padding of later
+    axes is calculated from padding of previous axes. This is easiest to
+    think about with a rank 2 array where the corners of the padded array
+    are calculated by using padded values from the first axis.
+
+    The padding function, if used, should modify a rank 1 array in-place. It
+    has the following signature::
+
+        padding_func(vector, iaxis_pad_width, iaxis, kwargs)
+
+    where
+
+    vector : dpnp.ndarray
+        A rank 1 array already padded with zeros. Padded values are
+        vector[:iaxis_pad_width[0]] and vector[-iaxis_pad_width[1]:].
+    iaxis_pad_width : tuple
+        A 2-tuple of ints, iaxis_pad_width[0] represents the number of
+        values padded at the beginning of vector where
+        iaxis_pad_width[1] represents the number of values padded at
+        the end of vector.
+    iaxis : int
+        The axis currently being calculated.
+    kwargs : dict
+        Any keyword arguments the function requires.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3, 4, 5])
+    >>> np.pad(a, (2, 3), 'constant', constant_values=(4, 6))
+    array([4, 4, 1, 2, 3, 4, 5, 6, 6, 6])
+
+    >>> np.pad(a, (2, 3), 'edge')
+    array([1, 1, 1, 2, 3, 4, 5, 5, 5, 5])
+
+    >>> np.pad(a, (2, 3), 'linear_ramp', end_values=(5, -4))
+    array([ 5,  3,  1,  2,  3,  4,  5,  2, -1, -4])
+
+    >>> np.pad(a, (2,), 'maximum')
+    array([5, 5, 1, 2, 3, 4, 5, 5, 5])
+
+    >>> np.pad(a, (2,), 'mean')
+    array([3, 3, 1, 2, 3, 4, 5, 3, 3])
+
+    >>> np.pad(a, (2,), 'median')
+    array([3, 3, 1, 2, 3, 4, 5, 3, 3])
+
+    >>> a = np.array([[1, 2], [3, 4]])
+    >>> np.pad(a, ((3, 2), (2, 3)), 'minimum')
+    array([[1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1],
+           [3, 3, 3, 4, 3, 3, 3],
+           [1, 1, 1, 2, 1, 1, 1],
+           [1, 1, 1, 2, 1, 1, 1]])
+
+    >>> a = np.array([1, 2, 3, 4, 5])
+    >>> np.pad(a, (2, 3), 'reflect')
+    array([3, 2, 1, 2, 3, 4, 5, 4, 3, 2])
+
+    >>> np.pad(a, (2, 3), 'reflect', reflect_type='odd')
+    array([-1,  0,  1,  2,  3,  4,  5,  6,  7,  8])
+
+    >>> np.pad(a, (2, 3), 'symmetric')
+    array([2, 1, 1, 2, 3, 4, 5, 5, 4, 3])
+
+    >>> np.pad(a, (2, 3), 'symmetric', reflect_type='odd')
+    array([0, 1, 1, 2, 3, 4, 5, 5, 6, 7])
+
+    >>> np.pad(a, (2, 3), 'wrap')
+    array([4, 5, 1, 2, 3, 4, 5, 1, 2, 3])
+
+    >>> def pad_width(vector, pad_width, iaxis, kwargs):
+    ...     pad_value = kwargs.get('padder', 10)
+    ...     vector[:pad_width[0]] = pad_value
+    ...     vector[-pad_width[1]:] = pad_value
+    >>> a = np.arange(6)
+    >>> a = a.reshape((2, 3))
+    >>> np.pad(a, 2, pad_width)
+    array([[10, 10, 10, 10, 10, 10, 10],
+           [10, 10, 10, 10, 10, 10, 10],
+           [10, 10,  0,  1,  2, 10, 10],
+           [10, 10,  3,  4,  5, 10, 10],
+           [10, 10, 10, 10, 10, 10, 10],
+           [10, 10, 10, 10, 10, 10, 10]])
+    >>> np.pad(a, 2, pad_width, padder=100)
+    array([[100, 100, 100, 100, 100, 100, 100],
+           [100, 100, 100, 100, 100, 100, 100],
+           [100, 100,   0,   1,   2, 100, 100],
+           [100, 100,   3,   4,   5, 100, 100],
+           [100, 100, 100, 100, 100, 100, 100],
+           [100, 100, 100, 100, 100, 100, 100]])
+
+    """
+
+    dpnp.check_supported_arrays_type(array)
+    return dpnp_pad(array, pad_width, mode=mode, **kwargs)
 
 
 def ravel(a, order="C"):

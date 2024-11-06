@@ -25,6 +25,8 @@
 
 #pragma once
 
+#include <stdexcept>
+
 #include "dot_common.hpp"
 
 namespace dpnp::extensions::blas

@@ -82,7 +82,6 @@ class TestSearch:
         return a.argmax(axis=1)
 
     @testing.slow
-    @pytest.mark.skip("slow mark is not implemented")
     def test_argmax_int32_overflow(self):
         a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
         assert a.argmax().item() == 2**32
@@ -162,7 +161,6 @@ class TestSearch:
         return a.argmin(axis=1)
 
     @testing.slow
-    @pytest.mark.skip("slow mark is not implemented")
     def test_argmin_int32_overflow(self):
         a = testing.shaped_arange((2**32 + 1,), cupy, numpy.float64)
         cupy.negative(a, out=a)

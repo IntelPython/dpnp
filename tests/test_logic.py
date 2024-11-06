@@ -431,6 +431,34 @@ def test_finite(op, data, dtype):
     assert_equal(dpnp_res, np_res)
 
 
+class TestIsFortran:
+    @pytest.mark.parametrize(
+        "array, expected",
+        [
+            (dpnp.ones((2, 4), order="C"), True),
+            (dpnp.ones((2, 4), order="F"), False),
+        ],
+    )
+    def test_isfortran_transpose(self, array, expected):
+        assert dpnp.isfortran(array.T) == expected
+
+    @pytest.mark.parametrize(
+        "array, expected",
+        [
+            (dpnp.ones((2, 4), order="C"), False),
+            (dpnp.ones((2, 4), order="F"), True),
+        ],
+    )
+    def test_isfortran_usm_ndarray(self, array, expected):
+        assert dpnp.isfortran(array.get_array()) == expected
+
+    def test_isfortran_errors(self):
+        # unsupported type
+        a_np = numpy.ones((2, 3))
+        assert_raises(TypeError, dpnp.isfortran, a_np)
+        assert_raises(TypeError, dpnp.isfortran, [1, 2, 3])
+
+
 @pytest.mark.parametrize("func", ["isneginf", "isposinf"])
 @pytest.mark.parametrize(
     "data",

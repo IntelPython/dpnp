@@ -25,10 +25,12 @@ env:
       test_arithmetic.py
       test_arraycreation.py
       test_arraymanipulation.py
+      test_arraypad.py
       test_bitwise.py
       test_copy.py
       test_counting.py
       test_fft.py
+      test_fill.py
       test_flat.py
       test_histogram.py
       test_indexing.py
@@ -59,10 +61,12 @@ env:
       third_party/cupy/logic_tests
       third_party/cupy/manipulation_tests
       third_party/cupy/math_tests
+      third_party/cupy/padding_tests
       third_party/cupy/sorting_tests
       third_party/cupy/statistics_tests/test_histogram.py
       third_party/cupy/statistics_tests/test_meanvar.py
       third_party/cupy/test_ndim.py
+      third_party/cupy/test_type_routines.py
   VER_JSON_NAME: 'version.json'
   VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
   VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
@@ -95,7 +99,7 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout DPNP repo
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
@@ -129,7 +133,7 @@ jobs:
         run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
       - name: Cache conda packages
-        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -142,6 +146,8 @@ jobs:
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
+        env:
+          MAX_BUILD_CMPL_MKL_VERSION: '2024.3a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
@@ -229,7 +235,7 @@ jobs:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: Cache conda packages
-        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         env:
           CACHE_NUMBER: 1 # Increase to reset cache
         with:
@@ -373,7 +379,7 @@ jobs:
         run: more lockfile
 
       - name: Cache conda packages
-        uses: actions/cache@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
@@ -514,7 +520,7 @@ jobs:
         run: mamba install anaconda-client
 
       - name: Checkout repo
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: IntelPython/devops-tools
           fetch-depth: 0

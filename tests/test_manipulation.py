@@ -299,122 +299,6 @@ class TestArraySplit:
         _compare_results(result, expected)
 
 
-class TestSplit:
-    # The split function is essentially the same as array_split,
-    # except that it test if splitting will result in an
-    # equal split. Only test for this case.
-    def test_equal_split(self):
-        a = numpy.arange(10)
-        a_dp = dpnp.array(a)
-
-        expected = numpy.split(a, 2)
-        result = dpnp.split(a_dp, 2)
-        _compare_results(result, expected)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_unequal_split(self, xp):
-        a = xp.arange(10)
-        assert_raises(ValueError, xp.split, a, 3)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_error(self, xp):
-        # axis out of range
-        a = xp.arange(9)
-        assert_raises(IndexError, xp.split, a, 3, axis=1)
-
-    @pytest.mark.parametrize(
-        "indices",
-        [
-            2,
-            3.0,
-            dpnp.int64(5),
-            dpnp.int32(5),
-            dpnp.array(6),
-            numpy.array(7),
-            numpy.int32(5),
-        ],
-    )
-    def test_integer_split(self, indices):
-        a = numpy.arange(10)
-        a_dp = dpnp.array(a)
-
-        expected = numpy.array_split(a, indices)
-        result = dpnp.array_split(a_dp, indices)
-        _compare_results(result, expected)
-
-
-# array_split has more comprehensive test of splitting.
-# only do simple test on hsplit, vsplit, and dsplit
-class TestHsplit:
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_error(self, xp):
-        # 0D array
-        a = xp.array(1)
-        assert_raises(ValueError, xp.hsplit, a, 2)
-
-    def test_1D_array(self):
-        a = numpy.array([1, 2, 3, 4])
-        a_dp = dpnp.array(a)
-
-        expected = numpy.hsplit(a, 2)
-        result = dpnp.hsplit(a_dp, 2)
-        _compare_results(result, expected)
-
-    def test_2D_array(self):
-        a = numpy.array([[1, 2, 3, 4], [1, 2, 3, 4]])
-        a_dp = dpnp.array(a)
-
-        expected = numpy.hsplit(a, 2)
-        result = dpnp.hsplit(a_dp, 2)
-        _compare_results(result, expected)
-
-
-class TestVsplit:
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_error(self, xp):
-        # 0D array
-        a = xp.array(1)
-        assert_raises(ValueError, xp.vsplit, a, 2)
-
-        # 1D array
-        a = xp.array([1, 2, 3, 4])
-        assert_raises(ValueError, xp.vsplit, a, 2)
-
-    def test_2D_array(self):
-        a = numpy.array([[1, 2, 3, 4], [1, 2, 3, 4]])
-        a_dp = dpnp.array(a)
-
-        expected = numpy.vsplit(a, 2)
-        result = dpnp.vsplit(a_dp, 2)
-        _compare_results(result, expected)
-
-
-class TestDsplit:
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_error(self, xp):
-        # 0D array
-        a = xp.array(1)
-        assert_raises(ValueError, xp.dsplit, a, 2)
-
-        # 1D array
-        a = xp.array([1, 2, 3, 4])
-        assert_raises(ValueError, xp.dsplit, a, 2)
-
-        # 2D array
-        a = xp.array([[1, 2, 3, 4], [1, 2, 3, 4]])
-        assert_raises(ValueError, xp.dsplit, a, 2)
-
-    def test_3D_array(self):
-        a = numpy.array(
-            [[[1, 2, 3, 4], [1, 2, 3, 4]], [[1, 2, 3, 4], [1, 2, 3, 4]]]
-        )
-        a_dp = dpnp.array(a)
-
-        expected = numpy.dsplit(a, 2)
-        result = dpnp.dsplit(a_dp, 2)
-        _compare_results(result, expected)
-
-
 class TestAsarrayCheckFinite:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_basic(self, dtype):
@@ -446,6 +330,199 @@ class TestAsarrayCheckFinite:
         # b is a view of a, changing b, modifies a
         b[0::2] = 0
         assert_array_equal(b, a)
+
+
+class TestDelete:
+    @pytest.mark.parametrize(
+        "obj", [slice(0, 4, 2), 3, [2, 3]], ids=["slice", "int", "list"]
+    )
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    def test_dtype(self, dt, obj):
+        a = numpy.array([0, 1, 2, 3, 4, 5], dtype=dt)
+        a_dp = dpnp.array(a)
+
+        expected = numpy.delete(a, obj)
+        result = dpnp.delete(a_dp, obj)
+        assert result.dtype == dt
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("start", [-6, -2, 0, 1, 2, 4, 5])
+    @pytest.mark.parametrize("stop", [-6, -2, 0, 1, 2, 4, 5])
+    @pytest.mark.parametrize("step", [-3, -1, 1, 3])
+    def test_slice_1D(self, start, stop, step):
+        indices = slice(start, stop, step)
+        # 1D array
+        a = numpy.arange(5)
+        a_dp = dpnp.array(a)
+        expected = numpy.delete(a, indices)
+        result = dpnp.delete(a_dp, indices)
+        assert_array_equal(result, expected)
+
+        # N-D array
+        a = numpy.arange(10).reshape(1, 5, 2)
+        a_dp = dpnp.array(a)
+        for axis in [None, 1, -1]:
+            expected = numpy.delete(a, indices, axis=axis)
+            result = dpnp.delete(a_dp, indices, axis=axis)
+            assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize(
+        "indices", [0, -4, [], [0, -1, 2, 2], [True, False, False, True, False]]
+    )
+    def test_indices_1D(self, indices):
+        # 1D array
+        a = numpy.arange(5)
+        a_dp = dpnp.array(a)
+        expected = numpy.delete(a, indices)
+        result = dpnp.delete(a_dp, indices)
+        assert_array_equal(result, expected)
+
+        # N-D array
+        a = numpy.arange(10).reshape(1, 5, 2)
+        a_dp = dpnp.array(a)
+        expected = numpy.delete(a, indices, axis=1)
+        result = dpnp.delete(a_dp, indices, axis=1)
+        assert_array_equal(result, expected)
+
+    def test_obj_ndarray(self):
+        # 1D array
+        a = numpy.arange(5)
+        ind = numpy.array([[0, 1], [2, 1]])
+        a_dp = dpnp.array(a)
+        ind_dp = dpnp.array(ind)
+
+        expected = numpy.delete(a, ind)
+        # both numpy.ndarray and dpnp.ndarray are supported for obj in dpnp
+        for indices in [ind, ind_dp]:
+            result = dpnp.delete(a_dp, indices)
+            assert_array_equal(result, expected)
+
+        # N-D array
+        b = numpy.arange(10).reshape(1, 5, 2)
+        b_dp = dpnp.array(b)
+        expected = numpy.delete(b, ind, axis=1)
+        for indices in [ind, ind_dp]:
+            result = dpnp.delete(b_dp, indices, axis=1)
+            assert_array_equal(result, expected)
+
+    def test_error(self):
+        a = dpnp.arange(5)
+        # out of bounds index
+        with pytest.raises(IndexError):
+            dpnp.delete(a, [100])
+        with pytest.raises(IndexError):
+            dpnp.delete(a, [-100])
+
+        # boolean array argument obj must be one dimensional
+        with pytest.raises(ValueError):
+            dpnp.delete(a, True)
+
+        # not enough items
+        with pytest.raises(ValueError):
+            dpnp.delete(a, [False] * 4)
+
+        # 0-D array
+        a = dpnp.array(1)
+        with pytest.raises(AxisError):
+            dpnp.delete(a, [], axis=0)
+        with pytest.raises(TypeError):
+            dpnp.delete(a, [], axis="nonsense")
+
+        # index float
+        a = dpnp.array([1, 2, 3])
+        with pytest.raises(IndexError):
+            dpnp.delete(a, dpnp.array([1.0, 2.0]))
+        with pytest.raises(IndexError):
+            dpnp.delete(a, dpnp.array([], dtype=dpnp.float32))
+
+    @pytest.mark.parametrize("order", ["C", "F"])
+    def test_order(self, order):
+        a = numpy.arange(10).reshape(2, 5, order=order)
+        a_dp = dpnp.array(a)
+
+        expected = numpy.delete(a, slice(3, None), axis=1)
+        result = dpnp.delete(a_dp, slice(3, None), axis=1)
+
+        assert_equal(result.flags.c_contiguous, expected.flags.c_contiguous)
+        assert_equal(result.flags.f_contiguous, expected.flags.f_contiguous)
+
+    @pytest.mark.parametrize("indexer", [1, dpnp.array([1]), [1]])
+    def test_single_item_array(self, indexer):
+        a = numpy.arange(5)
+        a_dp = dpnp.array(a)
+        expected = numpy.delete(a, 1)
+        result = dpnp.delete(a_dp, indexer)
+        assert_equal(result, expected)
+
+        b = numpy.arange(10).reshape(1, 5, 2)
+        b_dp = dpnp.array(b)
+        expected = numpy.delete(b, 1, axis=1)
+        result = dpnp.delete(b_dp, indexer, axis=1)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("flag", [True, False])
+    def test_boolean_obj(self, flag):
+        expected = numpy.delete(numpy.ones(1), numpy.array([flag]))
+        result = dpnp.delete(dpnp.ones(1), dpnp.array([flag]))
+        assert_array_equal(result, expected)
+
+        expected = numpy.delete(
+            numpy.ones((3, 1)), numpy.array([flag]), axis=-1
+        )
+        result = dpnp.delete(dpnp.ones((3, 1)), dpnp.array([flag]), axis=-1)
+        assert_array_equal(result, expected)
+
+
+class TestDsplit:
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_error(self, xp):
+        # 0D array
+        a = xp.array(1)
+        assert_raises(ValueError, xp.dsplit, a, 2)
+
+        # 1D array
+        a = xp.array([1, 2, 3, 4])
+        assert_raises(ValueError, xp.dsplit, a, 2)
+
+        # 2D array
+        a = xp.array([[1, 2, 3, 4], [1, 2, 3, 4]])
+        assert_raises(ValueError, xp.dsplit, a, 2)
+
+    def test_3D_array(self):
+        a = numpy.array(
+            [[[1, 2, 3, 4], [1, 2, 3, 4]], [[1, 2, 3, 4], [1, 2, 3, 4]]]
+        )
+        a_dp = dpnp.array(a)
+
+        expected = numpy.dsplit(a, 2)
+        result = dpnp.dsplit(a_dp, 2)
+        _compare_results(result, expected)
+
+
+# array_split has more comprehensive test of splitting.
+# only do simple test on hsplit, vsplit, and dsplit
+class TestHsplit:
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_error(self, xp):
+        # 0D array
+        a = xp.array(1)
+        assert_raises(ValueError, xp.hsplit, a, 2)
+
+    def test_1D_array(self):
+        a = numpy.array([1, 2, 3, 4])
+        a_dp = dpnp.array(a)
+
+        expected = numpy.hsplit(a, 2)
+        result = dpnp.hsplit(a_dp, 2)
+        _compare_results(result, expected)
+
+    def test_2D_array(self):
+        a = numpy.array([[1, 2, 3, 4], [1, 2, 3, 4]])
+        a_dp = dpnp.array(a)
+
+        expected = numpy.hsplit(a, 2)
+        result = dpnp.hsplit(a_dp, 2)
+        _compare_results(result, expected)
 
 
 class TestRavel:
@@ -731,7 +808,7 @@ class TestRequire:
         assert expected.flags["F"] == result.flags["F"]
         assert expected.flags["W"] == result.flags["W"]
         assert expected.dtype == result.dtype
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
 
     def test_C_and_F_simul(self):
         a = self.generate_all_false("f4")
@@ -747,63 +824,7 @@ class TestRequire:
         result = dpnp.require(a_dp, requirements=["W", "C"])
         # copy is done
         assert result is not a_dp
-        assert_array_equal(expected, result)
-
-
-class TestResize:
-    @pytest.mark.parametrize(
-        "data, shape",
-        [
-            pytest.param([[1, 2], [3, 4]], (2, 4)),
-            pytest.param([[1, 2], [3, 4], [1, 2], [3, 4]], (4, 2)),
-            pytest.param([[1, 2, 3], [4, 1, 2], [3, 4, 1], [2, 3, 4]], (4, 3)),
-        ],
-    )
-    def test_copies(self, data, shape):
-        a = numpy.array(data)
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
-
-    @pytest.mark.parametrize("newshape", [(2, 4), [2, 4], (10,), 10])
-    def test_newshape_type(self, newshape):
-        a = numpy.array([[1, 2], [3, 4]])
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, newshape), numpy.resize(a, newshape))
-
-    @pytest.mark.parametrize(
-        "data, shape",
-        [
-            pytest.param([1, 2, 3], (2, 4)),
-            pytest.param([[1, 2], [3, 1], [2, 3], [1, 2]], (4, 2)),
-            pytest.param([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]], (4, 3)),
-        ],
-    )
-    def test_repeats(self, data, shape):
-        a = numpy.array(data)
-        ia = dpnp.array(a)
-        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
-
-    def test_zeroresize(self):
-        a = numpy.array([[1, 2], [3, 4]])
-        ia = dpnp.array(a)
-        assert_array_equal(dpnp.resize(ia, (0,)), numpy.resize(a, (0,)))
-        assert_equal(a.dtype, ia.dtype)
-
-        assert_equal(dpnp.resize(ia, (0, 2)), numpy.resize(a, (0, 2)))
-        assert_equal(dpnp.resize(ia, (2, 0)), numpy.resize(a, (2, 0)))
-
-    def test_reshape_from_zero(self):
-        a = numpy.zeros(0, dtype=numpy.float32)
-        ia = dpnp.array(a)
-        assert_array_equal(dpnp.resize(ia, (2, 1)), numpy.resize(a, (2, 1)))
-        assert_equal(a.dtype, ia.dtype)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_negative_resize(self, xp):
-        a = xp.arange(0, 10, dtype=xp.float32)
-        new_shape = (-10, -1)
-        with pytest.raises(ValueError, match=r"negative"):
-            xp.resize(a, new_shape=new_shape)
+        assert_array_equal(result, expected)
 
 
 class TestReshape:
@@ -881,6 +902,62 @@ class TestReshape:
         )
 
 
+class TestResize:
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([[1, 2], [3, 4]], (2, 4)),
+            pytest.param([[1, 2], [3, 4], [1, 2], [3, 4]], (4, 2)),
+            pytest.param([[1, 2, 3], [4, 1, 2], [3, 4, 1], [2, 3, 4]], (4, 3)),
+        ],
+    )
+    def test_copies(self, data, shape):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
+
+    @pytest.mark.parametrize("newshape", [(2, 4), [2, 4], (10,), 10])
+    def test_newshape_type(self, newshape):
+        a = numpy.array([[1, 2], [3, 4]])
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, newshape), numpy.resize(a, newshape))
+
+    @pytest.mark.parametrize(
+        "data, shape",
+        [
+            pytest.param([1, 2, 3], (2, 4)),
+            pytest.param([[1, 2], [3, 1], [2, 3], [1, 2]], (4, 2)),
+            pytest.param([[1, 2, 3], [1, 2, 3], [1, 2, 3], [1, 2, 3]], (4, 3)),
+        ],
+    )
+    def test_repeats(self, data, shape):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert_equal(dpnp.resize(ia, shape), numpy.resize(a, shape))
+
+    def test_zeroresize(self):
+        a = numpy.array([[1, 2], [3, 4]])
+        ia = dpnp.array(a)
+        assert_array_equal(dpnp.resize(ia, (0,)), numpy.resize(a, (0,)))
+        assert_equal(a.dtype, ia.dtype)
+
+        assert_equal(dpnp.resize(ia, (0, 2)), numpy.resize(a, (0, 2)))
+        assert_equal(dpnp.resize(ia, (2, 0)), numpy.resize(a, (2, 0)))
+
+    def test_reshape_from_zero(self):
+        a = numpy.zeros(0, dtype=numpy.float32)
+        ia = dpnp.array(a)
+        assert_array_equal(dpnp.resize(ia, (2, 1)), numpy.resize(a, (2, 1)))
+        assert_equal(a.dtype, ia.dtype)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_negative_resize(self, xp):
+        a = xp.arange(0, 10, dtype=xp.float32)
+        new_shape = (-10, -1)
+        with pytest.raises(ValueError, match=r"negative"):
+            xp.resize(a, new_shape=new_shape)
+
+
 class TestRot90:
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_error(self, xp):
@@ -939,6 +1016,50 @@ class TestRot90:
                 dpnp.rot90(ia, k=k, axes=(2, 0)),
                 numpy.rot90(a, k=k, axes=(2, 0)),
             )
+
+
+class TestSplit:
+    # The split function is essentially the same as array_split,
+    # except that it test if splitting will result in an
+    # equal split. Only test for this case.
+    def test_equal_split(self):
+        a = numpy.arange(10)
+        a_dp = dpnp.array(a)
+
+        expected = numpy.split(a, 2)
+        result = dpnp.split(a_dp, 2)
+        _compare_results(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unequal_split(self, xp):
+        a = xp.arange(10)
+        assert_raises(ValueError, xp.split, a, 3)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_error(self, xp):
+        # axis out of range
+        a = xp.arange(9)
+        assert_raises(IndexError, xp.split, a, 3, axis=1)
+
+    @pytest.mark.parametrize(
+        "indices",
+        [
+            2,
+            3.0,
+            dpnp.int64(5),
+            dpnp.int32(5),
+            dpnp.array(6),
+            numpy.array(7),
+            numpy.int32(5),
+        ],
+    )
+    def test_integer_split(self, indices):
+        a = numpy.arange(10)
+        a_dp = dpnp.array(a)
+
+        expected = numpy.array_split(a, indices)
+        result = dpnp.array_split(a_dp, indices)
+        _compare_results(result, expected)
 
 
 class TestTranspose:
@@ -1446,3 +1567,23 @@ class TestUnique:
                 )
             for iv, v in zip(result, expected):
                 assert_array_equal(iv, v)
+
+
+class TestVsplit:
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_error(self, xp):
+        # 0D array
+        a = xp.array(1)
+        assert_raises(ValueError, xp.vsplit, a, 2)
+
+        # 1D array
+        a = xp.array([1, 2, 3, 4])
+        assert_raises(ValueError, xp.vsplit, a, 2)
+
+    def test_2D_array(self):
+        a = numpy.array([[1, 2, 3, 4], [1, 2, 3, 4]])
+        a_dp = dpnp.array(a)
+
+        expected = numpy.vsplit(a, 2)
+        result = dpnp.vsplit(a_dp, 2)
+        _compare_results(result, expected)

@@ -44,6 +44,7 @@ __all__ = [
     "DPNPImag",
     "DPNPReal",
     "DPNPRound",
+    "DPNPSinc",
     "DPNPUnaryFunc",
     "acceptance_fn_gcd_lcm",
     "acceptance_fn_negative",
@@ -604,6 +605,27 @@ class DPNPRound(DPNPUnaryFunc):
             return dpnp_array._create_from_usm_ndarray(res_usm)
         else:
             return super().__call__(x, out=out, dtype=dtype)
+
+
+class DPNPSinc(DPNPUnaryFunc):
+    """Class that implements dpnp.sinc unary element-wise functions."""
+
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        unary_dp_impl_fn,
+        docs,
+    ):
+        super().__init__(
+            name,
+            result_type_resolver_fn,
+            unary_dp_impl_fn,
+            docs,
+        )
+
+    def __call__(self, x, out=None, order="K"):
+        return super().__call__(x, out=out, order=order)
 
 
 def acceptance_fn_gcd_lcm(
