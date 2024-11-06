@@ -156,7 +156,13 @@ def _delete_with_slice(params, obj, axis):
         stop = xr[0] + 1
 
     newshape[axis] -= num_del
-    new = dpnp.empty_like(a, order=order, shape=newshape)
+    new = dpnp.empty(
+        newshape,
+        order=order,
+        dtype=a.dtype,
+        sycl_queue=exec_q,
+        usm_type=usm_type,
+    )
     # copy initial chunk
     if start == 0:
         pass
@@ -207,7 +213,13 @@ def _delete_without_slice(params, obj, axis, single_value):
         if obj < 0:
             obj += n
         newshape[axis] -= 1
-        new = dpnp.empty_like(a, order=order, shape=newshape)
+        new = dpnp.empty(
+            newshape,
+            order=order,
+            dtype=a.dtype,
+            sycl_queue=exec_q,
+            usm_type=usm_type,
+        )
         slobj[axis] = slice(None, obj)
         new[tuple(slobj)] = a[tuple(slobj)]
         slobj[axis] = slice(obj, None)
@@ -288,7 +300,13 @@ def _insert_array_indices(parameters, indices, values, obj):
     )
     old_mask[indices] = False
 
-    new = dpnp.empty_like(a, order=order, shape=newshape)
+    new = dpnp.empty(
+        newshape,
+        order=order,
+        dtype=a.dtype,
+        sycl_queue=exec_q,
+        usm_type=usm_type,
+    )
     slobj2 = [slice(None)] * a_ndim
     slobj[axis] = indices
     slobj2[axis] = old_mask
@@ -341,7 +359,13 @@ def _insert_singleton_index(parameters, indices, values, obj):
 
     numnew = values.shape[axis]
     newshape[axis] += numnew
-    new = dpnp.empty_like(a, order=order, shape=newshape)
+    new = dpnp.empty(
+        newshape,
+        order=order,
+        dtype=a.dtype,
+        sycl_queue=exec_q,
+        usm_type=usm_type,
+    )
 
     slobj[axis] = slice(None, index)
     new[tuple(slobj)] = a[tuple(slobj)]
