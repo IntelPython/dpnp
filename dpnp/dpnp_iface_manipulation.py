@@ -63,6 +63,7 @@ __all__ = [
     "atleast_2d",
     "atleast_3d",
     "broadcast_arrays",
+    "broadcast_shapes",
     "broadcast_to",
     "can_cast",
     "column_stack",
@@ -965,6 +966,41 @@ def broadcast_arrays(*args, subok=False):
 
     usm_arrays = dpt.broadcast_arrays(*[dpnp.get_usm_ndarray(a) for a in args])
     return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
+
+
+def broadcast_shapes(*args):
+    """
+    Broadcast the input shapes into a single shape.
+
+    For full documentation refer to :obj:`numpy.broadcast_shapes`.
+
+    Parameters
+    ----------
+    *args : tuples of ints, or ints
+        The shapes to be broadcast against each other.
+
+    Returns
+    -------
+    tuple
+        Broadcasted shape.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
+                                   each other.
+    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.broadcast_shapes((1, 2), (3, 1), (3, 2))
+    (3, 2)
+    >>> np.broadcast_shapes((6, 7), (5, 6, 1), (7,), (5, 1, 7))
+    (5, 6, 7)
+
+    """
+
+    return numpy.broadcast_shapes(*args)
 
 
 # pylint: disable=redefined-outer-name
