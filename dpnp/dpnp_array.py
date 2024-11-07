@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import dpctl.tensor as dpt
+from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 
@@ -205,6 +206,7 @@ class dpnp_array:
         return self._array_obj.__bool__()
 
     # '__class__',
+    # `__class_getitem__`,
 
     def __complex__(self):
         return self._array_obj.__complex__()
@@ -335,6 +337,8 @@ class dpnp_array:
         res._array_obj = item
         return res
 
+    # '__getstate__',
+
     def __gt__(self, other):
         """Return ``self>value``."""
         return dpnp.greater(self, other)
@@ -361,7 +365,31 @@ class dpnp_array:
         dpnp.left_shift(self, other, out=self)
         return self
 
-    # '__imatmul__',
+    def __imatmul__(self, other):
+        """Return ``self@=value``."""
+
+        """
+        Unlike `matmul(a, b, out=a)` we ensure that the result is not broadcast
+        if the result without `out` would have less dimensions than `a`.
+        Since the signature of matmul is '(n?,k),(k,m?)->(n?,m?)' this is the
+        case exactly when the second operand has both core dimensions.
+        We have to enforce this check by passing the correct `axes=`.
+        """
+        if self.ndim == 1:
+            axes = [(-1,), (-2, -1), (-1,)]
+        else:
+            axes = [(-2, -1), (-2, -1), (-2, -1)]
+
+        try:
+            dpnp.matmul(self, other, out=self, axes=axes)
+        except AxisError:
+            # AxisError should indicate that the axes argument didn't work out
+            # which should mean the second operand not being 2 dimensional.
+            raise ValueError(
+                "inplace matrix multiplication requires the first operand to "
+                "have at least one and the second at least two dimensions."
+            )
+        return self
 
     def __imod__(self, other):
         """Return ``self%=value``."""
@@ -469,9 +497,11 @@ class dpnp_array:
         return dpnp.power(self, other)
 
     def __radd__(self, other):
+        """Return ``value+self``."""
         return dpnp.add(other, self)
 
     def __rand__(self, other):
+        """Return ``value&self``."""
         return dpnp.bitwise_and(other, self)
 
     # '__rdivmod__',
@@ -483,27 +513,35 @@ class dpnp_array:
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
     def __rfloordiv__(self, other):
+        """Return ``value//self``."""
         return dpnp.floor_divide(self, other)
 
     def __rlshift__(self, other):
+        """Return ``value<<self``."""
         return dpnp.left_shift(other, self)
 
     def __rmatmul__(self, other):
+        """Return ``value@self``."""
         return dpnp.matmul(other, self)
 
     def __rmod__(self, other):
+        """Return ``value%self``."""
         return dpnp.remainder(other, self)
 
     def __rmul__(self, other):
+        """Return ``value*self``."""
         return dpnp.multiply(other, self)
 
     def __ror__(self, other):
+        """Return ``value|self``."""
         return dpnp.bitwise_or(other, self)
 
     def __rpow__(self, other):
+        """Return ``value**self``."""
         return dpnp.power(other, self)
 
     def __rrshift__(self, other):
+        """Return ``value>>self``."""
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
@@ -511,12 +549,15 @@ class dpnp_array:
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
+        """Return ``value-self``."""
         return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
+        """Return ``value/self``."""
         return dpnp.true_divide(other, self)
 
     def __rxor__(self, other):
+        """Return ``value^self``."""
         return dpnp.bitwise_xor(other, self)
 
     # '__setattr__',
@@ -928,13 +969,16 @@ class dpnp_array:
         """
         Fill the array with a scalar value.
 
+        For full documentation refer to :obj:`numpy.ndarray.fill`.
+
         Parameters
         ----------
-        value : scalar
+        value : {dpnp.ndarray, usm_ndarray, scalar}
             All elements of `a` will be assigned this value.
 
         Examples
         --------
+        >>> import dpnp as np
         >>> a = np.array([1, 2])
         >>> a.fill(0)
         >>> a
@@ -946,8 +990,10 @@ class dpnp_array:
 
         """
 
-        for i in range(self.size):
-            self.flat[i] = value
+        # lazy import avoids circular imports
+        from .dpnp_algo.dpnp_fill import dpnp_fill
+
+        dpnp_fill(self, value)
 
     @property
     def flags(self):
@@ -984,7 +1030,7 @@ class dpnp_array:
 
         Returns
         -------
-        out: dpnp.ndarray
+        out : dpnp.ndarray
             A copy of the input array, flattened to one dimension.
 
         See Also
@@ -1047,42 +1093,55 @@ class dpnp_array:
         else:
             raise TypeError("array does not have imaginary part to set")
 
-    def item(self, id=None):
+    def item(self, *args):
         """
         Copy an element of an array to a standard Python scalar and return it.
 
         For full documentation refer to :obj:`numpy.ndarray.item`.
 
+        Parameters
+        ----------
+        *args : {none, int, tuple of ints}
+            - none: in this case, the method only works for arrays with
+              one element (``a.size == 1``), which element is copied into a
+              standard Python scalar object and returned.
+            - int: this argument is interpreted as a flat index into the array,
+              specifying which element to copy and return.
+            - tuple of ints: functions as does a single int argument, except
+              that the argument is interpreted as an nd-index into the array.
+
+        Returns
+        -------
+        out : Standard Python scalar object
+            A copy of the specified element of the array as a suitable Python scalar.
+
         Examples
         --------
+        >>> import dpnp as np
         >>> np.random.seed(123)
         >>> x = np.random.randint(9, size=(3, 3))
         >>> x
-        array([[2, 2, 6],
-               [1, 3, 6],
-               [1, 0, 1]])
+        array([[0, 0, 7],
+               [6, 6, 6],
+               [0, 7, 1]])
         >>> x.item(3)
-        1
+        6
         >>> x.item(7)
-        0
+        7
         >>> x.item((0, 1))
-        2
+        0
         >>> x.item((2, 2))
         1
 
+        >>> x = np.array(5)
+        >>> x.item()
+        5
+
         """
 
-        if id is None:
-            if self.size != 1:
-                raise ValueError(
-                    "DPNP ndarray::item(): can only convert an array of size 1 to a Python scalar"
-                )
-            else:
-                id = 0
-
-        return self.flat[id]
-
-    # 'itemset',
+        # TODO: implement a more efficient way to avoid copying to host
+        # for large arrays using `asnumpy()`
+        return self.asnumpy().item(*args)
 
     @property
     def itemsize(self):
@@ -1187,8 +1246,6 @@ class dpnp_array:
         """
 
         return self._array_obj.ndim
-
-    # 'newbyteorder',
 
     def nonzero(self):
         """

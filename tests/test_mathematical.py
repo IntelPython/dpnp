@@ -1897,6 +1897,170 @@ class TestRealIfClose:
         assert_raises(TypeError, xp.real_if_close, a, tol=tol_val)
 
 
+class TestSinc:
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_bool=True, no_float16=False)
+    )
+    def test_basic(self, dt):
+        a = numpy.linspace(-1, 1, 100, dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_dtype_allclose(result, expected)
+
+    def test_bool(self):
+        a = numpy.array([True, False, True])
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        # numpy promotes result to float64 dtype, but expected float16
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
+    def test_zero(self, dt):
+        a = numpy.array([0.0], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_dtype_allclose(result, expected)
+
+    # TODO: add a proper NumPY version once resolved
+    @testing.with_requires("numpy>=2.0.0")
+    def test_zero_fp16(self):
+        a = numpy.array([0.0], dtype=numpy.float16)
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        # expected = numpy.sinc(a) # numpy returns NaN, but expected 1.0
+        expected = numpy.ones_like(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    def test_nan_infs(self):
+        a = numpy.array([numpy.inf, -numpy.inf, numpy.nan])
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_equal(result, expected)
+
+    @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+    def test_nan_infs_complex(self):
+        a = numpy.array(
+            [
+                numpy.inf,
+                -numpy.inf,
+                numpy.nan,
+                complex(numpy.nan),
+                complex(numpy.nan, numpy.nan),
+                complex(0, numpy.nan),
+                complex(numpy.inf, numpy.nan),
+                complex(numpy.nan, numpy.inf),
+                complex(-numpy.inf, numpy.nan),
+                complex(numpy.nan, -numpy.inf),
+                complex(numpy.inf, numpy.inf),
+                complex(numpy.inf, -numpy.inf),
+                complex(-numpy.inf, numpy.inf),
+                complex(-numpy.inf, -numpy.inf),
+            ]
+        )
+        ia = dpnp.array(a)
+
+        result = dpnp.sinc(ia)
+        expected = numpy.sinc(a)
+        assert_equal(result, expected)
+
+
+class TestSpacing:
+    @pytest.mark.parametrize("sign", [1, -1])
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_basic(self, sign, dt):
+        a = numpy.array(
+            [1, numpy.nan, numpy.inf, 1e10, 1e-5, 1000, 10500], dtype=dt
+        )
+        a *= sign
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_equal(result, expected)
+
+        # switch to negatives
+        result = dpnp.spacing(-ia)
+        expected = numpy.spacing(-a)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    def test_zeros(self, dt):
+        a = numpy.array([0.0, -0.0], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+            assert_equal(result, expected)
+        else:
+            # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
+            # positive value (looks as a bug in NumPy), because for any other
+            # negative input the NumPy result will be also a negative value.
+            expected[1] *= -1
+            assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes(no_float16=False))
+    @pytest.mark.parametrize("val", [1, 1e-5, 1000])
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_vs_nextafter(self, val, dt, xp):
+        a = xp.array(val, dtype=dt)
+        a1 = xp.array(val + 1, dtype=dt)
+        assert (xp.nextafter(a, a1) - a) == xp.spacing(a)
+
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    def test_fp16(self):
+        a = numpy.arange(0x7C00, dtype=numpy.uint16)
+
+        # all values are non-negative finites
+        b = a.view(dtype=numpy.float16)
+        ib = dpnp.array(b)
+
+        result = dpnp.spacing(ib)
+        expected = numpy.spacing(b)
+        assert_equal(result, expected)
+
+        # switch to negatives
+        a |= 0x8000
+        ib = dpnp.array(b)
+
+        result = dpnp.spacing(ib)
+        expected = numpy.spacing(b)
+        assert_equal(result, expected)
+
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    def test_integer(self, dt):
+        a = numpy.array([1, 0, -3], dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_dtype_allclose(result, expected)
+
+    def test_bool(self):
+        a = numpy.array([True, False])
+        ia = dpnp.array(a)
+
+        result = dpnp.spacing(ia)
+        expected = numpy.spacing(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_complex(self, xp):
+        a = xp.array([2.1 + 4e-14j, 5.2 + 3e-15j])
+        assert_raises((TypeError, ValueError), xp.spacing, a)
+
+
 class TestTrapezoid:
     def get_numpy_func(self):
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
@@ -3648,6 +3812,8 @@ class TestMatmul:
         expected = numpy.matmul(a1, a2)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("order1", ["C", "F", "A"])
+    @pytest.mark.parametrize("order2", ["C", "F", "A"])
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
     @pytest.mark.parametrize(
         "shape_pair",
@@ -3662,17 +3828,26 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_order(self, order, shape_pair):
+    def test_matmul_order(self, order1, order2, order, shape_pair):
         shape1, shape2 = shape_pair
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1, order=order1)
+        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2, order=order2)
 
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
 
         result = dpnp.matmul(b1, b2, order=order)
         expected = numpy.matmul(a1, a2, order=order)
-        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        # For the special case of shape_pair == ((6, 7, 4, 3), (6, 7, 3, 5))
+        # and order1 == "F" and order2 == "F", NumPy result is not c-contiguous
+        # nor f-contiguous, while dpnp (and cupy) results are c-contiguous
+        if not (
+            shape_pair == ((6, 7, 4, 3), (6, 7, 3, 5))
+            and order1 == "F"
+            and order2 == "F"
+            and order == "K"
+        ):
+            assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
@@ -3929,9 +4104,8 @@ class TestMatmul:
         ],
     )
     def test_matmul_out_0D(self, out_shape):
-        # for matmul of 0-D arrays with out keyword,
-        # NumPy repeats the data to match the shape
-        # of output array
+        # for matmul of 1-D arrays, output is 0-D and if out keyword is given
+        # NumPy repeats the data to match the shape of output array
         a = numpy.arange(3)
         b = dpnp.asarray(a)
 
@@ -3994,25 +4168,91 @@ class TestMatmul:
         assert_array_equal(result, expected)
 
 
-class TestMatmulInvalidCases:
+class TestMatmulInplace:
+    ALL_DTYPES = get_all_dtypes(no_none=True)
+    DTYPES = {}
+    for i in ALL_DTYPES:
+        for j in ALL_DTYPES:
+            if numpy.can_cast(j, i):
+                DTYPES[f"{i}-{j}"] = (i, j)
+
+    @pytest.mark.parametrize("dtype1, dtype2", DTYPES.values())
+    def test_basic(self, dtype1, dtype2):
+        a = numpy.arange(10).reshape(5, 2).astype(dtype1)
+        b = numpy.ones((2, 2), dtype=dtype2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+        ia_id = id(ia)
+
+        a @= b
+        ia @= ib
+        assert id(ia) == ia_id
+        assert_dtype_allclose(ia, a)
+
     @pytest.mark.parametrize(
-        "shape_pair",
+        "a_sh, b_sh",
+        [
+            pytest.param((10**5, 10), (10, 10), id="2d_large"),
+            pytest.param((10**4, 10, 10), (1, 10, 10), id="3d_large"),
+            pytest.param((3,), (3,), id="1d"),
+            pytest.param((3, 3), (3,), id="2d_1d"),
+            pytest.param((3,), (3, 3), id="1d_2d"),
+            pytest.param((3, 3), (3, 1), id="2d_broadcast"),
+            pytest.param((1, 3), (3, 3), id="2d_broadcast_reverse"),
+            pytest.param((3, 3, 3), (1, 3, 1), id="3d_broadcast1"),
+            pytest.param((3, 3, 3), (1, 3, 3), id="3d_broadcast2"),
+            pytest.param((3, 3, 3), (3, 3, 1), id="3d_broadcast3"),
+            pytest.param((1, 3, 3), (3, 3, 3), id="3d_broadcast_reverse1"),
+            pytest.param((3, 1, 3), (3, 3, 3), id="3d_broadcast_reverse2"),
+            pytest.param((1, 1, 3), (3, 3, 3), id="3d_broadcast_reverse3"),
+        ],
+    )
+    def test_shapes(self, a_sh, b_sh):
+        a_sz, b_sz = numpy.prod(a_sh), numpy.prod(b_sh)
+        a = numpy.arange(a_sz).reshape(a_sh).astype(numpy.float64)
+        b = numpy.arange(b_sz).reshape(b_sh)
+
+        ia, ib = dpnp.array(a), dpnp.array(b)
+        ia_id = id(ia)
+
+        expected = a @ b
+        if expected.shape != a_sh:
+            if len(b_sh) == 1:
+                # check the exception matches NumPy
+                match = "inplace matrix multiplication requires"
+            else:
+                match = None
+
+            with pytest.raises(ValueError, match=match):
+                a @= b
+
+            with pytest.raises(ValueError, match=match):
+                ia @= ib
+        else:
+            ia @= ib
+            assert id(ia) == ia_id
+            assert_dtype_allclose(ia, expected)
+
+
+class TestMatmulInvalidCases:
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize(
+        "shape1, shape2",
         [
             ((3, 2), ()),
             ((), (3, 2)),
             ((), ()),
         ],
     )
-    def test_zero_dim(self, shape_pair):
-        for xp in (numpy, dpnp):
-            shape1, shape2 = shape_pair
-            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
-            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
-            with pytest.raises(ValueError):
-                xp.matmul(x1, x2)
+    def test_zero_dim(self, xp, shape1, shape2):
+        x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+        x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
 
+        with pytest.raises(ValueError):
+            xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
-        "shape_pair",
+        "shape1, shape2",
         [
             ((3,), (4,)),
             ((2, 3), (4, 5)),
@@ -4025,16 +4265,16 @@ class TestMatmulInvalidCases:
             ((6, 5, 3, 2), (3, 2, 4)),
         ],
     )
-    def test_invalid_shape(self, shape_pair):
-        for xp in (numpy, dpnp):
-            shape1, shape2 = shape_pair
-            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
-            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
-            with pytest.raises(ValueError):
-                xp.matmul(x1, x2)
+    def test_invalid_shape(self, xp, shape1, shape2):
+        x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+        x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
 
+        with pytest.raises(ValueError):
+            xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
-        "shape_pair",
+        "shape1, shape2, out_shape",
         [
             ((5, 4, 3), (3, 1), (3, 4, 1)),
             ((5, 4, 3), (3, 1), (5, 6, 1)),
@@ -4046,24 +4286,24 @@ class TestMatmulInvalidCases:
             ((4,), (3, 4, 5), (3, 6)),
         ],
     )
-    def test_invalid_shape_out(self, shape_pair):
-        for xp in (numpy, dpnp):
-            shape1, shape2, out_shape = shape_pair
-            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
-            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
-            res = xp.empty(out_shape)
-            with pytest.raises(ValueError):
-                xp.matmul(x1, x2, out=res)
+    def test_invalid_shape_out(self, xp, shape1, shape2, out_shape):
+        x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+        x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
+        res = xp.empty(out_shape)
 
+        with pytest.raises(ValueError):
+            xp.matmul(x1, x2, out=res)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True)[:-2])
-    def test_invalid_dtype(self, dtype):
+    def test_invalid_dtype(self, xp, dtype):
         dpnp_dtype = get_all_dtypes(no_none=True)[-1]
-        a1 = dpnp.arange(5 * 4, dtype=dpnp_dtype).reshape(5, 4)
-        a2 = dpnp.arange(7 * 4, dtype=dpnp_dtype).reshape(4, 7)
-        dp_out = dpnp.empty((5, 7), dtype=dtype)
+        a1 = xp.arange(5 * 4, dtype=dpnp_dtype).reshape(5, 4)
+        a2 = xp.arange(7 * 4, dtype=dpnp_dtype).reshape(4, 7)
+        dp_out = xp.empty((5, 7), dtype=dtype)
 
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, out=dp_out)
+            xp.matmul(a1, a2, out=dp_out)
 
     def test_exe_q(self):
         x1 = dpnp.ones((5, 4), sycl_queue=dpctl.SyclQueue())
@@ -4077,13 +4317,14 @@ class TestMatmulInvalidCases:
         with pytest.raises(ExecutionPlacementError):
             dpnp.matmul(x1, x2, out=out)
 
-    def test_matmul_casting(self):
-        a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
-        a2 = dpnp.arange(4 * 3).reshape(4, 3)
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_matmul_casting(self, xp):
+        a1 = xp.arange(2 * 4, dtype=xp.float32).reshape(2, 4)
+        a2 = xp.arange(4 * 3).reshape(4, 3)
 
-        res = dpnp.empty((2, 3), dtype=dpnp.int64)
+        res = xp.empty((2, 3), dtype=xp.int64)
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, out=res, casting="safe")
+            xp.matmul(a1, a2, out=res, casting="safe")
 
     def test_matmul_not_implemented(self):
         a1 = dpnp.arange(2 * 4).reshape(2, 4)
@@ -4093,65 +4334,59 @@ class TestMatmulInvalidCases:
             dpnp.matmul(a1, a2, subok=False)
 
         with pytest.raises(NotImplementedError):
-            dpnp.matmul(
-                a1, a2, signature=(dpnp.float32, dpnp.float32, dpnp.float32)
-            )
-
-        def custom_error_callback(err):
-            print("Custom error callback triggered with error:", err)
-
-        with pytest.raises(NotImplementedError):
-            dpnp.matmul(a1, a2, extobj=[32, 1, custom_error_callback])
+            signature = (dpnp.float32, dpnp.float32, dpnp.float32)
+            dpnp.matmul(a1, a2, signature=signature)
 
         with pytest.raises(NotImplementedError):
             dpnp.matmul(a1, a2, axis=2)
 
-    def test_matmul_axes(self):
-        a1 = dpnp.arange(120).reshape(2, 5, 3, 4)
-        a2 = dpnp.arange(120).reshape(4, 2, 5, 3)
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_matmul_axes(self, xp):
+        a1 = xp.arange(120).reshape(2, 5, 3, 4)
+        a2 = xp.arange(120).reshape(4, 2, 5, 3)
 
         # axes must be a list
         axes = ((3, 1), (2, 0), (0, 1))
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes must be be a list of three tuples
         axes = [(3, 1), (2, 0)]
         with pytest.raises(ValueError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes item should be a tuple
         axes = [(3, 1), (2, 0), [0, 1]]
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes item should be a tuple with 2 elements
         axes = [(3, 1), (2, 0), (0, 1, 2)]
-        with pytest.raises(ValueError):
-            dpnp.matmul(a1, a2, axes=axes)
+        with pytest.raises(AxisError):
+            xp.matmul(a1, a2, axes=axes)
 
         # axes must be an integer
         axes = [(3, 1), (2, 0), (0.0, 1)]
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes item 2 should be an empty tuple
-        a = dpnp.arange(3)
+        a = xp.arange(3)
         axes = [0, 0, 0]
-        with pytest.raises(TypeError):
-            dpnp.matmul(a, a, axes=axes)
+        with pytest.raises(AxisError):
+            xp.matmul(a, a, axes=axes)
 
-        a = dpnp.arange(3 * 4 * 5).reshape(3, 4, 5)
-        b = dpnp.arange(3)
+        a = xp.arange(3 * 4 * 5).reshape(3, 4, 5)
+        b = xp.arange(3)
         # list object cannot be interpreted as an integer
         axes = [(1, 0), (0), [0]]
         with pytest.raises(TypeError):
-            dpnp.matmul(a, b, axes=axes)
+            xp.matmul(a, b, axes=axes)
 
         # axes item should be a tuple with a single element, or an integer
         axes = [(1, 0), (0), (0, 1)]
-        with pytest.raises(ValueError):
-            dpnp.matmul(a, b, axes=axes)
+        with pytest.raises(AxisError):
+            xp.matmul(a, b, axes=axes)
 
 
 def test_elemenwise_nin_nout():

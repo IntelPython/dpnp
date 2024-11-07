@@ -1139,14 +1139,12 @@ class TestEinsum:
         result = inp.einsum(*args, dtype="?", casting="unsafe", optimize=do_opt)
         assert_dtype_allclose(result, expected)
 
-        # with an scalar, NumPy < 2.0.0 uses the other input arrays to
-        # determine the output type while for NumPy > 2.0.0 the scalar
-        # with default machine dtype is used to determine the output
-        # data type
+        # NumPy >= 2.0 follows NEP-50 to determine the output dtype when one of
+        # the inputs is a scalar while NumPy < 2.0 does not
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-            check_type = True
-        else:
             check_type = False
+        else:
+            check_type = True
         a = numpy.arange(9, dtype=dtype)
         a_dp = inp.array(a)
         expected = numpy.einsum(",i->", 3, a)
@@ -1712,7 +1710,7 @@ class TestEinsum:
 
     def test_output_order(self):
         # Ensure output order is respected for optimize cases, the below
-        # conraction should yield a reshaped tensor view
+        # contraction should yield a reshaped tensor view
         a = inp.ones((2, 3, 5), order="F")
         b = inp.ones((4, 3), order="F")
 
@@ -2099,6 +2097,32 @@ class TestMatrixRank:
         )
         assert np_rank_low_tol == dp_rank_low_tol
 
+    # rtol kwarg was added in numpy 2.0
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "tol",
+        [0.99e-6, numpy.array(1.01e-6), numpy.ones(4) * [0.99e-6]],
+        ids=["float", "0-D array", "1-D array"],
+    )
+    def test_matrix_rank_tol(self, tol):
+        a = numpy.zeros((4, 3, 2))
+        a_dp = inp.array(a)
+
+        if isinstance(tol, numpy.ndarray):
+            dp_tol = inp.array(
+                tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
+            )
+        else:
+            dp_tol = tol
+
+        expected = numpy.linalg.matrix_rank(a, rtol=tol)
+        result = inp.linalg.matrix_rank(a_dp, rtol=dp_tol)
+        assert_dtype_allclose(result, expected)
+
+        expected = numpy.linalg.matrix_rank(a, tol=tol)
+        result = inp.linalg.matrix_rank(a_dp, tol=dp_tol)
+        assert_dtype_allclose(result, expected)
+
     def test_matrix_rank_errors(self):
         a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
 
@@ -2121,6 +2145,11 @@ class TestMatrixRank:
             inp.linalg.matrix_rank,
             a_dp_q,
             tol_dp_q,
+        )
+
+        # both tol and rtol are given
+        assert_raises(
+            ValueError, inp.linalg.matrix_rank, a_dp, tol=1e-06, rtol=1e-04
         )
 
 
@@ -3143,6 +3172,16 @@ class TestPinv:
         reconstructed = inp.dot(inp.dot(a_dp, B_dp), a_dp)
         assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
 
+    # rtol kwarg was added in numpy 2.0
+    @testing.with_requires("numpy>=2.0")
+    def test_pinv_rtol(self):
+        a = numpy.ones((2, 2))
+        a_dp = inp.array(a)
+
+        expected = numpy.linalg.pinv(a, rtol=1e-15)
+        result = inp.linalg.pinv(a_dp, rtol=1e-15)
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "shape",
@@ -3208,6 +3247,11 @@ class TestPinv:
         a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
         rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
         assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)
+
+        # both rcond and rtol are given
+        assert_raises(
+            ValueError, inp.linalg.pinv, a_dp, rcond=1e-06, rtol=1e-04
+        )
 
 
 class TestTensorinv:

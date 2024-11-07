@@ -72,7 +72,6 @@ class TestIsScalarValues2(testing.NumpyAliasValuesTestBase):
 )
 class TestIsFortran(unittest.TestCase):
 
-    @pytest.mark.skip("isfortran not implemented")
     @testing.numpy_cupy_equal()
     def test(self, xp):
         return xp.isfortran(xp.asarray(self.value))
