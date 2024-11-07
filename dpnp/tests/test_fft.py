@@ -12,7 +12,6 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_complex_dtypes,
-    get_float_complex_dtypes,
     get_float_dtypes,
 )
 

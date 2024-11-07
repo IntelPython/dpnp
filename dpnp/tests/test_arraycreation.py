@@ -17,7 +17,6 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
-    has_support_aspect64,
 )
 from .third_party.cupy import testing
 

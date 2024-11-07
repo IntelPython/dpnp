@@ -1,8 +1,5 @@
 import unittest
 
-import numpy
-
-from .helper import has_support_aspect64
 from .third_party.cupy import testing
 
 
