@@ -214,7 +214,7 @@ jobs:
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          python -m pytest -ra -v --disable-warnings --pyargs ${{ env.MODULE_NAME }}.tests
+          python -m pytest -ra --pyargs ${{ env.MODULE_NAME }}.tests
         working-directory: ${{ github.workspace }}
 
       - name: Run tests
@@ -230,7 +230,7 @@ jobs:
             . $CONDA/etc/profile.d/conda.sh
             conda activate ${{ env.TEST_ENV_NAME }}
             cd ${{ github.workspace }}
-            pytest -ra -v --disable-warnings --pyargs ${{ env.MODULE_NAME }}.tests
+            pytest -ra --pyargs ${{ env.MODULE_NAME }}.tests
 
   test_windows:
     name: Test ['windows-2019', python='${{ matrix.python }}']
@@ -369,7 +369,7 @@ jobs:
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          pytest -ra -v --disable-warnings --pyargs ${{ env.MODULE_NAME }}.tests
+          pytest -ra --pyargs ${{ env.MODULE_NAME }}.tests
         working-directory: ${{ env.workdir }}
 
       - name: Run tests
@@ -384,7 +384,7 @@ jobs:
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
             & cd ${{ env.workdir }}
-            & pytest -ra -v --disable-warnings --pyargs ${{ env.MODULE_NAME }}.tests
+            & pytest -ra --pyargs ${{ env.MODULE_NAME }}.tests
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
