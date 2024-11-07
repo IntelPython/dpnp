@@ -99,7 +99,7 @@ jobs:
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2024.3a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2025.1a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
