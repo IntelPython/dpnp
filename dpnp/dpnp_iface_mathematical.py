@@ -65,6 +65,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPImag,
     DPNPReal,
     DPNPRound,
+    DPNPSinc,
     DPNPUnaryFunc,
     acceptance_fn_gcd_lcm,
     acceptance_fn_negative,
@@ -130,6 +131,8 @@ __all__ = [
     "round",
     "sign",
     "signbit",
+    "sinc",
+    "spacing",
     "subtract",
     "sum",
     "trapezoid",
@@ -991,8 +994,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     a_shape = a.shape
     b_shape = b.shape
 
-    # TODO: replace with dpnp.broadcast_shapes once implemented
-    res_shape = numpy.broadcast_shapes(a_shape[:-1], b_shape[:-1])
+    res_shape = dpnp.broadcast_shapes(a_shape[:-1], b_shape[:-1])
     if a_shape[:-1] != res_shape:
         a = dpnp.broadcast_to(a, res_shape + (a_shape[-1],))
         a_shape = a.shape
@@ -3746,6 +3748,125 @@ signbit = DPNPUnaryFunc(
     ti._signbit_result_type,
     ti._signbit,
     _SIGNBIT_DOCSTRING,
+)
+
+
+_SINC_DOCSTRING = r"""
+Return the normalized sinc function.
+
+The sinc function is equal to :math:`\sin(\pi x)/(\pi x)` for any argument
+:math:`x\ne 0`. ``sinc(0)`` takes the limit value 1, making ``sinc`` not
+only everywhere continuous but also infinitely differentiable.
+
+For full documentation refer to :obj:`numpy.sinc`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have floating-point data type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise result of the ``sinc(x)`` function.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
+
+Notes
+-----
+The name sinc is short for "sine cardinal" or "sinus cardinalis".
+
+The sinc function is used in various signal processing applications, including
+in anti-aliasing, in the construction of a Lanczos resampling filter, and in
+interpolation.
+
+For bandlimited interpolation of discrete-time signals, the ideal interpolation
+kernel is proportional to the sinc function.
+
+Examples
+--------
+>>> import dpnp as np
+>>> x = np.linspace(-4, 4, 41, dtype=np.float64)
+>>> np.sinc(x) # result may vary
+    array([ 0.        , -0.04923628, -0.08409186, -0.08903844, -0.05846808,
+            0.        ,  0.06682066,  0.11643488,  0.12613779,  0.08504448,
+            0.        , -0.10394325, -0.18920668, -0.21623621, -0.15591488,
+            0.        ,  0.23387232,  0.50455115,  0.75682673,  0.93548928,
+            1.        ,  0.93548928,  0.75682673,  0.50455115,  0.23387232,
+            0.        , -0.15591488, -0.21623621, -0.18920668, -0.10394325,
+            0.        ,  0.08504448,  0.12613779,  0.11643488,  0.06682066,
+            0.        , -0.05846808, -0.08903844, -0.08409186, -0.04923628,
+            0.        ])
+"""
+
+sinc = DPNPSinc(
+    "sinc",
+    ufi._sinc_result_type,
+    ufi._sinc,
+    _SINC_DOCSTRING,
+)
+
+
+_SPACING_DOCSTRING = """
+Return the distance between `x` and the nearest adjacent number.
+
+For full documentation refer to :obj:`numpy.spacing`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    The array of values to find the spacing of, expected to have a real-valued
+    data type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The spacing of values of `x`. The data type of the returned array is
+    determined by the Type Promotion Rules.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Notes
+-----
+It can be considered as a generalization of EPS:
+``dpnp.spacing(dpnp.float64(1)) == dpnp.finfo(dpnp.float64).eps``, and there
+should not be any representable number between ``x + spacing(x)`` and `x` for
+any finite `x`.
+
+Spacing of +- inf and NaN is ``NaN``.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array(1)
+>>> b = np.spacing(a)
+>>> b == np.finfo(b.dtype).eps
+array(True)
+"""
+
+spacing = DPNPUnaryFunc(
+    "spacing",
+    ufi._spacing_result_type,
+    ufi._spacing,
+    _SPACING_DOCSTRING,
 )
 
 

@@ -498,6 +498,32 @@ def test_matmul(usm_type_x, usm_type_y, shape_pair):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((4,), (4,)),  # call_flag: dot
+        ((3, 1), (3, 1)),
+        ((2, 0), (2, 0)),  # zero-size inputs, 1D output
+        ((3, 0, 4), (3, 0, 4)),  # zero-size output
+        ((3, 4), (3, 4)),  # call_flag: vecdot
+    ],
+)
+def test_vecdot(usm_type_x, usm_type_y, shape_pair):
+    shape1, shape2 = shape_pair
+    x = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    y = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    x = dp.array(x, usm_type=usm_type_x)
+    y = dp.array(y, usm_type=usm_type_y)
+    z = dp.vecdot(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_meshgrid(usm_type_x, usm_type_y):
     x = dp.arange(100, usm_type=usm_type_x)
     y = dp.arange(100, usm_type=usm_type_y)
@@ -615,9 +641,11 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "sin", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
+        pytest.param("sinc", [-5.0, -3.5, 0.0, 2.5, 4.3]),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
         pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
+        pytest.param("spacing", [1, 2, -3, 0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
@@ -801,6 +829,38 @@ def test_cond(usm_type, p):
     result = dp.linalg.cond(ia, p=p)
     assert ia.usm_type == usm_type
     assert result.usm_type == usm_type
+
+
+class TestDelete:
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_delete(self, obj, usm_type):
+        x = dp.arange(5, usm_type=usm_type)
+        result = dp.delete(x, obj)
+
+        assert x.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_obj_ndarray(self, usm_type_x, usm_type_y):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.delete(x, y)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
@@ -996,6 +1056,28 @@ def test_eigenvalue(func, shape, usm_type):
         dp_val = getattr(dp.linalg, func)(a)
 
     assert a.usm_type == dp_val.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_pad(usm_type):
+    all_modes = [
+        "constant",
+        "edge",
+        "linear_ramp",
+        "maximum",
+        "mean",
+        "median",
+        "minimum",
+        "reflect",
+        "symmetric",
+        "wrap",
+        "empty",
+    ]
+    dpnp_data = dp.arange(100, usm_type=usm_type)
+    assert dpnp_data.usm_type == usm_type
+    for mode in all_modes:
+        result = dp.pad(dpnp_data, (25, 20), mode=mode)
+        assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)

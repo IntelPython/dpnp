@@ -134,7 +134,6 @@ Array conversion
 
    dpnp.ndarray.item
    dpnp.ndarray.tolist
-   dpnp.ndarray.itemset
    dpnp.ndarray.tostring
    dpnp.ndarray.tobytes
    dpnp.ndarray.tofile
@@ -250,7 +249,7 @@ Comparison operators:
    dpnp.ndarray.__eq__
    dpnp.ndarray.__ne__
 
-Truth value of an array (:func:`bool()`):
+Truth value of an array (:class:`bool() <bool>`):
 
 .. autosummary::
    :toctree: generated/
@@ -261,11 +260,11 @@ Truth value of an array (:func:`bool()`):
 
    Truth-value testing of an array invokes
    :meth:`dpnp.ndarray.__bool__`, which raises an error if the number of
-   elements in the array is larger than 1, because the truth value
+   elements in the array is not 1, because the truth value
    of such arrays is ambiguous. Use :meth:`.any() <dpnp.ndarray.any>` and
    :meth:`.all() <dpnp.ndarray.all>` instead to be clear about what is meant
-   in such cases. (If the number of elements is 0, the array evaluates
-   to ``False``.)
+   in such cases. (If you wish to check for whether an array is empty,
+   use for example ``.size > 0``.)
 
 
 Unary operations:
@@ -301,6 +300,26 @@ Arithmetic:
    dpnp.ndarray.__xor__
 
 
+Arithmetic, reflected:
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.ndarray.__radd__
+   dpnp.ndarray.__rsub__
+   dpnp.ndarray.__rmul__
+   dpnp.ndarray.__rtruediv__
+   dpnp.ndarray.__rfloordiv__
+   dpnp.ndarray.__rmod__
+   dpnp.ndarray.__rpow__
+   dpnp.ndarray.__rlshift__
+   dpnp.ndarray.__rrshift__
+   dpnp.ndarray.__rand__
+   dpnp.ndarray.__ror__
+   dpnp.ndarray.__rxor__
+
+
 Arithmetic, in-place:
 
 .. autosummary::
@@ -327,6 +346,8 @@ Matrix Multiplication:
    :toctree: generated/
 
    dpnp.ndarray.__matmul__
+   dpnp.ndarray.__rmatmul__
+   dpnp.ndarray.__imatmul__
 
 
 Special methods

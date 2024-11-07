@@ -492,6 +492,19 @@ class TestHistogram:
         with assert_raises(ValueError):
             dpnp.histogram(v, weights=w)
 
+    @pytest.mark.parametrize(
+        "bins_count",
+        [10, 10**2, 10**3, 10**4, 10**5, 10**6],
+    )
+    def test_different_bins_amount(self, bins_count):
+        v = numpy.linspace(0, bins_count, bins_count, dtype=numpy.float32)
+        iv = dpnp.array(v)
+
+        expected_hist, expected_edges = numpy.histogram(v, bins=bins_count)
+        result_hist, result_edges = dpnp.histogram(iv, bins=bins_count)
+        assert_array_equal(result_hist, expected_hist)
+        assert_allclose(result_edges, expected_edges)
+
 
 class TestHistogramBinEdges:
     @pytest.mark.parametrize(

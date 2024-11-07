@@ -24,8 +24,8 @@
 //*****************************************************************************
 
 #include <cstring>
-#include <exception>
 #include <iostream>
+#include <stdexcept>
 
 #include "dpnp_iface.hpp"
 #include "queue_sycl.hpp"

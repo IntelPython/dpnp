@@ -12,7 +12,7 @@ env:
   GH_BOT_NAME: 'github-actions[bot]'
   GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
   GH_EVENT_OPEN_PR_UPSTREAM: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' &&
-                                 github.event.pull_request && !github.event.pull_request.head.repo.fork }}
+                                 github.event.pull_request && !github.event.pull_request.base.repo.fork }}
   GH_EVENT_PUSH_UPSTREAM: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' &&
                               github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork }}
   PUBLISH_DIR: doc/_build/html/
@@ -226,7 +226,7 @@ jobs:
   clean:
     if: |
       github.event_name == 'pull_request' && github.event.action == 'closed' &&
-      github.event.pull_request && !github.event.pull_request.head.repo.fork
+      github.event.pull_request && !github.event.pull_request.base.repo.fork
 
     needs: build-and-deploy
 

@@ -25,7 +25,7 @@
 
 #pragma once
 #include <cstring>
-#include <stdexcept>
+#include <exception>
 
 namespace dpnp::extensions::lapack
 {

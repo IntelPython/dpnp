@@ -95,6 +95,7 @@ __all__ = [
     "tensorinv",
     "tensorsolve",
     "trace",
+    "vecdot",
     "vector_norm",
 ]
 
@@ -2183,6 +2184,61 @@ def trace(x, /, *, offset=0, dtype=None):
     """
 
     return dpnp.trace(x, offset, axis1=-2, axis2=-1, dtype=dtype)
+
+
+def vecdot(x1, x2, /, *, axis=-1):
+    r"""
+    Computes the vector dot product.
+
+    This function is restricted to arguments compatible with the Array API,
+    contrary to :obj:`dpnp.vecdot`.
+
+    Let :math:`\mathbf{a}` be a vector in `x1` and :math:`\mathbf{b}` be
+    a corresponding vector in `x2`. The dot product is defined as:
+
+    .. math::
+       \mathbf{a} \cdot \mathbf{b} = \sum_{i=0}^{n-1} \overline{a_i}b_i
+
+    over the dimension specified by `axis` and where :math:`\overline{a_i}`
+    denotes the complex conjugate if :math:`a_i` is complex and the identity
+    otherwise.
+
+    For full documentation refer to :obj:`numpy.linalg.vecdot`.
+
+    Parameters
+    ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    x2 : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+    axis : int, optional
+        Axis over which to compute the dot product.
+        Default: ``-1``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The vector dot product of the inputs.
+
+    See Also
+    --------
+    :obj:`dpnp.vecdot` : Similar function with support for more
+                    keyword arguments.
+    :obj:`dpnp.vdot` : Complex-conjugating dot product.
+
+    Examples
+    --------
+    Get the projected size along a given normal for an array of vectors.
+
+    >>> import dpnp as np
+    >>> v = np.array([[0., 5., 0.], [0., 0., 10.], [0., 6., 8.]])
+    >>> n = np.array([0., 0.6, 0.8])
+    >>> np.linalg.vecdot(v, n)
+    array([ 3.,  8., 10.])
+
+    """
+
+    return dpnp.vecdot(x1, x2, axis=axis)
 
 
 def vector_norm(x, /, *, axis=None, keepdims=False, ord=2):
