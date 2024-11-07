@@ -10,9 +10,9 @@ from numpy.testing import assert_array_equal, assert_equal
 
 import dpnp
 from dpnp.dpnp_utils.dpnp_utils_pad import _as_pairs as dpnp_as_pairs
-from dpnp.tests.third_party.cupy import testing
 
 from .helper import assert_dtype_allclose, get_all_dtypes
+from .third_party.cupy import testing
 
 
 class TestPad:
