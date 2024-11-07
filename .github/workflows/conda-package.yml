@@ -40,7 +40,7 @@ jobs:
 
     defaults:
       run:
-        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -l {0}' }}
+        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
     continue-on-error: true
 
@@ -76,7 +76,7 @@ jobs:
         run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
 
       - name: Store conda paths as envs
-        shell: bash -l {0}
+        shell: bash -el {0}
         run: |
           echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
@@ -99,7 +99,7 @@ jobs:
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2024.3a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2025.1a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
@@ -122,7 +122,7 @@ jobs:
 
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -el {0}
 
     strategy:
       matrix:
@@ -317,7 +317,7 @@ jobs:
           @echo on
           set "SCRIPT=${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}"
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
-             SET PACKAGE_VERSION=%%F
+            set PACKAGE_VERSION=%%F
           )
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
@@ -356,7 +356,11 @@ jobs:
         shell: pwsh
         run: |
           $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
-          &$script_path
+          if (Test-Path $script_path) {
+            &$script_path
+          } else {
+            Write-Warning "File $script_path was NOT found!"
+          }
           # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
           $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
           Get-Content -Tail 5 -Path $cl_cfg
@@ -400,7 +404,7 @@ jobs:
 
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -el {0}
 
     continue-on-error: true
 
@@ -449,11 +453,15 @@ jobs:
 
   cleanup_packages:
     name: Clean up anaconda packages
+
     needs: [upload]
+
     runs-on: 'ubuntu-latest'
+
     defaults:
       run:
         shell: bash -el {0}
+
     steps:
       - uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
