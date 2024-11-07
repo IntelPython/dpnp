@@ -99,12 +99,6 @@ def pytest_configure(config):
         "multi_gpu: marks tests that require a specified number of GPUs",
     )
 
-    # Add warning filters
-    # pkg_resources
-    config.addinivalue_line(
-        "filterwarnings",
-        "ignore:pkg_resources is deprecated as an API:DeprecationWarning",
-    )
     # NumPy arccosh
     # Undefined behavior depends on the backend:
     # NumPy with OpenBLAS for np.array[1.0] does not raise a warning
