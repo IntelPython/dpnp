@@ -1,7 +1,9 @@
 import contextlib
+import importlib.metadata
 import inspect
 import unittest
 import warnings
+from importlib.metadata import PackageNotFoundError
 from typing import Callable
 from unittest import mock
 
@@ -32,8 +34,10 @@ def with_requires(*requirements):
        This test case runs only when `numpy>=1.18` is installed.
 
        >>> from cupy import testing
+       ...
+       ...
        ... class Test(unittest.TestCase):
-       ...     @testing.with_requires('numpy>=1.18')
+       ...     @testing.with_requires("numpy>=1.18")
        ...     def test_for_numpy_1_18(self):
        ...         pass
 
@@ -42,8 +46,8 @@ def with_requires(*requirements):
             run a given test case.
 
     """
-    msg = "requires: {}".format(",".join(requirements))
-    return _skipif(not installed(requirements), reason=msg)
+    msg = f"requires: {','.join(requirements)}"
+    return _skipif(not installed(*requirements), reason=msg)
 
 
 def installed(*specifiers):
@@ -53,14 +57,18 @@ def installed(*specifiers):
     Args:
         specifiers: Version specifiers (e.g., `numpy>=1.20.0`).
     """
-    # Delay import of pkg_resources because it is excruciatingly slow.
-    # See https://github.com/pypa/setuptools/issues/510
-    import pkg_resources
+    # Make `packaging` a soft requirement
+    from packaging.requirements import Requirement
 
     for spec in specifiers:
+        req = Requirement(spec)
         try:
-            pkg_resources.require(spec)
-        except pkg_resources.ResolutionError:
+            found = importlib.metadata.version(req.name)
+        except PackageNotFoundError:
+            return False
+        expected = req.specifier
+        # If no constraint is given, skip
+        if expected and (not expected.contains(found, prereleases=True)):
             return False
     return True
 
