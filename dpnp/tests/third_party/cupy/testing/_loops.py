@@ -12,9 +12,8 @@ from dpctl import select_default_device
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
-
-from . import _array, _parameterized
-from ._pytest_impl import is_available
+from dpnp.tests.third_party.cupy.testing import _array, _parameterized
+from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
 
 # import cupyx
 # import cupyx.scipy.sparse

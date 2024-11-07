@@ -10,8 +10,7 @@ else:
     from numpy import ComplexWarning
 
 import dpnp as cupy
-
-from .. import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 class TestFlatiter(unittest.TestCase):

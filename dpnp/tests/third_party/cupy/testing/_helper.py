@@ -10,8 +10,7 @@ from unittest import mock
 import numpy
 
 import dpnp as cupy
-
-from ._pytest_impl import is_available
+from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
 
 # from cupy._core import internal
 # import cupyx
