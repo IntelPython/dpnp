@@ -994,8 +994,7 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
     a_shape = a.shape
     b_shape = b.shape
 
-    # TODO: replace with dpnp.broadcast_shapes once implemented
-    res_shape = numpy.broadcast_shapes(a_shape[:-1], b_shape[:-1])
+    res_shape = dpnp.broadcast_shapes(a_shape[:-1], b_shape[:-1])
     if a_shape[:-1] != res_shape:
         a = dpnp.broadcast_to(a, res_shape + (a_shape[-1],))
         a_shape = a.shape
