@@ -332,6 +332,31 @@ class TestAsarrayCheckFinite:
         assert_array_equal(b, a)
 
 
+class TestBroadcast:
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            [(1,), (3,)],
+            [(1, 3), (3, 3)],
+            [(3, 1), (3, 3)],
+            [(1, 3), (3, 1)],
+            [(1, 1), (3, 3)],
+            [(1, 1), (1, 3)],
+            [(1, 1), (3, 1)],
+            [(1, 0), (0, 0)],
+            [(0, 1), (0, 0)],
+            [(1, 0), (0, 1)],
+            [(1, 1), (0, 0)],
+            [(1, 1), (1, 0)],
+            [(1, 1), (0, 1)],
+        ],
+    )
+    def test_broadcast_shapes(self, shape):
+        expected = numpy.broadcast_shapes(*shape)
+        result = dpnp.broadcast_shapes(*shape)
+        assert_equal(result, expected)
+
+
 class TestDelete:
     @pytest.mark.parametrize(
         "obj", [slice(0, 4, 2), 3, [2, 3]], ids=["slice", "int", "list"]
