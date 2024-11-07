@@ -33,8 +33,10 @@ def with_requires(*requirements):
        This test case runs only when `numpy>=1.18` is installed.
 
        >>> from cupy import testing
+       ...
+       ...
        ... class Test(unittest.TestCase):
-       ...     @testing.with_requires('numpy>=1.18')
+       ...     @testing.with_requires("numpy>=1.18")
        ...     def test_for_numpy_1_18(self):
        ...         pass
 
@@ -43,8 +45,8 @@ def with_requires(*requirements):
             run a given test case.
 
     """
-    msg = "requires: {}".format(",".join(requirements))
-    return _skipif(not installed(requirements), reason=msg)
+    msg = f"requires: {','.join(requirements)}"
+    return _skipif(not installed(*requirements), reason=msg)
 
 
 def installed(*specifiers):
