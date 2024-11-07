@@ -9,11 +9,10 @@ from tests.third_party.cupy import testing
 
 
 @testing.parameterize(*(testing.product({"axis": [0, 1, -1]})))
-@pytest.mark.skip("'apply_along_axis' is not implemented yet")
 class TestApplyAlongAxis(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_simple(self, xp):
-        a = xp.ones((20, 10), "d")
+        a = xp.ones((20, 10), dtype="f")
         return xp.apply_along_axis(len, self.axis, a)
 
     @testing.for_all_dtypes(no_bool=True)
@@ -100,7 +99,6 @@ class TestApplyAlongAxis(unittest.TestCase):
 
 
 @testing.with_requires("numpy>=1.16")
-@pytest.mark.skip("'apply_along_axis' is not implemented yet")
 def test_apply_along_axis_invalid_axis():
     for xp in [numpy, cupy]:
         a = xp.ones((8, 4))

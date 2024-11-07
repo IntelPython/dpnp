@@ -2173,6 +2173,18 @@ def test_split(func, data1, device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_apply_along_axis(device):
+    x = dpnp.arange(9, device=device).reshape(3, 3)
+    result = dpnp.apply_along_axis(dpnp.sum, 0, x)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "device_x",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
