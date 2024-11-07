@@ -329,7 +329,7 @@ def _insert_singleton_index(parameters, indices, values, obj):
     # In dpnp, `.item()` calls `.wait()`, so it is preferred to avoid it
     # When possible (i.e. for numpy arrays, lists, etc), it is preferred
     # to use `.item()` on a NumPy array
-    if isinstance(obj, (dpnp_array, dpt.usm_ndarray)):
+    if dpnp.is_supported_array_type(obj):
         index = indices.item()
     else:
         if isinstance(obj, slice):
@@ -1600,7 +1600,7 @@ def delete(arr, obj, axis=None):
             # In dpnp, `.item()` calls `.wait()`, so it is preferred to avoid it
             # When possible (i.e. for numpy arrays, lists, etc), it is
             # preferred to use `.item()` on a NumPy array
-            if isinstance(obj, (dpnp_array, dpt.usm_ndarray)):
+            if dpnp.is_supported_array_type(obj):
                 indices = indices.item()
             else:
                 indices = numpy.asarray(obj).item()
