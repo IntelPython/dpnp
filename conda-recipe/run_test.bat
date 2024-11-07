@@ -31,7 +31,7 @@ if not defined PYTHON (
 )
 
 
-"%PYTHON%" -c "import dpctl; print(dpctl.__version__)"
+"%PYTHON%" -c "import dpnp; print(dpnp.__version__)"
 if errorlevel 1 exit 1
 
 "%PYTHON%" -m dpctl -f
