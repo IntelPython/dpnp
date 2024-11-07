@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev1+6.g589c17af43f documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev1+11.gf9ff71a0f01 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=35d4eee6"></script>
+      <script src="../../_static/documentation_options.js?v=7fcbf8ae"></script>
       <script src="../../_static/doctools.js?v=9a2dae69"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -126,8 +126,9 @@
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">operator</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
 
+<span class="kn">import</span> <span class="nn">dpctl</span>
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">AxisError</span><span class="p">,</span> <span class="n">normalize_axis_index</span>
@@ -140,20 +141,20 @@
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_pad</span> <span class="kn">import</span> <span class="n">dpnp_pad</span>
 
-<span class="n">Parameters</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span>
-    <span class="s2">&quot;Parameters_insert_delete&quot;</span><span class="p">,</span>
-    <span class="p">[</span>
-        <span class="s2">&quot;a&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;a_ndim&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;order&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;axis&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;slobj&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;n&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;a_shape&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;exec_q&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;usm_type&quot;</span><span class="p">,</span>
-    <span class="p">],</span>
-<span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">InsertDeleteParams</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Parameters used for ``dpnp.delete`` and ``dpnp.insert``.&quot;&quot;&quot;</span>
+
+    <span class="n">a</span><span class="p">:</span> <span class="n">dpnp_array</span>
+    <span class="n">a_ndim</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">order</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">slobj</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="n">n</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">a_shape</span><span class="p">:</span> <span class="nb">list</span>
+    <span class="n">exec_q</span><span class="p">:</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">SyclQueue</span>
+    <span class="n">usm_type</span><span class="p">:</span> <span class="nb">str</span>
+
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;append&quot;</span><span class="p">,</span>
@@ -224,7 +225,7 @@
 <span class="k">def</span> <span class="nf">_delete_with_slice</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` when obj is slice.&quot;&quot;&quot;</span>
 
-    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">params</span>
 
     <span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
     <span class="n">xr</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
@@ -239,11 +240,11 @@
         <span class="n">start</span> <span class="o">=</span> <span class="n">xr</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">stop</span> <span class="o">=</span> <span class="n">xr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
 
-    <span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-=</span> <span class="n">num_del</span>
+    <span class="n">newshape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-=</span> <span class="n">num_del</span>
     <span class="n">new</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">a_shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">newshape</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
     <span class="p">)</span>
@@ -285,7 +286,7 @@
 <span class="k">def</span> <span class="nf">_delete_without_slice</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">single_value</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` when obj is int or array of int.&quot;&quot;&quot;</span>
 
-    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">params</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">params</span>
 
     <span class="k">if</span> <span class="n">single_value</span><span class="p">:</span>
         <span class="c1"># optimization for a single value</span>
@@ -296,11 +297,11 @@
             <span class="p">)</span>
         <span class="k">if</span> <span class="n">obj</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">obj</span> <span class="o">+=</span> <span class="n">n</span>
-        <span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="n">newshape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
         <span class="n">new</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-            <span class="n">a_shape</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+            <span class="n">newshape</span><span class="p">,</span>
             <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
             <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="p">)</span>
@@ -349,18 +350,9 @@
     <span class="n">n</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
     <span class="n">a_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="ow">and</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span>
-        <span class="n">values</span>
-    <span class="p">):</span>
-        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
-        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">values</span><span class="p">])</span>
-    <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
-        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">obj</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">a</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">])</span>
 
-    <span class="k">return</span> <span class="n">Parameters</span><span class="p">(</span>
+    <span class="k">return</span> <span class="n">InsertDeleteParams</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span>
     <span class="p">)</span>
 
@@ -372,7 +364,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">parameters</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">parameters</span>
 
     <span class="n">is_array</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_array</span><span class="p">:</span>
@@ -387,16 +379,16 @@
         <span class="n">numnew</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">indices</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
     <span class="p">)</span>
 
-    <span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+=</span> <span class="n">numnew</span>
+    <span class="n">newshape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+=</span> <span class="n">numnew</span>
     <span class="n">old_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
-        <span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+        <span class="n">newshape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
     <span class="p">)</span>
     <span class="n">old_mask</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="n">new</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">a_shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">newshape</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
     <span class="p">)</span>
@@ -416,24 +408,27 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">parameters</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">parameters</span>
 
     <span class="c1"># In dpnp, `.item()` calls `.wait()`, so it is preferred to avoid it</span>
     <span class="c1"># When possible (i.e. for numpy arrays, lists, etc), it is preferred</span>
     <span class="c1"># to use `.item()` on a NumPy array</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="nb">slice</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">)):</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+            <span class="n">obj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="o">*</span><span class="n">obj</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">n</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
         <span class="n">index</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="o">-</span><span class="n">n</span> <span class="ow">or</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="n">n</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2"> is out of bounds for axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> &quot;</span> <span class="sa">f</span><span class="s2">&quot;with size </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;index </span><span class="si">{</span><span class="n">index</span><span class="si">}</span><span class="s2"> is out of bounds for axis </span><span class="si">{</span><span class="n">axis</span><span class="si">}</span><span class="s2"> with size </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">index</span> <span class="o">+=</span> <span class="n">n</span>
 
-    <span class="c1"># There are some object array corner cases here, that cannot be avoided</span>
+    <span class="c1"># Need to change the dtype of values to input array dtype and update</span>
+    <span class="c1"># its shape to make ``input_arr[..., index, ...] = values`` legal</span>
     <span class="n">values</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="n">values</span><span class="p">,</span>
         <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -446,15 +441,17 @@
         <span class="c1"># numpy.insert behave differently if obj is an scalar or an array</span>
         <span class="c1"># with one element, so, this change is needed to align with NumPy</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+
     <span class="n">numnew</span> <span class="o">=</span> <span class="n">values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span>
-    <span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+=</span> <span class="n">numnew</span>
+    <span class="n">newshape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">+=</span> <span class="n">numnew</span>
     <span class="n">new</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
-        <span class="n">a_shape</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">newshape</span><span class="p">,</span>
         <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
     <span class="p">)</span>
+
     <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span>
     <span class="n">new</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span>
     <span class="n">slobj</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="n">numnew</span><span class="p">)</span>
@@ -2382,8 +2379,8 @@
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="c1"># need to copy obj, because indices will be changed in-place</span>
-        <span class="n">indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
-            <span class="n">obj</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">usm_type</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
+            <span class="n">obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">usm_type</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
