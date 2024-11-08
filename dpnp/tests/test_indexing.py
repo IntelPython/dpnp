@@ -335,6 +335,18 @@ class TestIx:
         assert_raises(ValueError, xp.ix_, xp.ones(shape))
 
 
+class TestNdindex:
+    @pytest.mark.parametrize(
+        "shape", [[1, 2, 3], [(1, 2, 3)], [(3,)], [3], [], [()], [0]]
+    )
+    def test_basic(self, shape):
+        result = dpnp.ndindex(*shape)
+        expected = numpy.ndindex(*shape)
+
+        for x, y in zip(result, expected):
+            assert x == y
+
+
 class TestNonzero:
     @pytest.mark.parametrize("list_val", [[], [0], [1]])
     def test_trivial(self, list_val):
