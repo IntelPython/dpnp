@@ -642,8 +642,7 @@ def dpnp_pad(array, pad_width, mode="constant", **kwargs):
 
             # compute indices for the iteration axes, and append a trailing
             # ellipsis to prevent 0d arrays decaying to scalars
-            # TODO: replace with dpnp.ndindex when implemented
-            inds = numpy.ndindex(view.shape[:-1])
+            inds = dpnp.ndindex(view.shape[:-1])
             inds = (ind + (Ellipsis,) for ind in inds)
             for ind in inds:
                 function(view[ind], pad_width[axis], axis, kwargs)
