@@ -1,0 +1,6 @@
+﻿dpnp.linalg.matrix\_norm
+========================
+
+.. currentmodule:: dpnp.linalg
+
+.. autofunction:: matrix_norm
