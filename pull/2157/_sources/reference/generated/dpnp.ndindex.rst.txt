@@ -1,0 +1,65 @@
+﻿dpnp.ndindex
+============
+
+.. currentmodule:: dpnp
+
+.. autoclass:: ndindex
+
+   ..
+      Methods
+
+
+
+   .. rubric:: Methods
+
+   ..
+      Special methods
+
+
+
+
+
+
+   .. automethod:: __next__
+
+
+   .. automethod:: __iter__
+
+
+   ..
+      Ordinary methods
+
+
+
+
+   .. automethod:: ndincr
+
+
+   ..
+      Special methods
+
+
+
+   .. automethod:: __eq__
+
+
+   .. automethod:: __ne__
+
+
+   .. automethod:: __lt__
+
+
+   .. automethod:: __le__
+
+
+   .. automethod:: __gt__
+
+
+   .. automethod:: __ge__
+
+
+
+   ..
+      Attributes
+
+  

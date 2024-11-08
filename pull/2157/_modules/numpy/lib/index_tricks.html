@@ -1,0 +1,1138 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-554F8VNE28"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-554F8VNE28');
+    </script>
+    
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>numpy.lib.index_tricks &mdash; Data Parallel Extension for NumPy 0.17.0dev1+12.g83a08a4b123 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=dde4dcc4"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            Data Parallel Extension for NumPy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quick_start_guide.html">Quick Start Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../reference/index.html">API Reference</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development information</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../dpnp_backend_api.html">C++ backend API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Data Parallel Extension for NumPy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">numpy.lib.index_tricks</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for numpy.lib.index_tricks</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">numpy.core.numeric</span> <span class="k">as</span> <span class="nn">_nx</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numeric</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">asarray</span><span class="p">,</span> <span class="n">ScalarType</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">alltrue</span><span class="p">,</span> <span class="n">cumprod</span><span class="p">,</span> <span class="n">arange</span><span class="p">,</span> <span class="n">ndim</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">numpy.core.numerictypes</span> <span class="kn">import</span> <span class="n">find_common_type</span><span class="p">,</span> <span class="n">issubdtype</span>
+
+<span class="kn">import</span> <span class="nn">numpy.matrixlib</span> <span class="k">as</span> <span class="nn">matrixlib</span>
+<span class="kn">from</span> <span class="nn">.function_base</span> <span class="kn">import</span> <span class="n">diff</span>
+<span class="kn">from</span> <span class="nn">numpy.core.multiarray</span> <span class="kn">import</span> <span class="n">ravel_multi_index</span><span class="p">,</span> <span class="n">unravel_index</span>
+<span class="kn">from</span> <span class="nn">numpy.core.overrides</span> <span class="kn">import</span> <span class="n">set_module</span>
+<span class="kn">from</span> <span class="nn">numpy.core</span> <span class="kn">import</span> <span class="n">overrides</span><span class="p">,</span> <span class="n">linspace</span>
+<span class="kn">from</span> <span class="nn">numpy.lib.stride_tricks</span> <span class="kn">import</span> <span class="n">as_strided</span>
+
+
+<span class="n">array_function_dispatch</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partial</span><span class="p">(</span>
+    <span class="n">overrides</span><span class="o">.</span><span class="n">array_function_dispatch</span><span class="p">,</span> <span class="n">module</span><span class="o">=</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;ravel_multi_index&#39;</span><span class="p">,</span> <span class="s1">&#39;unravel_index&#39;</span><span class="p">,</span> <span class="s1">&#39;mgrid&#39;</span><span class="p">,</span> <span class="s1">&#39;ogrid&#39;</span><span class="p">,</span> <span class="s1">&#39;r_&#39;</span><span class="p">,</span> <span class="s1">&#39;c_&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;s_&#39;</span><span class="p">,</span> <span class="s1">&#39;index_exp&#39;</span><span class="p">,</span> <span class="s1">&#39;ix_&#39;</span><span class="p">,</span> <span class="s1">&#39;ndenumerate&#39;</span><span class="p">,</span> <span class="s1">&#39;ndindex&#39;</span><span class="p">,</span> <span class="s1">&#39;fill_diagonal&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;diag_indices&#39;</span><span class="p">,</span> <span class="s1">&#39;diag_indices_from&#39;</span>
+<span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">_ix__dispatcher</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">args</span>
+
+
+<span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_ix__dispatcher</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">ix_</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct an open mesh from multiple sequences.</span>
+
+<span class="sd">    This function takes N 1-D sequences and returns N outputs with N</span>
+<span class="sd">    dimensions each, such that the shape is 1 in all but one dimension</span>
+<span class="sd">    and the dimension with the non-unit shape value cycles through all</span>
+<span class="sd">    N dimensions.</span>
+
+<span class="sd">    Using `ix_` one can quickly construct index arrays that will index</span>
+<span class="sd">    the cross product. ``a[np.ix_([1,3],[2,5])]`` returns the array</span>
+<span class="sd">    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    args : 1-D sequences</span>
+<span class="sd">        Each sequence should be of integer or boolean type.</span>
+<span class="sd">        Boolean sequences will be interpreted as boolean masks for the</span>
+<span class="sd">        corresponding dimension (equivalent to passing in</span>
+<span class="sd">        ``np.nonzero(boolean_sequence)``).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : tuple of ndarrays</span>
+<span class="sd">        N arrays with N dimensions each, with N the number of input</span>
+<span class="sd">        sequences. Together these arrays form an open mesh.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ogrid, mgrid, meshgrid</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(10).reshape(2, 5)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 1, 2, 3, 4],</span>
+<span class="sd">           [5, 6, 7, 8, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; ixgrid = np.ix_([0, 1], [2, 4])</span>
+<span class="sd">    &gt;&gt;&gt; ixgrid</span>
+<span class="sd">    (array([[0],</span>
+<span class="sd">           [1]]), array([[2, 4]]))</span>
+<span class="sd">    &gt;&gt;&gt; ixgrid[0].shape, ixgrid[1].shape</span>
+<span class="sd">    ((2, 1), (1, 2))</span>
+<span class="sd">    &gt;&gt;&gt; a[ixgrid]</span>
+<span class="sd">    array([[2, 4],</span>
+<span class="sd">           [7, 9]])</span>
+
+<span class="sd">    &gt;&gt;&gt; ixgrid = np.ix_([True, True], [2, 4])</span>
+<span class="sd">    &gt;&gt;&gt; a[ixgrid]</span>
+<span class="sd">    array([[2, 4],</span>
+<span class="sd">           [7, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; ixgrid = np.ix_([True, True], [False, False, True, False, True])</span>
+<span class="sd">    &gt;&gt;&gt; a[ixgrid]</span>
+<span class="sd">    array([[2, 4],</span>
+<span class="sd">           [7, 9]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">nd</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">new</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">new</span><span class="p">,</span> <span class="n">_nx</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+            <span class="n">new</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">new</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Explicitly type empty arrays to avoid float default</span>
+                <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cross index must be 1 dimensional&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">issubdtype</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">_nx</span><span class="o">.</span><span class="n">bool_</span><span class="p">):</span>
+            <span class="n">new</span><span class="p">,</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">nonzero</span><span class="p">()</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="mi">1</span><span class="p">,)</span><span class="o">*</span><span class="n">k</span> <span class="o">+</span> <span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">size</span><span class="p">,)</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,)</span><span class="o">*</span><span class="p">(</span><span class="n">nd</span><span class="o">-</span><span class="n">k</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">nd_grid</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Construct a multi-dimensional &quot;meshgrid&quot;.</span>
+
+<span class="sd">    ``grid = nd_grid()`` creates an instance which will return a mesh-grid</span>
+<span class="sd">    when indexed.  The dimension and number of the output arrays are equal</span>
+<span class="sd">    to the number of indexing dimensions.  If the step length is not a</span>
+<span class="sd">    complex number, then the stop is not inclusive.</span>
+
+<span class="sd">    However, if the step length is a **complex number** (e.g. 5j), then the</span>
+<span class="sd">    integer part of its magnitude is interpreted as specifying the</span>
+<span class="sd">    number of points to create between the start and stop values, where</span>
+<span class="sd">    the stop value **is inclusive**.</span>
+
+<span class="sd">    If instantiated with an argument of ``sparse=True``, the mesh-grid is</span>
+<span class="sd">    open (or not fleshed out) so that only one-dimension of each returned</span>
+<span class="sd">    argument is greater than 1.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sparse : bool, optional</span>
+<span class="sd">        Whether the grid is sparse or not. Default is False.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Two instances of `nd_grid` are made available in the NumPy namespace,</span>
+<span class="sd">    `mgrid` and `ogrid`, approximately defined as::</span>
+
+<span class="sd">        mgrid = nd_grid(sparse=False)</span>
+<span class="sd">        ogrid = nd_grid(sparse=True)</span>
+
+<span class="sd">    Users should use these pre-defined instances instead of using `nd_grid`</span>
+<span class="sd">    directly.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sparse</span> <span class="o">=</span> <span class="n">sparse</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">typ</span> <span class="o">=</span> <span class="nb">int</span>
+            <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">key</span><span class="p">:</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">kk</span><span class="o">.</span><span class="n">step</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">kk</span><span class="o">.</span><span class="n">start</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)):</span>
+                    <span class="n">size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">step</span><span class="p">)))</span>
+                    <span class="n">typ</span> <span class="o">=</span> <span class="nb">float</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                        <span class="nb">int</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">kk</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">step</span> <span class="o">*</span> <span class="mf">1.0</span><span class="p">))))</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">or</span>
+                        <span class="nb">isinstance</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">or</span>
+                        <span class="nb">isinstance</span><span class="p">(</span><span class="n">kk</span><span class="o">.</span><span class="n">stop</span><span class="p">,</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="nb">float</span><span class="p">))):</span>
+                    <span class="n">typ</span> <span class="o">=</span> <span class="nb">float</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                <span class="n">nn</span> <span class="o">=</span> <span class="p">[</span><span class="n">_nx</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">_x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">_t</span><span class="p">)</span>
+                      <span class="k">for</span> <span class="n">_x</span><span class="p">,</span> <span class="n">_t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="p">(</span><span class="n">typ</span><span class="p">,)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">))]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">nn</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">indices</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">typ</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">kk</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">kk</span><span class="o">.</span><span class="n">step</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">kk</span><span class="o">.</span><span class="n">start</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)):</span>
+                    <span class="n">step</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">step</span><span class="p">))</span>
+                    <span class="k">if</span> <span class="n">step</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">step</span> <span class="o">=</span> <span class="p">(</span><span class="n">kk</span><span class="o">.</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">)</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">step</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">nn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">nn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">*</span><span class="n">step</span><span class="o">+</span><span class="n">start</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sparse</span><span class="p">:</span>
+                <span class="n">slobj</span> <span class="o">=</span> <span class="p">[</span><span class="n">_nx</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">size</span><span class="p">)):</span>
+                    <span class="n">slobj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                    <span class="n">nn</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">nn</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="nb">tuple</span><span class="p">(</span><span class="n">slobj</span><span class="p">)]</span>
+                    <span class="n">slobj</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">newaxis</span>
+            <span class="k">return</span> <span class="n">nn</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">IndexError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+            <span class="n">step</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">step</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">stop</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">start</span>
+            <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)):</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+                <span class="n">length</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">step</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">step</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">stop</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="n">step</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">_nx</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">float</span><span class="p">)</span><span class="o">*</span><span class="n">step</span> <span class="o">+</span> <span class="n">start</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">_nx</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">MGridClass</span><span class="p">(</span><span class="n">nd_grid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `nd_grid` instance which returns a dense multi-dimensional &quot;meshgrid&quot;.</span>
+
+<span class="sd">    An instance of `numpy.lib.index_tricks.nd_grid` which returns an dense</span>
+<span class="sd">    (or fleshed out) mesh-grid when indexed, so that each returned argument</span>
+<span class="sd">    has the same shape.  The dimensions and number of the output arrays are</span>
+<span class="sd">    equal to the number of indexing dimensions.  If the step length is not a</span>
+<span class="sd">    complex number, then the stop is not inclusive.</span>
+
+<span class="sd">    However, if the step length is a **complex number** (e.g. 5j), then</span>
+<span class="sd">    the integer part of its magnitude is interpreted as specifying the</span>
+<span class="sd">    number of points to create between the start and stop values, where</span>
+<span class="sd">    the stop value **is inclusive**.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mesh-grid `ndarrays` all of the same dimensions</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    lib.index_tricks.nd_grid : class of `ogrid` and `mgrid` objects</span>
+<span class="sd">    ogrid : like mgrid but returns open (not fleshed out) mesh grids</span>
+<span class="sd">    r_ : array concatenator</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.mgrid[0:5, 0:5]</span>
+<span class="sd">    array([[[0, 0, 0, 0, 0],</span>
+<span class="sd">            [1, 1, 1, 1, 1],</span>
+<span class="sd">            [2, 2, 2, 2, 2],</span>
+<span class="sd">            [3, 3, 3, 3, 3],</span>
+<span class="sd">            [4, 4, 4, 4, 4]],</span>
+<span class="sd">           [[0, 1, 2, 3, 4],</span>
+<span class="sd">            [0, 1, 2, 3, 4],</span>
+<span class="sd">            [0, 1, 2, 3, 4],</span>
+<span class="sd">            [0, 1, 2, 3, 4],</span>
+<span class="sd">            [0, 1, 2, 3, 4]]])</span>
+<span class="sd">    &gt;&gt;&gt; np.mgrid[-1:1:5j]</span>
+<span class="sd">    array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="n">mgrid</span> <span class="o">=</span> <span class="n">MGridClass</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">OGridClass</span><span class="p">(</span><span class="n">nd_grid</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    `nd_grid` instance which returns an open multi-dimensional &quot;meshgrid&quot;.</span>
+
+<span class="sd">    An instance of `numpy.lib.index_tricks.nd_grid` which returns an open</span>
+<span class="sd">    (i.e. not fleshed out) mesh-grid when indexed, so that only one dimension</span>
+<span class="sd">    of each returned array is greater than 1.  The dimension and number of the</span>
+<span class="sd">    output arrays are equal to the number of indexing dimensions.  If the step</span>
+<span class="sd">    length is not a complex number, then the stop is not inclusive.</span>
+
+<span class="sd">    However, if the step length is a **complex number** (e.g. 5j), then</span>
+<span class="sd">    the integer part of its magnitude is interpreted as specifying the</span>
+<span class="sd">    number of points to create between the start and stop values, where</span>
+<span class="sd">    the stop value **is inclusive**.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    mesh-grid</span>
+<span class="sd">        `ndarrays` with only one dimension not equal to 1</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    np.lib.index_tricks.nd_grid : class of `ogrid` and `mgrid` objects</span>
+<span class="sd">    mgrid : like `ogrid` but returns dense (or fleshed out) mesh grids</span>
+<span class="sd">    r_ : array concatenator</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; from numpy import ogrid</span>
+<span class="sd">    &gt;&gt;&gt; ogrid[-1:1:5j]</span>
+<span class="sd">    array([-1. , -0.5,  0. ,  0.5,  1. ])</span>
+<span class="sd">    &gt;&gt;&gt; ogrid[0:5,0:5]</span>
+<span class="sd">    [array([[0],</span>
+<span class="sd">            [1],</span>
+<span class="sd">            [2],</span>
+<span class="sd">            [3],</span>
+<span class="sd">            [4]]), array([[0, 1, 2, 3, 4]])]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">sparse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="n">ogrid</span> <span class="o">=</span> <span class="n">OGridClass</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">AxisConcatenator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates slice objects to concatenation along an axis.</span>
+
+<span class="sd">    For detailed documentation on usage, see `r_`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># allow ma.mr_ to override this</span>
+    <span class="n">concatenate</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">concatenate</span><span class="p">)</span>
+    <span class="n">makemat</span> <span class="o">=</span> <span class="nb">staticmethod</span><span class="p">(</span><span class="n">matrixlib</span><span class="o">.</span><span class="n">matrix</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">matrix</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">trans1d</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span> <span class="o">=</span> <span class="n">matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trans1d</span> <span class="o">=</span> <span class="n">trans1d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ndmin</span> <span class="o">=</span> <span class="n">ndmin</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># handle matrix builder syntax</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">frame</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_back</span>
+            <span class="n">mymat</span> <span class="o">=</span> <span class="n">matrixlib</span><span class="o">.</span><span class="n">bmat</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_globals</span><span class="p">,</span> <span class="n">frame</span><span class="o">.</span><span class="n">f_locals</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">mymat</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="p">(</span><span class="n">key</span><span class="p">,)</span>
+
+        <span class="c1"># copy attributes, since they can be overridden in the first argument</span>
+        <span class="n">trans1d</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trans1d</span>
+        <span class="n">ndmin</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ndmin</span>
+        <span class="n">matrix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrix</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">axis</span>
+
+        <span class="n">objs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">scalars</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">arraytypes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">scalartypes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">key</span><span class="p">):</span>
+            <span class="n">scalar</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">slice</span><span class="p">):</span>
+                <span class="n">step</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">step</span>
+                <span class="n">start</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">start</span>
+                <span class="n">stop</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">stop</span>
+                <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">step</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">step</span><span class="p">,</span> <span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">,</span> <span class="nb">complex</span><span class="p">)):</span>
+                    <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">step</span><span class="p">))</span>
+                    <span class="n">newobj</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">newobj</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">ndmin</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">newobj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">newobj</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">trans1d</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                        <span class="n">newobj</span> <span class="o">=</span> <span class="n">newobj</span><span class="o">.</span><span class="n">swapaxes</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">trans1d</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">k</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;special directives must be the &quot;</span>
+                                     <span class="s2">&quot;first entry.&quot;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">item</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">):</span>
+                    <span class="n">matrix</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">col</span> <span class="o">=</span> <span class="p">(</span><span class="n">item</span> <span class="o">==</span> <span class="s1">&#39;c&#39;</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="s1">&#39;,&#39;</span> <span class="ow">in</span> <span class="n">item</span><span class="p">:</span>
+                    <span class="n">vec</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">axis</span><span class="p">,</span> <span class="n">ndmin</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">vec</span><span class="p">[:</span><span class="mi">2</span><span class="p">]]</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">vec</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                            <span class="n">trans1d</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">vec</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                        <span class="k">continue</span>
+                    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                            <span class="s2">&quot;unknown special directive </span><span class="si">{!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                        <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">axis</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;unknown special directive&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">item</span><span class="p">)</span> <span class="ow">in</span> <span class="n">ScalarType</span><span class="p">:</span>
+                <span class="n">newobj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">)</span>
+                <span class="n">scalars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">))</span>
+                <span class="n">scalar</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="n">scalartypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newobj</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">item_ndim</span> <span class="o">=</span> <span class="n">ndim</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+                <span class="n">newobj</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="n">ndmin</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">trans1d</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">item_ndim</span> <span class="o">&lt;</span> <span class="n">ndmin</span><span class="p">:</span>
+                    <span class="n">k2</span> <span class="o">=</span> <span class="n">ndmin</span> <span class="o">-</span> <span class="n">item_ndim</span>
+                    <span class="n">k1</span> <span class="o">=</span> <span class="n">trans1d</span>
+                    <span class="k">if</span> <span class="n">k1</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">k1</span> <span class="o">+=</span> <span class="n">k2</span> <span class="o">+</span> <span class="mi">1</span>
+                    <span class="n">defaxes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">ndmin</span><span class="p">))</span>
+                    <span class="n">axes</span> <span class="o">=</span> <span class="n">defaxes</span><span class="p">[:</span><span class="n">k1</span><span class="p">]</span> <span class="o">+</span> <span class="n">defaxes</span><span class="p">[</span><span class="n">k2</span><span class="p">:]</span> <span class="o">+</span> <span class="n">defaxes</span><span class="p">[</span><span class="n">k1</span><span class="p">:</span><span class="n">k2</span><span class="p">]</span>
+                    <span class="n">newobj</span> <span class="o">=</span> <span class="n">newobj</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+            <span class="n">objs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newobj</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">scalar</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">newobj</span><span class="p">,</span> <span class="n">_nx</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+                <span class="n">arraytypes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newobj</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+
+        <span class="c1"># Ensure that scalars won&#39;t up-cast unless warranted</span>
+        <span class="n">final_dtype</span> <span class="o">=</span> <span class="n">find_common_type</span><span class="p">(</span><span class="n">arraytypes</span><span class="p">,</span> <span class="n">scalartypes</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">final_dtype</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">scalars</span><span class="p">:</span>
+                <span class="n">objs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">objs</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">final_dtype</span><span class="p">)</span>
+
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">objs</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">matrix</span><span class="p">:</span>
+            <span class="n">oldndim</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">ndim</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">makemat</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">oldndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">col</span><span class="p">:</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">return</span> <span class="n">res</span>
+
+    <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+<span class="c1"># separate classes are used here instead of just making r_ = concatentor(0),</span>
+<span class="c1"># etc. because otherwise we couldn&#39;t get the doc string to come out right</span>
+<span class="c1"># in help(r_)</span>
+
+
+<span class="k">class</span> <span class="nc">RClass</span><span class="p">(</span><span class="n">AxisConcatenator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates slice objects to concatenation along the first axis.</span>
+
+<span class="sd">    This is a simple way to build up arrays quickly. There are two use cases.</span>
+
+<span class="sd">    1. If the index expression contains comma separated arrays, then stack</span>
+<span class="sd">       them along their first axis.</span>
+<span class="sd">    2. If the index expression contains slice notation or scalars then create</span>
+<span class="sd">       a 1-D array with a range indicated by the slice notation.</span>
+
+<span class="sd">    If slice notation is used, the syntax ``start:stop:step`` is equivalent</span>
+<span class="sd">    to ``np.arange(start, stop, step)`` inside of the brackets. However, if</span>
+<span class="sd">    ``step`` is an imaginary number (i.e. 100j) then its integer portion is</span>
+<span class="sd">    interpreted as a number-of-points desired and the start and stop are</span>
+<span class="sd">    inclusive. In other words ``start:stop:stepj`` is interpreted as</span>
+<span class="sd">    ``np.linspace(start, stop, step, endpoint=1)`` inside of the brackets.</span>
+<span class="sd">    After expansion of slice notation, all comma separated sequences are</span>
+<span class="sd">    concatenated together.</span>
+
+<span class="sd">    Optional character strings placed as the first element of the index</span>
+<span class="sd">    expression can be used to change the output. The strings &#39;r&#39; or &#39;c&#39; result</span>
+<span class="sd">    in matrix output. If the result is 1-D and &#39;r&#39; is specified a 1 x N (row)</span>
+<span class="sd">    matrix is produced. If the result is 1-D and &#39;c&#39; is specified, then a N x 1</span>
+<span class="sd">    (column) matrix is produced. If the result is 2-D then both provide the</span>
+<span class="sd">    same matrix result.</span>
+
+<span class="sd">    A string integer specifies which axis to stack multiple comma separated</span>
+<span class="sd">    arrays along. A string of two comma-separated integers allows indication</span>
+<span class="sd">    of the minimum number of dimensions to force each entry into as the</span>
+<span class="sd">    second integer (the axis to concatenate along is still the first integer).</span>
+
+<span class="sd">    A string with three comma-separated integers allows specification of the</span>
+<span class="sd">    axis to concatenate along, the minimum number of dimensions to force the</span>
+<span class="sd">    entries to, and which axis should contain the start of the arrays which</span>
+<span class="sd">    are less than the specified number of dimensions. In other words the third</span>
+<span class="sd">    integer allows you to specify where the 1&#39;s should be placed in the shape</span>
+<span class="sd">    of the arrays that have their shapes upgraded. By default, they are placed</span>
+<span class="sd">    in the front of the shape tuple. The third argument allows you to specify</span>
+<span class="sd">    where the start of the array should be instead. Thus, a third argument of</span>
+<span class="sd">    &#39;0&#39; would place the 1&#39;s at the end of the array shape. Negative integers</span>
+<span class="sd">    specify where in the new shape tuple the last dimension of upgraded arrays</span>
+<span class="sd">    should be placed, so the default is &#39;-1&#39;.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    Not a function, so takes no parameters</span>
+
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    A concatenated ndarray or matrix.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    concatenate : Join a sequence of arrays along an existing axis.</span>
+<span class="sd">    c_ : Translates slice objects to concatenation along the second axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.r_[np.array([1,2,3]), 0, 0, np.array([4,5,6])]</span>
+<span class="sd">    array([1, 2, 3, ..., 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.r_[-1:1:6j, [0]*3, 5, 6]</span>
+<span class="sd">    array([-1. , -0.6, -0.2,  0.2,  0.6,  1. ,  0. ,  0. ,  0. ,  5. ,  6. ])</span>
+
+<span class="sd">    String integers specify the axis to concatenate along or the minimum</span>
+<span class="sd">    number of dimensions to force entries into.</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[0, 1, 2], [3, 4, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.r_[&#39;-1&#39;, a, a] # concatenate along last axis</span>
+<span class="sd">    array([[0, 1, 2, 0, 1, 2],</span>
+<span class="sd">           [3, 4, 5, 3, 4, 5]])</span>
+<span class="sd">    &gt;&gt;&gt; np.r_[&#39;0,2&#39;, [1,2,3], [4,5,6]] # concatenate along first axis, dim&gt;=2</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [4, 5, 6]])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.r_[&#39;0,2,0&#39;, [1,2,3], [4,5,6]]</span>
+<span class="sd">    array([[1],</span>
+<span class="sd">           [2],</span>
+<span class="sd">           [3],</span>
+<span class="sd">           [4],</span>
+<span class="sd">           [5],</span>
+<span class="sd">           [6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.r_[&#39;1,2,0&#39;, [1,2,3], [4,5,6]]</span>
+<span class="sd">    array([[1, 4],</span>
+<span class="sd">           [2, 5],</span>
+<span class="sd">           [3, 6]])</span>
+
+<span class="sd">    Using &#39;r&#39; or &#39;c&#39; as a first string argument creates a matrix.</span>
+
+<span class="sd">    &gt;&gt;&gt; np.r_[&#39;r&#39;,[1,2,3], [4,5,6]]</span>
+<span class="sd">    matrix([[1, 2, 3, 4, 5, 6]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">AxisConcatenator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">r_</span> <span class="o">=</span> <span class="n">RClass</span><span class="p">()</span>
+
+
+<span class="k">class</span> <span class="nc">CClass</span><span class="p">(</span><span class="n">AxisConcatenator</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Translates slice objects to concatenation along the second axis.</span>
+
+<span class="sd">    This is short-hand for ``np.r_[&#39;-1,2,0&#39;, index expression]``, which is</span>
+<span class="sd">    useful because of its common occurrence. In particular, arrays will be</span>
+<span class="sd">    stacked along their last axis after being upgraded to at least 2-D with</span>
+<span class="sd">    1&#39;s post-pended to the shape (column vectors made out of 1-D arrays).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    column_stack : Stack 1-D arrays as columns into a 2-D array.</span>
+<span class="sd">    r_ : For more detailed documentation.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.c_[np.array([1,2,3]), np.array([4,5,6])]</span>
+<span class="sd">    array([[1, 4],</span>
+<span class="sd">           [2, 5],</span>
+<span class="sd">           [3, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.c_[np.array([[1,2,3]]), 0, 0, np.array([[4,5,6]])]</span>
+<span class="sd">    array([[1, 2, 3, ..., 4, 5, 6]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">AxisConcatenator</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">ndmin</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">trans1d</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+<span class="n">c_</span> <span class="o">=</span> <span class="n">CClass</span><span class="p">()</span>
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ndenumerate</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Multidimensional index iterator.</span>
+
+<span class="sd">    Return an iterator yielding pairs of array coordinates and values.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : ndarray</span>
+<span class="sd">      Input array.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ndindex, flatiter</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 2], [3, 4]])</span>
+<span class="sd">    &gt;&gt;&gt; for index, x in np.ndenumerate(a):</span>
+<span class="sd">    ...     print(index, x)</span>
+<span class="sd">    (0, 0) 1</span>
+<span class="sd">    (0, 1) 2</span>
+<span class="sd">    (1, 0) 3</span>
+<span class="sd">    (1, 1) 4</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arr</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iter</span> <span class="o">=</span> <span class="n">asarray</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span>
+
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Standard iterator method, returns the index tuple and array value.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        coords : tuple of ints</span>
+<span class="sd">            The indices of the current iteration.</span>
+<span class="sd">        val : scalar</span>
+<span class="sd">            The array element of the current iteration.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">iter</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">ndindex</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An N-dimensional iterator object to index arrays.</span>
+
+<span class="sd">    Given the shape of an array, an `ndindex` instance iterates over</span>
+<span class="sd">    the N-dimensional index of the array. At each iteration a tuple</span>
+<span class="sd">    of indices is returned, the last dimension is iterated over first.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape : ints, or a single tuple of ints</span>
+<span class="sd">        The size of each dimension of the array can be passed as </span>
+<span class="sd">        individual parameters or as the elements of a tuple.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    ndenumerate, flatiter</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Dimensions as individual arguments</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; for index in np.ndindex(3, 2, 1):</span>
+<span class="sd">    ...     print(index)</span>
+<span class="sd">    (0, 0, 0)</span>
+<span class="sd">    (0, 1, 0)</span>
+<span class="sd">    (1, 0, 0)</span>
+<span class="sd">    (1, 1, 0)</span>
+<span class="sd">    (2, 0, 0)</span>
+<span class="sd">    (2, 1, 0)</span>
+
+<span class="sd">    Same dimensions - but in a tuple ``(3, 2, 1)``</span>
+<span class="sd">    </span>
+<span class="sd">    &gt;&gt;&gt; for index in np.ndindex((3, 2, 1)):</span>
+<span class="sd">    ...     print(index)</span>
+<span class="sd">    (0, 0, 0)</span>
+<span class="sd">    (0, 1, 0)</span>
+<span class="sd">    (1, 0, 0)</span>
+<span class="sd">    (1, 1, 0)</span>
+<span class="sd">    (2, 0, 0)</span>
+<span class="sd">    (2, 1, 0)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">shape</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">as_strided</span><span class="p">(</span><span class="n">_nx</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+                       <span class="n">strides</span><span class="o">=</span><span class="n">_nx</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_it</span> <span class="o">=</span> <span class="n">_nx</span><span class="o">.</span><span class="n">nditer</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;multi_index&#39;</span><span class="p">,</span> <span class="s1">&#39;zerosize_ok&#39;</span><span class="p">],</span>
+                              <span class="n">order</span><span class="o">=</span><span class="s1">&#39;C&#39;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ndindex.__iter__">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.ndindex.html#dpnp.ndindex.__iter__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+
+<div class="viewcode-block" id="ndindex.ndincr">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.ndindex.html#dpnp.ndindex.ndincr">[docs]</a>
+    <span class="k">def</span> <span class="nf">ndincr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Increment the multi-dimensional index by one.</span>
+
+<span class="sd">        This method is for backward compatibility only: do not use.</span>
+
+<span class="sd">        .. deprecated:: 1.20.0</span>
+<span class="sd">            This method has been advised against since numpy 1.8.0, but only</span>
+<span class="sd">            started emitting DeprecationWarning as of this version.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># NumPy 1.20.0, 2020-09-08</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">&quot;`ndindex.ndincr()` is deprecated, use `next(ndindex)` instead&quot;</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span> <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ndindex.__next__">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.ndindex.html#dpnp.ndindex.__next__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Standard iterator method, updates the index and returns the index</span>
+<span class="sd">        tuple.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        val : tuple of ints</span>
+<span class="sd">            Returns a tuple containing the indices of the current</span>
+<span class="sd">            iteration.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_it</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_it</span><span class="o">.</span><span class="n">multi_index</span></div>
+
+
+
+<span class="c1"># You can do all this with slice() plus a few special objects,</span>
+<span class="c1"># but there&#39;s a lot to remember. This version is simpler because</span>
+<span class="c1"># it uses the standard array indexing syntax.</span>
+<span class="c1">#</span>
+<span class="c1"># Written by Konrad Hinsen &lt;hinsen@cnrs-orleans.fr&gt;</span>
+<span class="c1"># last revision: 1999-7-23</span>
+<span class="c1">#</span>
+<span class="c1"># Cosmetic changes by T. Oliphant 2001</span>
+<span class="c1">#</span>
+<span class="c1">#</span>
+
+<span class="k">class</span> <span class="nc">IndexExpression</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A nicer way to build up index tuples for arrays.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">       Use one of the two predefined instances `index_exp` or `s_`</span>
+<span class="sd">       rather than directly using `IndexExpression`.</span>
+
+<span class="sd">    For any index combination, including slicing and axis insertion,</span>
+<span class="sd">    ``a[indices]`` is the same as ``a[np.index_exp[indices]]`` for any</span>
+<span class="sd">    array `a`. However, ``np.index_exp[indices]`` can be used anywhere</span>
+<span class="sd">    in Python code and returns a tuple of slice objects that can be</span>
+<span class="sd">    used in the construction of complex index expressions.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    maketuple : bool</span>
+<span class="sd">        If True, always returns a tuple.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    index_exp : Predefined instance that always returns a tuple:</span>
+<span class="sd">       `index_exp = IndexExpression(maketuple=True)`.</span>
+<span class="sd">    s_ : Predefined instance without tuple conversion:</span>
+<span class="sd">       `s_ = IndexExpression(maketuple=False)`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    You can do all this with `slice()` plus a few special objects,</span>
+<span class="sd">    but there&#39;s a lot to remember and this version is simpler because</span>
+<span class="sd">    it uses the standard array indexing syntax.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; np.s_[2::2]</span>
+<span class="sd">    slice(2, None, 2)</span>
+<span class="sd">    &gt;&gt;&gt; np.index_exp[2::2]</span>
+<span class="sd">    (slice(2, None, 2),)</span>
+
+<span class="sd">    &gt;&gt;&gt; np.array([0, 1, 2, 3, 4])[np.s_[2::2]]</span>
+<span class="sd">    array([2, 4])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">maketuple</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">maketuple</span> <span class="o">=</span> <span class="n">maketuple</span>
+
+    <span class="k">def</span> <span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">maketuple</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">item</span><span class="p">,)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">item</span>
+
+
+<span class="n">index_exp</span> <span class="o">=</span> <span class="n">IndexExpression</span><span class="p">(</span><span class="n">maketuple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">s_</span> <span class="o">=</span> <span class="n">IndexExpression</span><span class="p">(</span><span class="n">maketuple</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+<span class="c1"># End contribution from Konrad.</span>
+
+
+<span class="c1"># The following functions complement those in twodim_base, but are</span>
+<span class="c1"># applicable to N-dimensions.</span>
+
+
+<span class="k">def</span> <span class="nf">_fill_diagonal_dispatcher</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">a</span><span class="p">,)</span>
+
+
+<span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_fill_diagonal_dispatcher</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">fill_diagonal</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">wrap</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Fill the main diagonal of the given array of any dimensionality.</span>
+
+<span class="sd">    For an array `a` with ``a.ndim &gt;= 2``, the diagonal is the list of</span>
+<span class="sd">    locations with indices ``a[i, ..., i]`` all identical. This function</span>
+<span class="sd">    modifies the input array in-place, it does not return a value.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : array, at least 2-D.</span>
+<span class="sd">      Array whose diagonal is to be filled, it gets modified in-place.</span>
+
+<span class="sd">    val : scalar or array_like</span>
+<span class="sd">      Value(s) to write on the diagonal. If `val` is scalar, the value is</span>
+<span class="sd">      written along the diagonal. If array-like, the flattened `val` is</span>
+<span class="sd">      written along the diagonal, repeating if necessary to fill all</span>
+<span class="sd">      diagonal entries.</span>
+
+<span class="sd">    wrap : bool</span>
+<span class="sd">      For tall matrices in NumPy version up to 1.6.2, the</span>
+<span class="sd">      diagonal &quot;wrapped&quot; after N columns. You can have this behavior</span>
+<span class="sd">      with this option. This affects only tall matrices.</span>
+
+<span class="sd">    See also</span>
+<span class="sd">    --------</span>
+<span class="sd">    diag_indices, diag_indices_from</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 1.4.0</span>
+
+<span class="sd">    This functionality can be obtained via `diag_indices`, but internally</span>
+<span class="sd">    this version uses a much faster implementation that never constructs the</span>
+<span class="sd">    indices and uses simple slicing.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((3, 3), int)</span>
+<span class="sd">    &gt;&gt;&gt; np.fill_diagonal(a, 5)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[5, 0, 0],</span>
+<span class="sd">           [0, 5, 0],</span>
+<span class="sd">           [0, 0, 5]])</span>
+
+<span class="sd">    The same function can operate on a 4-D array:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((3, 3, 3, 3), int)</span>
+<span class="sd">    &gt;&gt;&gt; np.fill_diagonal(a, 4)</span>
+
+<span class="sd">    We only show a few blocks for clarity:</span>
+
+<span class="sd">    &gt;&gt;&gt; a[0, 0]</span>
+<span class="sd">    array([[4, 0, 0],</span>
+<span class="sd">           [0, 0, 0],</span>
+<span class="sd">           [0, 0, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; a[1, 1]</span>
+<span class="sd">    array([[0, 0, 0],</span>
+<span class="sd">           [0, 4, 0],</span>
+<span class="sd">           [0, 0, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; a[2, 2]</span>
+<span class="sd">    array([[0, 0, 0],</span>
+<span class="sd">           [0, 0, 0],</span>
+<span class="sd">           [0, 0, 4]])</span>
+
+<span class="sd">    The wrap option affects only tall matrices:</span>
+
+<span class="sd">    &gt;&gt;&gt; # tall matrices no wrap</span>
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((5, 3), int)</span>
+<span class="sd">    &gt;&gt;&gt; np.fill_diagonal(a, 4)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[4, 0, 0],</span>
+<span class="sd">           [0, 4, 0],</span>
+<span class="sd">           [0, 0, 4],</span>
+<span class="sd">           [0, 0, 0],</span>
+<span class="sd">           [0, 0, 0]])</span>
+
+<span class="sd">    &gt;&gt;&gt; # tall matrices wrap</span>
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((5, 3), int)</span>
+<span class="sd">    &gt;&gt;&gt; np.fill_diagonal(a, 4, wrap=True)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[4, 0, 0],</span>
+<span class="sd">           [0, 4, 0],</span>
+<span class="sd">           [0, 0, 4],</span>
+<span class="sd">           [0, 0, 0],</span>
+<span class="sd">           [4, 0, 0]])</span>
+
+<span class="sd">    &gt;&gt;&gt; # wide matrices</span>
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((3, 5), int)</span>
+<span class="sd">    &gt;&gt;&gt; np.fill_diagonal(a, 4, wrap=True)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[4, 0, 0, 0, 0],</span>
+<span class="sd">           [0, 4, 0, 0, 0],</span>
+<span class="sd">           [0, 0, 4, 0, 0]])</span>
+
+<span class="sd">    The anti-diagonal can be filled by reversing the order of elements</span>
+<span class="sd">    using either `numpy.flipud` or `numpy.fliplr`.</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((3, 3), int);</span>
+<span class="sd">    &gt;&gt;&gt; np.fill_diagonal(np.fliplr(a), [1,2,3])  # Horizontal flip</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 0, 1],</span>
+<span class="sd">           [0, 2, 0],</span>
+<span class="sd">           [3, 0, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; np.fill_diagonal(np.flipud(a), [1,2,3])  # Vertical flip</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[0, 0, 3],</span>
+<span class="sd">           [0, 2, 0],</span>
+<span class="sd">           [1, 0, 0]])</span>
+
+<span class="sd">    Note that the order in which the diagonal is filled varies depending</span>
+<span class="sd">    on the flip function.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;array must be at least 2-d&quot;</span><span class="p">)</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="c1"># Explicit, fast formula for the common case.  For 2-d arrays, we</span>
+        <span class="c1"># accept rectangular ones.</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="c1"># This is needed to don&#39;t have tall matrix have the diagonal wrap.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">wrap</span><span class="p">:</span>
+            <span class="n">end</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># For more than d=2, the strided formula is only valid for arrays with</span>
+        <span class="c1"># all dimensions equal, so we check first.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">alltrue</span><span class="p">(</span><span class="n">diff</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="p">(</span><span class="n">cumprod</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="c1"># Write the value out into the diagonal.</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">flat</span><span class="p">[:</span><span class="n">end</span><span class="p">:</span><span class="n">step</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
+
+
+<span class="nd">@set_module</span><span class="p">(</span><span class="s1">&#39;numpy&#39;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">diag_indices</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the indices to access the main diagonal of an array.</span>
+
+<span class="sd">    This returns a tuple of indices that can be used to access the main</span>
+<span class="sd">    diagonal of an array `a` with ``a.ndim &gt;= 2`` dimensions and shape</span>
+<span class="sd">    (n, n, ..., n). For ``a.ndim = 2`` this is the usual diagonal, for</span>
+<span class="sd">    ``a.ndim &gt; 2`` this is the set of indices to access ``a[i, i, ..., i]``</span>
+<span class="sd">    for ``i = [0..n-1]``.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">      The size, along each dimension, of the arrays for which the returned</span>
+<span class="sd">      indices can be used.</span>
+
+<span class="sd">    ndim : int, optional</span>
+<span class="sd">      The number of dimensions.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    diag_indices_from</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 1.4.0</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Create a set of indices to access the diagonal of a (4, 4) array:</span>
+
+<span class="sd">    &gt;&gt;&gt; di = np.diag_indices(4)</span>
+<span class="sd">    &gt;&gt;&gt; di</span>
+<span class="sd">    (array([0, 1, 2, 3]), array([0, 1, 2, 3]))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(16).reshape(4, 4)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[ 0,  1,  2,  3],</span>
+<span class="sd">           [ 4,  5,  6,  7],</span>
+<span class="sd">           [ 8,  9, 10, 11],</span>
+<span class="sd">           [12, 13, 14, 15]])</span>
+<span class="sd">    &gt;&gt;&gt; a[di] = 100</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[100,   1,   2,   3],</span>
+<span class="sd">           [  4, 100,   6,   7],</span>
+<span class="sd">           [  8,   9, 100,  11],</span>
+<span class="sd">           [ 12,  13,  14, 100]])</span>
+
+<span class="sd">    Now, we create indices to manipulate a 3-D array:</span>
+
+<span class="sd">    &gt;&gt;&gt; d3 = np.diag_indices(2, 3)</span>
+<span class="sd">    &gt;&gt;&gt; d3</span>
+<span class="sd">    (array([0, 1]), array([0, 1]), array([0, 1]))</span>
+
+<span class="sd">    And use it to set the diagonal of an array of zeros to 1:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.zeros((2, 2, 2), dtype=int)</span>
+<span class="sd">    &gt;&gt;&gt; a[d3] = 1</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[[1, 0],</span>
+<span class="sd">            [0, 0]],</span>
+<span class="sd">           [[0, 0],</span>
+<span class="sd">            [0, 1]]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">idx</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">idx</span><span class="p">,)</span> <span class="o">*</span> <span class="n">ndim</span>
+
+
+<span class="k">def</span> <span class="nf">_diag_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">arr</span><span class="p">,)</span>
+
+
+<span class="nd">@array_function_dispatch</span><span class="p">(</span><span class="n">_diag_indices_from</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">diag_indices_from</span><span class="p">(</span><span class="n">arr</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the indices to access the main diagonal of an n-dimensional array.</span>
+
+<span class="sd">    See `diag_indices` for full details.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    arr : array, at least 2-D</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    diag_indices</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    .. versionadded:: 1.4.0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;input array must be at least 2-d&quot;</span><span class="p">)</span>
+    <span class="c1"># For more than d=2, the strided formula is only valid for arrays with</span>
+    <span class="c1"># all dimensions equal, so we check first.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">alltrue</span><span class="p">(</span><span class="n">diff</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All dimensions of input must be of equal length&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">diag_indices</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
