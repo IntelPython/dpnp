@@ -15,15 +15,15 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dtype &mdash; Data Parallel Extension for NumPy 0.17.0dev1+14.ge0ddde0dd7b documentation</title>
+  <title>dpnp.dtype &mdash; Data Parallel Extension for NumPy 0.17.0dev1+25.g26ad67f43e3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=01018911"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/documentation_options.js?v=6763c0d6"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -123,7 +123,7 @@
 <h1>dpnp.dtype<a class="headerlink" href="#dpnp-dtype" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpnp.dtype">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy=False</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dtype" title="Link to this definition"></a></dt>
 <dd><p>Create a data type object.</p>
 <p>A numpy array is homogeneous, and contains elements described by a
 dtype object. A dtype object can be constructed from different
@@ -138,6 +138,7 @@ or a comma-separated string. If a struct dtype is being created,
 this also sets a sticky alignment flag <code class="docutils literal notranslate"><span class="pre">isalignedstruct</span></code>.</p></li>
 <li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- Make a new copy of the data-type object. If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the result
 may just be a reference to a built-in data-type object.</p></li>
+<li><p><strong>metadata</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>, </em><em>optional</em>) -- An optional dictionary with dtype metadata.</p></li>
 </ul>
 </dd>
 </dl>
@@ -147,7 +148,8 @@ may just be a reference to a built-in data-type object.</p></li>
 </div>
 <p class="rubric">Examples</p>
 <p>Using array-scalar type:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
 <span class="go">dtype(&#39;int16&#39;)</span>
 </pre></div>
 </div>
@@ -244,8 +246,9 @@ byte order.  <cite>new_order</cite> codes can be any of:</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sys_is_le</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">native_code</span> <span class="o">=</span> <span class="n">sys_is_le</span> <span class="ow">and</span> <span class="s1">&#39;&lt;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;&gt;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_code</span> <span class="o">=</span> <span class="n">sys_is_le</span> <span class="ow">and</span> <span class="s1">&#39;&gt;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;&lt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">native_code</span> <span class="o">=</span> <span class="s1">&#39;&lt;&#39;</span> <span class="k">if</span> <span class="n">sys_is_le</span> <span class="k">else</span> <span class="s1">&#39;&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_code</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">if</span> <span class="n">sys_is_le</span> <span class="k">else</span> <span class="s1">&#39;&lt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">native_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">native_code</span><span class="o">+</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">swapped_code</span><span class="o">+</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">native_dt</span><span class="o">.</span><span class="n">newbyteorder</span><span class="p">(</span><span class="s1">&#39;S&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="n">swapped_dt</span>
@@ -315,7 +318,8 @@ byte order.  <cite>new_order</cite> codes can be any of:</p>
 <dd><p>The required alignment (bytes) of this data-type according to the compiler.</p>
 <p>More information is available in the C-API section of the manual.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i4&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i4&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">alignment</span>
 <span class="go">4</span>
 </pre></div>
@@ -337,7 +341,8 @@ regardless of their dimension or shape.</p>
 <p><a class="reference internal" href="#dpnp.dtype.subdtype" title="dpnp.dtype.subdtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype.subdtype</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;8f&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;8f&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">base</span>
 <span class="go">dtype(&#39;float32&#39;)</span>
 </pre></div>
@@ -372,7 +377,8 @@ regardless of their dimension or shape.</p>
 </table>
 <p>All built-in data-type objects have byteorder either '=' or '|'.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">byteorder</span>
 <span class="go">&#39;=&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># endian is not relevant for 8 bit numbers</span>
@@ -385,8 +391,8 @@ regardless of their dimension or shape.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># &#39;=&#39; is the byteorder</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">sys</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">sys_is_le</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">byteorder</span> <span class="o">==</span> <span class="s1">&#39;little&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">native_code</span> <span class="o">=</span> <span class="n">sys_is_le</span> <span class="ow">and</span> <span class="s1">&#39;&lt;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;&gt;&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_code</span> <span class="o">=</span> <span class="n">sys_is_le</span> <span class="ow">and</span> <span class="s1">&#39;&gt;&#39;</span> <span class="ow">or</span> <span class="s1">&#39;&lt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">native_code</span> <span class="o">=</span> <span class="s1">&#39;&lt;&#39;</span> <span class="k">if</span> <span class="n">sys_is_le</span> <span class="k">else</span> <span class="s1">&#39;&gt;&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">swapped_code</span> <span class="o">=</span> <span class="s1">&#39;&gt;&#39;</span> <span class="k">if</span> <span class="n">sys_is_le</span> <span class="k">else</span> <span class="s1">&#39;&lt;&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">native_code</span> <span class="o">+</span> <span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">byteorder</span>
 <span class="go">&#39;=&#39;</span>
@@ -403,7 +409,8 @@ regardless of their dimension or shape.</p>
 <span class="sig-name descname"><span class="pre">char</span></span><a class="headerlink" href="#dpnp.dtype.char" title="Link to this definition"></a></dt>
 <dd><p>A unique character code for each of the 21 different built-in types.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">char</span>
 <span class="go">&#39;d&#39;</span>
 </pre></div>
@@ -417,10 +424,11 @@ regardless of their dimension or shape.</p>
 <p>The format is that required by the 'descr' key in the
 <cite>__array_interface__</cite> attribute.</p>
 <p>Warning: This attribute exists specifically for <cite>__array_interface__</cite>,
-and passing it directly to <cite>np.dtype</cite> will not accurately reconstruct
+and passing it directly to <cite>numpy.dtype</cite> will not accurately reconstruct
 some dtypes (e.g., scalar and subarray dtypes).</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">descr</span>
 <span class="go">[(&#39;&#39;, &#39;&lt;f8&#39;)]</span>
 </pre></div>
@@ -445,14 +453,15 @@ Each entry in the dictionary is a tuple fully describing the field:</p>
 If present, the optional title can be any object (if it is a string
 or unicode then it will also be a key in the fields dictionary,
 otherwise it's meta-data). Notice also that the first two elements
-of the tuple can be passed directly as arguments to the <code class="docutils literal notranslate"><span class="pre">ndarray.getfield</span></code>
-and <code class="docutils literal notranslate"><span class="pre">ndarray.setfield</span></code> methods.</p>
+of the tuple can be passed directly as arguments to the
+<code class="docutils literal notranslate"><span class="pre">ndarray.getfield</span></code> and <code class="docutils literal notranslate"><span class="pre">ndarray.setfield</span></code> methods.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.getfield</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">ndarray.setfield</span></code></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;grades&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,))])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">str_</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;grades&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,))])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
 <span class="go">{&#39;grades&#39;: (dtype((&#39;float64&#39;,(2,))), 16), &#39;name&#39;: (dtype(&#39;|S16&#39;), 0)}</span>
 </pre></div>
@@ -463,7 +472,7 @@ and <code class="docutils literal notranslate"><span class="pre">ndarray.setfiel
 <dt class="sig sig-object py" id="dpnp.dtype.flags">
 <span class="sig-name descname"><span class="pre">flags</span></span><a class="headerlink" href="#dpnp.dtype.flags" title="Link to this definition"></a></dt>
 <dd><p>Bit-flags describing how this data type is to be interpreted.</p>
-<p>Bit-masks are in <cite>numpy.core.multiarray</cite> as the constants
+<p>Bit-masks are in <code class="docutils literal notranslate"><span class="pre">numpy._core.multiarray</span></code> as the constants
 <cite>ITEM_HASOBJECT</cite>, <cite>LIST_PICKLE</cite>, <cite>ITEM_IS_POINTER</cite>, <cite>NEEDS_INIT</cite>,
 <cite>NEEDS_PYAPI</cite>, <cite>USE_GETITEM</cite>, <cite>USE_SETITEM</cite>. A full explanation
 of these flags is in C-API documentation; they are largely useful
@@ -471,10 +480,11 @@ for user-defined data-types.</p>
 <p>The following example demonstrates that operations on this particular
 dtype requires Python C-API.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">flags</span>
 <span class="go">16</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">multiarray</span><span class="o">.</span><span class="n">NEEDS_PYAPI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">_core</span><span class="o">.</span><span class="n">multiarray</span><span class="o">.</span><span class="n">NEEDS_PYAPI</span>
 <span class="go">16</span>
 </pre></div>
 </div>
@@ -523,7 +533,8 @@ numpy to handle a new array type. See
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i2&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">isbuiltin</span>
 <span class="go">1</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;f8&#39;</span><span class="p">)</span>
@@ -550,7 +561,8 @@ to the platform.</p>
 <p>For 18 of the 21 types this number is fixed by the data-type.
 For the flexible data-types, this number can be anything.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span>
 <span class="go">dtype(&#39;int64&#39;)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span><span class="o">.</span><span class="n">itemsize</span>
@@ -606,7 +618,8 @@ For the flexible data-types, this number can be anything.</p>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i4&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;i4&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">kind</span>
 <span class="go">&#39;i&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;f8&#39;</span><span class="p">)</span>
@@ -634,7 +647,8 @@ and is not well supported. Some aspects of metadata propagation
 are expected to change in the future.</p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;key&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">})</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s2">&quot;key&quot;</span><span class="p">]</span>
 <span class="go">&#39;value&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
@@ -663,7 +677,8 @@ dropped:</p>
 <dd><p>A bit-width name for this data-type.</p>
 <p>Un-sized flexible data-type objects do not have this attribute.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">name</span>
 <span class="go">&#39;float64&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">([(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="mi">6</span><span class="p">)])</span>
@@ -696,7 +711,8 @@ sub-array, and <code class="docutils literal notranslate"><span class="pre">0</s
 <p><span class="versionmodified added">Added in version 1.13.0.</span></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span>
 <span class="go">0</span>
 </pre></div>
@@ -719,7 +735,8 @@ sub-array, and <code class="docutils literal notranslate"><span class="pre">0</s
 <dd><p>A unique number for each of the 21 different built-in types.</p>
 <p>These are roughly ordered from least-to-most precision.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">num</span>
 <span class="go">19</span>
 </pre></div>
@@ -737,7 +754,8 @@ sub-array, and <code class="docutils literal notranslate"><span class="pre">0</s
 <dd><p>Shape tuple of the sub-array if this data type describes a sub-array,
 and <code class="docutils literal notranslate"><span class="pre">()</span></code> otherwise.</p>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">((</span><span class="s1">&#39;i4&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">((</span><span class="s1">&#39;i4&#39;</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dt</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(4,)</span>
 </pre></div>
@@ -770,7 +788,8 @@ the end of the retrieved array.</p>
 <p><a class="reference internal" href="#dpnp.dtype.base" title="dpnp.dtype.base"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dtype.base</span></code></a></p>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;8f&#39;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;8f&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="o">.</span><span class="n">subdtype</span>
 <span class="go">(dtype(&#39;float32&#39;), (8,))</span>
 </pre></div>
