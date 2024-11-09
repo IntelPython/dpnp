@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_rtruediv\_\_
+=============================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__rtruediv__
