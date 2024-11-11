@@ -15,15 +15,15 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.byte_bounds &mdash; Data Parallel Extension for NumPy 0.17.0dev1+8.gd09b2bafac documentation</title>
+  <title>dpnp.byte_bounds &mdash; Data Parallel Extension for NumPy 0.17.0dev1+14.gbe7a0c372d2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=17dfb265"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/documentation_options.js?v=67e0b6b1"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -111,7 +111,7 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">byte_bounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_utils.html#byte_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.byte_bounds" title="Link to this definition"></a></dt>
 <dd><p>Returns a 2-tuple with pointers to the end-points of the array.</p>
 <dl class="simple">
-<dt>For full documentation refer to</dt><dd><p>:obj:<a href="#id1"><span class="problematic" id="id2">`</span></a>numpy.lib.array_utils.byte_bounds.</p>
+<dt>For full documentation refer to</dt><dd><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.lib.array_utils.byte_bounds.html#numpy.lib.array_utils.byte_bounds" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.lib.array_utils.byte_bounds</span></code></a>.</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -129,7 +129,7 @@ not use every byte between the (<cite>low</cite>, <cite>high</cite>) values.</p>
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;f&#39;</span><span class="p">);</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">I</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">complex64</span><span class="p">);</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">byte_bounds</span><span class="p">(</span><span class="n">I</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">high</span> <span class="o">-</span> <span class="n">low</span> <span class="o">==</span> <span class="n">I</span><span class="o">.</span><span class="n">size</span><span class="o">*</span><span class="n">I</span><span class="o">.</span><span class="n">itemsize</span>
 <span class="go">True</span>
