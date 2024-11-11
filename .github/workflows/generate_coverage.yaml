@@ -17,7 +17,7 @@ jobs:
 
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -el {0}
 
     env:
       python-ver: '3.12'
@@ -40,20 +40,22 @@ jobs:
       - name: Add Intel repository
         if: env.INSTALL_ONE_API == 'yes'
         run: |
-          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-          sudo apt-get update
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          cat GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt update
 
       - name: Install latest Intel OneAPI
         if: env.INSTALL_ONE_API == 'yes'
         run: |
-          sudo apt-get install intel-oneapi-mkl-2024.2*                \
-                               intel-oneapi-mkl-devel-2024.2*          \
-                               intel-oneapi-tbb-devel-2021.13*         \
-                               intel-oneapi-libdpstd-devel-2022.6*     \
-                               intel-oneapi-compiler-dpcpp-cpp-2024.2*
+          sudo apt install hwloc                           \
+                           intel-oneapi-mkl                \
+                           intel-oneapi-umf                \
+                           intel-oneapi-mkl-devel          \
+                           intel-oneapi-tbb-devel          \
+                           intel-oneapi-libdpstd-devel     \
+                           intel-oneapi-compiler-dpcpp-cpp
 
       - name: Install Lcov
         run: |
@@ -109,7 +111,7 @@ jobs:
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
             git clean -fxd
-            python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py" --verbose
+            python scripts/gen_coverage.py --verbose
 
       - name: Total number of coverage attempts
         run: |
