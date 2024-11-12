@@ -57,7 +57,7 @@ jobs:
 
       - name: Define conda's package directory
         run: |
-          echo "CONDA_PKGS_DIR=${{ runner.os == 'Linux' && '/home/runner/' || 'D:\' }}conda_pkgs_dir" >> $GITHUB_ENV
+          echo "CONDA_PKGS_DIR=${{ runner.os == 'Linux' && '/home/runner/' || 'D:\\' }}conda_pkgs_dir" >> $GITHUB_ENV
 
       - name: Cache conda packages
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
