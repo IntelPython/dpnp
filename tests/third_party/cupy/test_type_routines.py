@@ -46,7 +46,6 @@ class TestCanCast(unittest.TestCase):
         return ret
 
 
-@pytest.mark.skip("dpnp.common_type() is not implemented yet")
 class TestCommonType(unittest.TestCase):
     @testing.numpy_cupy_equal()
     def test_common_type_empty(self, xp):
