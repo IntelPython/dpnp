@@ -41,10 +41,12 @@ it contains:
 
 
 import dpctl.tensor._tensor_elementwise_impl as ti
+import numpy
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 __all__ = [
+    "binary_repr",
     "bitwise_and",
     "bitwise_invert",
     "bitwise_left_shift",
@@ -56,6 +58,71 @@ __all__ = [
     "left_shift",
     "right_shift",
 ]
+
+
+def binary_repr(num, width=None):
+    """
+    Return the binary representation of the input number as a string.
+
+    For negative numbers, if `width` is not given, a minus sign is added to the
+    front. If `width` is given, the two's complement of the number is returned,
+    with respect to that width.
+
+    In a two's-complement system negative numbers are represented by the two's
+    complement of the absolute value. A N-bit two's-complement system can
+    represent every integer in the range :math:`-2^{N-1}` to :math:`+2^{N-1}-1`.
+
+    For full documentation refer to :obj:`numpy.binary_repr`.
+
+    Parameters
+    ----------
+    num : int
+        Only an integer decimal number can be used.
+    width : {None, int}, optional
+        The length of the returned string if `num` is positive, or the length
+        of the two's complement if `num` is negative, provided that `width` is
+        at least a sufficient number of bits for `num` to be represented in the
+        designated form. If the `width` value is insufficient, an error is
+        raised.
+        Default: ``None``.
+
+    Returns
+    -------
+    bin : str
+        Binary representation of `num` or two's complement of `num`.
+
+    See Also
+    --------
+    :obj:`dpnp.base_repr` : Return a string representation of a number in the
+                            given base system.
+    bin : Python's built-in binary representation generator of an integer.
+
+    Notes
+    -----
+    :obj:`dpnp.binary_repr` is equivalent to using :obj:`dpnp.base_repr` with
+    base 2, but significantly faster.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> np.binary_repr(3)
+    '11'
+    >>> np.binary_repr(-3)
+    '-11'
+    >>> np.binary_repr(3, width=4)
+    '0011'
+
+    The two's complement is returned when the input number is negative and
+    `width` is specified:
+
+    >>> np.binary_repr(-3, width=3)
+    '101'
+    >>> np.binary_repr(-3, width=5)
+    '11101'
+
+    """
+
+    return numpy.binary_repr(num, width)
 
 
 _BITWISE_AND_DOCSTRING = """
