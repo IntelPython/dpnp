@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_bool\_\_
+=========================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__bool__

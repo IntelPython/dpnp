@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_imatmul\_\_
+============================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__imatmul__
