@@ -165,6 +165,7 @@ jobs:
           channels: conda-forge
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
+          pkgs-dirs: ${{ env.onda-pkgs }}
 
       - name: Remove defaults channel
         run: conda config --remove channels defaults
@@ -196,8 +197,9 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         env:
-          CACHE_NUMBER: 1 # Increase to reset cache
+          CACHE_NUMBER: 2 # Increase to reset cache
         with:
+          enableCrossOsArchive: 'true'  # Use faster GNU tar
           path: ${{ env.conda-pkgs }}
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
@@ -258,7 +260,7 @@ jobs:
     continue-on-error: true
 
     env:
-      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
+      conda-pkgs: 'D:\conda_pkgs_dir\'
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       extracted-pkg-path: '${{ github.workspace }}\pkg'
@@ -294,6 +296,7 @@ jobs:
           channels: conda-forge
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
+          pkgs-dirs: ${{ env.onda-pkgs }}
 
       - name: Remove defaults channel
         run: conda config --remove channels defaults
@@ -340,8 +343,9 @@ jobs:
       - name: Cache conda packages
         uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
         env:
-          CACHE_NUMBER: 1  # Increase to reset cache
+          CACHE_NUMBER: 2  # Increase to reset cache
         with:
+          enableCrossOsArchive: 'true'  # Use faster GNU tar
           path: ${{ env.conda-pkgs }}
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
