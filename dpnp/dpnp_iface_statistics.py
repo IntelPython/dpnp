@@ -389,7 +389,7 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
 
     Returns
     -------
-    R : dpnp.ndarray
+    R : {dpnp.ndarray}
         The correlation coefficient matrix of the variables.
 
     See Also
@@ -400,7 +400,7 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
     --------
     In this example we generate two random arrays, ``xarr`` and ``yarr``, and
     compute the row-wise and column-wise Pearson correlation coefficients,
-    ``R``. Since ``rowvar`` is  true by  default, we first find the row-wise
+    ``R``. Since `rowvar` is true by default, we first find the row-wise
     Pearson correlation coefficients between the variables of ``xarr``.
 
     >>> import dpnp as np
