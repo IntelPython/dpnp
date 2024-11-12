@@ -831,6 +831,38 @@ def test_cond(usm_type, p):
     assert result.usm_type == usm_type
 
 
+class TestDelete:
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_delete(self, obj, usm_type):
+        x = dp.arange(5, usm_type=usm_type)
+        result = dp.delete(x, obj)
+
+        assert x.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_obj_ndarray(self, usm_type_x, usm_type_y):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.delete(x, y)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_multi_dot(usm_type):
     numpy_array_list = []
@@ -870,6 +902,81 @@ def test_einsum(usm_type):
     input_usm_type, _ = get_usm_allocations(dpnp_array_list)
     assert input_usm_type == usm_type
     assert result.usm_type == usm_type
+
+
+class TestInsert:
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    def test_bacis(self, usm_type, obj):
+        x = dp.arange(5, usm_type=usm_type)
+        result = dp.insert(x, obj, 3)
+
+        assert x.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 3), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_values_ndarray(self, obj, usm_type_x, usm_type_y):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.insert(x, obj, y)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+    @pytest.mark.parametrize("values", [-2, [-1, -2]], ids=["scalar", "list"])
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_obj_ndarray(self, values, usm_type_x, usm_type_y):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.insert(x, y, values)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_z", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_obj_values_ndarray(self, usm_type_x, usm_type_y, usm_type_z):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.array([-1, -3], usm_type=usm_type_z)
+        res = dp.insert(x, y, z)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == usm_type_z
+        assert res.usm_type == du.get_coerced_usm_type(
+            [usm_type_x, usm_type_y, usm_type_z]
+        )
 
 
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])

@@ -4168,25 +4168,91 @@ class TestMatmul:
         assert_array_equal(result, expected)
 
 
-class TestMatmulInvalidCases:
+class TestMatmulInplace:
+    ALL_DTYPES = get_all_dtypes(no_none=True)
+    DTYPES = {}
+    for i in ALL_DTYPES:
+        for j in ALL_DTYPES:
+            if numpy.can_cast(j, i):
+                DTYPES[f"{i}-{j}"] = (i, j)
+
+    @pytest.mark.parametrize("dtype1, dtype2", DTYPES.values())
+    def test_basic(self, dtype1, dtype2):
+        a = numpy.arange(10).reshape(5, 2).astype(dtype1)
+        b = numpy.ones((2, 2), dtype=dtype2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+        ia_id = id(ia)
+
+        a @= b
+        ia @= ib
+        assert id(ia) == ia_id
+        assert_dtype_allclose(ia, a)
+
     @pytest.mark.parametrize(
-        "shape_pair",
+        "a_sh, b_sh",
+        [
+            pytest.param((10**5, 10), (10, 10), id="2d_large"),
+            pytest.param((10**4, 10, 10), (1, 10, 10), id="3d_large"),
+            pytest.param((3,), (3,), id="1d"),
+            pytest.param((3, 3), (3,), id="2d_1d"),
+            pytest.param((3,), (3, 3), id="1d_2d"),
+            pytest.param((3, 3), (3, 1), id="2d_broadcast"),
+            pytest.param((1, 3), (3, 3), id="2d_broadcast_reverse"),
+            pytest.param((3, 3, 3), (1, 3, 1), id="3d_broadcast1"),
+            pytest.param((3, 3, 3), (1, 3, 3), id="3d_broadcast2"),
+            pytest.param((3, 3, 3), (3, 3, 1), id="3d_broadcast3"),
+            pytest.param((1, 3, 3), (3, 3, 3), id="3d_broadcast_reverse1"),
+            pytest.param((3, 1, 3), (3, 3, 3), id="3d_broadcast_reverse2"),
+            pytest.param((1, 1, 3), (3, 3, 3), id="3d_broadcast_reverse3"),
+        ],
+    )
+    def test_shapes(self, a_sh, b_sh):
+        a_sz, b_sz = numpy.prod(a_sh), numpy.prod(b_sh)
+        a = numpy.arange(a_sz).reshape(a_sh).astype(numpy.float64)
+        b = numpy.arange(b_sz).reshape(b_sh)
+
+        ia, ib = dpnp.array(a), dpnp.array(b)
+        ia_id = id(ia)
+
+        expected = a @ b
+        if expected.shape != a_sh:
+            if len(b_sh) == 1:
+                # check the exception matches NumPy
+                match = "inplace matrix multiplication requires"
+            else:
+                match = None
+
+            with pytest.raises(ValueError, match=match):
+                a @= b
+
+            with pytest.raises(ValueError, match=match):
+                ia @= ib
+        else:
+            ia @= ib
+            assert id(ia) == ia_id
+            assert_dtype_allclose(ia, expected)
+
+
+class TestMatmulInvalidCases:
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize(
+        "shape1, shape2",
         [
             ((3, 2), ()),
             ((), (3, 2)),
             ((), ()),
         ],
     )
-    def test_zero_dim(self, shape_pair):
-        for xp in (numpy, dpnp):
-            shape1, shape2 = shape_pair
-            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
-            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
-            with pytest.raises(ValueError):
-                xp.matmul(x1, x2)
+    def test_zero_dim(self, xp, shape1, shape2):
+        x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+        x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
 
+        with pytest.raises(ValueError):
+            xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
-        "shape_pair",
+        "shape1, shape2",
         [
             ((3,), (4,)),
             ((2, 3), (4, 5)),
@@ -4199,16 +4265,16 @@ class TestMatmulInvalidCases:
             ((6, 5, 3, 2), (3, 2, 4)),
         ],
     )
-    def test_invalid_shape(self, shape_pair):
-        for xp in (numpy, dpnp):
-            shape1, shape2 = shape_pair
-            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
-            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
-            with pytest.raises(ValueError):
-                xp.matmul(x1, x2)
+    def test_invalid_shape(self, xp, shape1, shape2):
+        x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+        x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
 
+        with pytest.raises(ValueError):
+            xp.matmul(x1, x2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
-        "shape_pair",
+        "shape1, shape2, out_shape",
         [
             ((5, 4, 3), (3, 1), (3, 4, 1)),
             ((5, 4, 3), (3, 1), (5, 6, 1)),
@@ -4220,24 +4286,24 @@ class TestMatmulInvalidCases:
             ((4,), (3, 4, 5), (3, 6)),
         ],
     )
-    def test_invalid_shape_out(self, shape_pair):
-        for xp in (numpy, dpnp):
-            shape1, shape2, out_shape = shape_pair
-            x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
-            x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
-            res = xp.empty(out_shape)
-            with pytest.raises(ValueError):
-                xp.matmul(x1, x2, out=res)
+    def test_invalid_shape_out(self, xp, shape1, shape2, out_shape):
+        x1 = xp.arange(numpy.prod(shape1), dtype=xp.float32).reshape(shape1)
+        x2 = xp.arange(numpy.prod(shape2), dtype=xp.float32).reshape(shape2)
+        res = xp.empty(out_shape)
 
+        with pytest.raises(ValueError):
+            xp.matmul(x1, x2, out=res)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True)[:-2])
-    def test_invalid_dtype(self, dtype):
+    def test_invalid_dtype(self, xp, dtype):
         dpnp_dtype = get_all_dtypes(no_none=True)[-1]
-        a1 = dpnp.arange(5 * 4, dtype=dpnp_dtype).reshape(5, 4)
-        a2 = dpnp.arange(7 * 4, dtype=dpnp_dtype).reshape(4, 7)
-        dp_out = dpnp.empty((5, 7), dtype=dtype)
+        a1 = xp.arange(5 * 4, dtype=dpnp_dtype).reshape(5, 4)
+        a2 = xp.arange(7 * 4, dtype=dpnp_dtype).reshape(4, 7)
+        dp_out = xp.empty((5, 7), dtype=dtype)
 
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, out=dp_out)
+            xp.matmul(a1, a2, out=dp_out)
 
     def test_exe_q(self):
         x1 = dpnp.ones((5, 4), sycl_queue=dpctl.SyclQueue())
@@ -4251,13 +4317,14 @@ class TestMatmulInvalidCases:
         with pytest.raises(ExecutionPlacementError):
             dpnp.matmul(x1, x2, out=out)
 
-    def test_matmul_casting(self):
-        a1 = dpnp.arange(2 * 4, dtype=dpnp.float32).reshape(2, 4)
-        a2 = dpnp.arange(4 * 3).reshape(4, 3)
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_matmul_casting(self, xp):
+        a1 = xp.arange(2 * 4, dtype=xp.float32).reshape(2, 4)
+        a2 = xp.arange(4 * 3).reshape(4, 3)
 
-        res = dpnp.empty((2, 3), dtype=dpnp.int64)
+        res = xp.empty((2, 3), dtype=xp.int64)
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, out=res, casting="safe")
+            xp.matmul(a1, a2, out=res, casting="safe")
 
     def test_matmul_not_implemented(self):
         a1 = dpnp.arange(2 * 4).reshape(2, 4)
@@ -4273,52 +4340,53 @@ class TestMatmulInvalidCases:
         with pytest.raises(NotImplementedError):
             dpnp.matmul(a1, a2, axis=2)
 
-    def test_matmul_axes(self):
-        a1 = dpnp.arange(120).reshape(2, 5, 3, 4)
-        a2 = dpnp.arange(120).reshape(4, 2, 5, 3)
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_matmul_axes(self, xp):
+        a1 = xp.arange(120).reshape(2, 5, 3, 4)
+        a2 = xp.arange(120).reshape(4, 2, 5, 3)
 
         # axes must be a list
         axes = ((3, 1), (2, 0), (0, 1))
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes must be be a list of three tuples
         axes = [(3, 1), (2, 0)]
         with pytest.raises(ValueError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes item should be a tuple
         axes = [(3, 1), (2, 0), [0, 1]]
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes item should be a tuple with 2 elements
         axes = [(3, 1), (2, 0), (0, 1, 2)]
-        with pytest.raises(ValueError):
-            dpnp.matmul(a1, a2, axes=axes)
+        with pytest.raises(AxisError):
+            xp.matmul(a1, a2, axes=axes)
 
         # axes must be an integer
         axes = [(3, 1), (2, 0), (0.0, 1)]
         with pytest.raises(TypeError):
-            dpnp.matmul(a1, a2, axes=axes)
+            xp.matmul(a1, a2, axes=axes)
 
         # axes item 2 should be an empty tuple
-        a = dpnp.arange(3)
+        a = xp.arange(3)
         axes = [0, 0, 0]
-        with pytest.raises(TypeError):
-            dpnp.matmul(a, a, axes=axes)
+        with pytest.raises(AxisError):
+            xp.matmul(a, a, axes=axes)
 
-        a = dpnp.arange(3 * 4 * 5).reshape(3, 4, 5)
-        b = dpnp.arange(3)
+        a = xp.arange(3 * 4 * 5).reshape(3, 4, 5)
+        b = xp.arange(3)
         # list object cannot be interpreted as an integer
         axes = [(1, 0), (0), [0]]
         with pytest.raises(TypeError):
-            dpnp.matmul(a, b, axes=axes)
+            xp.matmul(a, b, axes=axes)
 
         # axes item should be a tuple with a single element, or an integer
         axes = [(1, 0), (0), (0, 1)]
-        with pytest.raises(ValueError):
-            dpnp.matmul(a, b, axes=axes)
+        with pytest.raises(AxisError):
+            xp.matmul(a, b, axes=axes)
 
 
 def test_elemenwise_nin_nout():
