@@ -5,6 +5,7 @@ import pytest
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
+from tests.helper import has_support_aspect64
 from tests.third_party.cupy import testing
 
 
@@ -21,7 +22,7 @@ class TestApplyAlongAxis(unittest.TestCase):
         a = xp.arange(27, dtype=dtype).reshape((3, 3, 3))
         return xp.apply_along_axis(xp.sum, self.axis, a)
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_0d_array(self, xp):
 
         def sum_to_0d(x):
