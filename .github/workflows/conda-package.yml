@@ -89,7 +89,7 @@ jobs:
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
-          path: ${{ env.CONDA_PKGS_DIR }}
+          path: ${{ runner.os == 'Linux' && '/home/runner/conda_pkgs_dir' || 'C:\Users\runneradmin\conda_pkgs_dir' }}
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
