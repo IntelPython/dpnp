@@ -24,19 +24,17 @@ to program on XPUs.
 
 # Installing
 
-You can install the library using `conda` or [pip](https://pypi.org/project/dpnp/)
+You can install the library using `conda`, `mamba` or [pip](https://pypi.org/project/dpnp/)
 package managers. It is also available as part of the [Intel(R) Distribution for Python](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
 (IDP).
 
-## Intel(R) oneAPI
+## Intel(R) Distribution for Python
 
-You can find the most recent release of `dpnp` every quarter as part of the Intel(R) oneAPI releases.
+You can find the most recent release of `dpnp` every quarter as part of the IDP
+releases.
 
-To get the library from the latest oneAPI release, follow the
-instructions from Intel(R) [oneAPI installation guide](https://www.intel.com/content/www/us/en/developer/articles/guide/installation-guide-for-oneapi-toolkits.html).
-
-> **NOTE:** You need to install the Intel(R) oneAPI AI Analytics Toolkit to get
->IDP and `dpnp`.
+To get the library from the latest release, follow the instructions from
+[Get Started With Intel® Distribution for Python](https://www.intel.com/content/www/us/en/developer/articles/technical/get-started-with-intel-distribution-for-python.html).
 
 ## Conda
 
