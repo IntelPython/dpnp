@@ -83,6 +83,7 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: 'build'
           pkgs-dirs: ${{ env.CONDA_PKGS_DIR }}
+          use-only-tar-bz2: 'true'  # This needs to be set for caching to work properly
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
       - name: Disable speed limit check in mamba
@@ -161,6 +162,7 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
           pkgs-dirs: ${{ env.onda-pkgs }}
+          use-only-tar-bz2: 'true'  # This needs to be set for caching to work properly
 
       - name: Install conda-index
         run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
@@ -290,6 +292,7 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
           pkgs-dirs: ${{ env.onda-pkgs }}
+          use-only-tar-bz2: 'true'  # This needs to be set for caching to work properly
 
       - name: Store conda paths as envs
         run: |
