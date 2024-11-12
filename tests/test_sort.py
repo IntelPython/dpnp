@@ -67,7 +67,7 @@ class TestArgsort:
         expected = np_array.argsort(axis=axis)
         assert_dtype_allclose(result, expected)
 
-    # this test validates that all diffeernt options of kind in dpnp are stable
+    # this test validates that all different options of kind in dpnp are stable
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     def test_kind(self, kind):
         np_array = numpy.repeat(numpy.arange(10), 10)
@@ -319,7 +319,7 @@ class TestSort:
         np_array.sort(axis=axis)
         assert_dtype_allclose(dp_array, np_array)
 
-    # this test validates that all diffeernt options of kind in dpnp are stable
+    # this test validates that all different options of kind in dpnp are stable
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     def test_kind(self, kind):
         np_array = numpy.repeat(numpy.arange(10), 10)
