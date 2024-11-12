@@ -55,24 +55,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Define conda's package directory
-        shell: bash -el {0}
-        run: |
-          echo "CONDA_PKGS_DIR=${{ runner.os == 'Linux' && '/home/runner/' || 'D:\\' }}conda_pkgs_dir" >> $GITHUB_ENV
-
-      - name: Cache conda packages
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        env:
-          CACHE_NUMBER: 2  # Increase to reset cache
-        with:
-          enableCrossOsArchive: 'true'  # Use faster GNU tar
-          path: ${{ env.CONDA_PKGS_DIR }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
@@ -82,7 +64,6 @@ jobs:
           conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
           activate-environment: 'build'
-          pkgs-dirs: ${{ env.CONDA_PKGS_DIR }}
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
       - name: Disable speed limit check in mamba
@@ -132,7 +113,6 @@ jobs:
     continue-on-error: true
 
     env:
-      conda-pkgs: '/home/runner/conda_pkgs_dir/'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       extracted-pkg-path: '${{ github.workspace }}/pkg/'
@@ -160,7 +140,6 @@ jobs:
           conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
-          pkgs-dirs: ${{ env.onda-pkgs }}
 
       - name: Install conda-index
         run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
@@ -174,30 +153,12 @@ jobs:
           mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
-      - name: Collect dependencies
+      - name: Get package version
         run: |
           export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
 
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-
-          mamba install ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
-          cat lockfile
-        env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
-
-      - name: Cache conda packages
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        env:
-          CACHE_NUMBER: 2 # Increase to reset cache
-        with:
-          enableCrossOsArchive: 'true'  # Use faster GNU tar
-          path: ${{ env.conda-pkgs }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
         run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
@@ -252,7 +213,6 @@ jobs:
     continue-on-error: true
 
     env:
-      conda-pkgs: 'D:\conda_pkgs_dir\'
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       extracted-pkg-path: '${{ github.workspace }}\pkg'
@@ -289,7 +249,6 @@ jobs:
           conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
-          pkgs-dirs: ${{ env.onda-pkgs }}
 
       - name: Store conda paths as envs
         run: |
@@ -313,7 +272,7 @@ jobs:
       - name: Dump version.json
         run: more ${{ env.ver-json-path }}
 
-      - name: Collect dependencies
+      - name: Get package version
         run: |
           @echo on
           set "SCRIPT=${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}"
@@ -322,26 +281,6 @@ jobs:
           )
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
-
-          mamba install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
-        env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
-
-      - name: Dump lockfile
-        run: more lockfile
-
-      - name: Cache conda packages
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        env:
-          CACHE_NUMBER: 2  # Increase to reset cache
-        with:
-          enableCrossOsArchive: 'true'  # Use faster GNU tar
-          path: ${{ env.conda-pkgs }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
         run: |
