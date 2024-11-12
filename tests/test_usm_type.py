@@ -576,6 +576,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("cbrt", [1, 8, 27]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
+        pytest.param("corrcoef", [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
         pytest.param(
             "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
@@ -685,6 +686,11 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
+        pytest.param(
+            "corrcoef",
+            [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
+            [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
+        ),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
