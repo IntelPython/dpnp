@@ -55,6 +55,23 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Define conda's package directory
+        run: |
+          echo "CONDA_PKGS_DIR=${{ runner.os == 'Linux' && '/home/runner/' || 'D:\' }}conda_pkgs_dir" >> $GITHUB_ENV
+
+      - name: Cache conda packages
+        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        env:
+          CACHE_NUMBER: 2  # Increase to reset cache
+        with:
+          enableCrossOsArchive: 'true'  # Use faster GNU tar
+          path: ${{ env.CONDA_PKGS_DIR }}
+          key:
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
+            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
+
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
@@ -63,6 +80,7 @@ jobs:
           channels: conda-forge
           python-version: ${{ matrix.python }}
           activate-environment: 'build'
+          pkgs-dirs: ${{ env.CONDA_PKGS_DIR }}
 
       # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
       # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
@@ -83,18 +101,6 @@ jobs:
 
       - name: Install conda-build
         run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
-
-      - name: Cache conda packages
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        env:
-          CACHE_NUMBER: 1  # Increase to reset cache
-        with:
-          path: ${{ runner.os == 'Linux' && '/home/runner/conda_pkgs_dir' || 'C:\Users\runneradmin\conda_pkgs_dir' }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
