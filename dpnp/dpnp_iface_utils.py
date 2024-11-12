@@ -42,8 +42,7 @@ def byte_bounds(a):
     """
     Returns a 2-tuple with pointers to the end-points of the array.
 
-    For full documentation refer to
-      :obj:`numpy.lib.array_utils.byte_bounds`.
+    For full documentation refer to :obj:`numpy.lib.array_utils.byte_bounds`.
 
     Parameters
     ----------
