@@ -442,6 +442,7 @@ def test_meshgrid(device):
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param("copy", [1.0, 2.0, 3.0]),
+        pytest.param("corrcoef", [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
         pytest.param(
             "cos", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
@@ -693,6 +694,11 @@ def test_reduce_hypot(device):
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param(
+            "corrcoef",
+            [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
+            [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
+        ),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
@@ -2554,6 +2560,27 @@ def test_lstsq(m, n, nrhs, device):
     for param_dp in result_dp:
         assert_sycl_queue_equal(param_dp.sycl_queue, a_dp.sycl_queue)
         assert_sycl_queue_equal(param_dp.sycl_queue, b_dp.sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_bincount(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_hist = numpy.bincount(v, weights=w)
+    result_hist = dpnp.bincount(iv, weights=iw)
+    assert_array_equal(result_hist, expected_hist)
+
+    hist_queue = result_hist.sycl_queue
+    assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
 
 
 @pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])

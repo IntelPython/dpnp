@@ -64,7 +64,7 @@ __all__ = [
     "amax",
     "amin",
     "average",
-    "bincount",
+    "corrcoef",
     "correlate",
     "cov",
     "max",
@@ -338,26 +338,125 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
     return avg
 
 
-def bincount(x1, weights=None, minlength=0):
+def corrcoef(x, y=None, rowvar=True, *, dtype=None):
     """
-    Count number of occurrences of each value in array of non-negative integers.
+    Return Pearson product-moment correlation coefficients.
 
-    For full documentation refer to :obj:`numpy.bincount`.
+    For full documentation refer to :obj:`numpy.corrcoef`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        A 1-D or 2-D array containing multiple variables and observations.
+        Each row of `x` represents a variable, and each column a single
+        observation of all those variables. Also see `rowvar` below.
+    y : {None, dpnp.ndarray, usm_ndarray}, optional
+        An additional set of variables and observations. `y` has the same
+        shape as `x`.
+        Default: ``None``.
+    rowvar : {bool}, optional
+        If `rowvar` is ``True``, then each row represents a variable,
+        with observations in the columns. Otherwise, the relationship
+        is transposed: each column represents a variable, while the rows
+        contain observations.
+        Default: ``True``.
+    dtype : {None, dtype}, optional
+        Data-type of the result.
+        Default: ``None``.
+
+    Returns
+    -------
+    R : {dpnp.ndarray}
+        The correlation coefficient matrix of the variables.
 
     See Also
     --------
-    :obj:`dpnp.unique` : Find the unique elements of an array.
+    :obj:`dpnp.cov` : Covariance matrix.
 
     Examples
     --------
-    >>> import dpnp as np
-    >>> res = np.bincount(np.arange(5))
-    >>> print(res)
-    [1, 1, 1, 1, 1]
+    In this example we generate two random arrays, ``xarr`` and ``yarr``, and
+    compute the row-wise and column-wise Pearson correlation coefficients,
+    ``R``. Since `rowvar` is true by default, we first find the row-wise
+    Pearson correlation coefficients between the variables of ``xarr``.
 
+    >>> import dpnp as np
+    >>> np.random.seed(123)
+    >>> xarr = np.random.rand(3, 3).astype(np.float32)
+    >>> xarr
+    array([[7.2858386e-17, 2.2066992e-02, 3.9520904e-01],
+           [4.8012391e-01, 5.9377134e-01, 4.5147297e-01],
+           [9.0728188e-01, 9.9387854e-01, 5.8399546e-01]], dtype=float32)
+    >>> R1 = np.corrcoef(xarr)
+    >>> R1
+    array([[ 0.99999994, -0.6173796 , -0.9685411 ],
+           [-0.6173796 ,  1.        ,  0.7937219 ],
+           [-0.9685411 ,  0.7937219 ,  0.9999999 ]], dtype=float32)
+
+    If we add another set of variables and observations ``yarr``, we can
+    compute the row-wise Pearson correlation coefficients between the
+    variables in ``xarr`` and ``yarr``.
+
+    >>> yarr = np.random.rand(3, 3).astype(np.float32)
+    >>> yarr
+    array([[0.17615308, 0.65354985, 0.15716429],
+           [0.09373496, 0.2123185 , 0.84086883],
+           [0.9011005 , 0.45206687, 0.00225109]], dtype=float32)
+    >>> R2 = np.corrcoef(xarr, yarr)
+    >>> R2
+    array([[ 0.99999994, -0.6173796 , -0.968541  , -0.48613155,  0.9951523 ,
+            -0.8900264 ],
+           [-0.6173796 ,  1.        ,  0.7937219 ,  0.9875833 , -0.53702235,
+             0.19083664],
+           [-0.968541  ,  0.7937219 ,  0.9999999 ,  0.6883078 , -0.9393724 ,
+             0.74857277],
+           [-0.48613152,  0.9875833 ,  0.6883078 ,  0.9999999 , -0.39783284,
+             0.0342579 ],
+           [ 0.9951523 , -0.53702235, -0.9393725 , -0.39783284,  0.99999994,
+            -0.9305482 ],
+           [-0.89002645,  0.19083665,  0.7485727 ,  0.0342579 , -0.9305482 ,
+             1.        ]], dtype=float32)
+
+    Finally if we use the option ``rowvar=False``, the columns are now
+    being treated as the variables and we will find the column-wise Pearson
+    correlation coefficients between variables in ``xarr`` and ``yarr``.
+
+    >>> R3 = np.corrcoef(xarr, yarr, rowvar=False)
+    >>> R3
+    array([[ 1.        ,  0.9724453 , -0.9909503 ,  0.8104691 , -0.46436927,
+            -0.1643624 ],
+           [ 0.9724453 ,  1.        , -0.9949381 ,  0.6515728 , -0.6580445 ,
+             0.07012729],
+           [-0.99095035, -0.994938  ,  1.        , -0.72450536,  0.5790461 ,
+             0.03047091],
+           [ 0.8104691 ,  0.65157276, -0.72450536,  1.        ,  0.14243561,
+            -0.71102554],
+           [-0.4643693 , -0.6580445 ,  0.57904613,  0.1424356 ,  0.99999994,
+            -0.79727215],
+           [-0.1643624 ,  0.07012729,  0.03047091, -0.7110255 , -0.7972722 ,
+             0.99999994]], dtype=float32)
     """
 
-    return call_origin(numpy.bincount, x1, weights=weights, minlength=minlength)
+    out = dpnp.cov(x, y, rowvar, dtype=dtype)
+    if out.ndim == 0:
+        # scalar covariance
+        # nan if incorrect value (nan, inf, 0), 1 otherwise
+        return out / out
+
+    d = dpnp.diag(out)
+
+    stddev = dpnp.sqrt(d.real)
+    out /= stddev[:, None]
+    out /= stddev[None, :]
+
+    # Clip real and imaginary parts to [-1, 1]. This does not guarantee
+    # abs(a[i,j]) <= 1 for complex arrays, but is the best we can do without
+    # excessive work.
+    dpnp.clip(out.real, -1, 1, out=out.real)
+    if dpnp.iscomplexobj(out):
+        dpnp.clip(out.imag, -1, 1, out=out.imag)
+
+    return out
 
 
 def correlate(x1, x2, mode="valid"):
