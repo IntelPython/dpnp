@@ -112,6 +112,7 @@ var annotated_dup =
         [ "TableBuilder2", "structstatistics_1_1common_1_1_table_builder2.html", "structstatistics_1_1common_1_1_table_builder2" ]
       ] ],
       [ "histogram", null, [
+        [ "Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
         [ "CachedData", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
         [ "HistGlobalMemory", "structstatistics_1_1histogram_1_1_hist_global_memory.html", null ],
         [ "HistLocalType", "structstatistics_1_1histogram_1_1_hist_local_type.html", null ],
