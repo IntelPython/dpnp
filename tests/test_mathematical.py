@@ -424,6 +424,38 @@ class TestCumProd:
         assert_array_equal(expected, result)
         assert result is iout
 
+    def test_include_initial(self):
+        a = numpy.arange(8).reshape(2, 2, 2)
+        ia = dpnp.array(a)
+
+        expected = numpy.cumulative_prod(a, axis=1, include_initial=True)
+        result = dpnp.cumulative_prod(ia, axis=1, include_initial=True)
+        assert_array_equal(result, expected)
+
+        expected = numpy.cumulative_prod(a, axis=0, include_initial=True)
+        result = dpnp.cumulative_prod(ia, axis=0, include_initial=True)
+        assert_array_equal(result, expected)
+
+        a = numpy.arange(1, 5).reshape(2, 2)
+        ia = dpnp.array(a)
+        out = numpy.zeros((3, 2), dtype=numpy.float32)
+        out_dp = dpnp.array(out)
+
+        expected = numpy.cumulative_prod(
+            a, axis=0, out=out, include_initial=True
+        )
+        result = dpnp.cumulative_prod(
+            ia, axis=0, out=out_dp, include_initial=True
+        )
+        assert result is out_dp
+        assert_array_equal(result, expected)
+
+        a = numpy.array([2, 2])
+        ia = dpnp.array(a)
+        expected = numpy.cumulative_prod(a, include_initial=True)
+        result = dpnp.cumulative_prod(ia, include_initial=True)
+        assert_array_equal(result, expected)
+
 
 class TestCumSum:
     @pytest.mark.parametrize(
@@ -494,6 +526,38 @@ class TestCumSum:
         expected = a.cumsum(out=out, dtype=dtype)
         assert_array_equal(expected, result)
         assert result is iout
+
+    def test_include_initial(self):
+        a = numpy.arange(8).reshape(2, 2, 2)
+        ia = dpnp.array(a)
+
+        expected = numpy.cumulative_sum(a, axis=1, include_initial=True)
+        result = dpnp.cumulative_sum(ia, axis=1, include_initial=True)
+        assert_array_equal(result, expected)
+
+        expected = numpy.cumulative_sum(a, axis=0, include_initial=True)
+        result = dpnp.cumulative_sum(ia, axis=0, include_initial=True)
+        assert_array_equal(result, expected)
+
+        a = numpy.arange(1, 5).reshape(2, 2)
+        ia = dpnp.array(a)
+        out = numpy.zeros((3, 2), dtype=numpy.float32)
+        out_dp = dpnp.array(out)
+
+        expected = numpy.cumulative_sum(
+            a, axis=0, out=out, include_initial=True
+        )
+        result = dpnp.cumulative_sum(
+            ia, axis=0, out=out_dp, include_initial=True
+        )
+        assert result is out_dp
+        assert_array_equal(result, expected)
+
+        a = numpy.array([2, 2])
+        ia = dpnp.array(a)
+        expected = numpy.cumulative_sum(a, include_initial=True)
+        result = dpnp.cumulative_sum(ia, include_initial=True)
+        assert_array_equal(result, expected)
 
 
 class TestDiff:

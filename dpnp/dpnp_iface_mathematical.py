@@ -94,6 +94,8 @@ __all__ = [
     "cross",
     "cumprod",
     "cumsum",
+    "cumulative_prod",
+    "cumulative_sum",
     "diff",
     "divide",
     "ediff1d",
@@ -1062,6 +1064,8 @@ def cumprod(a, axis=None, dtype=None, out=None):
 
     See Also
     --------
+    :obj:`dpnp.cumulative_prod` : Array API compatible alternative for
+                                :obj:`dpnp.cumprod`.
     :obj:`dpnp.prod` : Product array elements.
 
     Examples
@@ -1143,6 +1147,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
 
     See Also
     --------
+    :obj:`dpnp.cumulative_sum` : Array API compatible alternative for
+                                :obj:`dpnp.cumsum`.
     :obj:`dpnp.sum` : Sum array elements.
     :obj:`dpnp.trapezoid` : Integration of array values using composite
                             trapezoidal rule.
@@ -1191,6 +1197,184 @@ def cumsum(a, axis=None, dtype=None, out=None):
         usm_a,
         axis=axis,
         dtype=dtype,
+    )
+
+
+def cumulative_prod(
+    x, /, *, axis=None, dtype=None, out=None, include_initial=False
+):
+    """
+    Return the cumulative product of elements along a given axis.
+
+    This function is an Array API compatible alternative to :obj:`dpnp.cumprod`.
+
+    For full documentation refer to :obj:`numpy.cumprod`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int}, optional
+        Axis along which the cumulative product is computed. The default
+        (``None``) is only allowed for one-dimensional arrays. For arrays
+        with more than one dimension `axis` is required.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        Type of the returned array and of the accumulator in which the elements
+        are summed. If `dtype` is not specified, it defaults to the dtype of
+        `x`, unless `x` has an integer dtype with a precision less than that of
+        the default platform integer. In that case, the default platform
+        integer is used.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output but the type will
+        be cast if necessary.
+        Default: ``None``.
+    include_initial : bool, optional
+        Boolean indicating whether to include the initial value (ones) as
+        the first value in the output. With ``include_initial=True``
+        the shape of the output is different than the shape of the input.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result is returned unless `out` is specified,
+        in which case a reference to `out` is returned. The
+        result has the same shape as `x` if ``include_initial=False``.
+
+    See Also
+    --------
+    :obj:`dpnp.prod` : Product array elements.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3])
+    >>> np.cumulative_prod(a) # intermediate results 1, 1*2
+    ...                       # total product 1*2*3 = 6
+    array([1, 2, 6])
+    >>> a = np.array([1, 2, 3, 4, 5, 6])
+    >>> np.cumulative_prod(a, dtype=np.float32) # specify type of output
+    array([  1.,   2.,   6.,  24., 120., 720.], dtype=float32)
+
+    The cumulative product for each column (i.e., over the rows) of `b`:
+
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.cumulative_prod(a, axis=0)
+    array([[ 1,  2,  3],
+           [ 4, 10, 18]])
+
+    The cumulative product for each row (i.e. over the columns) of `b`:
+
+    >>> np.cumulative_prod(a, axis=1)
+    array([[  1,   2,   6],
+           [  4,  20, 120]])
+
+    """
+
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.cumulative_prod,
+        _get_reduction_res_dt,
+        dpnp.get_usm_ndarray(x),
+        axis=axis,
+        dtype=dtype,
+        include_initial=include_initial,
+    )
+
+
+def cumulative_sum(
+    x, /, *, axis=None, dtype=None, out=None, include_initial=False
+):
+    """
+    Return the cumulative sum of the elements along a given axis.
+
+    This function is an Array API compatible alternative to :obj:`dpnp.cumsum`.
+
+    For full documentation refer to :obj:`numpy.cumsum`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int}, optional
+        Axis along which the cumulative sum is computed. The default (``None``)
+        is only allowed for one-dimensional arrays. For arrays with more than
+        one dimension `axis` is required.
+        Default: ``None``.
+    dtype : {None, dtype}, optional
+        Type of the returned array and of the accumulator in which the elements
+        are summed. If `dtype` is not specified, it defaults to the dtype of
+        `x`, unless `x` has an integer dtype with a precision less than that of
+        the default platform integer. In that case, the default platform
+        integer is used.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output but the type will
+        be cast if necessary.
+        Default: ``None``.
+    include_initial : bool, optional
+        Boolean indicating whether to include the initial value (ones) as
+        the first value in the output. With ``include_initial=True``
+        the shape of the output is different than the shape of the input.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result is returned unless `out` is specified,
+        in which case a reference to `out` is returned. The
+        result has the same shape as `x` if ``include_initial=False``.
+
+    See Also
+    --------
+    :obj:`dpnp.sum` : Sum array elements.
+    :obj:`dpnp.trapezoid` : Integration of array values using composite
+                            trapezoidal rule.
+    :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3, 4, 5, 6])
+    >>> a
+    array([1, 2, 3, 4, 5, 6])
+    >>> np.cumulative_sum(a)
+    array([ 1,  3,  6, 10, 15, 21])
+    >>> np.cumulative_sum(a, dtype=float)   # specifies type of output value(s)
+    array([ 1.,  3.,  6., 10., 15., 21.])
+
+    >>> b = np.array([[1, 2, 3], [4, 5, 6]])
+    >>> np.cumsum(b, axis=0)     # sum over rows for each of the 3 columns
+    array([[1, 2, 3],
+           [5, 7, 9]])
+    >>> np.cumsum(b, axis=1)     # sum over columns for each of the 2 rows
+    array([[ 1,  3,  6],
+           [ 4,  9, 15]])
+
+    ``cumulative_sum(c)[-1]`` may not be equal to ``sum(c)``
+
+    >>> c = np.array([1, 2e-9, 3e-9] * 1000000)
+    >>> np.cumulative_sum(c).dtype == c.sum().dtype == np.float64
+    True
+    >>> np.cumulative_sum(c)[-1] == c.sum()
+    array(False)
+
+    """
+
+    return dpnp_wrap_reduction_call(
+        x,
+        out,
+        dpt.cumulative_sum,
+        _get_reduction_res_dt,
+        dpnp.get_usm_ndarray(x),
+        axis=axis,
+        dtype=dtype,
+        include_initial=include_initial,
     )
 
 
