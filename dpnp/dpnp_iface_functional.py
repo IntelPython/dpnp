@@ -71,6 +71,8 @@ def apply_along_axis(func1d, axis, arr, *args, **kwargs):
             for kk in ndindex(Nk):
                 out[ii + s_[...,] + kk] = func1d(arr[ii + s_[:,] + kk])
 
+    For full documentation refer to :obj:`numpy.apply_along_axis`.
+
     Parameters
     ----------
     func1d : function (M,) -> (Nj...)
@@ -110,7 +112,7 @@ def apply_along_axis(func1d, axis, arr, *args, **kwargs):
     array([2., 5., 8.])
 
     For a function that returns a 1D array, the number of dimensions in
-    `outarr` is the same as `arr`.
+    `out` is the same as `arr`.
 
     >>> b = np.array([[8, 1, 7], [4, 3, 9], [5, 2, 6]])
     >>> np.apply_along_axis(sorted, 1, b)

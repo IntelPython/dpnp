@@ -44,8 +44,5 @@ class TestApplyAlongAxis:
         assert_array_equal(result, expected)
 
         # positional args: axis, dtype, out, keepdims
-        expected = numpy.apply_along_axis(
-            numpy.mean, 0, a, 0, dtype, None, True
-        )
         result = dpnp.apply_along_axis(dpnp.mean, 0, ia, 0, dtype, None, True)
         assert_array_equal(result, expected)
