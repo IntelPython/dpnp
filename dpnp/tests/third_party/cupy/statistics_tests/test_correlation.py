@@ -12,26 +12,26 @@ from dpnp.tests.third_party.cupy import testing
 
 class TestCorrcoef(unittest.TestCase):
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_corrcoef(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         return xp.corrcoef(a)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_corrcoef_diag_exception(self, xp, dtype):
         a = testing.shaped_arange((1, 3), xp, dtype)
         return xp.corrcoef(a)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_corrcoef_y(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         y = testing.shaped_arange((2, 3), xp, dtype)
         return xp.corrcoef(a, y=y)
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_corrcoef_rowvar(self, xp, dtype):
         a = testing.shaped_arange((2, 3), xp, dtype)
         y = testing.shaped_arange((2, 3), xp, dtype)

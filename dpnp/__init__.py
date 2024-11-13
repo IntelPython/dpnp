@@ -54,9 +54,13 @@ from dpnp.dpnp_flatiter import flatiter as flatiter
 from dpnp.dpnp_iface_types import *
 from dpnp.dpnp_iface import *
 from dpnp.dpnp_iface import __all__ as _iface__all__
+from dpnp.dpnp_iface_utils import *
+from dpnp.dpnp_iface_utils import __all__ as _ifaceutils__all__
 from dpnp._version import get_versions
 
 __all__ = _iface__all__
+__all__ += _ifaceutils__all__
+
 
 __version__ = get_versions()["version"]
 del get_versions

@@ -442,6 +442,7 @@ def test_meshgrid(device):
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param("copy", [1.0, 2.0, 3.0]),
+        pytest.param("corrcoef", [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
         pytest.param(
             "cos", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
@@ -693,6 +694,11 @@ def test_reduce_hypot(device):
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param(
+            "corrcoef",
+            [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
+            [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
+        ),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
@@ -2076,6 +2082,70 @@ class TestDelete:
 
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+
+class TestInsert:
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_basic(self, obj, device):
+        x = dpnp.arange(5, device=device)
+        result = dpnp.insert(x, obj, 3)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 3), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_values_ndarray(self, obj, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        result = dpnp.insert(x, obj, y)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+    @pytest.mark.parametrize("values", [-2, [-1, -2]], ids=["scalar", "list"])
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_obj_ndarray(self, values, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        result = dpnp.insert(x, y, values)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_obj_values_ndarray(self, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        z = dpnp.array([-1, -3], device=device)
+        result = dpnp.insert(x, y, z)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, z.sycl_queue)
 
 
 @pytest.mark.parametrize(

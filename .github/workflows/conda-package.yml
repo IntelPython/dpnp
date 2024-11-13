@@ -56,20 +56,14 @@ jobs:
           fetch-depth: 0
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
-          use-mamba: true
+          use-mamba: 'true'
           channels: conda-forge
+          conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
           activate-environment: 'build'
-
-      # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
-      # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
-      - name: Remove defaults channel
-        run: |
-          conda config --remove channels defaults
-          conda config --show
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
       - name: Disable speed limit check in mamba
@@ -89,7 +83,7 @@ jobs:
         env:
           CACHE_NUMBER: 1  # Increase to reset cache
         with:
-          path: ${{ env.CONDA_PKGS_DIR }}
+          path: ${{ runner.os == 'Linux' && '/home/runner/conda_pkgs_dir' || 'C:\Users\runneradmin\conda_pkgs_dir' }}
           key:
             ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
           restore-keys: |
@@ -150,16 +144,14 @@ jobs:
           tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
-          use-mamba: true
+          use-mamba: 'true'
           channels: conda-forge
+          conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
-
-      - name: Remove defaults channel
-        run: conda config --remove channels defaults
 
       - name: Install conda-index
         run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
@@ -279,16 +271,14 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
-          use-mamba: true
+          use-mamba: 'true'
           channels: conda-forge
+          conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
           activate-environment: ${{ env.TEST_ENV_NAME }}
-
-      - name: Remove defaults channel
-        run: conda config --remove channels defaults
 
       - name: Store conda paths as envs
         run: |
@@ -424,16 +414,14 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
-          use-mamba: true
+          use-mamba: 'true'
           channels: conda-forge
+          conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
           activate-environment: 'upload'
-
-      - name: Remove defaults channel
-        run: conda config --remove channels defaults
 
       - name: Install anaconda-client
         run: mamba install anaconda-client
@@ -463,17 +451,15 @@ jobs:
         shell: bash -el {0}
 
     steps:
-      - uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
+      - uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
-          use-mamba: true
+          use-mamba: 'true'
           channels: conda-forge
-          run-post: false
+          conda-remove-defaults: 'true'
+          run-post: 'false'
           python-version: '3.12'
           activate-environment: 'cleanup'
-
-      - name: Remove defaults channel
-        run: conda config --remove channels defaults
 
       - name: Install anaconda-client
         run: mamba install anaconda-client
