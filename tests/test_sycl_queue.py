@@ -2568,6 +2568,27 @@ def test_lstsq(m, n, nrhs, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_bincount(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_hist = numpy.bincount(v, weights=w)
+    result_hist = dpnp.bincount(iv, weights=iw)
+    assert_array_equal(result_hist, expected_hist)
+
+    hist_queue = result_hist.sycl_queue
+    assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_histogram(weights, device):
     v = numpy.arange(5)
     w = weights
