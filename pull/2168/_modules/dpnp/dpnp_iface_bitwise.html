@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.17.0dev1+20.g54ac7d2b874 documentation</title>
+  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.17.0dev1+24.g9510a31991c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b03dc83e"></script>
+      <script src="../../_static/documentation_options.js?v=a9de4bdd"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -275,8 +275,11 @@
 <span class="s2">&gt;&gt;&gt; x1 &amp; x2</span>
 <span class="s2">array([ 2,  4, 16])</span>
 
-<span class="s2">The number 13 is represented by ``00001101``.  Likewise, 17 is represented by</span>
+<span class="s2">The number 13 is represented by ``00001101``. Likewise, 17 is represented by</span>
 <span class="s2">``00010001``. The bit-wise AND of 13 and 17 is therefore ``000000001``, or 1:</span>
+
+<span class="s2">&gt;&gt;&gt; np.bitwise_and(np.array(13), 17)</span>
+<span class="s2">array(1)</span>
 
 <span class="s2">&gt;&gt;&gt; np.bitwise_and(np.array(14), 13)</span>
 <span class="s2">array(12)</span>
