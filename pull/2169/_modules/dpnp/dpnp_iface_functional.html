@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.17.0dev1+21.g64516002145 documentation</title>
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.17.0dev1+28.g2d48d93d4c9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bd8ed662"></script>
+      <script src="../../_static/documentation_options.js?v=57dc6299"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -158,6 +158,8 @@
 <span class="sd">            for kk in ndindex(Nk):</span>
 <span class="sd">                out[ii + s_[...,] + kk] = func1d(arr[ii + s_[:,] + kk])</span>
 
+<span class="sd">    For full documentation refer to :obj:`numpy.apply_along_axis`.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    func1d : function (M,) -&gt; (Nj...)</span>
@@ -197,7 +199,7 @@
 <span class="sd">    array([2., 5., 8.])</span>
 
 <span class="sd">    For a function that returns a 1D array, the number of dimensions in</span>
-<span class="sd">    `outarr` is the same as `arr`.</span>
+<span class="sd">    `out` is the same as `arr`.</span>
 
 <span class="sd">    &gt;&gt;&gt; b = np.array([[8, 1, 7], [4, 3, 9], [5, 2, 6]])</span>
 <span class="sd">    &gt;&gt;&gt; np.apply_along_axis(sorted, 1, b)</span>

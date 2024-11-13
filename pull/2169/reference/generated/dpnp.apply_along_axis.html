@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.apply_along_axis &mdash; Data Parallel Extension for NumPy 0.17.0dev1+21.g64516002145 documentation</title>
+  <title>dpnp.apply_along_axis &mdash; Data Parallel Extension for NumPy 0.17.0dev1+28.g2d48d93d4c9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bd8ed662"></script>
+      <script src="../../_static/documentation_options.js?v=57dc6299"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -69,7 +69,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, searching, and counting</a></li>
@@ -142,6 +142,7 @@
         <span class="n">out</span><span class="p">[</span><span class="n">ii</span> <span class="o">+</span> <span class="n">s_</span><span class="p">[</span><span class="o">...</span><span class="p">,]</span> <span class="o">+</span> <span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">func1d</span><span class="p">(</span><span class="n">arr</span><span class="p">[</span><span class="n">ii</span> <span class="o">+</span> <span class="n">s_</span><span class="p">[:,]</span> <span class="o">+</span> <span class="n">kk</span><span class="p">])</span>
 </pre></div>
 </div>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.apply_along_axis.html#numpy.apply_along_axis" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.apply_along_axis</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -182,7 +183,7 @@ of <cite>func1d</cite>.</p>
 </pre></div>
 </div>
 <p>For a function that returns a 1D array, the number of dimensions in
-<cite>outarr</cite> is the same as <cite>arr</cite>.</p>
+<cite>out</cite> is the same as <cite>arr</cite>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">],</span> <span class="p">[</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">],</span> <span class="p">[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">apply_along_axis</span><span class="p">(</span><span class="nb">sorted</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">array([[1, 7, 8],</span>

@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev1+21.g64516002145 documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev1+28.g2d48d93d4c9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bd8ed662"></script>
+      <script src="../../_static/documentation_options.js?v=57dc6299"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -123,7 +123,6 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
@@ -138,6 +137,7 @@
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">map_dtype_to_device</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;bincount&quot;</span><span class="p">,</span>
     <span class="s2">&quot;digitize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram_bin_edges&quot;</span><span class="p">,</span>
@@ -146,6 +146,35 @@
 <span class="c1"># range is a keyword argument to many functions, so save the builtin so they can</span>
 <span class="c1"># use it.</span>
 <span class="n">_range</span> <span class="o">=</span> <span class="nb">range</span>
+
+
+<span class="k">def</span> <span class="nf">_result_type_for_device</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+    <span class="n">rt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_align_dtypes</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+    <span class="n">has_fp64</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
+    <span class="n">has_fp16</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
+
+    <span class="n">a_bin_dtype</span> <span class="o">=</span> <span class="n">_result_type_for_device</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># histogram implementation doesn&#39;t support uint64 as histogram type</span>
+    <span class="c1"># we can use int64 instead. Result would be correct even in case of overflow</span>
+    <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span>
+        <span class="n">ntype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">ntype</span>
+
+    <span class="k">for</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">hist_type</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">_can_cast</span><span class="p">(</span>
+            <span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span>
+        <span class="p">)</span> <span class="ow">and</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">hist_type</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">hist_type</span>
+
+    <span class="c1"># should not happen</span>
+    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
 <span class="k">def</span> <span class="nf">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
@@ -158,16 +187,6 @@
     <span class="c1"># ensure that `a` array has supported type</span>
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">usm_type</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">usm_type</span>
-
-    <span class="c1"># ensure that the array is a &quot;subtractable&quot; dtype</span>
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Converting input from </span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="si">}</span><span class="s2"> &quot;</span>
-            <span class="s2">&quot;for compatibility.&quot;</span><span class="p">,</span>
-            <span class="ne">RuntimeWarning</span><span class="p">,</span>
-            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
-        <span class="p">)</span>
-        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># check that `weights` array has supported type</span>
@@ -293,6 +312,192 @@
     <span class="k">return</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="kc">None</span>
 
 
+<span class="k">def</span> <span class="nf">_bincount_validate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object too deep for desired array&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object of too small depth for desired array&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;x must be an integer array&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The weights and x don&#39;t have the same length.&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Weights must be integer or float. Got </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">minlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">minlength</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">minlength</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">minlength</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;minlength must be non-negative&quot;</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_bincount_run_native</span><span class="p">(</span>
+    <span class="n">x_casted</span><span class="p">,</span> <span class="n">weights_casted</span><span class="p">,</span> <span class="n">minlength</span><span class="p">,</span> <span class="n">n_dtype</span><span class="p">,</span> <span class="n">usm_type</span>
+<span class="p">):</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">x_casted</span><span class="o">.</span><span class="n">sycl_queue</span>
+
+    <span class="n">max_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x_casted</span><span class="p">)</span>
+    <span class="n">min_v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">x_casted</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">min_v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x argument must have no negative arguments&quot;</span><span class="p">)</span>
+
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">max_v</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">minlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">minlength</span><span class="p">)</span>
+
+    <span class="c1"># bincount implementation uses atomics, but atomics doesn&#39;t work with</span>
+    <span class="c1"># host usm memory</span>
+    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="s2">&quot;device&quot;</span> <span class="k">if</span> <span class="n">usm_type</span> <span class="o">==</span> <span class="s2">&quot;host&quot;</span> <span class="k">else</span> <span class="n">usm_type</span>
+
+    <span class="c1"># bincount implementation requires output array to be filled with zeros</span>
+    <span class="n">n_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">n_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">n_usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span>
+    <span class="p">)</span>
+
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">queue</span><span class="p">]</span>
+
+    <span class="n">x_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x_casted</span><span class="p">)</span>
+    <span class="n">weights_usm</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">weights_casted</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weights_casted</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+        <span class="k">else</span> <span class="kc">None</span>
+    <span class="p">)</span>
+    <span class="n">n_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">n_casted</span><span class="p">)</span>
+
+    <span class="n">mem_ev</span><span class="p">,</span> <span class="n">bc_ev</span> <span class="o">=</span> <span class="n">statistics_ext</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span>
+        <span class="n">x_usm</span><span class="p">,</span>
+        <span class="n">min_v</span><span class="p">,</span>
+        <span class="n">max_v</span><span class="p">,</span>
+        <span class="n">weights_usm</span><span class="p">,</span>
+        <span class="n">n_usm</span><span class="p">,</span>
+        <span class="n">depends</span><span class="o">=</span><span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">mem_ev</span><span class="p">,</span> <span class="n">bc_ev</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">n_casted</span>
+
+
+<div class="viewcode-block" id="bincount">
+<a class="viewcode-back" href="../../reference/generated/dpnp.bincount.html#dpnp.bincount">[docs]</a>
+<span class="k">def</span> <span class="nf">bincount</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    bincount(x, /, weights=None, minlength=None)</span>
+
+<span class="sd">    Count number of occurrences of each value in array of non-negative ints.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.bincount`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input 1-dimensional array with nonnegative integer values.</span>
+<span class="sd">    weights : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Weights, array of the same shape as `x`.</span>
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    minlength : {None, int}, optional</span>
+<span class="sd">        A minimum number of bins for the output array.</span>
+<span class="sd">        Default: ``None``</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of ints</span>
+<span class="sd">        The result of binning the input array.</span>
+<span class="sd">        The length of `out` is equal to ``dpnp.max(x) + 1``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.histogram` : Compute the histogram of a data set.</span>
+<span class="sd">    :obj:`dpnp.digitize` : Return the indices of the bins to which each value</span>
+<span class="sd">    :obj:`dpnp.unique` : Find the unique elements of an array.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.bincount(np.arange(5))</span>
+<span class="sd">    array([1, 1, 1, 1, 1])</span>
+<span class="sd">    &gt;&gt;&gt; np.bincount(np.array([0, 1, 1, 3, 2, 1, 7]))</span>
+<span class="sd">    array([1, 3, 1, 1, 0, 0, 0, 1])</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, 1, 1, 3, 2, 1, 7, 23])</span>
+<span class="sd">    &gt;&gt;&gt; np.bincount(x).size == np.amax(x) + 1</span>
+<span class="sd">    array(True)</span>
+
+<span class="sd">    The input array needs to be of integer dtype, otherwise a</span>
+<span class="sd">    TypeError is raised:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.bincount(np.arange(5, dtype=np.float32))</span>
+<span class="sd">    Traceback (most recent call last):</span>
+<span class="sd">      ...</span>
+<span class="sd">    TypeError: x must be an integer array</span>
+
+<span class="sd">    A possible use of :obj:`dpnp.bincount` is to perform sums over</span>
+<span class="sd">    variable-size chunks of an array, using the `weights` keyword.</span>
+
+<span class="sd">    &gt;&gt;&gt; w = np.array([0.3, 0.5, 0.2, 0.7, 1., -0.6], dtype=np.float32) # weights</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([0, 1, 1, 2, 2, 2])</span>
+<span class="sd">    &gt;&gt;&gt; np.bincount(x, weights=w)</span>
+<span class="sd">    array([0.3, 0.7, 1.1], dtype=float32)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_bincount_validate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="p">)</span>
+
+    <span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">sycl_queue</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">sycl_device</span>
+
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">ntype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># unlike in case of histogram result type is integer if no weights</span>
+        <span class="c1"># provided and float if weights are provided even if weights are integer</span>
+        <span class="n">ntype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
+
+    <span class="n">weights_casted</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="n">supported_types</span> <span class="o">=</span> <span class="n">statistics_ext</span><span class="o">.</span><span class="n">bincount_dtypes</span><span class="p">()</span>
+    <span class="n">x_casted_dtype</span><span class="p">,</span> <span class="n">ntype_casted</span> <span class="o">=</span> <span class="n">_align_dtypes</span><span class="p">(</span>
+        <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x_casted_dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ntype_casted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;function &#39;</span><span class="si">{</span><span class="n">bincount</span><span class="si">}</span><span class="s2">&#39; does not support input types &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">), &quot;</span>
+            <span class="s2">&quot;and the inputs could not be coerced to any &quot;</span>
+            <span class="s2">&quot;supported types&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">x_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_casted_dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">weights_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype_casted</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">n_casted</span> <span class="o">=</span> <span class="n">_bincount_run_native</span><span class="p">(</span>
+        <span class="n">x_casted</span><span class="p">,</span> <span class="n">weights_casted</span><span class="p">,</span> <span class="n">minlength</span><span class="p">,</span> <span class="n">ntype_casted</span><span class="p">,</span> <span class="n">usm_type</span>
+    <span class="p">)</span>
+
+    <span class="n">n_usm_type</span> <span class="o">=</span> <span class="n">n_casted</span><span class="o">.</span><span class="n">usm_type</span>
+    <span class="k">if</span> <span class="n">usm_type</span> <span class="o">!=</span> <span class="n">n_usm_type</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">n_casted</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">ntype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">n_casted</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">n</span></div>
+
+
+
 <div class="viewcode-block" id="digitize">
 <a class="viewcode-back" href="../../reference/generated/dpnp.digitize.html#dpnp.digitize">[docs]</a>
 <span class="k">def</span> <span class="nf">digitize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -386,35 +591,6 @@
     <span class="c1"># Reverse bins and adjust indices if bins are decreasing</span>
     <span class="k">return</span> <span class="n">bins</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">bins</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">x</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="n">side</span><span class="p">)</span></div>
 
-
-
-<span class="k">def</span> <span class="nf">_result_type_for_device</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-    <span class="n">rt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">dtype1</span><span class="p">,</span> <span class="n">dtype2</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
-
-
-<span class="k">def</span> <span class="nf">_align_dtypes</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-    <span class="n">has_fp64</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
-    <span class="n">has_fp16</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
-
-    <span class="n">a_bin_dtype</span> <span class="o">=</span> <span class="n">_result_type_for_device</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
-
-    <span class="c1"># histogram implementation doesn&#39;t support uint64 as histogram type</span>
-    <span class="c1"># we can use int64 instead. Result would be correct even in case of overflow</span>
-    <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span>
-        <span class="n">ntype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span>
-
-    <span class="k">if</span> <span class="p">(</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">ntype</span>
-
-    <span class="k">for</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">hist_type</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">_can_cast</span><span class="p">(</span>
-            <span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span>
-        <span class="p">)</span> <span class="ow">and</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">hist_type</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">hist_type</span>
-
-    <span class="c1"># should not happen</span>
-    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="histogram">
