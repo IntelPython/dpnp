@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.bincount &mdash; Data Parallel Extension for NumPy 0.17.0dev1+20.g7bfe0c8eec4 documentation</title>
+  <title>dpnp.bincount &mdash; Data Parallel Extension for NumPy 0.17.0dev1+21.g078d9a33a18 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=43c01f52"></script>
+      <script src="../../_static/documentation_options.js?v=0f66f663"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,7 +136,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> -- The result of binning the input array.
-The length of <cite>out</cite> is equal to <code class="docutils literal notranslate"><span class="pre">np.amax(x)</span> <span class="pre">+</span> <span class="pre">1</span></code>.</p>
+The length of <cite>out</cite> is equal to <code class="docutils literal notranslate"><span class="pre">dpnp.max(x)</span> <span class="pre">+</span> <span class="pre">1</span></code>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray of ints</p>
@@ -174,7 +174,7 @@ TypeError is raised:</p>
 <span class="gr">TypeError</span>: <span class="n">x must be an integer array</span>
 </pre></div>
 </div>
-<p>A possible use of <code class="docutils literal notranslate"><span class="pre">bincount</span></code> is to perform sums over
+<p>A possible use of <a class="reference internal" href="#dpnp.bincount" title="dpnp.bincount"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bincount</span></code></a> is to perform sums over
 variable-size chunks of an array, using the <cite>weights</cite> keyword.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.3</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">,</span> <span class="mf">1.</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.6</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="c1"># weights</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
