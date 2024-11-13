@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../../">
 <head>
@@ -12,20 +14,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.15.0dev1+20.gd807371654 documentation</title>
+  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.17.0dev1+20.g7bfe0c8eec4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
-  <!--[if lt IE 9]>
-    <script src="../../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
-        <script src="../../_static/jquery.js?v=5d32c60e"></script>
-        <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-        <script src="../../_static/documentation_options.js?v=fa73b2d8"></script>
-        <script src="../../_static/doctools.js?v=888ff710"></script>
-        <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=43c01f52"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -42,9 +40,6 @@
           <a href="../../index.html" class="icon icon-home">
             Data Parallel Extension for NumPy
           </a>
-              <div class="version">
-                0.15.0dev1+20.gd807371654
-              </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
@@ -127,23 +122,22 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=protected-access</span>
 
+
+<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">check_nd_call_func</span><span class="p">,</span>
-    <span class="n">dpnp_bitwise_and</span><span class="p">,</span>
-    <span class="n">dpnp_bitwise_or</span><span class="p">,</span>
-    <span class="n">dpnp_bitwise_xor</span><span class="p">,</span>
-    <span class="n">dpnp_invert</span><span class="p">,</span>
-    <span class="n">dpnp_left_shift</span><span class="p">,</span>
-    <span class="n">dpnp_right_shift</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;binary_repr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_and&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bitwise_invert&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bitwise_left_shift&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_not&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_or&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bitwise_right_shift&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_xor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;invert&quot;</span><span class="p">,</span>
     <span class="s2">&quot;left_shift&quot;</span><span class="p">,</span>
@@ -151,416 +145,538 @@
 <span class="p">]</span>
 
 
-<div class="viewcode-block" id="bitwise_and">
-<a class="viewcode-back" href="../../reference/generated/dpnp.bitwise_and.html#dpnp.bitwise_and">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_and</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
+<div class="viewcode-block" id="binary_repr">
+<a class="viewcode-back" href="../../reference/generated/dpnp.binary_repr.html#dpnp.binary_repr">[docs]</a>
+<span class="k">def</span> <span class="nf">binary_repr</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="sd">    Return the binary representation of the input number as a string.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.bitwise_and`.</span>
+<span class="sd">    For negative numbers, if `width` is not given, a minus sign is added to the</span>
+<span class="sd">    front. If `width` is given, the two&#39;s complement of the number is returned,</span>
+<span class="sd">    with respect to that width.</span>
+
+<span class="sd">    In a two&#39;s-complement system negative numbers are represented by the two&#39;s</span>
+<span class="sd">    complement of the absolute value. A N-bit two&#39;s-complement system can</span>
+<span class="sd">    represent every integer in the range :math:`-2^{N-1}` to :math:`+2^{N-1}-1`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.binary_repr`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num : int</span>
+<span class="sd">        Only an integer decimal number can be used.</span>
+<span class="sd">    width : {None, int}, optional</span>
+<span class="sd">        The length of the returned string if `num` is positive, or the length</span>
+<span class="sd">        of the two&#39;s complement if `num` is negative, provided that `width` is</span>
+<span class="sd">        at least a sufficient number of bits for `num` to be represented in the</span>
+<span class="sd">        designated form. If the `width` value is insufficient, an error is</span>
+<span class="sd">        raised.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array containing the element-wise results.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.</span>
+<span class="sd">    bin : str</span>
+<span class="sd">        Binary representation of `num` or two&#39;s complement of `num`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_and` : Compute the truth value of ``x1`` AND ``x2`` element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_or`: Compute the bit-wise OR of two arrays element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+<span class="sd">    :obj:`dpnp.base_repr` : Return a string representation of a number in the</span>
+<span class="sd">                            given base system.</span>
+<span class="sd">    bin : Python&#39;s built-in binary representation generator of an integer.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    :obj:`dpnp.binary_repr` is equivalent to using :obj:`dpnp.base_repr` with</span>
+<span class="sd">    base 2, but significantly faster.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([2, 5, 255])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([3,14,16])</span>
-<span class="sd">    &gt;&gt;&gt; np.bitwise_and(x1, x2)</span>
-<span class="sd">    [2, 4, 16]</span>
+<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">    &gt;&gt;&gt; np.binary_repr(3)</span>
+<span class="sd">    &#39;11&#39;</span>
+<span class="sd">    &gt;&gt;&gt; np.binary_repr(-3)</span>
+<span class="sd">    &#39;-11&#39;</span>
+<span class="sd">    &gt;&gt;&gt; np.binary_repr(3, width=4)</span>
+<span class="sd">    &#39;0011&#39;</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.array([True, True])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([False, True])</span>
-<span class="sd">    &gt;&gt;&gt; np.bitwise_and(a, b)</span>
-<span class="sd">    array([False,  True])</span>
+<span class="sd">    The two&#39;s complement is returned when the input number is negative and</span>
+<span class="sd">    `width` is specified:</span>
 
-<span class="sd">    The ``&amp;`` operator can be used as a shorthand for ``bitwise_and`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
+<span class="sd">    &gt;&gt;&gt; np.binary_repr(-3, width=3)</span>
+<span class="sd">    &#39;101&#39;</span>
+<span class="sd">    &gt;&gt;&gt; np.binary_repr(-3, width=5)</span>
+<span class="sd">    &#39;11101&#39;</span>
 
-<span class="sd">    &gt;&gt;&gt; x1 &amp; x2</span>
-<span class="sd">    array([ 2,  4, 16])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">,</span>
-        <span class="n">dpnp_bitwise_and</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="bitwise_or">
-<a class="viewcode-back" href="../../reference/generated/dpnp.bitwise_or.html#dpnp.bitwise_or">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_or</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the bit-wise OR of two arrays element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.bitwise_or`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array containing the element-wise results.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_or` : Compute the truth value of ``x1`` OR ``x2`` element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([2, 5, 255])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([4])</span>
-<span class="sd">    &gt;&gt;&gt; np.bitwise_or(x1, x2)</span>
-<span class="sd">    array([  6,   5, 255])</span>
-
-<span class="sd">    The ``|`` operator can be used as a shorthand for ``bitwise_or`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; x1 | x2</span>
-<span class="sd">    array([  6,   5, 255])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_or</span><span class="p">,</span>
-        <span class="n">dpnp_bitwise_or</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="bitwise_xor">
-<a class="viewcode-back" href="../../reference/generated/dpnp.bitwise_xor.html#dpnp.bitwise_xor">[docs]</a>
-<span class="k">def</span> <span class="nf">bitwise_xor</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute the bit-wise XOR of two arrays element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.bitwise_xor`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array containing the element-wise results.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Data type of input arrays `x1` and `x2` has to be an integer or boolean data type.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.logical_xor` : Compute the truth value of ``x1`` XOR `x2`, element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([31, 3])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([5, 6])</span>
-<span class="sd">    &gt;&gt;&gt; np.bitwise_xor(x1, x2)</span>
-<span class="sd">    array([26,  5])</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([True, True])</span>
-<span class="sd">    &gt;&gt;&gt; b = np.array([False, True])</span>
-<span class="sd">    &gt;&gt;&gt; np.bitwise_xor(a, b)</span>
-<span class="sd">    array([ True, False])</span>
-
-<span class="sd">    The ``^`` operator can be used as a shorthand for ``bitwise_xor`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; a ^ b</span>
-<span class="sd">    array([ True, False])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">,</span>
-        <span class="n">dpnp_bitwise_xor</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
-
-
-<div class="viewcode-block" id="invert">
-<a class="viewcode-back" href="../../reference/generated/dpnp.invert.html#dpnp.invert">[docs]</a>
-<span class="k">def</span> <span class="nf">invert</span><span class="p">(</span>
-    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compute bit-wise inversion, or bit-wise NOT, element-wise.</span>
-
-<span class="sd">    For full documentation refer to :obj:`numpy.invert`.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array containing the element-wise results.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameter `x` is supported as either :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Data type of input array `x` has to be an integer data type.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
-<span class="sd">    :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
-<span class="sd">    :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.array([13])</span>
-<span class="sd">    &gt;&gt;&gt; np.invert(x)</span>
-<span class="sd">    -14</span>
-
-<span class="sd">    &gt;&gt;&gt; a = np.array([True, False])</span>
-<span class="sd">    &gt;&gt;&gt; np.invert(a)</span>
-<span class="sd">    array([False,  True])</span>
-
-<span class="sd">    The ``~`` operator can be used as a shorthand for ``invert`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; ~a</span>
-<span class="sd">    array([False,  True])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">invert</span><span class="p">,</span>
-        <span class="n">dpnp_invert</span><span class="p">,</span>
-        <span class="n">x</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">binary_repr</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">width</span><span class="p">)</span></div>
 
+
+
+<span class="n">_BITWISE_AND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the bitwise AND of the underlying binary representation of each</span>
+<span class="s2">element `x1_i` of the input array `x1` with the respective element `x2_i`</span>
+<span class="s2">of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.bitwise_and`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have integer or boolean data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have integer or boolean data</span>
+<span class="s2">    type. Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logical_and` : Compute the truth value of ``x1`` AND ``x2`` element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_or`: Compute the bit-wise OR of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
+<span class="s2">                          as a string.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([2, 5, 255])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([3, 14, 16])</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_and(x1, x2)</span>
+<span class="s2">array([ 2,  4, 16])</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([True, True])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([False, True])</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_and(a, b)</span>
+<span class="s2">array([False,  True])</span>
+
+<span class="s2">The ``&amp;`` operator can be used as a shorthand for ``bitwise_and`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; x1 &amp; x2</span>
+<span class="s2">array([ 2,  4, 16])</span>
+
+<span class="s2">The number 13 is represented by ``00001101``. Likewise, 17 is represented by</span>
+<span class="s2">``00010001``. The bit-wise AND of 13 and 17 is therefore ``000000001``, or 1:</span>
+
+<span class="s2">&gt;&gt;&gt; np.bitwise_and(np.array(13), 17)</span>
+<span class="s2">array(1)</span>
+
+<span class="s2">&gt;&gt;&gt; np.bitwise_and(np.array(14), 13)</span>
+<span class="s2">array(12)</span>
+<span class="s2">&gt;&gt;&gt; np.binary_repr(12)</span>
+<span class="s2">&#39;1100&#39;</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_and(np.array([14, 3]), 13)</span>
+<span class="s2">array([12,  1])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">bitwise_and</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;bitwise_and&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_and_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_and</span><span class="p">,</span>
+    <span class="n">_BITWISE_AND_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_BITWISE_OR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the bitwise OR of the underlying binary representation of each</span>
+<span class="s2">element `x1_i` of the input array `x1` with the respective element `x2_i`</span>
+<span class="s2">of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.bitwise_or`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have integer or boolean data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have integer or boolean data</span>
+<span class="s2">    type. Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logical_or` : Compute the truth value of ``x1`` OR ``x2`` element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
+<span class="s2">                          as a string.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([2, 5, 255])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([4])</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_or(x1, x2)</span>
+<span class="s2">array([  6,   5, 255])</span>
+
+<span class="s2">The ``|`` operator can be used as a shorthand for ``bitwise_or`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; x1 | x2</span>
+<span class="s2">array([  6,   5, 255])</span>
+
+<span class="s2">The number 13 has the binary representation ``00001101``. Likewise, 16 is</span>
+<span class="s2">represented by ``00010000``. The bit-wise OR of 13 and 16 is then ``00011101``,</span>
+<span class="s2">or 29:</span>
+
+<span class="s2">&gt;&gt;&gt; np.bitwise_or(np.array(13), 16)</span>
+<span class="s2">array(29)</span>
+<span class="s2">&gt;&gt;&gt; np.binary_repr(29)</span>
+<span class="s2">&#39;11101&#39;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">bitwise_or</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;bitwise_or&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_or_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_or</span><span class="p">,</span>
+    <span class="n">_BITWISE_OR_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_BITWISE_XOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the bitwise XOR of the underlying binary representation of each</span>
+<span class="s2">element `x1_i` of the input array `x1` with the respective element `x2_i`</span>
+<span class="s2">of the input array `x2`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.bitwise_xor`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have integer or boolean data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have integer or boolean data</span>
+<span class="s2">    type. Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.logical_xor` : Compute the truth value of ``x1`` XOR `x2`, element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
+<span class="s2">                          as a string.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([31, 3])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([5, 6])</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_xor(x1, x2)</span>
+<span class="s2">array([26,  5])</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([True, True])</span>
+<span class="s2">&gt;&gt;&gt; b = np.array([False, True])</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_xor(a, b)</span>
+<span class="s2">array([ True, False])</span>
+
+<span class="s2">The ``^`` operator can be used as a shorthand for ``bitwise_xor`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; a ^ b</span>
+<span class="s2">array([ True, False])</span>
+
+<span class="s2">The number 13 is represented by ``00001101``. Likewise, 17 is represented by</span>
+<span class="s2">``00010001``. The bit-wise XOR of 13 and 17 is therefore ``00011100``, or 28:</span>
+
+<span class="s2">&gt;&gt;&gt; np.bitwise_xor(np.array(13), 17)</span>
+<span class="s2">array(28)</span>
+<span class="s2">&gt;&gt;&gt; np.binary_repr(28)</span>
+<span class="s2">&#39;11100&#39;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">bitwise_xor</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;bitwise_xor&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_xor_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_xor</span><span class="p">,</span>
+    <span class="n">_BITWISE_XOR_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_INVERT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Inverts (flips) each bit for each element `x_i` of the input array `x`.</span>
+
+<span class="s2">Note that :obj:`dpnp.bitwise_invert` is an alias of :obj:`dpnp.invert`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.invert`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have integer or boolean data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results.</span>
+<span class="s2">    The data type of the returned array is same as the data type of the</span>
+<span class="s2">    input array.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+<span class="s2">:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
+<span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
+<span class="s2">                          as a string.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+
+<span class="s2">The number 13 is represented by ``00001101``. The invert or bit-wise NOT of 13</span>
+<span class="s2">is then:</span>
+
+<span class="s2">&gt;&gt;&gt; x = np.array([13])</span>
+<span class="s2">&gt;&gt;&gt; np.invert(x)</span>
+<span class="s2">array([-14])</span>
+<span class="s2">&gt;&gt;&gt; np.binary_repr(-14, width=8)</span>
+<span class="s2">&#39;11110010&#39;</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([True, False])</span>
+<span class="s2">&gt;&gt;&gt; np.invert(a)</span>
+<span class="s2">array([False,  True])</span>
+
+<span class="s2">The ``~`` operator can be used as a shorthand for ``invert`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; ~a</span>
+<span class="s2">array([False,  True])</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">invert</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;invert&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_invert_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_invert</span><span class="p">,</span>
+    <span class="n">_INVERT_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <span class="n">bitwise_not</span> <span class="o">=</span> <span class="n">invert</span>  <span class="c1"># bitwise_not is an alias for invert</span>
+<span class="n">bitwise_invert</span> <span class="o">=</span> <span class="n">invert</span>  <span class="c1"># bitwise_invert is an alias for invert</span>
+
+<span class="n">_LEFT_SHIFT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Shifts the bits of each element `x1_i` of the input array x1 to the left by</span>
+<span class="s2">appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to</span>
+<span class="s2">the right of `x1_i`.</span>
+
+<span class="s2">Note that :obj:`dpnp.bitwise_left_shift` is an alias of :obj:`dpnp.left_shift`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.left_shift`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have integer data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have integer data type.</span>
+<span class="s2">    Each element must be greater than or equal to ``0``.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.right_shift` : Shift the bits of an integer to the right.</span>
+<span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
+<span class="s2">                          as a string.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([5])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([1, 2, 3])</span>
+<span class="s2">&gt;&gt;&gt; np.left_shift(x1, x2)</span>
+<span class="s2">array([10, 20, 40])</span>
+
+<span class="s2">The ``&lt;&lt;`` operator can be used as a shorthand for ``left_shift`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
+
+<span class="s2">&gt;&gt;&gt; x1 &lt;&lt; x2</span>
+<span class="s2">array([10, 20, 40])</span>
+
+<span class="s2">&gt;&gt;&gt; np.binary_repr(5)</span>
+<span class="s2">&#39;101&#39;</span>
+<span class="s2">&gt;&gt;&gt; np.left_shift(np.array(5), 2)</span>
+<span class="s2">array(20)</span>
+<span class="s2">&gt;&gt;&gt; np.binary_repr(20)</span>
+<span class="s2">&#39;10100&#39;</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">left_shift</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;left_shift&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_left_shift_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_left_shift</span><span class="p">,</span>
+    <span class="n">_LEFT_SHIFT_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">bitwise_left_shift</span> <span class="o">=</span> <span class="n">left_shift</span>  <span class="c1"># bitwise_left_shift is an alias for left_shift</span>
 
 
-<div class="viewcode-block" id="left_shift">
-<a class="viewcode-back" href="../../reference/generated/dpnp.left_shift.html#dpnp.left_shift">[docs]</a>
-<span class="k">def</span> <span class="nf">left_shift</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shift the bits of an integer to the left.</span>
+<span class="n">_RIGHT_SHIFT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Shifts the bits of each element `x1_i` of the input array `x1` to the right</span>
+<span class="s2">according to the respective element `x2_i` of the input array `x2`.</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.left_shift`.</span>
+<span class="s2">Note that :obj:`dpnp.bitwise_right_shift` is an alias of :obj:`dpnp.right_shift`.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array containing the element-wise results.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.right_shift`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input data is supported as integer only.</span>
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    First input array, expected to have integer data type.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
+<span class="s2">    Second input array, also expected to have integer data type.</span>
+<span class="s2">    Each element must be greater than or equal to ``0``.</span>
+<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
 
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.right_shift` : Shift the bits of an integer to the right.</span>
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise results. The data type</span>
+<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
 
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([5])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; np.left_shift(x1, x2)</span>
-<span class="sd">    array([10, 20, 40])</span>
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
-<span class="sd">    The ``&lt;&lt;`` operator can be used as a shorthand for ``left_shift`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
+<span class="s2">See Also</span>
+<span class="s2">--------</span>
+<span class="s2">:obj:`dpnp.left_shift` : Shift the bits of an integer to the left.</span>
+<span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
+<span class="s2">                          as a string.</span>
 
-<span class="sd">    &gt;&gt;&gt; x1 &lt;&lt; x2</span>
-<span class="sd">    array([10, 20, 40])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">left_shift</span><span class="p">,</span>
-        <span class="n">dpnp_left_shift</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x1 = np.array([10])</span>
+<span class="s2">&gt;&gt;&gt; x2 = np.array([1, 2, 3])</span>
+<span class="s2">&gt;&gt;&gt; np.right_shift(x1, x2)</span>
+<span class="s2">array([5, 2, 1])</span>
 
+<span class="s2">The ``&gt;&gt;`` operator can be used as a shorthand for ``right_shift`` on</span>
+<span class="s2">:class:`dpnp.ndarray`.</span>
 
+<span class="s2">&gt;&gt;&gt; x1 &gt;&gt; x2</span>
+<span class="s2">array([5, 2, 1])</span>
 
-<div class="viewcode-block" id="right_shift">
-<a class="viewcode-back" href="../../reference/generated/dpnp.right_shift.html#dpnp.right_shift">[docs]</a>
-<span class="k">def</span> <span class="nf">right_shift</span><span class="p">(</span>
-    <span class="n">x1</span><span class="p">,</span>
-    <span class="n">x2</span><span class="p">,</span>
-    <span class="o">/</span><span class="p">,</span>
-    <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="o">*</span><span class="p">,</span>
-    <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span>
-    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-    <span class="n">subok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-    <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-<span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Shift the bits of an integer to the right.</span>
+<span class="s2">&gt;&gt;&gt; np.binary_repr(10)</span>
+<span class="s2">&#39;1010&#39;</span>
+<span class="s2">&gt;&gt;&gt; np.right_shift(np.array(10), 1)</span>
+<span class="s2">array(5)</span>
+<span class="s2">&gt;&gt;&gt; np.binary_repr(5)</span>
+<span class="s2">&#39;101&#39;</span>
+<span class="s2">&quot;&quot;&quot;</span>
 
-<span class="sd">    For full documentation refer to :obj:`numpy.right_shift`.</span>
+<span class="n">right_shift</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;right_shift&quot;</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_right_shift_result_type</span><span class="p">,</span>
+    <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_right_shift</span><span class="p">,</span>
+    <span class="n">_RIGHT_SHIFT_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        An array containing the element-wise results.</span>
-
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Parameters `x1` and `x2` are supported as either scalar, :class:`dpnp.ndarray`</span>
-<span class="sd">    or :class:`dpctl.tensor.usm_ndarray`, but both `x1` and `x2` can not be scalars at the same time.</span>
-<span class="sd">    Parameters `where`, `dtype` and `subok` are supported with their default values.</span>
-<span class="sd">    Keyword argument `kwargs` is currently unsupported.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input data is supported as integer only.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.left_shift` : Shift the bits of an integer to the left.</span>
-
-<span class="sd">    Examples</span>
-<span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x1 = np.array([10])</span>
-<span class="sd">    &gt;&gt;&gt; x2 = np.array([1, 2, 3])</span>
-<span class="sd">    &gt;&gt;&gt; np.right_shift(x1, x2)</span>
-<span class="sd">    array([5, 2, 1])</span>
-
-<span class="sd">    The ``&gt;&gt;`` operator can be used as a shorthand for ``right_shift`` on</span>
-<span class="sd">    :class:`dpnp.ndarray`.</span>
-
-<span class="sd">    &gt;&gt;&gt; x1 &gt;&gt; x2</span>
-<span class="sd">    array([5, 2, 1])</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">check_nd_call_func</span><span class="p">(</span>
-        <span class="n">numpy</span><span class="o">.</span><span class="n">right_shift</span><span class="p">,</span>
-        <span class="n">dpnp_right_shift</span><span class="p">,</span>
-        <span class="n">x1</span><span class="p">,</span>
-        <span class="n">x2</span><span class="p">,</span>
-        <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span>
-        <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
-        <span class="n">where</span><span class="o">=</span><span class="n">where</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-        <span class="n">subok</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span>
-        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
-    <span class="p">)</span></div>
-
+<span class="c1"># bitwise_right_shift is an alias for right_shift</span>
+<span class="n">bitwise_right_shift</span> <span class="o">=</span> <span class="n">right_shift</span>
 </pre></div>
 
            </div>
