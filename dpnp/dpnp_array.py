@@ -347,22 +347,22 @@ class dpnp_array:
 
     def __iadd__(self, other):
         """Return ``self+=value``."""
-        dpnp.add(self, other, out=self)
+        dpnp.add._inplace_op(self, other)
         return self
 
     def __iand__(self, other):
         """Return ``self&=value``."""
-        dpnp.bitwise_and(self, other, out=self)
+        dpnp.bitwise_and._inplace_op(self, other)
         return self
 
     def __ifloordiv__(self, other):
         """Return ``self//=value``."""
-        dpnp.floor_divide(self, other, out=self)
+        dpnp.floor_divide._inplace_op(self, other)
         return self
 
     def __ilshift__(self, other):
         """Return ``self<<=value``."""
-        dpnp.left_shift(self, other, out=self)
+        dpnp.left_shift._inplace_op(self, other)
         return self
 
     def __imatmul__(self, other):
@@ -381,7 +381,7 @@ class dpnp_array:
             axes = [(-2, -1), (-2, -1), (-2, -1)]
 
         try:
-            dpnp.matmul(self, other, out=self, axes=axes)
+            dpnp.matmul(self, other, out=self, dtype=self.dtype, axes=axes)
         except AxisError:
             # AxisError should indicate that the axes argument didn't work out
             # which should mean the second operand not being 2 dimensional.
@@ -393,12 +393,12 @@ class dpnp_array:
 
     def __imod__(self, other):
         """Return ``self%=value``."""
-        dpnp.remainder(self, other, out=self)
+        dpnp.remainder._inplace_op(self, other)
         return self
 
     def __imul__(self, other):
         """Return ``self*=value``."""
-        dpnp.multiply(self, other, out=self)
+        dpnp.multiply._inplace_op(self, other)
         return self
 
     def __index__(self):
@@ -416,34 +416,34 @@ class dpnp_array:
 
     def __ior__(self, other):
         """Return ``self|=value``."""
-        dpnp.bitwise_or(self, other, out=self)
+        dpnp.bitwise_or._inplace_op(self, other)
         return self
 
     def __ipow__(self, other):
         """Return ``self**=value``."""
-        dpnp.power(self, other, out=self)
+        dpnp.power._inplace_op(self, other)
         return self
 
     def __irshift__(self, other):
         """Return ``self>>=value``."""
-        dpnp.right_shift(self, other, out=self)
+        dpnp.right_shift._inplace_op(self, other)
         return self
 
     def __isub__(self, other):
         """Return ``self-=value``."""
-        dpnp.subtract(self, other, out=self)
+        dpnp.subtract._inplace_op(self, other)
         return self
 
     # '__iter__',
 
     def __itruediv__(self, other):
         """Return ``self/=value``."""
-        dpnp.true_divide(self, other, out=self)
+        dpnp.true_divide._inplace_op(self, other)
         return self
 
     def __ixor__(self, other):
         """Return ``self^=value``."""
-        dpnp.bitwise_xor(self, other, out=self)
+        dpnp.bitwise_xor._inplace_op(self, other)
         return self
 
     def __le__(self, other):
