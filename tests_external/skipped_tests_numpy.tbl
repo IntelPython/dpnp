@@ -322,7 +322,6 @@ tests/test_deprecations.py::TestAlen::test_alen
 tests/test_deprecations.py::TestArrayDataAttributeAssignmentDeprecation::test_data_attr_assignment
 tests/test_deprecations.py::TestBinaryReprInsufficientWidthParameterForRepresentation::test_insufficient_width_negative
 tests/test_deprecations.py::TestBinaryReprInsufficientWidthParameterForRepresentation::test_insufficient_width_positive
-tests/test_deprecations.py::TestBincount::test_bincount_minlength
 tests/test_deprecations.py::TestComparisonDeprecations::test_array_richcompare_legacy_weirdness
 tests/test_deprecations.py::TestComparisonDeprecations::test_normal_types
 tests/test_deprecations.py::TestComparisonDeprecations::test_string

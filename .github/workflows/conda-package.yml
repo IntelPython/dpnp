@@ -78,18 +78,6 @@ jobs:
       - name: Install conda-build
         run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
 
-      - name: Cache conda packages
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        env:
-          CACHE_NUMBER: 1  # Increase to reset cache
-        with:
-          path: ${{ runner.os == 'Linux' && '/home/runner/conda_pkgs_dir' || 'C:\Users\runneradmin\conda_pkgs_dir' }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('**/meta.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
-
       - name: Build conda package
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
         env:
@@ -125,7 +113,6 @@ jobs:
     continue-on-error: true
 
     env:
-      conda-pkgs: '/home/runner/conda_pkgs_dir/'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       extracted-pkg-path: '${{ github.workspace }}/pkg/'
@@ -166,29 +153,12 @@ jobs:
           mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
-      - name: Collect dependencies
+      - name: Get package version
         run: |
           export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
 
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
-
-          mamba install ${{ env.PACKAGE_NAME }}=${PACKAGE_VERSION} python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
-          cat lockfile
-        env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
-
-      - name: Cache conda packages
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        env:
-          CACHE_NUMBER: 1 # Increase to reset cache
-        with:
-          path: ${{ env.conda-pkgs }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
         run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
@@ -243,7 +213,6 @@ jobs:
     continue-on-error: true
 
     env:
-      conda-pkgs: 'C:\Users\runneradmin\conda_pkgs_dir\'
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       extracted-pkg-path: '${{ github.workspace }}\pkg'
@@ -303,7 +272,7 @@ jobs:
       - name: Dump version.json
         run: more ${{ env.ver-json-path }}
 
-      - name: Collect dependencies
+      - name: Get package version
         run: |
           @echo on
           set "SCRIPT=${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}"
@@ -312,25 +281,6 @@ jobs:
           )
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
-
-          mamba install ${{ env.PACKAGE_NAME }}=%PACKAGE_VERSION% python=${{ matrix.python }} ${{ env.TEST_CHANNELS }} --only-deps --dry-run > lockfile
-        env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
-
-      - name: Dump lockfile
-        run: more lockfile
-
-      - name: Cache conda packages
-        uses: actions/cache@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
-        env:
-          CACHE_NUMBER: 1  # Increase to reset cache
-        with:
-          path: ${{ env.conda-pkgs }}
-          key:
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-${{hashFiles('lockfile') }}
-          restore-keys: |
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-python-${{ matrix.python }}-
-            ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-
 
       - name: Install dpnp
         run: |

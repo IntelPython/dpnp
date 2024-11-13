@@ -278,6 +278,13 @@ private:
     T *data = nullptr;
 };
 
+template <typename dT>
+bool check_in_bounds(const dT &val, const dT &min, const dT &max)
+{
+    Less<dT> _less;
+    return !_less(val, min) && !_less(max, val) && !IsNan<dT>::isnan(val);
+}
+
 template <typename T, typename HistImpl, typename Edges, typename Weights>
 class histogram_kernel;
 
@@ -330,8 +337,8 @@ void submit_histogram(const T *in,
 }
 
 void validate(const usm_ndarray &sample,
-              const usm_ndarray &bins,
-              std::optional<const dpctl::tensor::usm_ndarray> &weights,
+              const std::optional<const dpctl::tensor::usm_ndarray> &bins,
+              const std::optional<const dpctl::tensor::usm_ndarray> &weights,
               const usm_ndarray &histogram);
 
 uint32_t get_local_hist_copies_count(uint32_t loc_mem_size_in_items,
