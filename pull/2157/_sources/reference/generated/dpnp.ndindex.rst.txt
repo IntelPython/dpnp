@@ -32,9 +32,6 @@
 
 
 
-   .. automethod:: ndincr
-
-
    ..
       Special methods
 
