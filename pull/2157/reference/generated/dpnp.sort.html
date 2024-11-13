@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.sort &mdash; Data Parallel Extension for NumPy 0.17.0dev1+15.g38c8fc7392e documentation</title>
+  <title>dpnp.sort &mdash; Data Parallel Extension for NumPy 0.17.0dev1+24.g7401c6c2ac3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5932ae64"></script>
+      <script src="../../_static/documentation_options.js?v=de0dba8a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -120,7 +120,7 @@
 <h1>dpnp.sort<a class="headerlink" href="#dpnp-sort" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.sort">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.sort" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.sort" title="Link to this definition"></a></dt>
 <dd><p>Return a sorted copy of an array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sort.html#numpy.sort" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.sort</span></code></a>.</p>
 <dl class="field-list simple">
@@ -129,8 +129,8 @@
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be sorted.</p></li>
 <li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- Axis along which to sort. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the array is flattened before
 sorting. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which sorts along the last axis.</p></li>
-<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;stable&quot;}</em><em>, </em><em>optional</em>) -- Sorting algorithm. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is equivalent to
-<code class="docutils literal notranslate"><span class="pre">&quot;stable&quot;</span></code>. Unlike NumPy, no other option is accepted here.</p></li>
+<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;stable&quot;</em><em>, </em><em>&quot;mergesort&quot;</em><em>, </em><em>&quot;radixsort&quot;}</em><em>, </em><em>optional</em>) -- Sorting algorithm. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is equivalent to
+<code class="docutils literal notranslate"><span class="pre">&quot;stable&quot;</span></code>.</p></li>
 <li><p><strong>stable</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- Sort stability. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned array will maintain
 the relative order of <code class="docutils literal notranslate"><span class="pre">a</span></code> values which compare as equal.
 The same behavior applies when set to <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
@@ -150,8 +150,8 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 returned as a one-dimensional array. Otherwise, an <code class="docutils literal notranslate"><span class="pre">AxisError</span></code> is raised.</p>
 <p class="rubric">Limitations</p>
 <p>Parameters <cite>order</cite> is only supported with its default value.
-Parameter <cite>kind</cite> can only be <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;stable&quot;</span></code> which are equivalent.
-Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.
+Sorting algorithms <code class="docutils literal notranslate"><span class="pre">&quot;quicksort&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;heapsort&quot;</span></code> are not supported.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">

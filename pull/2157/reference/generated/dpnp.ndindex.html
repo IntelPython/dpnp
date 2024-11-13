@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndindex &mdash; Data Parallel Extension for NumPy 0.17.0dev1+15.g38c8fc7392e documentation</title>
+  <title>dpnp.ndindex &mdash; Data Parallel Extension for NumPy 0.17.0dev1+24.g7401c6c2ac3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5932ae64"></script>
+      <script src="../../_static/documentation_options.js?v=de0dba8a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -121,12 +121,12 @@
 <h1>dpnp.ndindex<a class="headerlink" href="#dpnp-ndindex" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpnp.ndindex">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">ndindex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndindex" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">ndindex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#ndindex"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ndindex" title="Link to this definition"></a></dt>
 <dd><p>An N-dimensional iterator object to index arrays.</p>
-<p>Given the shape of an array, an <cite>ndindex</cite> instance iterates over the
-N-dimensional index of the array. At each iteration a tuple of indices is
-returned, the last dimension is iterated over first.</p>
-<p>For full documentation refer to <a class="reference internal" href="#dpnp.ndindex" title="numpy.ndindex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndindex</span></code></a>.</p>
+<p>Given the shape of an array, an <a class="reference internal" href="#dpnp.ndindex" title="dpnp.ndindex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndindex</span></code></a> instance iterates over
+the N-dimensional index of the array. At each iteration a tuple of indices
+is returned, the last dimension is iterated over first.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndindex.html#numpy.ndindex" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.ndindex</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>shape</strong> (<em>ints</em><em>, or </em><em>a single tuple</em><em> of </em><em>ints</em>) -- The size of each dimension of the array can be passed as individual
@@ -171,13 +171,11 @@ parameters or as the elements of a tuple.</p>
 <p class="rubric">Methods</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.ndindex.__next__">
-<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/numpy/lib/_index_tricks_impl.html#ndindex.__next__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ndindex.__next__" title="Link to this definition"></a></dt>
-<dd><p>Standard iterator method, updates the index and returns the index
-tuple.</p>
+<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#ndindex.__next__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ndindex.__next__" title="Link to this definition"></a></dt>
+<dd><p>Standard iterator method, updates the index and returns the index tuple.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>val</strong> -- Returns a tuple containing the indices of the current
-iteration.</p>
+<dd class="field-odd"><p><strong>val</strong> -- Returns a tuple containing the indices of the current iteration.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a> of ints</p>
