@@ -1060,7 +1060,7 @@ def mask_indices(
 
 # pylint: disable=invalid-name
 # pylint: disable=too-few-public-methods
-class ndindex(numpy.ndindex):
+class ndindex:
     """
     An N-dimensional iterator object to index arrays.
 
@@ -1110,7 +1110,10 @@ class ndindex(numpy.ndindex):
     """
 
     def __init__(self, *shape):
-        super().__init__(shape)
+        self.ndindex_ = numpy.ndindex(*shape)
+
+    def __iter__(self):
+        return self.ndindex_
 
     def __next__(self):
         """
@@ -1123,8 +1126,7 @@ class ndindex(numpy.ndindex):
 
         """
 
-        # pylint: disable=useless-parent-delegation
-        return super().__next__()
+        return self.ndindex_.__next__()
 
 
 def nonzero(a):
