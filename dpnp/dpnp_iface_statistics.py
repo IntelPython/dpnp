@@ -64,7 +64,6 @@ __all__ = [
     "amax",
     "amin",
     "average",
-    "bincount",
     "corrcoef",
     "correlate",
     "cov",
@@ -337,28 +336,6 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
             scl = dpnp.broadcast_to(scl, avg.shape).copy()
         return avg, scl
     return avg
-
-
-def bincount(x1, weights=None, minlength=0):
-    """
-    Count number of occurrences of each value in array of non-negative integers.
-
-    For full documentation refer to :obj:`numpy.bincount`.
-
-    See Also
-    --------
-    :obj:`dpnp.unique` : Find the unique elements of an array.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> res = np.bincount(np.arange(5))
-    >>> print(res)
-    [1, 1, 1, 1, 1]
-
-    """
-
-    return call_origin(numpy.bincount, x1, weights=weights, minlength=minlength)
 
 
 def corrcoef(x, y=None, rowvar=True, *, dtype=None):

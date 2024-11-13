@@ -165,6 +165,19 @@ size_t get_local_mem_size_in_items(const sycl::device &device, size_t reserve)
     return get_local_mem_size_in_bytes(device, sizeof(T) * reserve) / sizeof(T);
 }
 
+template <typename T>
+inline size_t get_local_mem_size_in_items(const sycl::queue &queue)
+{
+    return get_local_mem_size_in_items<T>(queue.get_device());
+}
+
+template <typename T>
+inline size_t get_local_mem_size_in_items(const sycl::queue &queue,
+                                          size_t reserve)
+{
+    return get_local_mem_size_in_items<T>(queue.get_device(), reserve);
+}
+
 template <int Dims>
 sycl::nd_range<Dims> make_ndrange(const sycl::range<Dims> &global_range,
                                   const sycl::range<Dims> &local_range,

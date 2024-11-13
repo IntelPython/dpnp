@@ -50,16 +50,24 @@ namespace histogram
 {
 
 void validate(const usm_ndarray &sample,
-              const usm_ndarray &bins,
-              std::optional<const dpctl::tensor::usm_ndarray> &weights,
+              const std::optional<const dpctl::tensor::usm_ndarray> &bins,
+              const std::optional<const dpctl::tensor::usm_ndarray> &weights,
               const usm_ndarray &histogram)
 {
     auto exec_q = sample.get_queue();
     using array_ptr = const usm_ndarray *;
 
-    std::vector<array_ptr> arrays{&sample, &bins, &histogram};
+    std::vector<array_ptr> arrays{&sample, &histogram};
     std::unordered_map<array_ptr, std::string> names = {
-        {arrays[0], "sample"}, {arrays[1], "bins"}, {arrays[2], "histogram"}};
+        {arrays[0], "sample"}, {arrays[1], "histogram"}};
+
+    array_ptr bins_ptr = nullptr;
+
+    if (bins.has_value()) {
+        bins_ptr = &bins.value();
+        arrays.push_back(bins_ptr);
+        names.insert({bins_ptr, "bins"});
+    }
 
     array_ptr weights_ptr = nullptr;
 
@@ -116,11 +124,11 @@ void validate(const usm_ndarray &sample,
     };
 
     check_overlaping(&sample, &histogram);
-    check_overlaping(&bins, &histogram);
+    check_overlaping(bins_ptr, &histogram);
     check_overlaping(weights_ptr, &histogram);
 
-    if (bins.get_size() < 2) {
-        throw py::value_error(get_name(&bins) +
+    if (bins_ptr && bins_ptr->get_size() < 2) {
+        throw py::value_error(get_name(bins_ptr) +
                               " parameter must have at least 2 elements");
     }
 
@@ -160,40 +168,43 @@ void validate(const usm_ndarray &sample,
     }
 
     if (sample.get_ndim() == 1) {
-        if (bins.get_ndim() != 1) {
+        if (bins_ptr != nullptr && bins_ptr->get_ndim() != 1) {
             throw py::value_error(get_name(&sample) + " parameter is 1d, but " +
-                                  get_name(&bins) + " is " +
-                                  std::to_string(bins.get_ndim()) + "d");
+                                  get_name(bins_ptr) + " is " +
+                                  std::to_string(bins_ptr->get_ndim()) + "d");
         }
     }
     else if (sample.get_ndim() == 2) {
         auto sample_count = sample.get_shape(0);
         auto expected_dims = sample.get_shape(1);
 
-        if (bins.get_ndim() != expected_dims) {
+        if (bins_ptr != nullptr && bins_ptr->get_ndim() != expected_dims) {
             throw py::value_error(get_name(&sample) + " parameter has shape {" +
                                   std::to_string(sample_count) + "x" +
                                   std::to_string(expected_dims) + "}" +
-                                  ", so " + get_name(&bins) +
+                                  ", so " + get_name(bins_ptr) +
                                   " parameter expected to be " +
                                   std::to_string(expected_dims) +
                                   "d. "
                                   "Actual " +
-                                  std::to_string(bins.get_ndim()) + "d");
+                                  std::to_string(bins->get_ndim()) + "d");
         }
     }
 
-    py::ssize_t expected_hist_size = 1;
-    for (int i = 0; i < bins.get_ndim(); ++i) {
-        expected_hist_size *= (bins.get_shape(i) - 1);
-    }
+    if (bins_ptr != nullptr) {
+        py::ssize_t expected_hist_size = 1;
+        for (int i = 0; i < bins_ptr->get_ndim(); ++i) {
+            expected_hist_size *= (bins_ptr->get_shape(i) - 1);
+        }
 
-    if (histogram.get_size() != expected_hist_size) {
-        throw py::value_error(
-            get_name(&histogram) + " and " + get_name(&bins) +
-            " shape mismatch. " + get_name(&histogram) +
-            " expected to have size = " + std::to_string(expected_hist_size) +
-            ". Actual " + std::to_string(histogram.get_size()));
+        if (histogram.get_size() != expected_hist_size) {
+            throw py::value_error(
+                get_name(&histogram) + " and " + get_name(bins_ptr) +
+                " shape mismatch. " + get_name(&histogram) +
+                " expected to have size = " +
+                std::to_string(expected_hist_size) + ". Actual " +
+                std::to_string(histogram.get_size()));
+        }
     }
 
     int64_t max_hist_size = std::numeric_limits<uint32_t>::max() - 1;

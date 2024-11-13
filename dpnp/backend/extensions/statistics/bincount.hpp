@@ -22,19 +22,45 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._lapack_impl extensions
-//
-//*****************************************************************************
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#pragma once
 
-#include "bincount.hpp"
-#include "histogram.hpp"
+#include <dpctl4pybind11.hpp>
+#include <sycl/sycl.hpp>
 
-PYBIND11_MODULE(_statistics_impl, m)
+#include "dispatch_table.hpp"
+
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+
+namespace statistics
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-}
+namespace histogram
+{
+struct Bincount
+{
+    using FnT = sycl::event (*)(sycl::queue &,
+                                const void *,
+                                const int64_t,
+                                const int64_t,
+                                const void *,
+                                void *,
+                                const size_t,
+                                const size_t,
+                                const std::vector<sycl::event> &);
+
+    common::DispatchTable2<FnT> dispatch_table;
+
+    Bincount();
+
+    std::tuple<sycl::event, sycl::event>
+        call(const dpctl::tensor::usm_ndarray &input,
+             const int64_t min,
+             const int64_t max,
+             const std::optional<const dpctl::tensor::usm_ndarray> &weights,
+             dpctl::tensor::usm_ndarray &output,
+             const std::vector<sycl::event> &depends);
+};
+
+void populate_bincount(py::module_ m);
+} // namespace histogram
+} // namespace statistics
