@@ -187,8 +187,11 @@ The ``&`` operator can be used as a shorthand for ``bitwise_and`` on
 >>> x1 & x2
 array([ 2,  4, 16])
 
-The number 13 is represented by ``00001101``.  Likewise, 17 is represented by
+The number 13 is represented by ``00001101``. Likewise, 17 is represented by
 ``00010001``. The bit-wise AND of 13 and 17 is therefore ``000000001``, or 1:
+
+>>> np.bitwise_and(np.array(13), 17)
+array(1)
 
 >>> np.bitwise_and(np.array(14), 13)
 array(12)
