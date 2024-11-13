@@ -3,6 +3,7 @@ var hierarchy =
     [ "statistics::common::AtomicOp< T, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op.html", null ],
     [ "statistics::common::AtomicOp< std::complex< T >, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op_3_01std_1_1complex_3_01_t_01_4_00_01_order_00_01_scope_01_4.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
+    [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
