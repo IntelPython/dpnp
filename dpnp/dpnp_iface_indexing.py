@@ -1059,54 +1059,72 @@ def mask_indices(
 
 
 # pylint: disable=invalid-name
-ndindex = numpy.ndindex
-ndindex.__doc__ = """
-An N-dimensional iterator object to index arrays.
+# pylint: disable=too-few-public-methods
+class ndindex(numpy.ndindex):
+    """
+    An N-dimensional iterator object to index arrays.
 
-Given the shape of an array, an `ndindex` instance iterates over the
-N-dimensional index of the array. At each iteration a tuple of indices is
-returned, the last dimension is iterated over first.
+    Given the shape of an array, an :obj:`dpnp.ndindex` instance iterates over
+    the N-dimensional index of the array. At each iteration a tuple of indices
+    is returned, the last dimension is iterated over first.
 
-For full documentation refer to :obj:`numpy.ndindex`.
+    For full documentation refer to :obj:`numpy.ndindex`.
 
-Parameters
-----------
-shape : ints, or a single tuple of ints
-    The size of each dimension of the array can be passed as individual
-    parameters or as the elements of a tuple.
+    Parameters
+    ----------
+    shape : ints, or a single tuple of ints
+        The size of each dimension of the array can be passed as individual
+        parameters or as the elements of a tuple.
 
-See Also
---------
-:obj:`dpnp.ndenumerate` : Multidimensional index iterator.
-:obj:`dpnp.flatiter` : Flat iterator object to iterate over arrays.
+    See Also
+    --------
+    :obj:`dpnp.ndenumerate` : Multidimensional index iterator.
+    :obj:`dpnp.flatiter` : Flat iterator object to iterate over arrays.
 
-Examples
---------
->>> import dpnp as np
+    Examples
+    --------
+    >>> import dpnp as np
 
-Dimensions as individual arguments
+    Dimensions as individual arguments
 
->>> for index in np.ndindex(3, 2, 1):
-...     print(index)
-(0, 0, 0)
-(0, 1, 0)
-(1, 0, 0)
-(1, 1, 0)
-(2, 0, 0)
-(2, 1, 0)
+    >>> for index in np.ndindex(3, 2, 1):
+    ...     print(index)
+    (0, 0, 0)
+    (0, 1, 0)
+    (1, 0, 0)
+    (1, 1, 0)
+    (2, 0, 0)
+    (2, 1, 0)
 
-Same dimensions - but in a tuple ``(3, 2, 1)``
+    Same dimensions - but in a tuple ``(3, 2, 1)``
 
->>> for index in np.ndindex((3, 2, 1)):
-...     print(index)
-(0, 0, 0)
-(0, 1, 0)
-(1, 0, 0)
-(1, 1, 0)
-(2, 0, 0)
-(2, 1, 0)
+    >>> for index in np.ndindex((3, 2, 1)):
+    ...     print(index)
+    (0, 0, 0)
+    (0, 1, 0)
+    (1, 0, 0)
+    (1, 1, 0)
+    (2, 0, 0)
+    (2, 1, 0)
 
-"""
+    """
+
+    def __init__(self, *shape):
+        super().__init__(shape)
+
+    def __next__(self):
+        """
+        Standard iterator method, updates the index and returns the index tuple.
+
+        Returns
+        -------
+        val : tuple of ints
+            Returns a tuple containing the indices of the current iteration.
+
+        """
+
+        # pylint: disable=useless-parent-delegation
+        return super().__next__()
 
 
 def nonzero(a):
