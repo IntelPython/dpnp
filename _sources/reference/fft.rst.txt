@@ -1,5 +1,5 @@
-FFT Functions
-=============
+Discrete Fourier Transform
+==========================
 
 .. https://numpy.org/doc/stable/reference/routines.fft.html
 
