@@ -176,7 +176,6 @@ jobs:
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
           python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
-        working-directory: ${{ github.workspace }}
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
@@ -190,7 +189,6 @@ jobs:
           command: |
             . $CONDA/etc/profile.d/conda.sh
             conda activate ${{ env.TEST_ENV_NAME }}
-            cd ${{ github.workspace }}
             pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows:
@@ -313,7 +311,6 @@ jobs:
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
           pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
-        working-directory: ${{ env.workdir }}
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
@@ -326,7 +323,6 @@ jobs:
           retry_on: any
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
-            & cd ${{ env.workdir }}
             & pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:
