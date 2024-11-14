@@ -424,6 +424,7 @@ class TestCumProd:
         assert_array_equal(expected, result)
         assert result is iout
 
+    @testing.with_requires("numpy>=2.0.0")
     def test_include_initial(self):
         a = numpy.arange(8).reshape(2, 2, 2)
         ia = dpnp.array(a)
@@ -527,6 +528,7 @@ class TestCumSum:
         assert_array_equal(expected, result)
         assert result is iout
 
+    @testing.with_requires("numpy>=2.0.0")
     def test_include_initial(self):
         a = numpy.arange(8).reshape(2, 2, 2)
         ia = dpnp.array(a)
@@ -1991,7 +1993,7 @@ class TestSinc:
         expected = numpy.sinc(a)
         assert_dtype_allclose(result, expected)
 
-    # TODO: add a proper NumPY version once resolved
+    # TODO: add a proper NumPy version once resolved
     @testing.with_requires("numpy>=2.0.0")
     def test_zero_fp16(self):
         a = numpy.array([0.0], dtype=numpy.float16)
