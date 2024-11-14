@@ -94,9 +94,8 @@ struct HistogramEdges
     template <typename dT>
     bool in_bounds(const dT *val, const boundsT &bounds) const
     {
-        Less<dT> _less;
-        return !_less(val[0], std::get<0>(bounds)) &&
-               !_less(std::get<1>(bounds), val[0]) && !IsNan<dT>::isnan(val[0]);
+        return check_in_bounds(val[0], std::get<0>(bounds),
+                               std::get<1>(bounds));
     }
 
 private:
@@ -110,7 +109,7 @@ template <typename T>
 using UncachedEdges = HistogramEdges<T, UncachedData<const T, 1>>;
 
 template <typename T, typename BinsT, typename HistType = size_t>
-struct histogram_kernel
+struct HistogramF
 {
     static sycl::event impl(sycl::queue &exec_q,
                             const void *vin,
@@ -185,7 +184,7 @@ struct histogram_kernel
 };
 
 template <typename SampleType, typename HistType>
-using histogram_kernel_ = histogram_kernel<SampleType, SampleType, HistType>;
+using HistogramF_ = HistogramF<SampleType, SampleType, HistType>;
 
 } // namespace
 
@@ -212,7 +211,7 @@ using SupportedTypes = std::tuple<std::tuple<uint64_t, int64_t>,
 
 Histogram::Histogram() : dispatch_table("sample", "histogram")
 {
-    dispatch_table.populate_dispatch_table<SupportedTypes, histogram_kernel_>();
+    dispatch_table.populate_dispatch_table<SupportedTypes, HistogramF_>();
 }
 
 std::tuple<sycl::event, sycl::event>

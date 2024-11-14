@@ -258,36 +258,33 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.histogram(x, bins)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount(self, xp, dtype):
         x = testing.shaped_arange((3,), xp, dtype)
         return xp.bincount(x)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount_duplicated_value(self, xp, dtype):
         x = xp.array([1, 2, 2, 1, 2, 4], dtype)
         return xp.bincount(x)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_combination_bincount(names=["x_type", "w_type"])
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(
+        accept_error=TypeError, type_check=has_support_aspect64()
+    )
     def test_bincount_with_weight(self, xp, x_type, w_type):
         x = testing.shaped_arange((3,), xp, x_type)
         w = testing.shaped_arange((3,), xp, w_type)
         return xp.bincount(x, weights=w)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount_with_minlength(self, xp, dtype):
         x = testing.shaped_arange((3,), xp, dtype)
         return xp.bincount(x, minlength=5)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_combination_bincount(names=["x_type", "w_type"])
     def test_bincount_invalid_weight_length(self, x_type, w_type):
         for xp in (numpy, cupy):
@@ -298,7 +295,6 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises((ValueError, TypeError)):
                 xp.bincount(x, weights=w)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_signed_dtypes_bincount()
     def test_bincount_negative(self, dtype):
         for xp in (numpy, cupy):
@@ -306,7 +302,6 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.bincount(x)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     def test_bincount_too_deep(self, dtype):
         for xp in (numpy, cupy):
@@ -314,22 +309,19 @@ class TestHistogram(unittest.TestCase):
             with pytest.raises(ValueError):
                 xp.bincount(x)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     def test_bincount_too_small(self, dtype):
         for xp in (numpy, cupy):
-            x = xp.zeros((), dtype)
+            x = xp.zeros((), dtype=dtype)
             with pytest.raises(ValueError):
                 xp.bincount(x)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_bincount_zero(self, xp, dtype):
         x = testing.shaped_arange((3,), xp, dtype)
         return xp.bincount(x, minlength=0)
 
-    @pytest.mark.skip("bincount() is not implemented yet")
     @for_all_dtypes_bincount()
     def test_bincount_too_small_minlength(self, dtype):
         for xp in (numpy, cupy):
