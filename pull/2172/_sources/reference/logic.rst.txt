@@ -1,4 +1,4 @@
-Logic Functions
+Logic functions
 ===============
 
 .. https://numpy.org/doc/stable/reference/routines.logic.html
