@@ -464,6 +464,8 @@ def test_meshgrid(device):
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("cumulative_prod", [1, 2, 3, 4, 5, 6]),
+        pytest.param("cumulative_sum", [1, 2, 3, 4, 5, 6]),
         pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
@@ -555,6 +557,14 @@ def test_1in_1out(func, data, device):
     ):
         # `trapezoid` is available from NumPy 2.0
         func = "trapz"
+
+    if (
+        func in ["cumulative_prod", "cumulative_sum"]
+        and numpy.lib.NumpyVersion(numpy.__version__) < "2.1.0"
+    ):
+        pytest.skip(
+            "cumulative_prod and cumulative_sum are available from NumPy 2.1"
+        )
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
