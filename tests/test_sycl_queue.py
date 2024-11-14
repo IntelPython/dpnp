@@ -558,6 +558,14 @@ def test_1in_1out(func, data, device):
         # `trapezoid` is available from NumPy 2.0
         func = "trapz"
 
+    if (
+        func in ["cumulative_prod", "cumulative_sum"]
+        and numpy.lib.NumpyVersion(numpy.__version__) < "2.1.0"
+    ):
+        pytest.skip(
+            "cumulative_prod and cumulative_sum are available from NumPy 2.1"
+        )
+
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
     assert_dtype_allclose(result, expected)
