@@ -7,6 +7,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestCount(unittest.TestCase):
+
     @testing.for_all_dtypes()
     def test_count_nonzero(self, dtype):
         def func(xp):
@@ -17,7 +18,7 @@ class TestCount(unittest.TestCase):
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
                 assert isinstance(c, xp.ndarray)
-                assert c.dtype == "p"
+                assert c.dtype == "l"
                 assert c.shape == ()
             return int(c)
 
@@ -32,7 +33,7 @@ class TestCount(unittest.TestCase):
                 # CuPy returns zero-dimensional array instead of
                 # returning a scalar value
                 assert isinstance(c, xp.ndarray)
-                assert c.dtype == "p"
+                assert c.dtype == "l"
                 assert c.shape == ()
             return int(c)
 
