@@ -25,7 +25,7 @@
 # *****************************************************************************
 
 """
-Interface of the Array manipulation routines part of the DPNP
+Interface of the array manipulation routines part of the DPNP
 
 Notes
 -----

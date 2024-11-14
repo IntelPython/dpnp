@@ -1,4 +1,4 @@
-Sorting, Searching, and Counting
+Sorting, searching, and counting
 ================================
 
 .. https://numpy.org/doc/stable/reference/routines.sort.html

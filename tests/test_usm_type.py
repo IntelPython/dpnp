@@ -776,6 +776,14 @@ def test_2in_with_scalar_1out(func, data, scalar, usm_type):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_apply_along_axis(usm_type):
+    x = dp.arange(9, usm_type=usm_type).reshape(3, 3)
+    y = dp.apply_along_axis(dp.sum, 0, x)
+
+    assert x.usm_type == y.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_broadcast_to(usm_type):
     x = dp.ones(7, usm_type=usm_type)
     y = dp.broadcast_to(x, (2, 7))
@@ -800,6 +808,18 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     x = dp.array(data1, usm_type=usm_type_x)
     y = dp.array(data2, usm_type=usm_type_y)
     z = getattr(dp, func)((x, y))
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_extract(usm_type_x, usm_type_y):
+    x = dp.arange(3, usm_type=usm_type_x)
+    y = dp.array([True, False, True], usm_type=usm_type_y)
+    z = dp.extract(y, x)
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
