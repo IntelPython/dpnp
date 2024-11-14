@@ -5,15 +5,15 @@ import pytest
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
 @testing.parameterize(*(testing.product({"axis": [0, 1, -1]})))
-@pytest.mark.skip("'apply_along_axis' is not implemented yet")
 class TestApplyAlongAxis(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_simple(self, xp):
-        a = xp.ones((20, 10), "d")
+        a = xp.ones((20, 10), dtype="f")
         return xp.apply_along_axis(len, self.axis, a)
 
     @testing.for_all_dtypes(no_bool=True)
@@ -22,7 +22,7 @@ class TestApplyAlongAxis(unittest.TestCase):
         a = xp.arange(27, dtype=dtype).reshape((3, 3, 3))
         return xp.apply_along_axis(xp.sum, self.axis, a)
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_0d_array(self, xp):
 
         def sum_to_0d(x):
@@ -100,7 +100,6 @@ class TestApplyAlongAxis(unittest.TestCase):
 
 
 @testing.with_requires("numpy>=1.16")
-@pytest.mark.skip("'apply_along_axis' is not implemented yet")
 def test_apply_along_axis_invalid_axis():
     for xp in [numpy, cupy]:
         a = xp.ones((8, 4))

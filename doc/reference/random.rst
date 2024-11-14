@@ -1,4 +1,4 @@
-Random Sampling (``dpnp.random``)
+Random sampling (``dpnp.random``)
 =================================
 
 .. https://numpy.org/doc/stable/reference/random/legacy.html
