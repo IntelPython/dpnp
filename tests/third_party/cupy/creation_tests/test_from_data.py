@@ -516,6 +516,7 @@ class TestFromData(unittest.TestCase):
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_copy_multigpu(self, dtype, order):
         q1 = dpctl.SyclQueue()
         q2 = dpctl.SyclQueue()
