@@ -325,7 +325,7 @@ def bincount(x, weights=None, minlength=None):
     -------
     out : dpnp.ndarray of ints
         The result of binning the input array.
-        The length of `out` is equal to ``np.amax(x) + 1``.
+        The length of `out` is equal to ``dpnp.max(x) + 1``.
 
     See Also
     --------
@@ -353,7 +353,7 @@ def bincount(x, weights=None, minlength=None):
       ...
     TypeError: x must be an integer array
 
-    A possible use of ``bincount`` is to perform sums over
+    A possible use of :obj:`dpnp.bincount` is to perform sums over
     variable-size chunks of an array, using the `weights` keyword.
 
     >>> w = np.array([0.3, 0.5, 0.2, 0.7, 1., -0.6], dtype=np.float32) # weights
