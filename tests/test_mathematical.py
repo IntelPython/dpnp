@@ -424,7 +424,7 @@ class TestCumProd:
         assert_array_equal(expected, result)
         assert result is iout
 
-    @testing.with_requires("numpy>=2.0.0")
+    @testing.with_requires("numpy>=2.1.0")
     def test_include_initial(self):
         a = numpy.arange(8).reshape(2, 2, 2)
         ia = dpnp.array(a)
@@ -528,7 +528,7 @@ class TestCumSum:
         assert_array_equal(expected, result)
         assert result is iout
 
-    @testing.with_requires("numpy>=2.0.0")
+    @testing.with_requires("numpy>=2.1.0")
     def test_include_initial(self):
         a = numpy.arange(8).reshape(2, 2, 2)
         ia = dpnp.array(a)

@@ -1163,8 +1163,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
            [4, 5, 6]])
     >>> np.cumsum(a)
     array([ 1,  3,  6, 10, 15, 21])
-    >>> np.cumsum(a, dtype=float)     # specifies type of output value(s)
-    array([ 1.,  3.,  6., 10., 15., 21.])
+    >>> np.cumsum(a, dtype=np.float32)     # specifies type of output value(s)
+    array([ 1.,  3.,  6., 10., 15., 21.], dtype=np.float32)
 
     >>> np.cumsum(a, axis=0)     # sum over rows for each of the 3 columns
     array([[1, 2, 3],
@@ -1175,8 +1175,8 @@ def cumsum(a, axis=None, dtype=None, out=None):
 
     ``cumsum(b)[-1]`` may not be equal to ``sum(b)``
 
-    >>> b = np.array([1, 2e-9, 3e-9] * 10000)
-    >>> b.cumsum().dtype == b.sum().dtype == np.float64
+    >>> b = np.array([1, 2e-7, 3e-7] * 100000, dtype=np.float32)
+    >>> b.cumsum().dtype == b.sum().dtype == np.float32
     True
     >>> b.cumsum()[-1] == b.sum()
     array(False)
@@ -1208,16 +1208,16 @@ def cumulative_prod(
 
     This function is an Array API compatible alternative to :obj:`dpnp.cumprod`.
 
-    For full documentation refer to :obj:`numpy.cumprod`.
+    For full documentation refer to :obj:`numpy.cumulative_prod`.
 
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : {None, int}, optional
-        Axis along which the cumulative product is computed. The default
-        (``None``) is only allowed for one-dimensional arrays. For arrays
-        with more than one dimension `axis` is required.
+        Axis along which the cumulative product is computed. The default value
+        is only allowed for one-dimensional arrays. For arrays with more than
+        one dimension `axis` is required.
         Default: ``None``.
     dtype : {None, dtype}, optional
         Type of the returned array and of the accumulator in which the elements
@@ -1262,13 +1262,13 @@ def cumulative_prod(
     The cumulative product for each column (i.e., over the rows) of `b`:
 
     >>> b = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> np.cumulative_prod(a, axis=0)
+    >>> np.cumulative_prod(b, axis=0)
     array([[ 1,  2,  3],
            [ 4, 10, 18]])
 
     The cumulative product for each row (i.e. over the columns) of `b`:
 
-    >>> np.cumulative_prod(a, axis=1)
+    >>> np.cumulative_prod(b, axis=1)
     array([[  1,   2,   6],
            [  4,  20, 120]])
 
@@ -1294,14 +1294,14 @@ def cumulative_sum(
 
     This function is an Array API compatible alternative to :obj:`dpnp.cumsum`.
 
-    For full documentation refer to :obj:`numpy.cumsum`.
+    For full documentation refer to :obj:`numpy.cumulative_sum`.
 
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : {None, int}, optional
-        Axis along which the cumulative sum is computed. The default (``None``)
+        Axis along which the cumulative sum is computed. The default value
         is only allowed for one-dimensional arrays. For arrays with more than
         one dimension `axis` is required.
         Default: ``None``.
@@ -1345,21 +1345,21 @@ def cumulative_sum(
     array([1, 2, 3, 4, 5, 6])
     >>> np.cumulative_sum(a)
     array([ 1,  3,  6, 10, 15, 21])
-    >>> np.cumulative_sum(a, dtype=float)   # specifies type of output value(s)
-    array([ 1.,  3.,  6., 10., 15., 21.])
+    >>> np.cumulative_sum(a, dtype=np.float32)   # specifies output dtype
+    array([ 1.,  3.,  6., 10., 15., 21.], dtype=np.float32)
 
     >>> b = np.array([[1, 2, 3], [4, 5, 6]])
-    >>> np.cumsum(b, axis=0)     # sum over rows for each of the 3 columns
+    >>> np.cumulative_sum(b, axis=0)  # sum over rows for each of the 3 columns
     array([[1, 2, 3],
            [5, 7, 9]])
-    >>> np.cumsum(b, axis=1)     # sum over columns for each of the 2 rows
+    >>> np.cumulative_sum(b, axis=1)  # sum over columns for each of the 2 rows
     array([[ 1,  3,  6],
            [ 4,  9, 15]])
 
     ``cumulative_sum(c)[-1]`` may not be equal to ``sum(c)``
 
-    >>> c = np.array([1, 2e-9, 3e-9] * 1000000)
-    >>> np.cumulative_sum(c).dtype == c.sum().dtype == np.float64
+    >>> c = np.array([1, 2e-7, 3e-7] * 100000, dtype=np.float32)
+    >>> np.cumulative_sum(c).dtype == c.sum().dtype == np.float32
     True
     >>> np.cumulative_sum(c)[-1] == c.sum()
     array(False)
