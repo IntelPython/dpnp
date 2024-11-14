@@ -12,14 +12,14 @@ env:
   GH_BOT_NAME: 'github-actions[bot]'
   GH_BOT_EMAIL: 'github-actions[bot]@users.noreply.github.com'
   GH_EVENT_OPEN_PR_UPSTREAM: ${{ github.event_name == 'pull_request' && github.event.action != 'closed' &&
-                                 github.event.pull_request && !github.event.pull_request.head.repo.fork }}
+                                 github.event.pull_request && !github.event.pull_request.base.repo.fork }}
   GH_EVENT_PUSH_UPSTREAM: ${{ github.ref == 'refs/heads/master' && github.event_name == 'push' &&
                               github.event.ref == 'refs/heads/master' && github.event.repository && !github.event.repository.fork }}
   PUBLISH_DIR: doc/_build/html/
 
 defaults:
   run:
-    shell: bash -l {0}
+    shell: bash -el {0}
 
 jobs:
   build-and-deploy:
@@ -36,7 +36,7 @@ jobs:
       pull-requests: write
 
     env:
-      python-ver: '3.9'
+      python-ver: '3.12'
       CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
       NO_INTEL_CHANNELS: '-c dppy/label/dev -c conda-forge --override-channels'
       # Install the latest oneAPI compiler to work around an issue
@@ -59,13 +59,13 @@ jobs:
         with:
           docker-images: false
 
-      - name: Install Intel repository
+      - name: Add Intel repository
         run: |
-          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-          sudo apt-get update
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          cat GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt update
 
       - name: Update libstdc++-dev
         run: |
@@ -76,11 +76,13 @@ jobs:
 
       - name: Install Intel OneAPI
         run: |
-          sudo apt-get install intel-oneapi-mkl                \
-                               intel-oneapi-mkl-devel          \
-                               intel-oneapi-tbb-devel          \
-                               intel-oneapi-libdpstd-devel     \
-                               intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install hwloc                           \
+                           intel-oneapi-mkl                \
+                           intel-oneapi-umf                \
+                           intel-oneapi-mkl-devel          \
+                           intel-oneapi-tbb-devel          \
+                           intel-oneapi-libdpstd-devel     \
+                           intel-oneapi-compiler-dpcpp-cpp
 
       # required by sphinxcontrib-spelling extension
       - name: Install enchant package
@@ -96,26 +98,20 @@ jobs:
           sudo apt-get install -y nvidia-cuda-toolkit clinfo
 
       - name: Checkout repo
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
       # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
-          use-mamba: true
+          use-mamba: 'true'
           channels: conda-forge
+          conda-remove-defaults: 'true'
           python-version: ${{ env.python-ver }}
           activate-environment: 'docs'
-
-      # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
-      # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
-      - name: Remove defaults channel
-        run: |
-          conda config --remove channels defaults
-          conda config --show
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
       - name: Disable speed limit check in mamba
@@ -130,16 +126,16 @@ jobs:
       - name: Install dpnp dependencies
         if: env.INSTALL_ONE_API == 'yes'
         run: |
-          mamba install numpy"<1.24" dpctl">=0.18.0dev0" cmake cython pytest ninja scikit-build ${{ env.NO_INTEL_CHANNELS }}
+          mamba install numpy dpctl">=0.18.0dev0" cmake cython pytest ninja scikit-build ${{ env.NO_INTEL_CHANNELS }}
 
       - name: Install dpnp dependencies
         if: env.INSTALL_ONE_API != 'yes'
         run: |
-          mamba install numpy"<1.24" dpctl">=0.18.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
+          mamba install numpy dpctl">=0.18.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
               cmake cython pytest ninja scikit-build ${{ env.CHANNELS }}
 
       - name: Install cuPy dependencies
-        run: mamba install cupy cudatoolkit=10.0
+        run: mamba install cupy
 
       - name: Conda info
         run: mamba info
@@ -224,7 +220,7 @@ jobs:
   clean:
     if: |
       github.event_name == 'pull_request' && github.event.action == 'closed' &&
-      github.event.pull_request && !github.event.pull_request.head.repo.fork
+      github.event.pull_request && !github.event.pull_request.base.repo.fork
 
     needs: build-and-deploy
 
@@ -237,7 +233,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 

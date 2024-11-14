@@ -28,7 +28,7 @@ import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_tuple
+from dpctl.tensor._numpy_helper import AxisError, normalize_axis_tuple
 from dpctl.utils import ExecutionPlacementError
 
 import dpnp
@@ -36,7 +36,7 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul"]
+__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul", "dpnp_vecdot"]
 
 
 def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
@@ -187,9 +187,9 @@ def _define_contig_flag(x):
     return flag, x_is_c_contiguous, x_is_f_contiguous
 
 
-def _define_dim_flags(x, pos):
+def _define_dim_flags(x, axis):
     """
-    Define useful flags for the main calculation in dpnp_matmul.
+    Define useful flags for the calculations in dpnp_matmul and dpnp_vecdot.
     x_is_1D: `x` is 1D array or inherently 1D (all dimensions are equal to one
     except for one of them), for instance, if x.shape = (1, 1, 1, 2),
     then x_is_1D = True
@@ -200,14 +200,14 @@ def _define_dim_flags(x, pos):
     if x.shape = (3, 4, 1, 2), then x_base_is_1D = True
     """
 
-    index = -1 if pos == 0 else -2
     x_shape = x.shape
     x_ndim = x.ndim
     x_is_1D = x_ndim == 1
     if numpy.prod(x_shape) != 0:
+        # if the first condition is valid, the 2nd condition is not checked
         # the 2nd condition is only expected to be checked for
-        # ND-arrays (N>1) since index is in [-2, -1]
-        x_is_1D = x_is_1D or numpy.prod(x_shape) == x_shape[index]
+        # ND-arrays (N>1) since axis could be -2
+        x_is_1D = x_is_1D or numpy.prod(x_shape) == x_shape[axis]
 
     x_is_2D = False
     if not x_is_1D:
@@ -220,7 +220,7 @@ def _define_dim_flags(x, pos):
     return x_is_2D, x_is_1D, x_base_is_1D
 
 
-def _get_result_shape(x1, x2, out, np_flag):
+def _get_result_shape(x1, x2, out, _get_result_shape_fn, np_flag):
     """
     Three task are completed in this function:
         - Get the shape of the result array.
@@ -230,36 +230,48 @@ def _get_result_shape(x1, x2, out, np_flag):
     x1_ndim = x1.ndim
     x2_ndim = x2.ndim
 
-    x1_shape = x1.shape
-    x2_shape = x2.shape
-
     if x1_ndim == 0:
         raise ValueError(
-            "Input array 0 does not have enough dimensions (has 0, but requires at least 1)"
+            "The first input array does not have enough dimensions (has 0, but requires at least 1)"
         )
     if x2_ndim == 0:
         raise ValueError(
-            "Input array 1 does not have enough dimensions (has 0, but requires at least 1)"
+            "The second input array does not have enough dimensions (has 0, but requires at least 1)"
         )
+
+    x1, x2, result_shape = _get_result_shape_fn(x1, x2, x1_ndim, x2_ndim)
+
+    if out is not None:
+        out_shape = out.shape
+        if out_shape != result_shape and not np_flag:
+            _shape_error(result_shape, out_shape, None, err_msg=2)
+
+    return x1, x2, result_shape
+
+
+def _get_result_shape_matmul(x1, x2, x1_ndim, x2_ndim):
+
+    x1_shape = x1.shape
+    x2_shape = x2.shape
 
     if x1_ndim == 1 and x2_ndim == 1:
         if x1_shape[-1] != x2_shape[-1]:
-            _shape_error(x1_shape[-1], x2_shape[-1], None, err_msg=0)
+            _shape_error(x1_shape[-1], x2_shape[-1], "matmul", err_msg=0)
         result_shape = ()
     elif x1_ndim == 1:
         if x1_shape[-1] != x2_shape[-2]:
-            _shape_error(x1_shape[-1], x2_shape[-2], None, err_msg=0)
+            _shape_error(x1_shape[-1], x2_shape[-2], "matmul", err_msg=0)
         result_shape = x2_shape[:-2] + (x2_shape[-1],)
     elif x2_ndim == 1:
         if x1_shape[-1] != x2_shape[-1]:
-            _shape_error(x1_shape[-1], x2_shape[-1], None, err_msg=0)
+            _shape_error(x1_shape[-1], x2_shape[-1], "matmul", err_msg=0)
         result_shape = x1_shape[:-1]
     else:  # at least 2D
-        x1_is_2D, x1_is_1D, _ = _define_dim_flags(x1, pos=0)
-        x2_is_2D, x2_is_1D, _ = _define_dim_flags(x2, pos=1)
+        x1_is_2D, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
+        x2_is_2D, x2_is_1D, _ = _define_dim_flags(x2, axis=-2)
 
         if x1_shape[-1] != x2_shape[-2]:
-            _shape_error(x1_shape[-1], x2_shape[-2], None, err_msg=0)
+            _shape_error(x1_shape[-1], x2_shape[-2], "matmul", err_msg=0)
 
         if x1_ndim == 2 and x2_ndim == 2:
             result_shape = (x1_shape[-2], x2_shape[-1])
@@ -292,33 +304,56 @@ def _get_result_shape(x1, x2, out, np_flag):
                         if not (x2_is_2D or x2_is_1D):
                             x2 = dpnp.repeat(x2, x1_shape[i], axis=i)
                     else:
-                        _shape_error(
-                            x1_shape[:-2], x2_shape[:-2], None, err_msg=2
-                        )
+                        _shape_error(x1_shape, x2_shape, "matmul", err_msg=1)
 
             result_shape = tuple(tmp_shape) + (x1.shape[-2], x2.shape[-1])
 
-    if out is not None:
-        out_shape = out.shape
-        if out_shape != result_shape and not np_flag:
-            len_out = len(out_shape)
-            len_res = len(result_shape)
-            if len_out != len_res:
-                _shape_error(len_out, len_res, None, err_msg=4)
-            for i in range(len_out):
-                if out_shape[i] != result_shape[i]:
-                    if i == len_out - 1:
-                        _shape_error(
-                            out_shape[i], result_shape[i], 1, err_msg=1
-                        )
-                    elif i == len_out - 2:
-                        _shape_error(
-                            out_shape[i], result_shape[i], 0, err_msg=1
-                        )
-                    else:
-                        _shape_error(
-                            out_shape[:-2], result_shape[:-2], None, err_msg=3
-                        )
+    return x1, x2, result_shape
+
+
+def _get_result_shape_vecdot(x1, x2, x1_ndim, x2_ndim):
+
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+
+    if x1_shape[-1] != x2_shape[-1]:
+        _shape_error(x1_shape[-1], x2_shape[-1], "vecdot", err_msg=0)
+
+    _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
+    _, x2_is_1D, _ = _define_dim_flags(x2, axis=-1)
+
+    if x1_ndim == 1 and x2_ndim == 1:
+        result_shape = ()
+    elif x1_is_1D:
+        result_shape = x2_shape[:-1]
+    elif x2_is_1D:
+        result_shape = x1_shape[:-1]
+    else:  # at least 2D
+        if x1_ndim != x2_ndim:
+            diff = abs(x1_ndim - x2_ndim)
+            if x1_ndim < x2_ndim:
+                x1 = dpnp.reshape(x1, ((1,) * diff + x1.shape))
+                x1_shape = x1.shape
+            else:
+                x2 = dpnp.reshape(x2, ((1,) * diff + x2.shape))
+                x2_shape = x2.shape
+
+        # examining the option to align inputs when their
+        # shapes differ but the shape of one of them is 1
+        # in that dimension (similar to braodcasting concept)
+        tmp_shape = list(x1_shape[:-1])
+        for i in range(len(tmp_shape)):
+            if x1_shape[i] != x2_shape[i]:
+                if x1_shape[i] == 1:
+                    tmp_shape[i] = x2_shape[i]
+                    # Unlike `matmul`, no need to duplicate data for the
+                    # dimension with shape equal to one; dpt.vecdot handles it
+                elif x2_shape[i] == 1:
+                    pass
+                else:
+                    _shape_error(x1_shape, x2_shape, "vecdot", err_msg=1)
+
+        result_shape = tuple(tmp_shape)
 
     return x1, x2, result_shape
 
@@ -423,37 +458,34 @@ def _gemm_matmul(exec_q, x1, x2, res):
     return res
 
 
-def _shape_error(a, b, core_dim, err_msg):
+def _shape_error(shape1, shape2, func, err_msg):
+    """Validate the shapes of input and output arrays."""
+
+    if func == "matmul":
+        signature = "(n?,k),(k,m?)->(n?,m?)"
+    elif func == "vecdot":
+        signature = "(n?,),(n?,)->()"
+    else:
+        # applicable when err_msg == 2
+        assert func is None
+
     if err_msg == 0:
         raise ValueError(
             "Input arrays have a mismatch in their core dimensions. "
             "The core dimensions should follow this signature: "
-            f"(n?,k),(k,m?)->(n?,m?) (size {a} is different from {b})"
+            f"{signature} (size {shape1} is different from {shape2})"
         )
     elif err_msg == 1:
         raise ValueError(
-            f"Output array has a mismatch in its core dimension {core_dim}. "
-            "The core dimensions should follow this signature: "
-            f"(n?,k),(k,m?)->(n?,m?) (size {a} is different from {b})"
+            "The shapes of the input arrays are incompatible. "
+            f"The first input array has shape {shape1} and the second input "
+            f"array has shape {shape2}. "
+            f"These cannot be broadcast together for '{func}' function."
         )
-    elif err_msg == 2:
+    else:  # err_msg == 2:
+        assert err_msg == 2
         raise ValueError(
-            "Leading element(s) of the input arrays' shape do not match and "
-            "they could not be broadcast together, the leading element(s) of "
-            f"the input array 0 is {a} and it is different from leading "
-            f"element(s) of the input array 1 which is {b}."
-        )
-    elif err_msg == 3:
-        raise ValueError(
-            "The shape of the output array does not have similar leading "
-            "elements to the shape of input arrays, the leading element(s) of "
-            f"the output array is {a} and it is different from the leading "
-            f"element(s) of the input arrays which is {b}."
-        )
-    elif err_msg == 4:
-        raise ValueError(
-            "Output array does not have enough dimensions "
-            f"(has {a} while requires {b})"
+            f"Expected output array of shape {shape1}, but got {shape2}."
         )
 
 
@@ -479,7 +511,7 @@ def _standardize_strides_to_nonzero(strides, shape):
     return stndrd_strides
 
 
-def _validate_axes(x1, x2, axes):
+def _validate_axes(x1, x2, axes, func):
     """Check axes is valid for matmul function."""
 
     def _validate_internal(axes, i, ndim):
@@ -493,7 +525,7 @@ def _validate_axes(x1, x2, axes):
                 )
 
             if len(axes) != 1:
-                raise ValueError(
+                raise AxisError(
                     f"Axes item {i} should be a tuple with a single element, or an integer."
                 )
         else:
@@ -501,7 +533,7 @@ def _validate_axes(x1, x2, axes):
             if not isinstance(axes, tuple):
                 raise TypeError(f"Axes item {i} should be a tuple.")
             if len(axes) != 2:
-                raise ValueError(
+                raise AxisError(
                     f"Axes item {i} should be a tuple with 2 elements."
                 )
 
@@ -514,24 +546,40 @@ def _validate_axes(x1, x2, axes):
 
     if not isinstance(axes, list):
         raise TypeError("Axes should be a list.")
-    else:
-        if len(axes) != 3:
-            raise ValueError(
-                "Axes should be a list of three tuples for inputs and output."
-            )
+    elif len(axes) != 3:
+        raise ValueError(
+            "Axes should be a list of three tuples: two inputs and one output."
+        )
 
-    axes[0] = _validate_internal(axes[0], 0, x1.ndim)
-    axes[1] = _validate_internal(axes[1], 1, x2.ndim)
+    if func == "matmul":
+        x1_ndim = x1.ndim
+        x2_ndim = x2.ndim
+    else:  # func == "vecdot"
+        assert func == "vecdot"
+        x1_ndim = x2_ndim = 1
 
-    if x1.ndim == 1 and x2.ndim == 1:
+    axes[0] = _validate_internal(axes[0], 0, x1_ndim)
+    axes[1] = _validate_internal(axes[1], 1, x2_ndim)
+
+    if x1_ndim == 1 and x2_ndim == 1:
         if axes[2] != ():
-            raise TypeError("Axes item 2 should be an empty tuple.")
-    elif x1.ndim == 1 or x2.ndim == 1:
+            raise AxisError("Axes item 2 should be an empty tuple.")
+    elif x1_ndim == 1 or x2_ndim == 1:
         axes[2] = _validate_internal(axes[2], 2, 1)
     else:
         axes[2] = _validate_internal(axes[2], 2, 2)
 
     return axes
+
+
+def _validate_out_array(out, exec_q):
+    """Validate out is supported array and has correct queue."""
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
+            raise ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
 
 
 def dpnp_cross(a, b, cp):
@@ -599,7 +647,7 @@ def dpnp_cross(a, b, cp):
     return cp
 
 
-def dpnp_dot(a, b, /, out=None, *, conjugate=False):
+def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
     """
     Return the dot product of two arrays.
 
@@ -621,13 +669,7 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
         )
 
     res_usm_type, exec_q = get_usm_allocations([a, b])
-    if (
-        out is not None
-        and dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None
-    ):
-        raise ExecutionPlacementError(
-            "Input and output allocation queues are not compatible"
-        )
+    _validate_out_array(out, exec_q)
 
     # Determine the appropriate data types
     dot_dtype, res_dtype = _compute_res_dtype(a, b, sycl_queue=exec_q)
@@ -667,8 +709,7 @@ def dpnp_dot(a, b, /, out=None, *, conjugate=False):
     if dot_dtype != res_dtype:
         result = result.astype(res_dtype, copy=False)
 
-    # numpy.dot does not allow casting even if it is safe
-    return dpnp.get_result_array(result, out, casting="no")
+    return dpnp.get_result_array(result, out, casting=casting)
 
 
 def dpnp_kron(a, b, a_ndim, b_ndim):
@@ -709,32 +750,30 @@ def dpnp_matmul(
     """
     Return the matrix product of two arrays.
 
-    The main calculation is done by calling an extension function
-    for BLAS library of OneMKL. Depending on dimension of `x1` and `x2` arrays,
-    it will be either ``gemm`` (for one- and two-dimentional arrays) or
-    ``gemm_batch``(for others).
+    The main calculation is performed by calling an extension function
+    for BLAS library of OneMKL.
 
     """
 
     dpnp.check_supported_arrays_type(x1, x2)
     res_usm_type, exec_q = get_usm_allocations([x1, x2])
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        if dpctl.utils.get_execution_queue((exec_q, out.sycl_queue)) is None:
-            raise ExecutionPlacementError(
-                "Input and output allocation queues are not compatible"
-            )
+    _validate_out_array(out, exec_q)
 
-    if order in ["a", "A"]:
-        if x1.flags.f_contiguous and x2.flags.f_contiguous:
+    if order in "aA":
+        if x1.flags.fnc and x2.flags.fnc:
             order = "F"
         else:
             order = "C"
+    elif order in "kK":
+        # For order="K", we return order="C" to align with NumPy behavior
+        # It is different than logic used in dpnp_vecdot because NumPy
+        # behaves differently for matmul and vecdot
+        order = "C"
 
     x1_ndim = x1.ndim
     x2_ndim = x2.ndim
     if axes is not None:
-        axes = _validate_axes(x1, x2, axes)
+        axes = _validate_axes(x1, x2, axes, "matmul")
 
         axes_x1, axes_x2, axes_res = axes
         axes_x1 = normalize_axis_tuple(axes_x1, x1_ndim, "axis")
@@ -753,14 +792,14 @@ def dpnp_matmul(
             elif len(axes_res) == 1:
                 out = dpnp.moveaxis(out, axes_res, (-1,))
 
-    # With these conditions, the result is a 0D array. However,
-    # NumPy allows out to have any shape and the result is expanded to it
+    # When inputs are 1-D arrays, the result is a 0-D array. For this case,
+    # NumPy allows out keyword to have any shape and the result is broadcast to it
     NumPy_special_behavior = (
         out is not None and x1_ndim == 1 and x2_ndim == 1 and out.shape != ()
     )
 
     x1, x2, result_shape = _get_result_shape(
-        x1, x2, out, NumPy_special_behavior
+        x1, x2, out, _get_result_shape_matmul, NumPy_special_behavior
     )
 
     # Determine the appropriate data types
@@ -772,8 +811,8 @@ def dpnp_matmul(
     transpose = False
     x1_shape = x1.shape
     x2_shape = x2.shape
-    x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, pos=0)
-    x2_is_2D, x2_is_1D, x2_base_is_1D = _define_dim_flags(x2, pos=1)
+    x1_is_2D, x1_is_1D, x1_base_is_1D = _define_dim_flags(x1, axis=-1)
+    x2_is_2D, x2_is_1D, x2_base_is_1D = _define_dim_flags(x2, axis=-2)
 
     # TODO: investigate usage of syrk function from BLAS in
     # case of a.T @ a and a @ a.T to gain performance.
@@ -901,6 +940,7 @@ def dpnp_matmul(
                     result,
                 )
             else:  # call_flag == "gemm_batch"
+                assert call_flag == "gemm_batch"
                 result = _gemm_batch_matmul(
                     exec_q,
                     x1,
@@ -925,17 +965,127 @@ def dpnp_matmul(
                 result = dpnp.moveaxis(result, (-1,), axes_res)
             return dpnp.ascontiguousarray(result)
 
-        # If `order` was not passed as default
-        # we need to update it to match the passed `order`.
-        if order not in ["k", "K"]:
-            return dpnp.asarray(result, order=order)
-        # dpnp.ascontiguousarray changes 0-D array to 1-D array
-        if result.ndim == 0:
-            return result
-        return dpnp.ascontiguousarray(result)
+        return dpnp.asarray(result, order=order)
 
     result = dpnp.get_result_array(result, out, casting=casting)
     if axes is not None and out is result:
         # out and out_orig contain the same data but they have different shape
         return out_orig
     return result
+
+
+def dpnp_vecdot(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    casting="same_kind",
+    order="K",
+    dtype=None,
+    axes=None,
+    axis=None,
+):
+    """Vector dot product of two arrays."""
+
+    dpnp.check_supported_arrays_type(x1, x2)
+    res_usm_type, exec_q = get_usm_allocations([x1, x2])
+    _validate_out_array(out, exec_q)
+
+    if order in "aAkK":
+        # This logic is also used for order="K" to align with NumPy behavior.
+        # It is different than logic used in dpnp_matmul because NumPy
+        # behaves differently for matmul and vecdot
+        if x1.flags.fnc and x2.flags.fnc:
+            order = "F"
+        else:
+            order = "C"
+
+    x1_ndim = x1.ndim
+    x2_ndim = x2.ndim
+    if axes is None and axis is None:
+        # default behavior with axis=-1
+        pass
+    elif axes is not None:
+        if axis is not None:
+            raise TypeError("cannot specify both `axis` and `axes`.")
+
+        axes = _validate_axes(x1, x2, axes, "vecdot")
+
+        axes_x1, axes_x2, axes_res = axes
+        axes_x1 = normalize_axis_tuple(axes_x1, x1_ndim, "axis")
+        axes_x2 = normalize_axis_tuple(axes_x2, x2_ndim, "axis")
+
+        # Move the axes that are going to be used in dot product,
+        # to the end of "x1" and "x2"
+        x1 = dpnp.moveaxis(x1, axes_x1, -1) if x1_ndim != 1 else x1
+        x2 = dpnp.moveaxis(x2, axes_x2, -1) if x2_ndim != 1 else x2
+    else:
+        x1 = dpnp.moveaxis(x1, axis, -1) if x1_ndim != 1 else x1
+        x2 = dpnp.moveaxis(x2, axis, -1) if x2_ndim != 1 else x2
+
+    # When inputs are 1-D arrays, the result is a 0-D array. For this case,
+    # NumPy allows out keyword to have any shape and the result is broadcast to it
+    NumPy_special_behavior = (
+        out is not None and x1_ndim == 1 and x2_ndim == 1 and out.shape != ()
+    )
+
+    x1, x2, result_shape = _get_result_shape(
+        x1, x2, out, _get_result_shape_vecdot, NumPy_special_behavior
+    )
+
+    # Determine the appropriate data types
+    _, res_dtype = _compute_res_dtype(
+        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+    )
+
+    _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
+    _, x2_is_1D, _ = _define_dim_flags(x2, axis=-1)
+
+    if x1.size == 0 or x2.size == 0:
+        call_flag = "trivial"
+    elif x1_is_1D and x2_is_1D:
+        call_flag = "dot"
+        # arrays are inehrently 1D, make them 1D
+        x1 = dpnp.ravel(x1)
+        x2 = dpnp.ravel(x2)
+    else:
+        # TODO: if a batch version of MKL dot is implemented, can be used here
+        call_flag = "vecdot"
+
+    # dispatch to proper function call
+    if call_flag == "trivial":
+        result = _create_result_array(
+            x1,
+            x2,
+            out,
+            shape=result_shape,
+            dtype=res_dtype,
+            usm_type=res_usm_type,
+            sycl_queue=exec_q,
+            order=order,
+        )
+        if numpy.prod(result_shape) != 0:
+            result.fill(0)
+    elif call_flag == "dot":
+        if out is not None and out.shape != ():
+            result = dpnp_dot(x1, x2, out=None, conjugate=True)
+        else:
+            result = dpnp_dot(x1, x2, out=out, conjugate=True)
+    else:  # call_flag == "vecdot"
+        assert call_flag == "vecdot"
+        x1_usm = dpnp.get_usm_ndarray(x1)
+        x2_usm = dpnp.get_usm_ndarray(x2)
+        result = dpnp_array._create_from_usm_ndarray(
+            dpt.vecdot(x1_usm, x2_usm, axis=-1)
+        )
+
+    if NumPy_special_behavior:
+        result = dpnp.tile(result, out.shape)
+    elif result.shape != result_shape:
+        result = dpnp.reshape(result, result_shape)
+
+    if out is None:
+        return dpnp.asarray(result, order=order)
+
+    return dpnp.get_result_array(result, out, casting=casting)

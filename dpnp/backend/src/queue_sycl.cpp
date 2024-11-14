@@ -24,7 +24,6 @@
 //*****************************************************************************
 
 #include <chrono>
-#include <exception>
 #include <iostream>
 
 #include "dpnp_iface.hpp"

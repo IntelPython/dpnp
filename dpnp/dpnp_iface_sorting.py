@@ -66,9 +66,10 @@ def _wrap_sort_argsort(
         raise NotImplementedError(
             "order keyword argument is only supported with its default value."
         )
-    if kind is not None and kind != "stable":
-        raise NotImplementedError(
-            "kind keyword argument can only be None or 'stable'."
+    if kind is not None and stable is not None:
+        raise ValueError(
+            "`kind` and `stable` parameters can't be provided at the same time."
+            " Use only one of them."
         )
 
     usm_a = dpnp.get_usm_ndarray(a)
@@ -77,11 +78,11 @@ def _wrap_sort_argsort(
         axis = -1
 
     axis = normalize_axis_index(axis, ndim=usm_a.ndim)
-    usm_res = _sorting_fn(usm_a, axis=axis, stable=stable)
+    usm_res = _sorting_fn(usm_a, axis=axis, stable=stable, kind=kind)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
-def argsort(a, axis=-1, kind=None, order=None, *, stable=True):
+def argsort(a, axis=-1, kind=None, order=None, *, stable=None):
     """
     Returns the indices that would sort an array.
 
@@ -94,9 +95,9 @@ def argsort(a, axis=-1, kind=None, order=None, *, stable=True):
     axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is ``-1``, which sorts along the last axis.
-    kind : {None, "stable"}, optional
+    kind : {None, "stable", "mergesort", "radixsort"}, optional
         Sorting algorithm. Default is ``None``, which is equivalent to
-         ``"stable"``. Unlike NumPy, no other option is accepted here.
+         ``"stable"``.
     stable : {None, bool}, optional
         Sort stability. If ``True``, the returned array will maintain
         the relative order of ``a`` values which compare as equal.
@@ -121,8 +122,9 @@ def argsort(a, axis=-1, kind=None, order=None, *, stable=True):
     Limitations
     -----------
     Parameters `order` is only supported with its default value.
-    Parameter `kind` can only be ``None`` or ``"stable"`` which are equivalent.
     Otherwise ``NotImplementedError`` exception will be raised.
+    Sorting algorithms ``"quicksort"`` and ``"heapsort"`` are not supported.
+
 
     See Also
     --------
@@ -205,7 +207,7 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
     return call_origin(numpy.partition, x1, kth, axis, kind, order)
 
 
-def sort(a, axis=-1, kind=None, order=None, *, stable=True):
+def sort(a, axis=-1, kind=None, order=None, *, stable=None):
     """
     Return a sorted copy of an array.
 
@@ -218,9 +220,9 @@ def sort(a, axis=-1, kind=None, order=None, *, stable=True):
     axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is ``-1``, which sorts along the last axis.
-    kind : {None, "stable"}, optional
+    kind : {None, "stable", "mergesort", "radixsort"}, optional
         Sorting algorithm. Default is ``None``, which is equivalent to
-        ``"stable"``. Unlike NumPy, no other option is accepted here.
+        ``"stable"``.
     stable : {None, bool}, optional
         Sort stability. If ``True``, the returned array will maintain
         the relative order of ``a`` values which compare as equal.
@@ -241,8 +243,8 @@ def sort(a, axis=-1, kind=None, order=None, *, stable=True):
     Limitations
     -----------
     Parameters `order` is only supported with its default value.
-    Parameter `kind` can only be ``None`` or ``"stable"`` which are equivalent.
     Otherwise ``NotImplementedError`` exception will be raised.
+    Sorting algorithms ``"quicksort"`` and ``"heapsort"`` are not supported.
 
     See Also
     --------

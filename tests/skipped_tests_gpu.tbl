@@ -24,8 +24,6 @@ tests/test_umath.py::test_umaths[('divmod', 'dd')]
 tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
 tests/test_umath.py::test_umaths[('frexp', 'f')]
 tests/test_umath.py::test_umaths[('frexp', 'd')]
-tests/test_umath.py::test_umaths[('spacing', 'f')]
-tests/test_umath.py::test_umaths[('spacing', 'd')]
 
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_2_{p_shape=(3, 2), shape=(4, 3, 2)}::test_geometric
 tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric_param_3_{p_shape=(3, 2), shape=(3, 2)}::test_geometric
@@ -321,11 +319,6 @@ tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bo
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_2
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit
 tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit_2
-
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_diag_exception
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_rowvar
-tests/third_party/cupy/statistics_tests/test_correlation.py::TestCorrcoef::test_corrcoef_y
 
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults[linear]
 tests/third_party/cupy/statistics_tests/test_order.py::TestOrder::test_percentile_defaults[lower]

@@ -23,6 +23,9 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <exception>
+#include <stdexcept>
+
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers

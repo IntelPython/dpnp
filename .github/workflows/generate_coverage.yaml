@@ -17,7 +17,7 @@ jobs:
 
     defaults:
       run:
-        shell: bash -l {0}
+        shell: bash -el {0}
 
     env:
       python-ver: '3.12'
@@ -33,47 +33,43 @@ jobs:
           access_token: ${{ github.token }}
 
       - name: Checkout repo
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
 
       - name: Add Intel repository
         if: env.INSTALL_ONE_API == 'yes'
         run: |
-          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
-          sudo add-apt-repository "deb https://apt.repos.intel.com/oneapi all main"
-          sudo apt-get update
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          cat GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt update
 
       - name: Install latest Intel OneAPI
         if: env.INSTALL_ONE_API == 'yes'
         run: |
-          sudo apt-get install intel-oneapi-mkl                \
-                               intel-oneapi-mkl-devel          \
-                               intel-oneapi-tbb-devel          \
-                               intel-oneapi-libdpstd-devel     \
-                               intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install hwloc                           \
+                           intel-oneapi-mkl                \
+                           intel-oneapi-umf                \
+                           intel-oneapi-mkl-devel          \
+                           intel-oneapi-tbb-devel          \
+                           intel-oneapi-libdpstd-devel     \
+                           intel-oneapi-compiler-dpcpp-cpp
 
       - name: Install Lcov
         run: |
           sudo apt-get install lcov
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
-          use-mamba: true
+          use-mamba: 'true'
           channels: conda-forge
+          conda-remove-defaults: 'true'
           python-version: ${{ env.python-ver }}
           activate-environment: 'coverage'
-
-      # Here is an issue in conda gh-12356 causing adding defaults to the list of channels
-      # upon running `conda config --append channels conda-forge`, while mamba requires to have only conda-forge channel
-      - name: Remove defaults channel
-        run: |
-          conda config --remove channels defaults
-          conda config --show
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
       - name: Disable speed limit check in mamba
@@ -109,7 +105,7 @@ jobs:
             conda activate coverage
             [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
             git clean -fxd
-            python scripts/gen_coverage.py --pytest-opts="--ignore tests/test_random.py" --verbose
+            python scripts/gen_coverage.py --verbose
 
       - name: Total number of coverage attempts
         run: |

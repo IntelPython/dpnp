@@ -16,6 +16,7 @@ from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
     get_float_dtypes,
+    get_integer_dtypes,
     has_support_aspect64,
 )
 
@@ -257,22 +258,6 @@ class TestHistogram:
         assert_allclose(result_hist, expected_hist)
         assert_allclose(result_edges, expected_edges)
 
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_bool_conversion(self, xp):
-        a = xp.array([1, 1, 0], dtype=numpy.uint8)
-        int_hist, int_edges = xp.histogram(a)
-
-        with suppress_warnings() as sup:
-            rec = sup.record(RuntimeWarning, "Converting input from .*")
-
-            v = xp.array([True, True, False])
-            hist, edges = xp.histogram(v)
-
-            # A warning should be issued
-            assert len(rec) == 1
-            assert_array_equal(hist, int_hist)
-            assert_array_equal(edges, int_edges)
-
     @pytest.mark.parametrize("density", [True, False])
     def test_weights(self, density):
         v = numpy.random.rand(100)
@@ -492,6 +477,19 @@ class TestHistogram:
         with assert_raises(ValueError):
             dpnp.histogram(v, weights=w)
 
+    @pytest.mark.parametrize(
+        "bins_count",
+        [10, 10**2, 10**3, 10**4, 10**5, 10**6],
+    )
+    def test_different_bins_amount(self, bins_count):
+        v = numpy.linspace(0, bins_count, bins_count, dtype=numpy.float32)
+        iv = dpnp.array(v)
+
+        expected_hist, expected_edges = numpy.histogram(v, bins=bins_count)
+        result_hist, result_edges = dpnp.histogram(iv, bins=bins_count)
+        assert_array_equal(result_hist, expected_hist)
+        assert_allclose(result_edges, expected_edges)
+
 
 class TestHistogramBinEdges:
     @pytest.mark.parametrize(
@@ -518,3 +516,97 @@ class TestHistogramBinEdges:
         expected_edges = numpy.histogram_bin_edges(v, bins=bins, range=range)
         result_edges = dpnp.histogram_bin_edges(iv, bins=bins, range=range)
         assert_dtype_allclose(result_edges, expected_edges)
+
+
+class TestBincount:
+    @pytest.mark.parametrize("dtype", get_integer_dtypes())
+    def test_rand_data(self, dtype):
+        n = 100
+        upper_bound = 10 if dtype != dpnp.bool_ else 1
+        v = numpy.random.randint(0, upper_bound, size=n, dtype=dtype)
+        iv = dpnp.array(v)
+
+        expected_hist = numpy.bincount(v)
+        result_hist = dpnp.bincount(iv)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.parametrize("dtype", get_integer_dtypes())
+    def test_arange_data(self, dtype):
+        v = numpy.arange(100).astype(dtype)
+        iv = dpnp.array(v)
+
+        expected_hist = numpy.bincount(v)
+        result_hist = dpnp.bincount(iv)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_negative_values(self, xp):
+        x = xp.array([-1, 2])
+        assert_raises(ValueError, xp.bincount, x)
+
+    def test_no_side_effects(self):
+        v = dpnp.array([1, 2, 3], dtype=dpnp.int64)
+        copy_v = v.copy()
+
+        # check that ensures that values passed to ``bincount`` are unchanged
+        _ = dpnp.bincount(v)
+        assert (v == copy_v).all()
+
+    def test_weights_another_sycl_queue(self):
+        v = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        w = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.bincount(v, weights=w)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_weights_unsupported_dtype(self, xp):
+        v = dpnp.arange(5)
+        w = dpnp.arange(5, dtype=dpnp.complex64)
+        with assert_raises(ValueError):
+            dpnp.bincount(v, weights=w)
+
+    @pytest.mark.parametrize(
+        "bins_count",
+        [10, 10**2, 10**3, 10**4, 10**5, 10**6],
+    )
+    def test_different_bins_amount(self, bins_count):
+        v = numpy.arange(0, bins_count, dtype=int)
+        iv = dpnp.array(v)
+
+        expected_hist = numpy.bincount(v)
+        result_hist = dpnp.bincount(iv)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.parametrize(
+        "array",
+        [[1, 2, 3], [1, 2, 2, 1, 2, 4], [2, 2, 2, 2]],
+        ids=["[1, 2, 3]", "[1, 2, 2, 1, 2, 4]", "[2, 2, 2, 2]"],
+    )
+    @pytest.mark.parametrize(
+        "minlength", [0, 1, 3, 5], ids=["0", "1", "3", "5"]
+    )
+    def test_bincount_minlength(self, array, minlength):
+        np_a = numpy.array(array)
+        dpnp_a = dpnp.array(array)
+
+        expected = numpy.bincount(np_a, minlength=minlength)
+        result = dpnp.bincount(dpnp_a, minlength=minlength)
+        assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "array", [[1, 2, 2, 1, 2, 4]], ids=["[1, 2, 2, 1, 2, 4]"]
+    )
+    @pytest.mark.parametrize(
+        "weights",
+        [None, [0.3, 0.5, 0.2, 0.7, 1.0, -0.6], [2, 2, 2, 2, 2, 2]],
+        ids=["None", "[0.3, 0.5, 0.2, 0.7, 1., -0.6]", "[2, 2, 2, 2, 2, 2]"],
+    )
+    def test_bincount_weights(self, array, weights):
+        np_a = numpy.array(array)
+        np_weights = numpy.array(weights) if weights is not None else weights
+        dpnp_a = dpnp.array(array)
+        dpnp_weights = dpnp.array(weights) if weights is not None else weights
+
+        expected = numpy.bincount(np_a, weights=np_weights)
+        result = dpnp.bincount(dpnp_a, weights=dpnp_weights)
+        assert_allclose(expected, result)

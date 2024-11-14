@@ -344,9 +344,7 @@ def test_array_copy(func, usm_type_x, usm_type_y):
     assert y.usm_type == usm_type_y
 
 
-@pytest.mark.parametrize(
-    "copy", [True, False, None], ids=["True", "False", "None"]
-)
+@pytest.mark.parametrize("copy", [True, False, None])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 def test_array_creation_from_dpctl(copy, usm_type_x):
     x = dpt.ones((3, 3), usm_type=usm_type_x)
@@ -500,6 +498,32 @@ def test_matmul(usm_type_x, usm_type_y, shape_pair):
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape_pair",
+    [
+        ((4,), (4,)),  # call_flag: dot
+        ((3, 1), (3, 1)),
+        ((2, 0), (2, 0)),  # zero-size inputs, 1D output
+        ((3, 0, 4), (3, 0, 4)),  # zero-size output
+        ((3, 4), (3, 4)),  # call_flag: vecdot
+    ],
+)
+def test_vecdot(usm_type_x, usm_type_y, shape_pair):
+    shape1, shape2 = shape_pair
+    x = numpy.arange(numpy.prod(shape1)).reshape(shape1)
+    y = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+
+    x = dp.array(x, usm_type=usm_type_x)
+    y = dp.array(y, usm_type=usm_type_y)
+    z = dp.vecdot(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_meshgrid(usm_type_x, usm_type_y):
     x = dp.arange(100, usm_type=usm_type_x)
     y = dp.arange(100, usm_type=usm_type_y)
@@ -510,20 +534,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
-    "ord",
-    [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"],
-    ids=[
-        "None",
-        "-dpnp.inf",
-        "-2",
-        "-1",
-        "1",
-        "2",
-        "3",
-        "dpnp.inf",
-        '"fro"',
-        '"nuc"',
-    ],
+    "ord", [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"]
 )
 @pytest.mark.parametrize(
     "axis",
@@ -565,6 +576,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("cbrt", [1, 8, 27]),
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
+        pytest.param("corrcoef", [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
         pytest.param(
             "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
@@ -630,9 +642,11 @@ def test_norm(usm_type, ord, axis):
         pytest.param(
             "sin", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
+        pytest.param("sinc", [-5.0, -3.5, 0.0, 2.5, 4.3]),
         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
         pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
         pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
+        pytest.param("spacing", [1, 2, -3, 0]),
         pytest.param("sqrt", [1.0, 3.0, 9.0]),
         pytest.param("square", [1.0, 3.0, 9.0]),
         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
@@ -667,17 +681,22 @@ def test_1in_1out(func, data, usm_type):
             [[1.2, -0.0], [-7, 2.34567]],
             [[1.2, 0.0], [-7, 2.34567]],
         ),
-        pytest.param("arctan2", [[-1, +1, +1, -1]], [[-1, -1, +1, +1]]),
+        pytest.param("append", [1, 2, 3], [4, 5, 6]),
+        pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
+        pytest.param(
+            "corrcoef",
+            [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
+            [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
+        ),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
         pytest.param("dot", [3, 4, 5], [1, 2, 3]),
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
-        # TODO: uncomment once resolved in gh-1723 by dpctl
-        # pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
+        pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
         pytest.param(
             "float_power",
             [0, 1, 2, 3, 4, 5],
@@ -808,30 +827,46 @@ def test_split(func, data1, usm_type):
     assert y[1].usm_type == usm_type
 
 
-@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-def test_append(usm_type_x, usm_type_y):
-    x = dp.array([1, 2, 3], usm_type=usm_type_x)
-    y = dp.array([4, 5, 6], usm_type=usm_type_y)
-    z = dp.append(x, y)
-
-    assert x.usm_type == usm_type_x
-    assert y.usm_type == usm_type_y
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
-
-
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-@pytest.mark.parametrize(
-    "p",
-    [None, -dp.inf, -2, -1, 1, 2, dp.inf, "fro"],
-    ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
-)
+@pytest.mark.parametrize("p", [None, -dp.inf, -2, -1, 1, 2, dp.inf, "fro"])
 def test_cond(usm_type, p):
     ia = dp.arange(32, usm_type=usm_type).reshape(2, 4, 4)
 
     result = dp.linalg.cond(ia, p=p)
     assert ia.usm_type == usm_type
     assert result.usm_type == usm_type
+
+
+class TestDelete:
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_delete(self, obj, usm_type):
+        x = dp.arange(5, usm_type=usm_type)
+        result = dp.delete(x, obj)
+
+        assert x.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_obj_ndarray(self, usm_type_x, usm_type_y):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.delete(x, y)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
@@ -873,6 +908,81 @@ def test_einsum(usm_type):
     input_usm_type, _ = get_usm_allocations(dpnp_array_list)
     assert input_usm_type == usm_type
     assert result.usm_type == usm_type
+
+
+class TestInsert:
+    @pytest.mark.parametrize(
+        "usm_type", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    def test_bacis(self, usm_type, obj):
+        x = dp.arange(5, usm_type=usm_type)
+        result = dp.insert(x, obj, 3)
+
+        assert x.usm_type == usm_type
+        assert result.usm_type == usm_type
+
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 3), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_values_ndarray(self, obj, usm_type_x, usm_type_y):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.insert(x, obj, y)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+    @pytest.mark.parametrize("values", [-2, [-1, -2]], ids=["scalar", "list"])
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_obj_ndarray(self, values, usm_type_x, usm_type_y):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.insert(x, y, values)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+    @pytest.mark.parametrize(
+        "usm_type_x", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_y", list_of_usm_types, ids=list_of_usm_types
+    )
+    @pytest.mark.parametrize(
+        "usm_type_z", list_of_usm_types, ids=list_of_usm_types
+    )
+    def test_obj_values_ndarray(self, usm_type_x, usm_type_y, usm_type_z):
+        x = dp.arange(5, usm_type=usm_type_x)
+        y = dp.array([1, 4], usm_type=usm_type_y)
+        z = dp.array([-1, -3], usm_type=usm_type_z)
+        res = dp.insert(x, y, z)
+
+        assert x.usm_type == usm_type_x
+        assert y.usm_type == usm_type_y
+        assert z.usm_type == usm_type_z
+        assert res.usm_type == du.get_coerced_usm_type(
+            [usm_type_x, usm_type_y, usm_type_z]
+        )
 
 
 @pytest.mark.parametrize("func", ["take", "take_along_axis"])
@@ -1027,6 +1137,28 @@ def test_eigenvalue(func, shape, usm_type):
         dp_val = getattr(dp.linalg, func)(a)
 
     assert a.usm_type == dp_val.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_pad(usm_type):
+    all_modes = [
+        "constant",
+        "edge",
+        "linear_ramp",
+        "maximum",
+        "mean",
+        "median",
+        "minimum",
+        "reflect",
+        "symmetric",
+        "wrap",
+        "empty",
+    ]
+    dpnp_data = dp.arange(100, usm_type=usm_type)
+    assert dpnp_data.usm_type == usm_type
+    for mode in all_modes:
+        result = dp.pad(dpnp_data, (25, 20), mode=mode)
+        assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
@@ -1296,11 +1428,7 @@ def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
     assert x.usm_type == s.usm_type
 
 
-@pytest.mark.parametrize(
-    "n",
-    [-1, 0, 1, 2, 3],
-    ids=["-1", "0", "1", "2", "3"],
-)
+@pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_matrix_power(n, usm_type):
     a = dp.array([[1, 2], [3, 5]], usm_type=usm_type)
@@ -1454,6 +1582,18 @@ def test_histogram(usm_type_v, usm_type_w):
     assert w.usm_type == usm_type_w
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_bincount(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    hist = dp.bincount(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
+    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
 @pytest.mark.parametrize(

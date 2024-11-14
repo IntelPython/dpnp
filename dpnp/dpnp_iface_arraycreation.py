@@ -319,6 +319,11 @@ def array(
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: ``"K"``.
+    ndmin : int, optional
+        Specifies the minimum number of dimensions that the resulting array
+        should have. Ones will be prepended to the shape as needed to meet
+        this requirement.
+        Default: ``0``.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
         The `device` can be ``None`` (the default), an OneAPI filter selector
@@ -345,7 +350,6 @@ def array(
     Limitations
     -----------
     Parameter `subok` is supported only with default value ``False``.
-    Parameter `ndmin` is supported only with default value ``0``.
     Parameter `like` is supported only with default value ``None``.
     Otherwise, the function raises ``NotImplementedError`` exception.
 
@@ -373,6 +377,11 @@ def array(
     >>> x
     array([1, 2, 3])
 
+    Upcasting:
+
+    >>> np.array([1, 2, 3.0])
+    array([ 1.,  2.,  3.])
+
     More than one dimension:
 
     >>> x2 = np.array([[1, 2], [3, 4]])
@@ -381,6 +390,16 @@ def array(
     >>> x2
     array([[1, 2],
            [3, 4]])
+
+    Minimum dimensions 2:
+
+    >>> np.array([1, 2, 3], ndmin=2)
+    array([[1, 2, 3]])
+
+    Type provided:
+
+    >>> np.array([1, 2, 3], dtype=complex)
+    array([ 1.+0.j,  2.+0.j,  3.+0.j])
 
     Creating an array on a different device or with a specified usm_type
 
@@ -399,13 +418,10 @@ def array(
     """
 
     dpnp.check_limitations(subok=subok, like=like)
-    if ndmin != 0:
-        raise NotImplementedError(
-            "Keyword argument `ndmin` is supported only with "
-            f"default value ``0``, but got {ndmin}"
-        )
+    if not isinstance(ndmin, (int, dpnp.integer)):
+        raise TypeError(f"`ndmin` should be an integer, got {type(ndmin)}")
 
-    return dpnp_container.asarray(
+    result = dpnp_container.asarray(
         a,
         dtype=dtype,
         copy=copy,
@@ -414,6 +430,14 @@ def array(
         usm_type=usm_type,
         sycl_queue=sycl_queue,
     )
+
+    res_ndim = result.ndim
+    if res_ndim >= ndmin:
+        return result
+
+    num_axes = ndmin - res_ndim
+    new_shape = (1,) * num_axes + result.shape
+    return result.reshape(new_shape)
 
 
 def asanyarray(
@@ -635,7 +659,7 @@ def ascontiguousarray(
     a, dtype=None, *, like=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
-    Return a contiguous array in memory (C order).
+    Return a contiguous array ``(ndim >= 1)`` in memory (C order).
 
     For full documentation refer to :obj:`numpy.ascontiguousarray`.
 
@@ -731,14 +755,12 @@ def ascontiguousarray(
 
     dpnp.check_limitations(like=like)
 
-    # at least 1-d array has to be returned
-    if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
-        a = [a]
-
-    return asarray(
+    return dpnp.array(
         a,
         dtype=dtype,
+        copy=None,
         order="C",
+        ndmin=1,
         device=device,
         usm_type=usm_type,
         sycl_queue=sycl_queue,
@@ -849,14 +871,12 @@ def asfortranarray(
 
     dpnp.check_limitations(like=like)
 
-    # at least 1-d array has to be returned
-    if dpnp.isscalar(a) or hasattr(a, "ndim") and a.ndim == 0:
-        a = [a]
-
-    return asarray(
+    return dpnp.array(
         a,
         dtype=dtype,
+        copy=None,
         order="F",
+        ndmin=1,
         device=device,
         usm_type=usm_type,
         sycl_queue=sycl_queue,
