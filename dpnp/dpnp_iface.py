@@ -750,7 +750,7 @@ def is_cuda_backend(obj=None):
     Returns
     -------
     out : bool
-        Return ``True`` if object has a cuda backend, otherwise``False``.
+        Return ``True`` if object has a CUDA backend, otherwise ``False``.
 
     """
 

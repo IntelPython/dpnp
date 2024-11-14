@@ -9,6 +9,7 @@ import dpnp as cupy
 from tests.third_party.cupy import testing
 
 
+# TODO: to roll back the changes once the issue with CUDA support is resolved for random
 def _gen_array(dtype, alloc_q=None):
     if cupy.issubdtype(dtype, numpy.unsignedinteger):
         array = numpy.random.randint(0, 10, size=(2, 3))

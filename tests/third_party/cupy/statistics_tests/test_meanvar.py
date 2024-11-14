@@ -11,7 +11,6 @@ ignore_runtime_warnings = pytest.mark.filterwarnings(
 )
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestMedian:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
