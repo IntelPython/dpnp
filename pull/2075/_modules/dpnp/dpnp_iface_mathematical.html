@@ -14,15 +14,15 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev0+71.g46aa7bf7cc8 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev1+38.g4c47d64aca0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
-      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=7ab3649f" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=04806dc0"></script>
-      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/documentation_options.js?v=ac545868"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -150,6 +150,7 @@
     <span class="n">DPNPImag</span><span class="p">,</span>
     <span class="n">DPNPReal</span><span class="p">,</span>
     <span class="n">DPNPRound</span><span class="p">,</span>
+    <span class="n">DPNPSinc</span><span class="p">,</span>
     <span class="n">DPNPUnaryFunc</span><span class="p">,</span>
     <span class="n">acceptance_fn_gcd_lcm</span><span class="p">,</span>
     <span class="n">acceptance_fn_negative</span><span class="p">,</span>
@@ -215,6 +216,8 @@
     <span class="s2">&quot;round&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sign&quot;</span><span class="p">,</span>
     <span class="s2">&quot;signbit&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sinc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;spacing&quot;</span><span class="p">,</span>
     <span class="s2">&quot;subtract&quot;</span><span class="p">,</span>
     <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;trapezoid&quot;</span><span class="p">,</span>
@@ -1087,8 +1090,7 @@
     <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
     <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
 
-    <span class="c1"># TODO: replace with dpnp.broadcast_shapes once implemented</span>
-    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">res_shape</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
     <span class="k">if</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">res_shape</span><span class="p">:</span>
         <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">res_shape</span> <span class="o">+</span> <span class="p">(</span><span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],))</span>
         <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
@@ -3875,6 +3877,125 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_signbit_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_signbit</span><span class="p">,</span>
     <span class="n">_SIGNBIT_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_SINC_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Return the normalized sinc function.</span>
+
+<span class="s2">The sinc function is equal to :math:`\sin(\pi x)/(\pi x)` for any argument</span>
+<span class="s2">:math:`x\ne 0`. ``sinc(0)`` takes the limit value 1, making ``sinc`` not</span>
+<span class="s2">only everywhere continuous but also infinitely differentiable.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.sinc`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    An array containing the element-wise result of the ``sinc(x)`` function.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">The name sinc is short for &quot;sine cardinal&quot; or &quot;sinus cardinalis&quot;.</span>
+
+<span class="s2">The sinc function is used in various signal processing applications, including</span>
+<span class="s2">in anti-aliasing, in the construction of a Lanczos resampling filter, and in</span>
+<span class="s2">interpolation.</span>
+
+<span class="s2">For bandlimited interpolation of discrete-time signals, the ideal interpolation</span>
+<span class="s2">kernel is proportional to the sinc function.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; x = np.linspace(-4, 4, 41, dtype=np.float64)</span>
+<span class="s2">&gt;&gt;&gt; np.sinc(x) # result may vary</span>
+<span class="s2">    array([ 0.        , -0.04923628, -0.08409186, -0.08903844, -0.05846808,</span>
+<span class="s2">            0.        ,  0.06682066,  0.11643488,  0.12613779,  0.08504448,</span>
+<span class="s2">            0.        , -0.10394325, -0.18920668, -0.21623621, -0.15591488,</span>
+<span class="s2">            0.        ,  0.23387232,  0.50455115,  0.75682673,  0.93548928,</span>
+<span class="s2">            1.        ,  0.93548928,  0.75682673,  0.50455115,  0.23387232,</span>
+<span class="s2">            0.        , -0.15591488, -0.21623621, -0.18920668, -0.10394325,</span>
+<span class="s2">            0.        ,  0.08504448,  0.12613779,  0.11643488,  0.06682066,</span>
+<span class="s2">            0.        , -0.05846808, -0.08903844, -0.08409186, -0.04923628,</span>
+<span class="s2">            0.        ])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">sinc</span> <span class="o">=</span> <span class="n">DPNPSinc</span><span class="p">(</span>
+    <span class="s2">&quot;sinc&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_sinc_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_sinc</span><span class="p">,</span>
+    <span class="n">_SINC_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_SPACING_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Return the distance between `x` and the nearest adjacent number.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.spacing`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    The array of values to find the spacing of, expected to have a real-valued</span>
+<span class="s2">    data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The spacing of values of `x`. The data type of the returned array is</span>
+<span class="s2">    determined by the Type Promotion Rules.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">It can be considered as a generalization of EPS:</span>
+<span class="s2">``dpnp.spacing(dpnp.float64(1)) == dpnp.finfo(dpnp.float64).eps``, and there</span>
+<span class="s2">should not be any representable number between ``x + spacing(x)`` and `x` for</span>
+<span class="s2">any finite `x`.</span>
+
+<span class="s2">Spacing of +- inf and NaN is ``NaN``.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; a = np.array(1)</span>
+<span class="s2">&gt;&gt;&gt; b = np.spacing(a)</span>
+<span class="s2">&gt;&gt;&gt; b == np.finfo(b.dtype).eps</span>
+<span class="s2">array(True)</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">spacing</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;spacing&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_spacing_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_spacing</span><span class="p">,</span>
+    <span class="n">_SPACING_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
