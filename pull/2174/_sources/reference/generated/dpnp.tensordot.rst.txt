@@ -1,0 +1,6 @@
+﻿dpnp.tensordot
+==============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: tensordot
