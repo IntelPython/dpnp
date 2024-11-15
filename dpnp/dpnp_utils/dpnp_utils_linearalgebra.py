@@ -36,7 +36,14 @@ import dpnp.backend.extensions.blas._blas_impl as bi
 from dpnp.dpnp_array import dpnp_array
 from dpnp.dpnp_utils import get_usm_allocations
 
-__all__ = ["dpnp_cross", "dpnp_dot", "dpnp_kron", "dpnp_matmul", "dpnp_vecdot"]
+__all__ = [
+    "dpnp_cross",
+    "dpnp_dot",
+    "dpnp_kron",
+    "dpnp_matmul",
+    "dpnp_tensordot",
+    "dpnp_vecdot",
+]
 
 
 def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
@@ -972,6 +979,70 @@ def dpnp_matmul(
         # out and out_orig contain the same data but they have different shape
         return out_orig
     return result
+
+
+def dpnp_tensordot(a, b, axes=2):
+    """Tensor dot product of two arrays."""
+
+    try:
+        iter(axes)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        if not isinstance(axes, int):
+            raise TypeError("Axes must be an integer.") from e
+        if axes < 0:
+            raise ValueError("Axes must be a non-negative integer.") from e
+        axes_a = tuple(range(-axes, 0))
+        axes_b = tuple(range(0, axes))
+    else:
+        if len(axes) != 2:
+            raise ValueError("Axes must consist of two sequences.")
+
+        axes_a, axes_b = axes
+        axes_a = (axes_a,) if dpnp.isscalar(axes_a) else axes_a
+        axes_b = (axes_b,) if dpnp.isscalar(axes_b) else axes_b
+
+        if len(axes_a) != len(axes_b):
+            raise ValueError("Axes length mismatch.")
+
+    # Make the axes non-negative
+    a_ndim = a.ndim
+    b_ndim = b.ndim
+    axes_a = normalize_axis_tuple(axes_a, a_ndim, "axis_a")
+    axes_b = normalize_axis_tuple(axes_b, b_ndim, "axis_b")
+
+    if a.ndim == 0 or b.ndim == 0:
+        # TODO: use specific scalar-vector kernel
+        return dpnp.multiply(a, b)
+
+    a_shape = a.shape
+    b_shape = b.shape
+    for axis_a, axis_b in zip(axes_a, axes_b):
+        if a_shape[axis_a] != b_shape[axis_b]:
+            raise ValueError(
+                "shape of input arrays is not similar at requested axes."
+            )
+
+    # Move the axes to sum over, to the end of "a"
+    not_in = tuple(k for k in range(a_ndim) if k not in axes_a)
+    newaxes_a = not_in + axes_a
+    n1 = int(numpy.prod([a_shape[ax] for ax in not_in]))
+    n2 = int(numpy.prod([a_shape[ax] for ax in axes_a]))
+    newshape_a = (n1, n2)
+    olda = [a_shape[axis] for axis in not_in]
+
+    # Move the axes to sum over, to the front of "b"
+    not_in = tuple(k for k in range(b_ndim) if k not in axes_b)
+    newaxes_b = tuple(axes_b + not_in)
+    n1 = int(numpy.prod([b_shape[ax] for ax in axes_b]))
+    n2 = int(numpy.prod([b_shape[ax] for ax in not_in]))
+    newshape_b = (n1, n2)
+    oldb = [b_shape[axis] for axis in not_in]
+
+    at = dpnp.transpose(a, newaxes_a).reshape(newshape_a)
+    bt = dpnp.transpose(b, newaxes_b).reshape(newshape_b)
+    res = dpnp.matmul(at, bt)
+
+    return res.reshape(olda + oldb)
 
 
 def dpnp_vecdot(
