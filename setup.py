@@ -46,6 +46,7 @@ Operating System :: POSIX
 Operating System :: Unix
 """
 
+
 setup(
     name="dpnp",
     version=__version__,
@@ -69,10 +70,15 @@ setup(
     ],
     package_data={
         "dpnp": [
+            "backend/include/*.hpp",
             "libdpnp_backend_c.so",
             "dpnp_backend_c.lib",
             "dpnp_backend_c.dll",
+            "tests/*.*",
+            "tests/testing/*.py",
+            "tests/third_party/cupy/*.py",
+            "tests/third_party/cupy/*/*.py",
         ]
     },
-    include_package_data=True,
+    include_package_data=False,
 )

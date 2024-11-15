@@ -26,3 +26,15 @@ if [ -n "${TBBROOT}" ]; then
     # shellcheck source=/dev/null
     . "${TBBROOT}"/env/vars.sh
 fi
+
+# If PYTHON is not set
+# assign it to the Python interpreter from the testing environment
+if [ -z "${PYTHON}" ]; then
+    PYTHON=$PREFIX/bin/python
+fi
+
+set -e
+
+$PYTHON -c "import dpnp; print(dpnp.__version__)"
+$PYTHON -m dpctl -f
+$PYTHON -m pytest -ra --pyargs dpnp
