@@ -38,9 +38,12 @@ class TestAsfarray:
 
     # This is only for coverage with NumPy 2.0 and above
     def test_asfarray_coverage(self):
-        expected = [1.0, 2.0, 3.0]
+        expected = dpnp.array([1.0, 2.0, 3.0])
         result = dpnp.asfarray([1, 2, 3])
+        assert_array_equal(result, expected)
 
+        expected = dpnp.array([1.0, 2.0, 3.0], dtype=dpnp.float32)
+        result = dpnp.asfarray([1, 2, 3], dtype=dpnp.float32)
         assert_array_equal(result, expected)
 
 
