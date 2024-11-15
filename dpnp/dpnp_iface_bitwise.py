@@ -41,10 +41,12 @@ it contains:
 
 
 import dpctl.tensor._tensor_elementwise_impl as ti
+import numpy
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 __all__ = [
+    "binary_repr",
     "bitwise_and",
     "bitwise_invert",
     "bitwise_left_shift",
@@ -56,6 +58,71 @@ __all__ = [
     "left_shift",
     "right_shift",
 ]
+
+
+def binary_repr(num, width=None):
+    """
+    Return the binary representation of the input number as a string.
+
+    For negative numbers, if `width` is not given, a minus sign is added to the
+    front. If `width` is given, the two's complement of the number is returned,
+    with respect to that width.
+
+    In a two's-complement system negative numbers are represented by the two's
+    complement of the absolute value. A N-bit two's-complement system can
+    represent every integer in the range :math:`-2^{N-1}` to :math:`+2^{N-1}-1`.
+
+    For full documentation refer to :obj:`numpy.binary_repr`.
+
+    Parameters
+    ----------
+    num : int
+        Only an integer decimal number can be used.
+    width : {None, int}, optional
+        The length of the returned string if `num` is positive, or the length
+        of the two's complement if `num` is negative, provided that `width` is
+        at least a sufficient number of bits for `num` to be represented in the
+        designated form. If the `width` value is insufficient, an error is
+        raised.
+        Default: ``None``.
+
+    Returns
+    -------
+    bin : str
+        Binary representation of `num` or two's complement of `num`.
+
+    See Also
+    --------
+    :obj:`dpnp.base_repr` : Return a string representation of a number in the
+                            given base system.
+    bin : Python's built-in binary representation generator of an integer.
+
+    Notes
+    -----
+    :obj:`dpnp.binary_repr` is equivalent to using :obj:`dpnp.base_repr` with
+    base 2, but significantly faster.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> np.binary_repr(3)
+    '11'
+    >>> np.binary_repr(-3)
+    '-11'
+    >>> np.binary_repr(3, width=4)
+    '0011'
+
+    The two's complement is returned when the input number is negative and
+    `width` is specified:
+
+    >>> np.binary_repr(-3, width=3)
+    '101'
+    >>> np.binary_repr(-3, width=5)
+    '11101'
+
+    """
+
+    return numpy.binary_repr(num, width)
 
 
 _BITWISE_AND_DOCSTRING = """
@@ -98,14 +165,16 @@ See Also
 :obj:`dpnp.logical_and` : Compute the truth value of ``x1`` AND ``x2`` element-wise.
 :obj:`dpnp.bitwise_or`: Compute the bit-wise OR of two arrays element-wise.
 :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
+:obj:`dpnp.binary_repr` : Return the binary representation of the input number
+                          as a string.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x1 = np.array([2, 5, 255])
->>> x2 = np.array([3,14,16])
+>>> x2 = np.array([3, 14, 16])
 >>> np.bitwise_and(x1, x2)
-[2, 4, 16]
+array([ 2,  4, 16])
 
 >>> a = np.array([True, True])
 >>> b = np.array([False, True])
@@ -117,6 +186,19 @@ The ``&`` operator can be used as a shorthand for ``bitwise_and`` on
 
 >>> x1 & x2
 array([ 2,  4, 16])
+
+The number 13 is represented by ``00001101``. Likewise, 17 is represented by
+``00010001``. The bit-wise AND of 13 and 17 is therefore ``000000001``, or 1:
+
+>>> np.bitwise_and(np.array(13), 17)
+array(1)
+
+>>> np.bitwise_and(np.array(14), 13)
+array(12)
+>>> np.binary_repr(12)
+'1100'
+>>> np.bitwise_and(np.array([14, 3]), 13)
+array([12,  1])
 """
 
 bitwise_and = DPNPBinaryFunc(
@@ -167,6 +249,8 @@ See Also
 :obj:`dpnp.logical_or` : Compute the truth value of ``x1`` OR ``x2`` element-wise.
 :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
 :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
+:obj:`dpnp.binary_repr` : Return the binary representation of the input number
+                          as a string.
 
 Examples
 --------
@@ -181,6 +265,15 @@ The ``|`` operator can be used as a shorthand for ``bitwise_or`` on
 
 >>> x1 | x2
 array([  6,   5, 255])
+
+The number 13 has the binary representation ``00001101``. Likewise, 16 is
+represented by ``00010000``. The bit-wise OR of 13 and 16 is then ``00011101``,
+or 29:
+
+>>> np.bitwise_or(np.array(13), 16)
+array(29)
+>>> np.binary_repr(29)
+'11101'
 """
 
 bitwise_or = DPNPBinaryFunc(
@@ -231,6 +324,8 @@ See Also
 :obj:`dpnp.logical_xor` : Compute the truth value of ``x1`` XOR `x2`, element-wise.
 :obj:`dpnp.bitwise_and`: Compute the bit-wise AND of two arrays element-wise.
 :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
+:obj:`dpnp.binary_repr` : Return the binary representation of the input number
+                          as a string.
 
 Examples
 --------
@@ -250,6 +345,14 @@ The ``^`` operator can be used as a shorthand for ``bitwise_xor`` on
 
 >>> a ^ b
 array([ True, False])
+
+The number 13 is represented by ``00001101``. Likewise, 17 is represented by
+``00010001``. The bit-wise XOR of 13 and 17 is therefore ``00011100``, or 28:
+
+>>> np.bitwise_xor(np.array(13), 17)
+array(28)
+>>> np.binary_repr(28)
+'11100'
 """
 
 bitwise_xor = DPNPBinaryFunc(
@@ -298,13 +401,21 @@ See Also
 :obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.
 :obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.
 :obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.
+:obj:`dpnp.binary_repr` : Return the binary representation of the input number
+                          as a string.
 
 Examples
 --------
 >>> import dpnp as np
+
+The number 13 is represented by ``00001101``. The invert or bit-wise NOT of 13
+is then:
+
 >>> x = np.array([13])
 >>> np.invert(x)
--14
+array([-14])
+>>> np.binary_repr(-14, width=8)
+'11110010'
 
 >>> a = np.array([True, False])
 >>> np.invert(a)
@@ -315,6 +426,7 @@ The ``~`` operator can be used as a shorthand for ``invert`` on
 
 >>> ~a
 array([False,  True])
+
 """
 
 invert = DPNPUnaryFunc(
@@ -368,6 +480,8 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.right_shift` : Shift the bits of an integer to the right.
+:obj:`dpnp.binary_repr` : Return the binary representation of the input number
+                          as a string.
 
 Examples
 --------
@@ -382,6 +496,13 @@ The ``<<`` operator can be used as a shorthand for ``left_shift`` on
 
 >>> x1 << x2
 array([10, 20, 40])
+
+>>> np.binary_repr(5)
+'101'
+>>> np.left_shift(np.array(5), 2)
+array(20)
+>>> np.binary_repr(20)
+'10100'
 """
 
 left_shift = DPNPBinaryFunc(
@@ -434,6 +555,8 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.left_shift` : Shift the bits of an integer to the left.
+:obj:`dpnp.binary_repr` : Return the binary representation of the input number
+                          as a string.
 
 Examples
 --------
@@ -448,6 +571,13 @@ The ``>>`` operator can be used as a shorthand for ``right_shift`` on
 
 >>> x1 >> x2
 array([5, 2, 1])
+
+>>> np.binary_repr(10)
+'1010'
+>>> np.right_shift(np.array(10), 1)
+array(5)
+>>> np.binary_repr(5)
+'101'
 """
 
 right_shift = DPNPBinaryFunc(

@@ -25,7 +25,7 @@
 # *****************************************************************************
 
 """
-Interface of the Array manipulation routines part of the DPNP
+Interface of the array manipulation routines part of the DPNP
 
 Notes
 -----
@@ -41,7 +41,9 @@ it contains:
 import math
 import operator
 import warnings
+from typing import NamedTuple
 
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import AxisError, normalize_axis_index
@@ -54,6 +56,21 @@ from .dpnp_array import dpnp_array
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_pad import dpnp_pad
 
+
+class InsertDeleteParams(NamedTuple):
+    """Parameters used for ``dpnp.delete`` and ``dpnp.insert``."""
+
+    a: dpnp_array
+    a_ndim: int
+    order: str
+    axis: int
+    slobj: list
+    n: int
+    a_shape: list
+    exec_q: dpctl.SyclQueue
+    usm_type: str
+
+
 __all__ = [
     "append",
     "array_split",
@@ -63,6 +80,7 @@ __all__ = [
     "atleast_2d",
     "atleast_3d",
     "broadcast_arrays",
+    "broadcast_shapes",
     "broadcast_to",
     "can_cast",
     "column_stack",
@@ -78,6 +96,7 @@ __all__ = [
     "flipud",
     "hsplit",
     "hstack",
+    "insert",
     "matrix_transpose",
     "moveaxis",
     "ndim",
@@ -119,10 +138,11 @@ def _check_stack_arrays(arrays):
         )
 
 
-def _delete_with_slice(a, obj, axis):
+def _delete_with_slice(params, obj, axis):
     """Utility function for ``dpnp.delete`` when obj is slice."""
 
-    a, a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    a, a_ndim, order, axis, slobj, n, newshape, exec_q, usm_type = params
+
     start, stop, step = obj.indices(n)
     xr = range(start, stop, step)
     num_del = len(xr)
@@ -136,13 +156,13 @@ def _delete_with_slice(a, obj, axis):
         start = xr[-1]
         stop = xr[0] + 1
 
-    a_shape[axis] -= num_del
+    newshape[axis] -= num_del
     new = dpnp.empty(
-        a_shape,
-        dtype=a.dtype,
+        newshape,
         order=order,
-        sycl_queue=a.sycl_queue,
-        usm_type=a.usm_type,
+        dtype=a.dtype,
+        sycl_queue=exec_q,
+        usm_type=usm_type,
     )
     # copy initial chunk
     if start == 0:
@@ -165,8 +185,8 @@ def _delete_with_slice(a, obj, axis):
         keep = dpnp.ones(
             stop - start,
             dtype=dpnp.bool,
-            sycl_queue=a.sycl_queue,
-            usm_type=a.usm_type,
+            sycl_queue=exec_q,
+            usm_type=usm_type,
         )
         keep[: stop - start : step] = False
         slobj[axis] = slice(start, stop - num_del)
@@ -179,10 +199,11 @@ def _delete_with_slice(a, obj, axis):
     return new
 
 
-def _delete_without_slice(a, obj, axis, single_value, exec_q, usm_type):
+def _delete_without_slice(params, obj, axis, single_value):
     """Utility function for ``dpnp.delete`` when obj is int or array of int."""
 
-    a, a_ndim, order, axis, slobj, n, a_shape = _calc_parameters(a, axis)
+    a, a_ndim, order, axis, slobj, n, newshape, exec_q, usm_type = params
+
     if single_value:
         # optimization for a single value
         if obj < -n or obj >= n:
@@ -192,11 +213,11 @@ def _delete_without_slice(a, obj, axis, single_value, exec_q, usm_type):
             )
         if obj < 0:
             obj += n
-        a_shape[axis] -= 1
+        newshape[axis] -= 1
         new = dpnp.empty(
-            a_shape,
-            dtype=a.dtype,
+            newshape,
             order=order,
+            dtype=a.dtype,
             sycl_queue=exec_q,
             usm_type=usm_type,
         )
@@ -228,7 +249,7 @@ def _delete_without_slice(a, obj, axis, single_value, exec_q, usm_type):
     return new
 
 
-def _calc_parameters(a, axis):
+def _calc_parameters(a, axis, obj, values=None):
     """Utility function for ``dpnp.delete`` and ``dpnp.insert``."""
 
     a_ndim = a.ndim
@@ -245,7 +266,118 @@ def _calc_parameters(a, axis):
     n = a.shape[axis]
     a_shape = list(a.shape)
 
-    return a, a_ndim, order, axis, slobj, n, a_shape
+    usm_type, exec_q = get_usm_allocations([a, obj, values])
+
+    return InsertDeleteParams(
+        a, a_ndim, order, axis, slobj, n, a_shape, exec_q, usm_type
+    )
+
+
+def _insert_array_indices(parameters, indices, values, obj):
+    """
+    Utility function for ``dpnp.insert`` when indices is an array with
+    multiple elements.
+
+    """
+
+    a, a_ndim, order, axis, slobj, n, newshape, exec_q, usm_type = parameters
+
+    is_array = isinstance(obj, (dpnp_array, numpy.ndarray, dpt.usm_ndarray))
+    if indices.size == 0 and not is_array:
+        # Can safely cast the empty list to intp
+        indices = indices.astype(dpnp.intp)
+
+    indices[indices < 0] += n
+
+    numnew = len(indices)
+    ind_sort = indices.argsort(kind="stable")
+    indices[ind_sort] += dpnp.arange(
+        numnew, dtype=indices.dtype, sycl_queue=exec_q, usm_type=usm_type
+    )
+
+    newshape[axis] += numnew
+    old_mask = dpnp.ones(
+        newshape[axis], dtype=dpnp.bool, sycl_queue=exec_q, usm_type=usm_type
+    )
+    old_mask[indices] = False
+
+    new = dpnp.empty(
+        newshape,
+        order=order,
+        dtype=a.dtype,
+        sycl_queue=exec_q,
+        usm_type=usm_type,
+    )
+    slobj2 = [slice(None)] * a_ndim
+    slobj[axis] = indices
+    slobj2[axis] = old_mask
+    new[tuple(slobj)] = values
+    new[tuple(slobj2)] = a
+
+    return new
+
+
+def _insert_singleton_index(parameters, indices, values, obj):
+    """
+    Utility function for ``dpnp.insert`` when indices is an array with
+    one element.
+
+    """
+
+    a, a_ndim, order, axis, slobj, n, newshape, exec_q, usm_type = parameters
+
+    # In dpnp, `.item()` calls `.wait()`, so it is preferred to avoid it
+    # When possible (i.e. for numpy arrays, lists, etc), it is preferred
+    # to use `.item()` on a NumPy array
+    if dpnp.is_supported_array_type(obj):
+        index = indices.item()
+    else:
+        if isinstance(obj, slice):
+            obj = numpy.arange(*obj.indices(n), dtype=dpnp.intp)
+        index = numpy.asarray(obj).item()
+
+    if index < -n or index > n:
+        raise IndexError(
+            f"index {index} is out of bounds for axis {axis} with size {n}"
+        )
+    if index < 0:
+        index += n
+
+    # Need to change the dtype of values to input array dtype and update
+    # its shape to make ``input_arr[..., index, ...] = values`` legal
+    values = dpnp.array(
+        values,
+        copy=None,
+        ndmin=a_ndim,
+        dtype=a.dtype,
+        sycl_queue=exec_q,
+        usm_type=usm_type,
+    )
+    if indices.ndim == 0:
+        # numpy.insert behave differently if obj is an scalar or an array
+        # with one element, so, this change is needed to align with NumPy
+        values = dpnp.moveaxis(values, 0, axis)
+
+    numnew = values.shape[axis]
+    newshape[axis] += numnew
+    new = dpnp.empty(
+        newshape,
+        order=order,
+        dtype=a.dtype,
+        sycl_queue=exec_q,
+        usm_type=usm_type,
+    )
+
+    slobj[axis] = slice(None, index)
+    new[tuple(slobj)] = a[tuple(slobj)]
+    slobj[axis] = slice(index, index + numnew)
+    new[tuple(slobj)] = values
+    slobj[axis] = slice(index + numnew, None)
+    slobj2 = [slice(None)] * a_ndim
+    slobj2[axis] = slice(index, None)
+    new[tuple(slobj)] = a[tuple(slobj2)]
+
+    return new
 
 
 def _unique_1d(
@@ -967,6 +1099,41 @@ def broadcast_arrays(*args, subok=False):
     return [dpnp_array._create_from_usm_ndarray(a) for a in usm_arrays]
 
 
+def broadcast_shapes(*args):
+    """
+    Broadcast the input shapes into a single shape.
+
+    For full documentation refer to :obj:`numpy.broadcast_shapes`.
+
+    Parameters
+    ----------
+    *args : tuples of ints, or ints
+        The shapes to be broadcast against each other.
+
+    Returns
+    -------
+    tuple
+        Broadcasted shape.
+
+    See Also
+    --------
+    :obj:`dpnp.broadcast_arrays` : Broadcast any number of arrays against
+                                   each other.
+    :obj:`dpnp.broadcast_to` : Broadcast an array to a new shape.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.broadcast_shapes((1, 2), (3, 1), (3, 2))
+    (3, 2)
+    >>> np.broadcast_shapes((6, 7), (5, 6, 1), (7,), (5, 1, 7))
+    (5, 6, 7)
+
+    """
+
+    return numpy.broadcast_shapes(*args)
+
+
 # pylint: disable=redefined-outer-name
 def broadcast_to(array, /, shape, subok=False):
     """
@@ -1406,14 +1573,10 @@ def delete(arr, obj, axis=None):
     """
 
     dpnp.check_supported_arrays_type(arr)
+    params = _calc_parameters(arr, axis, obj)
 
     if isinstance(obj, slice):
-        return _delete_with_slice(arr, obj, axis)
-
-    if dpnp.is_supported_array_type(obj):
-        usm_type, exec_q = get_usm_allocations([arr, obj])
-    else:
-        usm_type, exec_q = arr.usm_type, arr.sycl_queue
+        return _delete_with_slice(params, obj, axis)
 
     if isinstance(obj, (int, dpnp.integer)) and not isinstance(obj, bool):
         single_value = True
@@ -1421,7 +1584,9 @@ def delete(arr, obj, axis=None):
     else:
         single_value = False
         is_array = isinstance(obj, (dpnp_array, numpy.ndarray, dpt.usm_ndarray))
-        indices = dpnp.asarray(obj, sycl_queue=exec_q, usm_type=usm_type)
+        indices = dpnp.asarray(
+            obj, sycl_queue=params.exec_q, usm_type=params.usm_type
+        )
         # if `obj` is originally an empty list, after converting it into
         # an array, it will have float dtype, so we need to change its dtype
         # to integer. However, if `obj` is originally an empty array with
@@ -1431,15 +1596,16 @@ def delete(arr, obj, axis=None):
         elif indices.size == 1 and indices.dtype.kind in "ui":
             # For a size 1 integer array we can use the single-value path
             # (most dtypes, except boolean, should just fail later).
-            if isinstance(obj, (dpnp_array, dpt.usm_ndarray)):
+            single_value = True
+            # In dpnp, `.item()` calls `.wait()`, so it is preferred to avoid it
+            # When possible (i.e. for numpy arrays, lists, etc), it is
+            # preferred to use `.item()` on a NumPy array
+            if dpnp.is_supported_array_type(obj):
                 indices = indices.item()
             else:
                 indices = numpy.asarray(obj).item()
-            single_value = True
 
-    return _delete_without_slice(
-        arr, indices, axis, single_value, exec_q, usm_type
-    )
+    return _delete_without_slice(params, indices, axis, single_value)
 
 
 def dsplit(ary, indices_or_sections):
@@ -1992,6 +2158,138 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     if arrs and arrs[0].ndim == 1:
         return dpnp.concatenate(arrs, axis=0, dtype=dtype, casting=casting)
     return dpnp.concatenate(arrs, axis=1, dtype=dtype, casting=casting)
+
+
+def insert(arr, obj, values, axis=None):
+    """
+    Insert values along the given axis before the given indices.
+
+    For full documentation refer to :obj:`numpy.insert`.
+
+    Parameters
+    ----------
+    arr : array_like
+        Input array.
+    obj : {slice, int, array-like of ints}
+        Object that defines the index or indices before which `values` is
+        inserted. It supports multiple insertions when `obj` is a single
+        scalar or a sequence with one element (similar to calling insert
+        multiple times).
+    values : array_like
+        Values to insert into `arr`. If the type of `values` is different
+        from that of `arr`, `values` is converted to the type of `arr`.
+        `values` should be shaped so that ``arr[..., obj, ...] = values``
+        is legal.
+    axis : {None, int}, optional
+        Axis along which to insert `values`. If `axis` is ``None`` then `arr`
+        is flattened first.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of `arr` with `values` inserted. Note that :obj:`dpnp.insert`
+        does not occur in-place: a new array is returned. If
+        `axis` is ``None``, `out` is a flattened array.
+
+    See Also
+    --------
+    :obj:`dpnp.append` : Append elements at the end of an array.
+    :obj:`dpnp.concatenate` : Join a sequence of arrays along an existing axis.
+    :obj:`dpnp.delete` : Delete elements from an array.
+
+    Notes
+    -----
+    Note that for higher dimensional inserts ``obj=0`` behaves very different
+    from ``obj=[0]`` just like ``arr[:, 0, :] = values`` is different from
+    ``arr[:, [0], :] = values``.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[1, 1], [2, 2], [3, 3]])
+    >>> a
+    array([[1, 1],
+           [2, 2],
+           [3, 3]])
+    >>> np.insert(a, 1, 5)
+    array([1, 5, 1, 2, 2, 3, 3])
+    >>> np.insert(a, 1, 5, axis=1)
+    array([[1, 5, 1],
+           [2, 5, 2],
+           [3, 5, 3]])
+
+    Difference between sequence and scalars:
+
+    >>> np.insert(a, [1], [[1],[2],[3]], axis=1)
+    array([[1, 1, 1],
+           [2, 2, 2],
+           [3, 3, 3]])
+    >>> np.array_equal(np.insert(a, 1, [1, 2, 3], axis=1),
+    ...                np.insert(a, [1], [[1],[2],[3]], axis=1))
+    array(True)
+
+    >>> b = a.flatten()
+    >>> b
+    array([1, 1, 2, 2, 3, 3])
+    >>> np.insert(b, [2, 2], [5, 6])
+    array([1, 1, 5, 6, 2, 2, 3, 3])
+
+    >>> np.insert(b, slice(2, 4), [5, 6])
+    array([1, 1, 5, 2, 6, 2, 3, 3])
+
+    >>> np.insert(b, [2, 2], [7.13, False]) # dtype casting
+    array([1, 1, 7, 0, 2, 2, 3, 3])
+
+    >>> x = np.arange(8).reshape(2, 4)
+    >>> idx = (1, 3)
+    >>> np.insert(x, idx, 999, axis=1)
+    array([[  0, 999,   1,   2, 999,   3],
+           [  4, 999,   5,   6, 999,   7]])
+
+    """
+
+    dpnp.check_supported_arrays_type(arr)
+    params = _calc_parameters(arr, axis, obj, values)
+
+    if isinstance(obj, slice):
+        # turn it into a range object
+        indices = dpnp.arange(
+            *obj.indices(params.n),
+            dtype=dpnp.intp,
+            sycl_queue=params.exec_q,
+            usm_type=params.usm_type,
+        )
+    else:
+        # need to copy obj, because indices will be changed in-place
+        indices = dpnp.copy(
+            obj, sycl_queue=params.exec_q, usm_type=params.usm_type
+        )
+        if indices.dtype == dpnp.bool:
+            warnings.warn(
+                "In the future insert will treat boolean arrays and array-likes"
+                " as a boolean index instead of casting it to integers",
+                FutureWarning,
+                stacklevel=2,
+            )
+            indices = indices.astype(dpnp.intp)
+            # TODO: Code after warning period:
+            # if indices.ndim != 1:
+            #    raise ValueError(
+            #        "boolean array argument `obj` to insert must be "
+            #        "one-dimensional"
+            #    )
+            # indices = dpnp.nonzero(indices)[0]
+        elif indices.ndim > 1:
+            raise ValueError(
+                "index array argument `obj` to insert must be one-dimensional "
+                "or scalar"
+            )
+
+    if indices.size == 1:
+        return _insert_singleton_index(params, indices, values, obj)
+
+    return _insert_array_indices(params, indices, values, obj)
 
 
 def matrix_transpose(x, /):

@@ -411,6 +411,20 @@ def test_copy_operation(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_extract(device):
+    x = dpnp.arange(3, device=device)
+    y = dpnp.array([True, False, True], device=device)
+    result = dpnp.extract(x, y)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_meshgrid(device):
     x = dpnp.arange(100, device=device)
     y = dpnp.arange(100, device=device)
@@ -442,6 +456,7 @@ def test_meshgrid(device):
         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
         pytest.param("copy", [1.0, 2.0, 3.0]),
+        pytest.param("corrcoef", [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
         pytest.param(
             "cos", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
@@ -449,6 +464,8 @@ def test_meshgrid(device):
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("cumulative_prod", [1, 2, 3, 4, 5, 6]),
+        pytest.param("cumulative_sum", [1, 2, 3, 4, 5, 6]),
         pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
@@ -541,6 +558,14 @@ def test_1in_1out(func, data, device):
     ):
         # `trapezoid` is available from NumPy 2.0
         func = "trapz"
+
+    if (
+        func in ["cumulative_prod", "cumulative_sum"]
+        and numpy.lib.NumpyVersion(numpy.__version__) < "2.1.0"
+    ):
+        pytest.skip(
+            "cumulative_prod and cumulative_sum are available from NumPy 2.1"
+        )
 
     x_orig = dpnp.asnumpy(x)
     expected = getattr(numpy, func)(x_orig)
@@ -694,6 +719,11 @@ def test_reduce_hypot(device):
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param(
+            "corrcoef",
+            [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
+            [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
+        ),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
@@ -2079,6 +2109,70 @@ class TestDelete:
         assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
 
 
+class TestInsert:
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 2), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_basic(self, obj, device):
+        x = dpnp.arange(5, device=device)
+        result = dpnp.insert(x, obj, 3)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "obj",
+        [slice(None, None, 3), 3, [2, 3]],
+        ids=["slice", "scalar", "list"],
+    )
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_values_ndarray(self, obj, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        result = dpnp.insert(x, obj, y)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+    @pytest.mark.parametrize("values", [-2, [-1, -2]], ids=["scalar", "list"])
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_obj_ndarray(self, values, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        result = dpnp.insert(x, y, values)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "device",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_obj_values_ndarray(self, device):
+        x = dpnp.arange(5, device=device)
+        y = dpnp.array([1, 4], device=device)
+        z = dpnp.array([-1, -3], device=device)
+        result = dpnp.insert(x, y, z)
+
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, z.sycl_queue)
+
+
 @pytest.mark.parametrize(
     "func,data1",
     [
@@ -2107,6 +2201,18 @@ def test_split(func, data1, device):
     assert_allclose(result[1], expected[1])
     assert_sycl_queue_equal(result[0].sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result[1].sycl_queue, x1.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_apply_along_axis(device):
+    x = dpnp.arange(9, device=device).reshape(3, 3)
+    result = dpnp.apply_along_axis(dpnp.sum, 0, x)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
 @pytest.mark.parametrize(
@@ -2491,6 +2597,27 @@ def test_lstsq(m, n, nrhs, device):
     for param_dp in result_dp:
         assert_sycl_queue_equal(param_dp.sycl_queue, a_dp.sycl_queue)
         assert_sycl_queue_equal(param_dp.sycl_queue, b_dp.sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_bincount(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_hist = numpy.bincount(v, weights=w)
+    result_hist = dpnp.bincount(iv, weights=iw)
+    assert_array_equal(result_hist, expected_hist)
+
+    hist_queue = result_hist.sycl_queue
+    assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
 
 
 @pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])

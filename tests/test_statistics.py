@@ -573,39 +573,59 @@ class TestStd:
             dpnp.std(ia, ddof="1")
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestBincount:
-    @pytest.mark.parametrize(
-        "array",
-        [[1, 2, 3], [1, 2, 2, 1, 2, 4], [2, 2, 2, 2]],
-        ids=["[1, 2, 3]", "[1, 2, 2, 1, 2, 4]", "[2, 2, 2, 2]"],
+class TestCorrcoef:
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
     )
-    @pytest.mark.parametrize(
-        "minlength", [0, 1, 3, 5], ids=["0", "1", "3", "5"]
-    )
-    def test_bincount_minlength(self, array, minlength):
-        np_a = numpy.array(array)
-        dpnp_a = dpnp.array(array)
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("rowvar", [True, False])
+    def test_corrcoef(self, dtype, rowvar):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        np_array = dpnp.asnumpy(dp_array)
 
-        expected = numpy.bincount(np_a, minlength=minlength)
-        result = dpnp.bincount(dpnp_a, minlength=minlength)
-        assert_allclose(expected, result)
+        expected = numpy.corrcoef(np_array, rowvar=rowvar)
+        result = dpnp.corrcoef(dp_array, rowvar=rowvar)
 
-    @pytest.mark.parametrize(
-        "array", [[1, 2, 2, 1, 2, 4]], ids=["[1, 2, 2, 1, 2, 4]"]
-    )
-    @pytest.mark.parametrize(
-        "weights",
-        [None, [0.3, 0.5, 0.2, 0.7, 1.0, -0.6], [2, 2, 2, 2, 2, 2]],
-        ids=["None", "[0.3, 0.5, 0.2, 0.7, 1., -0.6]", "[2, 2, 2, 2, 2, 2]"],
-    )
-    def test_bincount_weights(self, array, weights):
-        np_a = numpy.array(array)
-        dpnp_a = dpnp.array(array)
+        assert_dtype_allclose(result, expected)
 
-        expected = numpy.bincount(np_a, weights=weights)
-        result = dpnp.bincount(dpnp_a, weights=weights)
-        assert_allclose(expected, result)
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("shape", [(2, 0), (0, 2)])
+    def test_corrcoef_empty(self, shape):
+        dp_array = dpnp.empty(shape, dtype=dpnp.int64)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.corrcoef(dp_array)
+        expected = numpy.corrcoef(np_array)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
+    def test_corrcoef_dtype(self, dt_in, dt_out):
+        dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dt_in)
+        np_array = dpnp.asnumpy(dp_array)
+
+        expected = numpy.corrcoef(np_array, dtype=dt_out)
+        result = dpnp.corrcoef(dp_array, dtype=dt_out)
+        assert expected.dtype == result.dtype
+        assert_allclose(result, expected, rtol=1e-6)
+
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+    )
+    def test_corrcoef_scalar(self):
+        dp_array = dpnp.array(5)
+        np_array = dpnp.asnumpy(dp_array)
+
+        result = dpnp.corrcoef(dp_array)
+        expected = numpy.corrcoef(np_array)
+        assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(

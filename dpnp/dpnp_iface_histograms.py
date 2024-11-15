@@ -38,7 +38,6 @@ it contains:
 """
 
 import operator
-import warnings
 
 import dpctl.utils as dpu
 import numpy
@@ -53,6 +52,7 @@ import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 from .dpnp_utils import map_dtype_to_device
 
 __all__ = [
+    "bincount",
     "digitize",
     "histogram",
     "histogram_bin_edges",
@@ -61,6 +61,35 @@ __all__ = [
 # range is a keyword argument to many functions, so save the builtin so they can
 # use it.
 _range = range
+
+
+def _result_type_for_device(dtype1, dtype2, device):
+    rt = dpnp.result_type(dtype1, dtype2)
+    return map_dtype_to_device(rt, device)
+
+
+def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
+    has_fp64 = device.has_aspect_fp64
+    has_fp16 = device.has_aspect_fp16
+
+    a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
+
+    # histogram implementation doesn't support uint64 as histogram type
+    # we can use int64 instead. Result would be correct even in case of overflow
+    if ntype == numpy.uint64:
+        ntype = dpnp.int64
+
+    if (a_bin_dtype, ntype) in supported_types:
+        return a_bin_dtype, ntype
+
+    for sample_type, hist_type in supported_types:
+        if _can_cast(
+            a_bin_dtype, sample_type, has_fp16, has_fp64
+        ) and _can_cast(ntype, hist_type, has_fp16, has_fp64):
+            return sample_type, hist_type
+
+    # should not happen
+    return None, None
 
 
 def _ravel_check_a_and_weights(a, weights):
@@ -73,16 +102,6 @@ def _ravel_check_a_and_weights(a, weights):
     # ensure that `a` array has supported type
     dpnp.check_supported_arrays_type(a)
     usm_type = a.usm_type
-
-    # ensure that the array is a "subtractable" dtype
-    if a.dtype == dpnp.bool:
-        warnings.warn(
-            f"Converting input from {a.dtype} to {numpy.uint8} "
-            "for compatibility.",
-            RuntimeWarning,
-            stacklevel=3,
-        )
-        a = dpnp.astype(a, numpy.uint8)
 
     if weights is not None:
         # check that `weights` array has supported type
@@ -208,6 +227,189 @@ def _get_bin_edges(a, bins, range, usm_type):
     return bin_edges, None
 
 
+def _bincount_validate(x, weights, minlength):
+    if x.ndim > 1:
+        raise ValueError("object too deep for desired array")
+    if x.ndim < 1:
+        raise ValueError("object of too small depth for desired array")
+    if not dpnp.issubdtype(x.dtype, dpnp.integer) and not dpnp.issubdtype(
+        x.dtype, dpnp.bool
+    ):
+        raise TypeError("x must be an integer array")
+    if weights is not None:
+        if x.shape != weights.shape:
+            raise ValueError("The weights and x don't have the same length.")
+        if not (
+            dpnp.issubdtype(weights.dtype, dpnp.integer)
+            or dpnp.issubdtype(weights.dtype, dpnp.floating)
+            or dpnp.issubdtype(weights.dtype, dpnp.bool)
+        ):
+            raise ValueError(
+                f"Weights must be integer or float. Got {weights.dtype}"
+            )
+
+    if minlength is not None:
+        minlength = int(minlength)
+        if minlength < 0:
+            raise ValueError("minlength must be non-negative")
+
+
+def _bincount_run_native(
+    x_casted, weights_casted, minlength, n_dtype, usm_type
+):
+    queue = x_casted.sycl_queue
+
+    max_v = dpnp.max(x_casted)
+    min_v = dpnp.min(x_casted)
+
+    if min_v < 0:
+        raise ValueError("x argument must have no negative arguments")
+
+    size = int(dpnp.max(max_v)) + 1
+    if minlength is not None:
+        size = max(size, minlength)
+
+    # bincount implementation uses atomics, but atomics doesn't work with
+    # host usm memory
+    n_usm_type = "device" if usm_type == "host" else usm_type
+
+    # bincount implementation requires output array to be filled with zeros
+    n_casted = dpnp.zeros(
+        size, dtype=n_dtype, usm_type=n_usm_type, sycl_queue=queue
+    )
+
+    _manager = dpu.SequentialOrderManager[queue]
+
+    x_usm = dpnp.get_usm_ndarray(x_casted)
+    weights_usm = (
+        dpnp.get_usm_ndarray(weights_casted)
+        if weights_casted is not None
+        else None
+    )
+    n_usm = dpnp.get_usm_ndarray(n_casted)
+
+    mem_ev, bc_ev = statistics_ext.bincount(
+        x_usm,
+        min_v,
+        max_v,
+        weights_usm,
+        n_usm,
+        depends=_manager.submitted_events,
+    )
+
+    _manager.add_event_pair(mem_ev, bc_ev)
+
+    return n_casted
+
+
+def bincount(x, weights=None, minlength=None):
+    """
+    bincount(x, /, weights=None, minlength=None)
+
+    Count number of occurrences of each value in array of non-negative ints.
+
+    For full documentation refer to :obj:`numpy.bincount`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input 1-dimensional array with nonnegative integer values.
+    weights : {None, dpnp.ndarray, usm_ndarray}, optional
+        Weights, array of the same shape as `x`.
+        Default: ``None``
+    minlength : {None, int}, optional
+        A minimum number of bins for the output array.
+        Default: ``None``
+
+    Returns
+    -------
+    out : dpnp.ndarray of ints
+        The result of binning the input array.
+        The length of `out` is equal to ``dpnp.max(x) + 1``.
+
+    See Also
+    --------
+    :obj:`dpnp.histogram` : Compute the histogram of a data set.
+    :obj:`dpnp.digitize` : Return the indices of the bins to which each value
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.bincount(np.arange(5))
+    array([1, 1, 1, 1, 1])
+    >>> np.bincount(np.array([0, 1, 1, 3, 2, 1, 7]))
+    array([1, 3, 1, 1, 0, 0, 0, 1])
+
+    >>> x = np.array([0, 1, 1, 3, 2, 1, 7, 23])
+    >>> np.bincount(x).size == np.amax(x) + 1
+    array(True)
+
+    The input array needs to be of integer dtype, otherwise a
+    TypeError is raised:
+
+    >>> np.bincount(np.arange(5, dtype=np.float32))
+    Traceback (most recent call last):
+      ...
+    TypeError: x must be an integer array
+
+    A possible use of :obj:`dpnp.bincount` is to perform sums over
+    variable-size chunks of an array, using the `weights` keyword.
+
+    >>> w = np.array([0.3, 0.5, 0.2, 0.7, 1., -0.6], dtype=np.float32) # weights
+    >>> x = np.array([0, 1, 1, 2, 2, 2])
+    >>> np.bincount(x, weights=w)
+    array([0.3, 0.7, 1.1], dtype=float32)
+
+    """
+
+    _bincount_validate(x, weights, minlength)
+
+    x, weights, usm_type = _ravel_check_a_and_weights(x, weights)
+
+    queue = x.sycl_queue
+    device = queue.sycl_device
+
+    if weights is None:
+        ntype = dpnp.dtype(dpnp.intp)
+    else:
+        # unlike in case of histogram result type is integer if no weights
+        # provided and float if weights are provided even if weights are integer
+        ntype = dpnp.default_float_type(sycl_queue=queue)
+
+    weights_casted = None
+
+    supported_types = statistics_ext.bincount_dtypes()
+    x_casted_dtype, ntype_casted = _align_dtypes(
+        x.dtype, x.dtype, ntype, supported_types, device
+    )
+
+    if x_casted_dtype is None or ntype_casted is None:
+        raise ValueError(
+            f"function '{bincount}' does not support input types "
+            f"({x.dtype}, {ntype}), "
+            "and the inputs could not be coerced to any "
+            "supported types"
+        )
+
+    x_casted = dpnp.astype(x, dtype=x_casted_dtype, copy=False)
+
+    if weights is not None:
+        weights_casted = dpnp.astype(weights, dtype=ntype_casted, copy=False)
+
+    n_casted = _bincount_run_native(
+        x_casted, weights_casted, minlength, ntype_casted, usm_type
+    )
+
+    n_usm_type = n_casted.usm_type
+    if usm_type != n_usm_type:
+        n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
+    else:
+        n = dpnp.astype(n_casted, ntype, copy=False)
+
+    return n
+
+
 def digitize(x, bins, right=False):
     """
     Return the indices of the bins to which each value in input array belongs.
@@ -298,35 +500,6 @@ def digitize(x, bins, right=False):
 
     # Reverse bins and adjust indices if bins are decreasing
     return bins.size - dpnp.searchsorted(bins[::-1], x, side=side)
-
-
-def _result_type_for_device(dtype1, dtype2, device):
-    rt = dpnp.result_type(dtype1, dtype2)
-    return map_dtype_to_device(rt, device)
-
-
-def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
-    has_fp64 = device.has_aspect_fp64
-    has_fp16 = device.has_aspect_fp16
-
-    a_bin_dtype = _result_type_for_device(a_dtype, bins_dtype, device)
-
-    # histogram implementation doesn't support uint64 as histogram type
-    # we can use int64 instead. Result would be correct even in case of overflow
-    if ntype == numpy.uint64:
-        ntype = dpnp.int64
-
-    if (a_bin_dtype, ntype) in supported_types:
-        return a_bin_dtype, ntype
-
-    for sample_type, hist_type in supported_types:
-        if _can_cast(
-            a_bin_dtype, sample_type, has_fp16, has_fp64
-        ) and _can_cast(ntype, hist_type, has_fp16, has_fp64):
-            return sample_type, hist_type
-
-    # should not happen
-    return None, None
 
 
 def histogram(a, bins=10, range=None, density=None, weights=None):
