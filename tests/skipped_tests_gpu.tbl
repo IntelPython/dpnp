@@ -1,0 +1,144 @@
+tests/test_random.py::TestDistributionsMultivariateNormal::test_moments
+tests/test_random.py::TestDistributionsMultivariateNormal::test_output_shape_check
+tests/test_random.py::TestDistributionsMultivariateNormal::test_seed
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[float32]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[float64]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[int32]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle[int64]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[float32]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[float64]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[int32]
+tests/test_random.py::TestPermutationsTestShuffle::test_no_miss_numbers[int64]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.complex64)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.int8)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), object)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.vstack([x, x]).T]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: (dpnp.asarray([(i, i) for i in x], [("a", int), ("b", int)]).view(dpnp.recarray))]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([(i, i) for i in x], [("a", object), ("b", dpnp.int32)])]]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray(x).astype(dpnp.int8)]
+
+tests/test_umath.py::test_umaths[('divmod', 'ii')]
+tests/test_umath.py::test_umaths[('divmod', 'll')]
+tests/test_umath.py::test_umaths[('divmod', 'ff')]
+tests/test_umath.py::test_umaths[('divmod', 'dd')]
+tests/test_umath.py::test_umaths[('floor_divide', 'ff')]
+tests/test_umath.py::test_umaths[('frexp', 'f')]
+tests/test_umath.py::test_umaths[('frexp', 'd')]
+
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_0_{shape=()}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_1_{shape=(1,)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_2_{shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_3_{order='C', shape=(2, 3)}::test_item
+tests/third_party/cupy/core_tests/test_ndarray_conversion.py::TestNdarrayToBytes_param_4_{order='F', shape=(2, 3)}::test_item
+
+tests/third_party/intel/test_zero_copy_test1.py::test_dpnp_interaction_with_dpctl_memory
+
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_copied
+tests/third_party/cupy/core_tests/test_ndarray_copy_and_view.py::TestArrayFlatten::test_flatten_order_transposed
+
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_min
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_1_{order='C', shape=(10, 20)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_1_{order='C', shape=(10, 20)}::test_cub_min
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_2_{order='C', shape=(10, 20, 30)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_2_{order='C', shape=(10, 20, 30)}::test_cub_min
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_3_{order='C', shape=(10, 20, 30, 40)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_3_{order='C', shape=(10, 20, 30, 40)}::test_cub_min
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_4_{order='F', shape=(10,)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_4_{order='F', shape=(10,)}::test_cub_min
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_5_{order='F', shape=(10, 20)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_5_{order='F', shape=(10, 20)}::test_cub_min
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_min
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
+tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
+
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmaskDifferentDtypes::test_putmask_differnt_dtypes_raises
+tests/third_party/cupy/indexing_tests/test_insert.py::TestPutmask::test_putmask_non_equal_shape_raises
+
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiter::test_base
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiter::test_copy
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiter::test_copy_next
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiter::test_len
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_0_{index=Ellipsis, shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_0_{index=Ellipsis, shape=(2, 3, 4)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_0_{index=Ellipsis, shape=(2, 3, 4)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_0_{index=Ellipsis, shape=(2, 3, 4)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_0_{index=Ellipsis, shape=(2, 3, 4)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_3_{index=slice(None, None, None), shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_3_{index=slice(None, None, None), shape=(2, 3, 4)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_3_{index=slice(None, None, None), shape=(2, 3, 4)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_3_{index=slice(None, None, None), shape=(2, 3, 4)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_3_{index=slice(None, None, None), shape=(2, 3, 4)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_4_{index=slice(None, 10, None), shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_4_{index=slice(None, 10, None), shape=(2, 3, 4)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_4_{index=slice(None, 10, None), shape=(2, 3, 4)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_4_{index=slice(None, 10, None), shape=(2, 3, 4)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_4_{index=slice(None, 10, None), shape=(2, 3, 4)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_5_{index=slice(None, None, 2), shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_5_{index=slice(None, None, 2), shape=(2, 3, 4)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_5_{index=slice(None, None, 2), shape=(2, 3, 4)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_5_{index=slice(None, None, 2), shape=(2, 3, 4)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_5_{index=slice(None, None, 2), shape=(2, 3, 4)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_6_{index=slice(None, None, -1), shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_6_{index=slice(None, None, -1), shape=(2, 3, 4)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_6_{index=slice(None, None, -1), shape=(2, 3, 4)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_6_{index=slice(None, None, -1), shape=(2, 3, 4)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_6_{index=slice(None, None, -1), shape=(2, 3, 4)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_7_{index=slice(10, None, -1), shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_7_{index=slice(10, None, -1), shape=(2, 3, 4)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_7_{index=slice(10, None, -1), shape=(2, 3, 4)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_7_{index=slice(10, None, -1), shape=(2, 3, 4)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_7_{index=slice(10, None, -1), shape=(2, 3, 4)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_8_{index=slice(10, None, -2), shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_8_{index=slice(10, None, -2), shape=(2, 3, 4)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_8_{index=slice(10, None, -2), shape=(2, 3, 4)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_8_{index=slice(10, None, -2), shape=(2, 3, 4)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_8_{index=slice(10, None, -2), shape=(2, 3, 4)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_9_{index=slice(None, None, None), shape=()}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_9_{index=slice(None, None, None), shape=()}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_9_{index=slice(None, None, None), shape=()}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_9_{index=slice(None, None, None), shape=()}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_9_{index=slice(None, None, None), shape=()}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_10_{index=slice(None, None, None), shape=(10,)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_10_{index=slice(None, None, None), shape=(10,)}::test_setitem_ndarray_1d
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_10_{index=slice(None, None, None), shape=(10,)}::test_setitem_ndarray_different_types
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_10_{index=slice(None, None, None), shape=(10,)}::test_setitem_ndarray_nd
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscript_param_10_{index=slice(None, None, None), shape=(10,)}::test_setitem_scalar
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_0_{index=None, shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_0_{index=None, shape=(2, 3, 4)}::test_setitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_1_{index=(0,), shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_1_{index=(0,), shape=(2, 3, 4)}::test_setitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_2_{index=True, shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_2_{index=True, shape=(2, 3, 4)}::test_setitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_3_{index=[0], shape=(2, 3, 4)}::test_getitem
+tests/third_party/cupy/indexing_tests/test_iterate.py::TestFlatiterSubscriptIndexError_param_3_{index=[0], shape=(2, 3, 4)}::test_setitem
+
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_0_{shapes=[(), ()]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_1_{shapes=[(0,), (0,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_2_{shapes=[(1,), (1,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_3_{shapes=[(2,), (2,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_4_{shapes=[(0,), (1,)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_5_{shapes=[(2, 3), (1, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_6_{shapes=[(2, 1, 3, 4), (3, 1, 4)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_7_{shapes=[(4, 3, 2, 3), (2, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_8_{shapes=[(2, 0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_9_{shapes=[(0, 1, 1, 3), (2, 1, 0, 0, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestBroadcast_param_10_{shapes=[(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]}::test_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_0_{shapes=[(3,), (2,)]}::test_invalid_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_1_{shapes=[(3, 2), (2, 3)]}::test_invalid_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_2_{shapes=[(3, 2), (3, 4)]}::test_invalid_broadcast
+tests/third_party/cupy/manipulation_tests/test_dims.py::TestInvalidBroadcast_param_3_{shapes=[(0,), (2,)]}::test_invalid_broadcast
+
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_period
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_left_right
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_nan_fy
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_nan_fx
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_nan_x
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_fy
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_fx
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_x
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_size1
+tests/third_party/cupy/math_tests/test_misc.py::TestMisc::test_interp_inf_to_nan
