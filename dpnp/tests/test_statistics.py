@@ -11,6 +11,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
@@ -23,8 +24,8 @@ class TestAverage:
     @pytest.mark.parametrize("axis", [None, 0, 1])
     @pytest.mark.parametrize("returned", [True, False])
     def test_avg_no_wgt(self, dtype, axis, returned):
-        ia = dpnp.array([[1, 1, 2], [3, 4, 5]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array((2, 3), dtype)
+        ia = dpnp.array(a)
 
         result = dpnp.average(ia, axis=axis, returned=returned)
         expected = numpy.average(a, axis=axis, returned=returned)
@@ -38,10 +39,10 @@ class TestAverage:
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("returned", [True, False])
     def test_avg(self, dtype, axis, returned):
-        ia = dpnp.array([[1, 1, 2], [3, 4, 5]], dtype=dtype)
-        iw = dpnp.array([[3, 1, 2], [3, 4, 2]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
-        w = dpnp.asnumpy(iw)
+        a = generate_random_numpy_array((2, 3), dtype)
+        w = generate_random_numpy_array((2, 3), dtype, low=0, high=10)
+        ia = dpnp.array(a)
+        iw = dpnp.array(w)
 
         result = dpnp.average(ia, axis=axis, weights=iw, returned=returned)
         expected = numpy.average(a, axis=axis, weights=w, returned=returned)
@@ -51,19 +52,6 @@ class TestAverage:
             assert_dtype_allclose(result[1], expected[1])
         else:
             assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_avg_complex(self, dtype):
-        x1 = numpy.random.rand(10)
-        x2 = numpy.random.rand(10)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        w = numpy.array(x2 + 1j * x1, dtype=dtype)
-        ia = dpnp.array(a)
-        iw = dpnp.array(w)
-
-        expected = numpy.average(a, weights=w)
-        result = dpnp.average(ia, weights=iw)
-        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "weight",
@@ -89,18 +77,18 @@ class TestAverage:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_avg_strided(self, dtype):
-        ia = dpnp.arange(20, dtype=dtype)
-        iw = dpnp.arange(-10, 10, dtype=dtype)
-        a = dpnp.asnumpy(ia)
-        w = dpnp.asnumpy(iw)
+        a = generate_random_numpy_array(20, dtype)
+        w = generate_random_numpy_array(20, dtype)
+        ia = dpnp.array(a)
+        iw = dpnp.array(w)
 
         result = dpnp.average(ia[::-1], weights=iw[::-1])
         expected = numpy.average(a[::-1], weights=w[::-1])
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         result = dpnp.average(ia[::2], weights=iw[::2])
         expected = numpy.average(a[::2], weights=w[::2])
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     def test_avg_error(self):
         a = dpnp.arange(5)
@@ -216,18 +204,18 @@ class TestMaxMin:
 
 
 class TestMean:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_mean(self, dtype, axis, keepdims):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array((2, 3), dtype)
+        ia = dpnp.array(a)
 
         result = dpnp.mean(ia, axis=axis, keepdims=keepdims)
         expected = numpy.mean(a, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "axis, out_shape", [(0, (3,)), (1, (2,)), ((0, 1), ())]
     )
@@ -240,17 +228,6 @@ class TestMean:
         expected = numpy.mean(a, axis=axis, out=out_np)
         result = dpnp.mean(ia, axis=axis, out=out_dp)
         assert result is out_dp
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_mean_complex(self, dtype):
-        x1 = numpy.random.rand(10)
-        x2 = numpy.random.rand(10)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        expected = numpy.mean(a)
-        result = dpnp.mean(ia)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures(
@@ -285,22 +262,17 @@ class TestMedian:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("size", [1, 2, 3, 4, 8, 9])
     def test_basic(self, dtype, size):
-        if dtype == dpnp.bool:
-            a = numpy.arange(2, dtype=dtype)
-            a = numpy.repeat(a, size)
-        else:
-            a = numpy.array(numpy.random.uniform(-5, 5, size), dtype=dtype)
+        a = generate_random_numpy_array(size, dtype)
         ia = dpnp.array(a)
 
         expected = numpy.median(a)
         result = dpnp.median(ia)
-
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1], (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_axis(self, axis, keepdims):
-        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a = generate_random_numpy_array((2, 3, 4))
         ia = dpnp.array(a)
 
         expected = numpy.median(a, axis=axis, keepdims=keepdims)
@@ -396,8 +368,8 @@ class TestVar:
     @pytest.mark.parametrize("keepdims", [True, False])
     @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2])
     def test_var(self, dtype, axis, keepdims, ddof):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array((2, 3), dtype)
+        ia = dpnp.array(a)
 
         expected = numpy.var(a, axis=axis, keepdims=keepdims, ddof=ddof)
         result = dpnp.var(ia, axis=axis, keepdims=keepdims, ddof=ddof)
@@ -414,8 +386,8 @@ class TestVar:
     @pytest.mark.parametrize("axis", [None, 0, 1])
     @pytest.mark.parametrize("ddof", [0, 1])
     def test_var_out(self, dtype, axis, ddof):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array((2, 3), dtype)
+        ia = dpnp.array(a)
 
         expected = numpy.var(a, axis=axis, ddof=ddof)
         if has_support_aspect64():
@@ -480,8 +452,8 @@ class TestStd:
     @pytest.mark.parametrize("keepdims", [True, False])
     @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2])
     def test_std(self, dtype, axis, keepdims, ddof):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array((2, 3), dtype)
+        ia = dpnp.array(a)
 
         expected = numpy.std(a, axis=axis, keepdims=keepdims, ddof=ddof)
         result = dpnp.std(ia, axis=axis, keepdims=keepdims, ddof=ddof)
@@ -497,8 +469,8 @@ class TestStd:
     @pytest.mark.parametrize("axis", [0, 1])
     @pytest.mark.parametrize("ddof", [0, 1])
     def test_std_out(self, dtype, axis, ddof):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array((2, 3), dtype)
+        ia = dpnp.array(a)
 
         expected = numpy.std(a, axis=axis, ddof=ddof)
         if has_support_aspect64():
@@ -559,7 +531,7 @@ class TestCorrcoef:
         "suppress_divide_invalid_numpy_warnings",
         "suppress_dof_numpy_warnings",
     )
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("rowvar", [True, False])
     def test_corrcoef(self, dtype, rowvar):
         ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
