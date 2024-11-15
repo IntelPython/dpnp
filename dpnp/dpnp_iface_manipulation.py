@@ -3894,18 +3894,13 @@ def transpose(a, axes=None):
 
     """
 
-    if isinstance(a, dpnp_array):
-        array = a
-    elif isinstance(a, dpt.usm_ndarray):
-        array = dpnp_array._create_from_usm_ndarray(a)
-    else:
-        raise TypeError(
-            f"An array must be any of supported type, but got {type(a)}"
-        )
+    dpnp.check_supported_arrays_type(a)
+    if isinstance(a, dpt.usm_ndarray):
+        a = dpnp_array._create_from_usm_ndarray(a)
 
     if axes is None:
-        return array.transpose()
-    return array.transpose(*axes)
+        return a.transpose()
+    return a.transpose(*axes)
 
 
 permute_dims = transpose  # permute_dims is an alias for transpose
