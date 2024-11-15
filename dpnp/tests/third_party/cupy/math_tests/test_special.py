@@ -7,8 +7,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestSpecial(unittest.TestCase):
-
-    @pytest.mark.skip("i0 is not implemented")
     @testing.for_dtypes(["e", "f", "d"])
     @testing.numpy_cupy_allclose(rtol=1e-3)
     def test_i0(self, xp, dtype):

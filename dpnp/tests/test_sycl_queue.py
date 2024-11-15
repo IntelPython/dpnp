@@ -479,6 +479,7 @@ def test_meshgrid(device):
         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
         pytest.param("gradient", [1.0, 2.0, 4.0, 7.0, 11.0, 16.0]),
         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
+        pytest.param("i0", [0, 1, 2, 3]),
         pytest.param(
             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
         ),
