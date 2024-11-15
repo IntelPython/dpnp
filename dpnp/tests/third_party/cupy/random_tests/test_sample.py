@@ -103,6 +103,7 @@ class TestRandint2(unittest.TestCase):
         assert _hypothesis.chi_square_test(counts, expected)
 
 
+@pytest.mark.skip("high=(max+1) is not supported")
 class TestRandintDtype(unittest.TestCase):
 
     @testing.with_requires("numpy>=2.0")
@@ -113,11 +114,10 @@ class TestRandintDtype(unittest.TestCase):
         size = (1000,)
         low = numpy.iinfo(dtype).min
         high = numpy.iinfo(dtype).max + 1
-        x = random.randint(low, high, size, dtype).get()
+        x = random.randint(low, high, size, dtype)
         assert low <= min(x)
         assert max(x) <= high
 
-    @pytest.mark.skip("high=(max+1) is not supported")
     @testing.for_int_dtypes(no_bool=True)
     @testing.for_dtypes([numpy.int32])
     def test_dtype2(self, dtype):

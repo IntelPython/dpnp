@@ -11,7 +11,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 def _run_script(code):

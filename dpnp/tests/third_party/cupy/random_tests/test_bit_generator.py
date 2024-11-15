@@ -5,7 +5,7 @@ import pytest
 
 import dpnp as cupy
 from dpnp import random
-from tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy import testing
 
 pytest.skip("bit generator is not supported yet", allow_module_level=True)
 

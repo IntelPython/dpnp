@@ -3,7 +3,7 @@ import unittest
 import pytest
 
 from dpnp import random
-from tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy import testing
 
 
 @pytest.mark.skip("random.get_random_state() is not supported yet")

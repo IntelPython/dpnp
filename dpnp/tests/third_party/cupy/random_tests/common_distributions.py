@@ -4,8 +4,8 @@ import unittest
 import numpy
 
 import dpnp as cupy
-from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import _condition
+from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing import _condition
 
 
 def two_sample_Kolmogorov_Smirnov_test(observed1, observed2):

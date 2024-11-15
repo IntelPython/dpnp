@@ -11,8 +11,8 @@ import dpnp as cupy
 # from cupy import cuda
 # from cupy.cuda import runtime
 # from cupy.random import _generator
-from tests.third_party.cupy import testing
-from tests.third_party.cupy.testing import _condition, _hypothesis
+from dpnp.tests.third_party.cupy import testing
+from dpnp.tests.third_party.cupy.testing import _condition, _hypothesis
 
 from . import common_distributions
 
