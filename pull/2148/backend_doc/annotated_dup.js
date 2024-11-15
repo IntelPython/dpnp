@@ -76,6 +76,9 @@ var annotated_dup =
         [ "heaviside", null, [
           [ "HeavisideFunctor", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ]
         ] ],
+        [ "i0", null, [
+          [ "I0Functor", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ]
+        ] ],
         [ "lcm", null, [
           [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]
         ] ],

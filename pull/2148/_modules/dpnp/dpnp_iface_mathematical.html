@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev1+47.g2da34b3cff8 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev2+28.g181011438e8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=80f32b25"></script>
+      <script src="../../_static/documentation_options.js?v=7825ed30"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -145,6 +145,7 @@
 
 <span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="n">dpnp_modf</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DPNPI0</span><span class="p">,</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
     <span class="n">DPNPImag</span><span class="p">,</span>
@@ -196,6 +197,7 @@
     <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
     <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
     <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;i0&quot;</span><span class="p">,</span>
     <span class="s2">&quot;lcm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ldexp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
@@ -2634,6 +2636,50 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside</span><span class="p">,</span>
     <span class="n">_HEAVISIDE_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_I0_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Modified Bessel function of the first kind, order 0.</span>
+
+<span class="s2">Usually denoted :math:`I_0`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.i0`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Argument of the Bessel function, expected to have floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The modified Bessel function evaluated at each of the elements of `x`.</span>
+<span class="s2">    If the input is of either boolean or integer data type, the returned array</span>
+<span class="s2">    will have the default floating point data type of a device where `x` has</span>
+<span class="s2">    been allocated. Otherwise the returned array has the same data type.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; np.i0(np.array(0.0))</span>
+<span class="s2">array(1.)</span>
+<span class="s2">&gt;&gt;&gt; np.i0(np.array([0, 1, 2, 3]))</span>
+<span class="s2">array([1.        , 1.26606588, 2.2795853 , 4.88079259])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">i0</span> <span class="o">=</span> <span class="n">DPNPI0</span><span class="p">(</span>
+    <span class="s2">&quot;i0&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_i0_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_i0</span><span class="p">,</span>
+    <span class="n">_I0_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
