@@ -11,7 +11,7 @@ from numpy.testing import assert_array_equal, assert_equal
 import dpnp
 from dpnp.dpnp_utils.dpnp_utils_pad import _as_pairs as dpnp_as_pairs
 
-from .helper import assert_dtype_allclose, get_all_dtypes, has_support_aspect64
+from .helper import assert_dtype_allclose, get_all_dtypes
 from .third_party.cupy import testing
 
 
@@ -384,7 +384,6 @@ class TestPad:
         result = dpnp.pad(a_dp, pad_width, mode=mode, reflect_type=reflect_type)
         assert_array_equal(result, expected)
 
-    @pytest.mark.skipif(not has_support_aspect64(), reason="dpctl-gh-1887")
     @pytest.mark.parametrize("data", [[[4, 5, 6], [6, 7, 8]], [[4, 5, 6]]])
     @pytest.mark.parametrize("pad_width", [10, (5, 7)])
     @pytest.mark.parametrize("mode", ["reflect", "symmetric"])
