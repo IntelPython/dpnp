@@ -785,6 +785,14 @@ def test_apply_along_axis(usm_type):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_apply_over_axes(usm_type):
+    x = dp.arange(18, usm_type=usm_type).reshape(2, 3, 3)
+    y = dp.apply_over_axes(dp.sum, x, [0, 1])
+
+    assert x.usm_type == y.usm_type
+
+
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_broadcast_to(usm_type):
     x = dp.ones(7, usm_type=usm_type)
     y = dp.broadcast_to(x, (2, 7))

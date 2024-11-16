@@ -38,11 +38,14 @@ it contains:
 
 
 import numpy
-from dpctl.tensor._numpy_helper import normalize_axis_index
+from dpctl.tensor._numpy_helper import (
+    normalize_axis_index,
+    normalize_axis_tuple,
+)
 
 import dpnp
 
-__all__ = ["apply_along_axis"]
+__all__ = ["apply_along_axis", "apply_over_axes"]
 
 
 def apply_along_axis(func1d, axis, arr, *args, **kwargs):
@@ -185,3 +188,83 @@ def apply_along_axis(func1d, axis, arr, *args, **kwargs):
         buff = dpnp.moveaxis(buff, -1, axis)
 
     return buff
+
+
+def apply_over_axes(func, a, axes):
+    """
+    Apply a function repeatedly over multiple axes.
+
+    `func` is called as ``res = func(a, axis)``, where `axis` is the first
+    element of `axes`. The result `res` of the function call must have
+    either the same dimensions as `a` or one less dimension. If `res`
+    has one less dimension than `a`, a dimension is inserted before
+    `axis`. The call to `func` is then repeated for each axis in `axes`,
+    with `res` as the first argument.
+
+    For full documentation refer to :obj:`numpy.apply_over_axes`.
+
+    Parameters
+    ----------
+    func : function
+         This function must take two arguments, ``func(a, axis)``.
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axes : {int, sequence of ints}
+        Axes over which `func` is applied.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The output array. The number of dimensions is the same as `a`,
+        but the shape can be different. This depends on whether `func`
+        changes the shape of its output with respect to its input.
+
+    See Also
+    --------
+    :obj:`dpnp.apply_along_axis` : Apply a function to 1-D slices of an array
+                                   along the given axis.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.arange(24).reshape(2, 3, 4)
+    >>> a
+    array([[[ 0,  1,  2,  3],
+            [ 4,  5,  6,  7],
+            [ 8,  9, 10, 11]],
+           [[12, 13, 14, 15],
+            [16, 17, 18, 19],
+            [20, 21, 22, 23]]])
+
+    Sum over axes 0 and 2. The result has same number of dimensions
+    as the original array:
+
+    >>> np.apply_over_axes(np.sum, a, [0, 2])
+    array([[[ 60],
+            [ 92],
+            [124]]])
+
+    Tuple axis arguments to ufuncs are equivalent:
+
+    >>> np.sum(a, axis=(0, 2), keepdims=True)
+    array([[[ 60],
+            [ 92],
+            [124]]])
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    if isinstance(axes, int):
+        axes = (axes,)
+    axes = normalize_axis_tuple(axes, a.ndim)
+
+    for axis in axes:
+        res = func(a, axis)
+        if res.ndim != a.ndim:
+            res = dpnp.expand_dims(res, axis)
+            if res.ndim != a.ndim:
+                raise ValueError(
+                    "function is not returning an array of the correct shape"
+                )
+        a = res
+    return res

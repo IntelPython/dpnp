@@ -2216,6 +2216,18 @@ def test_apply_along_axis(device):
 
 
 @pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_apply_over_axes(device):
+    x = dpnp.arange(18, device=device).reshape(2, 3, 3)
+    result = dpnp.apply_over_axes(dpnp.sum, x, [0, 1])
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+
+@pytest.mark.parametrize(
     "device_x",
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
