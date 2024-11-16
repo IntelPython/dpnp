@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.17.0dev2+4.g65a757811a0 documentation</title>
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.17.0dev2+7.gbe4dd2bc345 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ea1b5691"></script>
+      <script src="../../_static/documentation_options.js?v=4a60b6b3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -123,11 +123,14 @@
 
 
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">normalize_axis_index</span><span class="p">,</span>
+    <span class="n">normalize_axis_tuple</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;apply_along_axis&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;apply_along_axis&quot;</span><span class="p">,</span> <span class="s2">&quot;apply_over_axes&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="apply_along_axis">
@@ -272,6 +275,89 @@
         <span class="n">buff</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">buff</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">buff</span></div>
+
+
+
+<div class="viewcode-block" id="apply_over_axes">
+<a class="viewcode-back" href="../../reference/generated/dpnp.apply_over_axes.html#dpnp.apply_over_axes">[docs]</a>
+<span class="k">def</span> <span class="nf">apply_over_axes</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply a function repeatedly over multiple axes.</span>
+
+<span class="sd">    `func` is called as ``res = func(a, axis)``, where `axis` is the first</span>
+<span class="sd">    element of `axes`. The result `res` of the function call must have</span>
+<span class="sd">    either the same dimensions as `a` or one less dimension. If `res`</span>
+<span class="sd">    has one less dimension than `a`, a dimension is inserted before</span>
+<span class="sd">    `axis`. The call to `func` is then repeated for each axis in `axes`,</span>
+<span class="sd">    with `res` as the first argument.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.apply_over_axes`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    func : function</span>
+<span class="sd">         This function must take two arguments, ``func(a, axis)``.</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axes : {int, sequence of ints}</span>
+<span class="sd">        Axes over which `func` is applied.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The output array. The number of dimensions is the same as `a`,</span>
+<span class="sd">        but the shape can be different. This depends on whether `func`</span>
+<span class="sd">        changes the shape of its output with respect to its input.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.apply_along_axis` : Apply a function to 1-D slices of an array</span>
+<span class="sd">                                   along the given axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(24).reshape(2, 3, 4)</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[[ 0,  1,  2,  3],</span>
+<span class="sd">            [ 4,  5,  6,  7],</span>
+<span class="sd">            [ 8,  9, 10, 11]],</span>
+<span class="sd">           [[12, 13, 14, 15],</span>
+<span class="sd">            [16, 17, 18, 19],</span>
+<span class="sd">            [20, 21, 22, 23]]])</span>
+
+<span class="sd">    Sum over axes 0 and 2. The result has same number of dimensions</span>
+<span class="sd">    as the original array:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.apply_over_axes(np.sum, a, [0, 2])</span>
+<span class="sd">    array([[[ 60],</span>
+<span class="sd">            [ 92],</span>
+<span class="sd">            [124]]])</span>
+
+<span class="sd">    Tuple axis arguments to ufuncs are equivalent:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.sum(a, axis=(0, 2), keepdims=True)</span>
+<span class="sd">    array([[[ 60],</span>
+<span class="sd">            [ 92],</span>
+<span class="sd">            [124]]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">axes</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes</span><span class="p">,)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">res</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;function is not returning an array of the correct shape&quot;</span>
+                <span class="p">)</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">res</span>
+    <span class="k">return</span> <span class="n">res</span></div>
 
 </pre></div>
 
