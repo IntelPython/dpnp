@@ -3848,13 +3848,14 @@ def transpose(a, axes=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axes : None, tuple or list of ints, optional
+    axes : {None, tuple or list of ints}, optional
         If specified, it must be a tuple or list which contains a permutation
         of [0, 1, ..., N-1] where N is the number of axes of `a`.
         The `i`'th axis of the returned array will correspond to the axis
         numbered ``axes[i]`` of the input. If not specified or ``None``,
         defaults to ``range(a.ndim)[::-1]``, which reverses the order of
         the axes.
+        Default: ``None``.
 
     Returns
     -------
