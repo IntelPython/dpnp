@@ -40,7 +40,10 @@ it contains:
 import operator
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._copy_utils import _nonzero_impl
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
@@ -55,6 +58,7 @@ from .dpnp_utils import call_origin, get_usm_allocations
 
 __all__ = [
     "choose",
+    "compress",
     "diag_indices",
     "diag_indices_from",
     "diagonal",
@@ -153,6 +157,144 @@ def choose(x1, choices, out=None, mode="raise"):
                 return dpnp_choose(x1_desc, choices_list).get_pyobj()
 
     return call_origin(numpy.choose, x1, choices, out, mode)
+
+
+def compress(condition, a, axis=None, out=None):
+    """
+    Return selected slices of an array along given axis.
+
+    For full documentation refer to :obj:`numpy.choose`.
+
+    Parameters
+    ----------
+    condition : {array_like, dpnp.ndarray, usm_ndarray}
+        Array that selects which entries to extract. If the length of
+        `condition` is less than the size of `a` along `axis`, then
+        the output is truncated to the length of `condition`.
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to extract from.
+    axis : {int}, optional
+        Axis along which to extract slices. If `None`, works over the
+        flattened array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        If provided, the result will be placed in this array. It should
+        be of the appropriate shape and dtype.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of the slices of `a` where `condition` is True.
+
+    See also
+    --------
+    :obj:`dpnp.ndarray.compress` : Equivalent method.
+    :obj:`dpnp.extract` : Equivalent function when working on 1-D arrays.
+    """
+    dpnp.check_supported_arrays_type(a)
+    if axis is None:
+        if a.ndim != 1:
+            a = dpnp.ravel(a)
+        axis = 0
+    else:
+        axis = normalize_axis_index(operator.index(axis), a.ndim)
+
+    a_ary = dpnp.get_usm_ndarray(a)
+    if not dpnp.is_supported_array_type(condition):
+        usm_type = a_ary.usm_type
+        q = a_ary.sycl_queue
+        cond_ary = dpnp.as_usm_ndarray(
+            condition,
+            dtype=dpnp.bool,
+            usm_type=usm_type,
+            sycl_queue=q,
+        )
+        queues_ = [q]
+        usm_types_ = [usm_type]
+    else:
+        cond_ary = dpnp.get_usm_ndarray(condition)
+        queues_ = [a_ary.sycl_queue, cond_ary.sycl_queue]
+        usm_types_ = [a_ary.usm_type, cond_ary.usm_type]
+    if not cond_ary.ndim == 1:
+        raise ValueError(
+            "`condition` must be a 1-D array or un-nested " "sequence"
+        )
+
+    res_usm_type = dpu.get_coerced_usm_type(usm_types_)
+    exec_q = dpu.get_execution_queue(queues_)
+    if exec_q is None:
+        raise dpu.ExecutionPlacementError(
+            "arrays must be allocated on the same SYCL queue"
+        )
+
+    inds = _nonzero_impl(cond_ary)  # synchronizes
+
+    res_dt = a_ary.dtype
+    ind0 = inds[0]
+    a_sh = a_ary.shape
+    axis_end = axis + 1
+    if 0 in a_sh[axis:axis_end] and ind0.size != 0:
+        raise IndexError("cannot take non-empty indices from an empty axis")
+    res_sh = a_sh[:axis] + ind0.shape + a_sh[axis_end:]
+
+    orig_out = out
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        out = dpnp.get_usm_ndarray(out)
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != res_sh:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {res_sh}, got {out.shape}"
+            )
+
+        if res_dt != out.dtype:
+            raise ValueError(
+                f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
+            )
+
+        if dpu.get_execution_queue((a_ary.sycl_queue, out.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(a_ary, out):
+            # Allocate a temporary buffer to avoid memory overlapping.
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(
+            res_sh, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
+        )
+
+    if out.size == 0:
+        return out
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    h_ev, take_ev = ti._take(
+        src=a_ary,
+        ind=inds,
+        dst=out,
+        axis_start=axis,
+        mode=0,
+        sycl_queue=exec_q,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(h_ev, take_ev)
+
+    if not (orig_out is None or orig_out is out):
+        # Copy the out data from temporary buffer to original memory
+        ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=out, dst=orig_out, sycl_queue=exec_q, depends=[take_ev]
+        )
+        _manager.add_event_pair(ht_copy_ev, cpy_ev)
+        out = orig_out
+
+    return dpnp.get_result_array(out)
 
 
 def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
