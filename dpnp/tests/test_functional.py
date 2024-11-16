@@ -1,6 +1,6 @@
 import numpy
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
 
@@ -46,3 +46,22 @@ class TestApplyAlongAxis:
         # positional args: axis, dtype, out, keepdims
         result = dpnp.apply_along_axis(dpnp.mean, 0, ia, 0, dtype, None, True)
         assert_array_equal(result, expected)
+
+
+class TestApplyOverAxes:
+    @pytest.mark.parametrize("func", ["sum", "cumsum"])
+    @pytest.mark.parametrize("axes", [1, [0, 2], (-1, -2)])
+    def test_basic(self, func, axes):
+        a = numpy.arange(24).reshape(2, 3, 4)
+        ia = dpnp.array(a)
+
+        expected = numpy.apply_over_axes(getattr(numpy, func), a, axes)
+        result = dpnp.apply_over_axes(getattr(dpnp, func), ia, axes)
+        assert_array_equal(result, expected)
+
+    def test_custom_func(self):
+        def custom_func(x, axis):
+            return dpnp.expand_dims(dpnp.expand_dims(x, axis), axis)
+
+        ia = dpnp.arange(24).reshape(2, 3, 4)
+        assert_raises(ValueError, dpnp.apply_over_axes, custom_func, ia, 1)

@@ -1331,12 +1331,19 @@ class TestTranspose:
         assert_array_equal(result, expected)
 
     def test_alias(self):
-        a = dpnp.ones((5, 3))
+        a = dpnp.arange(15).reshape(5, 3)
 
-        res1 = dpnp.transpose((a))
-        res2 = dpnp.permute_dims((a))
-
+        res1 = dpnp.transpose(a)
+        res2 = dpnp.permute_dims(a)
         assert_array_equal(res1, res2)
+
+    def test_usm_array(self):
+        a = numpy.arange(9).reshape(3, 3)
+        ia = dpt.asarray(a)
+
+        expected = numpy.transpose(a)
+        result = dpnp.transpose(ia)
+        assert_array_equal(result, expected)
 
 
 class TestTrimZeros:
