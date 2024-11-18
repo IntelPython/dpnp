@@ -170,10 +170,9 @@ def _take_1d_index(x, inds, axis, q, usm_type, out=None):
         raise IndexError("cannot take non-empty indices from an empty axis")
     res_sh = x_sh[:axis] + ind0.shape + x_sh[axis_end:]
 
-    orig_out = out
+    orig_out = None
     if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        out = dpnp.get_usm_ndarray(out)
+        orig_out = out = dpnp.get_usm_ndarray(out)
 
         if not out.flags.writable:
             raise ValueError("provided `out` array is read-only")
@@ -286,7 +285,7 @@ def compress(condition, a, axis=None, out=None):
     inds = _nonzero_impl(cond_ary)
 
     return dpnp.get_result_array(
-        _take_1d_index(a_ary, inds, axis, exec_q, res_usm_type, out)
+        _take_1d_index(a_ary, inds, axis, exec_q, res_usm_type, out), out=out
     )
 
 
