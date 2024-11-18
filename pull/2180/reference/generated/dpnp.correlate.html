@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.correlate &mdash; Data Parallel Extension for NumPy 0.17.0dev2+6.g2673bd83f63 documentation</title>
+  <title>dpnp.correlate &mdash; Data Parallel Extension for NumPy 0.17.0dev2+8.g030f06f0361 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=54ce9872"></script>
+      <script src="../../_static/documentation_options.js?v=e22fae2e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -130,9 +130,9 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input sequences.</p></li>
 <li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input sequences.</p></li>
-<li><p><strong>mode</strong> (<em>{'valid'</em><em>, </em><em>'same'</em><em>, </em><em>'full'}</em><em>, </em><em>optional</em>) -- Refer to the <cite>convolve</cite> docstring. Note that the default
-is <code class="docutils literal notranslate"><span class="pre">'valid'</span></code>, unlike <cite>convolve</cite>, which uses <code class="docutils literal notranslate"><span class="pre">'full'</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">'valid'</span></code>.</p></li>
+<li><p><strong>mode</strong> (<em>{'valid'</em><em>, </em><em>'same'</em><em>, </em><em>'full'}</em><em>, </em><em>optional</em>) -- Refer to the <a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a> docstring. Note that the default
+is <code class="docutils literal notranslate"><span class="pre">'valid'</span></code>, unlike <a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a>, which uses <code class="docutils literal notranslate"><span class="pre">'full'</span></code>.
+| Default: <code class="docutils literal notranslate"><span class="pre">'valid'</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -145,11 +145,10 @@ Default: <code class="docutils literal notranslate"><span class="pre">'valid'</s
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">convolve</span></code></a></dt><dd><p>Discrete, linear convolution of two one-dimensional sequences.</p>
-</dd>
-<dt><a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.correlate.html#scipy.signal.correlate" title="(in SciPy v1.14.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scipy.signal.correlate</span></code></a></dt><dd><p>uses FFT which has superior performance on large arrays.</p>
+<dt><a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a></dt><dd><p>Discrete, linear convolution of two</p>
 </dd>
 </dl>
+<p><code class="xref py py-obj docutils literal notranslate"><span class="pre">one-dimensional</span></code></p>
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
