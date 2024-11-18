@@ -1,9 +1,11 @@
 import functools
 
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_,
     assert_array_equal,
@@ -1333,3 +1335,51 @@ class TestSelect:
             dpnp.select([x0], [x1], default=x1)
         with pytest.raises(TypeError):
             dpnp.select([x1], [x1])
+
+
+def test_compress_basic():
+    a = dpnp.arange(16).reshape(4, 4)
+    condition = dpnp.asarray([True, False, True])
+    r = dpnp.compress(condition, a, axis=0)
+    assert_array_equal(r[0], a[0])
+    assert_array_equal(r[1], a[2])
+
+
+@pytest.mark.parametrize("dtype", get_all_dtypes())
+def test_compress_condition_all_dtypes(dtype):
+    a = dpnp.arange(10, dtype="i4")
+    condition = dpnp.tile(dpnp.asarray([0, 1], dtype=dtype), 5)
+    r = dpnp.compress(condition, a)
+    assert_array_equal(r, a[1::2])
+
+
+def test_compress_invalid_out_errors():
+    q1 = dpctl.SyclQueue()
+    q2 = dpctl.SyclQueue()
+    a = dpnp.ones(10, dtype="i4", sycl_queue=q1)
+    condition = dpnp.asarray([True], sycl_queue=q1)
+    out_bad_shape = dpnp.empty_like(a)
+    with pytest.raises(ValueError):
+        dpnp.compress(condition, a, out=out_bad_shape)
+    out_bad_queue = dpnp.empty(1, dtype="i4", sycl_queue=q2)
+    with pytest.raises(ExecutionPlacementError):
+        dpnp.compress(condition, a, out=out_bad_queue)
+    out_bad_dt = dpnp.empty(1, dtype="i8", sycl_queue=q1)
+    with pytest.raises(ValueError):
+        dpnp.compress(condition, a, out=out_bad_dt)
+    out_read_only = dpnp.empty(1, dtype="i4", sycl_queue=q1)
+    out_read_only.flags.writable = False
+    with pytest.raises(ValueError):
+        dpnp.compress(condition, a, out=out_read_only)
+
+
+def test_compress_empty_axis():
+    a = dpnp.ones((10, 0, 5), dtype="i4")
+    condition = [True, False, True]
+    r = dpnp.compress(condition, a, axis=0)
+    assert r.shape == (2, 0, 5)
+    # empty take from empty axis is permitted
+    assert dpnp.compress([False], a, axis=1).shape == (10, 0, 5)
+    # non-empty take from empty axis raises IndexError
+    with pytest.raises(IndexError):
+        dpnp.compress(condition, a, axis=1)
