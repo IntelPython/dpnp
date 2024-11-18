@@ -22,6 +22,7 @@ from dpnp.dpnp_array import dpnp_array
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
@@ -2321,7 +2322,7 @@ class TestUnwrap:
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_rand(self, dt):
-        a = numpy.random.rand(10) * 100
+        a = generate_random_numpy_array((10,), seed_value=42) * 100
         a = a.astype(dtype=dt)
         ia = dpnp.array(a)
 
@@ -2345,7 +2346,7 @@ class TestUnwrap:
         "dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
     def test_rand_period(self, dt):
-        a = numpy.random.rand(10) * 1000
+        a = generate_random_numpy_array((10,), seed_value=42) * 1000
         a = a.astype(dtype=dt)
         ia = dpnp.array(a)
 
@@ -3429,6 +3430,7 @@ class TestPower:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_power(self, dtype):
+        numpy.random.seed(42)
         np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(
             "power", dtype, [0, 10, 10]
         )
