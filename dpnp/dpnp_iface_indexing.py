@@ -267,31 +267,20 @@ def compress(condition, a, axis=None, out=None):
 
     a_ary = dpnp.get_usm_ndarray(a)
     if not dpnp.is_supported_array_type(condition):
-        usm_type = a_ary.usm_type
-        q = a_ary.sycl_queue
         cond_ary = dpnp.as_usm_ndarray(
             condition,
             dtype=dpnp.bool,
-            usm_type=usm_type,
-            sycl_queue=q,
+            usm_type=a_ary.usm_type,
+            sycl_queue=a_ary.q,
         )
-        queues_ = [q]
-        usm_types_ = [usm_type]
     else:
         cond_ary = dpnp.get_usm_ndarray(condition)
-        queues_ = [a_ary.sycl_queue, cond_ary.sycl_queue]
-        usm_types_ = [a_ary.usm_type, cond_ary.usm_type]
     if not cond_ary.ndim == 1:
         raise ValueError(
             "`condition` must be a 1-D array or un-nested sequence"
         )
 
-    res_usm_type = dpu.get_coerced_usm_type(usm_types_)
-    exec_q = dpu.get_execution_queue(queues_)
-    if exec_q is None:
-        raise dpu.ExecutionPlacementError(
-            "arrays must be allocated on the same SYCL queue"
-        )
+    res_usm_type, exec_q = get_usm_allocations([a_ary, cond_ary])
 
     # _nonzero_impl synchronizes and returns a tuple of usm_ndarray indices
     inds = _nonzero_impl(cond_ary)
