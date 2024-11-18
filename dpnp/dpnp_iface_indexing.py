@@ -227,7 +227,8 @@ def _take_1d_index(x, inds, axis, q, usm_type, out=None):
 
 def compress(condition, a, axis=None, out=None):
     """
-    Return selected slices of an array along given axis.
+    A copy of `a` without the slices along `axis` for which `condition` is
+    ``False``.
 
     For full documentation refer to :obj:`numpy.choose`.
 
@@ -239,9 +240,10 @@ def compress(condition, a, axis=None, out=None):
         the output is truncated to the length of `condition`.
     a : {dpnp.ndarray, usm_ndarray}
         Array to extract from.
-    axis : {int}, optional
-        Axis along which to extract slices. If `None`, works over the
+    axis : {None, int}, optional
+        Axis along which to extract slices. If ``None``, works over the
         flattened array.
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be placed in this array. It should
         be of the appropriate shape and dtype.
@@ -254,9 +256,41 @@ def compress(condition, a, axis=None, out=None):
 
     See also
     --------
+    :obj:`dpnp.take` :  Take elements from an array along an axis.
+    :obj:`dpnp.choose` : Construct an array from an index array and a set of
+                         arrays to choose from.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagonal` : Return specified diagonals.
+    :obj:`dpnp.select` : Return an array drawn from elements in `choicelist`,
+                         depending on conditions.
     :obj:`dpnp.ndarray.compress` : Equivalent method.
     :obj:`dpnp.extract` : Equivalent function when working on 1-D arrays.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> a = np.array([[1, 2], [3, 4], [5, 6]])
+    >>> a
+    array([[1, 2],
+           [3, 4],
+           [5, 6]])
+    >>> np.compress([0, 1], a, axis=0)
+    array([[3, 4]])
+    >>> np.compress([False, True, True], a, axis=0)
+    array([[3, 4],
+           [5, 6]])
+    >>> np.compress([False, True], a, axis=1)
+    array([[2],
+           [4],
+           [6]])
+
+    Working on the flattened array does not return slices along an axis but
+    selects elements.
+
+    >>> np.compress([False, True], a)
+    array([2])
     """
+
     dpnp.check_supported_arrays_type(a)
     if axis is None:
         if a.ndim != 1:
@@ -270,7 +304,7 @@ def compress(condition, a, axis=None, out=None):
             condition,
             dtype=dpnp.bool,
             usm_type=a_ary.usm_type,
-            sycl_queue=a_ary.q,
+            sycl_queue=a_ary.sycl_queue,
         )
     else:
         cond_ary = dpnp.get_usm_ndarray(condition)
