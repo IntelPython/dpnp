@@ -37,6 +37,8 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+
 import operator
 
 import dpctl.tensor as dpt
@@ -159,6 +161,71 @@ def choose(x1, choices, out=None, mode="raise"):
     return call_origin(numpy.choose, x1, choices, out, mode)
 
 
+def _take_1d_index(x, inds, axis, q, usm_type, out=None):
+    # arg validation assumed done by caller
+    x_sh = x.shape
+    ind0 = inds[0]
+    axis_end = axis + 1
+    if 0 in x_sh[axis:axis_end] and ind0.size != 0:
+        raise IndexError("cannot take non-empty indices from an empty axis")
+    res_sh = x_sh[:axis] + ind0.shape + x_sh[axis_end:]
+
+    orig_out = out
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        out = dpnp.get_usm_ndarray(out)
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != res_sh:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {res_sh}, got {out.shape}"
+            )
+
+        if x.dtype != out.dtype:
+            raise ValueError(
+                f"Output array of type {x.dtype} is needed, " f"got {out.dtype}"
+            )
+
+        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(x, out):
+            # Allocate a temporary buffer to avoid memory overlapping.
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q)
+
+    _manager = dpu.SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
+
+    # always use wrap mode here
+    h_ev, take_ev = ti._take(
+        src=x,
+        ind=inds,
+        dst=out,
+        axis_start=axis,
+        mode=0,
+        sycl_queue=q,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(h_ev, take_ev)
+
+    if not (orig_out is None or orig_out is out):
+        # Copy the out data from temporary buffer to original memory
+        ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=out, dst=orig_out, sycl_queue=q, depends=[take_ev]
+        )
+        _manager.add_event_pair(ht_copy_ev, cpy_ev)
+        out = orig_out
+
+    return out
+
+
 def compress(condition, a, axis=None, out=None):
     """
     Return selected slices of an array along given axis.
@@ -196,8 +263,7 @@ def compress(condition, a, axis=None, out=None):
         if a.ndim != 1:
             a = dpnp.ravel(a)
         axis = 0
-    else:
-        axis = normalize_axis_index(operator.index(axis), a.ndim)
+    axis = normalize_axis_index(operator.index(axis), a.ndim)
 
     a_ary = dpnp.get_usm_ndarray(a)
     if not dpnp.is_supported_array_type(condition):
@@ -217,7 +283,7 @@ def compress(condition, a, axis=None, out=None):
         usm_types_ = [a_ary.usm_type, cond_ary.usm_type]
     if not cond_ary.ndim == 1:
         raise ValueError(
-            "`condition` must be a 1-D array or un-nested " "sequence"
+            "`condition` must be a 1-D array or un-nested sequence"
         )
 
     res_usm_type = dpu.get_coerced_usm_type(usm_types_)
@@ -227,74 +293,12 @@ def compress(condition, a, axis=None, out=None):
             "arrays must be allocated on the same SYCL queue"
         )
 
-    inds = _nonzero_impl(cond_ary)  # synchronizes
+    # _nonzero_impl synchronizes and returns a tuple of usm_ndarray indices
+    inds = _nonzero_impl(cond_ary)
 
-    res_dt = a_ary.dtype
-    ind0 = inds[0]
-    a_sh = a_ary.shape
-    axis_end = axis + 1
-    if 0 in a_sh[axis:axis_end] and ind0.size != 0:
-        raise IndexError("cannot take non-empty indices from an empty axis")
-    res_sh = a_sh[:axis] + ind0.shape + a_sh[axis_end:]
-
-    orig_out = out
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        out = dpnp.get_usm_ndarray(out)
-
-        if not out.flags.writable:
-            raise ValueError("provided `out` array is read-only")
-
-        if out.shape != res_sh:
-            raise ValueError(
-                "The shape of input and output arrays are inconsistent. "
-                f"Expected output shape is {res_sh}, got {out.shape}"
-            )
-
-        if res_dt != out.dtype:
-            raise ValueError(
-                f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
-            )
-
-        if dpu.get_execution_queue((a_ary.sycl_queue, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
-                "Input and output allocation queues are not compatible"
-            )
-
-        if ti._array_overlap(a_ary, out):
-            # Allocate a temporary buffer to avoid memory overlapping.
-            out = dpt.empty_like(out)
-    else:
-        out = dpt.empty(
-            res_sh, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
-        )
-
-    if out.size == 0:
-        return out
-
-    _manager = dpu.SequentialOrderManager[exec_q]
-    dep_evs = _manager.submitted_events
-
-    h_ev, take_ev = ti._take(
-        src=a_ary,
-        ind=inds,
-        dst=out,
-        axis_start=axis,
-        mode=0,
-        sycl_queue=exec_q,
-        depends=dep_evs,
+    return dpnp.get_result_array(
+        _take_1d_index(a_ary, inds, axis, exec_q, res_usm_type, out)
     )
-    _manager.add_event_pair(h_ev, take_ev)
-
-    if not (orig_out is None or orig_out is out):
-        # Copy the out data from temporary buffer to original memory
-        ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=out, dst=orig_out, sycl_queue=exec_q, depends=[take_ev]
-        )
-        _manager.add_event_pair(ht_copy_ev, cpy_ev)
-        out = orig_out
-
-    return dpnp.get_result_array(out)
 
 
 def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
