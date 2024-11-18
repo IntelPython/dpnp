@@ -2322,7 +2322,7 @@ class TestUnwrap:
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_rand(self, dt):
-        a = generate_random_numpy_array(10, seed_value=42) * 100
+        a = generate_random_numpy_array((10,), seed_value=42) * 100
         a = a.astype(dtype=dt)
         ia = dpnp.array(a)
 
@@ -2346,7 +2346,7 @@ class TestUnwrap:
         "dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
     def test_rand_period(self, dt):
-        a = numpy.random.rand(10) * 1000
+        a = generate_random_numpy_array((10,), seed_value=42) * 1000
         a = a.astype(dtype=dt)
         ia = dpnp.array(a)
 
