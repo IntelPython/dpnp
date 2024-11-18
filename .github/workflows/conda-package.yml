@@ -337,10 +337,6 @@ jobs:
 
     runs-on: ${{ matrix.os }}
 
-    defaults:
-      run:
-        shell: bash -el {0}
-
     continue-on-error: true
 
     if: |
@@ -372,15 +368,19 @@ jobs:
         run: mamba install anaconda-client
 
       - name: Package version
-        run: echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+        shell: bash -el {0}
+        run: |
+          echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Upload
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+        run: |
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
       - name: Upload wheels
-        run: anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
+        run: |
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
