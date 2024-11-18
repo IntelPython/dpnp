@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.nonzero
-====================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.nonzero
