@@ -46,6 +46,7 @@ import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._copy_utils import _nonzero_impl
+from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
@@ -161,14 +162,13 @@ def choose(x1, choices, out=None, mode="raise"):
     return call_origin(numpy.choose, x1, choices, out, mode)
 
 
-def _take_1d_index(x, inds, axis, q, usm_type, out=None):
+def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
     # arg validation assumed done by caller
     x_sh = x.shape
-    ind0 = inds[0]
     axis_end = axis + 1
-    if 0 in x_sh[axis:axis_end] and ind0.size != 0:
+    if 0 in x_sh[axis:axis_end] and inds.size != 0:
         raise IndexError("cannot take non-empty indices from an empty axis")
-    res_sh = x_sh[:axis] + ind0.shape + x_sh[axis_end:]
+    res_sh = x_sh[:axis] + inds.shape + x_sh[axis_end:]
 
     orig_out = None
     if out is not None:
@@ -202,13 +202,12 @@ def _take_1d_index(x, inds, axis, q, usm_type, out=None):
     _manager = dpu.SequentialOrderManager[q]
     dep_evs = _manager.submitted_events
 
-    # always use wrap mode here
     h_ev, take_ev = ti._take(
         src=x,
-        ind=inds,
+        ind=(inds,),
         dst=out,
         axis_start=axis,
-        mode=0,
+        mode=mode,
         sycl_queue=q,
         depends=dep_evs,
     )
@@ -319,7 +318,8 @@ def compress(condition, a, axis=None, out=None):
     inds = _nonzero_impl(cond_ary)
 
     return dpnp.get_result_array(
-        _take_1d_index(a_ary, inds, axis, exec_q, res_usm_type, out), out=out
+        _take_index(a_ary, inds[0], axis, exec_q, res_usm_type, out=out),
+        out=out,
     )
 
 
@@ -1974,8 +1974,8 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     """
 
-    if mode not in ("wrap", "clip"):
-        raise ValueError(f"`mode` must be 'wrap' or 'clip', but got `{mode}`.")
+    # sets mode to 0 for "wrap" and 1 for "clip", raises otherwise
+    mode = _get_indexing_mode(mode)
 
     usm_a = dpnp.get_usm_ndarray(a)
     if not dpnp.is_supported_array_type(indices):
@@ -1985,34 +1985,28 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     else:
         usm_ind = dpnp.get_usm_ndarray(indices)
 
+    res_usm_type, exec_q = get_usm_allocations([usm_a, usm_ind])
+
     a_ndim = a.ndim
     if axis is None:
-        res_shape = usm_ind.shape
-
         if a_ndim > 1:
-            # dpt.take requires flattened input array
+            # flatten input array
             usm_a = dpt.reshape(usm_a, -1)
+        axis = 0
     elif a_ndim == 0:
         axis = normalize_axis_index(operator.index(axis), 1)
-        res_shape = usm_ind.shape
     else:
         axis = normalize_axis_index(operator.index(axis), a_ndim)
-        a_sh = a.shape
-        res_shape = a_sh[:axis] + usm_ind.shape + a_sh[axis + 1 :]
-
-    if usm_ind.ndim != 1:
-        # dpt.take supports only 1-D array of indices
-        usm_ind = dpt.reshape(usm_ind, -1)
 
     if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
         # dpt.take supports only integer dtype for array of indices
         usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
 
-    usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
+    usm_res = _take_index(
+        usm_a, usm_ind, axis, exec_q, res_usm_type, out=out, mode=mode
+    )
 
-    # need to reshape the result if shape of indices array was changed
-    result = dpnp.reshape(usm_res, res_shape)
-    return dpnp.get_result_array(result, out)
+    return dpnp.get_result_array(usm_res, out=out)
 
 
 def take_along_axis(a, indices, axis, mode="wrap"):
