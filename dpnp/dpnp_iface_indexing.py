@@ -227,8 +227,10 @@ def _take_1d_index(x, inds, axis, q, usm_type, out=None):
 
 def compress(condition, a, axis=None, out=None):
     """
-    A copy of `a` without the slices along `axis` for which `condition` is
-    ``False``.
+    Return selected slices of an array along given axis.
+
+    A slice of `a` is returned for each index along `axis` where `condition`
+    is ``True``.
 
     For full documentation refer to :obj:`numpy.choose`.
 
@@ -299,15 +301,13 @@ def compress(condition, a, axis=None, out=None):
     axis = normalize_axis_index(operator.index(axis), a.ndim)
 
     a_ary = dpnp.get_usm_ndarray(a)
-    if not dpnp.is_supported_array_type(condition):
-        cond_ary = dpnp.as_usm_ndarray(
-            condition,
-            dtype=dpnp.bool,
-            usm_type=a_ary.usm_type,
-            sycl_queue=a_ary.sycl_queue,
-        )
-    else:
-        cond_ary = dpnp.get_usm_ndarray(condition)
+    cond_ary = dpnp.as_usm_ndarray(
+        condition,
+        dtype=dpnp.bool,
+        usm_type=a_ary.usm_type,
+        sycl_queue=a_ary.sycl_queue,
+    )
+
     if not cond_ary.ndim == 1:
         raise ValueError(
             "`condition` must be a 1-D array or un-nested sequence"
