@@ -1,4 +1,4 @@
-Linear Algebra
+Linear algebra
 ==============
 
 .. https://numpy.org/doc/stable/reference/routines.linalg.html

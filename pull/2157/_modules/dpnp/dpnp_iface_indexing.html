@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev1+27.gf27b9bdf133 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev2+14.g952163ca918 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ce524abb"></script>
+      <script src="../../_static/documentation_options.js?v=f5791313"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,10 +136,7 @@
     <span class="n">dpnp_putmask</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">call_origin</span><span class="p">,</span>
-    <span class="n">get_usm_allocations</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;choose&quot;</span><span class="p">,</span>
@@ -635,11 +632,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">condition</span><span class="p">])</span>
     <span class="n">usm_cond</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">as_usm_ndarray</span><span class="p">(</span>
         <span class="n">condition</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">,</span>
-        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span>
-        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">,</span>
+        <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
+        <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">usm_cond</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">usm_a</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
