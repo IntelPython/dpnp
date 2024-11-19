@@ -596,195 +596,192 @@ $(document).ready(function(){initNavTree('sliding__window1d_8hpp_source.html',''
 <div class="line"><a id="l00486" name="l00486"></a><span class="lineno">  486</span>                   Red red,</div>
 <div class="line"><a id="l00487" name="l00487"></a><span class="lineno">  487</span>                   <span class="keyword">const</span> sycl::nd_item&lt;1&gt; &amp;item)</div>
 <div class="line"><a id="l00488" name="l00488"></a><span class="lineno">  488</span>{</div>
-<div class="line"><a id="l00489" name="l00489"></a><span class="lineno">  489</span>    <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
-<div class="line"><a id="l00490" name="l00490"></a><span class="lineno">  490</span>    int32_t sbg_size = sbgroup.get_max_local_range()[0];</div>
-<div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span> </div>
-<div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>    <span class="keywordflow">for</span> (int32_t i = 0; i &lt; block_size; ++i) {</div>
-<div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>        <span class="keyword">auto</span> v_val = v_data.broadcast(i);</div>
-<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>        <span class="keywordflow">for</span> (int32_t r = 0; r &lt; r_size; ++r) {</div>
-<div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>            results[r] = red(results[r], op(a_data[r], v_val));</div>
-<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>        }</div>
-<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span>        a_data.advance_left();</div>
-<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span>    }</div>
-<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>}</div>
-<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span> </div>
-<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> SizeT&gt;</div>
-<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>SizeT get_global_linear_id(<span class="keyword">const</span> uint32_t wpi, <span class="keyword">const</span> sycl::nd_item&lt;1&gt; &amp;item)</div>
-<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>{</div>
-<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span>    <span class="keyword">auto</span> group = item.get_group();</div>
-<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>    <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
-<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>    <span class="keyword">const</span> <span class="keyword">auto</span> sg_loc_id = sbgroup.get_local_linear_id();</div>
+<div class="line"><a id="l00489" name="l00489"></a><span class="lineno">  489</span>    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; block_size; ++i) {</div>
+<div class="line"><a id="l00490" name="l00490"></a><span class="lineno">  490</span>        <span class="keyword">auto</span> v_val = v_data.broadcast(i);</div>
+<div class="line"><a id="l00491" name="l00491"></a><span class="lineno">  491</span>        <span class="keywordflow">for</span> (uint32_t r = 0; r &lt; r_size; ++r) {</div>
+<div class="line"><a id="l00492" name="l00492"></a><span class="lineno">  492</span>            results[r] = red(results[r], op(a_data[r], v_val));</div>
+<div class="line"><a id="l00493" name="l00493"></a><span class="lineno">  493</span>        }</div>
+<div class="line"><a id="l00494" name="l00494"></a><span class="lineno">  494</span>        a_data.advance_left();</div>
+<div class="line"><a id="l00495" name="l00495"></a><span class="lineno">  495</span>    }</div>
+<div class="line"><a id="l00496" name="l00496"></a><span class="lineno">  496</span>}</div>
+<div class="line"><a id="l00497" name="l00497"></a><span class="lineno">  497</span> </div>
+<div class="line"><a id="l00498" name="l00498"></a><span class="lineno">  498</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> SizeT&gt;</div>
+<div class="line"><a id="l00499" name="l00499"></a><span class="lineno">  499</span>SizeT get_global_linear_id(<span class="keyword">const</span> uint32_t wpi, <span class="keyword">const</span> sycl::nd_item&lt;1&gt; &amp;item)</div>
+<div class="line"><a id="l00500" name="l00500"></a><span class="lineno">  500</span>{</div>
+<div class="line"><a id="l00501" name="l00501"></a><span class="lineno">  501</span>    <span class="keyword">auto</span> group = item.get_group();</div>
+<div class="line"><a id="l00502" name="l00502"></a><span class="lineno">  502</span>    <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
+<div class="line"><a id="l00503" name="l00503"></a><span class="lineno">  503</span>    <span class="keyword">const</span> <span class="keyword">auto</span> sg_loc_id = sbgroup.get_local_linear_id();</div>
+<div class="line"><a id="l00504" name="l00504"></a><span class="lineno">  504</span> </div>
+<div class="line"><a id="l00505" name="l00505"></a><span class="lineno">  505</span>    <span class="keyword">const</span> SizeT sg_base_id = wpi * (item.get_global_linear_id() - sg_loc_id);</div>
+<div class="line"><a id="l00506" name="l00506"></a><span class="lineno">  506</span>    <span class="keyword">const</span> SizeT <span class="keywordtype">id</span> = sg_base_id + sg_loc_id;</div>
 <div class="line"><a id="l00507" name="l00507"></a><span class="lineno">  507</span> </div>
-<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>    <span class="keyword">const</span> SizeT sg_base_id = wpi * (item.get_global_linear_id() - sg_loc_id);</div>
-<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>    <span class="keyword">const</span> SizeT <span class="keywordtype">id</span> = sg_base_id + sg_loc_id;</div>
+<div class="line"><a id="l00508" name="l00508"></a><span class="lineno">  508</span>    <span class="keywordflow">return</span> id;</div>
+<div class="line"><a id="l00509" name="l00509"></a><span class="lineno">  509</span>}</div>
 <div class="line"><a id="l00510" name="l00510"></a><span class="lineno">  510</span> </div>
-<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span>    <span class="keywordflow">return</span> id;</div>
-<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>}</div>
-<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span> </div>
-<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> SizeT&gt;</div>
-<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>uint32_t get_results_num(<span class="keyword">const</span> uint32_t wpi,</div>
-<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>                         <span class="keyword">const</span> SizeT size,</div>
-<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>                         <span class="keyword">const</span> SizeT global_id,</div>
-<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span>                         <span class="keyword">const</span> sycl::nd_item&lt;1&gt; &amp;item)</div>
-<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>{</div>
-<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>    <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
-<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span> </div>
-<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>    <span class="keyword">const</span> <span class="keyword">auto</span> sbg_size = sbgroup.get_max_local_range()[0];</div>
-<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span>    <span class="keyword">const</span> <span class="keyword">auto</span> size_ = sycl::sub_sat(size, global_id);</div>
-<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span>    <span class="keywordflow">return</span> std::min(SizeT(wpi), CeilDiv(size_, sbg_size));</div>
-<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>}</div>
-<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span> </div>
-<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
-<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>          <span class="keyword">typename</span> T,</div>
-<div class="line"><a id="l00529" name="l00529"></a><span class="lineno">  529</span>          <span class="keyword">typename</span> SizeT,</div>
-<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span>          <span class="keyword">typename</span> Op,</div>
-<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span>          <span class="keyword">typename</span> Red&gt;</div>
-<div class="line"><a id="l00532" name="l00532"></a><span class="lineno"><a class="line" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">  532</a></span><span class="keyword">class </span><a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">sliding_window1d_kernel</a>;</div>
-<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span> </div>
-<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
-<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>          <span class="keyword">typename</span> T,</div>
-<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span>          <span class="keyword">typename</span> SizeT,</div>
-<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>          <span class="keyword">typename</span> Op,</div>
-<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>          <span class="keyword">typename</span> Red&gt;</div>
-<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span><span class="keywordtype">void</span> submit_sliding_window1d(<span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_padded_span.html">PaddedSpan&lt;const T, SizeT&gt;</a> &amp;a,</div>
-<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>                             <span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;const T, SizeT&gt;</a> &amp;v,</div>
-<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>                             <span class="keyword">const</span> Op &amp;op,</div>
-<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>                             <span class="keyword">const</span> Red &amp;red,</div>
-<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>                             <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;T, SizeT&gt;</a> &amp;out,</div>
-<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>                             sycl::nd_range&lt;1&gt; nd_range,</div>
-<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>                             sycl::handler &amp;cgh)</div>
-<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>{</div>
-<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>    cgh.parallel_for&lt;<a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">sliding_window1d_kernel&lt;WorkPI, T, SizeT, Op, Red&gt;</a>&gt;(</div>
-<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span>        nd_range, [=](sycl::nd_item&lt;1&gt; item) {</div>
-<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>            <span class="keyword">auto</span> group = item.get_group();</div>
-<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>            <span class="keyword">auto</span> glid = get_global_linear_id&lt;SizeT&gt;(WorkPI, item);</div>
+<div class="line"><a id="l00511" name="l00511"></a><span class="lineno">  511</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> SizeT&gt;</div>
+<div class="line"><a id="l00512" name="l00512"></a><span class="lineno">  512</span>uint32_t get_results_num(<span class="keyword">const</span> uint32_t wpi,</div>
+<div class="line"><a id="l00513" name="l00513"></a><span class="lineno">  513</span>                         <span class="keyword">const</span> SizeT size,</div>
+<div class="line"><a id="l00514" name="l00514"></a><span class="lineno">  514</span>                         <span class="keyword">const</span> SizeT global_id,</div>
+<div class="line"><a id="l00515" name="l00515"></a><span class="lineno">  515</span>                         <span class="keyword">const</span> sycl::nd_item&lt;1&gt; &amp;item)</div>
+<div class="line"><a id="l00516" name="l00516"></a><span class="lineno">  516</span>{</div>
+<div class="line"><a id="l00517" name="l00517"></a><span class="lineno">  517</span>    <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
+<div class="line"><a id="l00518" name="l00518"></a><span class="lineno">  518</span> </div>
+<div class="line"><a id="l00519" name="l00519"></a><span class="lineno">  519</span>    <span class="keyword">const</span> <span class="keyword">auto</span> sbg_size = sbgroup.get_max_local_range()[0];</div>
+<div class="line"><a id="l00520" name="l00520"></a><span class="lineno">  520</span>    <span class="keyword">const</span> <span class="keyword">auto</span> size_ = sycl::sub_sat(size, global_id);</div>
+<div class="line"><a id="l00521" name="l00521"></a><span class="lineno">  521</span>    <span class="keywordflow">return</span> std::min(SizeT(wpi), CeilDiv(size_, sbg_size));</div>
+<div class="line"><a id="l00522" name="l00522"></a><span class="lineno">  522</span>}</div>
+<div class="line"><a id="l00523" name="l00523"></a><span class="lineno">  523</span> </div>
+<div class="line"><a id="l00524" name="l00524"></a><span class="lineno">  524</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
+<div class="line"><a id="l00525" name="l00525"></a><span class="lineno">  525</span>          <span class="keyword">typename</span> T,</div>
+<div class="line"><a id="l00526" name="l00526"></a><span class="lineno">  526</span>          <span class="keyword">typename</span> SizeT,</div>
+<div class="line"><a id="l00527" name="l00527"></a><span class="lineno">  527</span>          <span class="keyword">typename</span> Op,</div>
+<div class="line"><a id="l00528" name="l00528"></a><span class="lineno">  528</span>          <span class="keyword">typename</span> Red&gt;</div>
+<div class="line"><a id="l00529" name="l00529"></a><span class="lineno"><a class="line" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">  529</a></span><span class="keyword">class </span><a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">sliding_window1d_kernel</a>;</div>
+<div class="line"><a id="l00530" name="l00530"></a><span class="lineno">  530</span> </div>
+<div class="line"><a id="l00531" name="l00531"></a><span class="lineno">  531</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
+<div class="line"><a id="l00532" name="l00532"></a><span class="lineno">  532</span>          <span class="keyword">typename</span> T,</div>
+<div class="line"><a id="l00533" name="l00533"></a><span class="lineno">  533</span>          <span class="keyword">typename</span> SizeT,</div>
+<div class="line"><a id="l00534" name="l00534"></a><span class="lineno">  534</span>          <span class="keyword">typename</span> Op,</div>
+<div class="line"><a id="l00535" name="l00535"></a><span class="lineno">  535</span>          <span class="keyword">typename</span> Red&gt;</div>
+<div class="line"><a id="l00536" name="l00536"></a><span class="lineno">  536</span><span class="keywordtype">void</span> submit_sliding_window1d(<span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_padded_span.html">PaddedSpan&lt;const T, SizeT&gt;</a> &amp;a,</div>
+<div class="line"><a id="l00537" name="l00537"></a><span class="lineno">  537</span>                             <span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;const T, SizeT&gt;</a> &amp;v,</div>
+<div class="line"><a id="l00538" name="l00538"></a><span class="lineno">  538</span>                             <span class="keyword">const</span> Op &amp;op,</div>
+<div class="line"><a id="l00539" name="l00539"></a><span class="lineno">  539</span>                             <span class="keyword">const</span> Red &amp;red,</div>
+<div class="line"><a id="l00540" name="l00540"></a><span class="lineno">  540</span>                             <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;T, SizeT&gt;</a> &amp;out,</div>
+<div class="line"><a id="l00541" name="l00541"></a><span class="lineno">  541</span>                             sycl::nd_range&lt;1&gt; nd_range,</div>
+<div class="line"><a id="l00542" name="l00542"></a><span class="lineno">  542</span>                             sycl::handler &amp;cgh)</div>
+<div class="line"><a id="l00543" name="l00543"></a><span class="lineno">  543</span>{</div>
+<div class="line"><a id="l00544" name="l00544"></a><span class="lineno">  544</span>    cgh.parallel_for&lt;<a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">sliding_window1d_kernel&lt;WorkPI, T, SizeT, Op, Red&gt;</a>&gt;(</div>
+<div class="line"><a id="l00545" name="l00545"></a><span class="lineno">  545</span>        nd_range, [=](sycl::nd_item&lt;1&gt; item) {</div>
+<div class="line"><a id="l00546" name="l00546"></a><span class="lineno">  546</span>            <span class="keyword">auto</span> group = item.get_group();</div>
+<div class="line"><a id="l00547" name="l00547"></a><span class="lineno">  547</span>            <span class="keyword">auto</span> glid = get_global_linear_id&lt;SizeT&gt;(WorkPI, item);</div>
+<div class="line"><a id="l00548" name="l00548"></a><span class="lineno">  548</span> </div>
+<div class="line"><a id="l00549" name="l00549"></a><span class="lineno">  549</span>            <span class="keyword">auto</span> results = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;T, WorkPI&gt;</a>(item);</div>
+<div class="line"><a id="l00550" name="l00550"></a><span class="lineno">  550</span>            results.fill(0);</div>
 <div class="line"><a id="l00551" name="l00551"></a><span class="lineno">  551</span> </div>
-<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>            <span class="keyword">auto</span> results = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;T, WorkPI&gt;</a>(item);</div>
-<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span>            results.fill(0);</div>
-<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span> </div>
-<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>            <span class="keyword">auto</span> results_num = get_results_num(WorkPI, out.size(), glid, item);</div>
+<div class="line"><a id="l00552" name="l00552"></a><span class="lineno">  552</span>            <span class="keyword">auto</span> results_num = get_results_num(WorkPI, out.size(), glid, item);</div>
+<div class="line"><a id="l00553" name="l00553"></a><span class="lineno">  553</span> </div>
+<div class="line"><a id="l00554" name="l00554"></a><span class="lineno">  554</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_begin = a.begin();</div>
+<div class="line"><a id="l00555" name="l00555"></a><span class="lineno">  555</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_end = a.end();</div>
 <div class="line"><a id="l00556" name="l00556"></a><span class="lineno">  556</span> </div>
-<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_begin = a.begin();</div>
-<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_end = a.end();</div>
-<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span> </div>
-<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>            <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
+<div class="line"><a id="l00557" name="l00557"></a><span class="lineno">  557</span>            <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
+<div class="line"><a id="l00558" name="l00558"></a><span class="lineno">  558</span> </div>
+<div class="line"><a id="l00559" name="l00559"></a><span class="lineno">  559</span>            <span class="keyword">const</span> <span class="keyword">auto</span> chunks_count =</div>
+<div class="line"><a id="l00560" name="l00560"></a><span class="lineno">  560</span>                CeilDiv(v.size(), sbgroup.get_max_local_range()[0]);</div>
 <div class="line"><a id="l00561" name="l00561"></a><span class="lineno">  561</span> </div>
-<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>            <span class="keyword">const</span> <span class="keyword">auto</span> chunks_count =</div>
-<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span>                CeilDiv(v.size(), sbgroup.get_max_local_range()[0]);</div>
-<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span> </div>
-<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_ptr = &amp;a.padded_begin()[glid];</div>
-<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span> </div>
-<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span>            <span class="keyword">auto</span> _a_load_cond = [a_begin, a_end](<span class="keyword">auto</span> &amp;&amp;ptr) {</div>
-<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>                <span class="keywordflow">return</span> ptr &gt;= a_begin &amp;&amp; ptr &lt; a_end;</div>
-<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>            };</div>
+<div class="line"><a id="l00562" name="l00562"></a><span class="lineno">  562</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_ptr = &amp;a.padded_begin()[glid];</div>
+<div class="line"><a id="l00563" name="l00563"></a><span class="lineno">  563</span> </div>
+<div class="line"><a id="l00564" name="l00564"></a><span class="lineno">  564</span>            <span class="keyword">auto</span> _a_load_cond = [a_begin, a_end](<span class="keyword">auto</span> &amp;&amp;ptr) {</div>
+<div class="line"><a id="l00565" name="l00565"></a><span class="lineno">  565</span>                <span class="keywordflow">return</span> ptr &gt;= a_begin &amp;&amp; ptr &lt; a_end;</div>
+<div class="line"><a id="l00566" name="l00566"></a><span class="lineno">  566</span>            };</div>
+<div class="line"><a id="l00567" name="l00567"></a><span class="lineno">  567</span> </div>
+<div class="line"><a id="l00568" name="l00568"></a><span class="lineno">  568</span>            <span class="keyword">auto</span> a_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_window.html">RegistryWindow&lt;const T, WorkPI + 1&gt;</a>(item);</div>
+<div class="line"><a id="l00569" name="l00569"></a><span class="lineno">  569</span>            a_ptr = a_data.load(a_ptr, _a_load_cond, 0);</div>
 <div class="line"><a id="l00570" name="l00570"></a><span class="lineno">  570</span> </div>
-<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>            <span class="keyword">auto</span> a_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_window.html">RegistryWindow&lt;const T, WorkPI + 1&gt;</a>(item);</div>
-<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>            a_ptr = a_data.load(a_ptr, _a_load_cond, 0);</div>
+<div class="line"><a id="l00571" name="l00571"></a><span class="lineno">  571</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *v_ptr = &amp;v.begin()[sbgroup.get_local_linear_id()];</div>
+<div class="line"><a id="l00572" name="l00572"></a><span class="lineno">  572</span>            <span class="keyword">auto</span> v_size = v.size();</div>
 <div class="line"><a id="l00573" name="l00573"></a><span class="lineno">  573</span> </div>
-<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *v_ptr = &amp;v.begin()[sbgroup.get_local_linear_id()];</div>
-<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>            <span class="keyword">auto</span> v_size = v.size();</div>
-<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span> </div>
-<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>            <span class="keywordflow">for</span> (uint32_t b = 0; b &lt; chunks_count; ++b) {</div>
-<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>                <span class="keyword">auto</span> v_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;const T&gt;</a>(item);</div>
-<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>                v_ptr = v_data.load(v_ptr, v_data.x() &lt; v_size, 0);</div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span> </div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>                uint32_t chunk_size_ =</div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>                    std::min(v_size, SizeT(v_data.total_size()));</div>
-<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>                process_block(results, results_num, a_data, v_data, chunk_size_,</div>
-<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>                              op, red, item);</div>
-<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span> </div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>                <span class="keywordflow">if</span> (b != chunks_count - 1) {</div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>                    a_ptr = a_data.load_lane(a_data.size_y() - 1, a_ptr,</div>
-<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>                                             _a_load_cond, 0);</div>
-<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>                    v_size -= v_data.total_size();</div>
-<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>                }</div>
-<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>            }</div>
-<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span> </div>
-<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_ptr = out.begin();</div>
-<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_end = out.end();</div>
-<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>            results.store(&amp;out_ptr[glid],</div>
-<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span>                          [out_end](<span class="keyword">auto</span> &amp;&amp;ptr) { <span class="keywordflow">return</span> ptr &lt; out_end; });</div>
-<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span>        });</div>
-<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>}</div>
-<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span> </div>
-<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
-<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>          <span class="keyword">typename</span> T,</div>
-<div class="line"><a id="l00602" name="l00602"></a><span class="lineno">  602</span>          <span class="keyword">typename</span> SizeT,</div>
-<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span>          <span class="keyword">typename</span> Op,</div>
-<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span>          <span class="keyword">typename</span> Red&gt;</div>
-<div class="line"><a id="l00605" name="l00605"></a><span class="lineno"><a class="line" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">  605</a></span><span class="keyword">class </span><a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">sliding_window1d_small_kernel</a>;</div>
-<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span> </div>
-<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
-<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>          <span class="keyword">typename</span> T,</div>
-<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span>          <span class="keyword">typename</span> SizeT,</div>
-<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>          <span class="keyword">typename</span> Op,</div>
-<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>          <span class="keyword">typename</span> Red&gt;</div>
-<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span><span class="keywordtype">void</span> submit_sliding_window1d_small_kernel(<span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_padded_span.html">PaddedSpan&lt;const T, SizeT&gt;</a> &amp;a,</div>
-<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>                                          <span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;const T, SizeT&gt;</a> &amp;v,</div>
-<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>                                          <span class="keyword">const</span> Op &amp;op,</div>
-<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>                                          <span class="keyword">const</span> Red &amp;red,</div>
-<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>                                          <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;T, SizeT&gt;</a> &amp;out,</div>
-<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>                                          sycl::nd_range&lt;1&gt; nd_range,</div>
-<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>                                          sycl::handler &amp;cgh)</div>
-<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>{</div>
-<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>    cgh.parallel_for&lt;<a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">sliding_window1d_small_kernel&lt;WorkPI, T, SizeT, Op, Red&gt;</a>&gt;(</div>
-<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span>        nd_range, [=](sycl::nd_item&lt;1&gt; item) {</div>
-<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>            <span class="keyword">auto</span> group = item.get_group();</div>
-<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>            <span class="keyword">auto</span> glid = get_global_linear_id&lt;SizeT&gt;(WorkPI, item);</div>
+<div class="line"><a id="l00574" name="l00574"></a><span class="lineno">  574</span>            <span class="keywordflow">for</span> (uint32_t b = 0; b &lt; chunks_count; ++b) {</div>
+<div class="line"><a id="l00575" name="l00575"></a><span class="lineno">  575</span>                <span class="keyword">auto</span> v_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;const T&gt;</a>(item);</div>
+<div class="line"><a id="l00576" name="l00576"></a><span class="lineno">  576</span>                v_ptr = v_data.load(v_ptr, v_data.x() &lt; v_size, 0);</div>
+<div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span> </div>
+<div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span>                uint32_t chunk_size_ =</div>
+<div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>                    std::min(v_size, SizeT(v_data.total_size()));</div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>                process_block(results, results_num, a_data, v_data, chunk_size_,</div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>                              op, red, item);</div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span> </div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>                <span class="keywordflow">if</span> (b != chunks_count - 1) {</div>
+<div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>                    a_ptr = a_data.load_lane(a_data.size_y() - 1, a_ptr,</div>
+<div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>                                             _a_load_cond, 0);</div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>                    v_size -= v_data.total_size();</div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>                }</div>
+<div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>            }</div>
+<div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span> </div>
+<div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_ptr = out.begin();</div>
+<div class="line"><a id="l00591" name="l00591"></a><span class="lineno">  591</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_end = out.end();</div>
+<div class="line"><a id="l00592" name="l00592"></a><span class="lineno">  592</span>            results.store(&amp;out_ptr[glid],</div>
+<div class="line"><a id="l00593" name="l00593"></a><span class="lineno">  593</span>                          [out_end](<span class="keyword">auto</span> &amp;&amp;ptr) { <span class="keywordflow">return</span> ptr &lt; out_end; });</div>
+<div class="line"><a id="l00594" name="l00594"></a><span class="lineno">  594</span>        });</div>
+<div class="line"><a id="l00595" name="l00595"></a><span class="lineno">  595</span>}</div>
+<div class="line"><a id="l00596" name="l00596"></a><span class="lineno">  596</span> </div>
+<div class="line"><a id="l00597" name="l00597"></a><span class="lineno">  597</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
+<div class="line"><a id="l00598" name="l00598"></a><span class="lineno">  598</span>          <span class="keyword">typename</span> T,</div>
+<div class="line"><a id="l00599" name="l00599"></a><span class="lineno">  599</span>          <span class="keyword">typename</span> SizeT,</div>
+<div class="line"><a id="l00600" name="l00600"></a><span class="lineno">  600</span>          <span class="keyword">typename</span> Op,</div>
+<div class="line"><a id="l00601" name="l00601"></a><span class="lineno">  601</span>          <span class="keyword">typename</span> Red&gt;</div>
+<div class="line"><a id="l00602" name="l00602"></a><span class="lineno"><a class="line" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">  602</a></span><span class="keyword">class </span><a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">sliding_window1d_small_kernel</a>;</div>
+<div class="line"><a id="l00603" name="l00603"></a><span class="lineno">  603</span> </div>
+<div class="line"><a id="l00604" name="l00604"></a><span class="lineno">  604</span><span class="keyword">template</span> &lt;uint32_t WorkPI,</div>
+<div class="line"><a id="l00605" name="l00605"></a><span class="lineno">  605</span>          <span class="keyword">typename</span> T,</div>
+<div class="line"><a id="l00606" name="l00606"></a><span class="lineno">  606</span>          <span class="keyword">typename</span> SizeT,</div>
+<div class="line"><a id="l00607" name="l00607"></a><span class="lineno">  607</span>          <span class="keyword">typename</span> Op,</div>
+<div class="line"><a id="l00608" name="l00608"></a><span class="lineno">  608</span>          <span class="keyword">typename</span> Red&gt;</div>
+<div class="line"><a id="l00609" name="l00609"></a><span class="lineno">  609</span><span class="keywordtype">void</span> submit_sliding_window1d_small_kernel(<span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_padded_span.html">PaddedSpan&lt;const T, SizeT&gt;</a> &amp;a,</div>
+<div class="line"><a id="l00610" name="l00610"></a><span class="lineno">  610</span>                                          <span class="keyword">const</span> <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;const T, SizeT&gt;</a> &amp;v,</div>
+<div class="line"><a id="l00611" name="l00611"></a><span class="lineno">  611</span>                                          <span class="keyword">const</span> Op &amp;op,</div>
+<div class="line"><a id="l00612" name="l00612"></a><span class="lineno">  612</span>                                          <span class="keyword">const</span> Red &amp;red,</div>
+<div class="line"><a id="l00613" name="l00613"></a><span class="lineno">  613</span>                                          <a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1_span.html">Span&lt;T, SizeT&gt;</a> &amp;out,</div>
+<div class="line"><a id="l00614" name="l00614"></a><span class="lineno">  614</span>                                          sycl::nd_range&lt;1&gt; nd_range,</div>
+<div class="line"><a id="l00615" name="l00615"></a><span class="lineno">  615</span>                                          sycl::handler &amp;cgh)</div>
+<div class="line"><a id="l00616" name="l00616"></a><span class="lineno">  616</span>{</div>
+<div class="line"><a id="l00617" name="l00617"></a><span class="lineno">  617</span>    cgh.parallel_for&lt;<a class="code hl_class" href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">sliding_window1d_small_kernel&lt;WorkPI, T, SizeT, Op, Red&gt;</a>&gt;(</div>
+<div class="line"><a id="l00618" name="l00618"></a><span class="lineno">  618</span>        nd_range, [=](sycl::nd_item&lt;1&gt; item) {</div>
+<div class="line"><a id="l00619" name="l00619"></a><span class="lineno">  619</span>            <span class="keyword">auto</span> group = item.get_group();</div>
+<div class="line"><a id="l00620" name="l00620"></a><span class="lineno">  620</span>            <span class="keyword">auto</span> glid = get_global_linear_id&lt;SizeT&gt;(WorkPI, item);</div>
+<div class="line"><a id="l00621" name="l00621"></a><span class="lineno">  621</span> </div>
+<div class="line"><a id="l00622" name="l00622"></a><span class="lineno">  622</span>            <span class="keyword">auto</span> results = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;T, WorkPI&gt;</a>(item);</div>
+<div class="line"><a id="l00623" name="l00623"></a><span class="lineno">  623</span>            results.fill(0);</div>
 <div class="line"><a id="l00624" name="l00624"></a><span class="lineno">  624</span> </div>
-<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>            <span class="keyword">auto</span> results = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;T, WorkPI&gt;</a>(item);</div>
-<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>            results.fill(0);</div>
-<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span> </div>
-<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span>            <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
-<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>            <span class="keyword">auto</span> sg_loc_id = sbgroup.get_local_linear_id();</div>
-<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>            <span class="keyword">auto</span> sg_size = sbgroup.get_max_local_range()[0];</div>
+<div class="line"><a id="l00625" name="l00625"></a><span class="lineno">  625</span>            <span class="keyword">auto</span> sbgroup = item.get_sub_group();</div>
+<div class="line"><a id="l00626" name="l00626"></a><span class="lineno">  626</span>            <span class="keyword">auto</span> sg_loc_id = sbgroup.get_local_linear_id();</div>
+<div class="line"><a id="l00627" name="l00627"></a><span class="lineno">  627</span>            <span class="keyword">auto</span> sg_size = sbgroup.get_max_local_range()[0];</div>
+<div class="line"><a id="l00628" name="l00628"></a><span class="lineno">  628</span> </div>
+<div class="line"><a id="l00629" name="l00629"></a><span class="lineno">  629</span>            <span class="keyword">const</span> uint32_t to_read = WorkPI * sg_size + v.size();</div>
+<div class="line"><a id="l00630" name="l00630"></a><span class="lineno">  630</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_begin = a.begin();</div>
 <div class="line"><a id="l00631" name="l00631"></a><span class="lineno">  631</span> </div>
-<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>            <span class="keyword">const</span> uint32_t to_read = WorkPI * sg_size + v.size();</div>
-<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_begin = a.begin();</div>
+<div class="line"><a id="l00632" name="l00632"></a><span class="lineno">  632</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_ptr = &amp;a.padded_begin()[glid];</div>
+<div class="line"><a id="l00633" name="l00633"></a><span class="lineno">  633</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_end = std::min(a_ptr + to_read, a.end());</div>
 <div class="line"><a id="l00634" name="l00634"></a><span class="lineno">  634</span> </div>
-<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_ptr = &amp;a.padded_begin()[glid];</div>
-<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *a_end = std::min(a_ptr + to_read, a.end());</div>
-<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span> </div>
-<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span>            <span class="keyword">auto</span> _a_load_cond = [a_begin, a_end](<span class="keyword">auto</span> &amp;&amp;ptr) {</div>
-<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>                <span class="keywordflow">return</span> ptr &gt;= a_begin &amp;&amp; ptr &lt; a_end;</div>
-<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>            };</div>
+<div class="line"><a id="l00635" name="l00635"></a><span class="lineno">  635</span>            <span class="keyword">auto</span> _a_load_cond = [a_begin, a_end](<span class="keyword">auto</span> &amp;&amp;ptr) {</div>
+<div class="line"><a id="l00636" name="l00636"></a><span class="lineno">  636</span>                <span class="keywordflow">return</span> ptr &gt;= a_begin &amp;&amp; ptr &lt; a_end;</div>
+<div class="line"><a id="l00637" name="l00637"></a><span class="lineno">  637</span>            };</div>
+<div class="line"><a id="l00638" name="l00638"></a><span class="lineno">  638</span> </div>
+<div class="line"><a id="l00639" name="l00639"></a><span class="lineno">  639</span>            <span class="keyword">auto</span> a_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_window.html">RegistryWindow&lt;const T, WorkPI + 1&gt;</a>(item);</div>
+<div class="line"><a id="l00640" name="l00640"></a><span class="lineno">  640</span>            a_data.load(a_ptr, _a_load_cond, 0);</div>
 <div class="line"><a id="l00641" name="l00641"></a><span class="lineno">  641</span> </div>
-<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>            <span class="keyword">auto</span> a_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_window.html">RegistryWindow&lt;const T, WorkPI + 1&gt;</a>(item);</div>
-<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>            a_data.load(a_ptr, _a_load_cond, 0);</div>
+<div class="line"><a id="l00642" name="l00642"></a><span class="lineno">  642</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *v_ptr = &amp;v.begin()[sbgroup.get_local_linear_id()];</div>
+<div class="line"><a id="l00643" name="l00643"></a><span class="lineno">  643</span>            <span class="keyword">auto</span> v_size = v.size();</div>
 <div class="line"><a id="l00644" name="l00644"></a><span class="lineno">  644</span> </div>
-<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>            <span class="keyword">const</span> <span class="keyword">auto</span> *v_ptr = &amp;v.begin()[sbgroup.get_local_linear_id()];</div>
-<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>            <span class="keyword">auto</span> v_size = v.size();</div>
+<div class="line"><a id="l00645" name="l00645"></a><span class="lineno">  645</span>            <span class="keyword">auto</span> v_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;const T&gt;</a>(item);</div>
+<div class="line"><a id="l00646" name="l00646"></a><span class="lineno">  646</span>            v_ptr = v_data.load(v_ptr, v_data.x() &lt; v_size, 0);</div>
 <div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span> </div>
-<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>            <span class="keyword">auto</span> v_data = <a class="code hl_struct" href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">RegistryData&lt;const T&gt;</a>(item);</div>
-<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>            v_ptr = v_data.load(v_ptr, v_data.x() &lt; v_size, 0);</div>
-<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span> </div>
-<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>            <span class="keyword">auto</span> results_num = get_results_num(WorkPI, out.size(), glid, item);</div>
+<div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span>            <span class="keyword">auto</span> results_num = get_results_num(WorkPI, out.size(), glid, item);</div>
+<div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span> </div>
+<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>            process_block(results, results_num, a_data, v_data, v_size, op, red,</div>
+<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>                          item);</div>
 <div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span> </div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            process_block(results, results_num, a_data, v_data, v_size, op, red,</div>
-<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>                          item);</div>
-<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span> </div>
-<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_ptr = out.begin();</div>
-<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_end = out.end();</div>
-<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>            results.store(&amp;out_ptr[glid],</div>
-<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>                          [out_end](<span class="keyword">auto</span> &amp;&amp;ptr) { <span class="keywordflow">return</span> ptr &lt; out_end; });</div>
-<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>        });</div>
-<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>}</div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_ptr = out.begin();</div>
+<div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>            <span class="keyword">auto</span> *<span class="keyword">const</span> out_end = out.end();</div>
+<div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>            results.store(&amp;out_ptr[glid],</div>
+<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>                          [out_end](<span class="keyword">auto</span> &amp;&amp;ptr) { <span class="keywordflow">return</span> ptr &lt; out_end; });</div>
+<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>        });</div>
+<div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>}</div>
+<div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span> </div>
+<div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>std::tuple&lt;size_t, size_t&gt;</div>
+<div class="line"><a id="l00661" name="l00661"></a><span class="lineno">  661</span>    get_padding(<span class="keyword">const</span> std::string &amp;mode, <span class="keywordtype">size_t</span> a_size, <span class="keywordtype">size_t</span> v_size);</div>
 <div class="line"><a id="l00662" name="l00662"></a><span class="lineno">  662</span> </div>
-<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span>std::tuple&lt;size_t, size_t&gt;</div>
-<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>    get_padding(<span class="keyword">const</span> std::string &amp;mode, <span class="keywordtype">size_t</span> a_size, <span class="keywordtype">size_t</span> v_size);</div>
-<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span> </div>
-<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span><span class="keywordtype">void</span> validate(<span class="keyword">const</span> usm_ndarray &amp;a,</div>
-<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>              <span class="keyword">const</span> usm_ndarray &amp;v,</div>
-<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>              <span class="keyword">const</span> usm_ndarray &amp;out,</div>
-<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>              <span class="keyword">const</span> <span class="keywordtype">size_t</span> l_pad,</div>
-<div class="line"><a id="l00670" name="l00670"></a><span class="lineno">  670</span>              <span class="keyword">const</span> <span class="keywordtype">size_t</span> r_pad);</div>
-<div class="line"><a id="l00671" name="l00671"></a><span class="lineno">  671</span>} <span class="comment">// namespace sliding_window1d</span></div>
-<div class="line"><a id="l00672" name="l00672"></a><span class="lineno">  672</span>} <span class="comment">// namespace statistics</span></div>
+<div class="line"><a id="l00663" name="l00663"></a><span class="lineno">  663</span><span class="keywordtype">void</span> validate(<span class="keyword">const</span> usm_ndarray &amp;a,</div>
+<div class="line"><a id="l00664" name="l00664"></a><span class="lineno">  664</span>              <span class="keyword">const</span> usm_ndarray &amp;v,</div>
+<div class="line"><a id="l00665" name="l00665"></a><span class="lineno">  665</span>              <span class="keyword">const</span> usm_ndarray &amp;out,</div>
+<div class="line"><a id="l00666" name="l00666"></a><span class="lineno">  666</span>              <span class="keyword">const</span> <span class="keywordtype">size_t</span> l_pad,</div>
+<div class="line"><a id="l00667" name="l00667"></a><span class="lineno">  667</span>              <span class="keyword">const</span> <span class="keywordtype">size_t</span> r_pad);</div>
+<div class="line"><a id="l00668" name="l00668"></a><span class="lineno">  668</span>} <span class="comment">// namespace sliding_window1d</span></div>
+<div class="line"><a id="l00669" name="l00669"></a><span class="lineno">  669</span>} <span class="comment">// namespace statistics</span></div>
 <div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1___registry_data_storage_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html">statistics::sliding_window1d::_RegistryDataStorage</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00057">sliding_window1d.hpp:58</a></div></div>
 <div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1_padded_span_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1_padded_span.html">statistics::sliding_window1d::PaddedSpan</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00443">sliding_window1d.hpp:444</a></div></div>
 <div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1_span_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1_span.html">statistics::sliding_window1d::Span</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00403">sliding_window1d.hpp:404</a></div></div>
-<div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">statistics::sliding_window1d::sliding_window1d_kernel</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00532">sliding_window1d.hpp:532</a></div></div>
-<div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">statistics::sliding_window1d::sliding_window1d_small_kernel</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00605">sliding_window1d.hpp:605</a></div></div>
+<div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html">statistics::sliding_window1d::sliding_window1d_kernel</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00529">sliding_window1d.hpp:529</a></div></div>
+<div class="ttc" id="aclassstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel_html"><div class="ttname"><a href="classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html">statistics::sliding_window1d::sliding_window1d_small_kernel</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00602">sliding_window1d.hpp:602</a></div></div>
 <div class="ttc" id="astructstatistics_1_1sliding__window1d_1_1_registry_data_html"><div class="ttname"><a href="structstatistics_1_1sliding__window1d_1_1_registry_data.html">statistics::sliding_window1d::RegistryData</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00170">sliding_window1d.hpp:171</a></div></div>
 <div class="ttc" id="astructstatistics_1_1sliding__window1d_1_1_registry_window_html"><div class="ttname"><a href="structstatistics_1_1sliding__window1d_1_1_registry_window.html">statistics::sliding_window1d::RegistryWindow</a></div><div class="ttdef"><b>Definition</b> <a href="sliding__window1d_8hpp_source.html#l00367">sliding_window1d.hpp:368</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
