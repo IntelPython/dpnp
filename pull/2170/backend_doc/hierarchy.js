@@ -3,6 +3,7 @@ var hierarchy =
     [ "statistics::common::AtomicOp< T, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op.html", null ],
     [ "statistics::common::AtomicOp< std::complex< T >, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op_3_01std_1_1complex_3_01_t_01_4_00_01_order_00_01_scope_01_4.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
+    [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
@@ -58,6 +59,7 @@ var hierarchy =
     [ "statistics::histogram::Histogram", "structstatistics_1_1histogram_1_1_histogram.html", null ],
     [ "statistics::histogram::histogram_kernel< T, HistImpl, Edges, Weights >", "classstatistics_1_1histogram_1_1histogram__kernel.html", null ],
     [ "statistics::histogram::HistWithLocalCopies< T, localT >", "structstatistics_1_1histogram_1_1_hist_with_local_copies.html", null ],
+    [ "dpnp::kernels::i0::I0Functor< argT, resT >", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ],
     [ "statistics::common::TableBuilder2< FnT, SupportedTypes, Func >::impl< _FnT, T1, T2 >", "structstatistics_1_1common_1_1_table_builder2_1_1impl.html", null ],
     [ "statistics::common::int_pair_hash", "structstatistics_1_1common_1_1int__pair__hash.html", null ],
     [ "statistics::common::IsNan< T >", "structstatistics_1_1common_1_1_is_nan.html", null ],
