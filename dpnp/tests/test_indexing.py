@@ -335,16 +335,30 @@ class TestIx:
         assert_raises(ValueError, xp.ix_, xp.ones(shape))
 
 
+@pytest.mark.parametrize(
+    "shape", [[1, 2, 3], [(1, 2, 3)], [(3,)], [3], [], [()], [0]]
+)
 class TestNdindex:
-    @pytest.mark.parametrize(
-        "shape", [[1, 2, 3], [(1, 2, 3)], [(3,)], [3], [], [()], [0]]
-    )
     def test_basic(self, shape):
         result = dpnp.ndindex(*shape)
         expected = numpy.ndindex(*shape)
 
         for x, y in zip(result, expected):
             assert x == y
+
+    def test_next(self, shape):
+        dind = dpnp.ndindex(*shape)
+        nind = numpy.ndindex(*shape)
+
+        while True:
+            try:
+                ditem = next(dind)
+            except StopIteration:
+                assert_raises(StopIteration, next, nind)
+                break  # both reach ends
+            else:
+                nitem = next(nind)
+                assert ditem == nitem
 
 
 class TestNonzero:
