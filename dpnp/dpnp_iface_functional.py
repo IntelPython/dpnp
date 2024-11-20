@@ -37,7 +37,6 @@ it contains:
 """
 
 
-import numpy
 from dpctl.tensor._numpy_helper import (
     normalize_axis_index,
     normalize_axis_tuple,
@@ -151,8 +150,7 @@ def apply_along_axis(func1d, axis, arr, *args, **kwargs):
 
     # compute indices for the iteration axes, and append a trailing ellipsis to
     # prevent 0d arrays decaying to scalars
-    # TODO: replace with dpnp.ndindex
-    inds = numpy.ndindex(inarr_view.shape[:-1])
+    inds = dpnp.ndindex(inarr_view.shape[:-1])
     inds = (ind + (Ellipsis,) for ind in inds)
 
     # invoke the function on the first item
