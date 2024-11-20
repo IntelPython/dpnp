@@ -1,6 +1,10 @@
-﻿dpnp.divide
+﻿
+
+dpnp.divide
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: divide

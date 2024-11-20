@@ -1,6 +1,10 @@
-﻿dpnp.nanprod
+﻿
+
+dpnp.nanprod
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: nanprod

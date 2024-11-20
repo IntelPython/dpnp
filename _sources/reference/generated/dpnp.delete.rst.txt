@@ -1,6 +1,10 @@
-﻿dpnp.delete
+﻿
+
+dpnp.delete
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: delete

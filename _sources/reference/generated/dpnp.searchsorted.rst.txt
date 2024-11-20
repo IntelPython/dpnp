@@ -1,6 +1,10 @@
-﻿dpnp.searchsorted
+﻿
+
+dpnp.searchsorted
 =================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: searchsorted

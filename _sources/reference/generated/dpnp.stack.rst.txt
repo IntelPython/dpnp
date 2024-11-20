@@ -1,6 +1,10 @@
-﻿dpnp.stack
+﻿
+
+dpnp.stack
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: stack

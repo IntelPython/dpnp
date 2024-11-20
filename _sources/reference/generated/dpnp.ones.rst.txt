@@ -1,6 +1,10 @@
-﻿dpnp.ones
+﻿
+
+dpnp.ones
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: ones
