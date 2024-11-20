@@ -34,7 +34,6 @@ from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
         DPNP_FN_CHOOSE_EXT
-        DPNP_FN_CORRELATE_EXT
         DPNP_FN_ERF_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT

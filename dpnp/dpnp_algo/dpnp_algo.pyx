@@ -62,7 +62,6 @@ include "dpnp_algo_indexing.pxi"
 include "dpnp_algo_mathematical.pxi"
 include "dpnp_algo_sorting.pxi"
 include "dpnp_algo_special.pxi"
-include "dpnp_algo_statistics.pxi"
 
 
 cpdef dpnp_queue_initialize():
