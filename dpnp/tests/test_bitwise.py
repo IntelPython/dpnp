@@ -23,7 +23,7 @@ from .helper import assert_dtype_allclose, get_integer_dtypes
         3,
     ],
 )
-@pytest.mark.parametrize("dtype", [inp.bool, inp.int32, inp.int64])
+@pytest.mark.parametrize("dtype", [inp.bool] + get_integer_dtypes())
 class TestBitwise:
     @staticmethod
     def array_or_scalar(xp, data, dtype=None):
@@ -175,3 +175,114 @@ def test_invert_out(dtype):
     result = inp.invert(dp_a, out=dp_out)
     assert result is dp_out
     assert_dtype_allclose(result, expected)
+
+
+@pytest.mark.parametrize("dtype1", [inp.bool] + get_integer_dtypes())
+@pytest.mark.parametrize("dtype2", [inp.bool] + get_integer_dtypes())
+class TestBitwiseInplace:
+    def test_bitwise_and(self, dtype1, dtype2):
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        ia, ib = inp.array(a), inp.array(b)
+
+        a &= True
+        ia &= True
+        assert_array_equal(ia, a)
+
+        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+            a &= b
+            ia &= ib
+            assert_array_equal(ia, a)
+        else:
+            with pytest.raises(TypeError):
+                a &= b
+
+            with pytest.raises(ValueError):
+                ia &= ib
+
+    def test_bitwise_or(self, dtype1, dtype2):
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        ia, ib = inp.array(a), inp.array(b)
+
+        a |= False
+        ia |= False
+        assert_array_equal(ia, a)
+
+        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+            a |= b
+            ia |= ib
+            assert_array_equal(ia, a)
+        else:
+            with pytest.raises(TypeError):
+                a |= b
+
+            with pytest.raises(ValueError):
+                ia |= ib
+
+    def test_bitwise_xor(self, dtype1, dtype2):
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        ia, ib = inp.array(a), inp.array(b)
+
+        a ^= False
+        ia ^= False
+        assert_array_equal(ia, a)
+
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        ia, ib = inp.array(a), inp.array(b)
+        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+            a ^= b
+            ia ^= ib
+            assert_array_equal(ia, a)
+        else:
+            with pytest.raises(TypeError):
+                a ^= b
+
+            with pytest.raises(ValueError):
+                ia ^= ib
+
+
+@pytest.mark.parametrize("dtype1", get_integer_dtypes())
+@pytest.mark.parametrize("dtype2", get_integer_dtypes())
+class TestBitwiseShiftInplace:
+    def test_bitwise_left_shift(self, dtype1, dtype2):
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, 2, 0, 1, 0], dtype=dtype2)
+        ia, ib = inp.array(a), inp.array(b)
+
+        a <<= True
+        ia <<= True
+        assert_array_equal(ia, a)
+
+        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+            a <<= b
+            ia <<= ib
+            assert_array_equal(ia, a)
+        else:
+            with pytest.raises(TypeError):
+                a <<= b
+
+            with pytest.raises(ValueError):
+                ia <<= ib
+
+    def test_bitwise_right_shift(self, dtype1, dtype2):
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, 2, 0, 1, 0], dtype=dtype2)
+        ia, ib = inp.array(a), inp.array(b)
+
+        a >>= True
+        ia >>= True
+        assert_array_equal(ia, a)
+
+        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+            a >>= b
+            ia >>= ib
+            assert_array_equal(ia, a)
+        else:
+            with pytest.raises(TypeError):
+                a >>= b
+
+            with pytest.raises(ValueError):
+                ia >>= ib
