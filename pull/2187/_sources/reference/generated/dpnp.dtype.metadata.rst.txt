@@ -7,5 +7,4 @@ dpnp.dtype.metadata
 
 attribute
 
-.. autoattribute:: dpnp::dtype.metadata
-
+.. autoattribute:: dtype.metadata

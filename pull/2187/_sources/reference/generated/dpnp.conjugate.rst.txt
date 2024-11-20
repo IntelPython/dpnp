@@ -7,5 +7,4 @@ dpnp.conjugate
 
 
 
-.. autofunction:: dpnp::conjugate
-
+.. autofunction:: conjugate

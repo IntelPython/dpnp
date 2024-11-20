@@ -7,5 +7,4 @@ dpnp.linalg.multi\_dot
 
 
 
-.. autofunction:: dpnp::linalg.multi_dot
-
+.. autofunction:: multi_dot

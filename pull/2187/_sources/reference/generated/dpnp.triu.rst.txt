@@ -7,5 +7,4 @@ dpnp.triu
 
 
 
-.. autofunction:: dpnp::triu
-
+.. autofunction:: triu

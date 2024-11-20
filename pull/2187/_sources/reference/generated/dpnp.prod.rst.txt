@@ -7,5 +7,4 @@ dpnp.prod
 
 
 
-.. autofunction:: dpnp::prod
-
+.. autofunction:: prod

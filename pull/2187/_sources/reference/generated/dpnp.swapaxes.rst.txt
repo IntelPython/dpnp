@@ -7,5 +7,4 @@ dpnp.swapaxes
 
 
 
-.. autofunction:: dpnp::swapaxes
-
+.. autofunction:: swapaxes

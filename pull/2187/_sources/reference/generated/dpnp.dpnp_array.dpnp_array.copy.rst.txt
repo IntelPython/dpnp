@@ -7,5 +7,4 @@ dpnp.dpnp\_array.dpnp\_array.copy
 
 method
 
-.. automethod:: dpnp::dpnp_array.dpnp_array.copy
-
+.. automethod:: dpnp_array.copy

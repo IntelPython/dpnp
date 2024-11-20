@@ -7,5 +7,4 @@ dpnp.random.bytes
 
 
 
-.. autofunction:: dpnp::random.bytes
-
+.. autofunction:: bytes

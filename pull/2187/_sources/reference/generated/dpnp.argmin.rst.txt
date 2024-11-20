@@ -7,5 +7,4 @@ dpnp.argmin
 
 
 
-.. autofunction:: dpnp::argmin
-
+.. autofunction:: argmin

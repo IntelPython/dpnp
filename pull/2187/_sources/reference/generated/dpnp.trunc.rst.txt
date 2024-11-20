@@ -7,5 +7,4 @@ dpnp.trunc
 
 
 
-.. autofunction:: dpnp::trunc
-
+.. autofunction:: trunc

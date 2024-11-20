@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_sub\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__sub__
-
+.. automethod:: ndarray.__sub__

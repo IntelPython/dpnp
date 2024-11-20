@@ -11,5 +11,4 @@ dpnp.ndarray.ndim
 property
 
 
-.. autoproperty:: dpnp::ndarray.ndim
-
+.. autoproperty:: ndarray.ndim

@@ -7,5 +7,4 @@ dpnp.random.RandomState.uniform
 
 method
 
-.. automethod:: dpnp::random.RandomState.uniform
-
+.. automethod:: RandomState.uniform

@@ -7,5 +7,4 @@ dpnp.array
 
 
 
-.. autofunction:: dpnp::array
-
+.. autofunction:: array

@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.sycl\_device
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.sycl_device
-
+.. autoproperty:: dpnp_array.sycl_device

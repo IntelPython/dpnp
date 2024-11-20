@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_imul\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__imul__
-
+.. automethod:: ndarray.__imul__

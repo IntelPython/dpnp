@@ -7,5 +7,4 @@ dpnp.rollaxis
 
 
 
-.. autofunction:: dpnp::rollaxis
-
+.. autofunction:: rollaxis

@@ -7,5 +7,4 @@ dpnp.logspace
 
 
 
-.. autofunction:: dpnp::logspace
-
+.. autofunction:: logspace

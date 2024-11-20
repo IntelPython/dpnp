@@ -7,5 +7,4 @@ dpnp.ndarray.min
 
 method
 
-.. automethod:: dpnp::ndarray.min
-
+.. automethod:: ndarray.min

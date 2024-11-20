@@ -7,5 +7,4 @@ dpnp.asinh
 
 
 
-.. autofunction:: dpnp::asinh
-
+.. autofunction:: asinh

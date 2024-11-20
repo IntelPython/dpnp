@@ -7,5 +7,4 @@ dpnp.digitize
 
 
 
-.. autofunction:: dpnp::digitize
-
+.. autofunction:: digitize

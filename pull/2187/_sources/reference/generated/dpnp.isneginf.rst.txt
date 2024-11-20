@@ -7,5 +7,4 @@ dpnp.isneginf
 
 
 
-.. autofunction:: dpnp::isneginf
-
+.. autofunction:: isneginf

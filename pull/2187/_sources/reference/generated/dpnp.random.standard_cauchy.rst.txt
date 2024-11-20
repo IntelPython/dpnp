@@ -7,5 +7,4 @@ dpnp.random.standard\_cauchy
 
 
 
-.. autofunction:: dpnp::random.standard_cauchy
-
+.. autofunction:: standard_cauchy

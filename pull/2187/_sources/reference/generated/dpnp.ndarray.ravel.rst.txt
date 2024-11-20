@@ -7,5 +7,4 @@ dpnp.ndarray.ravel
 
 method
 
-.. automethod:: dpnp::ndarray.ravel
-
+.. automethod:: ndarray.ravel

@@ -11,5 +11,4 @@ dpnp.ndarray.dtype
 property
 
 
-.. autoproperty:: dpnp::ndarray.dtype
-
+.. autoproperty:: ndarray.dtype

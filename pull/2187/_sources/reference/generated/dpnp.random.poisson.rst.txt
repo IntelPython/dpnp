@@ -7,5 +7,4 @@ dpnp.random.poisson
 
 
 
-.. autofunction:: dpnp::random.poisson
-
+.. autofunction:: poisson

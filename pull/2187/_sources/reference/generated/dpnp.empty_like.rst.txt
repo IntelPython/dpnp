@@ -7,5 +7,4 @@ dpnp.empty\_like
 
 
 
-.. autofunction:: dpnp::empty_like
-
+.. autofunction:: empty_like

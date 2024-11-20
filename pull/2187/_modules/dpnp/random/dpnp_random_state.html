@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.random.dpnp_random_state &mdash; Data Parallel Extension for NumPy 0.17.0dev2+13.g313d56aa527 documentation</title>
+  <title>dpnp.random.dpnp_random_state &mdash; Data Parallel Extension for NumPy 0.17.0dev2+14.g648065ba0d5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=75d53780"></script>
+      <script src="../../../_static/documentation_options.js?v=6b258bd4"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -245,6 +245,8 @@
             <span class="p">)</span>
         <span class="k">return</span> <span class="n">dtype</span>
 
+<div class="viewcode-block" id="RandomState.get_state">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.get_state.html#dpnp.random.RandomState.get_state">[docs]</a>
     <span class="k">def</span> <span class="nf">get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an internal state of the generator.</span>
@@ -256,8 +258,11 @@
 <span class="sd">        out : object</span>
 <span class="sd">            An object representing the internal state of the generator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_random_state</span></div>
 
+
+<div class="viewcode-block" id="RandomState.get_sycl_queue">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.get_sycl_queue.html#dpnp.random.RandomState.get_sycl_queue">[docs]</a>
     <span class="k">def</span> <span class="nf">get_sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an instance of :class:`dpctl.SyclQueue` used within the generator for data allocation.</span>
@@ -267,8 +272,11 @@
 <span class="sd">        queue : dpctl.SyclQueue</span>
 <span class="sd">            A SYCL queue used for data allocation.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span></div>
 
+
+<div class="viewcode-block" id="RandomState.get_sycl_device">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.get_sycl_device.html#dpnp.random.RandomState.get_sycl_device">[docs]</a>
     <span class="k">def</span> <span class="nf">get_sycl_device</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an instance of :class:`dpctl.SyclDevice` used within the generator to allocate data on.</span>
@@ -278,8 +286,11 @@
 <span class="sd">        device : dpctl.SyclDevice</span>
 <span class="sd">            A SYCL device used to allocate data on.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sycl_device</span></div>
 
+
+<div class="viewcode-block" id="RandomState.normal">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.normal.html#dpnp.random.RandomState.normal">[docs]</a>
     <span class="k">def</span> <span class="nf">normal</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span>
     <span class="p">):</span>
@@ -364,8 +375,11 @@
             <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span>
             <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RandomState.rand">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.rand.html#dpnp.random.RandomState.rand">[docs]</a>
     <span class="k">def</span> <span class="nf">rand</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random values in a given shape.</span>
@@ -406,8 +420,11 @@
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">random_sample</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RandomState.randint">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.randint.html#dpnp.random.RandomState.randint">[docs]</a>
     <span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random integers from `low` (inclusive) to `high` (exclusive).</span>
@@ -503,8 +520,11 @@
             <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RandomState.randn">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.randn.html#dpnp.random.RandomState.randn">[docs]</a>
     <span class="k">def</span> <span class="nf">randn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a sample (or samples) from the &quot;standard normal&quot; distribution.</span>
@@ -548,8 +568,11 @@
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">args</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard_normal</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">args</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RandomState.random_sample">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.random_sample.html#dpnp.random.RandomState.random_sample">[docs]</a>
     <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw random floats in the half-open interval [0.0, 1.0).</span>
@@ -586,8 +609,11 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span>
             <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RandomState.standard_normal">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.standard_normal.html#dpnp.random.RandomState.standard_normal">[docs]</a>
     <span class="k">def</span> <span class="nf">standard_normal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Draw samples from a standard Normal distribution ``(mean=0, stdev=1)``.</span>
@@ -624,8 +650,11 @@
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span>
             <span class="n">loc</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="RandomState.uniform">
+<a class="viewcode-back" href="../../../reference/generated/dpnp.random.RandomState.uniform.html#dpnp.random.RandomState.uniform">[docs]</a>
     <span class="k">def</span> <span class="nf">uniform</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">low</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">high</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="s2">&quot;device&quot;</span>
     <span class="p">):</span>
@@ -722,6 +751,7 @@
             <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span>
             <span class="n">sycl_queue</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sycl_queue</span><span class="p">,</span>
         <span class="p">)</span></div>
+</div>
 
 </pre></div>
 

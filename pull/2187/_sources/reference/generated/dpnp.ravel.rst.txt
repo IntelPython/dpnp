@@ -7,5 +7,4 @@ dpnp.ravel
 
 
 
-.. autofunction:: dpnp::ravel
-
+.. autofunction:: ravel

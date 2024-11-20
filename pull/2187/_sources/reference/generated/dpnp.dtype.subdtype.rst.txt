@@ -7,5 +7,4 @@ dpnp.dtype.subdtype
 
 attribute
 
-.. autoattribute:: dpnp::dtype.subdtype
-
+.. autoattribute:: dtype.subdtype

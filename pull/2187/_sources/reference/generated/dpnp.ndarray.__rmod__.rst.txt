@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_rmod\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__rmod__
-
+.. automethod:: ndarray.__rmod__

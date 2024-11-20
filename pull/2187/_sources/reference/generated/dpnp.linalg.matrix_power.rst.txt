@@ -7,5 +7,4 @@ dpnp.linalg.matrix\_power
 
 
 
-.. autofunction:: dpnp::linalg.matrix_power
-
+.. autofunction:: matrix_power

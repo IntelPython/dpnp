@@ -11,5 +11,4 @@ dpnp.ndarray.sycl\_context
 property
 
 
-.. autoproperty:: dpnp::ndarray.sycl_context
-
+.. autoproperty:: ndarray.sycl_context

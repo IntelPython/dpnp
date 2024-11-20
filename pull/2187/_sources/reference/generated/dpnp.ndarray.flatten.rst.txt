@@ -7,5 +7,4 @@ dpnp.ndarray.flatten
 
 method
 
-.. automethod:: dpnp::ndarray.flatten
-
+.. automethod:: ndarray.flatten

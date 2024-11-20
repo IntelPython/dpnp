@@ -7,5 +7,4 @@ dpnp.gcd
 
 
 
-.. autofunction:: dpnp::gcd
-
+.. autofunction:: gcd

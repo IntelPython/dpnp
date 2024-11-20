@@ -7,5 +7,4 @@ dpnp.ptp
 
 
 
-.. autofunction:: dpnp::ptp
-
+.. autofunction:: ptp

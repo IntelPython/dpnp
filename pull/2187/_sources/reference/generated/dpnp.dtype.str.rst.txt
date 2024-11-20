@@ -7,5 +7,4 @@ dpnp.dtype.str
 
 attribute
 
-.. autoattribute:: dpnp::dtype.str
-
+.. autoattribute:: dtype.str

@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_pos\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__pos__
-
+.. automethod:: ndarray.__pos__

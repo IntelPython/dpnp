@@ -7,5 +7,4 @@ dpnp.ndarray.fill
 
 method
 
-.. automethod:: dpnp::ndarray.fill
-
+.. automethod:: ndarray.fill

@@ -7,5 +7,4 @@ dpnp.logical\_not
 
 
 
-.. autofunction:: dpnp::logical_not
-
+.. autofunction:: logical_not

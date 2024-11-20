@@ -7,5 +7,4 @@ dpnp.nanargmin
 
 
 
-.. autofunction:: dpnp::nanargmin
-
+.. autofunction:: nanargmin

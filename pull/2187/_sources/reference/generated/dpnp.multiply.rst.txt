@@ -7,5 +7,4 @@ dpnp.multiply
 
 
 
-.. autofunction:: dpnp::multiply
-
+.. autofunction:: multiply

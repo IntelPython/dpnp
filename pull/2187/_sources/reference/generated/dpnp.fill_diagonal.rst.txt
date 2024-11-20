@@ -7,5 +7,4 @@ dpnp.fill\_diagonal
 
 
 
-.. autofunction:: dpnp::fill_diagonal
-
+.. autofunction:: fill_diagonal

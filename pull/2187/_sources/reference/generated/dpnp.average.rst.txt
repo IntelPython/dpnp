@@ -7,5 +7,4 @@ dpnp.average
 
 
 
-.. autofunction:: dpnp::average
-
+.. autofunction:: average

@@ -7,5 +7,4 @@ dpnp.ndarray.var
 
 method
 
-.. automethod:: dpnp::ndarray.var
-
+.. automethod:: ndarray.var

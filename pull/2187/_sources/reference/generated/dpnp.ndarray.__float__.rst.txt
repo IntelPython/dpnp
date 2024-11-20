@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_float\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__float__
-
+.. automethod:: ndarray.__float__

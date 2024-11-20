@@ -7,5 +7,4 @@ dpnp.random.multinomial
 
 
 
-.. autofunction:: dpnp::random.multinomial
-
+.. autofunction:: multinomial

@@ -7,5 +7,4 @@ dpnp.mgrid
 
 
 
-.. autodata:: dpnp::mgrid
-
+.. autodata:: mgrid

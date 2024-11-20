@@ -7,5 +7,4 @@ dpnp.fromiter
 
 
 
-.. autofunction:: dpnp::fromiter
-
+.. autofunction:: fromiter

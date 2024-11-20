@@ -7,5 +7,4 @@ dpnp.linalg.vector\_norm
 
 
 
-.. autofunction:: dpnp::linalg.vector_norm
-
+.. autofunction:: vector_norm

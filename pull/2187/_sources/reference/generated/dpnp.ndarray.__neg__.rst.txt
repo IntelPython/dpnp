@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_neg\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__neg__
-
+.. automethod:: ndarray.__neg__

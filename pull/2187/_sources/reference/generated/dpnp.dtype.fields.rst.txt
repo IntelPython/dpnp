@@ -7,5 +7,4 @@ dpnp.dtype.fields
 
 attribute
 
-.. autoattribute:: dpnp::dtype.fields
-
+.. autoattribute:: dtype.fields

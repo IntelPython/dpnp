@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_imod\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__imod__
-
+.. automethod:: ndarray.__imod__

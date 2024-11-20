@@ -7,5 +7,4 @@ dpnp.tanh
 
 
 
-.. autofunction:: dpnp::tanh
-
+.. autofunction:: tanh

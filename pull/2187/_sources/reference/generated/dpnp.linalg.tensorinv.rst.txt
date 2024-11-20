@@ -7,5 +7,4 @@ dpnp.linalg.tensorinv
 
 
 
-.. autofunction:: dpnp::linalg.tensorinv
-
+.. autofunction:: tensorinv

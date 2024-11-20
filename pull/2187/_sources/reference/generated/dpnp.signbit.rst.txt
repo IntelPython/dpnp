@@ -7,5 +7,4 @@ dpnp.signbit
 
 
 
-.. autofunction:: dpnp::signbit
-
+.. autofunction:: signbit

@@ -7,5 +7,4 @@ dpnp.random.permutation
 
 
 
-.. autofunction:: dpnp::random.permutation
-
+.. autofunction:: permutation

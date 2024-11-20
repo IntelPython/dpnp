@@ -7,5 +7,4 @@ dpnp.random.gumbel
 
 
 
-.. autofunction:: dpnp::random.gumbel
-
+.. autofunction:: gumbel

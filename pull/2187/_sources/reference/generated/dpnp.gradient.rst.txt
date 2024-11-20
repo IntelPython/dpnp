@@ -7,5 +7,4 @@ dpnp.gradient
 
 
 
-.. autofunction:: dpnp::gradient
-
+.. autofunction:: gradient

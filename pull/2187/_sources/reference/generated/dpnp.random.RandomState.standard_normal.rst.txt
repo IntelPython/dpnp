@@ -7,5 +7,4 @@ dpnp.random.RandomState.standard\_normal
 
 method
 
-.. automethod:: dpnp::random.RandomState.standard_normal
-
+.. automethod:: RandomState.standard_normal

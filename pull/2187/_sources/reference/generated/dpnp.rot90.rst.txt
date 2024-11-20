@@ -7,5 +7,4 @@ dpnp.rot90
 
 
 
-.. autofunction:: dpnp::rot90
-
+.. autofunction:: rot90

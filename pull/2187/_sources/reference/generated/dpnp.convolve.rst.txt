@@ -7,5 +7,4 @@ dpnp.convolve
 
 
 
-.. autofunction:: dpnp::convolve
-
+.. autofunction:: convolve

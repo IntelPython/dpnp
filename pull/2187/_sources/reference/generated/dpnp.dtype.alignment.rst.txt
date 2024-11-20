@@ -7,5 +7,4 @@ dpnp.dtype.alignment
 
 attribute
 
-.. autoattribute:: dpnp::dtype.alignment
-
+.. autoattribute:: dtype.alignment

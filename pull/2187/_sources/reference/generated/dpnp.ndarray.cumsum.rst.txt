@@ -7,5 +7,4 @@ dpnp.ndarray.cumsum
 
 method
 
-.. automethod:: dpnp::ndarray.cumsum
-
+.. automethod:: ndarray.cumsum

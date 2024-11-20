@@ -7,5 +7,4 @@ dpnp.reduce\_hypot
 
 
 
-.. autofunction:: dpnp::reduce_hypot
-
+.. autofunction:: reduce_hypot

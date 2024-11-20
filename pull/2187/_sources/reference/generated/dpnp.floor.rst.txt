@@ -7,5 +7,4 @@ dpnp.floor
 
 
 
-.. autofunction:: dpnp::floor
-
+.. autofunction:: floor

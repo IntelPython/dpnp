@@ -7,5 +7,4 @@ dpnp.reshape
 
 
 
-.. autofunction:: dpnp::reshape
-
+.. autofunction:: reshape

@@ -7,5 +7,4 @@ dpnp.linalg.cond
 
 
 
-.. autofunction:: dpnp::linalg.cond
-
+.. autofunction:: cond

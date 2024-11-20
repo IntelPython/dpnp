@@ -7,5 +7,4 @@ dpnp.floor\_divide
 
 
 
-.. autofunction:: dpnp::floor_divide
-
+.. autofunction:: floor_divide

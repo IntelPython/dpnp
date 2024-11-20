@@ -11,5 +11,4 @@ dpnp.ndarray.flags
 property
 
 
-.. autoproperty:: dpnp::ndarray.flags
-
+.. autoproperty:: ndarray.flags

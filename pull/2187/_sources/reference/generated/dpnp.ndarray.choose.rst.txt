@@ -7,5 +7,4 @@ dpnp.ndarray.choose
 
 method
 
-.. automethod:: dpnp::ndarray.choose
-
+.. automethod:: ndarray.choose

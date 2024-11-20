@@ -7,5 +7,4 @@ dpnp.mask\_indices
 
 
 
-.. autofunction:: dpnp::mask_indices
-
+.. autofunction:: mask_indices

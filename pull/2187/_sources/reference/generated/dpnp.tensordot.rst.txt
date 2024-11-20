@@ -7,5 +7,4 @@ dpnp.tensordot
 
 
 
-.. autofunction:: dpnp::tensordot
-
+.. autofunction:: tensordot

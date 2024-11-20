@@ -7,5 +7,4 @@ dpnp.random.random\_integers
 
 
 
-.. autofunction:: dpnp::random.random_integers
-
+.. autofunction:: random_integers

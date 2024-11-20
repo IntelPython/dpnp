@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.nbytes
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.nbytes
-
+.. autoproperty:: dpnp_array.nbytes

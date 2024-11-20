@@ -7,5 +7,4 @@ dpnp.heaviside
 
 
 
-.. autofunction:: dpnp::heaviside
-
+.. autofunction:: heaviside

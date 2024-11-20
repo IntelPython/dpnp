@@ -7,5 +7,4 @@ dpnp.dtype.isnative
 
 attribute
 
-.. autoattribute:: dpnp::dtype.isnative
-
+.. autoattribute:: dtype.isnative

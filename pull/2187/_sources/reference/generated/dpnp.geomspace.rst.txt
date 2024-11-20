@@ -7,5 +7,4 @@ dpnp.geomspace
 
 
 
-.. autofunction:: dpnp::geomspace
-
+.. autofunction:: geomspace

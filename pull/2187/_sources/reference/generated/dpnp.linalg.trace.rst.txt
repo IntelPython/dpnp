@@ -7,5 +7,4 @@ dpnp.linalg.trace
 
 
 
-.. autofunction:: dpnp::linalg.trace
-
+.. autofunction:: trace

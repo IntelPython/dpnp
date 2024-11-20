@@ -7,5 +7,4 @@ dpnp.arctan
 
 
 
-.. autofunction:: dpnp::arctan
-
+.. autofunction:: arctan

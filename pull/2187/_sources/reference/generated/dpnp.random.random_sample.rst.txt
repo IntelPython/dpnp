@@ -7,5 +7,4 @@ dpnp.random.random\_sample
 
 
 
-.. autofunction:: dpnp::random.random_sample
-
+.. autofunction:: random_sample

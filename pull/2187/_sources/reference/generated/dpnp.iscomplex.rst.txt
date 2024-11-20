@@ -7,5 +7,4 @@ dpnp.iscomplex
 
 
 
-.. autofunction:: dpnp::iscomplex
-
+.. autofunction:: iscomplex

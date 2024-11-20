@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_ior\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__ior__
-
+.. automethod:: ndarray.__ior__

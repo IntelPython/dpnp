@@ -7,5 +7,4 @@ dpnp.take\_along\_axis
 
 
 
-.. autofunction:: dpnp::take_along_axis
-
+.. autofunction:: take_along_axis

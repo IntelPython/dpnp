@@ -7,5 +7,4 @@ dpnp.nanmin
 
 
 
-.. autofunction:: dpnp::nanmin
-
+.. autofunction:: nanmin

@@ -7,5 +7,4 @@ dpnp.linalg.eigvalsh
 
 
 
-.. autofunction:: dpnp::linalg.eigvalsh
-
+.. autofunction:: eigvalsh

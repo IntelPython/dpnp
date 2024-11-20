@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_ixor\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__ixor__
-
+.. automethod:: ndarray.__ixor__

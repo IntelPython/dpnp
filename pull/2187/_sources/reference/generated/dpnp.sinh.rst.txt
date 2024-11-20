@@ -7,5 +7,4 @@ dpnp.sinh
 
 
 
-.. autofunction:: dpnp::sinh
-
+.. autofunction:: sinh

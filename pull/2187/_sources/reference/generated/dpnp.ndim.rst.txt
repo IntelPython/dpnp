@@ -7,5 +7,4 @@ dpnp.ndim
 
 
 
-.. autofunction:: dpnp::ndim
-
+.. autofunction:: ndim

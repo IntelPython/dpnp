@@ -7,5 +7,4 @@ dpnp.random.zipf
 
 
 
-.. autofunction:: dpnp::random.zipf
-
+.. autofunction:: zipf

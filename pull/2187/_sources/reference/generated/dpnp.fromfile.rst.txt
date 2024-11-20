@@ -7,5 +7,4 @@ dpnp.fromfile
 
 
 
-.. autofunction:: dpnp::fromfile
-
+.. autofunction:: fromfile

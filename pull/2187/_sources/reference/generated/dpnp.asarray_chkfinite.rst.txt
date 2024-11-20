@@ -7,5 +7,4 @@ dpnp.asarray\_chkfinite
 
 
 
-.. autofunction:: dpnp::asarray_chkfinite
-
+.. autofunction:: asarray_chkfinite

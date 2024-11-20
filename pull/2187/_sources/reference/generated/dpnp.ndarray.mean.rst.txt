@@ -7,5 +7,4 @@ dpnp.ndarray.mean
 
 method
 
-.. automethod:: dpnp::ndarray.mean
-
+.. automethod:: ndarray.mean

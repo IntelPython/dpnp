@@ -7,5 +7,4 @@ dpnp.tril
 
 
 
-.. autofunction:: dpnp::tril
-
+.. autofunction:: tril

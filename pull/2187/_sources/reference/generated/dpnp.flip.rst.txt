@@ -7,5 +7,4 @@ dpnp.flip
 
 
 
-.. autofunction:: dpnp::flip
-
+.. autofunction:: flip

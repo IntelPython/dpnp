@@ -7,5 +7,4 @@ dpnp.linalg.eigvals
 
 
 
-.. autofunction:: dpnp::linalg.eigvals
-
+.. autofunction:: eigvals

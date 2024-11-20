@@ -7,5 +7,4 @@ dpnp.fft.ifftn
 
 
 
-.. autofunction:: dpnp::fft.ifftn
-
+.. autofunction:: ifftn

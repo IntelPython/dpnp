@@ -7,5 +7,4 @@ dpnp.not\_equal
 
 
 
-.. autofunction:: dpnp::not_equal
-
+.. autofunction:: not_equal

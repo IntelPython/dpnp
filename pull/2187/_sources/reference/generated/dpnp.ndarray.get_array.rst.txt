@@ -7,5 +7,4 @@ dpnp.ndarray.get\_array
 
 method
 
-.. automethod:: dpnp::ndarray.get_array
-
+.. automethod:: ndarray.get_array

@@ -7,5 +7,4 @@ dpnp.linalg.solve
 
 
 
-.. autofunction:: dpnp::linalg.solve
-
+.. autofunction:: solve

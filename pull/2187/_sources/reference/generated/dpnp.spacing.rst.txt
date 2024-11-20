@@ -7,5 +7,4 @@ dpnp.spacing
 
 
 
-.. autofunction:: dpnp::spacing
-
+.. autofunction:: spacing

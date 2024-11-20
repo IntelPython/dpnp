@@ -7,5 +7,4 @@ dpnp.matrix\_transpose
 
 
 
-.. autofunction:: dpnp::matrix_transpose
-
+.. autofunction:: matrix_transpose

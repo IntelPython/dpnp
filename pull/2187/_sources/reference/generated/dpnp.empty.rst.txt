@@ -7,5 +7,4 @@ dpnp.empty
 
 
 
-.. autofunction:: dpnp::empty
-
+.. autofunction:: empty

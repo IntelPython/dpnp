@@ -7,5 +7,4 @@ dpnp.var
 
 
 
-.. autofunction:: dpnp::var
-
+.. autofunction:: var

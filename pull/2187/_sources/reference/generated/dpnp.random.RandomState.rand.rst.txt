@@ -7,5 +7,4 @@ dpnp.random.RandomState.rand
 
 method
 
-.. automethod:: dpnp::random.RandomState.rand
-
+.. automethod:: RandomState.rand

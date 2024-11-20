@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_complex\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__complex__
-
+.. automethod:: ndarray.__complex__

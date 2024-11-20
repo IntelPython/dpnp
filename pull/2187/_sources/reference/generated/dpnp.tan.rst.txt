@@ -7,5 +7,4 @@ dpnp.tan
 
 
 
-.. autofunction:: dpnp::tan
-
+.. autofunction:: tan

@@ -7,5 +7,4 @@ dpnp.log2
 
 
 
-.. autofunction:: dpnp::log2
-
+.. autofunction:: log2

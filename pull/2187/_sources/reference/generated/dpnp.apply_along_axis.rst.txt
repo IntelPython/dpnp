@@ -7,5 +7,4 @@ dpnp.apply\_along\_axis
 
 
 
-.. autofunction:: dpnp::apply_along_axis
-
+.. autofunction:: apply_along_axis

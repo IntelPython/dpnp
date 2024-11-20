@@ -7,5 +7,4 @@ dpnp.dtype.isalignedstruct
 
 attribute
 
-.. autoattribute:: dpnp::dtype.isalignedstruct
-
+.. autoattribute:: dtype.isalignedstruct

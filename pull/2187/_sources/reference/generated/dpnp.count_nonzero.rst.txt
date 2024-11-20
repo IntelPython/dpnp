@@ -7,5 +7,4 @@ dpnp.count\_nonzero
 
 
 
-.. autofunction:: dpnp::count_nonzero
-
+.. autofunction:: count_nonzero

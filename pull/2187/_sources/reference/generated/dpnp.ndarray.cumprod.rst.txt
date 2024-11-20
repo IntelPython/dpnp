@@ -7,5 +7,4 @@ dpnp.ndarray.cumprod
 
 method
 
-.. automethod:: dpnp::ndarray.cumprod
-
+.. automethod:: ndarray.cumprod

@@ -7,5 +7,4 @@ dpnp.fmod
 
 
 
-.. autofunction:: dpnp::fmod
-
+.. autofunction:: fmod

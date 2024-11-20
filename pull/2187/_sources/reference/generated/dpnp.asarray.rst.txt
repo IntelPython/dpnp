@@ -7,5 +7,4 @@ dpnp.asarray
 
 
 
-.. autofunction:: dpnp::asarray
-
+.. autofunction:: asarray

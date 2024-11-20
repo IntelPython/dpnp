@@ -7,5 +7,4 @@ dpnp.clip
 
 
 
-.. autofunction:: dpnp::clip
-
+.. autofunction:: clip

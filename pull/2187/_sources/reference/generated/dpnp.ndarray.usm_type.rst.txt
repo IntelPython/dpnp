@@ -11,5 +11,4 @@ dpnp.ndarray.usm\_type
 property
 
 
-.. autoproperty:: dpnp::ndarray.usm_type
-
+.. autoproperty:: ndarray.usm_type

@@ -7,5 +7,4 @@ dpnp.all
 
 
 
-.. autofunction:: dpnp::all
-
+.. autofunction:: all

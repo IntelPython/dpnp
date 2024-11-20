@@ -7,5 +7,4 @@ dpnp.cross
 
 
 
-.. autofunction:: dpnp::cross
-
+.. autofunction:: cross

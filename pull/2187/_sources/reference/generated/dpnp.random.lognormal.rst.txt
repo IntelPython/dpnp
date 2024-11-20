@@ -7,5 +7,4 @@ dpnp.random.lognormal
 
 
 
-.. autofunction:: dpnp::random.lognormal
-
+.. autofunction:: lognormal

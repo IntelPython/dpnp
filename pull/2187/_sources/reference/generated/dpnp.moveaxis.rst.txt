@@ -7,5 +7,4 @@ dpnp.moveaxis
 
 
 
-.. autofunction:: dpnp::moveaxis
-
+.. autofunction:: moveaxis

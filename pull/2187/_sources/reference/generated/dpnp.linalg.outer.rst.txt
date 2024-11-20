@@ -7,5 +7,4 @@ dpnp.linalg.outer
 
 
 
-.. autofunction:: dpnp::linalg.outer
-
+.. autofunction:: outer

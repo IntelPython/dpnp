@@ -7,5 +7,4 @@ dpnp.any
 
 
 
-.. autofunction:: dpnp::any
-
+.. autofunction:: any

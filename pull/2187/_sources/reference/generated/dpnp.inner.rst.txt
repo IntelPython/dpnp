@@ -7,5 +7,4 @@ dpnp.inner
 
 
 
-.. autofunction:: dpnp::inner
-
+.. autofunction:: inner

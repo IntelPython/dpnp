@@ -7,5 +7,4 @@ dpnp.fliplr
 
 
 
-.. autofunction:: dpnp::fliplr
-
+.. autofunction:: fliplr

@@ -7,5 +7,4 @@ dpnp.rsqrt
 
 
 
-.. autofunction:: dpnp::rsqrt
-
+.. autofunction:: rsqrt

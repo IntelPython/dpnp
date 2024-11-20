@@ -7,5 +7,4 @@ dpnp.random.exponential
 
 
 
-.. autofunction:: dpnp::random.exponential
-
+.. autofunction:: exponential

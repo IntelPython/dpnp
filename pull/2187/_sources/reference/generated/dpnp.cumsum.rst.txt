@@ -7,5 +7,4 @@ dpnp.cumsum
 
 
 
-.. autofunction:: dpnp::cumsum
-
+.. autofunction:: cumsum

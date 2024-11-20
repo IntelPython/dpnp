@@ -7,5 +7,4 @@ dpnp.argwhere
 
 
 
-.. autofunction:: dpnp::argwhere
-
+.. autofunction:: argwhere

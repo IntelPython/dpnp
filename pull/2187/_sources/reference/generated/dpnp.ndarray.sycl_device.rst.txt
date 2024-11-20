@@ -11,5 +11,4 @@ dpnp.ndarray.sycl\_device
 property
 
 
-.. autoproperty:: dpnp::ndarray.sycl_device
-
+.. autoproperty:: ndarray.sycl_device

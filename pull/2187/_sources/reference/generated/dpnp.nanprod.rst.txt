@@ -7,5 +7,4 @@ dpnp.nanprod
 
 
 
-.. autofunction:: dpnp::nanprod
-
+.. autofunction:: nanprod

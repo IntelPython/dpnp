@@ -11,5 +11,4 @@ dpnp.ndarray.real
 property
 
 
-.. autoproperty:: dpnp::ndarray.real
-
+.. autoproperty:: ndarray.real

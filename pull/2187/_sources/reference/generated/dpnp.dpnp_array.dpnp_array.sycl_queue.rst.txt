@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.sycl\_queue
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.sycl_queue
-
+.. autoproperty:: dpnp_array.sycl_queue

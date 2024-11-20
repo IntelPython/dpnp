@@ -7,5 +7,4 @@ dpnp.dtype.kind
 
 attribute
 
-.. autoattribute:: dpnp::dtype.kind
-
+.. autoattribute:: dtype.kind

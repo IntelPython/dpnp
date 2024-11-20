@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_rpow\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__rpow__
-
+.. automethod:: ndarray.__rpow__

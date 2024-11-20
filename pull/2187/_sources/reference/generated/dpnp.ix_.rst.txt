@@ -7,5 +7,4 @@ dpnp.ix\_
 
 
 
-.. autofunction:: dpnp::ix_
-
+.. autofunction:: ix_

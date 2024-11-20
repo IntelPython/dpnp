@@ -7,5 +7,4 @@ dpnp.nanmean
 
 
 
-.. autofunction:: dpnp::nanmean
-
+.. autofunction:: nanmean

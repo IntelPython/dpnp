@@ -7,5 +7,4 @@ dpnp.iscomplexobj
 
 
 
-.. autofunction:: dpnp::iscomplexobj
-
+.. autofunction:: iscomplexobj

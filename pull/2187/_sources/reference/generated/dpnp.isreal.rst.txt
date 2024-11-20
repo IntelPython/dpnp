@@ -7,5 +7,4 @@ dpnp.isreal
 
 
 
-.. autofunction:: dpnp::isreal
-
+.. autofunction:: isreal

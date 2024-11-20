@@ -11,5 +11,4 @@ dpnp.ndarray.flat
 property
 
 
-.. autoproperty:: dpnp::ndarray.flat
-
+.. autoproperty:: ndarray.flat

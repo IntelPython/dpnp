@@ -7,5 +7,4 @@ dpnp.invert
 
 
 
-.. autofunction:: dpnp::invert
-
+.. autofunction:: invert

@@ -7,5 +7,4 @@ dpnp.unravel\_index
 
 
 
-.. autofunction:: dpnp::unravel_index
-
+.. autofunction:: unravel_index

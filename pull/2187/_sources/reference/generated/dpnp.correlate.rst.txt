@@ -7,5 +7,4 @@ dpnp.correlate
 
 
 
-.. autofunction:: dpnp::correlate
-
+.. autofunction:: correlate

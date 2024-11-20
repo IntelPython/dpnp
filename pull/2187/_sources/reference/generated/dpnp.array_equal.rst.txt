@@ -7,5 +7,4 @@ dpnp.array\_equal
 
 
 
-.. autofunction:: dpnp::array_equal
-
+.. autofunction:: array_equal

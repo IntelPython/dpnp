@@ -7,5 +7,4 @@ dpnp.random.seed
 
 
 
-.. autofunction:: dpnp::random.seed
-
+.. autofunction:: seed

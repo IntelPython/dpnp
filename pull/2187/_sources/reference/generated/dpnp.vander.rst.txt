@@ -7,5 +7,4 @@ dpnp.vander
 
 
 
-.. autofunction:: dpnp::vander
-
+.. autofunction:: vander

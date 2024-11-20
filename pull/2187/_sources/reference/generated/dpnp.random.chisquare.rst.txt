@@ -7,5 +7,4 @@ dpnp.random.chisquare
 
 
 
-.. autofunction:: dpnp::random.chisquare
-
+.. autofunction:: chisquare

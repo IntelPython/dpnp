@@ -7,5 +7,4 @@ dpnp.proj
 
 
 
-.. autofunction:: dpnp::proj
-
+.. autofunction:: proj

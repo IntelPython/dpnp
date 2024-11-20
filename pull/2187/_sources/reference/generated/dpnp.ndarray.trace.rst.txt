@@ -7,5 +7,4 @@ dpnp.ndarray.trace
 
 method
 
-.. automethod:: dpnp::ndarray.trace
-
+.. automethod:: ndarray.trace

@@ -7,5 +7,4 @@ dpnp.flipud
 
 
 
-.. autofunction:: dpnp::flipud
-
+.. autofunction:: flipud

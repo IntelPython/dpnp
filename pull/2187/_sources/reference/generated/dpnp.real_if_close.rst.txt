@@ -7,5 +7,4 @@ dpnp.real\_if\_close
 
 
 
-.. autofunction:: dpnp::real_if_close
-
+.. autofunction:: real_if_close

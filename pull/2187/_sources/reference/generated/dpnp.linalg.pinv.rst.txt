@@ -7,5 +7,4 @@ dpnp.linalg.pinv
 
 
 
-.. autofunction:: dpnp::linalg.pinv
-
+.. autofunction:: pinv

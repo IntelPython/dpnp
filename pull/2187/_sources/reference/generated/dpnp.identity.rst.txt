@@ -7,5 +7,4 @@ dpnp.identity
 
 
 
-.. autofunction:: dpnp::identity
-
+.. autofunction:: identity

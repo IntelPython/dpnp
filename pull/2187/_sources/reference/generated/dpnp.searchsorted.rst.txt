@@ -7,5 +7,4 @@ dpnp.searchsorted
 
 
 
-.. autofunction:: dpnp::searchsorted
-
+.. autofunction:: searchsorted

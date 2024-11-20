@@ -7,5 +7,4 @@ dpnp.ndarray.swapaxes
 
 method
 
-.. automethod:: dpnp::ndarray.swapaxes
-
+.. automethod:: ndarray.swapaxes

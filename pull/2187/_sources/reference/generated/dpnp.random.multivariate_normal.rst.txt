@@ -7,5 +7,4 @@ dpnp.random.multivariate\_normal
 
 
 
-.. autofunction:: dpnp::random.multivariate_normal
-
+.. autofunction:: multivariate_normal

@@ -7,5 +7,4 @@ dpnp.nanmax
 
 
 
-.. autofunction:: dpnp::nanmax
-
+.. autofunction:: nanmax

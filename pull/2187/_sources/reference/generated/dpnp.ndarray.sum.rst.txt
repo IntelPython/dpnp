@@ -7,5 +7,4 @@ dpnp.ndarray.sum
 
 method
 
-.. automethod:: dpnp::ndarray.sum
-
+.. automethod:: ndarray.sum

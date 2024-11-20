@@ -7,5 +7,4 @@ dpnp.random.rayleigh
 
 
 
-.. autofunction:: dpnp::random.rayleigh
-
+.. autofunction:: rayleigh

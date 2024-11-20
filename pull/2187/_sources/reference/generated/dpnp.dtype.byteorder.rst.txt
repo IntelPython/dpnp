@@ -7,5 +7,4 @@ dpnp.dtype.byteorder
 
 attribute
 
-.. autoattribute:: dpnp::dtype.byteorder
-
+.. autoattribute:: dtype.byteorder

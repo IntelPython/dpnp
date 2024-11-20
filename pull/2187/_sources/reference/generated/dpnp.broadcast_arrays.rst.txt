@@ -7,5 +7,4 @@ dpnp.broadcast\_arrays
 
 
 
-.. autofunction:: dpnp::broadcast_arrays
-
+.. autofunction:: broadcast_arrays

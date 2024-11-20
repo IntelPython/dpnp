@@ -11,5 +11,4 @@ dpnp.ndarray.device
 property
 
 
-.. autoproperty:: dpnp::ndarray.device
-
+.. autoproperty:: ndarray.device

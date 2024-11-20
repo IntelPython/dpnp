@@ -7,5 +7,4 @@ dpnp.atleast\_3d
 
 
 
-.. autofunction:: dpnp::atleast_3d
-
+.. autofunction:: atleast_3d

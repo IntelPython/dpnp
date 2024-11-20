@@ -7,5 +7,4 @@ dpnp.isclose
 
 
 
-.. autofunction:: dpnp::isclose
-
+.. autofunction:: isclose

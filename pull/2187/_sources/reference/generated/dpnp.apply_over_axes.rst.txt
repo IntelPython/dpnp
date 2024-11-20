@@ -7,5 +7,4 @@ dpnp.apply\_over\_axes
 
 
 
-.. autofunction:: dpnp::apply_over_axes
-
+.. autofunction:: apply_over_axes

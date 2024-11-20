@@ -7,5 +7,4 @@ dpnp.size
 
 
 
-.. autofunction:: dpnp::size
-
+.. autofunction:: size

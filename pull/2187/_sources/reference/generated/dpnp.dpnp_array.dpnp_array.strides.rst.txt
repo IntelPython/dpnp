@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.strides
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.strides
-
+.. autoproperty:: dpnp_array.strides

@@ -11,5 +11,4 @@ dpnp.ndarray.nbytes
 property
 
 
-.. autoproperty:: dpnp::ndarray.nbytes
-
+.. autoproperty:: ndarray.nbytes

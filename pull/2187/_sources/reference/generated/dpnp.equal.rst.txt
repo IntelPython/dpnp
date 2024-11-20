@@ -7,5 +7,4 @@ dpnp.equal
 
 
 
-.. autofunction:: dpnp::equal
-
+.. autofunction:: equal

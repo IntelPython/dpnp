@@ -7,5 +7,4 @@ dpnp.full
 
 
 
-.. autofunction:: dpnp::full
-
+.. autofunction:: full

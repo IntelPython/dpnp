@@ -7,5 +7,4 @@ dpnp.fft.hfft
 
 
 
-.. autofunction:: dpnp::fft.hfft
-
+.. autofunction:: hfft

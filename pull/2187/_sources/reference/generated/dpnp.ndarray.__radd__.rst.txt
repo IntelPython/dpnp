@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_radd\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__radd__
-
+.. automethod:: ndarray.__radd__

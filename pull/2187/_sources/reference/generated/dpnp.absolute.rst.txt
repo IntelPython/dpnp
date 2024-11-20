@@ -7,5 +7,4 @@ dpnp.absolute
 
 
 
-.. autofunction:: dpnp::absolute
-
+.. autofunction:: absolute

@@ -7,5 +7,4 @@ dpnp.full\_like
 
 
 
-.. autofunction:: dpnp::full_like
-
+.. autofunction:: full_like

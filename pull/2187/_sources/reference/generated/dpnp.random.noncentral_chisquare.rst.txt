@@ -7,5 +7,4 @@ dpnp.random.noncentral\_chisquare
 
 
 
-.. autofunction:: dpnp::random.noncentral_chisquare
-
+.. autofunction:: noncentral_chisquare

@@ -7,5 +7,4 @@ dpnp.dpnp\_array.dpnp\_array.std
 
 method
 
-.. automethod:: dpnp::dpnp_array.dpnp_array.std
-
+.. automethod:: dpnp_array.std

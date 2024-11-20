@@ -7,5 +7,4 @@ dpnp.asfortranarray
 
 
 
-.. autofunction:: dpnp::asfortranarray
-
+.. autofunction:: asfortranarray

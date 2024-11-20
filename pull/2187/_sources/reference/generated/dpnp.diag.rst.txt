@@ -7,5 +7,4 @@ dpnp.diag
 
 
 
-.. autofunction:: dpnp::diag
-
+.. autofunction:: diag

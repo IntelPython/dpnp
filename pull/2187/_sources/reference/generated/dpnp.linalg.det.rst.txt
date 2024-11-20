@@ -7,5 +7,4 @@ dpnp.linalg.det
 
 
 
-.. autofunction:: dpnp::linalg.det
-
+.. autofunction:: det

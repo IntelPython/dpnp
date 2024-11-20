@@ -7,5 +7,4 @@ dpnp.nonzero
 
 
 
-.. autofunction:: dpnp::nonzero
-
+.. autofunction:: nonzero

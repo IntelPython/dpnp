@@ -7,5 +7,4 @@ dpnp.ndarray.nonzero
 
 method
 
-.. automethod:: dpnp::ndarray.nonzero
-
+.. automethod:: ndarray.nonzero

@@ -7,5 +7,4 @@ dpnp.logical\_and
 
 
 
-.. autofunction:: dpnp::logical_and
-
+.. autofunction:: logical_and

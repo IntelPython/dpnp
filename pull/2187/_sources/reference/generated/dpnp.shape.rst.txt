@@ -7,5 +7,4 @@ dpnp.shape
 
 
 
-.. autofunction:: dpnp::shape
-
+.. autofunction:: shape

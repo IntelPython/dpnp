@@ -7,5 +7,4 @@ dpnp.random.logseries
 
 
 
-.. autofunction:: dpnp::random.logseries
-
+.. autofunction:: logseries

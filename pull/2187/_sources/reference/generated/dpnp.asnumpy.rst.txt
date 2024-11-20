@@ -7,5 +7,4 @@ dpnp.asnumpy
 
 
 
-.. autofunction:: dpnp::asnumpy
-
+.. autofunction:: asnumpy

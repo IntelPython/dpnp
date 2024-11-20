@@ -7,5 +7,4 @@ dpnp.angle
 
 
 
-.. autofunction:: dpnp::angle
-
+.. autofunction:: angle

@@ -7,5 +7,4 @@ dpnp.ndarray.round
 
 method
 
-.. automethod:: dpnp::ndarray.round
-
+.. automethod:: ndarray.round

@@ -7,5 +7,4 @@ dpnp.ndarray.sort
 
 method
 
-.. automethod:: dpnp::ndarray.sort
-
+.. automethod:: ndarray.sort

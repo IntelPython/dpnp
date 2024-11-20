@@ -7,5 +7,4 @@ dpnp.arcsin
 
 
 
-.. autofunction:: dpnp::arcsin
-
+.. autofunction:: arcsin

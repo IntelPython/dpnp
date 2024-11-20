@@ -7,5 +7,4 @@ dpnp.isscalar
 
 
 
-.. autofunction:: dpnp::isscalar
-
+.. autofunction:: isscalar

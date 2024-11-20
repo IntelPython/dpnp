@@ -7,5 +7,4 @@ dpnp.select
 
 
 
-.. autofunction:: dpnp::select
-
+.. autofunction:: select

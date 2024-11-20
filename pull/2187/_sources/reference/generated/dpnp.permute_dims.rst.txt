@@ -7,5 +7,4 @@ dpnp.permute\_dims
 
 
 
-.. autofunction:: dpnp::permute_dims
-
+.. autofunction:: permute_dims

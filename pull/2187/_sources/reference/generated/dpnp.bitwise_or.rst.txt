@@ -7,5 +7,4 @@ dpnp.bitwise\_or
 
 
 
-.. autofunction:: dpnp::bitwise_or
-
+.. autofunction:: bitwise_or

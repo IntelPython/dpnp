@@ -7,5 +7,4 @@ dpnp.histogram
 
 
 
-.. autofunction:: dpnp::histogram
-
+.. autofunction:: histogram

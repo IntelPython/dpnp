@@ -7,5 +7,4 @@ dpnp.random.logistic
 
 
 
-.. autofunction:: dpnp::random.logistic
-
+.. autofunction:: logistic

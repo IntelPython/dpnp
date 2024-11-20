@@ -7,5 +7,4 @@ dpnp.ndarray.diagonal
 
 method
 
-.. automethod:: dpnp::ndarray.diagonal
-
+.. automethod:: ndarray.diagonal

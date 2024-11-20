@@ -7,5 +7,4 @@ dpnp.ndarray.clip
 
 method
 
-.. automethod:: dpnp::ndarray.clip
-
+.. automethod:: ndarray.clip

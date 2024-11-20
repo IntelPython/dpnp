@@ -7,5 +7,4 @@ dpnp.ndarray.repeat
 
 method
 
-.. automethod:: dpnp::ndarray.repeat
-
+.. automethod:: ndarray.repeat

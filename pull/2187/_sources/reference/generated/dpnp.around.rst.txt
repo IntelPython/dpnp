@@ -7,5 +7,4 @@ dpnp.around
 
 
 
-.. autofunction:: dpnp::around
-
+.. autofunction:: around

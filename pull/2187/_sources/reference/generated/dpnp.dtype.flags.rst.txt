@@ -7,5 +7,4 @@ dpnp.dtype.flags
 
 attribute
 
-.. autoattribute:: dpnp::dtype.flags
-
+.. autoattribute:: dtype.flags

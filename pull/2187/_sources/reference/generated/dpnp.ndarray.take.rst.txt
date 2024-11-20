@@ -7,5 +7,4 @@ dpnp.ndarray.take
 
 method
 
-.. automethod:: dpnp::ndarray.take
-
+.. automethod:: ndarray.take

@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_invert\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__invert__
-
+.. automethod:: ndarray.__invert__

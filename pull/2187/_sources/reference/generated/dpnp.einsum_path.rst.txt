@@ -7,5 +7,4 @@ dpnp.einsum\_path
 
 
 
-.. autofunction:: dpnp::einsum_path
-
+.. autofunction:: einsum_path

@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.shape
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.shape
-
+.. autoproperty:: dpnp_array.shape

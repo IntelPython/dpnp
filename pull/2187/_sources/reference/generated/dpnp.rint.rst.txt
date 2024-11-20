@@ -7,5 +7,4 @@ dpnp.rint
 
 
 
-.. autofunction:: dpnp::rint
-
+.. autofunction:: rint

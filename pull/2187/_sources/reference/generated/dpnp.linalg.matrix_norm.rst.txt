@@ -7,5 +7,4 @@ dpnp.linalg.matrix\_norm
 
 
 
-.. autofunction:: dpnp::linalg.matrix_norm
-
+.. autofunction:: matrix_norm

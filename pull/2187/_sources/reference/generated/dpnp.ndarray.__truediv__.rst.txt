@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_truediv\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__truediv__
-
+.. automethod:: ndarray.__truediv__

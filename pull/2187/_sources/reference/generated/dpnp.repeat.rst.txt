@@ -7,5 +7,4 @@ dpnp.repeat
 
 
 
-.. autofunction:: dpnp::repeat
-
+.. autofunction:: repeat

@@ -7,5 +7,4 @@ dpnp.pad
 
 
 
-.. autofunction:: dpnp::pad
-
+.. autofunction:: pad

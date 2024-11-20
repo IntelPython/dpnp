@@ -7,5 +7,4 @@ dpnp.bitwise\_invert
 
 
 
-.. autofunction:: dpnp::bitwise_invert
-
+.. autofunction:: bitwise_invert

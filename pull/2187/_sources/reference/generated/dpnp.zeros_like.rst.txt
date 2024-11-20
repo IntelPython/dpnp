@@ -7,5 +7,4 @@ dpnp.zeros\_like
 
 
 
-.. autofunction:: dpnp::zeros_like
-
+.. autofunction:: zeros_like

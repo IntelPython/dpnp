@@ -7,5 +7,4 @@ dpnp.histogram\_bin\_edges
 
 
 
-.. autofunction:: dpnp::histogram_bin_edges
-
+.. autofunction:: histogram_bin_edges

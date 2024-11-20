@@ -7,5 +7,4 @@ dpnp.random.wald
 
 
 
-.. autofunction:: dpnp::random.wald
-
+.. autofunction:: wald

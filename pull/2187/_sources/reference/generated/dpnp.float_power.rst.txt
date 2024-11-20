@@ -7,5 +7,4 @@ dpnp.float\_power
 
 
 
-.. autofunction:: dpnp::float_power
-
+.. autofunction:: float_power

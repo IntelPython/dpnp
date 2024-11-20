@@ -7,5 +7,4 @@ dpnp.nan\_to\_num
 
 
 
-.. autofunction:: dpnp::nan_to_num
-
+.. autofunction:: nan_to_num

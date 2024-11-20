@@ -7,5 +7,4 @@ dpnp.iinfo
 
 
 
-.. autofunction:: dpnp::iinfo
-
+.. autofunction:: iinfo

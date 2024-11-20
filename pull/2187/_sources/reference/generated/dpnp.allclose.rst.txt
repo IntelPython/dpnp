@@ -7,5 +7,4 @@ dpnp.allclose
 
 
 
-.. autofunction:: dpnp::allclose
-
+.. autofunction:: allclose

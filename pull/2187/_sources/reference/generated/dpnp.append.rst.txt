@@ -7,5 +7,4 @@ dpnp.append
 
 
 
-.. autofunction:: dpnp::append
-
+.. autofunction:: append

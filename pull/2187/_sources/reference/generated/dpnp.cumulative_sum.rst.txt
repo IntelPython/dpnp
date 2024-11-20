@@ -7,5 +7,4 @@ dpnp.cumulative\_sum
 
 
 
-.. autofunction:: dpnp::cumulative_sum
-
+.. autofunction:: cumulative_sum

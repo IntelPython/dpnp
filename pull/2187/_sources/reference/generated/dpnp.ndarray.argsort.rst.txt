@@ -7,5 +7,4 @@ dpnp.ndarray.argsort
 
 method
 
-.. automethod:: dpnp::ndarray.argsort
-
+.. automethod:: ndarray.argsort

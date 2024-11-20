@@ -7,5 +7,4 @@ dpnp.diagonal
 
 
 
-.. autofunction:: dpnp::diagonal
-
+.. autofunction:: diagonal

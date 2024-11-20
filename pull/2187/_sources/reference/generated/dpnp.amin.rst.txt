@@ -7,5 +7,4 @@ dpnp.amin
 
 
 
-.. autofunction:: dpnp::amin
-
+.. autofunction:: amin

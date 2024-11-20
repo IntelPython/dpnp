@@ -7,5 +7,4 @@ dpnp.isnan
 
 
 
-.. autofunction:: dpnp::isnan
-
+.. autofunction:: isnan

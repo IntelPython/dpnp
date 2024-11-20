@@ -7,5 +7,4 @@ dpnp.sort\_complex
 
 
 
-.. autofunction:: dpnp::sort_complex
-
+.. autofunction:: sort_complex

@@ -7,5 +7,4 @@ dpnp.zeros
 
 
 
-.. autofunction:: dpnp::zeros
-
+.. autofunction:: zeros

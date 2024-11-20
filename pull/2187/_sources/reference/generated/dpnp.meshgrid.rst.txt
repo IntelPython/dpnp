@@ -7,5 +7,4 @@ dpnp.meshgrid
 
 
 
-.. autofunction:: dpnp::meshgrid
-
+.. autofunction:: meshgrid

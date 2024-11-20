@@ -7,5 +7,4 @@ dpnp.expand\_dims
 
 
 
-.. autofunction:: dpnp::expand_dims
-
+.. autofunction:: expand_dims

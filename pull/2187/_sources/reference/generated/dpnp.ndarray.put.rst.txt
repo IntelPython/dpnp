@@ -7,5 +7,4 @@ dpnp.ndarray.put
 
 method
 
-.. automethod:: dpnp::ndarray.put
-
+.. automethod:: ndarray.put

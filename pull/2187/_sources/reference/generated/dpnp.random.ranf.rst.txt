@@ -7,5 +7,4 @@ dpnp.random.ranf
 
 
 
-.. autofunction:: dpnp::random.ranf
-
+.. autofunction:: ranf

@@ -7,5 +7,4 @@ dpnp.random.power
 
 
 
-.. autofunction:: dpnp::random.power
-
+.. autofunction:: power

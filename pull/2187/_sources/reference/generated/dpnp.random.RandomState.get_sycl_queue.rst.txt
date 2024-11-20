@@ -7,5 +7,4 @@ dpnp.random.RandomState.get\_sycl\_queue
 
 method
 
-.. automethod:: dpnp::random.RandomState.get_sycl_queue
-
+.. automethod:: RandomState.get_sycl_queue

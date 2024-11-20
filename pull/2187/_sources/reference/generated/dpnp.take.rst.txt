@@ -7,5 +7,4 @@ dpnp.take
 
 
 
-.. autofunction:: dpnp::take
-
+.. autofunction:: take

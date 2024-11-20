@@ -7,5 +7,4 @@ dpnp.random.standard\_exponential
 
 
 
-.. autofunction:: dpnp::random.standard_exponential
-
+.. autofunction:: standard_exponential

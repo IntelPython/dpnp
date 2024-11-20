@@ -7,5 +7,4 @@ dpnp.ndarray.reshape
 
 method
 
-.. automethod:: dpnp::ndarray.reshape
-
+.. automethod:: ndarray.reshape

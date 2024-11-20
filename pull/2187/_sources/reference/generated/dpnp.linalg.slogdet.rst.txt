@@ -7,5 +7,4 @@ dpnp.linalg.slogdet
 
 
 
-.. autofunction:: dpnp::linalg.slogdet
-
+.. autofunction:: slogdet

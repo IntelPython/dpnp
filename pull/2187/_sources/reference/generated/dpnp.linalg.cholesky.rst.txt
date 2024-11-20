@@ -7,5 +7,4 @@ dpnp.linalg.cholesky
 
 
 
-.. autofunction:: dpnp::linalg.cholesky
-
+.. autofunction:: cholesky

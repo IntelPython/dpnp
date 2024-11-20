@@ -7,5 +7,4 @@ dpnp.ogrid
 
 
 
-.. autodata:: dpnp::ogrid
-
+.. autodata:: ogrid

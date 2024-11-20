@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.usm\_type
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.usm_type
-
+.. autoproperty:: dpnp_array.usm_type

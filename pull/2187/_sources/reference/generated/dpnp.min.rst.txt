@@ -7,5 +7,4 @@ dpnp.min
 
 
 
-.. autofunction:: dpnp::min
-
+.. autofunction:: min

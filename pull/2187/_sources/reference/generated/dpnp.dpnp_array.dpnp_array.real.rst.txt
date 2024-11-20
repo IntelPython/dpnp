@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.real
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.real
-
+.. autoproperty:: dpnp_array.real

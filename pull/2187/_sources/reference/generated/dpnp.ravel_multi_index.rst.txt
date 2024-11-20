@@ -7,5 +7,4 @@ dpnp.ravel\_multi\_index
 
 
 
-.. autofunction:: dpnp::ravel_multi_index
-
+.. autofunction:: ravel_multi_index

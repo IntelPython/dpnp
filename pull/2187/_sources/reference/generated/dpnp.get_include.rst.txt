@@ -7,5 +7,4 @@ dpnp.get\_include
 
 
 
-.. autofunction:: dpnp::get_include
-
+.. autofunction:: get_include

@@ -7,5 +7,4 @@ dpnp.nextafter
 
 
 
-.. autofunction:: dpnp::nextafter
-
+.. autofunction:: nextafter

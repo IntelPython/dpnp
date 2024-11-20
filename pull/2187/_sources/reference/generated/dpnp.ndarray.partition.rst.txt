@@ -7,5 +7,4 @@ dpnp.ndarray.partition
 
 method
 
-.. automethod:: dpnp::ndarray.partition
-
+.. automethod:: ndarray.partition

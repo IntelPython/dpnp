@@ -7,5 +7,4 @@ dpnp.triu\_indices
 
 
 
-.. autofunction:: dpnp::triu_indices
-
+.. autofunction:: triu_indices

@@ -7,5 +7,4 @@ dpnp.vsplit
 
 
 
-.. autofunction:: dpnp::vsplit
-
+.. autofunction:: vsplit

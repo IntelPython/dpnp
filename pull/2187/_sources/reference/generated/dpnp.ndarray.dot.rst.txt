@@ -7,5 +7,4 @@ dpnp.ndarray.dot
 
 method
 
-.. automethod:: dpnp::ndarray.dot
-
+.. automethod:: ndarray.dot

@@ -7,5 +7,4 @@ dpnp.isposinf
 
 
 
-.. autofunction:: dpnp::isposinf
-
+.. autofunction:: isposinf

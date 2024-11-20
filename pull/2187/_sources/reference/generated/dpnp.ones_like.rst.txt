@@ -7,5 +7,4 @@ dpnp.ones\_like
 
 
 
-.. autofunction:: dpnp::ones_like
-
+.. autofunction:: ones_like

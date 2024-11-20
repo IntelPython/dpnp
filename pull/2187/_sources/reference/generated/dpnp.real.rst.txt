@@ -7,5 +7,4 @@ dpnp.real
 
 
 
-.. autofunction:: dpnp::real
-
+.. autofunction:: real

@@ -7,5 +7,4 @@ dpnp.diagflat
 
 
 
-.. autofunction:: dpnp::diagflat
-
+.. autofunction:: diagflat

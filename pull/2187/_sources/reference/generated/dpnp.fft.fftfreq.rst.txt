@@ -7,5 +7,4 @@ dpnp.fft.fftfreq
 
 
 
-.. autofunction:: dpnp::fft.fftfreq
-
+.. autofunction:: fftfreq

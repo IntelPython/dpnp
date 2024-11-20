@@ -7,5 +7,4 @@ dpnp.putmask
 
 
 
-.. autofunction:: dpnp::putmask
-
+.. autofunction:: putmask

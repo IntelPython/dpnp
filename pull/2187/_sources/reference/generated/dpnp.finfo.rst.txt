@@ -7,5 +7,4 @@ dpnp.finfo
 
 
 
-.. autofunction:: dpnp::finfo
-
+.. autofunction:: finfo

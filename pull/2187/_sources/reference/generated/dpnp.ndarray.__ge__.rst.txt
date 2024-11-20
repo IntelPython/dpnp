@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_ge\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__ge__
-
+.. automethod:: ndarray.__ge__

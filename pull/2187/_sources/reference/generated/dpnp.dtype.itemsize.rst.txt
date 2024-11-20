@@ -7,5 +7,4 @@ dpnp.dtype.itemsize
 
 attribute
 
-.. autoattribute:: dpnp::dtype.itemsize
-
+.. autoattribute:: dtype.itemsize

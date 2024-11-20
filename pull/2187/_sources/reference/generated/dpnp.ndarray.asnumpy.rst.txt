@@ -7,5 +7,4 @@ dpnp.ndarray.asnumpy
 
 method
 
-.. automethod:: dpnp::ndarray.asnumpy
-
+.. automethod:: ndarray.asnumpy

@@ -7,5 +7,4 @@ dpnp.unwrap
 
 
 
-.. autofunction:: dpnp::unwrap
-
+.. autofunction:: unwrap

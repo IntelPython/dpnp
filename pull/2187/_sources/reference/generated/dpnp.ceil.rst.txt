@@ -7,5 +7,4 @@ dpnp.ceil
 
 
 
-.. autofunction:: dpnp::ceil
-
+.. autofunction:: ceil

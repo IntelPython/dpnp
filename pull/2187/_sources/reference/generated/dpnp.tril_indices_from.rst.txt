@@ -7,5 +7,4 @@ dpnp.tril\_indices\_from
 
 
 
-.. autofunction:: dpnp::tril_indices_from
-
+.. autofunction:: tril_indices_from

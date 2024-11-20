@@ -7,5 +7,4 @@ dpnp.atleast\_1d
 
 
 
-.. autofunction:: dpnp::atleast_1d
-
+.. autofunction:: atleast_1d

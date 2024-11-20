@@ -7,5 +7,4 @@ dpnp.dpnp\_array.dpnp\_array.repeat
 
 method
 
-.. automethod:: dpnp::dpnp_array.dpnp_array.repeat
-
+.. automethod:: dpnp_array.repeat

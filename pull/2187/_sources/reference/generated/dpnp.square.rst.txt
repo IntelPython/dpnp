@@ -7,5 +7,4 @@ dpnp.square
 
 
 
-.. autofunction:: dpnp::square
-
+.. autofunction:: square

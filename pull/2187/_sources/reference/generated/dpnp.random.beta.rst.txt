@@ -7,5 +7,4 @@ dpnp.random.beta
 
 
 
-.. autofunction:: dpnp::random.beta
-
+.. autofunction:: beta

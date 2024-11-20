@@ -7,5 +7,4 @@ dpnp.ndarray.any
 
 method
 
-.. automethod:: dpnp::ndarray.any
-
+.. automethod:: ndarray.any

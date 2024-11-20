@@ -7,5 +7,4 @@ dpnp.ndarray.argmax
 
 method
 
-.. automethod:: dpnp::ndarray.argmax
-
+.. automethod:: ndarray.argmax

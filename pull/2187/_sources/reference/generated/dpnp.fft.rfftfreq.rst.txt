@@ -7,5 +7,4 @@ dpnp.fft.rfftfreq
 
 
 
-.. autofunction:: dpnp::fft.rfftfreq
-
+.. autofunction:: rfftfreq

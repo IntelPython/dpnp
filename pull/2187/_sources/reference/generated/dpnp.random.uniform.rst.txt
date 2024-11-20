@@ -7,5 +7,4 @@ dpnp.random.uniform
 
 
 
-.. autofunction:: dpnp::random.uniform
-
+.. autofunction:: uniform

@@ -7,5 +7,4 @@ dpnp.byte\_bounds
 
 
 
-.. autofunction:: dpnp::byte_bounds
-
+.. autofunction:: byte_bounds

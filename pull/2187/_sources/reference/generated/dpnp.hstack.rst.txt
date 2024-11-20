@@ -7,5 +7,4 @@ dpnp.hstack
 
 
 
-.. autofunction:: dpnp::hstack
-
+.. autofunction:: hstack

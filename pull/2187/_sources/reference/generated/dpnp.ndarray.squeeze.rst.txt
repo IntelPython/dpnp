@@ -7,5 +7,4 @@ dpnp.ndarray.squeeze
 
 method
 
-.. automethod:: dpnp::ndarray.squeeze
-
+.. automethod:: ndarray.squeeze

@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.sycl\_context
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.sycl_context
-
+.. autoproperty:: dpnp_array.sycl_context

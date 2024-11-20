@@ -7,5 +7,4 @@ dpnp.ndarray.conjugate
 
 method
 
-.. automethod:: dpnp::ndarray.conjugate
-
+.. automethod:: ndarray.conjugate

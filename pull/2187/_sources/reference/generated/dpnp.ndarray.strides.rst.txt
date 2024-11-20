@@ -11,5 +11,4 @@ dpnp.ndarray.strides
 property
 
 
-.. autoproperty:: dpnp::ndarray.strides
-
+.. autoproperty:: ndarray.strides

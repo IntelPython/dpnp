@@ -7,5 +7,4 @@ dpnp.cumlogsumexp
 
 
 
-.. autofunction:: dpnp::cumlogsumexp
-
+.. autofunction:: cumlogsumexp

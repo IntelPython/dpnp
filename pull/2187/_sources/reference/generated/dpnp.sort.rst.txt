@@ -7,5 +7,4 @@ dpnp.sort
 
 
 
-.. autofunction:: dpnp::sort
-
+.. autofunction:: sort

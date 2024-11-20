@@ -7,5 +7,4 @@ dpnp.copy
 
 
 
-.. autofunction:: dpnp::copy
-
+.. autofunction:: copy

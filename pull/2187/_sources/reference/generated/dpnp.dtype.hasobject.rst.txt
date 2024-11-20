@@ -7,5 +7,4 @@ dpnp.dtype.hasobject
 
 attribute
 
-.. autoattribute:: dpnp::dtype.hasobject
-
+.. autoattribute:: dtype.hasobject

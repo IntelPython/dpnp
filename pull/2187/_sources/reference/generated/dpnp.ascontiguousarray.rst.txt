@@ -7,5 +7,4 @@ dpnp.ascontiguousarray
 
 
 
-.. autofunction:: dpnp::ascontiguousarray
-
+.. autofunction:: ascontiguousarray

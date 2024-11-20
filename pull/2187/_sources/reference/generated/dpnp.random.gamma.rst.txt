@@ -7,5 +7,4 @@ dpnp.random.gamma
 
 
 
-.. autofunction:: dpnp::random.gamma
-
+.. autofunction:: gamma

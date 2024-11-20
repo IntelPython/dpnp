@@ -7,5 +7,4 @@ dpnp.resize
 
 
 
-.. autofunction:: dpnp::resize
-
+.. autofunction:: resize

@@ -7,5 +7,4 @@ dpnp.random.dirichlet
 
 
 
-.. autofunction:: dpnp::random.dirichlet
-
+.. autofunction:: dirichlet

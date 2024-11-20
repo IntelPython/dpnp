@@ -7,5 +7,4 @@ dpnp.random.noncentral\_f
 
 
 
-.. autofunction:: dpnp::random.noncentral_f
-
+.. autofunction:: noncentral_f

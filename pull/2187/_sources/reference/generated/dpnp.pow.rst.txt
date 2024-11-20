@@ -7,5 +7,4 @@ dpnp.pow
 
 
 
-.. autofunction:: dpnp::pow
-
+.. autofunction:: pow

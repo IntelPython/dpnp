@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_copy\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__copy__
-
+.. automethod:: ndarray.__copy__

@@ -7,5 +7,4 @@ dpnp.kron
 
 
 
-.. autofunction:: dpnp::kron
-
+.. autofunction:: kron

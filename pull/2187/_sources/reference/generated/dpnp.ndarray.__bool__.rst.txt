@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_bool\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__bool__
-
+.. automethod:: ndarray.__bool__

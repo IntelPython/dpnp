@@ -7,5 +7,4 @@ dpnp.ndarray.prod
 
 method
 
-.. automethod:: dpnp::ndarray.prod
-
+.. automethod:: ndarray.prod

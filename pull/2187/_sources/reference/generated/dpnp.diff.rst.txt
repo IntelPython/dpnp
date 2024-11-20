@@ -7,5 +7,4 @@ dpnp.diff
 
 
 
-.. autofunction:: dpnp::diff
-
+.. autofunction:: diff

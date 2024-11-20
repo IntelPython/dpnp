@@ -7,5 +7,4 @@ dpnp.random.laplace
 
 
 
-.. autofunction:: dpnp::random.laplace
-
+.. autofunction:: laplace

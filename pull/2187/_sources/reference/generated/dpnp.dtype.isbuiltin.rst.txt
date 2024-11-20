@@ -7,5 +7,4 @@ dpnp.dtype.isbuiltin
 
 attribute
 
-.. autoattribute:: dpnp::dtype.isbuiltin
-
+.. autoattribute:: dtype.isbuiltin

@@ -7,5 +7,4 @@ dpnp.random.standard\_t
 
 
 
-.. autofunction:: dpnp::random.standard_t
-
+.. autofunction:: standard_t

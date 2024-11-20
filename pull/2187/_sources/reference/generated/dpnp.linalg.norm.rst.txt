@@ -7,5 +7,4 @@ dpnp.linalg.norm
 
 
 
-.. autofunction:: dpnp::linalg.norm
-
+.. autofunction:: norm

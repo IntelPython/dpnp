@@ -7,5 +7,4 @@ dpnp.result\_type
 
 
 
-.. autofunction:: dpnp::result_type
-
+.. autofunction:: result_type

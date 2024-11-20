@@ -7,5 +7,4 @@ dpnp.nanstd
 
 
 
-.. autofunction:: dpnp::nanstd
-
+.. autofunction:: nanstd

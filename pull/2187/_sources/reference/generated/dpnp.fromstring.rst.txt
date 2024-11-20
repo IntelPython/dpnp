@@ -7,5 +7,4 @@ dpnp.fromstring
 
 
 
-.. autofunction:: dpnp::fromstring
-
+.. autofunction:: fromstring

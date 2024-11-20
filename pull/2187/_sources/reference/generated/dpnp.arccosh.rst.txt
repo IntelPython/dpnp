@@ -7,5 +7,4 @@ dpnp.arccosh
 
 
 
-.. autofunction:: dpnp::arccosh
-
+.. autofunction:: arccosh

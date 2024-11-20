@@ -7,5 +7,4 @@ dpnp.ediff1d
 
 
 
-.. autofunction:: dpnp::ediff1d
-
+.. autofunction:: ediff1d

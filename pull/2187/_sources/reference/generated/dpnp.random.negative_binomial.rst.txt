@@ -7,5 +7,4 @@ dpnp.random.negative\_binomial
 
 
 
-.. autofunction:: dpnp::random.negative_binomial
-
+.. autofunction:: negative_binomial

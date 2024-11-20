@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_rand\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__rand__
-
+.. automethod:: ndarray.__rand__

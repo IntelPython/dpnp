@@ -7,5 +7,4 @@ dpnp.conj
 
 
 
-.. autofunction:: dpnp::conj
-
+.. autofunction:: conj

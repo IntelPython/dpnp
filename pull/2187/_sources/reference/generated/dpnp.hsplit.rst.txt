@@ -7,5 +7,4 @@ dpnp.hsplit
 
 
 
-.. autofunction:: dpnp::hsplit
-
+.. autofunction:: hsplit

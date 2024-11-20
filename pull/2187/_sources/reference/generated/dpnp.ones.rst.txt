@@ -7,5 +7,4 @@ dpnp.ones
 
 
 
-.. autofunction:: dpnp::ones
-
+.. autofunction:: ones

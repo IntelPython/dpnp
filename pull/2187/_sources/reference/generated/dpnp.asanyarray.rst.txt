@@ -7,5 +7,4 @@ dpnp.asanyarray
 
 
 
-.. autofunction:: dpnp::asanyarray
-
+.. autofunction:: asanyarray

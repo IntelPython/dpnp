@@ -7,5 +7,4 @@ dpnp.random.shuffle
 
 
 
-.. autofunction:: dpnp::random.shuffle
-
+.. autofunction:: shuffle

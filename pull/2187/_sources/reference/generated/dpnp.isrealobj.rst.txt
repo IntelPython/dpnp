@@ -7,5 +7,4 @@ dpnp.isrealobj
 
 
 
-.. autofunction:: dpnp::isrealobj
-
+.. autofunction:: isrealobj

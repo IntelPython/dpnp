@@ -7,5 +7,4 @@ dpnp.trapezoid
 
 
 
-.. autofunction:: dpnp::trapezoid
-
+.. autofunction:: trapezoid

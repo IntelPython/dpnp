@@ -7,5 +7,4 @@ dpnp.split
 
 
 
-.. autofunction:: dpnp::split
-
+.. autofunction:: split

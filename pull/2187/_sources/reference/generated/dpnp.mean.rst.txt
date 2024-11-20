@@ -7,5 +7,4 @@ dpnp.mean
 
 
 
-.. autofunction:: dpnp::mean
-
+.. autofunction:: mean

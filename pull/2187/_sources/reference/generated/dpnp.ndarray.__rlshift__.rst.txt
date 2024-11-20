@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_rlshift\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__rlshift__
-
+.. automethod:: ndarray.__rlshift__

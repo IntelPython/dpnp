@@ -7,5 +7,4 @@ dpnp.lcm
 
 
 
-.. autofunction:: dpnp::lcm
-
+.. autofunction:: lcm

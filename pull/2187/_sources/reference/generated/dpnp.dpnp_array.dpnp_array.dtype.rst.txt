@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.dtype
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.dtype
-
+.. autoproperty:: dpnp_array.dtype

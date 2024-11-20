@@ -7,5 +7,4 @@ dpnp.cosh
 
 
 
-.. autofunction:: dpnp::cosh
-
+.. autofunction:: cosh

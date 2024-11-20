@@ -7,5 +7,4 @@ dpnp.array\_split
 
 
 
-.. autofunction:: dpnp::array_split
-
+.. autofunction:: array_split

@@ -7,5 +7,4 @@ dpnp.exp2
 
 
 
-.. autofunction:: dpnp::exp2
-
+.. autofunction:: exp2

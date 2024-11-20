@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.flags
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.flags
-
+.. autoproperty:: dpnp_array.flags

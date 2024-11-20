@@ -7,5 +7,4 @@ dpnp.dot
 
 
 
-.. autofunction:: dpnp::dot
-
+.. autofunction:: dot

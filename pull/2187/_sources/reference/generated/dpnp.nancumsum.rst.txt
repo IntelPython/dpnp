@@ -7,5 +7,4 @@ dpnp.nancumsum
 
 
 
-.. autofunction:: dpnp::nancumsum
-
+.. autofunction:: nancumsum

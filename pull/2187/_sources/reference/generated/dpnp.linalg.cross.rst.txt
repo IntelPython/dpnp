@@ -7,5 +7,4 @@ dpnp.linalg.cross
 
 
 
-.. autofunction:: dpnp::linalg.cross
-
+.. autofunction:: cross

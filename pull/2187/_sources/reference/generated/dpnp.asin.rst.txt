@@ -7,5 +7,4 @@ dpnp.asin
 
 
 
-.. autofunction:: dpnp::asin
-
+.. autofunction:: asin

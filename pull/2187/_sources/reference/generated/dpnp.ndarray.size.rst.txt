@@ -11,5 +11,4 @@ dpnp.ndarray.size
 property
 
 
-.. autoproperty:: dpnp::ndarray.size
-
+.. autoproperty:: ndarray.size

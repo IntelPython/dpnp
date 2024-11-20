@@ -7,5 +7,4 @@ dpnp.concatenate
 
 
 
-.. autofunction:: dpnp::concatenate
-
+.. autofunction:: concatenate

@@ -7,5 +7,4 @@ dpnp.copysign
 
 
 
-.. autofunction:: dpnp::copysign
-
+.. autofunction:: copysign

@@ -7,5 +7,4 @@ dpnp.linalg.tensorsolve
 
 
 
-.. autofunction:: dpnp::linalg.tensorsolve
-
+.. autofunction:: tensorsolve

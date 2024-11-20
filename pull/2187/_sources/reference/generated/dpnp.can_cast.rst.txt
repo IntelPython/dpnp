@@ -7,5 +7,4 @@ dpnp.can\_cast
 
 
 
-.. autofunction:: dpnp::can_cast
-
+.. autofunction:: can_cast

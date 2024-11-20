@@ -7,5 +7,4 @@ dpnp.argsort
 
 
 
-.. autofunction:: dpnp::argsort
-
+.. autofunction:: argsort

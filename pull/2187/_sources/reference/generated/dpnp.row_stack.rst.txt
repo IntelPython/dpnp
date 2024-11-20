@@ -7,5 +7,4 @@ dpnp.row\_stack
 
 
 
-.. autofunction:: dpnp::row_stack
-
+.. autofunction:: row_stack

@@ -7,5 +7,4 @@ dpnp.place
 
 
 
-.. autofunction:: dpnp::place
-
+.. autofunction:: place

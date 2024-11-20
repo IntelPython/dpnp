@@ -7,5 +7,4 @@ dpnp.fft.ifftshift
 
 
 
-.. autofunction:: dpnp::fft.ifftshift
-
+.. autofunction:: ifftshift

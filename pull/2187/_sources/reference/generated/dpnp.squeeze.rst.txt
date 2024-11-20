@@ -7,5 +7,4 @@ dpnp.squeeze
 
 
 
-.. autofunction:: dpnp::squeeze
-
+.. autofunction:: squeeze

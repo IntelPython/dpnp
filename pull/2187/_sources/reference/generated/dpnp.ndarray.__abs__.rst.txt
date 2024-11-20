@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_abs\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__abs__
-
+.. automethod:: ndarray.__abs__

@@ -7,5 +7,4 @@ dpnp.dtype.shape
 
 attribute
 
-.. autoattribute:: dpnp::dtype.shape
-
+.. autoattribute:: dtype.shape

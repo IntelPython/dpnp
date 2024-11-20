@@ -7,5 +7,4 @@ dpnp.acosh
 
 
 
-.. autofunction:: dpnp::acosh
-
+.. autofunction:: acosh

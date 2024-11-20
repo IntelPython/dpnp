@@ -7,5 +7,4 @@ dpnp.random.RandomState.get\_state
 
 method
 
-.. automethod:: dpnp::random.RandomState.get_state
-
+.. automethod:: RandomState.get_state

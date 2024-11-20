@@ -7,5 +7,4 @@ dpnp.linalg.matmul
 
 
 
-.. autofunction:: dpnp::linalg.matmul
-
+.. autofunction:: matmul

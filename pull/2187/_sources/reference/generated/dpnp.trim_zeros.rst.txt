@@ -7,5 +7,4 @@ dpnp.trim\_zeros
 
 
 
-.. autofunction:: dpnp::trim_zeros
-
+.. autofunction:: trim_zeros

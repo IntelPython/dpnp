@@ -7,5 +7,4 @@ dpnp.random.RandomState.get\_sycl\_device
 
 method
 
-.. automethod:: dpnp::random.RandomState.get_sycl_device
-
+.. automethod:: RandomState.get_sycl_device

@@ -7,5 +7,4 @@ dpnp.where
 
 
 
-.. autofunction:: dpnp::where
-
+.. autofunction:: where

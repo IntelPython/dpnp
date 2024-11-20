@@ -7,5 +7,4 @@ dpnp.sign
 
 
 
-.. autofunction:: dpnp::sign
-
+.. autofunction:: sign

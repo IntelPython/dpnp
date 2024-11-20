@@ -7,5 +7,4 @@ dpnp.median
 
 
 
-.. autofunction:: dpnp::median
-
+.. autofunction:: median

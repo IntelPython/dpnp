@@ -7,5 +7,4 @@ dpnp.dtype.ndim
 
 attribute
 
-.. autoattribute:: dpnp::dtype.ndim
-
+.. autoattribute:: dtype.ndim

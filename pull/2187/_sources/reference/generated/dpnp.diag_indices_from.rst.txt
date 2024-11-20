@@ -7,5 +7,4 @@ dpnp.diag\_indices\_from
 
 
 
-.. autofunction:: dpnp::diag_indices_from
-
+.. autofunction:: diag_indices_from

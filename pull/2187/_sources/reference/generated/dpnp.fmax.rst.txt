@@ -7,5 +7,4 @@ dpnp.fmax
 
 
 
-.. autofunction:: dpnp::fmax
-
+.. autofunction:: fmax

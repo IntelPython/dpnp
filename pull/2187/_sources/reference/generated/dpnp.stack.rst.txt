@@ -7,5 +7,4 @@ dpnp.stack
 
 
 
-.. autofunction:: dpnp::stack
-
+.. autofunction:: stack

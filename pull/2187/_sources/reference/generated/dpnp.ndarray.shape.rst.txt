@@ -11,5 +11,4 @@ dpnp.ndarray.shape
 property
 
 
-.. autoproperty:: dpnp::ndarray.shape
-
+.. autoproperty:: ndarray.shape

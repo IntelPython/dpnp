@@ -7,5 +7,4 @@ dpnp.divide
 
 
 
-.. autofunction:: dpnp::divide
-
+.. autofunction:: divide

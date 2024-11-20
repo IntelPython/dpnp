@@ -7,5 +7,4 @@ dpnp.reciprocal
 
 
 
-.. autofunction:: dpnp::reciprocal
-
+.. autofunction:: reciprocal

@@ -7,5 +7,4 @@ dpnp.nanvar
 
 
 
-.. autofunction:: dpnp::nanvar
-
+.. autofunction:: nanvar

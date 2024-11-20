@@ -7,5 +7,4 @@ dpnp.from\_dlpack
 
 
 
-.. autofunction:: dpnp::from_dlpack
-
+.. autofunction:: from_dlpack

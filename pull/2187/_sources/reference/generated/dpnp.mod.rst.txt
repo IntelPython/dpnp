@@ -7,5 +7,4 @@ dpnp.mod
 
 
 
-.. autofunction:: dpnp::mod
-
+.. autofunction:: mod

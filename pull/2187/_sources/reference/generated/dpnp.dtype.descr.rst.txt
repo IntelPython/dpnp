@@ -7,5 +7,4 @@ dpnp.dtype.descr
 
 attribute
 
-.. autoattribute:: dpnp::dtype.descr
-
+.. autoattribute:: dtype.descr

@@ -11,5 +11,4 @@ dpnp.ndarray.mT
 property
 
 
-.. autoproperty:: dpnp::ndarray.mT
-
+.. autoproperty:: ndarray.mT

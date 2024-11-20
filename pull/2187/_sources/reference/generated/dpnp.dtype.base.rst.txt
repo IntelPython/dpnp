@@ -7,5 +7,4 @@ dpnp.dtype.base
 
 attribute
 
-.. autoattribute:: dpnp::dtype.base
-
+.. autoattribute:: dtype.base

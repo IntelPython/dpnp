@@ -7,5 +7,4 @@ dpnp.ndarray.transpose
 
 method
 
-.. automethod:: dpnp::ndarray.transpose
-
+.. automethod:: ndarray.transpose

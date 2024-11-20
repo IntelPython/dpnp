@@ -7,5 +7,4 @@ dpnp.fft.rfft2
 
 
 
-.. autofunction:: dpnp::fft.rfft2
-
+.. autofunction:: rfft2

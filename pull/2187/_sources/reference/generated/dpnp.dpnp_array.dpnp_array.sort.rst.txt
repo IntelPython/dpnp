@@ -7,5 +7,4 @@ dpnp.dpnp\_array.dpnp\_array.sort
 
 method
 
-.. automethod:: dpnp::dpnp_array.dpnp_array.sort
-
+.. automethod:: dpnp_array.sort

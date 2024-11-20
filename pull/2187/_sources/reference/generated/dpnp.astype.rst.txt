@@ -7,5 +7,4 @@ dpnp.astype
 
 
 
-.. autofunction:: dpnp::astype
-
+.. autofunction:: astype

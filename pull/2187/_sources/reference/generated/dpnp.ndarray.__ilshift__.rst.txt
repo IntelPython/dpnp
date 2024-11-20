@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_ilshift\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__ilshift__
-
+.. automethod:: ndarray.__ilshift__

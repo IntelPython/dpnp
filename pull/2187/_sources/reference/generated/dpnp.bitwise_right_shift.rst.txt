@@ -7,5 +7,4 @@ dpnp.bitwise\_right\_shift
 
 
 
-.. autofunction:: dpnp::bitwise_right_shift
-
+.. autofunction:: bitwise_right_shift

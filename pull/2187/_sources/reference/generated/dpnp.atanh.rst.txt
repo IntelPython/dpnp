@@ -7,5 +7,4 @@ dpnp.atanh
 
 
 
-.. autofunction:: dpnp::atanh
-
+.. autofunction:: atanh

@@ -7,5 +7,4 @@ dpnp.binary\_repr
 
 
 
-.. autofunction:: dpnp::binary_repr
-
+.. autofunction:: binary_repr

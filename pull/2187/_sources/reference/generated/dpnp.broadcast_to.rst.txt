@@ -7,5 +7,4 @@ dpnp.broadcast\_to
 
 
 
-.. autofunction:: dpnp::broadcast_to
-
+.. autofunction:: broadcast_to

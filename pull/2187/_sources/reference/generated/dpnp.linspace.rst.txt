@@ -7,5 +7,4 @@ dpnp.linspace
 
 
 
-.. autofunction:: dpnp::linspace
-
+.. autofunction:: linspace

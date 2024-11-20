@@ -7,5 +7,4 @@ dpnp.dpnp\_array.dpnp\_array.all
 
 method
 
-.. automethod:: dpnp::dpnp_array.dpnp_array.all
-
+.. automethod:: dpnp_array.all

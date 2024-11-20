@@ -7,5 +7,4 @@ dpnp.ndarray.searchsorted
 
 method
 
-.. automethod:: dpnp::ndarray.searchsorted
-
+.. automethod:: ndarray.searchsorted

@@ -7,5 +7,4 @@ dpnp.linalg.inv
 
 
 
-.. autofunction:: dpnp::linalg.inv
-
+.. autofunction:: inv

@@ -7,5 +7,4 @@ dpnp.logsumexp
 
 
 
-.. autofunction:: dpnp::logsumexp
-
+.. autofunction:: logsumexp

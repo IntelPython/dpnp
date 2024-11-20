@@ -7,5 +7,4 @@ dpnp.arange
 
 
 
-.. autofunction:: dpnp::arange
-
+.. autofunction:: arange

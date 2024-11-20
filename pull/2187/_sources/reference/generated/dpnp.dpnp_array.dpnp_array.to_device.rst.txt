@@ -7,5 +7,4 @@ dpnp.dpnp\_array.dpnp\_array.to\_device
 
 method
 
-.. automethod:: dpnp::dpnp_array.dpnp_array.to_device
-
+.. automethod:: dpnp_array.to_device

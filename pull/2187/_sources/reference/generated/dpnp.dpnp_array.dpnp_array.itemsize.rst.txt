@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.itemsize
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.itemsize
-
+.. autoproperty:: dpnp_array.itemsize

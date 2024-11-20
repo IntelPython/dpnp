@@ -7,5 +7,4 @@ dpnp.linalg.qr
 
 
 
-.. autofunction:: dpnp::linalg.qr
-
+.. autofunction:: qr

@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.imag
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.imag
-
+.. autoproperty:: dpnp_array.imag

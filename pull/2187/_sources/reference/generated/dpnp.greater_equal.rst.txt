@@ -7,5 +7,4 @@ dpnp.greater\_equal
 
 
 
-.. autofunction:: dpnp::greater_equal
-
+.. autofunction:: greater_equal

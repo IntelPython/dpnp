@@ -7,5 +7,4 @@ dpnp.random.randn
 
 
 
-.. autofunction:: dpnp::random.randn
-
+.. autofunction:: randn

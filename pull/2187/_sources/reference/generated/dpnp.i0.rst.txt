@@ -7,5 +7,4 @@ dpnp.i0
 
 
 
-.. autofunction:: dpnp::i0
-
+.. autofunction:: i0

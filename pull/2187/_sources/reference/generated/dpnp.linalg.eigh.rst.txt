@@ -7,5 +7,4 @@ dpnp.linalg.eigh
 
 
 
-.. autofunction:: dpnp::linalg.eigh
-
+.. autofunction:: eigh

@@ -7,5 +7,4 @@ dpnp.corrcoef
 
 
 
-.. autofunction:: dpnp::corrcoef
-
+.. autofunction:: corrcoef

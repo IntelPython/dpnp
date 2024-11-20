@@ -7,5 +7,4 @@ dpnp.ndarray.to\_device
 
 method
 
-.. automethod:: dpnp::ndarray.to_device
-
+.. automethod:: ndarray.to_device

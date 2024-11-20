@@ -11,5 +11,4 @@ dpnp.ndarray.sycl\_queue
 property
 
 
-.. autoproperty:: dpnp::ndarray.sycl_queue
-
+.. autoproperty:: ndarray.sycl_queue

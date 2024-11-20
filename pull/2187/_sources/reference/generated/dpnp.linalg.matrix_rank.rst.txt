@@ -7,5 +7,4 @@ dpnp.linalg.matrix\_rank
 
 
 
-.. autofunction:: dpnp::linalg.matrix_rank
-
+.. autofunction:: matrix_rank

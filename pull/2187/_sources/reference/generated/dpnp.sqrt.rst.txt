@@ -7,5 +7,4 @@ dpnp.sqrt
 
 
 
-.. autofunction:: dpnp::sqrt
-
+.. autofunction:: sqrt

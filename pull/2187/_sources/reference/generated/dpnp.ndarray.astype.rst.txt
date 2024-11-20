@@ -7,5 +7,4 @@ dpnp.ndarray.astype
 
 method
 
-.. automethod:: dpnp::ndarray.astype
-
+.. automethod:: ndarray.astype

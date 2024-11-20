@@ -7,5 +7,4 @@ dpnp.random.hypergeometric
 
 
 
-.. autofunction:: dpnp::random.hypergeometric
-
+.. autofunction:: hypergeometric

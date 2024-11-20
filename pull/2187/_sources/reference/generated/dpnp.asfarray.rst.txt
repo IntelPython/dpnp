@@ -7,5 +7,4 @@ dpnp.asfarray
 
 
 
-.. autofunction:: dpnp::asfarray
-
+.. autofunction:: asfarray

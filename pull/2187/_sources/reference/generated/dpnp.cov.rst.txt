@@ -7,5 +7,4 @@ dpnp.cov
 
 
 
-.. autofunction:: dpnp::cov
-
+.. autofunction:: cov

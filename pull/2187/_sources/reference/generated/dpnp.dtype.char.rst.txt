@@ -7,5 +7,4 @@ dpnp.dtype.char
 
 attribute
 
-.. autoattribute:: dpnp::dtype.char
-
+.. autoattribute:: dtype.char

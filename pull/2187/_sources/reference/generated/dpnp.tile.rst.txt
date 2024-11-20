@@ -7,5 +7,4 @@ dpnp.tile
 
 
 
-.. autofunction:: dpnp::tile
-
+.. autofunction:: tile

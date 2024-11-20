@@ -7,5 +7,4 @@ dpnp.linalg.eig
 
 
 
-.. autofunction:: dpnp::linalg.eig
-
+.. autofunction:: eig

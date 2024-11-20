@@ -7,5 +7,4 @@ dpnp.power
 
 
 
-.. autofunction:: dpnp::power
-
+.. autofunction:: power

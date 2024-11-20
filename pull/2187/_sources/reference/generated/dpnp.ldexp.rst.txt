@@ -7,5 +7,4 @@ dpnp.ldexp
 
 
 
-.. autofunction:: dpnp::ldexp
-
+.. autofunction:: ldexp

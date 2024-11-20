@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.ndim
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.ndim
-
+.. autoproperty:: dpnp_array.ndim

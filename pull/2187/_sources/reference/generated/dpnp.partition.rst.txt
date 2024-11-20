@@ -7,5 +7,4 @@ dpnp.partition
 
 
 
-.. autofunction:: dpnp::partition
-
+.. autofunction:: partition

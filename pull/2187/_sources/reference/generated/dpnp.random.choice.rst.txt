@@ -7,5 +7,4 @@ dpnp.random.choice
 
 
 
-.. autofunction:: dpnp::random.choice
-
+.. autofunction:: choice

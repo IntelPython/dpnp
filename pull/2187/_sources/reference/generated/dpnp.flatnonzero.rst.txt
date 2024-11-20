@@ -7,5 +7,4 @@ dpnp.flatnonzero
 
 
 
-.. autofunction:: dpnp::flatnonzero
-
+.. autofunction:: flatnonzero

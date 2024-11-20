@@ -7,5 +7,4 @@ dpnp.linalg.svd
 
 
 
-.. autofunction:: dpnp::linalg.svd
-
+.. autofunction:: svd

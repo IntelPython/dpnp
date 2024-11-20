@@ -7,5 +7,4 @@ dpnp.ndarray.\_\_rfloordiv\_\_
 
 method
 
-.. automethod:: dpnp::ndarray.__rfloordiv__
-
+.. automethod:: ndarray.__rfloordiv__

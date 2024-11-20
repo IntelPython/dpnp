@@ -7,5 +7,4 @@ dpnp.broadcast\_shapes
 
 
 
-.. autofunction:: dpnp::broadcast_shapes
-
+.. autofunction:: broadcast_shapes

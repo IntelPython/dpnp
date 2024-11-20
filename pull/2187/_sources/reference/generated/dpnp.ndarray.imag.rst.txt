@@ -11,5 +11,4 @@ dpnp.ndarray.imag
 property
 
 
-.. autoproperty:: dpnp::ndarray.imag
-
+.. autoproperty:: ndarray.imag

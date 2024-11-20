@@ -7,5 +7,4 @@ dpnp.random.standard\_normal
 
 
 
-.. autofunction:: dpnp::random.standard_normal
-
+.. autofunction:: standard_normal

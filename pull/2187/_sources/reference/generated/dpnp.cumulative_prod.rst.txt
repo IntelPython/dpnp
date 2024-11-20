@@ -7,5 +7,4 @@ dpnp.cumulative\_prod
 
 
 
-.. autofunction:: dpnp::cumulative_prod
-
+.. autofunction:: cumulative_prod

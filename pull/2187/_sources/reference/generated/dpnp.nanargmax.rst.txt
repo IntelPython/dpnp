@@ -7,5 +7,4 @@ dpnp.nanargmax
 
 
 
-.. autofunction:: dpnp::nanargmax
-
+.. autofunction:: nanargmax

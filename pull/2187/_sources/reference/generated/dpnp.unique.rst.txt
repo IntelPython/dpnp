@@ -7,5 +7,4 @@ dpnp.unique
 
 
 
-.. autofunction:: dpnp::unique
-
+.. autofunction:: unique

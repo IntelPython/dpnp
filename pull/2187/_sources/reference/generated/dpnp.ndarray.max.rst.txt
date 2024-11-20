@@ -7,5 +7,4 @@ dpnp.ndarray.max
 
 method
 
-.. automethod:: dpnp::ndarray.max
-
+.. automethod:: ndarray.max

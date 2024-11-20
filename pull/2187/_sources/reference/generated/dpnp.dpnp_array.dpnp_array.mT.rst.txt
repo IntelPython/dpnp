@@ -11,5 +11,4 @@ dpnp.dpnp\_array.dpnp\_array.mT
 property
 
 
-.. autoproperty:: dpnp::dpnp_array.dpnp_array.mT
-
+.. autoproperty:: dpnp_array.mT
