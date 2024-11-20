@@ -1,6 +1,10 @@
-﻿dpnp.linalg.matmul
+﻿
+
+dpnp.linalg.matmul
 ==================
 
 .. currentmodule:: dpnp.linalg
+
+
 
 .. autofunction:: matmul

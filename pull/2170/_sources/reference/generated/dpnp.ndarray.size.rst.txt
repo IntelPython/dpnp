@@ -1,6 +1,14 @@
-﻿dpnp.ndarray.size
+
+:orphan:
+
+
+dpnp.ndarray.size
 =================
 
 .. currentmodule:: dpnp
+
+
+property
+
 
 .. autoproperty:: ndarray.size

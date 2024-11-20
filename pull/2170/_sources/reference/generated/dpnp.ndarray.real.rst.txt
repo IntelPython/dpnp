@@ -1,6 +1,14 @@
-﻿dpnp.ndarray.real
+
+:orphan:
+
+
+dpnp.ndarray.real
 =================
 
 .. currentmodule:: dpnp
+
+
+property
+
 
 .. autoproperty:: ndarray.real

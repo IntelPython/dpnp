@@ -1,6 +1,10 @@
-﻿dpnp.random.rand
+﻿
+
+dpnp.random.rand
 ================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: rand

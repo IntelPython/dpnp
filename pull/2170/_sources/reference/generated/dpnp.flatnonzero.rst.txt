@@ -1,6 +1,10 @@
-﻿dpnp.flatnonzero
+﻿
+
+dpnp.flatnonzero
 ================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: flatnonzero

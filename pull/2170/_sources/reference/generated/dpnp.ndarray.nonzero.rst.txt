@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.nonzero
+:orphan:
+
+dpnp.ndarray.nonzero
 ====================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.nonzero

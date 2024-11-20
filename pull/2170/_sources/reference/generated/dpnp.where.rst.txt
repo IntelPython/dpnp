@@ -1,6 +1,10 @@
-﻿dpnp.where
+﻿
+
+dpnp.where
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: where

@@ -1,6 +1,10 @@
-﻿dpnp.cumlogsumexp
+﻿
+
+dpnp.cumlogsumexp
 =================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: cumlogsumexp
