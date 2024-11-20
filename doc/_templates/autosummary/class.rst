@@ -1,53 +1,27 @@
-{{ fullname }}
-{{ underline }}
-
-.. currentmodule:: {{ module }}
-
-.. autoclass:: {{ objname }}
-
-   ..
-      Methods
+{% extends "!autosummary/class.rst" %}
 
 {% block methods %}
-
-   .. rubric:: Methods
-
-   ..
-      Special methods
-
-{% for item in ('__getitem__', '__setitem__', '__len__', '__next__', '__iter__') %}
-{% if item in all_methods or item in all_attributes %}
-   .. automethod:: {{ item }}
+{% if methods %}
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      {% for item in all_methods %}
+         {%- if not item.startswith('_') or item in ['__call__'] %}
+         {{ name }}.{{ item }}
+         {%- endif -%}
+      {%- endfor %}
 {% endif %}
-{%- endfor %}
-
-   ..
-      Ordinary methods
-
-{% for item in methods %}
-{% if item not in ('__init__',) %}
-   .. automethod:: {{ item }}
-{% endif %}
-{%- endfor %}
-
-   ..
-      Special methods
-
-{% for item in ('__eq__', '__ne__', '__lt__', '__le__', '__gt__', '__ge__') %}
-{% if item in all_methods %}
-   .. automethod:: {{ item }}
-{% endif %}
-{%- endfor %}
 {% endblock %}
 
-   ..
-      Attributes
-
-{% block attributes %} {% if attributes %}
-
-   .. rubric:: Attributes
-
-{% for item in attributes %}
-   .. autoattribute:: {{ item }}
-{%- endfor %}
-{% endif %} {% endblock %}
+{% block attributes %}
+{% if attributes %}
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      {% for item in all_attributes %}
+         {%- if not item.startswith('_') %}
+         {{ name }}.{{ item }}
+         {%- endif -%}
+      {%- endfor %}
+{% endif %}
+{% endblock %}
