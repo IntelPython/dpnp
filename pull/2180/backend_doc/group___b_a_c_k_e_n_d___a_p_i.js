@@ -1,6 +1,7 @@
 var group___b_a_c_k_e_n_d___a_p_i =
 [
     [ "dpnp_choose_c", "group___b_a_c_k_e_n_d___a_p_i.html#gade43dedf9297ae8a75c812cf1e59d2c1", null ],
+    [ "dpnp_correlate_c", "group___b_a_c_k_e_n_d___a_p_i.html#gac8a963ba01536cad42b8a42d8250314b", null ],
     [ "dpnp_dot_c", "group___b_a_c_k_e_n_d___a_p_i.html#gaddbabf7c091b81ba8ce90ebc54cdffc8", null ],
     [ "dpnp_initval_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2c1f63f22354673088112c4f248c98a2", null ],
     [ "dpnp_memory_alloc_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab577c1444f9e878b90162013bf2c4591", null ],
