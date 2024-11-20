@@ -1,0 +1,15 @@
+
+:orphan:
+
+
+dpnp.ndarray.nbytes
+===================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: dpnp::ndarray.nbytes
+

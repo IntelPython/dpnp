@@ -1,0 +1,11 @@
+﻿
+
+dpnp.asanyarray
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::asanyarray
+

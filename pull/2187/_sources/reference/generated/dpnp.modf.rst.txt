@@ -1,0 +1,11 @@
+﻿
+
+dpnp.modf
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::modf
+

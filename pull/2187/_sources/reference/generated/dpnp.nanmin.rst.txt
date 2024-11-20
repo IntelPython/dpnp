@@ -1,0 +1,11 @@
+﻿
+
+dpnp.nanmin
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::nanmin
+

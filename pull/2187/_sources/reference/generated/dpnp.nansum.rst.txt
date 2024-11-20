@@ -1,0 +1,11 @@
+﻿
+
+dpnp.nansum
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::nansum
+

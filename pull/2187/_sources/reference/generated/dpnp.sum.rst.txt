@@ -1,0 +1,11 @@
+﻿
+
+dpnp.sum
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::sum
+

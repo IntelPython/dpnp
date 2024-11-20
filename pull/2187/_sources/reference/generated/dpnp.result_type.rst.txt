@@ -1,0 +1,11 @@
+﻿
+
+dpnp.result\_type
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::result_type
+

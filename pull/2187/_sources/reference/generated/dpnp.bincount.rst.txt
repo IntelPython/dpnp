@@ -1,0 +1,11 @@
+﻿
+
+dpnp.bincount
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::bincount
+

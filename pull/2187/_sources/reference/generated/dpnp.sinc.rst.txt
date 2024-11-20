@@ -1,0 +1,11 @@
+﻿
+
+dpnp.sinc
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::sinc
+

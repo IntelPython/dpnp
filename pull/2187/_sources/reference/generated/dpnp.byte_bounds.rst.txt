@@ -1,0 +1,11 @@
+﻿
+
+dpnp.byte\_bounds
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::byte_bounds
+

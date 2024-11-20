@@ -1,0 +1,11 @@
+﻿
+
+dpnp.where
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::where
+

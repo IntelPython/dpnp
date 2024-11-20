@@ -1,0 +1,11 @@
+﻿
+
+dpnp.tril
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::tril
+

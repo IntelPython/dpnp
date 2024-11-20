@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fft.ifftshift
+==================
+
+.. currentmodule:: dpnp.fft
+
+
+
+.. autofunction:: dpnp::fft.ifftshift
+

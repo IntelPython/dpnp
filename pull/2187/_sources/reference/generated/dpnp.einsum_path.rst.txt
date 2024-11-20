@@ -1,0 +1,11 @@
+﻿
+
+dpnp.einsum\_path
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::einsum_path
+

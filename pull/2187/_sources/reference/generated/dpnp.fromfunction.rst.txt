@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fromfunction
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::fromfunction
+

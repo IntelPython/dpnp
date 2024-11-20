@@ -1,0 +1,11 @@
+﻿
+
+dpnp.nanstd
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::nanstd
+

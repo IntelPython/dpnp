@@ -1,0 +1,11 @@
+﻿
+
+dpnp.vander
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::vander
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.linalg.det
+===============
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: dpnp::linalg.det
+

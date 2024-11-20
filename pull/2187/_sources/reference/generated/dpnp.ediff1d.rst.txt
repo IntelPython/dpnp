@@ -1,0 +1,11 @@
+﻿
+
+dpnp.ediff1d
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::ediff1d
+

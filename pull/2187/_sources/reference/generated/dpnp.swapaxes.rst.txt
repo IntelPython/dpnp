@@ -1,0 +1,11 @@
+﻿
+
+dpnp.swapaxes
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::swapaxes
+

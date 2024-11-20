@@ -1,0 +1,11 @@
+﻿
+
+dpnp.ogrid
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autodata:: dpnp::ogrid
+

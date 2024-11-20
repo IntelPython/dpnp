@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.get\_array
+=======================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.get_array
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.loadtxt
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::loadtxt
+

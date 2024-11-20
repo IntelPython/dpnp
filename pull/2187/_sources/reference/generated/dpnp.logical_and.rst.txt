@@ -1,0 +1,11 @@
+﻿
+
+dpnp.logical\_and
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::logical_and
+

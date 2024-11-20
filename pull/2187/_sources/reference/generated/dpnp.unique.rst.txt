@@ -1,0 +1,11 @@
+﻿
+
+dpnp.unique
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::unique
+

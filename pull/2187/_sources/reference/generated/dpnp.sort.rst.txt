@@ -1,0 +1,11 @@
+﻿
+
+dpnp.sort
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::sort
+

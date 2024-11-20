@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.round
+==================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.round
+

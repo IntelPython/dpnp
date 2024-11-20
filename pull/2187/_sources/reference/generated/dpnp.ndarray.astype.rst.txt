@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.astype
+===================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.astype
+

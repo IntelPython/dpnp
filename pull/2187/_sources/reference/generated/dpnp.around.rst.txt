@@ -1,0 +1,11 @@
+﻿
+
+dpnp.around
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::around
+

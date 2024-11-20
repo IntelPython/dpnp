@@ -1,0 +1,11 @@
+﻿
+
+dpnp.stack
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::stack
+

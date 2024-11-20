@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fliplr
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::fliplr
+

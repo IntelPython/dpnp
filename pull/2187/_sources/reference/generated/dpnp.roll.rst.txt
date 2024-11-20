@@ -1,0 +1,11 @@
+﻿
+
+dpnp.roll
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::roll
+

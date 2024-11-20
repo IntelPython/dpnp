@@ -1,0 +1,11 @@
+﻿
+
+dpnp.finfo
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::finfo
+

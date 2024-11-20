@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.to\_device
+=======================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.to_device
+

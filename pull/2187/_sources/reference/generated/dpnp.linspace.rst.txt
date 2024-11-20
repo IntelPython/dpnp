@@ -1,0 +1,11 @@
+﻿
+
+dpnp.linspace
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::linspace
+

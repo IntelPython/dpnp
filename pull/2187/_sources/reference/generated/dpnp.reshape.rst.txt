@@ -1,0 +1,11 @@
+﻿
+
+dpnp.reshape
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::reshape
+

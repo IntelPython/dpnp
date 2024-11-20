@@ -1,0 +1,11 @@
+﻿
+
+dpnp.heaviside
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::heaviside
+

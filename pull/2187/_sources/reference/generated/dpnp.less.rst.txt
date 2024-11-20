@@ -1,0 +1,11 @@
+﻿
+
+dpnp.less
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::less
+

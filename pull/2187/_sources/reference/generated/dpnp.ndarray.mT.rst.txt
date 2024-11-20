@@ -1,0 +1,15 @@
+
+:orphan:
+
+
+dpnp.ndarray.mT
+===============
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: dpnp::ndarray.mT
+

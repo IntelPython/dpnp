@@ -1,0 +1,11 @@
+﻿
+
+dpnp.triu\_indices\_from
+========================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::triu_indices_from
+

@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.dtype.metadata
+===================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dpnp::dtype.metadata
+

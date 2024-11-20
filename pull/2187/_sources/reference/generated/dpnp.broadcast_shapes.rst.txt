@@ -1,0 +1,11 @@
+﻿
+
+dpnp.broadcast\_shapes
+======================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::broadcast_shapes
+

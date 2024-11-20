@@ -1,0 +1,11 @@
+﻿
+
+dpnp.divide
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::divide
+

@@ -1,0 +1,15 @@
+
+:orphan:
+
+
+dpnp.dpnp\_array.dpnp\_array.shape
+==================================
+
+.. currentmodule:: dpnp.dpnp_array
+
+
+property
+
+
+.. autoproperty:: dpnp::dpnp_array.dpnp_array.shape
+

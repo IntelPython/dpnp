@@ -1,0 +1,11 @@
+﻿
+
+dpnp.tril\_indices
+==================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::tril_indices
+

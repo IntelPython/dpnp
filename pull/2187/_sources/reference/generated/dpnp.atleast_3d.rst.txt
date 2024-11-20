@@ -1,0 +1,11 @@
+﻿
+
+dpnp.atleast\_3d
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::atleast_3d
+

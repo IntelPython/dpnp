@@ -1,0 +1,11 @@
+﻿
+
+dpnp.dot
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::dot
+

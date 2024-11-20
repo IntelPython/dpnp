@@ -1,0 +1,11 @@
+﻿
+
+dpnp.atleast\_1d
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::atleast_1d
+

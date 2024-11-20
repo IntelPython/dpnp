@@ -1,0 +1,11 @@
+﻿
+
+dpnp.clip
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::clip
+

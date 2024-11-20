@@ -1,0 +1,11 @@
+﻿
+
+dpnp.positive
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::positive
+

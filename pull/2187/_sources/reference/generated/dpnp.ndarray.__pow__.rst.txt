@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_pow\_\_
+========================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__pow__
+

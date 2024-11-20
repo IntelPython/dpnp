@@ -1,0 +1,11 @@
+﻿
+
+dpnp.apply\_over\_axes
+======================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::apply_over_axes
+

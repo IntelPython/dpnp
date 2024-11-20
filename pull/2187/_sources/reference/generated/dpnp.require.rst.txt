@@ -1,0 +1,11 @@
+﻿
+
+dpnp.require
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::require
+

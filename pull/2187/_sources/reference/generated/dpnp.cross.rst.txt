@@ -1,0 +1,11 @@
+﻿
+
+dpnp.cross
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::cross
+

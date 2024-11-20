@@ -1,0 +1,11 @@
+﻿
+
+dpnp.atan2
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::atan2
+

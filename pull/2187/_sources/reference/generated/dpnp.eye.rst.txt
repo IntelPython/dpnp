@@ -1,0 +1,11 @@
+﻿
+
+dpnp.eye
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::eye
+

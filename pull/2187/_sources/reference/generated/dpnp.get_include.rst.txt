@@ -1,0 +1,11 @@
+﻿
+
+dpnp.get\_include
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::get_include
+

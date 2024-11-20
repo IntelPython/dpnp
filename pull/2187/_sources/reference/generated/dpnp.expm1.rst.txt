@@ -1,0 +1,11 @@
+﻿
+
+dpnp.expm1
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::expm1
+

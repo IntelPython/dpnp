@@ -1,0 +1,11 @@
+﻿
+
+dpnp.select
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::select
+

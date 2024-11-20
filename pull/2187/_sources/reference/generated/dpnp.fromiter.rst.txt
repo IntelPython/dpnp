@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fromiter
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::fromiter
+

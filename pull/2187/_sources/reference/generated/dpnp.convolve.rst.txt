@@ -1,0 +1,11 @@
+﻿
+
+dpnp.convolve
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::convolve
+

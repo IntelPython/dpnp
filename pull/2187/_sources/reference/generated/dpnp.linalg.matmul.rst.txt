@@ -1,0 +1,11 @@
+﻿
+
+dpnp.linalg.matmul
+==================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: dpnp::linalg.matmul
+

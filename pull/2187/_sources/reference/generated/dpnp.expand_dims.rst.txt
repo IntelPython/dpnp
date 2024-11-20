@@ -1,0 +1,11 @@
+﻿
+
+dpnp.expand\_dims
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::expand_dims
+

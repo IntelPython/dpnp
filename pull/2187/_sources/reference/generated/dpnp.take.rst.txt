@@ -1,0 +1,11 @@
+﻿
+
+dpnp.take
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::take
+

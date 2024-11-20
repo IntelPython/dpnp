@@ -1,0 +1,11 @@
+﻿
+
+dpnp.random.gamma
+=================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: dpnp::random.gamma
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.asfarray
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::asfarray
+

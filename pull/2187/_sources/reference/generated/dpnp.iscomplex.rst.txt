@@ -1,0 +1,11 @@
+﻿
+
+dpnp.iscomplex
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::iscomplex
+

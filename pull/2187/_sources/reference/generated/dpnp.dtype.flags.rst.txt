@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.dtype.flags
+================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dpnp::dtype.flags
+

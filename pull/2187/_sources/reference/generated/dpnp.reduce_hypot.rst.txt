@@ -1,0 +1,11 @@
+﻿
+
+dpnp.reduce\_hypot
+==================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::reduce_hypot
+

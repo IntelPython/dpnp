@@ -1,0 +1,11 @@
+﻿
+
+dpnp.put\_along\_axis
+=====================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::put_along_axis
+

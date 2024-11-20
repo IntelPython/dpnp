@@ -1,0 +1,11 @@
+﻿
+
+dpnp.arctanh
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::arctanh
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.bitwise\_invert
+====================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::bitwise_invert
+

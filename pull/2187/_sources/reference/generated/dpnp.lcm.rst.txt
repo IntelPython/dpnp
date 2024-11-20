@@ -1,0 +1,11 @@
+﻿
+
+dpnp.lcm
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::lcm
+

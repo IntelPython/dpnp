@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.dtype.hasobject
+====================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dpnp::dtype.hasobject
+

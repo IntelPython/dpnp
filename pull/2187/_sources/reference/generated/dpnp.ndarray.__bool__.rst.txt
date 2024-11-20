@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_bool\_\_
+=========================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__bool__
+

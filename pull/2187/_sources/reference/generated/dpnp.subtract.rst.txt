@@ -1,0 +1,11 @@
+﻿
+
+dpnp.subtract
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::subtract
+

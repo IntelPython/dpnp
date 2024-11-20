@@ -1,0 +1,11 @@
+﻿
+
+dpnp.asarray
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::asarray
+

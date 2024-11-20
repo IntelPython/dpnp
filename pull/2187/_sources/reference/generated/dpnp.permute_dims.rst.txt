@@ -1,0 +1,11 @@
+﻿
+
+dpnp.permute\_dims
+==================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::permute_dims
+

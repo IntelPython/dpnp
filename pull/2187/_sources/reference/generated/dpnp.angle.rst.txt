@@ -1,0 +1,11 @@
+﻿
+
+dpnp.angle
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::angle
+

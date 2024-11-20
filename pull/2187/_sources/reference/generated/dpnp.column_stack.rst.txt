@@ -1,0 +1,11 @@
+﻿
+
+dpnp.column\_stack
+==================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::column_stack
+

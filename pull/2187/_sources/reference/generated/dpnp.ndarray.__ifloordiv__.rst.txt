@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_ifloordiv\_\_
+==============================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__ifloordiv__
+

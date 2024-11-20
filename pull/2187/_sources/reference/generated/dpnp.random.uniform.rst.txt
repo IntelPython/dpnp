@@ -1,0 +1,11 @@
+﻿
+
+dpnp.random.uniform
+===================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: dpnp::random.uniform
+

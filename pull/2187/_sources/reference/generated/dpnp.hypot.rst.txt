@@ -1,0 +1,11 @@
+﻿
+
+dpnp.hypot
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::hypot
+

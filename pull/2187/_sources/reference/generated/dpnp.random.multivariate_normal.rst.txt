@@ -1,0 +1,11 @@
+﻿
+
+dpnp.random.multivariate\_normal
+================================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: dpnp::random.multivariate_normal
+

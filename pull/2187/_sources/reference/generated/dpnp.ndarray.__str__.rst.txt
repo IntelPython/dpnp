@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_str\_\_
+========================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__str__
+

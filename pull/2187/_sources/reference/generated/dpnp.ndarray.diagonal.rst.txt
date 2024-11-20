@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.diagonal
+=====================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.diagonal
+

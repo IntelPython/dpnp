@@ -1,0 +1,11 @@
+﻿
+
+dpnp.cumprod
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::cumprod
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.mean
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::mean
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.nanvar
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::nanvar
+

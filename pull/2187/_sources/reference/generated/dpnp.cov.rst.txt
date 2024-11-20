@@ -1,0 +1,11 @@
+﻿
+
+dpnp.cov
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::cov
+

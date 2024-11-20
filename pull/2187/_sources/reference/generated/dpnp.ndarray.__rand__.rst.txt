@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_rand\_\_
+=========================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__rand__
+

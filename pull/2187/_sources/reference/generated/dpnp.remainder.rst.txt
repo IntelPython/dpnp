@@ -1,0 +1,11 @@
+﻿
+
+dpnp.remainder
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::remainder
+

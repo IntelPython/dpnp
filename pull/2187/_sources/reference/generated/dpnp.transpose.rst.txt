@@ -1,0 +1,11 @@
+﻿
+
+dpnp.transpose
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::transpose
+

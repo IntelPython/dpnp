@@ -1,0 +1,11 @@
+﻿
+
+dpnp.linalg.diagonal
+====================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: dpnp::linalg.diagonal
+

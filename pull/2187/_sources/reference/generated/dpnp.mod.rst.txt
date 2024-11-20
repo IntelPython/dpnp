@@ -1,0 +1,11 @@
+﻿
+
+dpnp.mod
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::mod
+

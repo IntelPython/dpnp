@@ -1,0 +1,11 @@
+﻿
+
+dpnp.cumlogsumexp
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::cumlogsumexp
+

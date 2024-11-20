@@ -1,0 +1,11 @@
+﻿
+
+dpnp.isneginf
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::isneginf
+

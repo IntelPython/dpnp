@@ -1,0 +1,11 @@
+﻿
+
+dpnp.count\_nonzero
+===================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::count_nonzero
+

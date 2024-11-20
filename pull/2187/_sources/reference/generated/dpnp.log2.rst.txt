@@ -1,0 +1,11 @@
+﻿
+
+dpnp.log2
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::log2
+

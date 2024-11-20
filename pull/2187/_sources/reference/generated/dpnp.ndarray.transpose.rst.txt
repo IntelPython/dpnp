@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.transpose
+======================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.transpose
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.logical\_not
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::logical_not
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.zeros\_like
+================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::zeros_like
+

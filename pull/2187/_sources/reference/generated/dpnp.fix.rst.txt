@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fix
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::fix
+

@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.dtype.itemsize
+===================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dpnp::dtype.itemsize
+

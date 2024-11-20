@@ -1,0 +1,11 @@
+﻿
+
+dpnp.diagonal
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::diagonal
+

@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_gt\_\_
+=======================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__gt__
+

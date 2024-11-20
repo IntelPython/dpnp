@@ -1,0 +1,11 @@
+﻿
+
+dpnp.full\_like
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::full_like
+

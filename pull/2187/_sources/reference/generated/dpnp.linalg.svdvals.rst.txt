@@ -1,0 +1,11 @@
+﻿
+
+dpnp.linalg.svdvals
+===================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: dpnp::linalg.svdvals
+

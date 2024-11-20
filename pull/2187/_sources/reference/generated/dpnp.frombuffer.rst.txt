@@ -1,0 +1,11 @@
+﻿
+
+dpnp.frombuffer
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::frombuffer
+

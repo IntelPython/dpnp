@@ -1,0 +1,11 @@
+﻿
+
+dpnp.place
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::place
+

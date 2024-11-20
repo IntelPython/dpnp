@@ -1,0 +1,11 @@
+﻿
+
+dpnp.from\_dlpack
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::from_dlpack
+

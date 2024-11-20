@@ -1,0 +1,11 @@
+﻿
+
+dpnp.linalg.tensordot
+=====================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: dpnp::linalg.tensordot
+

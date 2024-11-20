@@ -1,0 +1,11 @@
+﻿
+
+dpnp.can\_cast
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::can_cast
+

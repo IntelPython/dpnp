@@ -1,0 +1,11 @@
+﻿
+
+dpnp.trace
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::trace
+

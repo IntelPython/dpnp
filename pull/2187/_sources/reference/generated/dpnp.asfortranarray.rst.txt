@@ -1,0 +1,11 @@
+﻿
+
+dpnp.asfortranarray
+===================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::asfortranarray
+

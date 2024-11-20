@@ -1,0 +1,11 @@
+﻿
+
+dpnp.random.randint
+===================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: dpnp::random.randint
+

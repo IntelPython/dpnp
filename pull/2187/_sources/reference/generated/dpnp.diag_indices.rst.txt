@@ -1,0 +1,11 @@
+﻿
+
+dpnp.diag\_indices
+==================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::diag_indices
+

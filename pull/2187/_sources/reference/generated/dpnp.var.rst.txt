@@ -1,0 +1,11 @@
+﻿
+
+dpnp.var
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::var
+

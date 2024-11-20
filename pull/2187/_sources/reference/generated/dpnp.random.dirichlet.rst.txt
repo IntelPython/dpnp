@@ -1,0 +1,11 @@
+﻿
+
+dpnp.random.dirichlet
+=====================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: dpnp::random.dirichlet
+

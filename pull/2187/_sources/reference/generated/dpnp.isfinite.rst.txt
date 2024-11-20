@@ -1,0 +1,11 @@
+﻿
+
+dpnp.isfinite
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::isfinite
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.equal
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::equal
+

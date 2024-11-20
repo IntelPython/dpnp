@@ -1,0 +1,11 @@
+﻿
+
+dpnp.ones\_like
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::ones_like
+

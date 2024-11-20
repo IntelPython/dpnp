@@ -1,0 +1,11 @@
+﻿
+
+dpnp.tri
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::tri
+

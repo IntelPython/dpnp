@@ -1,0 +1,11 @@
+﻿
+
+dpnp.array
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::array
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.right\_shift
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::right_shift
+

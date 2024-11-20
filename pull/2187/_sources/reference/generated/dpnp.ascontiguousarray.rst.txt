@@ -1,0 +1,11 @@
+﻿
+
+dpnp.ascontiguousarray
+======================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::ascontiguousarray
+

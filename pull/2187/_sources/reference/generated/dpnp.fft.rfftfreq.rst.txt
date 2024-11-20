@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fft.rfftfreq
+=================
+
+.. currentmodule:: dpnp.fft
+
+
+
+.. autofunction:: dpnp::fft.rfftfreq
+

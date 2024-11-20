@@ -1,0 +1,11 @@
+﻿
+
+dpnp.full
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::full
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.digitize
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::digitize
+

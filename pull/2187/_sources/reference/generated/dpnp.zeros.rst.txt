@@ -1,0 +1,11 @@
+﻿
+
+dpnp.zeros
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::zeros
+

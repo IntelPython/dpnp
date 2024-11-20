@@ -1,0 +1,11 @@
+﻿
+
+dpnp.rint
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::rint
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.sin
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::sin
+

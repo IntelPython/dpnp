@@ -1,0 +1,11 @@
+﻿
+
+dpnp.conj
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::conj
+

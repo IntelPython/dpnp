@@ -1,0 +1,11 @@
+﻿
+
+dpnp.argmin
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::argmin
+

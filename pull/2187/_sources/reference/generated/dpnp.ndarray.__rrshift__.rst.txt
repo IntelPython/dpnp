@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_rrshift\_\_
+============================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__rrshift__
+

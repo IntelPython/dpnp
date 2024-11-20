@@ -1,0 +1,11 @@
+﻿
+
+dpnp.isclose
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::isclose
+

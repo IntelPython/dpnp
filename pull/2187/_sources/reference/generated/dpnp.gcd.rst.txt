@@ -1,0 +1,11 @@
+﻿
+
+dpnp.gcd
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::gcd
+

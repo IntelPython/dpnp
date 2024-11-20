@@ -1,0 +1,11 @@
+﻿
+
+dpnp.random.choice
+==================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: dpnp::random.choice
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.empty
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::empty
+

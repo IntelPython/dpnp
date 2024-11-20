@@ -1,0 +1,11 @@
+﻿
+
+dpnp.matmul
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::matmul
+

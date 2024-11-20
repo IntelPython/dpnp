@@ -1,0 +1,11 @@
+﻿
+
+dpnp.cos
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::cos
+

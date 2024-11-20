@@ -1,0 +1,11 @@
+﻿
+
+dpnp.trunc
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::trunc
+

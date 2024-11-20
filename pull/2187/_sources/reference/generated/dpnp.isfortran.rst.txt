@@ -1,0 +1,11 @@
+﻿
+
+dpnp.isfortran
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::isfortran
+

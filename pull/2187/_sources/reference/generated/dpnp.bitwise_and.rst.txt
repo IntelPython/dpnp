@@ -1,0 +1,11 @@
+﻿
+
+dpnp.bitwise\_and
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::bitwise_and
+

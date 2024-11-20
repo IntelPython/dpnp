@@ -1,0 +1,11 @@
+﻿
+
+dpnp.arcsinh
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::arcsinh
+

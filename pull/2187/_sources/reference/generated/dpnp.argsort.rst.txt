@@ -1,0 +1,11 @@
+﻿
+
+dpnp.argsort
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::argsort
+

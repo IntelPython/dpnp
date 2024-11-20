@@ -1,0 +1,11 @@
+﻿
+
+dpnp.isscalar
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::isscalar
+

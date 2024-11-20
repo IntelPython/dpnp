@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_rmatmul\_\_
+============================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__rmatmul__
+

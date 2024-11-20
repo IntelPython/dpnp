@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fmin
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::fmin
+

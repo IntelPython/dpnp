@@ -1,0 +1,11 @@
+﻿
+
+dpnp.inner
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::inner
+

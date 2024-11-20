@@ -1,0 +1,11 @@
+﻿
+
+dpnp.sinh
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::sinh
+

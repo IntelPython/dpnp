@@ -1,0 +1,11 @@
+﻿
+
+dpnp.fill\_diagonal
+===================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::fill_diagonal
+

@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.cumprod
+====================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.cumprod
+

@@ -1,0 +1,11 @@
+﻿
+
+dpnp.reciprocal
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::reciprocal
+

@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.cumsum
+===================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.cumsum
+

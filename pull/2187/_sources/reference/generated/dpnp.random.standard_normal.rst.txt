@@ -1,0 +1,11 @@
+﻿
+
+dpnp.random.standard\_normal
+============================
+
+.. currentmodule:: dpnp.random
+
+
+
+.. autofunction:: dpnp::random.standard_normal
+

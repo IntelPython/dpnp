@@ -1,0 +1,11 @@
+﻿
+
+dpnp.tanh
+=========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::tanh
+

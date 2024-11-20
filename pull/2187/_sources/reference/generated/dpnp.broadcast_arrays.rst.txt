@@ -1,0 +1,11 @@
+﻿
+
+dpnp.broadcast\_arrays
+======================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::broadcast_arrays
+

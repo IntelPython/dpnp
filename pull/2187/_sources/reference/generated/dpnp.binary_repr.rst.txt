@@ -1,0 +1,11 @@
+﻿
+
+dpnp.binary\_repr
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::binary_repr
+

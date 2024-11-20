@@ -1,0 +1,11 @@
+﻿
+
+dpnp.invert
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::invert
+

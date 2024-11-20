@@ -1,0 +1,11 @@
+﻿
+
+dpnp.greater
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::greater
+

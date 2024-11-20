@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.dtype.ndim
+===============
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dpnp::dtype.ndim
+

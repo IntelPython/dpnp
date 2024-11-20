@@ -1,0 +1,11 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_imatmul\_\_
+============================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.__imatmul__
+

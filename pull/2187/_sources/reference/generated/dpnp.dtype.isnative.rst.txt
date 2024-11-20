@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.dtype.isnative
+===================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dpnp::dtype.isnative
+

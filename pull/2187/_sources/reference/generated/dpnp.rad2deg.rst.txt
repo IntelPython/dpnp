@@ -1,0 +1,11 @@
+﻿
+
+dpnp.rad2deg
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::rad2deg
+

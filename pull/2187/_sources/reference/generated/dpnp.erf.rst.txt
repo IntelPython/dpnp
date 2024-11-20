@@ -1,0 +1,11 @@
+﻿
+
+dpnp.erf
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::erf
+

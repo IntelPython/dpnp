@@ -1,0 +1,11 @@
+:orphan:
+
+dpnp.ndarray.mean
+=================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: dpnp::ndarray.mean
+

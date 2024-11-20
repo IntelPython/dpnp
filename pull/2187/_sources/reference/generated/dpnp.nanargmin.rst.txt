@@ -1,0 +1,11 @@
+﻿
+
+dpnp.nanargmin
+==============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::nanargmin
+

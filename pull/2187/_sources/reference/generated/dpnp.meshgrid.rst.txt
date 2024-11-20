@@ -1,0 +1,11 @@
+﻿
+
+dpnp.meshgrid
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::meshgrid
+

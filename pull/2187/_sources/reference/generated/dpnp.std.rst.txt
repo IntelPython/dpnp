@@ -1,0 +1,11 @@
+﻿
+
+dpnp.std
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::std
+

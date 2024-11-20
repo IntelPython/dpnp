@@ -1,0 +1,11 @@
+﻿
+
+dpnp.abs
+========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: dpnp::abs
+
