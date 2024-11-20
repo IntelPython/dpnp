@@ -1,0 +1,10 @@
+﻿
+
+dpnp.float\_power
+=================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: float_power

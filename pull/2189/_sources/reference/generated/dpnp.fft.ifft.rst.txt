@@ -1,0 +1,10 @@
+﻿
+
+dpnp.fft.ifft
+=============
+
+.. currentmodule:: dpnp.fft
+
+
+
+.. autofunction:: ifft
