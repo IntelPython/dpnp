@@ -1,6 +1,10 @@
-﻿dpnp.linalg.vecdot
+﻿
+
+dpnp.linalg.vecdot
 ==================
 
 .. currentmodule:: dpnp.linalg
+
+
 
 .. autofunction:: vecdot

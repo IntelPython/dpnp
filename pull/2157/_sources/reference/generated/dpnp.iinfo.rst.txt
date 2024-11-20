@@ -1,6 +1,10 @@
-﻿dpnp.iinfo
+﻿
+
+dpnp.iinfo
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: iinfo

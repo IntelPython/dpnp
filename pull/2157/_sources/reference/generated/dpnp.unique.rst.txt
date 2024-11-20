@@ -1,6 +1,10 @@
-﻿dpnp.unique
+﻿
+
+dpnp.unique
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: unique

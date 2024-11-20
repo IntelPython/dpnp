@@ -1,6 +1,10 @@
-﻿dpnp.diff
+﻿
+
+dpnp.diff
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: diff

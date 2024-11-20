@@ -1,6 +1,10 @@
-﻿dpnp.pad
+﻿
+
+dpnp.pad
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: pad

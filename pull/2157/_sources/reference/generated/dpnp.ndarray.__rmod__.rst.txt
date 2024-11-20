@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_rmod\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_rmod\_\_
 =========================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__rmod__

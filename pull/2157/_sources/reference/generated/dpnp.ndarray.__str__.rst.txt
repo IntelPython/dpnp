@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_str\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_str\_\_
 ========================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__str__

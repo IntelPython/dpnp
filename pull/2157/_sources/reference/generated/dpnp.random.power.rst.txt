@@ -1,6 +1,10 @@
-﻿dpnp.random.power
+﻿
+
+dpnp.random.power
 =================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: power

@@ -1,6 +1,10 @@
-﻿dpnp.signbit
+﻿
+
+dpnp.signbit
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: signbit

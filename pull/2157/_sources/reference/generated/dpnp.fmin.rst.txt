@@ -1,6 +1,10 @@
-﻿dpnp.fmin
+﻿
+
+dpnp.fmin
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: fmin

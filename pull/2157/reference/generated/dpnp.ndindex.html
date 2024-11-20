@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndindex &mdash; Data Parallel Extension for NumPy 0.17.0dev2+18.gf4b68f55b25 documentation</title>
+  <title>dpnp.ndindex &mdash; Data Parallel Extension for NumPy 0.17.0dev2+20.gb4694995ac2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=890fd16e"></script>
+      <script src="../../_static/documentation_options.js?v=b748fcff"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -169,62 +169,6 @@ parameters or as the elements of a tuple.</p>
 <span class="go">(2, 1, 0)</span>
 </pre></div>
 </div>
-<p class="rubric">Methods</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__next__">
-<span class="sig-name descname"><span class="pre">__next__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#ndindex.__next__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ndindex.__next__" title="Link to this definition"></a></dt>
-<dd><p>Standard iterator method, updates the index and returns the index tuple.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>val</strong> -- Returns a tuple containing the indices of the current iteration.</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a> of ints</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_indexing.html#ndindex.__iter__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.ndindex.__iter__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__eq__">
-<span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndindex.__eq__" title="Link to this definition"></a></dt>
-<dd><p>Return self==value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndindex.__ne__" title="Link to this definition"></a></dt>
-<dd><p>Return self!=value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__lt__">
-<span class="sig-name descname"><span class="pre">__lt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndindex.__lt__" title="Link to this definition"></a></dt>
-<dd><p>Return self&lt;value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__le__">
-<span class="sig-name descname"><span class="pre">__le__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndindex.__le__" title="Link to this definition"></a></dt>
-<dd><p>Return self&lt;=value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__gt__">
-<span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndindex.__gt__" title="Link to this definition"></a></dt>
-<dd><p>Return self&gt;value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="dpnp.ndindex.__ge__">
-<span class="sig-name descname"><span class="pre">__ge__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndindex.__ge__" title="Link to this definition"></a></dt>
-<dd><p>Return self&gt;=value.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>

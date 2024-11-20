@@ -1,6 +1,10 @@
-﻿dpnp.triu\_indices
+﻿
+
+dpnp.triu\_indices
 ==================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: triu_indices

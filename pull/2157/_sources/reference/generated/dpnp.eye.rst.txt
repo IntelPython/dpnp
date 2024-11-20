@@ -1,6 +1,10 @@
-﻿dpnp.eye
+﻿
+
+dpnp.eye
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: eye
