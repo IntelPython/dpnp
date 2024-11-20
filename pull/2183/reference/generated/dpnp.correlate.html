@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.correlate &mdash; Data Parallel Extension for NumPy 0.17.0dev2+7.g6b919513aba documentation</title>
+  <title>dpnp.correlate &mdash; Data Parallel Extension for NumPy 0.17.0dev2+13.g11c961946da documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8fbc2cb1"></script>
+      <script src="../../_static/documentation_options.js?v=20d3fa50"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -126,7 +126,7 @@
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">correlate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'valid'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#correlate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.correlate" title="Link to this definition"></a></dt>
 <dd><p>Cross-correlation of two 1-dimensional sequences.</p>
 <p>This function computes the correlation as generally defined in signal
-processing texts <a href="#id2"><span class="problematic" id="id1">[1]_</span></a>:</p>
+processing texts [1]:</p>
 <div class="math notranslate nohighlight">
 \[c_k = \sum_n a_{n+k} \cdot \overline{v}_n\]</div>
 <p>with a and v sequences being zero-padded where necessary and
@@ -135,8 +135,8 @@ processing texts <a href="#id2"><span class="problematic" id="id1">[1]_</span></
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input sequences.</p></li>
-<li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input sequences.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First input array.</p></li>
+<li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second input array.</p></li>
 <li><p><strong>mode</strong> (<em>{'valid'</em><em>, </em><em>'same'</em><em>, </em><em>'full'}</em><em>, </em><em>optional</em>) -- <p>Refer to the <a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a> docstring. Note that the default
 is <code class="docutils literal notranslate"><span class="pre">'valid'</span></code>, unlike <a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a>, which uses <code class="docutils literal notranslate"><span class="pre">'full'</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">'valid'</span></code>.</p>
@@ -146,10 +146,18 @@ is <code class="docutils literal notranslate"><span class="pre">'valid'</span></
 </dl>
 <p class="rubric">Notes</p>
 <p>The definition of correlation above is not unique and sometimes
-correlation may be defined differently. Another common definition is:</p>
+correlation may be defined differently. Another common definition is [1]:</p>
 <div class="math notranslate nohighlight">
 \[c'_k = \sum_n a_{n} \cdot \overline{v_{n+k}}\]</div>
 <p>which is related to <span class="math notranslate nohighlight">\(c_k\)</span> by <span class="math notranslate nohighlight">\(c'_k = c_{-k}\)</span>.</p>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<p>Wikipedia, &quot;Cross-correlation&quot;,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Cross-correlation">https://en.wikipedia.org/wiki/Cross-correlation</a></p>
+</aside>
+</aside>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>out</strong> -- Discrete cross-correlation of <cite>a</cite> and <cite>v</cite>.</p>

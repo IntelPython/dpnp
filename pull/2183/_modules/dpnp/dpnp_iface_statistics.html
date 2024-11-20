@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev2+7.g6b919513aba documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev2+13.g11c961946da documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8fbc2cb1"></script>
+      <script src="../../_static/documentation_options.js?v=20d3fa50"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -614,7 +614,7 @@
 <span class="sd">    Cross-correlation of two 1-dimensional sequences.</span>
 
 <span class="sd">    This function computes the correlation as generally defined in signal</span>
-<span class="sd">    processing texts [1]_:</span>
+<span class="sd">    processing texts [1]:</span>
 
 <span class="sd">    .. math:: c_k = \sum_n a_{n+k} \cdot \overline{v}_n</span>
 
@@ -625,8 +625,10 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    a, v : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input sequences.</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    v : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
 <span class="sd">    mode : {&#39;valid&#39;, &#39;same&#39;, &#39;full&#39;}, optional</span>
 <span class="sd">        Refer to the :obj:`dpnp.convolve` docstring. Note that the default</span>
 <span class="sd">        is ``&#39;valid&#39;``, unlike :obj:`dpnp.convolve`, which uses ``&#39;full&#39;``.</span>
@@ -636,11 +638,16 @@
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
 <span class="sd">    The definition of correlation above is not unique and sometimes</span>
-<span class="sd">    correlation may be defined differently. Another common definition is:</span>
+<span class="sd">    correlation may be defined differently. Another common definition is [1]:</span>
 
 <span class="sd">    .. math:: c&#39;_k = \sum_n a_{n} \cdot \overline{v_{n+k}}</span>
 
 <span class="sd">    which is related to :math:`c_k` by :math:`c&#39;_k = c_{-k}`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wikipedia, &quot;Cross-correlation&quot;,</span>
+<span class="sd">           https://en.wikipedia.org/wiki/Cross-correlation</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
