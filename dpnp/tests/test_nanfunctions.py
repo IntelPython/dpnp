@@ -462,19 +462,15 @@ class TestNanMedian:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, -1, (0, -2, -1)])
-    def test_overwrite_input(self, axis, keepdims):
+    def test_overwrite_input(self, axis):
         a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
         a[0, 0, 0] = a[-2, -2, -2] = numpy.nan
         ia = dpnp.array(a)
 
         b = a.copy()
         ib = ia.copy()
-        expected = numpy.nanmedian(
-            b, axis=axis, keepdims=keepdims, overwrite_input=True
-        )
-        result = dpnp.nanmedian(
-            ib, axis=axis, keepdims=keepdims, overwrite_input=True
-        )
+        expected = numpy.nanmedian(b, axis=axis, overwrite_input=True)
+        result = dpnp.nanmedian(ib, axis=axis, overwrite_input=True)
         assert not numpy.all(a == b)
         assert not dpnp.all(ia == ib)
 
