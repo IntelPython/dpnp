@@ -127,7 +127,7 @@ class TestNanMedian:
     @pytest.mark.filterwarnings("ignore:All-NaN slice:RuntimeWarning")
     @pytest.mark.filterwarnings("ignore:invalid value:RuntimeWarning")
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_nanmedian(self, xp, dtype):
         a = xp.array(self._make_array(dtype))
         out = xp.nanmedian(
