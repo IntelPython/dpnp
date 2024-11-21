@@ -82,6 +82,8 @@ from dpnp.dpnp_iface_bitwise import *
 from dpnp.dpnp_iface_bitwise import __all__ as __all__bitwise
 from dpnp.dpnp_iface_counting import *
 from dpnp.dpnp_iface_counting import __all__ as __all__counting
+from dpnp.dpnp_iface_functional import *
+from dpnp.dpnp_iface_functional import __all__ as __all__functional
 from dpnp.dpnp_iface_histograms import *
 from dpnp.dpnp_iface_histograms import __all__ as __all__histograms
 from dpnp.dpnp_iface_indexing import *
@@ -117,6 +119,7 @@ from .dpnp_utils import (
 __all__ += __all__arraycreation
 __all__ += __all__bitwise
 __all__ += __all__counting
+__all__ += __all__functional
 __all__ += __all__histograms
 __all__ += __all__indexing
 __all__ += __all__libmath

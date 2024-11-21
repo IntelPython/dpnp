@@ -34,6 +34,7 @@
 #include "fmod.hpp"
 #include "gcd.hpp"
 #include "heaviside.hpp"
+#include "i0.hpp"
 #include "lcm.hpp"
 #include "ldexp.hpp"
 #include "logaddexp2.hpp"
@@ -59,6 +60,7 @@ void init_elementwise_functions(py::module_ m)
     init_fmod(m);
     init_gcd(m);
     init_heaviside(m);
+    init_i0(m);
     init_lcm(m);
     init_ldexp(m);
     init_logaddexp2(m);

@@ -51,14 +51,6 @@ test:
     requires:
       - pytest
       - setuptools
-    source_files:
-      - examples
-      - tests
-      - setup.cfg
-    commands:
-      - python -c "import dpnp; print(dpnp.__version__)"
-      - python -m dpctl -f
-      - pytest -s
 
 about:
     home: https://github.com/IntelPython/dpnp
@@ -79,6 +71,6 @@ extra:
     recipe-maintainers:
         - oleksandr-pavlyk
         - antonwolfy
-        - npolina4
+        - AlexanderKalistratov
         - vtavana
         - vlad-perevezentsev

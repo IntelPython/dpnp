@@ -51,10 +51,7 @@ from .dpnp_algo import (
     dpnp_putmask,
 )
 from .dpnp_array import dpnp_array
-from .dpnp_utils import (
-    call_origin,
-    get_usm_allocations,
-)
+from .dpnp_utils import call_origin, get_usm_allocations
 
 __all__ = [
     "choose",
@@ -67,6 +64,7 @@ __all__ = [
     "indices",
     "ix_",
     "mask_indices",
+    "ndindex",
     "nonzero",
     "place",
     "put",
@@ -538,11 +536,12 @@ def extract(condition, a):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
+    usm_type, exec_q = get_usm_allocations([usm_a, condition])
     usm_cond = dpnp.as_usm_ndarray(
         condition,
         dtype=dpnp.bool,
-        usm_type=usm_a.usm_type,
-        sycl_queue=usm_a.sycl_queue,
+        usm_type=usm_type,
+        sycl_queue=exec_q,
     )
 
     if usm_cond.size != usm_a.size:
@@ -1060,6 +1059,77 @@ def mask_indices(
     )
     a = mask_func(m, k=k)
     return nonzero(a != 0)
+
+
+# pylint: disable=invalid-name
+# pylint: disable=too-few-public-methods
+class ndindex:
+    """
+    An N-dimensional iterator object to index arrays.
+
+    Given the shape of an array, an :obj:`dpnp.ndindex` instance iterates over
+    the N-dimensional index of the array. At each iteration a tuple of indices
+    is returned, the last dimension is iterated over first.
+
+    For full documentation refer to :obj:`numpy.ndindex`.
+
+    Parameters
+    ----------
+    shape : ints, or a single tuple of ints
+        The size of each dimension of the array can be passed as individual
+        parameters or as the elements of a tuple.
+
+    See Also
+    --------
+    :obj:`dpnp.ndenumerate` : Multidimensional index iterator.
+    :obj:`dpnp.flatiter` : Flat iterator object to iterate over arrays.
+
+    Examples
+    --------
+    >>> import dpnp as np
+
+    Dimensions as individual arguments
+
+    >>> for index in np.ndindex(3, 2, 1):
+    ...     print(index)
+    (0, 0, 0)
+    (0, 1, 0)
+    (1, 0, 0)
+    (1, 1, 0)
+    (2, 0, 0)
+    (2, 1, 0)
+
+    Same dimensions - but in a tuple ``(3, 2, 1)``
+
+    >>> for index in np.ndindex((3, 2, 1)):
+    ...     print(index)
+    (0, 0, 0)
+    (0, 1, 0)
+    (1, 0, 0)
+    (1, 1, 0)
+    (2, 0, 0)
+    (2, 1, 0)
+
+    """
+
+    def __init__(self, *shape):
+        self.ndindex_ = numpy.ndindex(*shape)
+
+    def __iter__(self):
+        return self.ndindex_
+
+    def __next__(self):
+        """
+        Standard iterator method, updates the index and returns the index tuple.
+
+        Returns
+        -------
+        val : tuple of ints
+            Returns a tuple containing the indices of the current iteration.
+
+        """
+
+        return self.ndindex_.__next__()
 
 
 def nonzero(a):

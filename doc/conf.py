@@ -6,6 +6,8 @@
 # full list see the documentation:
 # http://www.sphinx-doc.org/en/master/config
 
+from datetime import datetime
+
 from sphinx.ext.autodoc import FunctionDocumenter
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
@@ -32,7 +34,8 @@ import dpnp
 # -- Project information -----------------------------------------------------
 
 project = "Data Parallel Extension for NumPy"
-copyright = "2020-2024, Intel Corporation"
+year = datetime.now().year
+copyright = f"2020-{year}, Intel Corporation"
 author = "Intel"
 
 version = dpnp.__version__.strip(".dirty")
