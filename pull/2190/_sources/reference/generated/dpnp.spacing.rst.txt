@@ -1,0 +1,10 @@
+﻿
+
+dpnp.spacing
+============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: spacing
