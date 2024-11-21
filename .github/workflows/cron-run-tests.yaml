@@ -1,0 +1,88 @@
+name: Run tests suite
+on:
+  # For Branch-Protection check. Only the default branch is supported. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#branch-protection
+  branch_protection_rule:
+  # To guarantee Maintained check is occasionally updated. See
+  # https://github.com/ossf/scorecard/blob/main/docs/checks.md#maintained
+  schedule:
+    - cron: '28 2 * * *'
+  workflow_dispatch:
+
+permissions: read-all
+
+env:
+  PACKAGE_NAME: dpnp
+  CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
+  TEST_ENV_NAME: test
+
+jobs:
+  test:
+    name: Test ['${{ matrix.runner }}', python='${{ matrix.python }}']
+
+    runs-on:  ${{ matrix.runner }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.runner == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+
+    permissions:
+      # Needed to cancel any previous runs that are not completed for a given workflow
+      actions: write
+
+    strategy:
+      matrix:
+        python: ['3.9', '3.10', '3.11', '3.12']
+        runner: [ubuntu-22.04, ubuntu-24.04, windows-2019]
+
+    continue-on-error: false
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+          python-version: ${{ matrix.python }}
+          activate-environment: ${{ env.TEST_ENV_NAME }}
+
+      - name: Install dpnp
+        run: |
+          mamba install ${{ env.PACKAGE_NAME }} pytest ${{ env.CHANNELS }}
+        env:
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Activate OCL CPU RT
+        if: ${{ matrix.runner }} == 'windows-2019'
+        shell: pwsh
+        run: |
+          $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
+          if (Test-Path $script_path) {
+            &$script_path
+          } else {
+            Write-Warning "File $script_path was NOT found!"
+          }
+          # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+          $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
+          Get-Content -Tail 5 -Path $cl_cfg
+
+      - name: Smoke test
+        run: |
+          python -m dpctl -f
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Run tests
+        run: |
+          python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+        env:
+          SYCL_CACHE_PERSISTENT: 1
