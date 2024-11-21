@@ -1,6 +1,14 @@
-﻿dpnp.ndarray.flat
+
+:orphan:
+
+
+dpnp.ndarray.flat
 =================
 
 .. currentmodule:: dpnp
+
+
+property
+
 
 .. autoproperty:: ndarray.flat

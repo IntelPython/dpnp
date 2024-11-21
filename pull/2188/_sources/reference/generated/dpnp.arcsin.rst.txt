@@ -1,6 +1,10 @@
-﻿dpnp.arcsin
+﻿
+
+dpnp.arcsin
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: arcsin

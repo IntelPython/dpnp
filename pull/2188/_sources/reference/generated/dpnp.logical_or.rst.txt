@@ -1,6 +1,10 @@
-﻿dpnp.logical\_or
+﻿
+
+dpnp.logical\_or
 ================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: logical_or

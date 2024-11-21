@@ -1,6 +1,10 @@
-﻿dpnp.vecdot
+﻿
+
+dpnp.vecdot
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: vecdot

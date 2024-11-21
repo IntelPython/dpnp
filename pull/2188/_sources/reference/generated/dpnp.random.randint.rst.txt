@@ -1,6 +1,10 @@
-﻿dpnp.random.randint
+﻿
+
+dpnp.random.randint
 ===================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: randint

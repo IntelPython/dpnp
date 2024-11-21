@@ -1,6 +1,10 @@
-﻿dpnp.abs
+﻿
+
+dpnp.abs
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: abs

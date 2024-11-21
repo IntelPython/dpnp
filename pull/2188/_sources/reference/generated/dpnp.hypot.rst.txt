@@ -1,6 +1,10 @@
-﻿dpnp.hypot
+﻿
+
+dpnp.hypot
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: hypot

@@ -1,6 +1,10 @@
-﻿dpnp.hstack
+﻿
+
+dpnp.hstack
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: hstack

@@ -1,6 +1,10 @@
-﻿dpnp.arctan
+﻿
+
+dpnp.arctan
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: arctan
