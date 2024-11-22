@@ -63,7 +63,7 @@ jobs:
         run: mamba list
 
       - name: Activate OCL CPU RT
-        if: ${{ matrix.runner }} == 'windows-2019'
+        if: matrix.runner == 'windows-2019'
         shell: pwsh
         run: |
           $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
