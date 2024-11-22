@@ -117,7 +117,7 @@ if(_use_onemkl_interfaces)
     FetchContent_Declare(
             onemkl_interfaces_library
             GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
-            GIT_TAG f2d2dcb4213a435bb60fbb88320c5f24892423ce
+            GIT_TAG 8f4312ef966420b9b8b4b82b9d5c22e2c91a1fe7  # v0.6
     )
     FetchContent_MakeAvailable(onemkl_interfaces_library)
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
