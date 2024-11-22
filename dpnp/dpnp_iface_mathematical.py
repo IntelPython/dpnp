@@ -2594,8 +2594,7 @@ x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
-    Array must have a shape that the input broadcast to and
-    the expected data type.
+    Array must have the correct shape and the expected data type.
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
