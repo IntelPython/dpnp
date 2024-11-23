@@ -1365,7 +1365,7 @@ def test_compress_invalid_out_errors():
     with pytest.raises(ExecutionPlacementError):
         dpnp.compress(condition, a, out=out_bad_queue)
     out_bad_dt = dpnp.empty(1, dtype="i8", sycl_queue=q1)
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         dpnp.compress(condition, a, out=out_bad_dt)
     out_read_only = dpnp.empty(1, dtype="i4", sycl_queue=q1)
     out_read_only.flags.writable = False

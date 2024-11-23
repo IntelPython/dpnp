@@ -170,9 +170,8 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
         raise IndexError("cannot take non-empty indices from an empty axis")
     res_sh = x_sh[:axis] + inds.shape + x_sh[axis_end:]
 
-    orig_out = None
     if out is not None:
-        orig_out = out = dpnp.get_usm_ndarray(out)
+        out = dpnp.get_usm_ndarray(out)
 
         if not out.flags.writable:
             raise ValueError("provided `out` array is read-only")
@@ -184,7 +183,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
             )
 
         if x.dtype != out.dtype:
-            raise ValueError(
+            raise TypeError(
                 f"Output array of type {x.dtype} is needed, " f"got {out.dtype}"
             )
 
@@ -212,14 +211,6 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
         depends=dep_evs,
     )
     _manager.add_event_pair(h_ev, take_ev)
-
-    if not (orig_out is None or orig_out is out):
-        # Copy the out data from temporary buffer to original memory
-        ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=out, dst=orig_out, sycl_queue=q, depends=[take_ev]
-        )
-        _manager.add_event_pair(ht_copy_ev, cpy_ev)
-        out = orig_out
 
     return out
 
@@ -317,10 +308,9 @@ def compress(condition, a, axis=None, out=None):
     # _nonzero_impl synchronizes and returns a tuple of usm_ndarray indices
     inds = _nonzero_impl(cond_ary)
 
-    return dpnp.get_result_array(
-        _take_index(a_ary, inds[0], axis, exec_q, res_usm_type, out=out),
-        out=out,
-    )
+    res = _take_index(a_ary, inds[0], axis, exec_q, res_usm_type, out=out)
+
+    return dpnp.get_result_array(res, out=out)
 
 
 def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
