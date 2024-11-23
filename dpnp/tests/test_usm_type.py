@@ -1746,3 +1746,17 @@ def test_ix(usm_type_0, usm_type_1):
     ixgrid = dp.ix_(x0, x1)
     assert ixgrid[0].usm_type == x0.usm_type
     assert ixgrid[1].usm_type == x1.usm_type
+
+
+@pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "usm_type_cond", list_of_usm_types, ids=list_of_usm_types
+)
+def test_compress(usm_type_a, usm_type_cond):
+    a = dp.arange(5, usm_type=usm_type_a)
+    cond = dp.array([False, True, True], usm_type=usm_type_cond)
+    z = dp.compress(cond, a, axis=None)
+
+    assert a.usm_type == usm_type_a
+    assert cond.usm_type == usm_type_cond
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_a, usm_type_cond])
