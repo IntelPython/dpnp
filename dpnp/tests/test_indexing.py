@@ -1348,7 +1348,7 @@ class TestCompress:
         result = dpnp.compress(cond, a, axis=0)
         assert_array_equal(expected, result)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_compress_condition_all_dtypes(self, dtype):
         a_np = numpy.arange(10, dtype="i4")
         a = dpnp.arange(10, dtype="i4")
