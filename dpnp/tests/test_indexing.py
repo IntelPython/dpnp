@@ -1339,18 +1339,24 @@ class TestSelect:
 
 class TestCompress:
     def test_compress_basic(self):
+        conditions = [True, False, True]
+        a_np = numpy.arange(16).reshape(4, 4)
         a = dpnp.arange(16).reshape(4, 4)
-        condition = dpnp.asarray([True, False, True])
-        r = dpnp.compress(condition, a, axis=0)
-        assert_array_equal(r[0], a[0])
-        assert_array_equal(r[1], a[2])
+        cond_np = numpy.array(conditions)
+        cond = dpnp.array(conditions)
+        expected = numpy.compress(cond_np, a_np, axis=0)
+        result = dpnp.compress(cond, a, axis=0)
+        assert_array_equal(expected, result)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_compress_condition_all_dtypes(self, dtype):
+        a_np = numpy.arange(10, dtype="i4")
         a = dpnp.arange(10, dtype="i4")
-        condition = dpnp.tile(dpnp.asarray([0, 1], dtype=dtype), 5)
-        r = dpnp.compress(condition, a)
-        assert_array_equal(r, a[1::2])
+        cond_np = numpy.tile(numpy.asarray([0, 1], dtype=dtype), 5)
+        cond = dpnp.tile(dpnp.asarray([0, 1], dtype=dtype), 5)
+        expected = numpy.compress(cond_np, a_np)
+        result = dpnp.compress(cond, a)
+        assert_array_equal(expected, result)
 
     def test_compress_invalid_out_errors(self):
         q1 = dpctl.SyclQueue()
