@@ -1387,3 +1387,22 @@ class TestCompress:
         # non-empty take from empty axis raises IndexError
         with pytest.raises(IndexError):
             dpnp.compress(condition, a, axis=1)
+
+    def test_compress_in_overlaps_out(self):
+        conditions = [False, True, True]
+        a_np = numpy.arange(6)
+        a = dpnp.arange(6)
+        cond_np = numpy.array(conditions)
+        cond = dpnp.array(conditions)
+        out = a[2:4]
+        expected = numpy.compress(cond_np, a_np, axis=None)
+        result = dpnp.compress(cond, a, axis=None, out=out)
+        assert_array_equal(expected, result)
+        assert result is out
+        assert (a[2:4] == out).all()
+
+    def test_compress_condition_not_1d(self):
+        a = dpnp.arange(4)
+        cond = dpnp.ones((1, 4), dtype="?")
+        with pytest.raises(ValueError):
+            dpnp.compress(cond, a, axis=None)
