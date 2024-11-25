@@ -1348,6 +1348,16 @@ class TestCompress:
         result = dpnp.compress(cond, a, axis=0)
         assert_array_equal(expected, result)
 
+    def test_compress_method_basic(self):
+        conditions = [True, True, False, True]
+        a_np = numpy.arange(3 * 4).reshape(3, 4)
+        a = dpnp.arange(3 * 4).reshape(3, 4)
+        cond_np = numpy.array(conditions)
+        cond = dpnp.array(conditions)
+        expected = a_np.compress(cond_np, axis=1)
+        result = a.compress(cond, axis=1)
+        assert_array_equal(expected, result)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_compress_condition_all_dtypes(self, dtype):
         a_np = numpy.arange(10, dtype="i4")
@@ -1406,3 +1416,20 @@ class TestCompress:
         cond = dpnp.ones((1, 4), dtype="?")
         with pytest.raises(ValueError):
             dpnp.compress(cond, a, axis=None)
+
+    def test_compress_strided(self):
+        a = dpnp.arange(20)
+        a_np = dpnp.asnumpy(a)
+        cond = dpnp.tile(dpnp.array([True, False, False, True]), 5)
+        cond_np = dpnp.asnumpy(cond)
+        result = dpnp.compress(cond, a)
+        expected = numpy.compress(cond_np, a_np)
+        assert_array_equal(result, expected)
+        # use axis keyword
+        a = dpnp.arange(50).reshape(10, 5)
+        a_np = dpnp.asnumpy(a)
+        cond = dpnp.array(dpnp.array([True, False, False, True, False]))
+        cond_np = dpnp.asnumpy(cond)
+        result = dpnp.compress(cond, a)
+        expected = numpy.compress(cond_np, a_np)
+        assert_array_equal(result, expected)
