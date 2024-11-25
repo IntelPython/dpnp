@@ -188,8 +188,10 @@ jobs:
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
-            conda activate ${{ env.TEST_ENV_NAME }}
-            pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.TEST_ENV_NAME }}
+
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows:
     name: Test ['windows-2019', python='${{ matrix.python }}']
@@ -323,7 +325,7 @@ jobs:
           retry_on: any
           command: >-
             mamba activate ${{ env.TEST_ENV_NAME }}
-            & pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            & python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
