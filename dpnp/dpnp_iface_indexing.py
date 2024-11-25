@@ -244,7 +244,7 @@ def compress(condition, a, axis=None, out=None):
     Returns
     -------
     out : dpnp.ndarray
-        A copy of the slices of `a` where `condition` is True.
+        A copy of the slices of `a` where `condition` is ``True``.
 
     See also
     --------
