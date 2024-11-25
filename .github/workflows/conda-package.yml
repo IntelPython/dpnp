@@ -182,7 +182,6 @@ jobs:
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          shell: bash
           timeout_minutes: 10
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
@@ -319,13 +318,11 @@ jobs:
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          shell: cmd
           timeout_minutes: 15
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
-          command: >-
-            mamba activate ${{ env.TEST_ENV_NAME }}
-            & python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          command: |
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']

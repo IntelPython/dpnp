@@ -103,8 +103,6 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.TEST_ENV_NAME }}
 
-            echo "SYCL_CACHE_PERSISTENT=$SYCL_CACHE_PERSISTENT"
-
             python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
