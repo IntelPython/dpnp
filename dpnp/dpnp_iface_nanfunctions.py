@@ -636,39 +636,38 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     >>> a = np.array([[10.0, 7, 4], [3, 2, 1]])
     >>> a[0, 1] = np.nan
     >>> a
-    array([[10,  nan,  4],
-           [ 3,  2,  1]])
+    array([[10.,  nan,  4.],
+           [ 3.,  2.,  1.]])
     >>> np.median(a)
     array(nan)
     >>> np.nanmedian(a)
     array(3.)
 
     >>> np.nanmedian(a, axis=0)
-    array([6.5, 2. , 2.5])
+    array([6.5, 2., 2.5])
     >>> np.nanmedian(a, axis=1)
-    array([7.,  2.])
+    array([7., 2.])
 
     >>> b = a.copy()
     >>> np.nanmedian(b, axis=1, overwrite_input=True)
-    array([7.,  2.])
+    array([7., 2.])
     >>> assert not np.all(a==b)
     >>> b = a.copy()
     >>> np.nanmedian(b, axis=None, overwrite_input=True)
-    array(3.0)
+    array(3.)
     >>> assert not np.all(a==b)
 
     """
 
     dpnp.check_supported_arrays_type(a)
+    ignore_nan = False
     if dpnp.issubdtype(a.dtype, dpnp.inexact):
         mask = dpnp.isnan(a)
         if dpnp.any(mask):
-            return dpnp_median(
-                a, axis, out, overwrite_input, keepdims, ignore_nan=True
-            )
+            ignore_nan = True
 
     return dpnp_median(
-        a, axis, out, overwrite_input, keepdims, ignore_nan=False
+        a, axis, out, overwrite_input, keepdims, ignore_nan=ignore_nan
     )
 
 
