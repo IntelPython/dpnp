@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.apply_along_axis &mdash; Data Parallel Extension for NumPy 0.17.0dev2+16.gdc490eda049 documentation</title>
+  <title>dpnp.apply_along_axis &mdash; Data Parallel Extension for NumPy 0.17.0dev2+22.gc32f96e2ce7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=196b02ef"></script>
+      <script src="../../_static/documentation_options.js?v=96bb5f25"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -125,7 +125,7 @@
 <p>Execute <code class="docutils literal notranslate"><span class="pre">func1d(a,</span> <span class="pre">*args,</span> <span class="pre">**kwargs)</span></code> where <cite>func1d</cite> operates on
 1-D arrays and <cite>a</cite> is a 1-D slice of <cite>arr</cite> along <cite>axis</cite>.</p>
 <p>This is equivalent to (but faster than) the following use of
-<code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndindex</span></code> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.s_</span></code>, which sets each of
+<a class="reference internal" href="dpnp.ndindex.html#dpnp.ndindex" title="dpnp.ndindex"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndindex</span></code></a> and <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.s_</span></code>, which sets each of
 <code class="docutils literal notranslate"><span class="pre">ii</span></code>, <code class="docutils literal notranslate"><span class="pre">jj</span></code>, and <code class="docutils literal notranslate"><span class="pre">kk</span></code> to a tuple of indices:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Ni</span><span class="p">,</span> <span class="n">Nk</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="n">axis</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="n">ndindex</span><span class="p">(</span><span class="n">Ni</span><span class="p">):</span>
