@@ -718,6 +718,7 @@ def test_reduce_hypot(device):
         ),
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
+        pytest.param("compress", [0, 1, 1, 0], [0, 1, 2, 3]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param(
             "corrcoef",
@@ -2855,24 +2856,3 @@ def test_ix(device_0, device_1):
     ixgrid = dpnp.ix_(x0, x1)
     assert_sycl_queue_equal(ixgrid[0].sycl_queue, x0.sycl_queue)
     assert_sycl_queue_equal(ixgrid[1].sycl_queue, x1.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_compress(device):
-    a_np = numpy.arange(5)
-    a = dpnp.array(a_np, device=device)
-
-    cond_np = numpy.array([0, 1, 0])
-    cond = dpnp.array(cond_np, device=device)
-
-    expected = numpy.compress(cond_np, a_np, axis=None)
-    result = dpnp.compress(cond, a, axis=None)
-    assert_allclose(expected, result)
-
-    expected_queue = a.sycl_queue
-    result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, expected_queue)
