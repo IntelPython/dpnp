@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev2+19.g217e305f8d3 documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev2+24.g40df09dd112 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=001f5f0f"></script>
+      <script src="../../_static/documentation_options.js?v=7d8c1851"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -741,39 +741,38 @@
 <span class="sd">    &gt;&gt;&gt; a = np.array([[10.0, 7, 4], [3, 2, 1]])</span>
 <span class="sd">    &gt;&gt;&gt; a[0, 1] = np.nan</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
-<span class="sd">    array([[10,  nan,  4],</span>
-<span class="sd">           [ 3,  2,  1]])</span>
+<span class="sd">    array([[10.,  nan,  4.],</span>
+<span class="sd">           [ 3.,  2.,  1.]])</span>
 <span class="sd">    &gt;&gt;&gt; np.median(a)</span>
 <span class="sd">    array(nan)</span>
 <span class="sd">    &gt;&gt;&gt; np.nanmedian(a)</span>
 <span class="sd">    array(3.)</span>
 
 <span class="sd">    &gt;&gt;&gt; np.nanmedian(a, axis=0)</span>
-<span class="sd">    array([6.5, 2. , 2.5])</span>
+<span class="sd">    array([6.5, 2., 2.5])</span>
 <span class="sd">    &gt;&gt;&gt; np.nanmedian(a, axis=1)</span>
-<span class="sd">    array([7.,  2.])</span>
+<span class="sd">    array([7., 2.])</span>
 
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.nanmedian(b, axis=1, overwrite_input=True)</span>
-<span class="sd">    array([7.,  2.])</span>
+<span class="sd">    array([7., 2.])</span>
 <span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.nanmedian(b, axis=None, overwrite_input=True)</span>
-<span class="sd">    array(3.0)</span>
+<span class="sd">    array(3.)</span>
 <span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">ignore_nan</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">dpnp_median</span><span class="p">(</span>
-                <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">True</span>
-            <span class="p">)</span>
+            <span class="n">ignore_nan</span> <span class="o">=</span> <span class="kc">True</span>
 
     <span class="k">return</span> <span class="n">dpnp_median</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span>
     <span class="p">)</span></div>
 
 

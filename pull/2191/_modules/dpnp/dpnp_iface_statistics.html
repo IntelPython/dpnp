@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev2+19.g217e305f8d3 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev2+24.g40df09dd112 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=001f5f0f"></script>
+      <script src="../../_static/documentation_options.js?v=7d8c1851"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -899,20 +899,20 @@
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=0)</span>
 <span class="sd">    array([6.5, 4.5, 2.5])</span>
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=1)</span>
-<span class="sd">    array([7.,  2.])</span>
+<span class="sd">    array([7., 2.])</span>
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=(0, 1))</span>
 <span class="sd">    array(3.5)</span>
 
 <span class="sd">    &gt;&gt;&gt; m = np.median(a, axis=0)</span>
 <span class="sd">    &gt;&gt;&gt; out = np.zeros_like(m)</span>
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=0, out=m)</span>
-<span class="sd">    array([6.5,  4.5,  2.5])</span>
+<span class="sd">    array([6.5, 4.5, 2.5])</span>
 <span class="sd">    &gt;&gt;&gt; m</span>
-<span class="sd">    array([6.5,  4.5,  2.5])</span>
+<span class="sd">    array([6.5, 4.5, 2.5])</span>
 
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=1, overwrite_input=True)</span>
-<span class="sd">    array([7.,  2.])</span>
+<span class="sd">    array([7., 2.])</span>
 <span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=None, overwrite_input=True)</span>
