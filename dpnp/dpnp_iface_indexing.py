@@ -50,6 +50,8 @@ from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
+
+# pylint: disable=no-name-in-module
 import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
 
 # pylint: disable=no-name-in-module

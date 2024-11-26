@@ -268,8 +268,7 @@ std::pair<sycl::event, sycl::event>
         }
 
         if (!(chc_type_id ==
-              array_types.typenum_to_lookup_id(chc_.get_typenum())))
-        {
+              array_types.typenum_to_lookup_id(chc_.get_typenum()))) {
             throw py::type_error(
                 "Choice array data types are not all the same.");
         }
@@ -396,8 +395,7 @@ struct ChooseWrapFactory
     fnT get()
     {
         if constexpr (std::is_integral<IndT>::value &&
-                      !std::is_same<IndT, bool>::value)
-        {
+                      !std::is_same<IndT, bool>::value) {
             using dpctl::tensor::indexing_utils::WrapIndex;
             fnT fn = kernels::choose_impl<WrapIndex<IndT>, IndT, T>;
             return fn;
@@ -415,8 +413,7 @@ struct ChooseClipFactory
     fnT get()
     {
         if constexpr (std::is_integral<IndT>::value &&
-                      !std::is_same<IndT, bool>::value)
-        {
+                      !std::is_same<IndT, bool>::value) {
             using dpctl::tensor::indexing_utils::ClipIndex;
             fnT fn = kernels::choose_impl<ClipIndex<IndT>, IndT, T>;
             return fn;
