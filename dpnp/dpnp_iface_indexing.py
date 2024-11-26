@@ -130,13 +130,7 @@ def _build_choices_list(choices):
     if dpnp.is_supported_array_type(choices):
         queues = [choices.sycl_queue]
         usm_types = [choices.usm_type]
-        choices_sh = choices.shape
-        if len(choices_sh) > 1:
-            choices = [
-                dpnp.get_usm_ndarray(chc) for chc in dpnp.unstack(choices)
-            ]
-        else:
-            choices = [choices]
+        choices = [dpnp.get_usm_ndarray(chc) for chc in dpnp.unstack(choices)]
     elif isinstance(choices, (tuple, list)):
         queues = []
         usm_types = []
