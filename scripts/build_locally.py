@@ -40,6 +40,7 @@ def run(
     cmake_opts="",
     target="intel",
     onemkl_interfaces=False,
+    onemkl_interfaces_dir=None,
 ):
     build_system = None
 
@@ -108,6 +109,13 @@ def run(
             "-DDPNP_USE_ONEMKL_INTERFACES=ON",
         ]
 
+        if onemkl_interfaces_dir:
+            cmake_args += [
+                f"-DDPNP_ONEMKL_INTERFACES_DIR={onemkl_interfaces_dir}",
+            ]
+    elif onemkl_interfaces_dir:
+        RuntimeError("--onemkl-interfaces-dir option is not supported")
+
     subprocess.check_call(
         cmake_args, shell=False, cwd=setup_dir, env=os.environ
     )
@@ -175,6 +183,13 @@ if __name__ == "__main__":
         dest="onemkl_interfaces",
         action="store_true",
     )
+    driver.add_argument(
+        "--onemkl-interfaces-dir",
+        help="Local directory with source of oneMKL Interfaces",
+        dest="onemkl_interfaces_dir",
+        default=None,
+        type=str,
+    )
     args = parser.parse_args()
 
     args_to_validate = [
@@ -230,4 +245,5 @@ if __name__ == "__main__":
         cmake_opts=args.cmake_opts,
         target=args.target,
         onemkl_interfaces=args.onemkl_interfaces,
+        onemkl_interfaces_dir=args.onemkl_interfaces_dir,
     )

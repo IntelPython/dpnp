@@ -13,7 +13,7 @@ env:
   # Follow oneAPI installation instruction for conda, since intel channel is not longer available
   # CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
-  CONDA_BUILD_VERSION: '24.9.0'
+  CONDA_BUILD_VERSION: '24.11.1'
   CONDA_INDEX_VERSION: '0.5.0'
   RERUN_TESTS_ON_FAILURE: 'true'
   RUN_TESTS_MAX_ATTEMPTS: 2
@@ -182,14 +182,15 @@ jobs:
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          shell: bash
           timeout_minutes: 10
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
-            conda activate ${{ env.TEST_ENV_NAME }}
-            pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.TEST_ENV_NAME }}
+
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows:
     name: Test ['windows-2019', python='${{ matrix.python }}']
@@ -317,13 +318,11 @@ jobs:
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          shell: cmd
           timeout_minutes: 15
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
-          command: >-
-            mamba activate ${{ env.TEST_ENV_NAME }}
-            & pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          command: |
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
