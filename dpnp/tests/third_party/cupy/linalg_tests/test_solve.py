@@ -106,31 +106,9 @@ class TestSolve(unittest.TestCase):
             self.check_shape((2, 3, 3), (3,), value_errors)
         else:
             # Not allowed since numpy 2
-            self.check_shape(
-                (0, 2, 2),
-                (
-                    0,
-                    2,
-                ),
-                value_errors,
-            )
-            self.check_shape(
-                (2, 4, 4),
-                (
-                    2,
-                    4,
-                ),
-                value_errors,
-            )
-            self.check_shape(
-                (2, 3, 2, 2),
-                (
-                    2,
-                    3,
-                    2,
-                ),
-                value_errors,
-            )
+            self.check_shape((0, 2, 2), (0, 2), value_errors)
+            self.check_shape((2, 4, 4), (2, 4), value_errors)
+            self.check_shape((2, 3, 2, 2), (2, 3, 2), value_errors)
 
 
 @testing.parameterize(
