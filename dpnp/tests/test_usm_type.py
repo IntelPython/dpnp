@@ -686,6 +686,7 @@ def test_1in_1out(func, data, usm_type):
         ),
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
+        pytest.param("compress", [False, True, True], [0, 1, 2, 3, 4]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
@@ -1746,17 +1747,3 @@ def test_ix(usm_type_0, usm_type_1):
     ixgrid = dp.ix_(x0, x1)
     assert ixgrid[0].usm_type == x0.usm_type
     assert ixgrid[1].usm_type == x1.usm_type
-
-
-@pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
-@pytest.mark.parametrize(
-    "usm_type_cond", list_of_usm_types, ids=list_of_usm_types
-)
-def test_compress(usm_type_a, usm_type_cond):
-    a = dp.arange(5, usm_type=usm_type_a)
-    cond = dp.array([False, True, True], usm_type=usm_type_cond)
-    z = dp.compress(cond, a, axis=None)
-
-    assert a.usm_type == usm_type_a
-    assert cond.usm_type == usm_type_cond
-    assert z.usm_type == du.get_coerced_usm_type([usm_type_a, usm_type_cond])
