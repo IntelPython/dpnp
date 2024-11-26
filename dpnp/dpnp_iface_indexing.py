@@ -147,6 +147,51 @@ def _build_choices_list(choices):
     return choices, queues, usm_types
 
 
+def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
+    # arg validation, broadcasting, type coercion assumed done by caller
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        out = dpnp.get_usm_ndarray(out)
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != inds.shape:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {inds.shape}, got {out.shape}"
+            )
+
+        if chcs[0].dtype != out.dtype:
+            raise ValueError(
+                f"Output array of type {chcs[0].dtype} is needed, "
+                f"got {out.dtype}"
+            )
+
+        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(inds, out) or any(
+            ti._array_overlap(out, chc) for chc in chcs
+        ):
+            # Allocate a temporary buffer to avoid memory overlapping.
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(
+            inds.shape, dtype=chcs[0].dtype, usm_type=usm_type, sycl_queue=q
+        )
+
+    _manager = dpu.SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
+
+    h_ev, choose_ev = indexing_ext._choose(inds, chcs, out, mode, q, dep_evs)
+    _manager.add_event_pair(h_ev, choose_ev)
+
+    return out
+
+
 def choose(x, choices, out=None, mode="wrap"):
     """
     Construct an array from an index array and a set of arrays to choose from.
@@ -218,59 +263,10 @@ def choose(x, choices, out=None, mode="wrap"):
     arrs_broadcast = dpt.broadcast_arrays(inds, *choices)
     inds = arrs_broadcast[0]
     choices = tuple(arrs_broadcast[1:])
-    res_sh = inds.shape
 
-    orig_out = out
-    if out is not None:
-        dpnp.check_supported_arrays_type(out)
-        out = dpnp.get_usm_ndarray(out)
+    res = _choose_run(inds, choices, exec_q, res_usm_type, out=out, mode=mode)
 
-        if not out.flags.writable:
-            raise ValueError("provided `out` array is read-only")
-
-        if out.shape != res_sh:
-            raise ValueError(
-                "The shape of input and output arrays are inconsistent. "
-                f"Expected output shape is {res_sh}, got {out.shape}"
-            )
-
-        if res_dt != out.dtype:
-            raise ValueError(
-                f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
-            )
-
-        if dpu.get_execution_queue((x.sycl_queue, out.sycl_queue)) is None:
-            raise dpu.ExecutionPlacementError(
-                "Input and output allocation queues are not compatible"
-            )
-
-        if ti._array_overlap(x, out) or any(
-            ti._array_overlap(out, chc) for chc in choices
-        ):
-            # Allocate a temporary buffer to avoid memory overlapping.
-            out = dpt.empty_like(out)
-    else:
-        out = dpt.empty(
-            res_sh, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
-        )
-
-    _manager = dpu.SequentialOrderManager[exec_q]
-    dep_evs = _manager.submitted_events
-
-    h_ev, choose_ev = indexing_ext._choose(
-        inds, choices, out, mode, exec_q, dep_evs
-    )
-    _manager.add_event_pair(h_ev, choose_ev)
-
-    if not (orig_out is None or orig_out is out):
-        # Copy the out data from temporary buffer to original memory
-        ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
-            src=out, dst=orig_out, sycl_queue=exec_q, depends=[choose_ev]
-        )
-        _manager.add_event_pair(ht_copy_ev, cpy_ev)
-        out = orig_out
-
-    return dpnp.get_result_array(out)
+    return dpnp.get_result_array(res, out=out)
 
 
 def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
