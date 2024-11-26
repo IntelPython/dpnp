@@ -121,7 +121,7 @@ def _build_choices_list(choices):
     """
     Gather queues and USM types for the input, expected to be an array or
     list of arrays. If a single array of dimension greater than one, the array
-    will be split along its first axis.
+    will be unstacked.
 
     Returns a list of :class:`dpctl.tensor.usm_ndarray`s, a list of
     :class:`dpctl.SyclQueue`s, and a list of strings representing USM types.
@@ -133,8 +133,7 @@ def _build_choices_list(choices):
         choices_sh = choices.shape
         if len(choices_sh) > 1:
             choices = [
-                dpnp.get_usm_ndarray(chc)
-                for chc in dpnp.array_split(choices, choices_sh[0])
+                dpnp.get_usm_ndarray(chc) for chc in dpnp.unstack(choices)
             ]
         else:
             choices = [choices]
@@ -171,8 +170,8 @@ def choose(x, choices, out=None, mode="wrap"):
                tuple of usm_ndarrays, list of dpnp.ndarrays,
                list of usm_ndarrays}
         Choice arrays. `x` and choice arrays must be broadcast-compatible.
-        If `choices` is an array, the array is split along its outermost
-        (i.e., 0th) dimension into a sequence of arrays.
+        If `choices` is an array, the array is unstacked into a sequence of
+        arrays.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be placed in this array. It should
         be of the appropriate shape and dtype.
