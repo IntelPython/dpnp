@@ -43,31 +43,32 @@ namespace dpnp::extensions::indexing::strides_detail
 struct NthStrideOffsetUnpacked
 {
     NthStrideOffsetUnpacked(int common_nd,
-                            ssize_t const *_offsets,
-                            ssize_t const *_shape,
-                            ssize_t const *_strides)
+                            dpctl::tensor::ssize_t const *_offsets,
+                            dpctl::tensor::ssize_t const *_shape,
+                            dpctl::tensor::ssize_t const *_strides)
         : _ind(common_nd), nd(common_nd), offsets(_offsets), shape(_shape),
           strides(_strides)
     {
     }
 
     template <typename nT>
-    size_t operator()(ssize_t gid, nT n) const
+    size_t operator()(dpctl::tensor::ssize_t gid, nT n) const
     {
-        ssize_t relative_offset(0);
-        _ind.get_displacement<const ssize_t *, const ssize_t *>(
+        dpctl::tensor::ssize_t relative_offset(0);
+        _ind.get_displacement<const dpctl::tensor::ssize_t *,
+                              const dpctl::tensor::ssize_t *>(
             gid, shape, strides + (n * nd), relative_offset);
 
         return relative_offset + offsets[n];
     }
 
 private:
-    dpctl::tensor::strides::CIndexer_vector<ssize_t> _ind;
+    dpctl::tensor::strides::CIndexer_vector<dpctl::tensor::ssize_t> _ind;
 
     int nd;
-    ssize_t const *offsets;
-    ssize_t const *shape;
-    ssize_t const *strides;
+    dpctl::tensor::ssize_t const *offsets;
+    dpctl::tensor::ssize_t const *shape;
+    dpctl::tensor::ssize_t const *strides;
 };
 
 } // namespace dpnp::extensions::indexing::strides_detail
@@ -93,7 +94,7 @@ private:
     const IndT *ind = nullptr;
     T *dst = nullptr;
     char **chcs = nullptr;
-    ssize_t n_chcs;
+    dpctl::tensor::ssize_t n_chcs;
     const IndOutIndexerT ind_out_indexer;
     const ChoicesIndexerT chcs_indexer;
 
@@ -101,7 +102,7 @@ public:
     ChooseFunctor(const IndT *ind_,
                   T *dst_,
                   char **chcs_,
-                  ssize_t n_chcs_,
+                  dpctl::tensor::ssize_t n_chcs_,
                   const IndOutIndexerT &ind_out_indexer_,
                   const ChoicesIndexerT &chcs_indexer_)
         : ind(ind_), dst(dst_), chcs(chcs_), n_chcs(n_chcs_),
@@ -113,17 +114,17 @@ public:
     {
         const ProjectorT proj{};
 
-        ssize_t i = id[0];
+        dpctl::tensor::ssize_t i = id[0];
 
         auto ind_dst_offsets = ind_out_indexer(i);
-        ssize_t ind_offset = ind_dst_offsets.get_first_offset();
-        ssize_t dst_offset = ind_dst_offsets.get_second_offset();
+        dpctl::tensor::ssize_t ind_offset = ind_dst_offsets.get_first_offset();
+        dpctl::tensor::ssize_t dst_offset = ind_dst_offsets.get_second_offset();
 
         IndT chc_idx = ind[ind_offset];
         // proj produces an index in the range of n_chcs
-        ssize_t projected_idx = proj(n_chcs, chc_idx);
+        dpctl::tensor::ssize_t projected_idx = proj(n_chcs, chc_idx);
 
-        ssize_t chc_offset = chcs_indexer(i, projected_idx);
+        dpctl::tensor::ssize_t chc_offset = chcs_indexer(i, projected_idx);
 
         T *chc = reinterpret_cast<T *>(chcs[projected_idx]);
 
@@ -133,29 +134,29 @@ public:
 
 typedef sycl::event (*choose_fn_ptr_t)(sycl::queue &,
                                        size_t,
-                                       ssize_t,
+                                       dpctl::tensor::ssize_t,
                                        int,
-                                       const ssize_t *,
+                                       const dpctl::tensor::ssize_t *,
                                        const char *,
                                        char *,
                                        char **,
-                                       ssize_t,
-                                       ssize_t,
-                                       const ssize_t *,
+                                       dpctl::tensor::ssize_t,
+                                       dpctl::tensor::ssize_t,
+                                       const dpctl::tensor::ssize_t *,
                                        const std::vector<sycl::event> &);
 
 template <typename ProjectorT, typename indTy, typename Ty>
 sycl::event choose_impl(sycl::queue &q,
                         size_t nelems,
-                        ssize_t n_chcs,
+                        dpctl::tensor::ssize_t n_chcs,
                         int nd,
-                        const ssize_t *shape_and_strides,
+                        const dpctl::tensor::ssize_t *shape_and_strides,
                         const char *ind_cp,
                         char *dst_cp,
                         char **chcs_cp,
-                        ssize_t ind_offset,
-                        ssize_t dst_offset,
-                        const ssize_t *chc_offsets,
+                        dpctl::tensor::ssize_t ind_offset,
+                        dpctl::tensor::ssize_t dst_offset,
+                        const dpctl::tensor::ssize_t *chc_offsets,
                         const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<Ty>(q);
