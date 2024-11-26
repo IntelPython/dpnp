@@ -15,6 +15,8 @@ env:
   PACKAGE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   TEST_ENV_NAME: test
+  RERUN_TESTS_ON_FAILURE: 'true'
+  RUN_TESTS_MAX_ATTEMPTS: 2
 
 jobs:
   test:
@@ -82,7 +84,38 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
+        if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
           python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+
+      - name: ReRun tests on Linux
+        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.runner != 'windows-2019'
+        id: run_tests_linux
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          timeout_minutes: 10
+          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          retry_on: any
+          command: |
+            . $CONDA/etc/profile.d/conda.sh
+            . $CONDA/etc/profile.d/mamba.sh
+            mamba activate ${{ env.TEST_ENV_NAME }}
+
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+        env:
+          SYCL_CACHE_PERSISTENT: 1
+
+      - name: ReRun tests on Windows
+        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.runner == 'windows-2019'
+        id: run_tests_win
+        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        with:
+          timeout_minutes: 15
+          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          retry_on: any
+          command: |
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
