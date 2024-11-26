@@ -879,7 +879,6 @@ class TestTakeAlongAxis:
         assert (result == dpnp.array([-2, 0, -2, 2])).all()
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_choose():
     a = numpy.r_[:4]
     ia = dpnp.array(a)
@@ -888,8 +887,10 @@ def test_choose():
     c = numpy.r_[100:500:100]
     ic = dpnp.array(c)
 
-    expected = numpy.choose([0, 0, 0, 0], [a, b, c])
-    result = dpnp.choose([0, 0, 0, 0], [ia, ib, ic])
+    inds_np = numpy.zeros(4, dtype="i4")
+    inds = dpnp.zeros(4, dtype="i4")
+    expected = numpy.choose(inds_np, [a, b, c])
+    result = dpnp.choose(inds, [ia, ib, ic])
     assert_array_equal(expected, result)
 
 
