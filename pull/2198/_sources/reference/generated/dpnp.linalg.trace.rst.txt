@@ -1,0 +1,10 @@
+﻿
+
+dpnp.linalg.trace
+=================
+
+.. currentmodule:: dpnp.linalg
+
+
+
+.. autofunction:: trace
