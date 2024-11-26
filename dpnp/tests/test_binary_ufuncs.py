@@ -245,81 +245,83 @@ class TestDivide:
         assert_raises(TypeError, numpy.divide, a.asnumpy(), 2, out)
 
 
-class TestFloorDivide:
+@pytest.mark.parametrize("func", ["floor_divide", "remainder"])
+class TestFloorDivideRemainder:
     ALL_DTYPES = get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+
+    def do_inplace_op(self, base, other, func):
+        if func == "floor_divide":
+            base //= other
+        else:
+            base %= other
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
-    def test_floor_divide(self, dtype):
-        a, b, expected = _get_numpy_arrays_2in_1out(
-            "floor_divide", dtype, [-5, 5, 10]
-        )
+    def test_basic(self, func, dtype):
+        a, b, expected = _get_numpy_arrays_2in_1out(func, dtype, [-5, 5, 10])
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         iout = dpnp.empty(expected.shape, dtype=dtype)
-        result = dpnp.floor_divide(ia, ib, out=iout)
+        result = getattr(dpnp, func)(ia, ib, out=iout)
 
         assert result is iout
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
-    def test_out_overlap(self, dtype):
+    def test_out_overlap(self, func, dtype):
         size = 15
-        a = numpy.arange(2 * size, dtype=dtype)
+        a = numpy.arange(1, 2 * size + 1, dtype=dtype)
         ia = dpnp.array(a)
 
-        dpnp.floor_divide(ia[size::], ia[::2], out=ia[:size:])
-        numpy.floor_divide(a[size::], a[::2], out=a[:size:])
+        getattr(dpnp, func)(ia[size::], ia[::2], out=ia[:size:])
+        getattr(numpy, func)(a[size::], a[::2], out=a[:size:])
 
         assert_dtype_allclose(ia, a)
 
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
-    def test_inplace_strides(self, dtype):
+    def test_inplace_strides(self, func, dtype):
         size = 21
 
         a = numpy.arange(size, dtype=dtype)
-        a[::3] //= 4
+        self.do_inplace_op(a[::3], 4, func)
 
         ia = dpnp.arange(size, dtype=dtype)
-        ia[::3] //= 4
+        self.do_inplace_op(ia[::3], 4, func)
 
         assert_dtype_allclose(ia, a)
 
-    @pytest.mark.parametrize(
-        "dtype1", get_all_dtypes(no_none=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype1", [dpnp.bool] + ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", get_float_dtypes())
-    def test_inplace_dtype(self, dtype1, dtype2):
+    def test_inplace_dtype(self, func, dtype1, dtype2):
         a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
         b = numpy.array([5, -2, -10, 1, 10], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
-            a //= b
-            ia //= ib
+            self.do_inplace_op(a, b, func)
+            self.do_inplace_op(ia, ib, func)
             assert_dtype_allclose(ia, a)
         else:
             with pytest.raises(TypeError):
-                a //= b
+                self.do_inplace_op(a, b, func)
 
             with pytest.raises(ValueError):
-                ia //= ib
+                self.do_inplace_op(ia, ib, func)
 
     @pytest.mark.parametrize("shape", [(0,), (15,), (2, 2)])
-    def test_invalid_shape(self, shape):
+    def test_invalid_shape(self, func, shape):
         a, b = dpnp.arange(10), dpnp.arange(10)
         out = dpnp.empty(shape)
 
         with pytest.raises(ValueError):
-            dpnp.floor_divide(a, b, out=out)
+            getattr(dpnp, func)(a, b, out=out)
 
     @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, out):
+    def test_invalid_out(self, func, out):
         a = dpnp.arange(10)
 
-        assert_raises(TypeError, dpnp.floor_divide, a, 2, out)
-        assert_raises(TypeError, numpy.floor_divide, a.asnumpy(), 2, out)
+        assert_raises(TypeError, getattr(dpnp, func), a, 2, out)
+        assert_raises(TypeError, getattr(numpy, func), a.asnumpy(), 2, out)
 
 
 class TestFmaxFmin:
