@@ -50,10 +50,10 @@ from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
+import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
 
 # pylint: disable=no-name-in-module
 from .dpnp_algo import (
-    dpnp_choose,
     dpnp_putmask,
 )
 from .dpnp_array import dpnp_array
@@ -117,56 +117,167 @@ def _ravel_multi_index_checks(multi_index, dims, order):
         )
 
 
-def choose(x1, choices, out=None, mode="raise"):
+def _build_choices_list(choices):
+    """
+    Gather queues and USM types for the input, expected to be an array or
+    list of arrays. If a single array of dimension greater than one, the array
+    will be split along its first axis.
+
+    Returns a list of :class:`dpctl.tensor.usm_ndarray`s, a list of
+    :class:`dpctl.SyclQueue`s, and a list of strings representing USM types.
+    """
+
+    if dpnp.is_supported_array_type(choices):
+        queues = [choices.sycl_queue]
+        usm_types = [choices.usm_type]
+        choices_sh = choices.shape
+        if len(choices_sh) > 1:
+            choices = [
+                dpnp.get_usm_ndarray(chc)
+                for chc in dpnp.array_split(choices, choices_sh[0])
+            ]
+        else:
+            choices = [choices]
+    elif isinstance(choices, (tuple, list)):
+        queues = []
+        usm_types = []
+        choices_ = []
+        for chc in choices:
+            chc_ = dpnp.get_usm_ndarray(chc)
+            choices_.append(dpnp.get_usm_ndarray(chc_))
+            queues.append(chc_.sycl_queue)
+            usm_types.append(chc_.usm_type)
+        choices = choices_
+    else:
+        raise TypeError("`choices` must be an array or sequence of arrays")
+
+    return choices, queues, usm_types
+
+
+def choose(x, choices, out=None, mode="wrap"):
     """
     Construct an array from an index array and a set of arrays to choose from.
 
     For full documentation refer to :obj:`numpy.choose`.
 
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        An integer array of indices indicating the position of the array
+        in `choices` to choose from. Behavior of out-of-bounds integers (i.e.,
+        integers outside of `[0, n-1]` where `n` is the number of choices) is
+        determined by the `mode` keyword.
+    choices : {dpnp.ndarray, usm_ndarray, tuple of dpnp.ndarrays,
+               tuple of usm_ndarrays, list of dpnp.ndarrays,
+               list of usm_ndarrays}
+        Choice arrays. `x` and choice arrays must be broadcast-compatible.
+        If `choices` is an array, the array is split along its outermost
+        (i.e., 0th) dimension into a sequence of arrays.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        If provided, the result will be placed in this array. It should
+        be of the appropriate shape and dtype.
+        Default: ``None``.
+    mode : {"wrap", "clip"}, optional
+        Specifies how out-of-bounds indices will be handled. Possible values
+        are:
+
+        - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+          negative indices.
+        - ``"clip"``: clips indices to (``0 <= i < n``).
+
+        Default: ``"wrap"``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The merged result.
+
     See also
     --------
     :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
-
     """
+    mode = _get_indexing_mode(mode)
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    inds = dpnp.get_usm_ndarray(x)
+    ind_dt = inds.dtype
+    if ind_dt.kind not in "ui":
+        raise ValueError("input index array must be of integer data type")
 
-    choices_list = []
-    for choice in choices:
-        choices_list.append(
-            dpnp.get_dpnp_descriptor(choice, copy_when_nondefault_queue=False)
+    choices, queues, usm_types = _build_choices_list(choices)
+
+    res_usm_type = dpu.get_coerced_usm_type(usm_types)
+    exec_q = dpu.get_execution_queue(queues)
+    if exec_q is None:
+        raise dpu.ExecutionPlacementError(
+            "arrays must be allocated on the same SYCL queue"
         )
+    # apply type promotion to input choices
+    res_dt = dpt.result_type(*choices)
+    if len(choices) > 1:
+        choices = tuple(
+            map(
+                lambda chc: (
+                    chc if chc.dtype == res_dt else dpt.astype(chc, res_dt)
+                ),
+                choices,
+            )
+        )
+    arrs_broadcast = dpt.broadcast_arrays(inds, *choices)
+    inds = arrs_broadcast[0]
+    choices = tuple(arrs_broadcast[1:])
+    res_sh = inds.shape
 
-    if x1_desc:
-        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
+    orig_out = out
+    if out is not None:
+        dpnp.check_supported_arrays_type(out)
+        out = dpnp.get_usm_ndarray(out)
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != res_sh:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {res_sh}, got {out.shape}"
             )
 
-        if any(not desc for desc in choices_list):
-            pass
-        elif out is not None:
-            pass
-        elif mode != "raise":
-            pass
-        elif any(not choices[0].dtype == choice.dtype for choice in choices):
-            pass
-        elif not choices_list:
-            pass
-        else:
-            size = x1_desc.size
-            choices_size = choices_list[0].size
-            if any(
-                choice.size != choices_size or choice.size != size
-                for choice in choices
-            ):
-                pass
-            elif any(x >= choices_size for x in dpnp.asnumpy(x1)):
-                pass
-            else:
-                return dpnp_choose(x1_desc, choices_list).get_pyobj()
+        if res_dt != out.dtype:
+            raise ValueError(
+                f"Output array of type {res_dt} is needed, " f"got {out.dtype}"
+            )
 
-    return call_origin(numpy.choose, x1, choices, out, mode)
+        if dpu.get_execution_queue((x.sycl_queue, out.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(x, out) or any(
+            ti._array_overlap(out, chc) for chc in choices
+        ):
+            # Allocate a temporary buffer to avoid memory overlapping.
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(
+            res_sh, dtype=res_dt, usm_type=res_usm_type, sycl_queue=exec_q
+        )
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    dep_evs = _manager.submitted_events
+
+    h_ev, choose_ev = indexing_ext._choose(
+        inds, choices, out, mode, exec_q, dep_evs
+    )
+    _manager.add_event_pair(h_ev, choose_ev)
+
+    if not (orig_out is None or orig_out is out):
+        # Copy the out data from temporary buffer to original memory
+        ht_copy_ev, cpy_ev = ti._copy_usm_ndarray_into_usm_ndarray(
+            src=out, dst=orig_out, sycl_queue=exec_q, depends=[choose_ev]
+        )
+        _manager.add_event_pair(ht_copy_ev, cpy_ev)
+        out = orig_out
+
+    return dpnp.get_result_array(out)
 
 
 def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
