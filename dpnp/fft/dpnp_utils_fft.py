@@ -78,11 +78,13 @@ def _commit_descriptor(a, forward, in_place, c2c, a_strides, index, batch_fft):
     shape = a_shape[index:]
     strides = (0,) + a_strides[index:]
     if c2c:  # c2c FFT
+        assert dpnp.issubdtype(a.dtype, dpnp.complexfloating)
         if a.dtype == dpnp.complex64:
             dsc = fi.Complex64Descriptor(shape)
         else:
             dsc = fi.Complex128Descriptor(shape)
     else:  # r2c/c2r FFT
+        assert dpnp.issubdtype(a.dtype, dpnp.inexact)
         if a.dtype in [dpnp.float32, dpnp.complex64]:
             dsc = fi.Real32Descriptor(shape)
         else:
@@ -262,12 +264,14 @@ def _copy_array(x, complex_input):
     in-place FFT can be performed.
     """
     dtype = x.dtype
+    copy_flag = False
     if numpy.min(x.strides) < 0:
         # negative stride is not allowed in OneMKL FFT
         # TODO: support for negative strides will be added in the future
         # versions of OneMKL, see discussion in MKLD-17597
         copy_flag = True
-    elif complex_input and not dpnp.issubdtype(dtype, dpnp.complexfloating):
+
+    if complex_input and not dpnp.issubdtype(dtype, dpnp.complexfloating):
         # c2c/c2r FFT, if input is not complex, convert to complex
         copy_flag = True
         if dtype in [dpnp.float16, dpnp.float32]:
@@ -279,8 +283,6 @@ def _copy_array(x, complex_input):
         # float32 or float64 depending on device capabilities
         copy_flag = True
         dtype = map_dtype_to_device(dpnp.float64, x.sycl_device)
-    else:
-        copy_flag = False
 
     if copy_flag:
         x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
