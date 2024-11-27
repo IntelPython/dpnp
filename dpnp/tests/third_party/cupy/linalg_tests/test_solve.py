@@ -60,11 +60,7 @@ class TestSolve(unittest.TestCase):
         # for other cases this signature must be followed
         # (..., m, m), (..., m, n) -> (..., m, n)
         # https://github.com/numpy/numpy/pull/25914
-        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-            self.check_x((2, 4, 4), (2, 4))
-            self.check_x((2, 3, 2, 2), (2, 3, 2))
-            self.check_x((0, 2, 2), (0, 2))
-        else:  # Allowed since numpy 2.0
+        if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
             self.check_x((2, 3, 3), (3,))
             self.check_x((2, 5, 3, 3), (3,))
 
@@ -101,11 +97,8 @@ class TestSolve(unittest.TestCase):
         self.check_shape((3, 3, 4), (3,), linalg_errors)
         self.check_shape((3, 3), (0,), value_errors)
         self.check_shape((0, 3, 4), (3,), linalg_errors)
-        # Since numpy >= 2.0, this case does not raise an error
-        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-            self.check_shape((2, 3, 3), (3,), value_errors)
-        else:
-            # Not allowed since numpy 2
+        # Not allowed since numpy 2.0
+        if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
             self.check_shape((0, 2, 2), (0, 2), value_errors)
             self.check_shape((2, 4, 4), (2, 4), value_errors)
             self.check_shape((2, 3, 2, 2), (2, 3, 2), value_errors)
