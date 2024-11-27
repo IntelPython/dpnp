@@ -721,6 +721,7 @@ def test_reduce_hypot(device):
         ),
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
+        pytest.param("compress", [0, 1, 1, 0], [0, 1, 2, 3]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param(
             "corrcoef",
