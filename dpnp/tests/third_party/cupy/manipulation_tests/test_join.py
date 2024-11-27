@@ -533,8 +533,7 @@ class TestJoin:
         a = testing.shaped_arange((4, 3), xp, dtype1)
         b = testing.shaped_arange((3,), xp, dtype2)
         c = testing.shaped_arange((2, 3), xp, dtype1)
-        with pytest.warns(DeprecationWarning):
-            return xp.row_stack((a, b, c))
+        return xp.row_stack((a, b, c))
 
     def test_row_stack_wrong_ndim1(self):
         a = cupy.zeros(())

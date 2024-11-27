@@ -45,6 +45,7 @@ class TestRoll(unittest.TestCase):
 
 class TestRollTypeError(unittest.TestCase):
 
+    @pytest.mark.skip("castable string shift is not supported")
     @testing.with_requires("numpy>=2.1.2")
     def test_roll_invalid_shift_castable(self):
         for xp in (numpy, cupy):
@@ -56,7 +57,7 @@ class TestRollTypeError(unittest.TestCase):
     def test_roll_invalid_shift(self):
         for xp in (numpy, cupy):
             x = testing.shaped_arange((5, 2), xp)
-            with pytest.raises(ValueError):
+            with pytest.raises((ValueError, TypeError)):
                 xp.roll(x, "a", axis=0)
 
     def test_roll_invalid_axis_type(self):

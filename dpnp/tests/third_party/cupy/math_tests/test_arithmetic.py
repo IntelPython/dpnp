@@ -266,7 +266,7 @@ class TestComplex:
 
 class ArithmeticBinaryBase:
 
-    @testing.numpy_cupy_allclose(atol=1e-4, type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def check_binary(self, xp):
         arg1 = self.arg1
         arg2 = self.arg2
