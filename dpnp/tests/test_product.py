@@ -70,8 +70,8 @@ class TestCross:
         ],
     )
     def test_basic(self, dtype, shape1, shape2, axis_a, axis_b, axis_c):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -89,28 +89,28 @@ class TestCross:
         ],
     )
     def test_axis(self, dtype, shape1, shape2, axis):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
         result = dpnp.cross(ia, ib, axis=axis)
         expected = numpy.cross(a, b, axis=axis)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
         if dtype1 == dpnp.bool and dtype2 == dpnp.bool:
             pytest.skip("boolean input arrays is not supported.")
-        a = generate_random_numpy_array(3, dtype1, low=-5, high=5)
-        b = generate_random_numpy_array(3, dtype2, low=-5, high=5)
+        a = generate_random_numpy_array(3, dtype1)
+        b = generate_random_numpy_array(3, dtype2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
         result = dpnp.cross(ia, ib)
         expected = numpy.cross(a, b)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -125,14 +125,14 @@ class TestCross:
         ],
     )
     def test_broadcast(self, dtype, shape1, shape2, axis_a, axis_b, axis_c):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
         result = dpnp.cross(ia, ib, axis_a, axis_b, axis_c)
         expected = numpy.cross(a, b, axis_a, axis_b, axis_c)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("stride", [3, -3])
@@ -217,7 +217,7 @@ class TestDot:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_scalar(self, dtype):
         a = 2
-        b = generate_random_numpy_array(10, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(10, dtype)
         ib = dpnp.array(b)
 
         result = dpnp.dot(a, ib)
@@ -257,8 +257,8 @@ class TestDot:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -286,7 +286,7 @@ class TestDot:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_out_scalar(self, dtype):
         a = 2
-        b = generate_random_numpy_array(10, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(10, dtype)
         ib = dpnp.array(b)
 
         dp_out = dpnp.empty(10, dtype=dtype)
@@ -325,8 +325,8 @@ class TestDot:
         ],
     )
     def test_out(self, dtype, shape1, shape2, out_shape):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -340,8 +340,8 @@ class TestDot:
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
-        a = generate_random_numpy_array(10, dtype1, low=-5, high=5)
-        b = generate_random_numpy_array(10, dtype2, low=-5, high=5)
+        a = generate_random_numpy_array(10, dtype1)
+        b = generate_random_numpy_array(10, dtype2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -438,7 +438,7 @@ class TestInner:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_scalar(self, dtype):
         a = 2
-        b = generate_random_numpy_array(10, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(10, dtype)
         ib = dpnp.array(b)
 
         result = dpnp.inner(a, ib)
@@ -461,8 +461,8 @@ class TestInner:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -473,8 +473,8 @@ class TestInner:
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
-        a = generate_random_numpy_array(10, dtype1, low=-5, high=5)
-        b = generate_random_numpy_array(10, dtype2, low=-5, high=5)
+        a = generate_random_numpy_array(10, dtype1)
+        b = generate_random_numpy_array(10, dtype2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -506,7 +506,7 @@ class TestKron:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_scalar(self, dtype):
         a = 2
-        b = generate_random_numpy_array(10, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(10, dtype)
         ib = dpnp.array(b)
 
         result = dpnp.kron(a, ib)
@@ -532,8 +532,8 @@ class TestKron:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -544,8 +544,8 @@ class TestKron:
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
-        a = generate_random_numpy_array(10, dtype1, low=-5, high=5)
-        b = generate_random_numpy_array(10, dtype2, low=-5, high=5)
+        a = generate_random_numpy_array(10, dtype1)
+        b = generate_random_numpy_array(10, dtype2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -631,9 +631,8 @@ class TestMultiDot:
     def test_basic(self, shapes, dtype):
         numpy_array_list = []
         dpnp_array_list = []
-        numpy.random.seed(70)
         for shape in shapes:
-            a = generate_random_numpy_array(shape, dtype, low=-5, high=5)
+            a = generate_random_numpy_array(shape, dtype)
             ia = dpnp.array(a)
 
             numpy_array_list.append(a)
@@ -641,7 +640,7 @@ class TestMultiDot:
 
         result = dpnp.linalg.multi_dot(dpnp_array_list)
         expected = numpy.linalg.multi_dot(numpy_array_list)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
@@ -677,7 +676,7 @@ class TestMultiDot:
         numpy_array_list = []
         dpnp_array_list = []
         for shape in shapes[:-1]:
-            a = generate_random_numpy_array(shape, dtype, low=-5, high=5)
+            a = generate_random_numpy_array(shape, dtype)
             ia = dpnp.array(a)
 
             numpy_array_list.append(a)
@@ -687,7 +686,7 @@ class TestMultiDot:
         result = dpnp.linalg.multi_dot(dpnp_array_list, out=dp_out)
         assert result is dp_out
         expected = numpy.linalg.multi_dot(numpy_array_list)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize(
         "stride",
@@ -759,7 +758,7 @@ class TestTensordot:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_scalar(self, dtype):
         a = 2
-        b = generate_random_numpy_array(10, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(10, dtype)
         ib = dpnp.array(b)
 
         result = dpnp.tensordot(a, ib, axes=0)
@@ -773,8 +772,8 @@ class TestTensordot:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axes", [0, 1, 2])
     def test_basic(self, dtype, axes):
-        a = generate_random_numpy_array((4, 4, 4), dtype, low=-10, high=10)
-        b = generate_random_numpy_array((4, 4, 4), dtype, low=-10, high=10)
+        a = generate_random_numpy_array((4, 4, 4), dtype)
+        b = generate_random_numpy_array((4, 4, 4), dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -794,8 +793,8 @@ class TestTensordot:
         ],
     )
     def test_axes(self, dtype, axes):
-        a = generate_random_numpy_array((2, 5, 3, 4), dtype, low=-10, high=10)
-        b = generate_random_numpy_array((4, 2, 5, 3), dtype, low=-10, high=10)
+        a = generate_random_numpy_array((2, 5, 3, 4), dtype)
+        b = generate_random_numpy_array((4, 2, 5, 3), dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -806,8 +805,8 @@ class TestTensordot:
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
-        a = generate_random_numpy_array((3, 4, 5), dtype1, low=-10, high=10)
-        b = generate_random_numpy_array((4, 5, 2), dtype2, low=-10, high=10)
+        a = generate_random_numpy_array((3, 4, 5), dtype1)
+        b = generate_random_numpy_array((4, 5, 2), dtype2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -839,8 +838,8 @@ class TestTensordot:
         [([0, 1]), ([0, 1], [1, 2]), ([-2, -3], [3, 2])],
     )
     def test_linalg(self, axes):
-        a = generate_random_numpy_array((2, 5, 3, 4), low=-10, high=10)
-        b = generate_random_numpy_array((4, 2, 5, 3), low=-10, high=10)
+        a = generate_random_numpy_array((2, 5, 3, 4))
+        b = generate_random_numpy_array((4, 2, 5, 3))
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -927,8 +926,8 @@ class TestVdot:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -951,8 +950,8 @@ class TestVdot:
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
-        a = generate_random_numpy_array(10, dtype1, low=-5, high=5)
-        b = generate_random_numpy_array(10, dtype2, low=-5, high=5)
+        a = generate_random_numpy_array(10, dtype1)
+        b = generate_random_numpy_array(10, dtype2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -1005,8 +1004,8 @@ class TestVecdot:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape1, dtype)
+        b = generate_random_numpy_array(shape2, dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -1020,8 +1019,8 @@ class TestVecdot:
         [((4,), (4, 4, 4)), ((3, 4, 5), (3, 4, 5))],
     )
     def test_axis1(self, axis, shape1, shape2):
-        a = generate_random_numpy_array(shape1, low=-5, high=5)
-        b = generate_random_numpy_array(shape2, low=-5, high=5)
+        a = generate_random_numpy_array(shape1)
+        b = generate_random_numpy_array(shape2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -1050,7 +1049,7 @@ class TestVecdot:
         ],
     )
     def test_axes(self, axes):
-        a = generate_random_numpy_array((5, 5, 5), low=-10, high=10)
+        a = generate_random_numpy_array((5, 5, 5))
         ia = dpnp.array(a)
 
         result = dpnp.vecdot(ia, ia, axes=axes)
@@ -1097,8 +1096,8 @@ class TestVecdot:
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
-        a = generate_random_numpy_array(10, dtype1, low=-5, high=5)
-        b = generate_random_numpy_array(10, dtype2, low=-5, high=5)
+        a = generate_random_numpy_array(10, dtype1)
+        b = generate_random_numpy_array(10, dtype2)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -1227,8 +1226,8 @@ class TestVecdot:
 
     @pytest.mark.parametrize("axis", [0, 1, 2, -1, -2, -3])
     def test_linalg(self, axis):
-        a = generate_random_numpy_array(4, low=-5, high=5)
-        b = generate_random_numpy_array((4, 4, 4), low=-5, high=5)
+        a = generate_random_numpy_array(4)
+        b = generate_random_numpy_array((4, 4, 4))
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 

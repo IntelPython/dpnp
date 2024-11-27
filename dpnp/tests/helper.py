@@ -162,7 +162,7 @@ def get_all_dtypes(
 
 
 def generate_random_numpy_array(
-    shape, dtype=None, hermitian=False, seed_value=None, low=-1, high=1
+    shape, dtype=None, hermitian=False, seed_value=None, low=-10, high=10
 ):
     """
     Generate a random numpy array with the specified shape and dtype.
@@ -184,12 +184,12 @@ def generate_random_numpy_array(
     seed_value : int, optional
         The seed value to initialize the random number generator.
         Default : ``None``
-    low : scalar, optional
+    low : {int, float}, optional
         Lower boundary of the generated samples from a uniform distribution.
-        Default : ``-1``.
-    high : scalar, optional
+        Default : ``-10``.
+    high : {int, float}, optional
         Upper boundary of the generated samples from a uniform distribution.
-        Default : ``1``.
+        Default : ``10``.
 
     Returns
     -------

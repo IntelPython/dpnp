@@ -150,11 +150,7 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky(self, array, dtype):
@@ -174,11 +170,7 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky_upper(self, array, dtype):
@@ -221,11 +213,7 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky_upper_numpy(self, array, dtype):
@@ -260,16 +248,8 @@ class TestCholesky:
 
     @pytest.mark.parametrize(
         "shape",
-        [
-            (0, 0),
-            (3, 0, 0),
-            (0, 2, 2),
-        ],
-        ids=[
-            "(0, 0)",
-            "(3, 0, 0)",
-            "(0, 2, 2)",
-        ],
+        [(0, 0), (3, 0, 0), (0, 2, 2)],
+        ids=["(0, 0)", "(3, 0, 0)", "(0, 2, 2)"],
     )
     def test_cholesky_empty(self, shape):
         a = numpy.empty(shape)
@@ -322,7 +302,7 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_cond(self, dtype, shape, p):
-        a = generate_random_numpy_array(shape, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(shape, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.cond(ia, p=p)
@@ -342,7 +322,7 @@ class TestCond:
 
     @pytest.mark.parametrize("p", [-dpnp.inf, -1, 1, dpnp.inf, "fro"])
     def test_cond_nan_input(self, p):
-        a = generate_random_numpy_array((3, 3), low=-10, high=10)
+        a = generate_random_numpy_array((3, 3))
         a[1, 1] = numpy.nan
         ia = dpnp.array(a)
 
@@ -354,7 +334,7 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_cond_nan(self, p):
-        a = generate_random_numpy_array((2, 2, 2, 2), low=-5, high=5)
+        a = generate_random_numpy_array((2, 2, 2, 2))
         a[0, 0] = 0
         a[1, 1] = 0
         ia = dpnp.array(a)
@@ -405,11 +385,7 @@ class TestDet:
                 [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_det(self, array, dtype):
@@ -523,35 +499,21 @@ class TestEigenvalue:
                     a[i].dot(v[i]), w[i] * v[i], rtol=rtol, atol=atol
                 )
 
-    @pytest.mark.parametrize(
-        "func",
-        [
-            "eig",
-            "eigvals",
-            "eigh",
-            "eigvalsh",
-        ],
-    )
+    @pytest.mark.parametrize("func", ["eig", "eigvals", "eigh", "eigvalsh"])
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (2, 3, 3), (2, 2, 3, 3)],
-        ids=["(2,2)", "(2,3,3)", "(2,2,3,3)"],
+        ids=["(2, 2)", "(2, 3, 3)", "(2, 2, 3, 3)"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize(
-        "order",
-        [
-            "C",
-            "F",
-        ],
-    )
+    @pytest.mark.parametrize("order", ["C", "F"])
     def test_eigenvalues(self, func, shape, dtype, order):
         # Set a `hermitian` flag for generate_random_numpy_array() to
         # get a symmetric array for eigh() and eigvalsh() or
         # non-symmetric for eig() and eigvals()
         is_hermitian = func in ("eigh, eigvalsh")
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=is_hermitian, seed_value=81
+            shape, dtype, hermitian=is_hermitian, seed_value=81, low=-2, high=2
         )
         a_order = numpy.array(a, order=order)
         a_dp = dpnp.array(a, order=order)
@@ -574,13 +536,7 @@ class TestEigenvalue:
         assert_dtype_allclose(w_dp, w)
 
     # eigh() and eigvalsh() are tested in cupy tests
-    @pytest.mark.parametrize(
-        "func",
-        [
-            "eig",
-            "eigvals",
-        ],
-    )
+    @pytest.mark.parametrize("func", ["eig", "eigvals"])
     @pytest.mark.parametrize(
         "shape",
         [(0, 0), (2, 0, 0), (0, 3, 3)],
@@ -603,15 +559,7 @@ class TestEigenvalue:
 
         assert_dtype_allclose(w_dp, w)
 
-    @pytest.mark.parametrize(
-        "func",
-        [
-            "eig",
-            "eigvals",
-            "eigh",
-            "eigvalsh",
-        ],
-    )
+    @pytest.mark.parametrize("func", ["eig", "eigvals", "eigh", "eigvalsh"])
     def test_eigenvalue_errors(self, func):
         a_dp = dpnp.array([[1, 3], [3, 2]], dtype="float32")
 
@@ -1737,11 +1685,7 @@ class TestInv:
                 [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_inv(self, array, dtype):
@@ -1776,16 +1720,8 @@ class TestInv:
 
     @pytest.mark.parametrize(
         "shape",
-        [
-            (0, 0),
-            (3, 0, 0),
-            (0, 2, 2),
-        ],
-        ids=[
-            "(0, 0)",
-            "(3, 0, 0)",
-            "(0, 2, 2)",
-        ],
+        [(0, 0), (3, 0, 0), (0, 2, 2)],
+        ids=["(0, 0)", "(3, 0, 0)", "(0, 2, 2)"],
     )
     def test_inv_empty(self, shape):
         a = numpy.empty(shape)
@@ -1882,8 +1818,8 @@ class TestLstsq:
     @pytest.mark.parametrize("a_dtype", get_all_dtypes())
     @pytest.mark.parametrize("b_dtype", get_all_dtypes())
     def test_lstsq_diff_type(self, a_dtype, b_dtype):
-        a_np = generate_random_numpy_array((2, 2), a_dtype, low=-5, high=5)
-        b_np = generate_random_numpy_array(2, b_dtype, low=-5, high=5)
+        a_np = generate_random_numpy_array((2, 2), a_dtype)
+        b_np = generate_random_numpy_array(2, b_dtype)
         a_dp = dpnp.array(a_np)
         b_dp = dpnp.array(b_np)
 
@@ -2030,11 +1966,7 @@ class TestMatrixRank:
             (numpy.array(0.99e-6), numpy.array(1.01e-6)),
             (numpy.array([0.99e-6]), numpy.array([1.01e-6])),
         ],
-        ids=[
-            "float",
-            "0-D array",
-            "1-D array",
-        ],
+        ids=["float", "0-D array", "1-D array"],
     )
     def test_matrix_rank_tolerance(self, high_tol, low_tol):
         a = numpy.eye(4)
@@ -2209,7 +2141,7 @@ class TestNorm:
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_1D(self, dtype, ord, axis, keepdims):
-        a = generate_random_numpy_array(10, dtype, low=-5, high=5)
+        a = generate_random_numpy_array(10, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
@@ -2226,7 +2158,7 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_2D(self, dtype, ord, axis, keepdims):
-        a = generate_random_numpy_array((3, 5), dtype, low=-5, high=5)
+        a = generate_random_numpy_array((3, 5), dtype)
         ia = dpnp.array(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             (isinstance(axis, tuple) or axis is None) and ord == 3
@@ -2253,7 +2185,7 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_ND(self, dtype, ord, axis, keepdims):
-        a = generate_random_numpy_array((2, 3, 4, 5), dtype, low=-5, high=5)
+        a = generate_random_numpy_array((2, 3, 4, 5), dtype)
         ia = dpnp.array(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             isinstance(axis, tuple) and ord == 3
@@ -2284,7 +2216,7 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_usm_ndarray(self, dtype, ord, axis, keepdims):
-        a = generate_random_numpy_array((2, 3, 4, 5), dtype, low=-5, high=5)
+        a = generate_random_numpy_array((2, 3, 4, 5), dtype)
         ia = dpt.asarray(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             isinstance(axis, tuple) and ord == 3
@@ -2361,7 +2293,7 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_matrix_norm(self, ord, keepdims):
-        a = generate_random_numpy_array((3, 5), low=-5, high=5)
+        a = generate_random_numpy_array((3, 5))
         ia = dpnp.array(a)
 
         result = dpnp.linalg.matrix_norm(ia, ord=ord, keepdims=keepdims)
@@ -2387,7 +2319,7 @@ class TestNorm:
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_vector_norm_1D(self, ord, axis, keepdims):
-        a = generate_random_numpy_array(10, low=-5, high=5)
+        a = generate_random_numpy_array(10)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.vector_norm(
@@ -2588,8 +2520,8 @@ class TestSolve:
     @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("b_dtype", get_all_dtypes(no_bool=True))
     def test_solve_diff_type(self, a_dtype, b_dtype):
-        a_np = generate_random_numpy_array((2, 2), a_dtype, low=-5, high=5)
-        b_np = generate_random_numpy_array(2, b_dtype, low=-5, high=5)
+        a_np = generate_random_numpy_array((2, 2), a_dtype)
+        b_np = generate_random_numpy_array(2, b_dtype)
         a_dp = dpnp.array(a_np)
         b_dp = dpnp.array(b_np)
 
@@ -2877,9 +2809,7 @@ class TestSvd:
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("compute_vt", [True, False])
     @pytest.mark.parametrize(
-        "shape",
-        [(2, 2), (16, 16)],
-        ids=["(2, 2)", "(16, 16)"],
+        "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
         # Set seed_value=81 to prevent
@@ -3025,15 +2955,13 @@ class TestPinv:
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
-        "shape",
-        [(2, 2), (16, 16)],
-        ids=["(2, 2)", "(16, 16)"],
+        "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_pinv_hermitian(self, dtype, shape):
         # Set seed_value=70 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=70
+            shape, dtype, hermitian=True, seed_value=70, low=-2, high=2
         )
         a_dp = dpnp.array(a)
 
@@ -3133,14 +3061,8 @@ class TestTensorinv:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "shape, ind",
-        [
-            ((4, 6, 8, 3), 2),
-            ((24, 8, 3), 1),
-        ],
-        ids=[
-            "(4, 6, 8, 3)",
-            "(24, 8, 3)",
-        ],
+        [((4, 6, 8, 3), 2), ((24, 8, 3), 1)],
+        ids=["(4, 6, 8, 3)", "(24, 8, 3)"],
     )
     def test_tensorinv(self, dtype, shape, ind):
         a = numpy.eye(24, dtype=dtype).reshape(shape)
@@ -3173,11 +3095,7 @@ class TestTensorsolve:
     @pytest.mark.parametrize(
         "axes",
         [None, (1,), (2,)],
-        ids=[
-            "None",
-            "(1,)",
-            "(2,)",
-        ],
+        ids=["None", "(1,)", "(2,)"],
     )
     def test_tensorsolve_axes(self, dtype, axes):
         a = numpy.eye(12).reshape(12, 3, 4).astype(dtype)
