@@ -1,0 +1,10 @@
+﻿
+
+dpnp.square
+===========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: square
