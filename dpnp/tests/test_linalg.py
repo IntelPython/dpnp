@@ -2830,6 +2830,10 @@ class TestSolve:
             inp.linalg.LinAlgError, inp.linalg.solve, a_dp_ndim_1, b_dp
         )
 
+        # b.ndim == 0
+        b_dp_ndim_0 = inp.array(2)
+        assert_raises(ValueError, inp.linalg.solve, a_dp, b_dp_ndim_0)
+
 
 class TestSlogdet:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
