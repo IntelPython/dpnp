@@ -1,6 +1,10 @@
-﻿dpnp.isreal
+﻿
+
+dpnp.isreal
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: isreal

@@ -1,6 +1,10 @@
-﻿dpnp.i0
+﻿
+
+dpnp.i0
 =======
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: i0

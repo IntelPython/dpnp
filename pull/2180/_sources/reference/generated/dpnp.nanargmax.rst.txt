@@ -1,6 +1,10 @@
-﻿dpnp.nanargmax
+﻿
+
+dpnp.nanargmax
 ==============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: nanargmax

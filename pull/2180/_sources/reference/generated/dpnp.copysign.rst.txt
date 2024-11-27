@@ -1,6 +1,10 @@
-﻿dpnp.copysign
+﻿
+
+dpnp.copysign
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: copysign

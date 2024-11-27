@@ -1,6 +1,10 @@
-﻿dpnp.random.ranf
+﻿
+
+dpnp.random.ranf
 ================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: ranf

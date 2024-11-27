@@ -1,6 +1,10 @@
-﻿dpnp.cumulative\_prod
+﻿
+
+dpnp.cumulative\_prod
 =====================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: cumulative_prod

@@ -1,6 +1,10 @@
-﻿dpnp.bitwise\_or
+﻿
+
+dpnp.bitwise\_or
 ================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: bitwise_or

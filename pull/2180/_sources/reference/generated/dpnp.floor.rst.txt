@@ -1,6 +1,10 @@
-﻿dpnp.floor
+﻿
+
+dpnp.floor
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: floor
