@@ -1644,52 +1644,37 @@ def solve(a, b):
     assert_stacked_2d(a)
     assert_stacked_square(a)
 
-    a_ndim = a.ndim
-    b_ndim = b.ndim
-
     a_shape = a.shape
     b_shape = b.shape
+    b_ndim = b.ndim
 
-    if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-        if not (
-            a_ndim in [b_ndim, b_ndim + 1]
-            and a_shape[:-1] == b_shape[: a_ndim - 1]
-        ):
-            raise dpnp.linalg.LinAlgError(
-                "a must have (..., M, M) shape and b must have (..., M) "
-                "or (..., M, K)"
-            )
-
-    else:  # compatible with numpy>=2.0
-        if b_ndim == 0:
-            raise ValueError("b must have at least one dimension")
-        if b_ndim == 1:
-            if a_shape[-1] != b.size:
-                raise ValueError(
-                    "a must have (..., M, M) shape and b must have (M,) "
-                    "for one-dimensional b"
-                )
-            b = dpnp.broadcast_to(b, a_shape[:-1])
-            return dpnp_solve(a, b)
-
-        if a_shape[-1] != b_shape[-2]:
+    # compatible with numpy>=2.0
+    if b_ndim == 0:
+        raise ValueError("b must have at least one dimension")
+    if b_ndim == 1:
+        if a_shape[-1] != b.size:
             raise ValueError(
-                "a must have (..., M, M) shape and b must have "
-                "(..., M, K) shape"
+                "a must have (..., M, M) shape and b must have (M,) "
+                "for one-dimensional b"
             )
+        b = dpnp.broadcast_to(b, a_shape[:-1])
+        return dpnp_solve(a, b)
 
-        # Use dpnp.broadcast_shapes() to align the resulting batch shapes
-        broadcasted_batch_shape = dpnp.broadcast_shapes(
-            a_shape[:-2], b_shape[:-2]
+    if a_shape[-1] != b_shape[-2]:
+        raise ValueError(
+            "a must have (..., M, M) shape and b must have (..., M, K) shape"
         )
 
-        a_broadcasted_shape = broadcasted_batch_shape + a_shape[-2:]
-        b_broadcasted_shape = broadcasted_batch_shape + b_shape[-2:]
+    # Use dpnp.broadcast_shapes() to align the resulting batch shapes
+    broadcasted_batch_shape = dpnp.broadcast_shapes(a_shape[:-2], b_shape[:-2])
 
-        if a_shape != a_broadcasted_shape:
-            a = dpnp.broadcast_to(a, a_broadcasted_shape)
-        if b_shape != b_broadcasted_shape:
-            b = dpnp.broadcast_to(b, b_broadcasted_shape)
+    a_broadcasted_shape = broadcasted_batch_shape + a_shape[-2:]
+    b_broadcasted_shape = broadcasted_batch_shape + b_shape[-2:]
+
+    if a_shape != a_broadcasted_shape:
+        a = dpnp.broadcast_to(a, a_broadcasted_shape)
+    if b_shape != b_broadcasted_shape:
+        b = dpnp.broadcast_to(b, b_broadcasted_shape)
 
     return dpnp_solve(a, b)
 
