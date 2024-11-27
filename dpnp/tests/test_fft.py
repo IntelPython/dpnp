@@ -382,7 +382,7 @@ class TestFft:
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
     def test_negative_stride(self, dtype):
-        a = dpnp.arange(10).astype(dtype)
+        a = dpnp.arange(10, dtype=dtype)
         result = dpnp.fft.fft(a[::-1])
         expected = numpy.fft.fft(a.asnumpy()[::-1])
 
