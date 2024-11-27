@@ -1,6 +1,10 @@
-﻿dpnp.power
+﻿
+
+dpnp.power
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: power

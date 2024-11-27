@@ -1,6 +1,10 @@
-﻿dpnp.ogrid
+﻿
+
+dpnp.ogrid
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autodata:: ogrid

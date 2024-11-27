@@ -1,6 +1,10 @@
-﻿dpnp.flipud
+﻿
+
+dpnp.flipud
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: flipud

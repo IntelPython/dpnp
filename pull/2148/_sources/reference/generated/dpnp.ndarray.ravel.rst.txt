@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.ravel
+:orphan:
+
+dpnp.ndarray.ravel
 ==================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.ravel

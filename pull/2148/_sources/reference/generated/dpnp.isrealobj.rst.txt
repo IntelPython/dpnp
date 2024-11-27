@@ -1,6 +1,10 @@
-﻿dpnp.isrealobj
+﻿
+
+dpnp.isrealobj
 ==============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: isrealobj

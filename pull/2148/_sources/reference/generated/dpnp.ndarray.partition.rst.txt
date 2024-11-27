@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.partition
+:orphan:
+
+dpnp.ndarray.partition
 ======================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.partition

@@ -1,6 +1,14 @@
-﻿dpnp.ndarray.itemsize
+
+:orphan:
+
+
+dpnp.ndarray.itemsize
 =====================
 
 .. currentmodule:: dpnp
+
+
+property
+
 
 .. autoproperty:: ndarray.itemsize

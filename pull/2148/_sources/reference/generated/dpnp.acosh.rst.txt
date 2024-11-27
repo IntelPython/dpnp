@@ -1,6 +1,10 @@
-﻿dpnp.acosh
+﻿
+
+dpnp.acosh
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: acosh

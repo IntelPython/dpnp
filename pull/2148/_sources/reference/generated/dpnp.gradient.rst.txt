@@ -1,6 +1,10 @@
-﻿dpnp.gradient
+﻿
+
+dpnp.gradient
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: gradient
