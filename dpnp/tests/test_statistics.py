@@ -629,25 +629,103 @@ class TestCorrcoef:
 
 
 class TestCorrelate:
+    def setup_method(self):
+        numpy.random.seed(0)
+
     @pytest.mark.parametrize(
         "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
     )
     @pytest.mark.parametrize("mode", [None, "full", "valid", "same"])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_correlate(self, a, v, mode, dtype):
+    @pytest.mark.parametrize("method", [None, "auto", "direct", "fft"])
+    def test_correlate(self, a, v, mode, dtype, method):
         an = numpy.array(a, dtype=dtype)
         vn = numpy.array(v, dtype=dtype)
         ad = dpnp.array(an)
         vd = dpnp.array(vn)
 
-        if mode is None:
-            expected = numpy.correlate(an, vn)
-            result = dpnp.correlate(ad, vd)
-        else:
-            expected = numpy.correlate(an, vn, mode=mode)
-            result = dpnp.correlate(ad, vd, mode=mode)
+        dpnp_kwargs = {}
+        numpy_kwargs = {}
+        if mode is not None:
+            dpnp_kwargs["mode"] = mode
+            numpy_kwargs["mode"] = mode
+        if method is not None:
+            dpnp_kwargs["method"] = method
+
+        expected = numpy.correlate(an, vn, **numpy_kwargs)
+        result = dpnp.correlate(ad, vd, **dpnp_kwargs)
 
         assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("a_size", [1, 100, 10000])
+    @pytest.mark.parametrize("v_size", [1, 100, 10000])
+    @pytest.mark.parametrize("mode", ["full", "valid", "same"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("method", ["auto", "direct", "fft"])
+    def test_correlate_random(self, a_size, v_size, mode, dtype, method):
+        if dtype == dpnp.bool:
+            an = numpy.random.rand(a_size) > 0.9
+            vn = numpy.random.rand(v_size) > 0.9
+        else:
+            an = (100 * numpy.random.rand(a_size)).astype(dtype)
+            vn = (100 * numpy.random.rand(v_size)).astype(dtype)
+
+            if dpnp.issubdtype(dtype, dpnp.complexfloating):
+                an = an + 1j * (100 * numpy.random.rand(a_size)).astype(dtype)
+                vn = vn + 1j * (100 * numpy.random.rand(v_size)).astype(dtype)
+
+        ad = dpnp.array(an)
+        vd = dpnp.array(vn)
+
+        dpnp_kwargs = {}
+        numpy_kwargs = {}
+        if mode is not None:
+            dpnp_kwargs["mode"] = mode
+            numpy_kwargs["mode"] = mode
+        if method is not None:
+            dpnp_kwargs["method"] = method
+
+        result = dpnp.correlate(ad, vd, **dpnp_kwargs)
+        expected = numpy.correlate(an, vn, **numpy_kwargs)
+
+        rdtype = result.dtype
+        if dpnp.issubdtype(rdtype, dpnp.integer):
+            rdtype = dpnp.default_float_type(ad.device)
+
+        if method != "fft" and (
+            dpnp.issubdtype(dtype, dpnp.integer) or dtype == dpnp.bool
+        ):
+            # For 'direct' and 'auto' methods, we expect exact results for integer types
+            assert_array_equal(result, expected)
+        else:
+            result = result.astype(rdtype)
+            if method == "direct":
+                expected = numpy.correlate(an, vn, **numpy_kwargs)
+                # For 'direct' method we can use standard validation
+                assert_dtype_allclose(result, expected, factor=30)
+            else:
+                rtol = 1e-3
+                atol = 1e-10
+
+                if rdtype == dpnp.float64 or rdtype == dpnp.complex128:
+                    rtol = 1e-6
+                    atol = 1e-12
+                elif rdtype == dpnp.bool:
+                    result = result.astype(dpnp.int32)
+                    rdtype = result.dtype
+
+                expected = expected.astype(rdtype)
+
+                diff = numpy.abs(result.asnumpy() - expected)
+                invalid = diff > atol + rtol * numpy.abs(expected)
+
+                # When using the 'fft' method, we might encounter outliers.
+                # This usually happens when the resulting array contains values close to zero.
+                # For these outliers, the relative error can be significant.
+                # We can tolerate a few such outliers.
+                max_outliers = 8 if expected.size > 1 else 0
+                if invalid.sum() > max_outliers:
+                    assert_dtype_allclose(result, expected, factor=1000)
 
     def test_correlate_mode_error(self):
         a = dpnp.arange(5)
@@ -689,7 +767,7 @@ class TestCorrelate:
         vd = dpnp.array(v)
 
         expected = numpy.correlate(a, v)
-        result = dpnp.correlate(ad, vd)
+        result = dpnp.correlate(ad, vd, method="direct")
 
         assert_dtype_allclose(result, expected, factor=20)
 
@@ -699,6 +777,13 @@ class TestCorrelate:
 
         with pytest.raises(ValueError):
             dpnp.correlate(a, v)
+
+    def test_correlate_unkown_method(self):
+        a = dpnp.arange(5)
+        v = dpnp.arange(3)
+
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v, method="unknown")
 
 
 @pytest.mark.parametrize(
