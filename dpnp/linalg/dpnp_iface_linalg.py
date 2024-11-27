@@ -1624,6 +1624,13 @@ def solve(a, b):
     --------
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
 
+    Notes
+    -----
+    The `b` array is only treated as a shape (M,) column vector if it is
+    exactly 1-dimensional. In all other instances it is treated as a stack
+    of (M, K) matrices. Previously `b` would be treated as a stack of (M,)
+    vectors if ``b.ndim`` was equal to ``a.ndim - 1``.
+
     Examples
     --------
     >>> import dpnp as dp
