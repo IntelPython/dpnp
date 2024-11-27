@@ -255,7 +255,7 @@ class TestMisc:
     def test_nan_to_num_nan(self):
         self.check_unary_nan("nan_to_num")
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_nan_to_num_scalar_nan(self, xp):
         return xp.nan_to_num(xp.array(xp.nan))
 

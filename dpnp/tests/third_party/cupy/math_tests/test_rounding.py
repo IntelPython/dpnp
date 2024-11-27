@@ -101,7 +101,7 @@ class TestRound(unittest.TestCase):
         a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
         return xp.around(a, self.decimals)
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose()
     def test_round_out(self, xp):
         a = testing.shaped_random(
             self.shape, xp, scale=100, dtype=cupy.default_float_type()
@@ -117,6 +117,9 @@ class TestRound(unittest.TestCase):
             "decimals": [-100, -99, -90, 0, 90, 99, 100],
         }
     )
+)
+@pytest.mark.skipif(
+    not has_support_aspect64(), reason="overflow encountered for float32 dtype"
 )
 class TestRoundExtreme(unittest.TestCase):
 

@@ -448,6 +448,7 @@ class TestMatmulAxes(unittest.TestCase):
         return out
 
 
+@pytest.mark.skip("GUFunc is not supported")
 class TestMatmulDispatch(unittest.TestCase):
 
     def test_matmul_dispatch(self):

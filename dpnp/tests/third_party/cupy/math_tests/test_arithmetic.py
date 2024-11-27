@@ -320,6 +320,14 @@ class ArithmeticBinaryBase:
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore")
                 if self.use_dtype:
+                    if (
+                        xp is numpy
+                        and self.name == "float_power"
+                        and self.dtype == numpy.float32
+                    ):
+                        # numpy.float_power does not have a loop for float32,
+                        # while dpnp.float_power does
+                        self.dtype = numpy.float64
                     y = func(arg1, arg2, dtype=self.dtype)
                 else:
                     y = func(arg1, arg2)
@@ -478,6 +486,7 @@ class TestArithmeticBinary2(ArithmeticBinaryBase):
         self.check_binary()
 
 
+@testing.with_requires("numpy>=2.0")
 class TestArithmeticBinary3(ArithmeticBinaryBase):
 
     @pytest.mark.parametrize(
