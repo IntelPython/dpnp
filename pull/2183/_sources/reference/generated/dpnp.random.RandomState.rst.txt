@@ -5,84 +5,24 @@
 
 .. autoclass:: RandomState
 
-   ..
-      Methods
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         RandomState.get_state
+         RandomState.get_sycl_device
+         RandomState.get_sycl_queue
+         RandomState.normal
+         RandomState.rand
+         RandomState.randint
+         RandomState.randn
+         RandomState.random_sample
+         RandomState.standard_normal
+         RandomState.uniform
 
 
 
-   .. rubric:: Methods
+   
 
-   ..
-      Special methods
-
-
-
-
-
-
-
-
-   ..
-      Ordinary methods
-
-
-
-
-   .. automethod:: get_state
-
-
-   .. automethod:: get_sycl_device
-
-
-   .. automethod:: get_sycl_queue
-
-
-   .. automethod:: normal
-
-
-   .. automethod:: rand
-
-
-   .. automethod:: randint
-
-
-   .. automethod:: randn
-
-
-   .. automethod:: random_sample
-
-
-   .. automethod:: standard_normal
-
-
-   .. automethod:: uniform
-
-
-   ..
-      Special methods
-
-
-
-   .. automethod:: __eq__
-
-
-   .. automethod:: __ne__
-
-
-   .. automethod:: __lt__
-
-
-   .. automethod:: __le__
-
-
-   .. automethod:: __gt__
-
-
-   .. automethod:: __ge__
-
-
-
-   ..
-      Attributes
-
-  

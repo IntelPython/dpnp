@@ -5,62 +5,14 @@
 
 .. autoclass:: flatiter
 
-   ..
-      Methods
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
 
 
 
-   .. rubric:: Methods
+   
 
-   ..
-      Special methods
-
-
-
-   .. automethod:: __getitem__
-
-
-   .. automethod:: __setitem__
-
-
-
-   .. automethod:: __next__
-
-
-   .. automethod:: __iter__
-
-
-   ..
-      Ordinary methods
-
-
-
-
-   ..
-      Special methods
-
-
-
-   .. automethod:: __eq__
-
-
-   .. automethod:: __ne__
-
-
-   .. automethod:: __lt__
-
-
-   .. automethod:: __le__
-
-
-   .. automethod:: __gt__
-
-
-   .. automethod:: __ge__
-
-
-
-   ..
-      Attributes
-
-  

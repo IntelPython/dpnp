@@ -1,6 +1,10 @@
-﻿dpnp.isfinite
+﻿
+
+dpnp.isfinite
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: isfinite

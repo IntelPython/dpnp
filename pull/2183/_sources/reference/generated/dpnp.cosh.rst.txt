@@ -1,6 +1,10 @@
-﻿dpnp.cosh
+﻿
+
+dpnp.cosh
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: cosh

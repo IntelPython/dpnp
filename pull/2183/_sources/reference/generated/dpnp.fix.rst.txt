@@ -1,6 +1,10 @@
-﻿dpnp.fix
+﻿
+
+dpnp.fix
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: fix

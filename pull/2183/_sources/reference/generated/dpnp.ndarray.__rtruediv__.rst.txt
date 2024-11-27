@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_rtruediv\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_rtruediv\_\_
 =============================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__rtruediv__
