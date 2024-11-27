@@ -9,6 +9,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestRounding(unittest.TestCase):
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=False, atol=1e-5)
     def check_unary(self, name, xp, dtype):
@@ -25,8 +26,6 @@ class TestRounding(unittest.TestCase):
     def check_unary_complex_unsupported(self, name, dtype):
         for xp in (numpy, cupy):
             a = testing.shaped_arange((2, 3), xp, dtype)
-            # NumPy returns TypeError while DPNP returns ValueError
-            # for these functions: "ceil", "floor", "trunc"
             with pytest.raises((TypeError, ValueError)):
                 getattr(xp, name)(a)
 
@@ -74,7 +73,7 @@ class TestRounding(unittest.TestCase):
 
     def test_round(self):
         self.check_unary("round")
-        self.check_unary_complex("around")
+        self.check_unary_complex("round")
 
 
 @testing.parameterize(
@@ -85,6 +84,7 @@ class TestRounding(unittest.TestCase):
     )
 )
 class TestRound(unittest.TestCase):
+
     shape = (20,)
 
     @testing.for_all_dtypes()
@@ -101,10 +101,11 @@ class TestRound(unittest.TestCase):
         a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
         return xp.around(a, self.decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_array_equal()
     def test_round_out(self, xp):
-        dtype = "d" if has_support_aspect64() else "f"
-        a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
+        a = testing.shaped_random(
+            self.shape, xp, scale=100, dtype=cupy.default_float_type()
+        )
         out = xp.empty_like(a)
         xp.around(a, self.decimals, out)
         return out
@@ -117,10 +118,8 @@ class TestRound(unittest.TestCase):
         }
     )
 )
-@pytest.mark.skipif(
-    not has_support_aspect64(), reason="overflow encountered for float32 dtype"
-)
 class TestRoundExtreme(unittest.TestCase):
+
     shape = (20,)
 
     dtype_ = (
@@ -160,10 +159,11 @@ class TestRoundExtreme(unittest.TestCase):
     )
 )
 class TestRoundBorder(unittest.TestCase):
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+
+    @pytest.mark.skip("scalar input is not supported")
+    @testing.numpy_cupy_allclose(atol=1e-5)
     def test_around_positive1(self, xp):
         a, decimals = self.value
-        a = xp.asarray(a)
         return xp.around(a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
@@ -172,10 +172,10 @@ class TestRoundBorder(unittest.TestCase):
         a = xp.asarray(a)
         return xp.around(a, decimals)
 
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    @pytest.mark.skip("scalar input is not supported")
+    @testing.numpy_cupy_allclose(atol=1e-5)
     def test_around_negative1(self, xp):
         a, decimals = self.value
-        a = xp.asarray(a)
         return xp.around(-a, decimals)
 
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
