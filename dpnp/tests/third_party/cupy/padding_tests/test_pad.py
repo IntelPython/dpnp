@@ -19,7 +19,7 @@ else:
         {
             "array": [numpy.arange(6).reshape([2, 3])],
             "pad_width": [1, [1, 2], [[1, 2], [3, 4]]],
-            # mode "mean" is non-exact, so it is tested in a separate class
+            # mode 'mean' is non-exact, so it is tested in a separate class
             "mode": [
                 "constant",
                 "edge",
@@ -34,6 +34,7 @@ else:
     )
 )
 class TestPadDefault(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_pad_default(self, xp, dtype):
@@ -64,6 +65,7 @@ class TestPadDefault(unittest.TestCase):
     )
 )
 class TestPadDefaultMean(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_almost_equal(decimal=5)
     def test_pad_default(self, xp, dtype):
@@ -86,7 +88,7 @@ class TestPadDefaultMean(unittest.TestCase):
 
 
 @testing.parameterize(
-    # mode="constant"
+    # mode='constant'
     {
         "array": numpy.arange(6).reshape([2, 3]),
         "pad_width": 1,
@@ -105,7 +107,7 @@ class TestPadDefaultMean(unittest.TestCase):
         "mode": "constant",
         "constant_values": [[3, 4], [5, 6]],
     },
-    # mode="reflect"
+    # mode='reflect'
     {
         "array": numpy.arange(6).reshape([2, 3]),
         "pad_width": 1,
@@ -124,7 +126,7 @@ class TestPadDefaultMean(unittest.TestCase):
         "mode": "reflect",
         "reflect_type": "odd",
     },
-    # mode="symmetric"
+    # mode='symmetric'
     {
         "array": numpy.arange(6).reshape([2, 3]),
         "pad_width": 1,
@@ -143,7 +145,7 @@ class TestPadDefaultMean(unittest.TestCase):
         "mode": "symmetric",
         "reflect_type": "odd",
     },
-    # mode="minimum"
+    # mode='minimum'
     {
         "array": numpy.arange(60).reshape([5, 12]),
         "pad_width": 1,
@@ -168,7 +170,7 @@ class TestPadDefaultMean(unittest.TestCase):
         "mode": "minimum",
         "stat_length": None,
     },
-    # mode="maximum"
+    # mode='maximum'
     {
         "array": numpy.arange(60).reshape([5, 12]),
         "pad_width": 1,
@@ -196,6 +198,7 @@ class TestPadDefaultMean(unittest.TestCase):
 )
 # Old numpy does not work with multi-dimensional constant_values
 class TestPad(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_pad(self, xp, dtype):
@@ -234,7 +237,7 @@ class TestPad(unittest.TestCase):
 
 
 @testing.parameterize(
-    # mode="mean"
+    # mode='mean'
     {
         "array": numpy.arange(60).reshape([5, 12]),
         "pad_width": 1,
@@ -262,6 +265,7 @@ class TestPad(unittest.TestCase):
 )
 # Old numpy does not work with multi-dimensional constant_values
 class TestPadMean(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_almost_equal(decimal=5)
     def test_pad(self, xp, dtype):
@@ -289,6 +293,7 @@ class TestPadMean(unittest.TestCase):
 
 
 class TestPadNumpybug(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_pad_highdim_default(self, xp, dtype):
@@ -302,6 +307,7 @@ class TestPadNumpybug(unittest.TestCase):
 
 
 class TestPadEmpty(unittest.TestCase):
+
     @testing.with_requires("numpy>=1.17")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
@@ -314,6 +320,7 @@ class TestPadEmpty(unittest.TestCase):
 
 
 class TestPadCustomFunction(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_pad_via_func(self, xp, dtype):
@@ -327,7 +334,7 @@ class TestPadCustomFunction(unittest.TestCase):
 
 
 @testing.parameterize(
-    # mode="constant"
+    # mode='constant'
     {"array": [], "pad_width": 1, "mode": "constant", "constant_values": 3},
     {"array": 1, "pad_width": 1, "mode": "constant", "constant_values": 3},
     {
@@ -342,16 +349,17 @@ class TestPadCustomFunction(unittest.TestCase):
         "mode": "constant",
         "constant_values": 3,
     },
-    # mode="edge"
+    # mode='edge'
     {"array": 1, "pad_width": 1, "mode": "edge"},
     {"array": [0, 1, 2, 3], "pad_width": 1, "mode": "edge"},
     {"array": [0, 1, 2, 3], "pad_width": [1, 2], "mode": "edge"},
-    # mode="reflect"
+    # mode='reflect'
     {"array": 1, "pad_width": 1, "mode": "reflect"},
     {"array": [0, 1, 2, 3], "pad_width": 1, "mode": "reflect"},
     {"array": [0, 1, 2, 3], "pad_width": [1, 2], "mode": "reflect"},
 )
 class TestPadSpecial(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_pad_special(self, xp):
         array = xp.array(self.array)
@@ -389,12 +397,7 @@ class TestPadSpecial(unittest.TestCase):
     },
     # edge
     {"array": [], "pad_width": 1, "mode": "edge", "kwargs": {}},
-    {
-        "array": [0, 1, 2, 3],
-        "pad_width": [-1, 1],
-        "mode": "edge",
-        "kwargs": {},
-    },
+    {"array": [0, 1, 2, 3], "pad_width": [-1, 1], "mode": "edge", "kwargs": {}},
     {
         "array": [0, 1, 2, 3],
         "pad_width": [[3, 4], [5, 6]],
@@ -407,7 +410,7 @@ class TestPadSpecial(unittest.TestCase):
         "mode": "edge",
         "kwargs": {"notallowedkeyword": 3},
     },
-    # mode="reflect"
+    # mode='reflect'
     {"array": [], "pad_width": 1, "mode": "reflect", "kwargs": {}},
     {
         "array": [0, 1, 2, 3],
@@ -430,6 +433,7 @@ class TestPadSpecial(unittest.TestCase):
 )
 @testing.with_requires("numpy>=1.17")
 class TestPadValueError(unittest.TestCase):
+
     def test_pad_failure(self):
         for xp in (numpy, cupy):
             array = xp.array(self.array)
@@ -446,10 +450,11 @@ class TestPadValueError(unittest.TestCase):
     },
     # edge
     {"array": [0, 1, 2, 3], "pad_width": [], "mode": "edge", "kwargs": {}},
-    # mode="reflect"
+    # mode='reflect'
     {"array": [0, 1, 2, 3], "pad_width": [], "mode": "reflect", "kwargs": {}},
 )
 class TestPadTypeError(unittest.TestCase):
+
     def test_pad_failure(self):
         for xp in (numpy, cupy):
             array = xp.array(self.array)
