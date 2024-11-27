@@ -786,7 +786,14 @@ class dpnp_array:
 
         return dpnp.clip(self, min, max, out=out, **kwargs)
 
-    # 'compress',
+    def compress(self, condition, axis=None, out=None):
+        """
+        Select slices of an array along a given axis.
+
+        Refer to :obj:`dpnp.compress` for full documentation.
+        """
+
+        return dpnp.compress(condition, self, axis=axis, out=out)
 
     def conj(self):
         """
