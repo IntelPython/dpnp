@@ -72,7 +72,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MODF,        /**< Used in numpy.modf() impl  */
     DPNP_FN_MODF_EXT,  /**< Used in numpy.modf() impl, requires extra parameters
                         */
-    DPNP_FN_MULTIPLY,  /**< Used in numpy.multiply() impl  */
     DPNP_FN_ONES,      /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE, /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION, /**< Used in numpy.partition() impl */
