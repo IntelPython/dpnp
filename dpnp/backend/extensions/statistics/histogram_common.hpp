@@ -74,13 +74,13 @@ struct CachedData
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &item) const
     {
-        int32_t llid = item.get_local_linear_id();
+        uint32_t llid = item.get_local_linear_id();
         auto local_ptr = &local_data[0];
-        int32_t size = local_data.size();
+        uint32_t size = local_data.size();
         auto group = item.get_group();
-        int32_t local_size = group.get_local_linear_range();
+        uint32_t local_size = group.get_local_linear_range();
 
-        for (int32_t i = llid; i < size; i += local_size) {
+        for (uint32_t i = llid; i < size; i += local_size) {
             local_ptr[i] = global_data[i];
         }
     }
@@ -218,15 +218,15 @@ struct HistWithLocalCopies
     template <int _Dims>
     void finalize(const sycl::nd_item<_Dims> &item) const
     {
-        int32_t llid = item.get_local_linear_id();
-        int32_t bins_count = local_hist.get_range().get(1);
-        int32_t local_hist_count = local_hist.get_range().get(0);
+        uint32_t llid = item.get_local_linear_id();
+        uint32_t bins_count = local_hist.get_range().get(1);
+        uint32_t local_hist_count = local_hist.get_range().get(0);
         auto group = item.get_group();
-        int32_t local_size = group.get_local_linear_range();
+        uint32_t local_size = group.get_local_linear_range();
 
-        for (int32_t i = llid; i < bins_count; i += local_size) {
+        for (uint32_t i = llid; i < bins_count; i += local_size) {
             auto value = local_hist[0][i];
-            for (int32_t lhc = 1; lhc < local_hist_count; ++lhc) {
+            for (uint32_t lhc = 1; lhc < local_hist_count; ++lhc) {
                 value += local_hist[lhc][i];
             }
             if (value != T(0)) {

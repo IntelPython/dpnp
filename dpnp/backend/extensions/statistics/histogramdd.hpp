@@ -25,12 +25,11 @@
 
 #pragma once
 
+#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-// dpctl tensor headers
-#include "dpctl4pybind11.hpp"
-
 #include "dispatch_table.hpp"
+#include "dpctl4pybind11.hpp"
 
 namespace statistics
 {

@@ -643,9 +643,14 @@ class TestHistogramDd:
         assert_array_equal(result_hist, expected_hist)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_invalid_bin(self, xp):
+    def test_invalid_bin_float(self, xp):
         a = xp.array([[1, 2]])
         assert_raises(ValueError, xp.histogramdd, a, bins=0.1)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_bin_2d_array(self, xp):
+        a = xp.array([[1, 2]])
+        assert_raises(ValueError, xp.histogramdd, a, bins=[[[10]], 10])
 
     @pytest.mark.parametrize(
         "bins",
@@ -731,7 +736,7 @@ class TestHistogramDd:
     def test_unsigned_monotonicity_check(self, xp):
         # bins must increase monotonically when bins contain unsigned values
         arr = xp.array([2])
-        bins = xp.array([1, 3, 1], dtype="uint64")
+        bins = [xp.array([1, 3, 1], dtype="uint64")]
         with assert_raises(ValueError):
             xp.histogramdd(arr, bins=bins)
 

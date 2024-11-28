@@ -235,32 +235,6 @@ def _get_bin_edges(a, bins, range, usm_type):
     return bin_edges, None
 
 
-def _normalize_array(a, dtype, usm_type=None):
-    if usm_type is None:
-        usm_type = a.usm_type
-
-    try:
-        return dpnp.asarray(
-            a,
-            dtype=dtype,
-            usm_type=usm_type,
-            sycl_queue=a.sycl_queue,
-            order="C",
-            copy=False,
-        )
-    except ValueError:
-        pass
-
-    return dpnp.asarray(
-        a,
-        dtype=dtype,
-        usm_type=usm_type,
-        sycl_queue=a.sycl_queue,
-        order="C",
-        copy=True,
-    )
-
-
 def _bincount_validate(x, weights, minlength):
     if x.ndim > 1:
         raise ValueError("object too deep for desired array")
@@ -426,16 +400,16 @@ def bincount(x, weights=None, minlength=None):
             "supported types"
         )
 
-    x_casted = _normalize_array(x, dtype=x_casted_dtype)
+    x_casted = dpnp.asarray(x, dtype=x_casted_dtype, order="C")
 
     if weights is not None:
-        weights_casted = _normalize_array(weights, dtype=ntype_casted)
+        weights_casted = dpnp.asarray(weights, dtype=ntype_casted, order="C")
 
     n_casted = _bincount_run_native(
         x_casted, weights_casted, minlength, ntype_casted, usm_type
     )
 
-    n = _normalize_array(n_casted, dtype=ntype, usm_type=usm_type)
+    n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type, order="C")
 
     return n
 
@@ -643,10 +617,12 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
             "supported types"
         )
 
-    a_casted = _normalize_array(a, a_bin_dtype)
-    bin_edges_casted = _normalize_array(bin_edges, a_bin_dtype)
+    a_casted = dpnp.asarray(a, dtype=a_bin_dtype, order="C")
+    bin_edges_casted = dpnp.asarray(bin_edges, dtype=a_bin_dtype, order="C")
     weights_casted = (
-        _normalize_array(weights, hist_dtype) if weights is not None else None
+        dpnp.asarray(weights, dtype=hist_dtype, order="C")
+        if weights is not None
+        else None
     )
 
     # histogram implementation uses atomics, but atomics doesn't work with
@@ -681,7 +657,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     )
     _manager.add_event_pair(mem_ev, ht_ev)
 
-    n = _normalize_array(n_casted, dtype=ntype, usm_type=usm_type)
+    n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type, order="C")
 
     if density:
         db = dpnp.astype(
@@ -794,17 +770,9 @@ def _histdd_validate_bins(bins):
             )
 
 
-def _histdd_check_monotonicity(bins):
-    for i, b in enumerate(bins):
-        if dpnp.any(b[:-1] > b[1:]):
-            raise ValueError(
-                f"bins[{i}] must increase monotonically, when an array"
-            )
-
-
 def _histdd_normalize_bins(bins, ndims):
     if not isinstance(bins, Iterable):
-        if not isinstance(bins, int):
+        if not dpnp.issubdtype(type(bins), dpnp.integer):
             raise ValueError("'bins' must be an integer, when a scalar")
 
         bins = [bins] * ndims
@@ -1053,11 +1021,11 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
         bin_edges_list, edges_count_list, sample_dtype
     )
 
-    _histdd_check_monotonicity(bin_edges_view_list)
-
-    sample_ = _normalize_array(sample, sample_dtype)
+    sample_ = dpnp.asarray(sample, dtype=sample_dtype, order="C")
     weights_ = (
-        _normalize_array(weights, hist_dtype) if weights is not None else None
+        dpnp.asarray(weights, dtype=hist_dtype, order="C")
+        if weights is not None
+        else None
     )
     n = _histdd_run_native(
         sample_,
@@ -1069,7 +1037,7 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
     )
 
     expexted_hist_dtype = _histdd_hist_dtype(queue, weights)
-    n = _normalize_array(n, expexted_hist_dtype, usm_type)
+    n = dpnp.asarray(n, dtype=expexted_hist_dtype, usm_type=usm_type, order="C")
 
     if density:
         # calculate the probability density function

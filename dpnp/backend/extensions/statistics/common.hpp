@@ -28,33 +28,10 @@
 #include <complex>
 #include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
-
-// clang-format off
-// math_utils.hpp doesn't include sycl header but uses sycl types
-// so sycl.hpp must be included before math_utils.hpp
 #include <sycl/sycl.hpp>
+
 #include "utils/math_utils.hpp"
 #include "utils/type_utils.hpp"
-// clang-format on
-
-namespace dpctl
-{
-namespace tensor
-{
-namespace type_utils
-{
-// Upstream to dpctl
-template <class T>
-struct is_complex<const std::complex<T>> : std::true_type
-{
-};
-
-template <typename T>
-constexpr bool is_complex_v = is_complex<T>::value;
-
-} // namespace type_utils
-} // namespace tensor
-} // namespace dpctl
 
 namespace type_utils = dpctl::tensor::type_utils;
 
@@ -115,18 +92,16 @@ struct IsNan
     static bool isnan(const T &v)
     {
         if constexpr (type_utils::is_complex_v<T>) {
-            const auto real1 = std::real(v);
-            const auto imag1 = std::imag(v);
-
             using vT = typename T::value_type;
+
+            const vT real1 = std::real(v);
+            const vT imag1 = std::imag(v);
 
             return IsNan<vT>::isnan(real1) || IsNan<vT>::isnan(imag1);
         }
-        else {
-            if constexpr (std::is_floating_point_v<T> ||
-                          std::is_same_v<T, sycl::half>) {
-                return sycl::isnan(v);
-            }
+        else if constexpr (std::is_floating_point_v<T> ||
+                           std::is_same_v<T, sycl::half>) {
+            return sycl::isnan(v);
         }
 
         return false;

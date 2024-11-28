@@ -245,7 +245,7 @@ struct HistogramddF
 };
 
 template <typename T, typename HistType = size_t>
-using HistogramddF2 = HistogramddF<T, T, HistType>;
+using HistogramddF_ = HistogramddF<T, T, HistType>;
 
 using SupportedTypes =
     std::tuple<std::tuple<uint64_t, float>,
@@ -268,7 +268,7 @@ using SupportedTypes =
 
 Histogramdd::Histogramdd() : dispatch_table("sample", "histogram")
 {
-    dispatch_table.populate_dispatch_table<SupportedTypes, HistogramddF2>();
+    dispatch_table.populate_dispatch_table<SupportedTypes, HistogramddF_>();
 }
 
 std::tuple<sycl::event, sycl::event> Histogramdd::call(
