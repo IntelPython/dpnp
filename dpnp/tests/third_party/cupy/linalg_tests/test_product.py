@@ -100,7 +100,7 @@ class TestDot(unittest.TestCase):
 class TestCrossProduct(unittest.TestCase):
 
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_cross(self, xp, dtype_a, dtype_b):
         if dtype_a == dtype_b == numpy.bool_:
             # cross does not support bool-bool inputs.
@@ -131,7 +131,7 @@ class TestCrossProduct(unittest.TestCase):
 )
 class TestCrossProductDeprecated(unittest.TestCase):
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_cross(self, xp, dtype_a, dtype_b):
         if dtype_a == dtype_b == numpy.bool_:
             # cross does not support bool-bool inputs.

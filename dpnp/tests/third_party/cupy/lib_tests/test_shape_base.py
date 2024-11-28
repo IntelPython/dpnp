@@ -11,9 +11,10 @@ from dpnp.tests.third_party.cupy import testing
 
 @testing.parameterize(*(testing.product({"axis": [0, 1, -1]})))
 class TestApplyAlongAxis(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_simple(self, xp):
-        a = xp.ones((20, 10), dtype="f")
+        a = xp.ones((20, 10), dtype=cupy.default_float_type())
         return xp.apply_along_axis(len, self.axis, a)
 
     @testing.for_all_dtypes(no_bool=True)
@@ -109,6 +110,7 @@ def test_apply_along_axis_invalid_axis():
 
 
 class TestPutAlongAxis(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_put_along_axis_empty(self, xp, dtype):
@@ -145,6 +147,7 @@ class TestPutAlongAxis(unittest.TestCase):
     )
 )
 class TestPutAlongAxes(unittest.TestCase):
+
     def test_replace_max(self):
         arr = cupy.array([[10, 30, 20], [60, 40, 50]])
         indices_max = cupy.argmax(arr, axis=self.axis, keepdims=True)
@@ -156,6 +159,7 @@ class TestPutAlongAxes(unittest.TestCase):
 
 
 class TestPutAlongAxisNone(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_axis_none(self, xp, dtype):
