@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.flatten
+:orphan:
+
+dpnp.ndarray.flatten
 ====================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.flatten

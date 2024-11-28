@@ -1,6 +1,10 @@
-﻿dpnp.asinh
+﻿
+
+dpnp.asinh
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: asinh

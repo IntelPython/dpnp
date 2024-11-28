@@ -1,6 +1,10 @@
-﻿dpnp.maximum
+﻿
+
+dpnp.maximum
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: maximum

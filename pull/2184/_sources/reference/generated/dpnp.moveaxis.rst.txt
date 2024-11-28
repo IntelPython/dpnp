@@ -1,6 +1,10 @@
-﻿dpnp.moveaxis
+﻿
+
+dpnp.moveaxis
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: moveaxis

@@ -1,6 +1,10 @@
-﻿dpnp.acos
+﻿
+
+dpnp.acos
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: acos

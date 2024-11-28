@@ -1,6 +1,10 @@
-﻿dpnp.arccosh
+﻿
+
+dpnp.arccosh
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: arccosh

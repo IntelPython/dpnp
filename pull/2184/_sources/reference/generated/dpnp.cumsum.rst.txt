@@ -1,6 +1,10 @@
-﻿dpnp.cumsum
+﻿
+
+dpnp.cumsum
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: cumsum

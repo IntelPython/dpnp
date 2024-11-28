@@ -1,6 +1,10 @@
-﻿dpnp.logical\_not
+﻿
+
+dpnp.logical\_not
 =================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: logical_not

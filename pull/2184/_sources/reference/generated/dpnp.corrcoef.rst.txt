@@ -1,6 +1,10 @@
-﻿dpnp.corrcoef
+﻿
+
+dpnp.corrcoef
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: corrcoef
