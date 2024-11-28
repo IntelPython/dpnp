@@ -1,6 +1,10 @@
-﻿dpnp.unravel\_index
+﻿
+
+dpnp.unravel\_index
 ===================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: unravel_index

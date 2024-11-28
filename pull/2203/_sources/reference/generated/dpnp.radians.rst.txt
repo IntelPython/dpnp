@@ -1,6 +1,10 @@
-﻿dpnp.radians
+﻿
+
+dpnp.radians
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: radians

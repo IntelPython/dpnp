@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_ror\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_ror\_\_
 ========================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__ror__

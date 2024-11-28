@@ -1,6 +1,10 @@
-﻿dpnp.ndim
+﻿
+
+dpnp.ndim
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: ndim

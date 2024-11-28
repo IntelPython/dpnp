@@ -1,6 +1,10 @@
-﻿dpnp.trapezoid
+﻿
+
+dpnp.trapezoid
 ==============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: trapezoid

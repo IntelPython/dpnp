@@ -1,6 +1,10 @@
-﻿dpnp.empty\_like
+﻿
+
+dpnp.empty\_like
 ================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: empty_like

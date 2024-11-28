@@ -1,6 +1,10 @@
-﻿dpnp.vdot
+﻿
+
+dpnp.vdot
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: vdot
