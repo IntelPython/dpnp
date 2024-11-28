@@ -718,6 +718,7 @@ def test_reduce_hypot(device):
         ),
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
+        pytest.param("compress", [0, 1, 1, 0], [0, 1, 2, 3]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param(
             "corrcoef",
@@ -2391,39 +2392,33 @@ def test_where(device):
     ids=[device.filter_string for device in valid_devices],
 )
 @pytest.mark.parametrize(
-    "matrix, vector",
+    "matrix, rhs",
     [
         ([[1, 2], [3, 5]], numpy.empty((2, 0))),
         ([[1, 2], [3, 5]], [1, 2]),
         (
             [
-                [[1, 1, 1], [0, 2, 5], [2, 5, -1]],
-                [[3, -1, 1], [1, 2, 3], [2, 3, 1]],
-                [[1, 4, 1], [1, 2, -2], [4, 1, 2]],
+                [[1, 1], [0, 2]],
+                [[3, -1], [1, 2]],
             ],
-            [[6, -4, 27], [9, -6, 15], [15, 1, 11]],
+            [
+                [[6, -4], [9, -6]],
+                [[15, 1], [15, 1]],
+            ],
         ),
     ],
     ids=[
-        "2D_Matrix_Empty_Vector",
-        "2D_Matrix_1D_Vector",
-        "3D_Matrix_and_Vectors",
+        "2D_Matrix_Empty_RHS",
+        "2D_Matrix_1D_RHS",
+        "3D_Matrix_and_3D_RHS",
     ],
 )
-def test_solve(matrix, vector, device):
+def test_solve(matrix, rhs, device):
     a_np = numpy.array(matrix)
-    b_np = numpy.array(vector)
+    b_np = numpy.array(rhs)
 
     a_dp = dpnp.array(a_np, device=device)
     b_dp = dpnp.array(b_np, device=device)
-
-    # In numpy 2.0 the broadcast ambiguity has been removed and now
-    # b is treaded as a single vector if and only if it is 1-dimensional;
-    # for other cases this signature must be followed
-    # (..., m, m), (..., m, n) -> (..., m, n)
-    # https://github.com/numpy/numpy/pull/25914
-    if a_dp.ndim > 2 and numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
-        pytest.skip("SAT-6928")
 
     result = dpnp.linalg.solve(a_dp, b_dp)
     expected = numpy.linalg.solve(a_np, b_np)
