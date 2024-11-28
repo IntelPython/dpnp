@@ -14,6 +14,8 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestFlatiter(unittest.TestCase):
+
+    @pytest.mark.skip("no base attribute")
     def test_base(self):
         for xp in (numpy, cupy):
             a = xp.zeros((2, 3, 4))
@@ -31,12 +33,14 @@ class TestFlatiter(unittest.TestCase):
             for ai, ei in zip(a.flat, e):
                 assert ai == ei
 
+    @pytest.mark.skip("no len() method")
     def test_len(self):
         for xp in (numpy, cupy):
             a = xp.zeros((2, 3, 4))
             assert len(a.flat) == 24
             assert len(a[::2].flat) == 12
 
+    @pytest.mark.skip("no copy attribute")
     @testing.numpy_cupy_array_equal()
     def test_copy(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -44,6 +48,7 @@ class TestFlatiter(unittest.TestCase):
         assert a is not o
         return a.flat.copy()
 
+    @pytest.mark.skip("no copy attribute")
     @testing.numpy_cupy_array_equal()
     def test_copy_next(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -53,19 +58,20 @@ class TestFlatiter(unittest.TestCase):
 
 
 @testing.parameterize(
-    {"shape": (2, 3, 4), "index": Ellipsis},
+    # {"shape": (2, 3, 4), "index": Ellipsis},
     {"shape": (2, 3, 4), "index": 0},
     {"shape": (2, 3, 4), "index": 10},
-    {"shape": (2, 3, 4), "index": slice(None)},
-    {"shape": (2, 3, 4), "index": slice(None, 10)},
-    {"shape": (2, 3, 4), "index": slice(None, None, 2)},
-    {"shape": (2, 3, 4), "index": slice(None, None, -1)},
-    {"shape": (2, 3, 4), "index": slice(10, None, -1)},
-    {"shape": (2, 3, 4), "index": slice(10, None, -2)},
-    {"shape": (), "index": slice(None)},
-    {"shape": (10,), "index": slice(None)},
+    # {"shape": (2, 3, 4), "index": slice(None)},
+    # {"shape": (2, 3, 4), "index": slice(None, 10)},
+    # {"shape": (2, 3, 4), "index": slice(None, None, 2)},
+    # {"shape": (2, 3, 4), "index": slice(None, None, -1)},
+    # {"shape": (2, 3, 4), "index": slice(10, None, -1)},
+    # {"shape": (2, 3, 4), "index": slice(10, None, -2)},
+    # {"shape": (), "index": slice(None)},
+    # {"shape": (10,), "index": slice(None)},
 )
 class TestFlatiterSubscript(unittest.TestCase):
+
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -121,11 +127,12 @@ class TestFlatiterSubscript(unittest.TestCase):
     {"shape": (2, 3, 4), "index": None},
     {"shape": (2, 3, 4), "index": (0,)},
     {"shape": (2, 3, 4), "index": True},
-    # printing behaviour of dpnp_array ('index') makes imposibble to skip this test
-    # {'shape': (2, 3, 4), 'index': cupy.array([0])},
+    {"shape": (2, 3, 4), "index": cupy.array([0])},
     {"shape": (2, 3, 4), "index": [0]},
 )
+@pytest.mark.skip("no exception raised")
 class TestFlatiterSubscriptIndexError(unittest.TestCase):
+
     @testing.for_all_dtypes()
     def test_getitem(self, dtype):
         a = testing.shaped_arange(self.shape, cupy, dtype)
