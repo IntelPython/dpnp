@@ -138,10 +138,11 @@ void check_num_dims(const array_ptr &arr,
                     const size_t ndim,
                     const array_names &names)
 {
-    if (arr != nullptr && arr->get_ndim() != ndim) {
+    size_t arr_n_dim = arr != nullptr ? arr->get_ndim() : 0;
+    if (arr != nullptr && arr_n_dim != ndim) {
         throw py::value_error("Array " + name_of(arr, names) + " must be " +
                               std::to_string(ndim) + "D, but got " +
-                              std::to_string(arr->get_ndim()) + "D.");
+                              std::to_string(arr_n_dim) + "D.");
     }
 }
 
@@ -149,11 +150,12 @@ void check_max_dims(const array_ptr &arr,
                     const size_t max_ndim,
                     const array_names &names)
 {
-    if (arr != nullptr && arr->get_ndim() > max_ndim) {
+    size_t arr_n_dim = arr != nullptr ? arr->get_ndim() : 0;
+    if (arr != nullptr && arr_n_dim > max_ndim) {
         throw py::value_error(
             "Array " + name_of(arr, names) + " must have no more than " +
             std::to_string(max_ndim) + " dimensions, but got " +
-            std::to_string(arr->get_ndim()) + " dimensions.");
+            std::to_string(arr_n_dim) + " dimensions.");
     }
 }
 
@@ -161,11 +163,12 @@ void check_size_at_least(const array_ptr &arr,
                          const size_t size,
                          const array_names &names)
 {
-    if (arr != nullptr && arr->get_size() < size) {
+    size_t arr_size = arr != nullptr ? arr->get_size() : 0;
+    if (arr != nullptr && arr_size < size) {
         throw py::value_error("Array " + name_of(arr, names) +
                               " must have at least " + std::to_string(size) +
-                              " elements, but got " +
-                              std::to_string(arr->get_size()) + " elements.");
+                              " elements, but got " + std::to_string(arr_size) +
+                              " elements.");
     }
 }
 

@@ -605,9 +605,6 @@ def correlate(a, v, mode="valid"):
     a_casted = dpnp.asarray(a, dtype=supported_dtype, order="C")
     v_casted = dpnp.asarray(v, dtype=supported_dtype, order="C")
 
-    if v.size > a.size:
-        a_casted, v_casted = v_casted, a_casted
-
     r = _run_native_sliding_dot_product1d(a_casted, v_casted, l_pad, r_pad)
 
     if revert:
