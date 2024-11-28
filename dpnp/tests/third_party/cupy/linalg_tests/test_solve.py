@@ -15,13 +15,14 @@ from dpnp.tests.third_party.cupy.testing import _condition
 @testing.parameterize(
     *testing.product(
         {
+            # "batched_gesv_limit": [None, 0],
             "order": ["C", "F"],
         }
     )
 )
 @testing.fix_random()
 class TestSolve(unittest.TestCase):
-    # TODO: add get_batched_gesv_limit
+
     # def setUp(self):
     #     if self.batched_gesv_limit is not None:
     #         self.old_limit = get_batched_gesv_limit()
@@ -32,6 +33,7 @@ class TestSolve(unittest.TestCase):
     #         set_batched_gesv_limit(self.old_limit)
 
     @testing.for_dtypes("ifdFD")
+    # TODO(kataoka): Fix contiguity
     @testing.numpy_cupy_allclose(
         atol=1e-3, contiguous_check=False, type_check=has_support_aspect64()
     )
@@ -71,6 +73,7 @@ class TestSolve(unittest.TestCase):
     # NumPy with OpenBLAS returns an empty array
     # while numpy with OneMKL raises LinAlgError
     @pytest.mark.skip("Undefined behavior")
+    @testing.numpy_cupy_allclose()
     def test_solve_singular_empty(self, xp):
         a = xp.zeros((3, 3))  # singular
         b = xp.empty((3, 0))  # nrhs = 0
@@ -94,10 +97,33 @@ class TestSolve(unittest.TestCase):
         self.check_shape((3, 3, 4), (3,), linalg_errors)
         self.check_shape((3, 3), (0,), value_errors)
         self.check_shape((0, 3, 4), (3,), linalg_errors)
-        # Not allowed since numpy 2.0
-        self.check_shape((0, 2, 2), (0, 2), value_errors)
-        self.check_shape((2, 4, 4), (2, 4), value_errors)
-        self.check_shape((2, 3, 2, 2), (2, 3, 2), value_errors)
+        self.check_shape((3, 3), (), value_errors)
+        # Not allowed since numpy 2
+        self.check_shape(
+            (0, 2, 2),
+            (
+                0,
+                2,
+            ),
+            value_errors,
+        )
+        self.check_shape(
+            (2, 4, 4),
+            (
+                2,
+                4,
+            ),
+            value_errors,
+        )
+        self.check_shape(
+            (2, 3, 2, 2),
+            (
+                2,
+                3,
+                2,
+            ),
+            value_errors,
+        )
 
 
 @testing.parameterize(
@@ -110,6 +136,7 @@ class TestSolve(unittest.TestCase):
 )
 @testing.fix_random()
 class TestTensorSolve(unittest.TestCase):
+
     @testing.for_dtypes("ifdFD")
     @testing.numpy_cupy_allclose(atol=0.02, type_check=has_support_aspect64())
     def test_tensorsolve(self, xp, dtype):
@@ -128,6 +155,7 @@ class TestTensorSolve(unittest.TestCase):
     )
 )
 class TestInv(unittest.TestCase):
+
     @testing.for_dtypes("ifdFD")
     @_condition.retry(10)
     def check_x(self, a_shape, dtype):
@@ -137,7 +165,6 @@ class TestInv(unittest.TestCase):
         a_gpu_copy = a_gpu.copy()
         result_cpu = numpy.linalg.inv(a_cpu)
         result_gpu = cupy.linalg.inv(a_gpu)
-
         assert_dtype_allclose(result_gpu, result_cpu)
         testing.assert_array_equal(a_gpu_copy, a_gpu)
 
@@ -167,6 +194,7 @@ class TestInv(unittest.TestCase):
 
 
 class TestInvInvalid(unittest.TestCase):
+
     @testing.for_dtypes("ifdFD")
     def test_inv(self, dtype):
         for xp in (numpy, cupy):
@@ -189,6 +217,7 @@ class TestInvInvalid(unittest.TestCase):
 
 
 class TestPinv(unittest.TestCase):
+
     @testing.for_dtypes("ifdFD")
     @_condition.retry(10)
     def check_x(self, a_shape, rcond, dtype):
@@ -231,6 +260,7 @@ class TestPinv(unittest.TestCase):
 
 
 class TestLstsq:
+
     @testing.for_dtypes("ifdFD")
     @testing.numpy_cupy_allclose(atol=1e-3, type_check=has_support_aspect64())
     def check_lstsq_solution(
@@ -309,20 +339,18 @@ class TestLstsq:
         self.check_invalid_shapes((3, 3), (2, 2))
         self.check_invalid_shapes((4, 3), (10, 3, 3))
 
-    # dpnp.linalg.lstsq() does not raise a FutureWarning
-    # because dpnp did not have a previous implementation of dpnp.linalg.lstsq()
-    # and there is no need to get rid of old deprecated behavior as numpy did.
-    @pytest.mark.skip("No support of deprecated behavior")
+    @testing.with_requires("numpy>=2.0")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(atol=1e-3)
-    def test_warn_rcond(self, xp, dtype):
+    def test_nowarn_rcond(self, xp, dtype):
         a = testing.shaped_random((3, 3), xp, dtype)
         b = testing.shaped_random((3,), xp, dtype)
-        with testing.assert_warns(FutureWarning):
-            return xp.linalg.lstsq(a, b)
+        # FutureWarning is no longer emitted
+        return xp.linalg.lstsq(a, b)
 
 
 class TestTensorInv(unittest.TestCase):
+
     @testing.for_dtypes("ifdFD")
     @_condition.retry(10)
     def check_x(self, a_shape, ind, dtype):
