@@ -1628,8 +1628,7 @@ def solve(a, b):
     -----
     The `b` array is only treated as a shape (M,) column vector if it is
     exactly 1-dimensional. In all other instances it is treated as a stack
-    of (M, K) matrices. Previously `b` would be treated as a stack of (M,)
-    vectors if ``b.ndim`` was equal to ``a.ndim - 1``.
+    of (M, K) matrices.
 
     Examples
     --------
