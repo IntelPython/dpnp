@@ -1612,17 +1612,23 @@ def solve(a, b):
     ----------
     a : (..., M, M) {dpnp.ndarray, usm_ndarray}
         Coefficient matrix.
-    b : {(…, M,), (…, M, K)} {dpnp.ndarray, usm_ndarray}
+    b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}
         Ordinate or "dependent variable" values.
 
     Returns
     -------
-    out : {(…, M,), (…, M, K)} dpnp.ndarray
+    out : {(..., M,), (..., M, K)} dpnp.ndarray
         Solution to the system `ax = b`. Returned shape is identical to `b`.
 
     See Also
     --------
     :obj:`dpnp.dot` : Returns the dot product of two arrays.
+
+    Notes
+    -----
+    The `b` array is only treated as a shape (M,) column vector if it is
+    exactly 1-dimensional. In all other instances it is treated as a stack
+    of (M, K) matrices.
 
     Examples
     --------
@@ -1644,13 +1650,37 @@ def solve(a, b):
     assert_stacked_2d(a)
     assert_stacked_square(a)
 
-    if not (
-        a.ndim in [b.ndim, b.ndim + 1] and a.shape[:-1] == b.shape[: a.ndim - 1]
-    ):
-        raise dpnp.linalg.LinAlgError(
-            "a must have (..., M, M) shape and b must have (..., M) "
-            "or (..., M, K)"
+    a_shape = a.shape
+    b_shape = b.shape
+    b_ndim = b.ndim
+
+    # compatible with numpy>=2.0
+    if b_ndim == 0:
+        raise ValueError("b must have at least one dimension")
+    if b_ndim == 1:
+        if a_shape[-1] != b.size:
+            raise ValueError(
+                "a must have (..., M, M) shape and b must have (M,) "
+                "for one-dimensional b"
+            )
+        b = dpnp.broadcast_to(b, a_shape[:-1])
+        return dpnp_solve(a, b)
+
+    if a_shape[-1] != b_shape[-2]:
+        raise ValueError(
+            "a must have (..., M, M) shape and b must have (..., M, K) shape"
         )
+
+    # Use dpnp.broadcast_shapes() to align the resulting batch shapes
+    broadcasted_batch_shape = dpnp.broadcast_shapes(a_shape[:-2], b_shape[:-2])
+
+    a_broadcasted_shape = broadcasted_batch_shape + a_shape[-2:]
+    b_broadcasted_shape = broadcasted_batch_shape + b_shape[-2:]
+
+    if a_shape != a_broadcasted_shape:
+        a = dpnp.broadcast_to(a, a_broadcasted_shape)
+    if b_shape != b_broadcasted_shape:
+        b = dpnp.broadcast_to(b, b_broadcasted_shape)
 
     return dpnp_solve(a, b)
 
