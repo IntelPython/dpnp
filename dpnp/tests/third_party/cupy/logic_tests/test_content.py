@@ -6,13 +6,14 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestContent(unittest.TestCase):
-    @testing.for_dtypes("fd")
+
+    @testing.for_dtypes("efFdD")
     @testing.numpy_cupy_array_equal()
     def check_unary_inf(self, name, xp, dtype):
         a = xp.array([-3, numpy.inf, -1, -numpy.inf, 0, 1, 2], dtype=dtype)
         return getattr(xp, name)(a)
 
-    @testing.for_dtypes("fd")
+    @testing.for_dtypes("efFdD")
     @testing.numpy_cupy_array_equal()
     def check_unary_nan(self, name, xp, dtype):
         a = xp.array(
@@ -31,6 +32,7 @@ class TestContent(unittest.TestCase):
 
 
 class TestUfuncLike(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def check_unary(self, name, xp):
         a = xp.array([-3, xp.inf, -1, -xp.inf, 0, 1, 2, xp.nan])
