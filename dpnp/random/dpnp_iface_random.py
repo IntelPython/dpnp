@@ -140,6 +140,11 @@ def beta(a, b, size=None):
     """
 
     if not use_origin_backend(a):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `a`, `b`
         if not dpnp.isscalar(a):
@@ -149,8 +154,6 @@ def beta(a, b, size=None):
         elif a <= 0:
             pass
         elif b <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_beta(a, b, size).get_pyobj()
@@ -188,6 +191,11 @@ def binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `p` param
         if not dpnp.isscalar(n):
@@ -197,8 +205,6 @@ def binomial(n, p, size=None):
         elif p > 1 or p < 0:
             pass
         elif n < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_binomial(int(n), p, size).get_pyobj()
@@ -242,13 +248,16 @@ def chisquare(df, size=None):
     """
 
     if not use_origin_backend(df):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `df`
         if not dpnp.isscalar(df):
             pass
         elif df <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             # TODO:
@@ -312,13 +321,16 @@ def exponential(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `scale`
         if not dpnp.isscalar(scale):
             pass
         elif scale < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_exponential(scale, size).get_pyobj()
@@ -346,6 +358,11 @@ def f(dfnum, dfden, size=None):
     """
 
     if not use_origin_backend(dfnum):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `dfnum` and `dfden`
         if not dpnp.isscalar(dfnum):
@@ -355,8 +372,6 @@ def f(dfnum, dfden, size=None):
         elif dfnum <= 0:
             pass
         elif dfden <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_f(dfnum, dfden, size).get_pyobj()
@@ -386,6 +401,11 @@ def gamma(shape, scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `scale` and `shape`
         if not dpnp.isscalar(scale):
@@ -395,8 +415,6 @@ def gamma(shape, scale=1.0, size=None):
         elif scale < 0:
             pass
         elif shape < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_gamma(shape, scale, size).get_pyobj()
@@ -426,13 +444,16 @@ def geometric(p, size=None):
     """
 
     if not use_origin_backend(p):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `p` param
         if not dpnp.isscalar(p):
             pass
         elif p > 1 or p <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_geometric(p, size).get_pyobj()
@@ -462,6 +483,11 @@ def gumbel(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `loc` and `scale` params
         if not dpnp.isscalar(scale):
@@ -469,8 +495,6 @@ def gumbel(loc=0.0, scale=1.0, size=None):
         elif not dpnp.isscalar(loc):
             pass
         elif scale < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_gumbel(loc, scale, size).get_pyobj()
@@ -502,6 +526,11 @@ def hypergeometric(ngood, nbad, nsample, size=None):
     """
 
     if not use_origin_backend(ngood):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of ints for `ngood`, `nbad`, `nsample` param
         if not dpnp.isscalar(ngood):
@@ -519,8 +548,6 @@ def hypergeometric(ngood, nbad, nsample, size=None):
         elif ngood + nbad < nsample:
             pass
         elif nsample < 1:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             _m = int(ngood)
@@ -552,6 +579,11 @@ def laplace(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `loc` and `scale`
         if not dpnp.isscalar(loc):
@@ -559,8 +591,6 @@ def laplace(loc=0.0, scale=1.0, size=None):
         elif not dpnp.isscalar(scale):
             pass
         elif scale < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_laplace(loc, scale, size).get_pyobj()
@@ -588,6 +618,11 @@ def logistic(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `loc` and `scale`
         if not dpnp.isscalar(loc):
@@ -595,8 +630,6 @@ def logistic(loc=0.0, scale=1.0, size=None):
         elif not dpnp.isscalar(scale):
             pass
         elif scale < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             result = dpnp_rng_logistic(loc, scale, size).get_pyobj()
@@ -631,6 +664,11 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
     """
 
     if not use_origin_backend(mean):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `mean` and `sigma` params
         if not dpnp.isscalar(mean):
@@ -638,8 +676,6 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
         elif not dpnp.isscalar(sigma):
             pass
         elif sigma < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_lognormal(mean, sigma, size).get_pyobj()
@@ -690,6 +726,11 @@ def multinomial(n, pvals, size=None):
         pvals_sum = sum(pvals)
         pvals_desc = dpnp.get_dpnp_descriptor(dpnp.array(pvals))
         d = len(pvals)
+        if dpnp.is_cuda_backend(pvals_desc.get_array()):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if n < 0:
             pass
         elif n > dpnp.iinfo(dpnp.int32).max:
@@ -697,8 +738,6 @@ def multinomial(n, pvals, size=None):
         elif pvals_sum > 1.0:
             pass
         elif pvals_sum < 0.0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             if size is None:
@@ -739,6 +778,13 @@ def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
     if not use_origin_backend(mean):
         mean_ = dpnp.get_dpnp_descriptor(dpnp.array(mean, dtype=dpnp.float64))
         cov_ = dpnp.get_dpnp_descriptor(dpnp.array(cov, dtype=dpnp.float64))
+        if dpnp.is_cuda_backend(mean_.get_array()) or dpnp.is_cuda_backend(
+            cov_.get_array()
+        ):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if size is None:
             shape = []
         elif isinstance(size, (int, dpnp.integer)):
@@ -750,8 +796,6 @@ def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
         elif (len(cov_.shape) != 2) or (cov_.shape[0] != cov_.shape[1]):
             pass
         elif mean_.shape[0] != cov_.shape[0]:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             final_shape = list(shape[:])
@@ -795,6 +839,11 @@ def negative_binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `p` and `n` params
         if not dpnp.isscalar(n):
@@ -804,8 +853,6 @@ def negative_binomial(n, p, size=None):
         elif p > 1 or p < 0:
             pass
         elif n <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_negative_binomial(n, p, size).get_pyobj()
@@ -882,6 +929,11 @@ def noncentral_chisquare(df, nonc, size=None):
     """
 
     if not use_origin_backend(df):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `mean` and `scale`
         if not dpnp.isscalar(df):
@@ -891,8 +943,6 @@ def noncentral_chisquare(df, nonc, size=None):
         elif df <= 0:
             pass
         elif nonc < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_noncentral_chisquare(df, nonc, size).get_pyobj()
@@ -938,13 +988,16 @@ def pareto(a, size=None):
     """
 
     if not use_origin_backend(a):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `a`
         if not dpnp.isscalar(a):
             pass
         elif a <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_pareto(a, size).get_pyobj()
@@ -1009,13 +1062,16 @@ def poisson(lam=1.0, size=None):
     """
 
     if not use_origin_backend(lam):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `lam` param
         if not dpnp.isscalar(lam):
             pass
         elif lam < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_poisson(lam, size).get_pyobj()
@@ -1046,13 +1102,16 @@ def power(a, size=None):
     """
 
     if not use_origin_backend(a):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `a`
         if not dpnp.isscalar(a):
             pass
         elif a <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_power(a, size).get_pyobj()
@@ -1455,13 +1514,16 @@ def rayleigh(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `scale` params
         if not dpnp.isscalar(scale):
             pass
         elif scale < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_rayleigh(scale, size).get_pyobj()
@@ -1533,9 +1595,13 @@ def shuffle(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
+
+        if dpnp.is_cuda_backend(x1_desc.get_array()):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if not dpnp.is_type_supported(x1_desc.dtype):
-            pass
-        elif dpnp.is_cuda_backend(x1):
             pass
         else:
             dpnp_rng_shuffle(x1_desc).get_pyobj()
@@ -1579,6 +1645,11 @@ def seed(seed=None, device=None, sycl_queue=None):
     )
 
     if not use_origin_backend(seed):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of ints for `seed`
         if seed is None:
@@ -1586,8 +1657,6 @@ def seed(seed=None, device=None, sycl_queue=None):
         if not isinstance(seed, int):
             pass
         elif seed < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             # TODO:
@@ -1622,9 +1691,10 @@ def standard_cauchy(size=None):
 
     if not use_origin_backend(size):
         if dpnp.is_cuda_backend():
-            pass
-        else:
-            return dpnp_rng_standard_cauchy(size).get_pyobj()
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+        return dpnp_rng_standard_cauchy(size).get_pyobj()
 
     return call_origin(numpy.random.standard_cauchy, size)
 
@@ -1650,9 +1720,10 @@ def standard_exponential(size=None):
 
     if not use_origin_backend(size):
         if dpnp.is_cuda_backend():
-            pass
-        else:
-            return dpnp_rng_standard_exponential(size).get_pyobj()
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+        return dpnp_rng_standard_exponential(size).get_pyobj()
 
     return call_origin(numpy.random.standard_exponential, size)
 
@@ -1680,13 +1751,16 @@ def standard_gamma(shape, size=None):
     """
 
     if not use_origin_backend(shape):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `shape`
         if not dpnp.isscalar(shape):
             pass
         elif shape < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_standard_gamma(shape, size).get_pyobj()
@@ -1760,13 +1834,16 @@ def standard_t(df, size=None):
     """
 
     if not use_origin_backend(df):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `df`
         if not dpnp.isscalar(df):
             pass
         elif df <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_standard_t(df, size).get_pyobj()
@@ -1798,6 +1875,11 @@ def triangular(left, mode, right, size=None):
     """
 
     if not use_origin_backend(left):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `left`, `mode`, `right`.
         if not dpnp.isscalar(left):
@@ -1811,8 +1893,6 @@ def triangular(left, mode, right, size=None):
         elif mode > right:
             pass
         elif left == right:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_triangular(left, mode, right, size).get_pyobj()
@@ -1908,6 +1988,11 @@ def vonmises(mu, kappa, size=None):
     """
 
     if not use_origin_backend(mu):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `mu`, `kappa`.
         if not dpnp.isscalar(mu):
@@ -1917,8 +2002,6 @@ def vonmises(mu, kappa, size=None):
         elif numpy.isnan(kappa):
             return dpnp.nan
         elif kappa < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_vonmises(mu, kappa, size).get_pyobj()
@@ -1946,6 +2029,11 @@ def wald(mean, scale, size=None):
     """
 
     if not use_origin_backend(mean):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `mean` and `scale`
         if not dpnp.isscalar(mean):
@@ -1955,8 +2043,6 @@ def wald(mean, scale, size=None):
         elif mean <= 0:
             pass
         elif scale <= 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_wald(mean, scale, size).get_pyobj()
@@ -1984,13 +2070,16 @@ def weibull(a, size=None):
     """
 
     if not use_origin_backend(a):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `a` param
         if not dpnp.isscalar(a):
             pass
         elif a < 0:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_weibull(a, size).get_pyobj()
@@ -2018,13 +2107,16 @@ def zipf(a, size=None):
     """
 
     if not use_origin_backend(a):
+        if dpnp.is_cuda_backend():
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         # TODO:
         # array_like of floats for `a` param
         if not dpnp.isscalar(a):
             pass
         elif a <= 1:
-            pass
-        elif dpnp.is_cuda_backend():
             pass
         else:
             return dpnp_rng_zipf(a, size).get_pyobj()

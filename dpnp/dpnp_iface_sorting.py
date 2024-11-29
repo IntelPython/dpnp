@@ -187,6 +187,11 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if not isinstance(kth, int):
             pass
         elif x1_desc.ndim == 0:
@@ -198,8 +203,6 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
         elif kind != "introselect":
             pass
         elif order is not None:
-            pass
-        elif dpnp.is_cuda_backend(x1):
             pass
         else:
             return dpnp_partition(x1_desc, kth, axis, kind, order).get_pyobj()

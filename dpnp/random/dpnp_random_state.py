@@ -235,11 +235,14 @@ class RandomState:
         """
 
         if not use_origin_backend():
+            if dpnp.is_cuda_backend():
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(loc):
                 pass
             elif not dpnp.isscalar(scale):
-                pass
-            elif dpnp.is_cuda_backend():
                 pass
             else:
                 dtype = self._validate_float_dtype(
@@ -366,11 +369,14 @@ class RandomState:
         """
 
         if not use_origin_backend(low):
+            if dpnp.is_cuda_backend():
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(low):
                 pass
             elif not (high is None or dpnp.isscalar(high)):
-                pass
-            elif dpnp.is_cuda_backend():
                 pass
             else:
                 _dtype = dpnp.int32 if dtype is int else dpnp.dtype(dtype)
@@ -592,11 +598,14 @@ class RandomState:
         """
 
         if not use_origin_backend():
+            if dpnp.is_cuda_backend():
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(low):
                 pass
             elif not dpnp.isscalar(high):
-                pass
-            elif dpnp.is_cuda_backend():
                 pass
             else:
                 min_double = dpnp.finfo("double").min

@@ -137,6 +137,11 @@ def choose(x1, choices, out=None, mode="raise"):
         )
 
     if x1_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if any(not desc for desc in choices_list):
             pass
         elif out is not None:
@@ -146,8 +151,6 @@ def choose(x1, choices, out=None, mode="raise"):
         elif any(not choices[0].dtype == choice.dtype for choice in choices):
             pass
         elif not choices_list:
-            pass
-        elif dpnp.is_cuda_backend(x1):
             pass
         else:
             size = x1_desc.size

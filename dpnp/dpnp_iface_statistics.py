@@ -484,13 +484,18 @@ def correlate(x1, x2, mode="valid"):
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
     if x1_desc and x2_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()) or dpnp.is_cuda_backend(
+            x2_desc.get_array()
+        ):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if x1_desc.size != x2_desc.size or x1_desc.size == 0:
             pass
         elif x1_desc.shape != x2_desc.shape:
             pass
         elif mode != "valid":
-            pass
-        elif dpnp.is_cuda_backend(x1) or dpnp.is_cuda_backend(x2):
             pass
         else:
             return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
