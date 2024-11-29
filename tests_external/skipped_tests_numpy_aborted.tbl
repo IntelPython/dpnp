@@ -598,7 +598,6 @@ tests/test_regression.py::TestRegression::test_complex_boolean_cast
 tests/test_regression.py::TestRegression::test_complex_scalar_complex_cast
 tests/test_regression.py::TestRegression::test_complex_scalar_warning
 tests/test_regression.py::TestRegression::test_compress_small_type
-tests/test_regression.py::TestRegression::test_convolve_empty
 tests/test_regression.py::TestRegression::test_copy_detection_corner_case
 tests/test_regression.py::TestRegression::test_copy_detection_corner_case2
 tests/test_regression.py::TestRegression::test_copy_detection_zero_dim
