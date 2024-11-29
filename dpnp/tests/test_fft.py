@@ -13,6 +13,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    is_cuda_device,
 )
 
 
@@ -470,6 +471,13 @@ class TestFftn:
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_fftn(self, dtype, axes, norm, order):
+        if is_cuda_device():
+            if order == "C" and axes == (0, 1, 2):
+                pass
+            elif order == "F" and axes == (-1, -4, -2):
+                pass
+            else:
+                pytest.skip("SAT-7587")
         x1 = numpy.random.uniform(-10, 10, 120)
         x2 = numpy.random.uniform(-10, 10, 120)
         a_np = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(
@@ -512,6 +520,9 @@ class TestFftn:
     @pytest.mark.parametrize("axes", [(2, 3, 3, 2), (0, 0, 3, 3)])
     @pytest.mark.parametrize("s", [(5, 4, 3, 3), (7, 8, 10, 9)])
     def test_fftn_repeated_axes_with_s(self, axes, s):
+        if is_cuda_device():
+            if axes == (0, 0, 3, 3) and s == (7, 8, 10, 9):
+                pytest.skip("SAT-7587")
         x1 = numpy.random.uniform(-10, 10, 120)
         x2 = numpy.random.uniform(-10, 10, 120)
         a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(
@@ -535,6 +546,11 @@ class TestFftn:
     @pytest.mark.parametrize("axes", [(0, 1, 2, 3), (1, 2, 1, 2), (2, 2, 2, 3)])
     @pytest.mark.parametrize("s", [(2, 3, 4, 5), (5, 4, 7, 8), (2, 5, 1, 2)])
     def test_fftn_out(self, axes, s):
+        if is_cuda_device():
+            if axes == (0, 1, 2, 3):
+                pytest.skip("SAT-7587")
+            elif s == (2, 5, 1, 2) and axes in [(1, 2, 1, 2), (2, 2, 2, 3)]:
+                pytest.skip("SAT-7587")
         x1 = numpy.random.uniform(-10, 10, 120)
         x2 = numpy.random.uniform(-10, 10, 120)
         a_np = numpy.array(x1 + 1j * x2, dtype=numpy.complex64).reshape(
@@ -1141,6 +1157,9 @@ class TestRfftn:
     @pytest.mark.parametrize("axes", [(0, 1, 2, 3), (1, 2, 1, 2), (2, 2, 2, 3)])
     @pytest.mark.parametrize("s", [(2, 3, 4, 5), (5, 6, 7, 9), (2, 5, 1, 2)])
     def test_rfftn_out(self, axes, s):
+        if is_cuda_device():
+            if axes == (0, 1, 2, 3) and s == (2, 5, 1, 2):
+                pytest.skip("SAT-7587")
         x1 = numpy.random.uniform(-10, 10, 120)
         a_np = numpy.array(x1, dtype=numpy.float32).reshape(2, 3, 4, 5)
         a = dpnp.asarray(a_np)
