@@ -33,6 +33,7 @@ def skip_int_equality_before_numpy_1_20(names=("dtype",)):
 
 
 class TestRanges(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_arange(self, xp, dtype):
@@ -51,7 +52,7 @@ class TestRanges(unittest.TestCase):
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_arange4(self, xp, dtype):
-        return xp.arange(20, 2, -3, dtype=dtype)
+        return xp.arange(20, 2, -3).astype(dtype)
 
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
@@ -71,8 +72,9 @@ class TestRanges(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_arange8(self, xp, dtype):
-        return xp.arange(10, 8, -1, dtype=dtype)
+        return xp.arange(10, 8, -1).astype(dtype)
 
+    @testing.with_requires("numpy>=1.24")
     def test_arange9(self):
         for xp in (numpy, cupy):
             with pytest.raises((ValueError, TypeError)):
@@ -119,7 +121,7 @@ class TestRanges(unittest.TestCase):
         x, step = xp.linspace(
             0, 10, 0, dtype=dtype, endpoint=False, retstep=True
         )
-        self.assertTrue(math.isnan(step))
+        assert math.isnan(step)
         return x
 
     @testing.with_requires("numpy>=1.18")
@@ -130,7 +132,7 @@ class TestRanges(unittest.TestCase):
         x, step = xp.linspace(
             start, stop, 1, dtype=dtype, endpoint=False, retstep=True
         )
-        self.assertEqual(step, stop - start)
+        assert step == stop - start
         return x
 
     @testing.for_all_dtypes(no_bool=True)
@@ -147,7 +149,7 @@ class TestRanges(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_linspace_with_retstep(self, xp, dtype):
         x, step = xp.linspace(0, 10, 5, dtype=dtype, retstep=True)
-        self.assertEqual(step, 2.5)
+        assert step == 2.5
         return x
 
     @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
@@ -158,7 +160,7 @@ class TestRanges(unittest.TestCase):
     def test_linspace_no_dtype_float(self, xp):
         return xp.linspace(0.0, 10.0, 50)
 
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_allclose()
     def test_linspace_float_args_with_int_dtype(self, xp):
         return xp.linspace(0.1, 9.1, 11, dtype=int)
 
@@ -193,10 +195,16 @@ class TestRanges(unittest.TestCase):
 
     @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes_combination(
-        names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
+        names=("dtype_range", "dtype_out"),
+        no_bool=True,
+        no_complex=True,
+        no_float16=True,
     )
-    @testing.numpy_cupy_allclose(rtol=1e-04)
+    @testing.numpy_cupy_allclose(
+        rtol={"default": 5e-6, numpy.float16: 1e-2, numpy.float32: 1e-5}
+    )
     def test_linspace_mixed_start_stop(self, xp, dtype_range, dtype_out):
+        # TODO (ev-br): np 2.0: check if can re-enable float16
         start = 0.0
         if xp.dtype(dtype_range).kind in "u":
             stop = xp.array([100, 16], dtype=dtype_range)
@@ -206,10 +214,18 @@ class TestRanges(unittest.TestCase):
 
     @testing.with_requires("numpy>=1.16")
     @testing.for_all_dtypes_combination(
-        names=("dtype_range", "dtype_out"), no_bool=True, no_complex=True
+        names=("dtype_range", "dtype_out"),
+        no_bool=True,
+        no_complex=True,
+        no_float16=True,
     )
-    @testing.numpy_cupy_allclose(rtol=1e-04)
+    @testing.numpy_cupy_allclose(
+        rtol={"default": 5e-6, numpy.float16: 1e-2, numpy.float32: 5e-6}
+    )
     def test_linspace_mixed_start_stop2(self, xp, dtype_range, dtype_out):
+        # TODO (ev-br): np 2.0: check if can re-enable float16
+        # TODO (ev-br): np 2.0: had to bump the default rtol on Windows
+        #               and numpy 1.26+weak promotion from 0 to 5e-6
         if xp.dtype(dtype_range).kind in "u":
             start = xp.array([160, 120], dtype=dtype_range)
         else:
@@ -312,6 +328,7 @@ class TestRanges(unittest.TestCase):
     )
 )
 class TestMeshgrid(unittest.TestCase):
+
     @testing.for_all_dtypes()
     def test_meshgrid0(self, dtype):
         out = cupy.meshgrid(
@@ -348,6 +365,7 @@ class TestMeshgrid(unittest.TestCase):
 
 
 class TestMgrid(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_mgrid0(self, xp):
         return xp.mgrid[0:]
@@ -380,6 +398,7 @@ class TestMgrid(unittest.TestCase):
 
 
 class TestOgrid(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_ogrid0(self, xp):
         return xp.ogrid[0:]

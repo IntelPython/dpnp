@@ -28,6 +28,7 @@ class TestBasic:
         assert (a == 123).all()
         # Free huge memory for slow test
         del a
+        # cupy.get_default_memory_pool().free_all_blocks()
 
     @testing.slow
     def test_empty_huge_size_fill0(self):
@@ -36,6 +37,7 @@ class TestBasic:
         assert (a == 0).all()
         # Free huge memory for slow test
         del a
+        # cupy.get_default_memory_pool().free_all_blocks()
 
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
@@ -221,8 +223,8 @@ class TestBasic:
 
     @testing.for_CF_orders()
     def test_zeros_strides(self, order):
-        a = numpy.zeros((2, 3), dtype="f", order=order)
-        b = cupy.zeros((2, 3), dtype="f", order=order)
+        a = numpy.zeros((2, 3), dtype=cupy.default_float_type(), order=order)
+        b = cupy.zeros((2, 3), dtype=cupy.default_float_type(), order=order)
         b_strides = tuple(x * b.itemsize for x in b.strides)
         assert b_strides == a.strides
 
@@ -306,6 +308,7 @@ class TestBasic:
     )
 )
 class TestBasicReshape:
+
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
