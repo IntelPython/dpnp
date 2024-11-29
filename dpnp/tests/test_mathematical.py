@@ -30,6 +30,7 @@ from .helper import (
     get_integer_dtypes,
     has_support_aspect16,
     has_support_aspect64,
+    is_cuda_device,
 )
 from .test_umath import (
     _get_numpy_arrays_1in_1out,
@@ -2129,6 +2130,9 @@ class TestSpacing:
 
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_zeros(self, dt):
+        if is_cuda_device():
+            if dt is dpnp.float32:
+                pytest.skip("SAT-7588")
         a = numpy.array([0.0, -0.0], dtype=dt)
         ia = dpnp.array(a)
 
