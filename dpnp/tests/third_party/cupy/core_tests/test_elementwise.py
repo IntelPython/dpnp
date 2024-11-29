@@ -4,10 +4,12 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
 class TestElementwise(unittest.TestCase):
+
     def check_copy(self, dtype, src_id, dst_id):
         with cuda.Device(src_id):
             src = testing.shaped_arange((2, 3, 4), dtype=dtype)
@@ -16,13 +18,13 @@ class TestElementwise(unittest.TestCase):
         _core.elementwise_copy(src, dst)
         testing.assert_allclose(src, dst)
 
-    @pytest.mark.skip("`device` argument isn't supported")
+    @pytest.mark.skip("elementwise_copy() argument isn't supported")
     @testing.for_all_dtypes()
     def test_copy(self, dtype):
         device_id = cuda.Device().id
         self.check_copy(dtype, device_id, device_id)
 
-    @pytest.mark.skip("`device` argument isn't supported")
+    @pytest.mark.skip("elementwise_copy() argument isn't supported")
     @testing.for_all_dtypes()
     def test_copy_multigpu_nopeer(self, dtype):
         if cuda.runtime.deviceCanAccessPeer(0, 1) == 1:
@@ -30,7 +32,7 @@ class TestElementwise(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.check_copy(dtype, 0, 1)
 
-    @pytest.mark.skip("`device` argument isn't supported")
+    @pytest.mark.skip("elementwise_copy() argument isn't supported")
     @testing.for_all_dtypes()
     def test_copy_multigpu_peer(self, dtype):
         if cuda.runtime.deviceCanAccessPeer(0, 1) != 1:
@@ -67,8 +69,9 @@ class TestElementwise(unittest.TestCase):
         assert b.strides == tuple(x / b_cpu.itemsize for x in b_cpu.strides)
 
 
-@pytest.mark.skip("`ElementwiseKernel` function isn't supported")
+@pytest.mark.skip("`ElementwiseKernel` isn't supported")
 class TestElementwiseInvalidShape(unittest.TestCase):
+
     def test_invalid_shape(self):
         with self.assertRaisesRegex(ValueError, "Out shape is mismatched"):
             f = cupy.ElementwiseKernel("T x", "T y", "y += x")
@@ -77,67 +80,114 @@ class TestElementwiseInvalidShape(unittest.TestCase):
             f(x, y)
 
 
-@pytest.mark.skip("`ElementwiseKernel` function isn't supported")
+@pytest.mark.skip("`ElementwiseKernel` isn't supported")
 class TestElementwiseInvalidArgument(unittest.TestCase):
+
     def test_invalid_kernel_name(self):
         with self.assertRaisesRegex(ValueError, "Invalid kernel name"):
             cupy.ElementwiseKernel("T x", "", "", "1")
 
 
-@pytest.mark.skip("`iinfo` function isn't supported")
 class TestElementwiseType(unittest.TestCase):
+
+    @testing.with_requires("numpy>=2.0")
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_upper_1(self, xp, dtype):
-        a = xp.array([0], dtype=xp.int8)
+        a = xp.array([0], dtype=numpy.int8)
         b = xp.iinfo(dtype).max
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_upper_2(self, xp, dtype):
-        a = xp.array([1], dtype=xp.int8)
+        if (
+            numpy.issubdtype(dtype, numpy.unsignedinteger)
+            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+        ):
+            pytest.skip("numpy promotes dtype differently")
+
+        a = xp.array([1], dtype=numpy.int8)
         b = xp.iinfo(dtype).max - 1
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_large_int_upper_3(self, xp, dtype):
+        if (
+            numpy.issubdtype(dtype, numpy.unsignedinteger)
+            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+        ):
+            pytest.skip("numpy promotes dtype differently")
+        elif (
+            dtype in (numpy.uint64, numpy.ulonglong)
+            and not has_support_aspect64()
+        ):
+            pytest.skip("no fp64 support")
+
         a = xp.array([xp.iinfo(dtype).max], dtype=dtype)
-        b = xp.int8(0)
+        b = numpy.int8(0)
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_large_int_upper_4(self, xp, dtype):
+        if (
+            numpy.issubdtype(dtype, numpy.unsignedinteger)
+            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+        ):
+            pytest.skip("numpy promotes dtype differently")
+        elif (
+            dtype in (numpy.uint64, numpy.ulonglong)
+            and not has_support_aspect64()
+        ):
+            pytest.skip("no fp64 support")
+
         a = xp.array([xp.iinfo(dtype).max - 1], dtype=dtype)
-        b = xp.int8(1)
+        b = numpy.int8(1)
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_lower_1(self, xp, dtype):
-        a = xp.array([0], dtype=xp.int8)
+        a = xp.array([0], dtype=numpy.int8)
         b = xp.iinfo(dtype).min
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
-    @testing.numpy_cupy_array_equal()
+    @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_lower_2(self, xp, dtype):
-        a = xp.array([-1], dtype=xp.int8)
+        a = xp.array([-1], dtype=numpy.int8)
         b = xp.iinfo(dtype).min + 1
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_large_int_lower_3(self, xp, dtype):
+        if (
+            numpy.issubdtype(dtype, numpy.unsignedinteger)
+            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+        ):
+            pytest.skip("numpy promotes dtype differently")
+        elif (
+            dtype in (numpy.uint64, numpy.ulonglong)
+            and not has_support_aspect64()
+        ):
+            pytest.skip("no fp64 support")
+
         a = xp.array([xp.iinfo(dtype).min], dtype=dtype)
-        b = xp.int8(0)
+        b = numpy.int8(0)
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_large_int_lower_4(self, xp, dtype):
+        if (
+            dtype in (numpy.uint64, numpy.ulonglong)
+            and not has_support_aspect64()
+        ):
+            pytest.skip("no fp64 support")
+
         a = xp.array([xp.iinfo(dtype).min + 1], dtype=dtype)
-        b = xp.int8(-1)
+        b = numpy.int8(-1)
         return a + b

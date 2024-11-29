@@ -9,6 +9,7 @@ from dpnp.tests.third_party.cupy import testing
 
 @pytest.mark.skip("class Flags is not exposed")
 class TestFlags(unittest.TestCase):
+
     def setUp(self):
         self.flags = flags.Flags(1, 2, 3)
 
@@ -42,6 +43,7 @@ class TestFlags(unittest.TestCase):
     )
 )
 class TestContiguityFlags(unittest.TestCase):
+
     def setUp(self):
         self.flags = None
 

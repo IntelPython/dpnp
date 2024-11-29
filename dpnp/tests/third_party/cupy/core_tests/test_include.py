@@ -1,8 +1,9 @@
 import os
 from unittest import mock
 
-import cupy
 import pytest
+
+import dpnp as cupy
 
 pytest.skip("CUDA compile is not supported", allow_module_level=True)
 
