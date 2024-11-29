@@ -758,7 +758,7 @@ def is_cuda_backend(obj=None):
     """
 
     if obj is None:
-        sycl_device = dpctl.SyclQueue().sycl_device
+        sycl_device = dpctl.select_default_device()
     elif isinstance(obj, dpctl.SyclDevice):
         sycl_device = obj
     else:
