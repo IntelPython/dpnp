@@ -1,0 +1,10 @@
+﻿
+
+dpnp.absolute
+=============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: absolute
