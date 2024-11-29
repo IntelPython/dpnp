@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.g1a61826783e documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.g2753715176a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=176d8ea1"></script>
+      <script src="../../_static/documentation_options.js?v=82622e50"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -605,13 +605,16 @@
 <span class="sd">          for points where the signals overlap completely. Values outside</span>
 <span class="sd">          the signal boundary have no effect.</span>
 <span class="sd">    method : {&#39;auto&#39;, &#39;direct&#39;, &#39;fft&#39;}, optional</span>
-<span class="sd">        `&#39;direct&#39;`: The convolution is determined directly from sums.</span>
+<span class="sd">        &#39;direct&#39;:</span>
+<span class="sd">         The convolution is determined directly from sums.</span>
 
-<span class="sd">        `&#39;fft&#39;`: The Fourier Transform is used to perform the calculations.</span>
-<span class="sd">        This method is faster for long sequences but can have accuracy issues.</span>
+<span class="sd">        &#39;fft&#39;:</span>
+<span class="sd">         The Fourier Transform is used to perform the calculations.</span>
+<span class="sd">         This method is faster for long sequences but can have accuracy issues.</span>
 
-<span class="sd">        `&#39;auto&#39;`: Automatically chooses direct or Fourier method based on</span>
-<span class="sd">        an estimate of which is faster.</span>
+<span class="sd">        &#39;auto&#39;:</span>
+<span class="sd">         Automatically chooses direct or Fourier method based on</span>
+<span class="sd">         an estimate of which is faster.</span>
 
 <span class="sd">        Note: Use of the FFT convolution on input containing NAN or INF</span>
 <span class="sd">        will lead to the entire output being NAN or INF.</span>
@@ -638,8 +641,8 @@
 <span class="sd">    is equivalent to the multiplication :math:`X(f) Y(f)` in the Fourier</span>
 <span class="sd">    domain, after appropriate padding (padding is necessary to prevent</span>
 <span class="sd">    circular convolution). Since multiplication is more efficient (faster)</span>
-<span class="sd">    than convolution, the function `scipy.signal.fftconvolve` exploits the</span>
-<span class="sd">    FFT to calculate the convolution of large data-sets.</span>
+<span class="sd">    than convolution, the function implements two approaches - direct and fft</span>
+<span class="sd">    which are regulated by the keyword `method`.</span>
 
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>

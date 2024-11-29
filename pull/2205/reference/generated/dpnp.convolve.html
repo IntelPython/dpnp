@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.g1a61826783e documentation</title>
+  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.g2753715176a documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=176d8ea1"></script>
+      <script src="../../_static/documentation_options.js?v=82622e50"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -162,11 +162,16 @@ the signal boundary have no effect.</p>
 </dd>
 </dl>
 </p></li>
-<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'direct'</em><em>, </em><em>'fft'}</em><em>, </em><em>optional</em>) -- <p><cite>'direct'</cite>: The convolution is determined directly from sums.</p>
-<p><cite>'fft'</cite>: The Fourier Transform is used to perform the calculations.
+<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'direct'</em><em>, </em><em>'fft'}</em><em>, </em><em>optional</em>) -- <dl class="simple">
+<dt>'direct':</dt><dd><p>The convolution is determined directly from sums.</p>
+</dd>
+<dt>'fft':</dt><dd><p>The Fourier Transform is used to perform the calculations.
 This method is faster for long sequences but can have accuracy issues.</p>
-<p><cite>'auto'</cite>: Automatically chooses direct or Fourier method based on
+</dd>
+<dt>'auto':</dt><dd><p>Automatically chooses direct or Fourier method based on
 an estimate of which is faster.</p>
+</dd>
+</dl>
 <p>Note: Use of the FFT convolution on input containing NAN or INF
 will lead to the entire output being NAN or INF.
 Use method='direct' when your input contains NAN or INF values.</p>
@@ -196,8 +201,8 @@ Use method='direct' when your input contains NAN or INF values.</p>
 is equivalent to the multiplication <span class="math notranslate nohighlight">\(X(f) Y(f)\)</span> in the Fourier
 domain, after appropriate padding (padding is necessary to prevent
 circular convolution). Since multiplication is more efficient (faster)
-than convolution, the function <cite>scipy.signal.fftconvolve</cite> exploits the
-FFT to calculate the convolution of large data-sets.</p>
+than convolution, the function implements two approaches - direct and fft
+which are regulated by the keyword <cite>method</cite>.</p>
 <p class="rubric">References</p>
 <aside class="footnote-list brackets">
 <aside class="footnote brackets" id="id2" role="doc-footnote">
