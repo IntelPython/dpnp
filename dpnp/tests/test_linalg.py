@@ -2812,11 +2812,7 @@ class TestSvd:
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
-        a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=81
-        )
+        a = generate_random_numpy_array(shape, dtype, hermitian=True)
         dp_a = dpnp.array(a)
 
         if compute_vt:
