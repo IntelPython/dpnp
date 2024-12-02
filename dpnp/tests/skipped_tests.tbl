@@ -17,20 +17,3 @@ tests/test_umath.py::test_umaths[('divmod', 'ff')]
 tests/test_umath.py::test_umaths[('divmod', 'dd')]
 tests/test_umath.py::test_umaths[('frexp', 'f')]
 tests/test_umath.py::test_umaths[('frexp', 'd')]
-
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_0_{order='C', shape=(10,)}::test_cub_min
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_1_{order='C', shape=(10, 20)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_1_{order='C', shape=(10, 20)}::test_cub_min
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_2_{order='C', shape=(10, 20, 30)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_2_{order='C', shape=(10, 20, 30)}::test_cub_min
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_3_{order='C', shape=(10, 20, 30, 40)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_3_{order='C', shape=(10, 20, 30, 40)}::test_cub_min
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_4_{order='F', shape=(10,)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_4_{order='F', shape=(10,)}::test_cub_min
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_5_{order='F', shape=(10, 20)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_5_{order='F', shape=(10, 20)}::test_cub_min
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_6_{order='F', shape=(10, 20, 30)}::test_cub_min
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_max
-tests/third_party/cupy/core_tests/test_ndarray_reduction.py::TestCubReduction_param_7_{order='F', shape=(10, 20, 30, 40)}::test_cub_min
