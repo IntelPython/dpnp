@@ -180,8 +180,16 @@ def _get_numpy_arrays_2in_1out(func_name, dtype, range):
 
 def _get_output_data_type(dtype):
     """Return a data type specified by input `dtype` and device capabilities."""
-    if dpnp.issubdtype(dtype, dpnp.bool):
+    dtype_float16 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
+    )
+    dtype_float32 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
+    )
+    if dtype_float16:
         out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
+    elif dtype_float32:
+        out_dtype = dpnp.float32
     elif dpnp.issubdtype(dtype, dpnp.complexfloating):
         out_dtype = dpnp.complex64
         if has_support_aspect64() and dtype != dpnp.complex64:

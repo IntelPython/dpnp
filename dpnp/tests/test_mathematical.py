@@ -258,7 +258,8 @@ class TestCumLogSumExp:
         res = dpnp.cumlogsumexp(a, axis=axis, include_initial=include_initial)
 
         exp_dt = None
-        if dtype == dpnp.bool:
+        dtype_list = [dpnp.bool, dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        if dtype in dtype_list:
             exp_dt = dpnp.default_float_type(a.device)
 
         exp = self._get_exp_array(a, axis, exp_dt)
@@ -311,7 +312,9 @@ class TestCumLogSumExp:
         exp = numpy.logaddexp.accumulate(dpnp.asnumpy(a))
         exp = exp.astype(out_dtype)
 
-        assert_allclose(res, exp, rtol=1e-06)
+        dtype_list = [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        tol = 1e-2 if in_dtype in dtype_list else 1e-6
+        assert_allclose(res, exp, rtol=tol)
 
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     @pytest.mark.parametrize(
@@ -391,7 +394,7 @@ class TestCumProd:
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_out_dtype(self, arr_dt, out_dt, dtype):
-        a = numpy.arange(5, 10).astype(dtype=arr_dt)
+        a = numpy.arange(1, 6).astype(dtype=arr_dt)
         out = numpy.zeros_like(a, dtype=out_dt)
 
         ia = dpnp.array(a)
@@ -495,7 +498,7 @@ class TestCumSum:
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_out_dtype(self, arr_dt, out_dt, dtype):
-        a = numpy.arange(10, 20).astype(dtype=arr_dt)
+        a = numpy.arange(5, 15).astype(dtype=arr_dt)
         out = numpy.zeros_like(a, dtype=out_dt)
 
         ia = dpnp.array(a)
@@ -869,9 +872,11 @@ class TestFix:
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dt):
-        a = numpy.array(
-            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=dt
-        )
+        if dpnp.issubdtype(dt, dpnp.unsignedinteger):
+            x = [[1.0, 1.1, 1.5, 1.8]]
+        else:
+            x = [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]]
+        a = numpy.array(x, dtype=dt)
         ia = dpnp.array(a)
 
         result = dpnp.fix(ia)
@@ -889,9 +894,11 @@ class TestFix:
         "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
     def test_out(self, a_dt):
-        a = numpy.array(
-            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dtype=a_dt
-        )
+        if dpnp.issubdtype(a_dt, dpnp.unsignedinteger):
+            x = [[1.0, 1.1, 1.5, 1.8]]
+        else:
+            x = [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]]
+        a = numpy.array(x, dtype=a_dt)
         ia = dpnp.array(a)
 
         if a.dtype != numpy.float32 and has_support_aspect64():
@@ -1289,7 +1296,7 @@ class TestHeavside:
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize(
-        "a_dt", get_all_dtypes(no_none=True, no_complex=True)
+        "a_dt", get_all_dtypes(no_none=True, no_complex=True, no_unsigned=True)
     )
     @pytest.mark.parametrize(
         "b_dt", get_all_dtypes(no_none=True, no_complex=True)
@@ -1350,7 +1357,9 @@ class TestI0:
 
         result = dpnp.i0(ia)
         expected = numpy.i0(a)
-        assert_dtype_allclose(result, expected)
+        # numpy promotes result for integer inputs to float64 dtype, but dpnp
+        # follows Type Promotion Rules
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_2d(self, dt):
@@ -1415,9 +1424,13 @@ class TestLdexp:
         exp = numpy.array(3, dtype=exp_dt)
         imant, iexp = dpnp.array(mant), dpnp.array(exp)
 
-        result = dpnp.ldexp(imant, iexp)
-        expected = numpy.ldexp(mant, exp)
-        assert_almost_equal(result, expected)
+        if dpnp.issubdtype(exp_dt, dpnp.uint64):
+            assert_raises(ValueError, dpnp.ldexp, imant, iexp)
+            assert_raises(TypeError, numpy.ldexp, mant, exp)
+        else:
+            result = dpnp.ldexp(imant, iexp)
+            expected = numpy.ldexp(mant, exp)
+            assert_almost_equal(result, expected)
 
     def test_float_scalar(self):
         a = numpy.array(3)
@@ -1893,7 +1906,7 @@ class TestProd:
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_prod_out_dtype(self, arr_dt, out_dt, dtype):
-        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        a = numpy.arange(1, 7).reshape((2, 3)).astype(dtype=arr_dt)
         out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
 
         ia = dpnp.array(a)
@@ -1917,8 +1930,8 @@ class TestProd:
 
 class TestRationalFunctions:
     @pytest.mark.parametrize("func", ["gcd", "lcm"])
-    @pytest.mark.parametrize("dt1", get_integer_dtypes())
-    @pytest.mark.parametrize("dt2", get_integer_dtypes())
+    @pytest.mark.parametrize("dt1", get_integer_dtypes(no_unsigned=True))
+    @pytest.mark.parametrize("dt2", get_integer_dtypes(no_unsigned=True))
     def test_basic(self, func, dt1, dt2):
         a = numpy.array([12, 120], dtype=dt1)
         b = numpy.array([20, 120], dtype=dt2)
@@ -2013,12 +2026,15 @@ class TestSinc:
         "dt", get_all_dtypes(no_none=True, no_bool=True, no_float16=False)
     )
     def test_basic(self, dt):
+        low = 0 if dpnp.issubdtype(dt, dpnp.integer) else -1
         a = numpy.linspace(-1, 1, 100, dtype=dt)
         ia = dpnp.array(a)
 
         result = dpnp.sinc(ia)
         expected = numpy.sinc(a)
-        assert_dtype_allclose(result, expected)
+        # numpy promotes result for integer inputs to float64 dtype, but dpnp
+        # follows Type Promotion Rules similar to other trigonometric functions
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     def test_bool(self):
         a = numpy.array([True, False, True])
@@ -2036,7 +2052,9 @@ class TestSinc:
 
         result = dpnp.sinc(ia)
         expected = numpy.sinc(a)
-        assert_dtype_allclose(result, expected)
+        # numpy promotes result for integer inputs to float64 dtype, but dpnp
+        # follows Type Promotion Rules similar to other trigonometric functions
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     # TODO: add a proper NumPy version once resolved
     @testing.with_requires("numpy>=2.0.0")
@@ -2151,7 +2169,11 @@ class TestSpacing:
 
     @pytest.mark.parametrize("dt", get_integer_dtypes())
     def test_integer(self, dt):
-        a = numpy.array([1, 0, -3], dtype=dt)
+        if dpnp.issubdtype(dt, dpnp.unsignedinteger):
+            a = [1, 0, 3]
+        else:
+            a = [1, 0, -3]
+        a = numpy.array(a, dtype=dt)
         ia = dpnp.array(a)
 
         result = dpnp.spacing(ia)
@@ -2469,7 +2491,9 @@ def test_divide_scalar(shape, dtype):
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
     ids=["[[1., -1.], [0.1, -0.1]]", "[-2, -1, 0, 1, 2]"],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_unsigned=True)
+)
 def test_negative(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
@@ -2502,7 +2526,9 @@ def test_negative_boolean():
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
     ids=["[[1., -1.], [0.1, -0.1]]", "[-2, -1, 0, 1, 2]"],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_unsigned=True)
+)
 def test_positive(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
@@ -2581,7 +2607,9 @@ def test_float_remainder_fmod_nans_inf(func, dtype, lhs, rhs):
     [[2, 0, -2], [1.1, -1.1]],
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_bool=True, no_unsigned=True)
+)
 def test_sign(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
@@ -2610,7 +2638,9 @@ def test_sign_boolean():
     [[2, 0, -2], [1.1, -1.1]],
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_complex=True, no_unsigned=True)
+)
 def test_signbit(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
     dpnp_a = dpnp.array(data, dtype=dtype)
@@ -3152,11 +3182,14 @@ class TestLogSumExp:
     def test_logsumexp(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.logsumexp(a, axis=axis, keepdims=keepdims)
-        exp_dtype = (
-            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
-        )
+
+        exp_dt = None
+        dtype_list = [dpnp.bool, dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        if dtype in dtype_list:
+            exp_dt = dpnp.default_float_type(a.device)
+
         exp = numpy.logaddexp.reduce(
-            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dt
         )
 
         assert_dtype_allclose(res, exp)
@@ -3166,17 +3199,18 @@ class TestLogSumExp:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_logsumexp_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = (
-            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
-        )
+        exp_dt = None
+        dtype_list = [dpnp.bool, dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        if dtype in dtype_list:
+            exp_dt = dpnp.default_float_type(a.device)
         exp = numpy.logaddexp.reduce(
-            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dt
         )
 
-        exp_dtype = exp.dtype
-        if exp_dtype == numpy.float64 and not has_support_aspect64():
-            exp_dtype = numpy.float32
-        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
+        exp_dt = exp.dtype
+        if exp_dt == numpy.float64 and not has_support_aspect64():
+            exp_dt = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dt)
         res = dpnp.logsumexp(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out
@@ -3192,7 +3226,9 @@ class TestLogSumExp:
         exp = numpy.logaddexp.reduce(dpnp.asnumpy(a))
         exp = exp.astype(out_dtype)
 
-        assert_allclose(res, exp, rtol=1e-06)
+        dtype_list = [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        tol = 1e-2 if in_dtype in dtype_list else 1e-6
+        assert_allclose(res, exp, rtol=tol)
 
     @testing.with_requires("numpy>=1.26.4")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -3204,7 +3240,7 @@ class TestLogSumExp:
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_logsumexp_out_dtype(self, arr_dt, out_dt, dtype):
-        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        a = numpy.arange(1, 11).reshape((2, 5)).astype(dtype=arr_dt)
         out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
 
         ia = dpnp.array(a)
@@ -3212,7 +3248,10 @@ class TestLogSumExp:
 
         result = dpnp.logsumexp(ia, out=iout, dtype=dtype, axis=1)
         exp = numpy.logaddexp.reduce(a, out=out, axis=1)
-        assert_allclose(result, exp.astype(dtype), rtol=1e-06)
+
+        dtype_list = [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        tol = 1e-2 if arr_dt in dtype_list else 1e-6
+        assert_allclose(result, exp.astype(dtype), rtol=tol)
         assert result is iout
 
 
@@ -3223,11 +3262,14 @@ class TestReduceHypot:
     def test_reduce_hypot(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
         res = dpnp.reduce_hypot(a, axis=axis, keepdims=keepdims)
-        exp_dtype = (
-            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
-        )
+
+        exp_dt = None
+        dtype_list = [dpnp.bool, dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        if dtype in dtype_list:
+            exp_dt = dpnp.default_float_type(a.device)
+
         exp = numpy.hypot.reduce(
-            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dt
         )
 
         assert_dtype_allclose(res, exp)
@@ -3237,17 +3279,18 @@ class TestReduceHypot:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_reduce_hypot_out(self, dtype, axis, keepdims):
         a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dtype = (
-            dpnp.default_float_type(a.device) if dtype == dpnp.bool else None
-        )
+        exp_dt = None
+        dtype_list = [dpnp.bool, dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+        if dtype in dtype_list:
+            exp_dt = dpnp.default_float_type(a.device)
         exp = numpy.hypot.reduce(
-            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dtype
+            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dt
         )
 
-        exp_dtype = exp.dtype
-        if exp_dtype == numpy.float64 and not has_support_aspect64():
-            exp_dtype = numpy.float32
-        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dtype)
+        exp_dt = exp.dtype
+        if exp_dt == numpy.float64 and not has_support_aspect64():
+            exp_dt = numpy.float32
+        dpnp_out = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dt)
         res = dpnp.reduce_hypot(a, axis=axis, out=dpnp_out, keepdims=keepdims)
 
         assert res is dpnp_out

@@ -16,7 +16,7 @@ from .third_party.cupy import testing
 
 @pytest.mark.usefixtures("suppress_complex_warning")
 @pytest.mark.parametrize("res_dtype", get_all_dtypes())
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_unsigned=True))
 @pytest.mark.parametrize(
     "arr",
     [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],
@@ -36,7 +36,7 @@ def test_astype_subok_error():
         x.astype("i4", subok=False)
 
 
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+@pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_unsigned=True))
 @pytest.mark.parametrize(
     "arr",
     [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],

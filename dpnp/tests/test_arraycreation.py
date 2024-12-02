@@ -182,10 +182,12 @@ def test_exception_subok(func, args):
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )
 def test_arange(start, stop, step, dtype):
-    rtol_mult = 2
-    if dpnp.issubdtype(dtype, dpnp.float16):
-        # numpy casts to float32 type when computes float16 data
-        rtol_mult = 4
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        start = abs(start)
+        stop = abs(stop) if stop else None
+
+    # numpy casts to float32 type when computes float16 data
+    rtol_mult = 4 if dpnp.issubdtype(dtype, dpnp.float16) else 2
 
     func = lambda xp: xp.arange(start, stop=stop, step=step, dtype=dtype)
 
