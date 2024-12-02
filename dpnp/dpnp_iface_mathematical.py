@@ -2956,8 +2956,6 @@ def modf(x1, **kwargs):
             )
 
         if not kwargs:
-            pass
-        else:
             return dpnp_modf(x1_desc)
 
     return call_origin(numpy.modf, x1, **kwargs)
