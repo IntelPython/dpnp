@@ -379,6 +379,16 @@ class TestFft:
         out = dpnp.empty((10,), dtype=dpnp.float32)
         assert_raises(TypeError, dpnp.fft.fft, a, out=out)
 
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_negative_stride(self, dtype):
+        a = dpnp.arange(10, dtype=dtype)
+        result = dpnp.fft.fft(a[::-1])
+        expected = numpy.fft.fft(a.asnumpy()[::-1])
+
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
 
 class TestFft2:
     def setup_method(self):
