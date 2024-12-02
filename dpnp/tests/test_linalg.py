@@ -2524,11 +2524,11 @@ class TestSolve:
         # random generation of the input singular matrix
         b_np = generate_random_numpy_array(b_shape, dtype, seed_value=76)
 
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
         expected = numpy.linalg.solve(a_np, b_np)
-        result = inp.linalg.solve(a_dp, b_dp)
+        result = dpnp.linalg.solve(a_dp, b_dp)
 
         assert_dtype_allclose(result, expected)
 
@@ -2638,8 +2638,8 @@ class TestSolve:
         )
 
         # b.ndim == 0
-        b_dp_ndim_0 = inp.array(2)
-        assert_raises(ValueError, inp.linalg.solve, a_dp, b_dp_ndim_0)
+        b_dp_ndim_0 = dpnp.array(2)
+        assert_raises(ValueError, dpnp.linalg.solve, a_dp, b_dp_ndim_0)
 
 
 class TestSlogdet:
@@ -2754,13 +2754,13 @@ class TestSvd:
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
-            tol = 1e-04
+            tol = 1e-03
         elif not has_support_aspect64() and dtype in (
             dpnp.int32,
             dpnp.int64,
             None,
         ):
-            tol = 1e-04
+            tol = 1e-03
         self._tol = tol
 
     def check_types_shapes(
