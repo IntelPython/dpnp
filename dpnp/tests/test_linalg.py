@@ -1208,6 +1208,18 @@ class TestEinsum:
             numpy.einsum("ij,i->", a, b, optimize=do_opt),
         )
 
+    def test_einsum_sums_int8(self):
+        self.check_einsum_sums("i1")
+
+    def test_einsum_sums_uint8(self):
+        self.check_einsum_sums("u1")
+
+    def test_einsum_sums_int16(self):
+        self.check_einsum_sums("i2")
+
+    def test_einsum_sums_uint16(self):
+        self.check_einsum_sums("u2")
+
     def test_einsum_sums_int32(self):
         self.check_einsum_sums("i4")
         self.check_einsum_sums("i4", True)

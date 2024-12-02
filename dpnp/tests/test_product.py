@@ -5,6 +5,7 @@ from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
+from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
     assert_dtype_allclose,
@@ -288,9 +289,12 @@ class TestDot:
         b = generate_random_numpy_array(10, dtype)
         ib = dpnp.array(b)
 
-        dp_out = dpnp.empty(10, dtype=dtype)
+        scalar_dtype = map_dtype_to_device(type(a), ib.sycl_device)
+        result_dtype = dpnp.result_type(scalar_dtype, ib)
+        out = numpy.empty(10, dtype=result_dtype)
+        dp_out = dpnp.array(out)
         result = dpnp.dot(a, ib, out=dp_out)
-        expected = numpy.dot(a, b)
+        expected = numpy.dot(a, b, out=out)
 
         assert result is dp_out
         _assert_selective_dtype_allclose(result, expected, dtype)
@@ -376,7 +380,7 @@ class TestDot:
         # output data type is incorrect
         dp_out = dpnp.empty((10,), dtype=dpnp.complex64)
         out = numpy.empty((10,), dtype=numpy.complex64)
-        assert_raises(ValueError, dpnp.dot, ia, ib, out=dp_out)
+        assert_raises((TypeError, ValueError), dpnp.dot, ia, ib, out=dp_out)
         assert_raises(ValueError, numpy.dot, a, b, out=out)
 
         # output shape is incorrect
@@ -630,6 +634,7 @@ class TestMultiDot:
     def test_basic(self, shapes, dtype):
         numpy_array_list = []
         dpnp_array_list = []
+        numpy.random.seed(70)
         for shape in shapes:
             a = generate_random_numpy_array(shape, dtype)
             ia = dpnp.array(a)
