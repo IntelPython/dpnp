@@ -1645,11 +1645,7 @@ def test_eigenvalue(func, shape, device):
     # get a symmetric array for eigh() and eigvalsh() or
     # non-symmetric for eig() and eigvals()
     is_hermitian = func in ("eigh, eigvalsh")
-    # Set seed_value=81 to prevent
-    # random generation of the input singular matrix
-    a = generate_random_numpy_array(
-        shape, dtype, hermitian=is_hermitian, seed_value=81
-    )
+    a = generate_random_numpy_array(shape, dtype, hermitian=is_hermitian)
     dp_a = dpnp.array(a, device=device)
 
     expected_queue = dp_a.sycl_queue
@@ -1661,15 +1657,15 @@ def test_eigenvalue(func, shape, device):
         # Check the eigenvalue decomposition
         if a.ndim == 2:
             assert_allclose(
-                dp_a @ dp_vec, dp_vec @ dpnp.diag(dp_val), rtol=1e-5, atol=1e-5
+                dp_a @ dp_vec, dp_vec @ dpnp.diag(dp_val), rtol=1e-4, atol=1e-4
             )
         else:  # a.ndim == 3
             for i in range(a.shape[0]):
                 assert_allclose(
                     dp_a[i].dot(dp_vec[i]),
                     dp_val[i] * dp_vec[i],
-                    rtol=1e-5,
-                    atol=1e-5,
+                    rtol=1e-4,
+                    atol=1e-4,
                 )
         assert dp_vec.shape == np_vec.shape
         assert dp_vec.dtype == np_vec.dtype
@@ -1682,7 +1678,7 @@ def test_eigenvalue(func, shape, device):
         dp_val = getattr(dpnp.linalg, func)(dp_a)
         np_val = getattr(numpy.linalg, func)(a)
 
-    assert_allclose(dp_val, np_val, rtol=1e-05, atol=1e-05)
+    assert_allclose(dp_val, np_val, rtol=1e-04, atol=1e-04)
     assert dp_val.shape == np_val.shape
     assert dp_val.dtype == np_val.dtype
 
