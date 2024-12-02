@@ -198,7 +198,6 @@ class TestIndexing(unittest.TestCase):
         return xp.extract(b, a)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestChoose(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

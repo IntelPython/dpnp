@@ -10,7 +10,6 @@ from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition, _hypothesis
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRandint(unittest.TestCase):
     def test_lo_hi_reversed(self):
         with self.assertRaises(ValueError):
@@ -107,7 +106,6 @@ class TestRandint2(unittest.TestCase):
         self.assertTrue(_hypothesis.chi_square_test(counts, expected))
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestRandintDtype(unittest.TestCase):
     # numpy.int8, numpy.uint8, numpy.int16, numpy.uint16, numpy.int32])
     @testing.for_dtypes([numpy.int32])

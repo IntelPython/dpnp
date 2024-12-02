@@ -45,7 +45,6 @@ class TestDistribution(unittest.TestCase):
         assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func",
     [dpnp.random.chisquare, dpnp.random.rand, dpnp.random.randn],
@@ -62,7 +61,6 @@ def test_input_size(func):
     assert output_shape == res.shape
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func",
     [
@@ -84,7 +82,6 @@ def test_input_shape(func):
     assert shape == res.shape
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func",
     [
@@ -107,7 +104,6 @@ def test_check_output(func):
     assert dpnp.all(res < 1)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.parametrize(
     "func",
     [
@@ -134,7 +130,6 @@ def test_seed(func):
     assert_allclose(a1, a2, rtol=1e-07, atol=0)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 def test_randn_normal_distribution():
     """
     Check the moments of the normal distribution sample obtained
@@ -672,7 +667,6 @@ class TestDistributionsNegativeBinomial(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsNormal(TestDistribution):
     def test_extreme_value(self):
         loc = 5
@@ -833,13 +827,11 @@ class TestDistributionsRayleigh(TestDistribution):
         self.check_seed("rayleigh", {"scale": scale})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardCauchy(TestDistribution):
     def test_seed(self):
         self.check_seed("standard_cauchy", {})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardExponential(TestDistribution):
     def test_moments(self):
         shape = 0.8
@@ -875,7 +867,6 @@ class TestDistributionsStandardGamma(TestDistribution):
         self.check_seed("standard_gamma", {"shape": 0.0})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsStandardNormal(TestDistribution):
     def test_moments(self):
         expected_mean = 0.0
@@ -953,7 +944,6 @@ class TestDistributionsTriangular(TestDistribution):
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestDistributionsUniform(TestDistribution):
     def test_extreme_value(self):
         low = 1.0
@@ -1080,7 +1070,6 @@ class TestDistributionsZipf(TestDistribution):
         self.check_seed("zipf", {"a": a})
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPermutationsTestShuffle:
     @pytest.mark.parametrize(
         "dtype",
