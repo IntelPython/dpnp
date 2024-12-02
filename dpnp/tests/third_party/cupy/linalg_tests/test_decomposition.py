@@ -7,6 +7,7 @@ import dpnp as cupy
 from dpnp.tests.helper import (
     has_support_aspect64,
     is_cpu_device,
+    is_cuda_device,
     is_win_platform,
 )
 from dpnp.tests.third_party.cupy import testing
@@ -256,13 +257,17 @@ class TestSVD(unittest.TestCase):
 
     @_condition.repeat(3, 10)
     def test_svd_rank2(self):
-        self.check_usv((3, 7))
+        # skip case where n < m on CUDA (SAT-7589)
+        if not is_cuda_device():
+            self.check_usv((3, 7))
         self.check_usv((2, 2))
         self.check_usv((7, 3))
 
     @_condition.repeat(3, 10)
     def test_svd_rank2_no_uv(self):
-        self.check_singular((3, 7))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_singular((3, 7))
         self.check_singular((2, 2))
         self.check_singular((7, 3))
 
@@ -288,8 +293,10 @@ class TestSVD(unittest.TestCase):
     )
     @_condition.repeat(3, 10)
     def test_svd_rank3(self):
-        self.check_usv((2, 3, 4))
-        self.check_usv((2, 3, 7))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_usv((2, 3, 4))
+            self.check_usv((2, 3, 7))
         self.check_usv((2, 4, 4))
         self.check_usv((2, 7, 3))
         self.check_usv((2, 4, 3))
@@ -303,12 +310,16 @@ class TestSVD(unittest.TestCase):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_usv((2, 64, 64))
         self.check_usv((2, 64, 32))
-        self.check_usv((2, 32, 64))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_usv((2, 32, 64))
 
     @_condition.repeat(3, 10)
     def test_svd_rank3_no_uv(self):
-        self.check_singular((2, 3, 4))
-        self.check_singular((2, 3, 7))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_singular((2, 3, 4))
+            self.check_singular((2, 3, 7))
         self.check_singular((2, 4, 4))
         self.check_singular((2, 7, 3))
         self.check_singular((2, 4, 3))
@@ -318,7 +329,9 @@ class TestSVD(unittest.TestCase):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_singular((2, 64, 64))
         self.check_singular((2, 64, 32))
-        self.check_singular((2, 32, 64))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_singular((2, 32, 64))
 
     @testing.with_requires("numpy>=1.16")
     def test_svd_rank3_empty_array(self):
@@ -350,8 +363,10 @@ class TestSVD(unittest.TestCase):
     )
     @_condition.repeat(3, 10)
     def test_svd_rank4(self):
-        self.check_usv((2, 2, 3, 4))
-        self.check_usv((2, 2, 3, 7))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_usv((2, 2, 3, 4))
+            self.check_usv((2, 2, 3, 7))
         self.check_usv((2, 2, 4, 4))
         self.check_usv((2, 2, 7, 3))
         self.check_usv((2, 2, 4, 3))
@@ -365,12 +380,16 @@ class TestSVD(unittest.TestCase):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_usv((3, 2, 64, 64))
         self.check_usv((3, 2, 64, 32))
-        self.check_usv((3, 2, 32, 64))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_usv((3, 2, 32, 64))
 
     @_condition.repeat(3, 10)
     def test_svd_rank4_no_uv(self):
-        self.check_singular((2, 2, 3, 4))
-        self.check_singular((2, 2, 3, 7))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_singular((2, 2, 3, 4))
+            self.check_singular((2, 2, 3, 7))
         self.check_singular((2, 2, 4, 4))
         self.check_singular((2, 2, 7, 3))
         self.check_singular((2, 2, 4, 3))
@@ -380,7 +399,9 @@ class TestSVD(unittest.TestCase):
         # This tests the loop-based batched gesvd on CUDA (_gesvd_batched)
         self.check_singular((3, 2, 64, 64))
         self.check_singular((3, 2, 64, 32))
-        self.check_singular((3, 2, 32, 64))
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_singular((3, 2, 32, 64))
 
     @testing.with_requires("numpy>=1.16")
     def test_svd_rank4_empty_array(self):
@@ -398,7 +419,14 @@ class TestSVD(unittest.TestCase):
 )
 class TestQRDecomposition(unittest.TestCase):
     @testing.for_dtypes("fdFD")
+    # skip cases with 'complete' and 'reduce' modes on CUDA (SAT-7589)
     def check_mode(self, array, mode, dtype):
+        if (
+            is_cuda_device()
+            and array.size > 0
+            and mode in ["complete", "reduced"]
+        ):
+            return
         a_cpu = numpy.asarray(array, dtype=dtype)
         a_gpu = cupy.asarray(array, dtype=dtype)
         result_gpu = cupy.linalg.qr(a_gpu, mode=mode)

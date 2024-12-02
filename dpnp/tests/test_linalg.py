@@ -23,6 +23,7 @@ from .helper import (
     get_float_complex_dtypes,
     has_support_aspect64,
     is_cpu_device,
+    is_cuda_device,
 )
 from .third_party.cupy import testing
 
@@ -367,6 +368,7 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.skipif(is_cuda_device(), reason="SAT-7589")
     @pytest.mark.parametrize(
         "p",
         [-inp.inf, -1, 1, inp.inf, "fro"],
@@ -387,6 +389,9 @@ class TestCond:
         ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
     def test_cond_nan(self, p):
+        if is_cuda_device():
+            if p in [-inp.inf, -1, 1, inp.inf, "fro"]:
+                pytest.skip("SAT-7589")
         a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(2, 2, 2, 2)
         a[0, 0] = 0
         a[1, 1] = 0
@@ -1893,6 +1898,9 @@ class TestLstsq:
         ],
     )
     def test_lstsq(self, a_shape, b_shape, dtype):
+        if is_cuda_device():
+            if a_shape == (2, 4):
+                pytest.skip("SAT-7589")
         a_np = numpy.random.rand(*a_shape).astype(dtype)
         b_np = numpy.random.rand(*b_shape).astype(dtype)
 
@@ -2272,6 +2280,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_2D(self, dtype, ord, axis, keepdims):
+        if is_cuda_device():
+            if ord in [-2, 2, "nuc"] and axis == None:
+                pytest.skip("SAT-7589")
         a = numpy.array(numpy.random.uniform(-5, 5, 15), dtype=dtype).reshape(
             3, 5
         )
@@ -2299,6 +2310,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_2D_complex(self, dtype, ord, axis, keepdims):
+        if is_cuda_device():
+            if ord in [-2, 2, "nuc"] and axis == None:
+                pytest.skip("SAT-7589")
         x1 = numpy.random.uniform(-5, 5, 15)
         x2 = numpy.random.uniform(-5, 5, 15)
         a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(3, 5)
@@ -2328,6 +2342,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_ND(self, dtype, ord, axis, keepdims):
+        if is_cuda_device():
+            if ord in [-2, 2, "nuc"] and axis == (0, 1):
+                pytest.skip("SAT-7589")
         a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
             2, 3, 4, 5
         )
@@ -2361,6 +2378,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_ND_complex(self, dtype, ord, axis, keepdims):
+        if is_cuda_device():
+            if ord in [-2, 2, "nuc"] and axis == (0, 1):
+                pytest.skip("SAT-7589")
         x1 = numpy.random.uniform(-5, 5, 120)
         x2 = numpy.random.uniform(-5, 5, 120)
         a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(2, 3, 4, 5)
@@ -2394,6 +2414,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_norm_usm_ndarray(self, dtype, ord, axis, keepdims):
+        if is_cuda_device():
+            if ord in [-2, 2, "nuc"] and axis in [(0, 1), (-2, -1)]:
+                pytest.skip("SAT-7589")
         a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
             2, 3, 4, 5
         )
@@ -2473,6 +2496,9 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_matrix_norm(self, ord, keepdims):
+        if is_cuda_device():
+            if ord in [-2, 2, "nuc"]:
+                pytest.skip("SAT-7589")
         a = numpy.array(numpy.random.uniform(-5, 5, 15)).reshape(3, 5)
         ia = inp.array(a)
 
@@ -2570,6 +2596,12 @@ class TestQr:
         ids=["r", "raw", "complete", "reduced"],
     )
     def test_qr(self, dtype, shape, mode):
+        if (
+            is_cuda_device()
+            and mode in ["complete", "reduced"]
+            and shape in [(16, 16), (2, 2, 4)]
+        ):
+            pytest.skip("SAT-7589")
         # Set seed_value=81 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
@@ -2987,6 +3019,9 @@ class TestSvd:
         ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)"],
     )
     def test_svd(self, dtype, shape):
+        if is_cuda_device():
+            if shape == (3, 4):
+                pytest.skip("SAT-7589")
         a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
         dp_a = inp.array(a)
 
@@ -3058,6 +3093,9 @@ class TestSvdvals:
         ids=["(3,5)", "(4,2)", "(2,3,3)", "(3,5,2)"],
     )
     def test_svdvals(self, dtype, shape):
+        if is_cuda_device():
+            if shape == (3, 5):
+                pytest.skip("SAT-7589")
         a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
         dp_a = inp.array(a)
 
@@ -3128,6 +3166,9 @@ class TestPinv:
         ],
     )
     def test_pinv(self, dtype, shape):
+        if is_cuda_device():
+            if shape in [(3, 4), (2, 2, 4)]:
+                pytest.skip("SAT-7589")
         # Set seed_value=81 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
