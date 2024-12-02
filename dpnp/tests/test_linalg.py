@@ -2988,11 +2988,7 @@ class TestPinv:
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_pinv_hermitian(self, dtype, shape):
-        # Set seed_value=70 to prevent
-        # random generation of the input singular matrix
-        a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=70, low=-2, high=2
-        )
+        a = generate_random_numpy_array(shape, dtype, hermitian=True)
         a_dp = dpnp.array(a)
 
         B = numpy.linalg.pinv(a, hermitian=True)
