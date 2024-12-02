@@ -42,7 +42,7 @@ class TestConj(unittest.TestCase):
 class TestAngle(unittest.TestCase):
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_almost_equal()
+    @testing.numpy_cupy_array_almost_equal(type_check=has_support_aspect64())
     def test_angle(self, xp, dtype):
         x = testing.shaped_arange((2, 3), xp, dtype)
         return xp.angle(x)
