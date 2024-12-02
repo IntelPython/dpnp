@@ -1,6 +1,10 @@
-﻿dpnp.linalg.eig
+﻿
+
+dpnp.linalg.eig
 ===============
 
 .. currentmodule:: dpnp.linalg
+
+
 
 .. autofunction:: eig

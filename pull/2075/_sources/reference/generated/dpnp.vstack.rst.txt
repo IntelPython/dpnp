@@ -1,6 +1,10 @@
-﻿dpnp.vstack
+﻿
+
+dpnp.vstack
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: vstack

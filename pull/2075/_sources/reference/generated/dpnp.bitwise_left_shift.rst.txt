@@ -1,6 +1,10 @@
-﻿dpnp.bitwise\_left\_shift
+﻿
+
+dpnp.bitwise\_left\_shift
 =========================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: bitwise_left_shift

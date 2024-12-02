@@ -1,6 +1,10 @@
-﻿dpnp.arcsinh
+﻿
+
+dpnp.arcsinh
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: arcsinh

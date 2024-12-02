@@ -1,6 +1,10 @@
-﻿dpnp.isnan
+﻿
+
+dpnp.isnan
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: isnan

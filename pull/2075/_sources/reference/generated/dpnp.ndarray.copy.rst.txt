@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.copy
+:orphan:
+
+dpnp.ndarray.copy
 =================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.copy

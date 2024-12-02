@@ -1,6 +1,10 @@
-﻿dpnp.rsqrt
+﻿
+
+dpnp.rsqrt
 ==========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: rsqrt

@@ -1,6 +1,10 @@
-﻿dpnp.multiply
+﻿
+
+dpnp.multiply
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: multiply

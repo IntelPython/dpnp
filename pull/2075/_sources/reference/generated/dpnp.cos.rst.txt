@@ -1,6 +1,10 @@
-﻿dpnp.cos
+﻿
+
+dpnp.cos
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: cos

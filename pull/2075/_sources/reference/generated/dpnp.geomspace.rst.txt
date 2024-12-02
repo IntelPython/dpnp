@@ -1,6 +1,10 @@
-﻿dpnp.geomspace
+﻿
+
+dpnp.geomspace
 ==============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: geomspace
