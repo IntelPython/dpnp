@@ -5,6 +5,7 @@ from dpctl.utils import ExecutionPlacementError
 from numpy.testing import assert_raises
 
 import dpnp
+from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
     assert_dtype_allclose,
@@ -13,18 +14,6 @@ from .helper import (
     get_complex_dtypes,
 )
 from .third_party.cupy import testing
-
-
-def _assert_selective_dtype_allclose(result, expected, dtype):
-    # For numpy.dot, numpy.vdot, numpy.kron, numpy.inner, and numpy.tensordot,
-    # when inputs are an scalar (which has the default dtype of platform) and
-    # an array, the scalar dtype precision determines the output dtype
-    # precision. In dpnp, we rely on dpnp.multiply for scalar-array product
-    # and array (not scalar) determines output dtype precision of dpnp.multiply
-    if dtype in [numpy.int32, numpy.float32, numpy.complex64]:
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
-    else:
-        assert_dtype_allclose(result, expected)
 
 
 class TestCross:
@@ -221,11 +210,11 @@ class TestDot:
 
         result = dpnp.dot(a, ib)
         expected = numpy.dot(a, b)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
         result = dpnp.dot(ib, a)
         expected = numpy.dot(b, a)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
@@ -256,8 +245,8 @@ class TestDot:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype)
-        b = generate_random_numpy_array(shape2, dtype)
+        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -288,12 +277,15 @@ class TestDot:
         b = generate_random_numpy_array(10, dtype)
         ib = dpnp.array(b)
 
-        dp_out = dpnp.empty(10, dtype=dtype)
+        np_res_dtype = numpy.result_type(type(a), b)
+        out = numpy.empty(10, dtype=np_res_dtype)
+        dp_res_dtype = map_dtype_to_device(np_res_dtype, ib.sycl_device)
+        dp_out = dpnp.array(out, dtype=dp_res_dtype)
         result = dpnp.dot(a, ib, out=dp_out)
-        expected = numpy.dot(a, b)
+        expected = numpy.dot(a, b, out=out)
 
         assert result is dp_out
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
@@ -324,8 +316,8 @@ class TestDot:
         ],
     )
     def test_out(self, dtype, shape1, shape2, out_shape):
-        a = generate_random_numpy_array(shape1, dtype)
-        b = generate_random_numpy_array(shape2, dtype)
+        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -376,7 +368,9 @@ class TestDot:
         # output data type is incorrect
         dp_out = dpnp.empty((10,), dtype=dpnp.complex64)
         out = numpy.empty((10,), dtype=numpy.complex64)
-        assert_raises(ValueError, dpnp.dot, ia, ib, out=dp_out)
+        # For scalar dpnp raises TypeError, and for empty array raises ValueError
+        # NumPy raises ValueError for both cases
+        assert_raises((TypeError, ValueError), dpnp.dot, ia, ib, out=dp_out)
         assert_raises(ValueError, numpy.dot, a, b, out=out)
 
         # output shape is incorrect
@@ -442,11 +436,11 @@ class TestInner:
 
         result = dpnp.inner(a, ib)
         expected = numpy.inner(a, b)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
         result = dpnp.inner(ib, a)
         expected = numpy.inner(b, a)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
@@ -460,8 +454,8 @@ class TestInner:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype)
-        b = generate_random_numpy_array(shape2, dtype)
+        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -510,11 +504,12 @@ class TestKron:
 
         result = dpnp.kron(a, ib)
         expected = numpy.kron(a, b)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
         result = dpnp.kron(ib, a)
         expected = numpy.kron(b, a)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        # NumPy returns incorrect dtype on Windows, add check_type=False
+        assert_dtype_allclose(result, expected, check_type=False)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
@@ -611,7 +606,7 @@ class TestMultiDot:
             ((6,), (6, 10), (10, 7), (7, 8)),
             ((4, 6), (6, 10), (10, 7), (7,)),
             ((6,), (6, 10), (10, 7), (7,)),
-            ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3)),
+            ((4, 6), (6, 2), (2, 7), (7, 5), (5, 3)),
         ],
         ids=[
             "two_arrays",
@@ -631,7 +626,7 @@ class TestMultiDot:
         numpy_array_list = []
         dpnp_array_list = []
         for shape in shapes:
-            a = generate_random_numpy_array(shape, dtype)
+            a = generate_random_numpy_array(shape, dtype, low=-2, high=2)
             ia = dpnp.array(a)
 
             numpy_array_list.append(a)
@@ -655,7 +650,7 @@ class TestMultiDot:
             ((6,), (6, 10), (10, 7), (7, 8), (8,)),
             ((4, 6), (6, 10), (10, 7), (7,), (4,)),
             ((6,), (6, 10), (10, 7), (7,), ()),
-            ((4, 6), (6, 9), (9, 7), (7, 8), (8, 3), (4, 3)),
+            ((4, 6), (6, 2), (2, 7), (7, 5), (5, 3), (4, 3)),
         ],
         ids=[
             "two_arrays",
@@ -675,7 +670,7 @@ class TestMultiDot:
         numpy_array_list = []
         dpnp_array_list = []
         for shape in shapes[:-1]:
-            a = generate_random_numpy_array(shape, dtype)
+            a = generate_random_numpy_array(shape, dtype, low=-2, high=2)
             ia = dpnp.array(a)
 
             numpy_array_list.append(a)
@@ -762,17 +757,17 @@ class TestTensordot:
 
         result = dpnp.tensordot(a, ib, axes=0)
         expected = numpy.tensordot(a, b, axes=0)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
         result = dpnp.tensordot(ib, a, axes=0)
         expected = numpy.tensordot(b, a, axes=0)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axes", [0, 1, 2])
     def test_basic(self, dtype, axes):
-        a = generate_random_numpy_array((4, 4, 4), dtype)
-        b = generate_random_numpy_array((4, 4, 4), dtype)
+        a = generate_random_numpy_array((4, 4, 4), dtype, low=-5, high=5)
+        b = generate_random_numpy_array((4, 4, 4), dtype, low=-5, high=5)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -792,8 +787,8 @@ class TestTensordot:
         ],
     )
     def test_axes(self, dtype, axes):
-        a = generate_random_numpy_array((2, 5, 3, 4), dtype)
-        b = generate_random_numpy_array((4, 2, 5, 3), dtype)
+        a = generate_random_numpy_array((2, 5, 3, 4), dtype, low=-5, high=5)
+        b = generate_random_numpy_array((4, 2, 5, 3), dtype, low=-5, high=5)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -804,8 +799,8 @@ class TestTensordot:
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
     def test_input_dtype_matrix(self, dtype1, dtype2):
-        a = generate_random_numpy_array((3, 4, 5), dtype1)
-        b = generate_random_numpy_array((4, 5, 2), dtype2)
+        a = generate_random_numpy_array((3, 4, 5), dtype1, low=-5, high=5)
+        b = generate_random_numpy_array((4, 5, 2), dtype2, low=-5, high=5)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -896,11 +891,11 @@ class TestVdot:
 
         result = dpnp.vdot(ia, b)
         expected = numpy.vdot(a, b)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
         result = dpnp.vdot(b, ia)
         expected = numpy.vdot(b, a)
-        _assert_selective_dtype_allclose(result, expected, dtype)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(

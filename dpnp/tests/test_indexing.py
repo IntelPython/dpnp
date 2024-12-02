@@ -43,12 +43,12 @@ class TestDiagonal:
         "shape",
         [(2, 2), (3, 3), (2, 5), (3, 2, 2), (2, 2, 2, 2), (2, 2, 2, 3)],
         ids=[
-            "(2,2)",
-            "(3,3)",
-            "(2,5)",
-            "(3,2,2)",
-            "(2,2,2,2)",
-            "(2,2,2,3)",
+            "(2, 2)",
+            "(3, 3)",
+            "(2, 5)",
+            "(3, 2, 2)",
+            "(2, 2, 2, 2)",
+            "(2, 2, 2, 3)",
         ],
     )
     def test_diagonal_offset(self, shape, dtype, offset):
@@ -122,8 +122,14 @@ class TestExtins:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("cond_dt", get_all_dtypes(no_none=True))
     def test_extract_diff_dtypes(self, a_dt, cond_dt):
-        a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=a_dt)
-        cond = numpy.array([1, -1, 2, 0, -2, 3], dtype=cond_dt)
+        x = [-2, -1, 0, 1, 2, 3]
+        y = [1, -1, 2, 0, -2, 3]
+        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
+            x = numpy.abs(x)
+        a = numpy.array(x, dtype=a_dt)
+        if numpy.issubdtype(cond_dt, numpy.unsignedinteger):
+            y = numpy.abs(y)
+        cond = numpy.array(y, dtype=cond_dt)
         ia, icond = dpnp.array(a), dpnp.array(cond)
 
         result = dpnp.extract(icond, ia)
@@ -132,7 +138,10 @@ class TestExtins:
 
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     def test_extract_list_cond(self, a_dt):
-        a = numpy.array([-2, -1, 0, 1, 2, 3], dtype=a_dt)
+        x = [-2, -1, 0, 1, 2, 3]
+        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
+            x = numpy.abs(x)
+        a = numpy.array(x, dtype=a_dt)
         cond = [1, -1, 2, 0, -2, 3]
         ia = dpnp.array(a)
 
@@ -165,7 +174,7 @@ class TestExtins:
             dtype=mask_dt,
         )
         vals = numpy.array(
-            [100, 200, 300, 400, 500, 600, 800, 900], dtype=vals_dt
+            [101, 102, 103, 104, 105, 106, 108, 109], dtype=vals_dt
         )
         ia, imask, ivals = dpnp.array(a), dpnp.array(mask), dpnp.array(vals)
 
@@ -385,7 +394,10 @@ class TestNonzero:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_1d(self, dtype):
-        a = numpy.array([1, 0, 2, -1, 0, 0, 8], dtype=dtype)
+        x = [1, 0, 2, -1, 0, 0, 8]
+        if numpy.issubdtype(dtype, numpy.unsignedinteger):
+            x = numpy.abs(x)
+        a = numpy.array(x, dtype=dtype)
         ia = dpnp.array(a)
 
         np_res = numpy.nonzero(a)
@@ -437,21 +449,26 @@ class TestNonzero:
 class TestPut:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
-        "indices", [[0, 2], [-5, 4]], ids=["[0, 2]", "[-5, 4]"]
+        "indices", [[0, 2], [-3, 4]], ids=["[0, 2]", "[-3, 4]"]
     )
     @pytest.mark.parametrize("ind_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "vals",
         [0, [1, 2], (2, 2), dpnp.array([1, 2])],
-        ids=["0", "[1, 2]", "(2, 2)", "dpnp.array([1,2])"],
+        ids=["0", "[1, 2]", "(2, 2)", "dpnp.array([1, 2])"],
     )
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_input_1d(self, a_dt, indices, ind_dt, vals, mode):
-        a = numpy.array([-2, -1, 0, 1, 2], dtype=a_dt)
+        x = [-2, -1, 0, 1, 2]
+        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
+            x = numpy.abs(x)
+        a = numpy.array(x, dtype=a_dt)
         b = numpy.copy(a)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
+        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
+            indices = numpy.abs(indices)
         ind = numpy.array(indices, dtype=ind_dt)
         if ind_dt == dpnp.bool and ind.all():
             ind[0] = False  # to get rid of duplicate indices
@@ -465,6 +482,18 @@ class TestPut:
             b.put(ind, vals, mode=mode)
             ib.put(iind, vals, mode=mode)
             assert_array_equal(ib, b)
+        elif numpy.issubdtype(ind_dt, numpy.uint64):
+            # For this special case, NumPy raises an error but dpnp works
+            assert_raises(TypeError, numpy.put, a, ind, vals, mode=mode)
+            assert_raises(TypeError, b.put, ind, vals, mode=mode)
+
+            numpy.put(a, ind.astype(numpy.int64), vals, mode=mode)
+            dpnp.put(ia, iind, vals, mode=mode)
+            assert_array_equal(ia, a)
+
+            b.put(ind.astype(numpy.int64), vals, mode=mode)
+            ib.put(iind, vals, mode=mode)
+            assert_array_equal(ib, b)
         else:
             assert_raises(TypeError, numpy.put, a, ind, vals, mode=mode)
             assert_raises(TypeError, dpnp.put, ia, iind, vals, mode=mode)
@@ -475,30 +504,35 @@ class TestPut:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "indices",
-        [
-            [0, 7],
-            [3, 4],
-            [-9, 8],
-        ],
-        ids=[
-            "[0, 7]",
-            "[3, 4]",
-            "[-9, 8]",
-        ],
+        [[0, 7], [3, 4], [-7, 8]],
+        ids=["[0, 7]", "[3, 4]", "[-7, 8]"],
     )
     @pytest.mark.parametrize("ind_dt", get_integer_dtypes())
-    @pytest.mark.parametrize("vals", [[10, 20]], ids=["[10, 20]"])
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
-    def test_input_2d(self, a_dt, indices, ind_dt, vals, mode):
-        a = numpy.array([[-1, 0, 1], [-2, -3, -4], [2, 3, 4]], dtype=a_dt)
+    def test_input_2d(self, a_dt, indices, ind_dt, mode):
+        x = [[-1, 0, 1], [-2, -3, -4], [2, 3, 4]]
+        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
+            x = numpy.abs(x)
+        a = numpy.array(x, dtype=a_dt)
         ia = dpnp.array(a)
+        vals = [10, 20]
 
+        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
+            indices = numpy.abs(indices)
         ind = numpy.array(indices, dtype=ind_dt)
         iind = dpnp.array(ind)
 
-        numpy.put(a, ind, vals, mode=mode)
-        dpnp.put(ia, iind, vals, mode=mode)
-        assert_array_equal(ia, a)
+        if numpy.issubdtype(ind_dt, numpy.uint64):
+            # For this special case, NumPy raises an error but dpnp works
+            assert_raises(TypeError, numpy.put, a, ind, vals, mode=mode)
+
+            numpy.put(a, ind.astype(numpy.int64), vals, mode=mode)
+            dpnp.put(ia, iind, vals, mode=mode)
+            assert_array_equal(ia, a)
+        else:
+            numpy.put(a, ind, vals, mode=mode)
+            dpnp.put(ia, iind, vals, mode=mode)
+            assert_array_equal(ia, a)
 
     def test_indices_2d(self):
         a = numpy.arange(5)
@@ -536,17 +570,7 @@ class TestPut:
         with pytest.raises(IndexError):
             empty.put(1, 1, mode=mode)
 
-    @pytest.mark.parametrize(
-        "shape",
-        [
-            (3,),
-            (4,),
-        ],
-        ids=[
-            "(3,)",
-            "(4,)",
-        ],
-    )
+    @pytest.mark.parametrize("shape", [(3,), (4,)], ids=["(3,)", "(4,)"])
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_invalid_shape(self, shape, mode):
         a = dpnp.arange(7)
@@ -558,17 +582,7 @@ class TestPut:
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
-        "axis",
-        [
-            1.0,
-            (0,),
-            [0, 1],
-        ],
-        ids=[
-            "1.0",
-            "(0,)",
-            "[0, 1]",
-        ],
+        "axis", [1.0, (0,), [0, 1]], ids=["1.0", "(0,)", "[0, 1]"]
     )
     def test_invalid_axis(self, xp, axis):
         a = xp.arange(6).reshape(2, 3)
@@ -599,7 +613,8 @@ class TestPutAlongAxis:
 
         # replace the max with a small value
         i_max = _add_keepdims(dpnp.argmax)(a, axis=axis)
-        dpnp.put_along_axis(a, i_max, -99, axis=axis)
+        val = 0 if numpy.issubdtype(arr_dt, numpy.unsignedinteger) else -99
+        dpnp.put_along_axis(a, i_max, val, axis=axis)
 
         # find the new minimum, which should max
         i_min = _add_keepdims(dpnp.argmin)(a, axis=axis)
@@ -613,8 +628,8 @@ class TestPutAlongAxis:
     @pytest.mark.parametrize(
         "values",
         [
-            777,
-            [100, 200, 300, 400],
+            77,
+            [101, 102, 103, 104],
             (42,),
             range(4),
             numpy.arange(4),
@@ -655,9 +670,10 @@ class TestPutAlongAxis:
         ind = numpy.arange(10, dtype=idx_dt).reshape((1, 2, 5)) % 4
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
-        numpy.put_along_axis(a, ind, 20, axis=1)
-        dpnp.put_along_axis(ia, iind, 20, axis=1)
-        assert_array_equal(ia, a)
+        if numpy.issubdtype(idx_dt, numpy.uint64):
+            numpy.put_along_axis(a, ind, 20, axis=1)
+            dpnp.put_along_axis(ia, iind, 20, axis=1)
+            assert_array_equal(ia, a)
 
     def test_mode_wrap(self):
         a = numpy.array([-2, -1, 0, 1, 2])
@@ -687,17 +703,29 @@ class TestTake:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("ind_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
-        "indices", [[-2, 2], [-5, 4]], ids=["[-2, 2]", "[-5, 4]"]
+        "indices", [[-2, 2], [-4, 4]], ids=["[-2, 2]", "[-4, 4]"]
     )
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_1d(self, a_dt, ind_dt, indices, mode):
-        a = numpy.array([-2, -1, 0, 1, 2], dtype=a_dt)
+        x = [-2, -1, 0, 1, 2]
+        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
+            x = numpy.abs(x)
+        a = numpy.array(x, dtype=a_dt)
+        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
+            indices = numpy.abs(indices)
         ind = numpy.array(indices, dtype=ind_dt)
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
         if numpy.can_cast(ind_dt, numpy.intp, casting="safe"):
             result = dpnp.take(ia, iind, mode=mode)
             expected = numpy.take(a, ind, mode=mode)
+            assert_array_equal(result, expected)
+        elif numpy.issubdtype(ind_dt, numpy.uint64):
+            # For this special case, although casting `ind_dt` to numpy.intp
+            # is not safe, dpnp do not raise an error
+            # NumPy only raises an error on Windows
+            result = dpnp.take(ia, iind, mode=mode)
+            expected = numpy.take(a, ind.astype(numpy.int64), mode=mode)
             assert_array_equal(result, expected)
         else:
             assert_raises(TypeError, ia.take, iind, mode=mode)
@@ -706,28 +734,43 @@ class TestTake:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("ind_dt", get_integer_dtypes())
     @pytest.mark.parametrize(
-        "indices", [[-1, 0], [-3, 2]], ids=["[-1, 0]", "[-3, 2]"]
+        "indices", [[-1, 0], [-2, 2]], ids=["[-1, 0]", "[-2, 2]"]
     )
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
-    @pytest.mark.parametrize("axis", [0, 1], ids=["0", "1"])
+    @pytest.mark.parametrize("axis", [0, 1])
     def test_2d(self, a_dt, ind_dt, indices, mode, axis):
-        a = numpy.array([[-1, 0, 1], [-2, -3, -4], [2, 3, 4]], dtype=a_dt)
+        x = [[-1, 0, 1], [-2, -3, -4], [2, 3, 4]]
+        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
+            x = numpy.abs(x)
+        a = numpy.array(x, dtype=a_dt)
+        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
+            indices = numpy.abs(indices)
         ind = numpy.array(indices, dtype=ind_dt)
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
-        result = ia.take(iind, axis=axis, mode=mode)
-        expected = a.take(ind, axis=axis, mode=mode)
-        assert_array_equal(result, expected)
+        if numpy.issubdtype(ind_dt, numpy.uint64):
+            # For this special case, NumPy raises an error on Windows
+            result = ia.take(iind, axis=axis, mode=mode)
+            expected = a.take(ind.astype(numpy.int64), axis=axis, mode=mode)
+            assert_array_equal(result, expected)
+        else:
+            result = ia.take(iind, axis=axis, mode=mode)
+            expected = a.take(ind, axis=axis, mode=mode)
+            assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("indices", [[-5, 5]], ids=["[-5, 5]"])
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
-    def test_over_index(self, a_dt, indices, mode):
-        a = dpnp.array([-2, -1, 0, 1, 2], dtype=a_dt)
-        ind = dpnp.array(indices, dtype=numpy.intp)
+    def test_over_index(self, a_dt, mode):
+        x = [-2, -1, 0, 1, 2]
+        y = [-2, 2]
+        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
+            x = numpy.abs(x)
+            y = numpy.abs(y)
+        a = dpnp.array(x, dtype=a_dt)
+        ind = dpnp.array([-5, 5], dtype=numpy.intp)
 
         result = dpnp.take(a, ind, mode=mode)
-        expected = dpnp.array([-2, 2], dtype=a.dtype)
+        expected = dpnp.array(y, dtype=a.dtype)
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
@@ -887,7 +930,7 @@ def test_choose():
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize("val", [-1, 0, 1], ids=["-1", "0", "1"])
+@pytest.mark.parametrize("val", [-1, 0, 1])
 @pytest.mark.parametrize(
     "array",
     [
@@ -936,7 +979,7 @@ def test_fill_diagonal(array, val):
     ],
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("sparse", [True, False])
 def test_indices(dimension, dtype, sparse):
     expected = numpy.indices(dimension, dtype=dtype, sparse=sparse)
     result = dpnp.indices(dimension, dtype=dtype, sparse=sparse)
@@ -944,7 +987,6 @@ def test_indices(dimension, dtype, sparse):
         assert_array_equal(Xnp, X)
 
 
-@pytest.mark.parametrize("vals", [[100, 200]], ids=["[100, 200]"])
 @pytest.mark.parametrize(
     "mask",
     [
@@ -963,12 +1005,12 @@ def test_indices(dimension, dtype, sparse):
     [[[0, 0], [0, 0]], [[1, 2], [1, 2]], [[1, 2], [3, 4]]],
     ids=["[[0, 0], [0, 0]]", "[[1, 2], [1, 2]]", "[[1, 2], [3, 4]]"],
 )
-def test_putmask1(arr, mask, vals):
+def test_putmask1(arr, mask):
     a = numpy.array(arr)
     ia = dpnp.array(a)
     m = numpy.array(mask)
     im = dpnp.array(m)
-    v = numpy.array(vals)
+    v = numpy.array([100, 200])
     iv = dpnp.array(v)
     numpy.putmask(a, m, v)
     dpnp.putmask(ia, im, iv)
@@ -1067,24 +1109,16 @@ def test_putmask3(arr, mask, vals):
     assert_array_equal(a, ia)
 
 
-@pytest.mark.parametrize(
-    "m", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
-)
-@pytest.mark.parametrize(
-    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
-)
-@pytest.mark.parametrize(
-    "n", [1, 2, 3, 4, 5, 6], ids=["1", "2", "3", "4", "5", "6"]
-)
+@pytest.mark.parametrize("m", [None, 0, 1, 2, 3, 4])
+@pytest.mark.parametrize("k", [-3, -2, -1, 0, 1, 2, 3])
+@pytest.mark.parametrize("n", [1, 2, 3, 4, 5, 6])
 def test_tril_indices(n, k, m):
     result = dpnp.tril_indices(n, k, m)
     expected = numpy.tril_indices(n, k, m)
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize(
-    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
-)
+@pytest.mark.parametrize("k", [-3, -2, -1, 0, 1, 2, 3])
 @pytest.mark.parametrize(
     "array",
     [
@@ -1102,24 +1136,16 @@ def test_tril_indices_from(array, k):
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize(
-    "m", [None, 0, 1, 2, 3, 4], ids=["None", "0", "1", "2", "3", "4"]
-)
-@pytest.mark.parametrize(
-    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
-)
-@pytest.mark.parametrize(
-    "n", [1, 2, 3, 4, 5, 6], ids=["1", "2", "3", "4", "5", "6"]
-)
+@pytest.mark.parametrize("m", [None, 0, 1, 2, 3, 4])
+@pytest.mark.parametrize("k", [-3, -2, -1, 0, 1, 2, 3])
+@pytest.mark.parametrize("n", [1, 2, 3, 4, 5, 6])
 def test_triu_indices(n, k, m):
     result = dpnp.triu_indices(n, k, m)
     expected = numpy.triu_indices(n, k, m)
     assert_array_equal(expected, result)
 
 
-@pytest.mark.parametrize(
-    "k", [-3, -2, -1, 0, 1, 2, 3], ids=["-3", "-2", "-1", "0", "1", "2", "3"]
-)
+@pytest.mark.parametrize("k", [-3, -2, -1, 0, 1, 2, 3])
 @pytest.mark.parametrize(
     "array",
     [

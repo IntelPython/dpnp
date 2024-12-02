@@ -161,7 +161,15 @@ def test_logsumexp(dtype):
 
     result = dpnp.logsumexp(dpa)
     expected = numpy.logaddexp.reduce(a)
-    assert_allclose(result, expected)
+    # for int8, uint8, NumPy returns float16 but dpnp returns float64
+    # for int16, uint16, NumPy returns float32 but dpnp returns float64
+    if dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]:
+        check_only_type_kind = True
+    else:
+        check_only_type_kind = False
+    assert_dtype_allclose(
+        result, expected, check_only_type_kind=check_only_type_kind
+    )
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -171,7 +179,15 @@ def test_cumlogsumexp(dtype):
 
     result = dpnp.cumlogsumexp(dpa)
     expected = numpy.logaddexp.accumulate(a)
-    assert_allclose(result, expected)
+    # for int8, uint8, NumPy returns float16 but dpnp returns float64
+    # for int16, uint16, NumPy returns float32 but dpnp returns float64
+    if dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]:
+        check_only_type_kind = True
+    else:
+        check_only_type_kind = False
+    assert_dtype_allclose(
+        result, expected, check_only_type_kind=check_only_type_kind
+    )
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -181,15 +197,29 @@ def test_reduce_hypot(dtype):
 
     result = dpnp.reduce_hypot(dpa)
     expected = numpy.hypot.reduce(a)
-    assert_allclose(result, expected)
-
-
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(10,)], ids=["(10,)"])
-def test_strides_erf(dtype, shape):
-    a = dpnp.reshape(
-        dpnp.linspace(-1, 1, num=numpy.prod(shape), dtype=dtype), shape
+    # for int8, uint8, NumPy returns float16 but dpnp returns float64
+    # for int16, uint16, NumPy returns float32 but dpnp returns float64
+    if dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]:
+        check_only_type_kind = True
+    else:
+        check_only_type_kind = False
+    assert_dtype_allclose(
+        result, expected, check_only_type_kind=check_only_type_kind
     )
+
+
+@pytest.mark.parametrize(
+    "dtype",
+    get_all_dtypes(
+        no_none=True,
+        no_bool=True,
+        no_complex=True,
+        no_unsigned=True,
+        xfail_dtypes=[dpnp.int8, dpnp.int16],
+    ),
+)
+def test_strides_erf(dtype):
+    a = dpnp.linspace(-1, 1, num=10, dtype=dtype)
     b = a[::2]
 
     result = dpnp.erf(b)

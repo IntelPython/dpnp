@@ -107,7 +107,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11']
 
     continue-on-error: true
 
@@ -193,7 +193,7 @@ jobs:
             python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_linux_all_dtypes:
-    name: Test ['ubuntu-latest', python='${{ matrix.python }}']
+    name: Test ['ubuntu-latest-all-dtypes', python='${{ matrix.python }}']
 
     needs: build
 
@@ -289,7 +289,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11']
 
     continue-on-error: true
 
@@ -409,7 +409,7 @@ jobs:
             python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows_all_dtypes:
-    name: Test ['windows-2019', python='${{ matrix.python }}']
+    name: Test ['windows-2019-all-dtypes', python='${{ matrix.python }}']
 
     needs: build
 

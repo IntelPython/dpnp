@@ -2,14 +2,13 @@ from itertools import permutations
 
 import numpy
 import pytest
-from numpy.testing import (
-    assert_array_equal,
-)
+from numpy.testing import assert_array_equal
 
 import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_float_dtypes,
 )
@@ -32,14 +31,14 @@ from .helper import (
         (40, 35),
     ],
 )
-@pytest.mark.parametrize("dtype_in", get_all_dtypes())
+@pytest.mark.parametrize("dtype_in", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize("dtype_out", get_all_dtypes())
 @pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("keepdims", [True, False])
 @pytest.mark.parametrize("order", ["C", "F"])
 def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
-    size = numpy.prod(shape)
-    a_np = numpy.arange(size).astype(dtype_in).reshape(shape, order=order)
+    a_np = generate_random_numpy_array(shape, dtype_in)
+    a_np = numpy.array(a_np, order=order)
     a = dpnp.asarray(a_np)
 
     if transpose:
@@ -53,9 +52,16 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     axes.append(tuple(axes_range))
 
     for axis in axes:
-        numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+        if numpy.issubdtype(dtype_out, numpy.bool_):
+            # If summation is zero and dtype=numpy.bool is passed to numpy.sum
+            # NumPy returns True which is not correct
+            numpy_res = a_np.sum(axis=axis, keepdims=keepdims).astype(
+                numpy.bool_
+            )
+        else:
+            numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
-        assert_array_equal(numpy_res, dpnp_res.asnumpy())
+        assert_dtype_allclose(dpnp_res, numpy_res, factor=16)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))

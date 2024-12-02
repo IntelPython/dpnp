@@ -44,6 +44,9 @@ class TestDigitize:
         ],
     )
     def test_digitize(self, x, bins, dtype, right):
+        if numpy.issubdtype(dtype, numpy.unsignedinteger) and bins[0] == -4:
+            x = numpy.abs(x)
+            bins = numpy.array([0, 2, 4, 6, 8])
         x = x.astype(dtype)
         bins = bins.astype(dtype)
         x_dp = dpnp.array(x)
@@ -527,18 +530,26 @@ class TestBincount:
         v = numpy.random.randint(0, upper_bound, size=n, dtype=dtype)
         iv = dpnp.array(v)
 
-        expected_hist = numpy.bincount(v)
-        result_hist = dpnp.bincount(iv)
-        assert_array_equal(result_hist, expected_hist)
+        if numpy.issubdtype(dtype, numpy.uint64):
+            assert_raises(TypeError, numpy.bincount, v)
+            assert_raises(ValueError, dpnp.bincount, iv)
+        else:
+            expected_hist = numpy.bincount(v)
+            result_hist = dpnp.bincount(iv)
+            assert_array_equal(result_hist, expected_hist)
 
     @pytest.mark.parametrize("dtype", get_integer_dtypes())
     def test_arange_data(self, dtype):
         v = numpy.arange(100).astype(dtype)
         iv = dpnp.array(v)
 
-        expected_hist = numpy.bincount(v)
-        result_hist = dpnp.bincount(iv)
-        assert_array_equal(result_hist, expected_hist)
+        if numpy.issubdtype(dtype, numpy.uint64):
+            assert_raises(TypeError, numpy.bincount, v)
+            assert_raises(ValueError, dpnp.bincount, iv)
+        else:
+            expected_hist = numpy.bincount(v)
+            result_hist = dpnp.bincount(iv)
+            assert_array_equal(result_hist, expected_hist)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_negative_values(self, xp):

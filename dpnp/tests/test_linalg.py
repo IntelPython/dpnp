@@ -2124,9 +2124,7 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(xfail_dtypes=[dpnp.uint64])
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
     )
@@ -2141,9 +2139,7 @@ class TestNorm:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(xfail_dtypes=[dpnp.uint64])
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
@@ -2170,9 +2166,7 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize(
         "dtype",
-        get_all_dtypes(
-            no_none=True, xfail_dtypes=[dpnp.uint16, dpnp.uint32, dpnp.uint64]
-        ),
+        get_all_dtypes(no_none=True),
     )
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
@@ -2204,10 +2198,7 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype",
-        get_all_dtypes(xfail_dtypes=[dpnp.uint16, dpnp.uint32, dpnp.uint64]),
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )

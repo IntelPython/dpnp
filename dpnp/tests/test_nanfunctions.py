@@ -586,7 +586,7 @@ class TestNanProd:
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_nanprod_out_dtype(self, arr_dt, out_dt, dtype):
-        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        a = numpy.arange(1, 7).reshape((2, 3)).astype(dtype=arr_dt)
         out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
 
         ia = dpnp.array(a)

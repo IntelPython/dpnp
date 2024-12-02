@@ -23,6 +23,8 @@ from .third_party.cupy import testing
     ids=["[-2, -1, 0, 1, 2]", "[[-2, -1], [1, 2]]", "[]"],
 )
 def test_astype(arr, arr_dtype, res_dtype):
+    if numpy.issubdtype(arr_dtype, numpy.unsignedinteger):
+        arr = numpy.abs(arr)
     numpy_array = numpy.array(arr, dtype=arr_dtype)
     dpnp_array = dpnp.array(numpy_array)
     expected = numpy_array.astype(res_dtype)
@@ -43,6 +45,8 @@ def test_astype_subok_error():
     ids=["[-2, -1, 0, 1, 2]", "[[-2, -1], [1, 2]]", "[]"],
 )
 def test_flatten(arr, arr_dtype):
+    if numpy.issubdtype(arr_dtype, numpy.unsignedinteger):
+        arr = numpy.abs(arr)
     numpy_array = numpy.array(arr, dtype=arr_dtype)
     dpnp_array = dpnp.array(arr, dtype=arr_dtype)
     expected = numpy_array.flatten()

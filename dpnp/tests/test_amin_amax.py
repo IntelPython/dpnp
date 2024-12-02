@@ -17,8 +17,10 @@ def test_amax_amin(func, keepdims, dtype):
             [[-2.0, 5.0], [-2, -1.2]],
             [[1.0, -2.0], [5.0, -1.1]],
         ],
-        dtype=dtype,
     )
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        a = numpy.abs(a)
+    a = a.astype(dtype)
     ia = dpnp.array(a)
 
     for axis in range(len(a)):
@@ -28,20 +30,20 @@ def test_amax_amin(func, keepdims, dtype):
 
 
 def _get_min_max_input(type, shape):
-    size = 1
-    for i in range(len(shape)):
-        size *= shape[i]
-
+    size = numpy.prod(shape)
     a = numpy.arange(size, dtype=type)
-    a[int(size / 2)] = size * size
-    a[int(size / 3)] = -(size * size)
+    a[int(size / 2)] = size + 5
+    if numpy.issubdtype(type, numpy.unsignedinteger):
+        a[int(size / 3)] = size
+    else:
+        a[int(size / 3)] = -(size + 5)
 
     return a.reshape(shape)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
-    "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
+    "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2, 3)", "(4, 5, 6)"]
 )
 def test_amax_diff_shape(dtype, shape):
     a = _get_min_max_input(dtype, shape)
@@ -59,7 +61,7 @@ def test_amax_diff_shape(dtype, shape):
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 @pytest.mark.parametrize(
-    "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2,3)", "(4,5,6)"]
+    "shape", [(4,), (2, 3), (4, 5, 6)], ids=["(4,)", "(2, 3)", "(4, 5, 6)"]
 )
 def test_amin_diff_shape(dtype, shape):
     a = _get_min_max_input(dtype, shape)
