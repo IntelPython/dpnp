@@ -1,0 +1,10 @@
+﻿
+
+dpnp.real\_if\_close
+====================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: real_if_close
