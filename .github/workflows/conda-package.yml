@@ -173,12 +173,15 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
+        env:
+          DPNP_TEST_ALL_TYPES: 1
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          export DPNP_TEST_ALL_TYPES=1
           python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
       - name: Run tests
+        env:
+          DPNP_TEST_ALL_TYPES: 1
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
@@ -191,7 +194,6 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.TEST_ENV_NAME }}
 
-            export DPNP_TEST_ALL_TYPES=1
             python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows:
@@ -311,12 +313,15 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
+        env:
+          DPNP_TEST_ALL_TYPES: 1
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          set DPNP_TEST_ALL_TYPES=1
           pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
       - name: Run tests
+        env:
+          DPNP_TEST_ALL_TYPES: 1
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
@@ -325,7 +330,6 @@ jobs:
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
-            set DPNP_TEST_ALL_TYPES=1
             python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:

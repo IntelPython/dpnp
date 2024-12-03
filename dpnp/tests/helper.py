@@ -5,7 +5,7 @@ import numpy
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
-from tests import config
+from dpnp.tests import config
 
 
 def assert_dtype_allclose(
