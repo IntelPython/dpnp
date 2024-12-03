@@ -355,7 +355,7 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_nan(self, p):
-        a = generate_random_numpy_array((2, 2, 2, 2))
+        a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(2, 2, 2, 2)
         a[0, 0] = 0
         a[1, 1] = 0
         ia = dpnp.array(a)
@@ -2852,13 +2852,13 @@ class TestSvd:
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
-            tol = 1e-03
+            tol = 1e-04
         elif not has_support_aspect64() and dtype in (
             dpnp.int32,
             dpnp.int64,
             None,
         ):
-            tol = 1e-03
+            tol = 1e-04
         self._tol = tol
 
     def check_types_shapes(
