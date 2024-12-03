@@ -235,7 +235,7 @@ class TestMeanVar:
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(rtol=1e-06)
     def test_mean_all_float32_dtype(self, xp, dtype):
-        a = xp.full((2, 3, 4), 123456789, dtype=dtype)
+        a = testing.shaped_arange((2, 3, 4), xp, dtype=dtype)
         return xp.mean(a, dtype=numpy.float32)
 
     @testing.for_all_dtypes(no_complex=True)

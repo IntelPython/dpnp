@@ -78,7 +78,7 @@ class TestQuantile:
 
 
 @pytest.mark.skip("dpnp.quantile() is not implemented yet")
-@testing.with_requires("numpy>=1.22.0rc1")
+@testing.with_requires("numpy>=2.0")
 @for_all_methods()
 class TestQuantileMethods:
 

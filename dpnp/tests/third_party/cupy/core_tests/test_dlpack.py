@@ -142,19 +142,21 @@ class TestNewDLPackConversion:
         testing.assert_array_equal(orig_array, out_array)
         assert orig_array.get_array()._pointer == out_array.get_array()._pointer
 
-    @pytest.mark.skip("no BufferError exception for bad device")
     def test_conversion_bad_device(self):
         arr = _gen_array("float32")
 
         # invalid device ID
         with pytest.raises(BufferError):
-            arr.__dlpack__(dl_device=(arr.__dlpack_device__()[0], 2**30))
+            arr.__dlpack__(
+                dl_device=(arr.__dlpack_device__()[0], 2**30),
+                max_version=(1, 0),
+            )
 
         # Simple, non-matching device:
         with pytest.raises(BufferError):
-            arr.__dlpack__(dl_device=(9, 0))
+            arr.__dlpack__(dl_device=(9, 0), max_version=(1, 0))
 
-    @pytest.mark.skip("not supported conversion to CPU")
+    @pytest.mark.skip("numpy doesn't support kDLOneAPI device type")
     def test_conversion_device_to_cpu(self):
         # NOTE: This defaults to the old unversioned, which is needed for
         #       NumPy 1.x support.
