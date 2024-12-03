@@ -75,6 +75,7 @@ __all__ = [
     "fromfunction",
     "fromiter",
     "fromstring",
+    "from_dlpack",
     "full",
     "full_like",
     "geomspace",
@@ -2045,6 +2046,67 @@ def fromstring(
         usm_type=usm_type,
         sycl_queue=sycl_queue,
     )
+
+
+def from_dlpack(x, /, *, device=None, copy=None):
+    """
+    Create a dpnp array from a Python object implementing the ``__dlpack__``
+    protocol.
+
+    For full documentation refer to :obj:`numpy.from_dlpack`.
+
+    Parameters
+    ----------
+    x : object
+        A Python object representing an array that implements the ``__dlpack__``
+        and ``__dlpack_device__`` methods.
+    device : {None, tuple, SyclDevice, SyclQueue, Device}, optional
+        Array API concept of a device where the output array is to be placed.
+        ``device`` can be ``None``, an oneAPI filter selector string,
+        an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        a :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpctl.tensor.usm_ndarray.device`, or a 2-tuple matching
+        the format of the output of the ``__dlpack_device__`` method,
+        an integer enumerator representing the device type followed by
+        an integer representing the index of the device.
+        Default: ``None``.
+    copy : {bool, None}, optional
+        Boolean indicating whether or not to copy the input.
+
+        * If `copy``is ``True``, the input will always be copied.
+        * If ``False``, a ``BufferError`` will be raised if a copy is deemed
+          necessary.
+        * If ``None``, a copy will be made only if deemed necessary, otherwise,
+          the existing memory buffer will be reused.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns a new dpnp array containing the data from another array `obj`
+        with the ``__dlpack__`` method on the same device as object.
+
+    Raises
+    ------
+    TypeError:
+        if `obj` does not implement ``__dlpack__`` method
+    ValueError:
+        if the input array resides on an unsupported device
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> import numpy
+    >>> x = numpy.arange(10)
+    >>> # create a view of the numpy array "x" in dpnp:
+    >>> y = np.from_dlpack(x)
+
+    """
+
+    usm_res = dpt.from_dlpack(x, device=device, copy=copy)
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def full(
