@@ -113,6 +113,7 @@ class TestDigitize:
         bins_np = dpnp.asnumpy(bins_dp)
         with pytest.raises(TypeError):
             dpnp.digitize(x_np, bins_dp)
+        with pytest.raises(TypeError):
             dpnp.digitize(x_dp, bins_np)
 
         # bins ndim < 1
