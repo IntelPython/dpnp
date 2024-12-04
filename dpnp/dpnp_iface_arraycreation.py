@@ -2077,9 +2077,8 @@ def from_dlpack(x, /, *, device=None, copy=None):
         * ``(device_type, device_id)`` : 2-tuple matching the format of the
           output of the ``__dlpack_device__`` method: an integer enumerator
           representing the device type followed by an integer representing
-          the index of the device. The only supported
-          :class:`dpctl.tensor.DLDeviceType` device types are ``"kDLCPU"``
-          and ``"kDLOneAPI"``.
+          the index of the device. The only supported :class:`dpnp.DLDeviceType`
+          device types are ``"kDLCPU"`` and ``"kDLOneAPI"``.
 
         Default: ``None``.
     copy : {bool, None}, optional
