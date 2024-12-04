@@ -2066,20 +2066,20 @@ def from_dlpack(x, /, *, device=None, copy=None):
 
         * ``None`` : The data remains on the same device.
         * oneAPI filter selector string : SYCL device selected by filter
-            selector string.
+          selector string.
         * :class:`dpctl.SyclDevice` : Explicit SYCL device that must correspond
-            to a non-partitioned SYCL device.
+          to a non-partitioned SYCL device.
         * :class:`dpctl.SyclQueue` : Implies SYCL device targeted by the SYCL
-            queue.
+          queue.
         * :class:`dpctl.tensor.Device` : Implies SYCL device
-            ``device.sycl_queue``. The `device` object is obtained via
-            :attr:`dpctl.tensor.usm_ndarray.device`.
+          ``device.sycl_queue``. The `device` object is obtained via
+          :attr:`dpctl.tensor.usm_ndarray.device`.
         * ``(device_type, device_id)`` : 2-tuple matching the format of the
-            output of the ``__dlpack_device__`` method: an integer enumerator
-            representing the device type followed by an integer representing
-            the index of the device. The only supported
-            :class:`dpctl.tensor.DLDeviceType` device types are ``"kDLCPU"``
-            and ``"kDLOneAPI"``.
+          output of the ``__dlpack_device__`` method: an integer enumerator
+          representing the device type followed by an integer representing
+          the index of the device. The only supported
+          :class:`dpctl.tensor.DLDeviceType` device types are ``"kDLCPU"``
+          and ``"kDLOneAPI"``.
 
         Default: ``None``.
     copy : {bool, None}, optional
