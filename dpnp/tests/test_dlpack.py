@@ -8,8 +8,6 @@ from .helper import (
     get_all_dtypes,
 )
 
-device_oneAPI = 14  # DLDeviceType.kDLOneAPI
-
 
 class TestDLPack:
     @pytest.mark.parametrize("stream", [None, 1])
@@ -56,11 +54,11 @@ class TestDLPack:
 
     def test_device(self):
         x = dpnp.arange(5)
-        assert x.__dlpack_device__()[0] == device_oneAPI
+        assert x.__dlpack_device__()[0] == dpnp.DLDeviceType.kDLOneAPI
         y = dpnp.from_dlpack(x)
-        assert y.__dlpack_device__()[0] == device_oneAPI
+        assert y.__dlpack_device__()[0] == dpnp.DLDeviceType.kDLOneAPI
         z = y[::2]
-        assert z.__dlpack_device__()[0] == device_oneAPI
+        assert z.__dlpack_device__()[0] == dpnp.DLDeviceType.kDLOneAPI
 
     def test_ndim0(self):
         x = dpnp.array(1.0)
@@ -72,3 +70,15 @@ class TestDLPack:
         y = dpnp.from_dlpack(x, device=x.__dlpack_device__())
         assert x.device == y.device
         assert x.get_array()._pointer == y.get_array()._pointer
+
+    def test_numpy_input(self):
+        x = numpy.arange(10)
+
+        y = dpnp.from_dlpack(x)
+        assert isinstance(y, numpy.ndarray)
+        assert y.ctypes.data == x.ctypes.data
+        assert y.dtype == x.dtype
+
+        z = dpnp.from_dlpack(x, device=(dpnp.DLDeviceType.kDLCPU, 0))
+        assert isinstance(z, numpy.ndarray)
+        assert z.dtype == y.dtype
