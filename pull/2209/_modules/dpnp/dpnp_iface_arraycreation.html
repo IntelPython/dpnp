@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev2+30.g21b57bf8068 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev2+31.g665489fb815 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8ea15bde"></script>
+      <script src="../../_static/documentation_options.js?v=d0817181"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2204,20 +2204,20 @@
 
 <span class="sd">        * ``None`` : The data remains on the same device.</span>
 <span class="sd">        * oneAPI filter selector string : SYCL device selected by filter</span>
-<span class="sd">            selector string.</span>
+<span class="sd">          selector string.</span>
 <span class="sd">        * :class:`dpctl.SyclDevice` : Explicit SYCL device that must correspond</span>
-<span class="sd">            to a non-partitioned SYCL device.</span>
+<span class="sd">          to a non-partitioned SYCL device.</span>
 <span class="sd">        * :class:`dpctl.SyclQueue` : Implies SYCL device targeted by the SYCL</span>
-<span class="sd">            queue.</span>
+<span class="sd">          queue.</span>
 <span class="sd">        * :class:`dpctl.tensor.Device` : Implies SYCL device</span>
-<span class="sd">            ``device.sycl_queue``. The `device` object is obtained via</span>
-<span class="sd">            :attr:`dpctl.tensor.usm_ndarray.device`.</span>
+<span class="sd">          ``device.sycl_queue``. The `device` object is obtained via</span>
+<span class="sd">          :attr:`dpctl.tensor.usm_ndarray.device`.</span>
 <span class="sd">        * ``(device_type, device_id)`` : 2-tuple matching the format of the</span>
-<span class="sd">            output of the ``__dlpack_device__`` method: an integer enumerator</span>
-<span class="sd">            representing the device type followed by an integer representing</span>
-<span class="sd">            the index of the device. The only supported</span>
-<span class="sd">            :class:`dpctl.tensor.DLDeviceType` device types are ``&quot;kDLCPU&quot;``</span>
-<span class="sd">            and ``&quot;kDLOneAPI&quot;``.</span>
+<span class="sd">          output of the ``__dlpack_device__`` method: an integer enumerator</span>
+<span class="sd">          representing the device type followed by an integer representing</span>
+<span class="sd">          the index of the device. The only supported</span>
+<span class="sd">          :class:`dpctl.tensor.DLDeviceType` device types are ``&quot;kDLCPU&quot;``</span>
+<span class="sd">          and ``&quot;kDLOneAPI&quot;``.</span>
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    copy : {bool, None}, optional</span>

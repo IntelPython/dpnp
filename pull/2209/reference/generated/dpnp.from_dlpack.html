@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.17.0dev2+30.g21b57bf8068 documentation</title>
+  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.17.0dev2+31.g665489fb815 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=8ea15bde"></script>
+      <script src="../../_static/documentation_options.js?v=d0817181"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,36 +136,21 @@ and <code class="docutils literal notranslate"><span class="pre">__dlpack_device
 can be:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> : The data remains on the same device.</p></li>
-<li><dl class="simple">
-<dt>oneAPI filter selector string<span class="classifier">SYCL device selected by filter</span></dt><dd><p>selector string.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code><span class="classifier">Explicit SYCL device that must correspond</span></dt><dd><p>to a non-partitioned SYCL device.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code><span class="classifier">Implies SYCL device targeted by the SYCL</span></dt><dd><p>queue.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code><span class="classifier">Implies SYCL device</span></dt><dd><p><code class="docutils literal notranslate"><span class="pre">device.sycl_queue</span></code>. The <cite>device</cite> object is obtained via
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code>.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">(device_type,</span> <span class="pre">device_id)</span></code><span class="classifier">2-tuple matching the format of the</span></dt><dd><p>output of the <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method: an integer enumerator
+<li><p>oneAPI filter selector string : SYCL device selected by filter
+selector string.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code> : Explicit SYCL device that must correspond
+to a non-partitioned SYCL device.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code> : Implies SYCL device targeted by the SYCL
+queue.</p></li>
+<li><p><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code> : Implies SYCL device
+<code class="docutils literal notranslate"><span class="pre">device.sycl_queue</span></code>. The <cite>device</cite> object is obtained via
+<code class="xref py py-attr docutils literal notranslate"><span class="pre">dpctl.tensor.usm_ndarray.device</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">(device_type,</span> <span class="pre">device_id)</span></code> : 2-tuple matching the format of the
+output of the <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method: an integer enumerator
 representing the device type followed by an integer representing
 the index of the device. The only supported
 <code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.DLDeviceType</span></code> device types are <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code>
-and <code class="docutils literal notranslate"><span class="pre">&quot;kDLOneAPI&quot;</span></code>.</p>
-</dd>
-</dl>
-</li>
+and <code class="docutils literal notranslate"><span class="pre">&quot;kDLOneAPI&quot;</span></code>.</p></li>
 </ul>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
