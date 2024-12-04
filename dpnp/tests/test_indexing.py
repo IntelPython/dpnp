@@ -1,9 +1,11 @@
 import functools
 
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
+from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_,
     assert_array_equal,
@@ -333,6 +335,14 @@ class TestIx:
     @pytest.mark.parametrize("shape", [(), (2, 2)])
     def test_ix_error(self, xp, shape):
         assert_raises(ValueError, xp.ix_, xp.ones(shape))
+
+
+class TestIterable:
+    @pytest.mark.parametrize("data", [[1.0], [2, 3]])
+    def test_basic(self, data):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert dpnp.iterable(ia) == numpy.iterable(a)
 
 
 @pytest.mark.parametrize(
@@ -1333,3 +1343,101 @@ class TestSelect:
             dpnp.select([x0], [x1], default=x1)
         with pytest.raises(TypeError):
             dpnp.select([x1], [x1])
+
+
+class TestCompress:
+    def test_compress_basic(self):
+        conditions = [True, False, True]
+        a_np = numpy.arange(16).reshape(4, 4)
+        a = dpnp.arange(16).reshape(4, 4)
+        cond_np = numpy.array(conditions)
+        cond = dpnp.array(conditions)
+        expected = numpy.compress(cond_np, a_np, axis=0)
+        result = dpnp.compress(cond, a, axis=0)
+        assert_array_equal(expected, result)
+
+    def test_compress_method_basic(self):
+        conditions = [True, True, False, True]
+        a_np = numpy.arange(3 * 4).reshape(3, 4)
+        a = dpnp.arange(3 * 4).reshape(3, 4)
+        cond_np = numpy.array(conditions)
+        cond = dpnp.array(conditions)
+        expected = a_np.compress(cond_np, axis=1)
+        result = a.compress(cond, axis=1)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_compress_condition_all_dtypes(self, dtype):
+        a_np = numpy.arange(10, dtype="i4")
+        a = dpnp.arange(10, dtype="i4")
+        cond_np = numpy.tile(numpy.asarray([0, 1], dtype=dtype), 5)
+        cond = dpnp.tile(dpnp.asarray([0, 1], dtype=dtype), 5)
+        expected = numpy.compress(cond_np, a_np)
+        result = dpnp.compress(cond, a)
+        assert_array_equal(expected, result)
+
+    def test_compress_invalid_out_errors(self):
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+        a = dpnp.ones(10, dtype="i4", sycl_queue=q1)
+        condition = dpnp.asarray([True], sycl_queue=q1)
+        out_bad_shape = dpnp.empty_like(a)
+        with pytest.raises(ValueError):
+            dpnp.compress(condition, a, out=out_bad_shape)
+        out_bad_queue = dpnp.empty(1, dtype="i4", sycl_queue=q2)
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.compress(condition, a, out=out_bad_queue)
+        out_bad_dt = dpnp.empty(1, dtype="i8", sycl_queue=q1)
+        with pytest.raises(TypeError):
+            dpnp.compress(condition, a, out=out_bad_dt)
+        out_read_only = dpnp.empty(1, dtype="i4", sycl_queue=q1)
+        out_read_only.flags.writable = False
+        with pytest.raises(ValueError):
+            dpnp.compress(condition, a, out=out_read_only)
+
+    def test_compress_empty_axis(self):
+        a = dpnp.ones((10, 0, 5), dtype="i4")
+        condition = [True, False, True]
+        r = dpnp.compress(condition, a, axis=0)
+        assert r.shape == (2, 0, 5)
+        # empty take from empty axis is permitted
+        assert dpnp.compress([False], a, axis=1).shape == (10, 0, 5)
+        # non-empty take from empty axis raises IndexError
+        with pytest.raises(IndexError):
+            dpnp.compress(condition, a, axis=1)
+
+    def test_compress_in_overlaps_out(self):
+        conditions = [False, True, True]
+        a_np = numpy.arange(6)
+        a = dpnp.arange(6)
+        cond_np = numpy.array(conditions)
+        cond = dpnp.array(conditions)
+        out = a[2:4]
+        expected = numpy.compress(cond_np, a_np, axis=None)
+        result = dpnp.compress(cond, a, axis=None, out=out)
+        assert_array_equal(expected, result)
+        assert result is out
+        assert (a[2:4] == out).all()
+
+    def test_compress_condition_not_1d(self):
+        a = dpnp.arange(4)
+        cond = dpnp.ones((1, 4), dtype="?")
+        with pytest.raises(ValueError):
+            dpnp.compress(cond, a, axis=None)
+
+    def test_compress_strided(self):
+        a = dpnp.arange(20)
+        a_np = dpnp.asnumpy(a)
+        cond = dpnp.tile(dpnp.array([True, False, False, True]), 5)
+        cond_np = dpnp.asnumpy(cond)
+        result = dpnp.compress(cond, a)
+        expected = numpy.compress(cond_np, a_np)
+        assert_array_equal(result, expected)
+        # use axis keyword
+        a = dpnp.arange(50).reshape(10, 5)
+        a_np = dpnp.asnumpy(a)
+        cond = dpnp.array(dpnp.array([True, False, False, True, False]))
+        cond_np = dpnp.asnumpy(cond)
+        result = dpnp.compress(cond, a)
+        expected = numpy.compress(cond_np, a_np)
+        assert_array_equal(result, expected)

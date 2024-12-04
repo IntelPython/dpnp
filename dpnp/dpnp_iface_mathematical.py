@@ -428,6 +428,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -791,7 +793,7 @@ def convolve(a, v, mode="full"):
     return call_origin(numpy.convolve, a=a, v=v, mode=mode)
 
 
-_COPYSING_DOCSTRING = """
+_COPYSIGN_DOCSTRING = """
 Composes a floating-point value with the magnitude of `x1_i` and the sign of
 `x2_i` for each element of input arrays `x1` and `x2`.
 
@@ -806,6 +808,8 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real floating-point data
     type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -852,7 +856,7 @@ copysign = DPNPBinaryFunc(
     "copysign",
     ti._copysign_result_type,
     ti._copysign,
-    _COPYSING_DOCSTRING,
+    _COPYSIGN_DOCSTRING,
 )
 
 
@@ -1462,6 +1466,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1759,6 +1765,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to floating-point data types.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -1910,6 +1918,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1984,6 +1994,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2069,6 +2081,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2151,6 +2165,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2220,8 +2236,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
-x : {dpnp.ndarray, usm_ndarray}
-    An array of floats to be rounded.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2484,6 +2500,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     The value of the function when `x1` is ``0``.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2636,6 +2654,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2693,6 +2713,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Array of exponents of two, expected to have an integer data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -2758,6 +2780,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2838,6 +2862,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).s
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2943,6 +2969,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3205,6 +3233,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     The direction where to look for the next representable value of `x1`.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -3326,6 +3356,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -3688,6 +3720,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -4114,6 +4148,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.

@@ -434,7 +434,11 @@ class dpnp_array:
         dpnp.subtract(self, other, out=self)
         return self
 
-    # '__iter__',
+    def __iter__(self):
+        """Return ``iter(self)``."""
+        if self.ndim == 0:
+            raise TypeError("iteration over a 0-d array")
+        return (self[i] for i in range(self.shape[0]))
 
     def __itruediv__(self, other):
         """Return ``self/=value``."""
@@ -786,7 +790,14 @@ class dpnp_array:
 
         return dpnp.clip(self, min, max, out=out, **kwargs)
 
-    # 'compress',
+    def compress(self, condition, axis=None, out=None):
+        """
+        Select slices of an array along a given axis.
+
+        Refer to :obj:`dpnp.compress` for full documentation.
+        """
+
+        return dpnp.compress(condition, self, axis=axis, out=out)
 
     def conj(self):
         """

@@ -2694,6 +2694,36 @@ class TestSolve:
 
         assert_allclose(expected, result, rtol=1e-06)
 
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize(
+        "a_shape, b_shape",
+        [
+            ((4, 4), (2, 2, 4, 3)),
+            ((2, 5, 5), (1, 5, 3)),
+            ((2, 4, 4), (2, 2, 4, 2)),
+            ((3, 2, 2), (3, 1, 2, 1)),
+            ((2, 2, 2, 2, 2), (2,)),
+            ((2, 2, 2, 2, 2), (2, 3)),
+        ],
+    )
+    def test_solve_broadcast(self, a_shape, b_shape, dtype):
+        # Set seed_value=81 to prevent
+        # random generation of the input singular matrix
+        a_np = generate_random_numpy_array(a_shape, dtype, seed_value=81)
+
+        # Set seed_value=76 to prevent
+        # random generation of the input singular matrix
+        b_np = generate_random_numpy_array(b_shape, dtype, seed_value=76)
+
+        a_dp = inp.array(a_np)
+        b_dp = inp.array(b_np)
+
+        expected = numpy.linalg.solve(a_np, b_np)
+        result = inp.linalg.solve(a_dp, b_dp)
+
+        assert_dtype_allclose(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_solve_nrhs_greater_n(self, dtype):
         # Test checking the case when nrhs > n for
@@ -2799,6 +2829,10 @@ class TestSolve:
         assert_raises(
             inp.linalg.LinAlgError, inp.linalg.solve, a_dp_ndim_1, b_dp
         )
+
+        # b.ndim == 0
+        b_dp_ndim_0 = inp.array(2)
+        assert_raises(ValueError, inp.linalg.solve, a_dp, b_dp_ndim_0)
 
 
 class TestSlogdet:
