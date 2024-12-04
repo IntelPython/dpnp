@@ -2050,8 +2050,8 @@ def fromstring(
 
 def from_dlpack(x, /, *, device=None, copy=None):
     """
-    Create a dpnp array from a Python object implementing the ``__dlpack__``
-    protocol.
+    Constructs :class:`dpnp.ndarray` or :class:`numpy.ndarray` instance from
+    a Python object `x` that implements ``__dlpack__`` protocol.
 
     For full documentation refer to :obj:`numpy.from_dlpack`.
 
@@ -2060,16 +2060,27 @@ def from_dlpack(x, /, *, device=None, copy=None):
     x : object
         A Python object representing an array that implements the ``__dlpack__``
         and ``__dlpack_device__`` methods.
-    device : {None, tuple, SyclDevice, SyclQueue, Device}, optional
-        Array API concept of a device where the output array is to be placed.
-        ``device`` can be ``None``, an oneAPI filter selector string,
-        an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        a :class:`dpctl.tensor.Device` object returned by
-        :attr:`dpctl.tensor.usm_ndarray.device`, or a 2-tuple matching
-        the format of the output of the ``__dlpack_device__`` method,
-        an integer enumerator representing the device type followed by
-        an integer representing the index of the device.
+    device : {None, string, tuple, device}, optional
+        Device where the output array is to be placed. `device` keyword values
+        can be:
+
+        * ``None`` : The data remains on the same device.
+        * oneAPI filter selector string : SYCL device selected by filter
+            selector string.
+        * :class:`dpctl.SyclDevice` : Explicit SYCL device that must correspond
+            to a non-partitioned SYCL device.
+        * :class:`dpctl.SyclQueue` : Implies SYCL device targeted by the SYCL
+            queue.
+        * :class:`dpctl.tensor.Device` : Implies SYCL device
+            ``device.sycl_queue``. The `device` object is obtained via
+            :attr:`dpctl.tensor.usm_ndarray.device`.
+        * ``(device_type, device_id)`` : 2-tuple matching the format of the
+            output of the ``__dlpack_device__`` method: an integer enumerator
+            representing the device type followed by an integer representing
+            the index of the device. The only supported
+            :class:`dpctl.tensor.DLDeviceType` device types are ``"kDLCPU"``
+            and ``"kDLOneAPI"``.
+
         Default: ``None``.
     copy : {bool, None}, optional
         Boolean indicating whether or not to copy the input.
@@ -2084,16 +2095,30 @@ def from_dlpack(x, /, *, device=None, copy=None):
 
     Returns
     -------
-    out : dpnp.ndarray
-        Returns a new dpnp array containing the data from another array `obj`
-        with the ``__dlpack__`` method on the same device as object.
+    out : {dpnp.ndarray, numpy.ndarray}
+        An array containing the data in `x`. When `copy` is ``None`` or
+        ``False``, this may be a view into the original memory.
+        The type of the returned object depends on where the data backing up
+        input object `x` resides. If it resides in a USM allocation on a SYCL
+        device, the type :class:`dpnp.ndarray` is returned, otherwise if it
+        resides on ``"kDLCPU"`` device the type is :class:`numpy.ndarray`, and
+        otherwise an exception is raised.
 
     Raises
     ------
-    TypeError:
+    TypeError
         if `obj` does not implement ``__dlpack__`` method
-    ValueError:
-        if the input array resides on an unsupported device
+    ValueError
+        if data of the input object resides on an unsupported device
+
+    Notes
+    -----
+    If the return type is :class:`dpnp.ndarray`, the associated SYCL queue is
+    derived from the `device` keyword. When `device` keyword value has type
+    :class:`dpctl.SyclQueue`, the explicit queue instance is used, when `device`
+    keyword value has type :class:`dpctl.tensor.Device`, the
+    ``device.sycl_queue`` is used. In all other cases, the cached SYCL queue
+    corresponding to the implied SYCL device is used.
 
     Examples
     --------
@@ -2105,8 +2130,10 @@ def from_dlpack(x, /, *, device=None, copy=None):
 
     """
 
-    usm_res = dpt.from_dlpack(x, device=device, copy=copy)
-    return dpnp_array._create_from_usm_ndarray(usm_res)
+    result = dpt.from_dlpack(x, device=device, copy=copy)
+    if isinstance(result, dpt.usm_ndarray):
+        return dpnp_array._create_from_usm_ndarray(result)
+    return result
 
 
 def full(
