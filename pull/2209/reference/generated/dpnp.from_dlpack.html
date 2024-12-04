@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.17.0dev2+31.gc35f18f1dc5 documentation</title>
+  <title>dpnp.from_dlpack &mdash; Data Parallel Extension for NumPy 0.17.0dev2+33.g50dc2712328 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d2db6ae0"></script>
+      <script src="../../_static/documentation_options.js?v=0dd0b21b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -148,9 +148,8 @@ queue.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">(device_type,</span> <span class="pre">device_id)</span></code> : 2-tuple matching the format of the
 output of the <code class="docutils literal notranslate"><span class="pre">__dlpack_device__</span></code> method: an integer enumerator
 representing the device type followed by an integer representing
-the index of the device. The only supported
-<code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.DLDeviceType</span></code> device types are <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code>
-and <code class="docutils literal notranslate"><span class="pre">&quot;kDLOneAPI&quot;</span></code>.</p></li>
+the index of the device. The only supported <code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.DLDeviceType</span></code>
+device types are <code class="docutils literal notranslate"><span class="pre">&quot;kDLCPU&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;kDLOneAPI&quot;</span></code>.</p></li>
 </ul>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
