@@ -636,7 +636,7 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     >>> a = np.array([[10.0, 7, 4], [3, 2, 1]])
     >>> a[0, 1] = np.nan
     >>> a
-    array([[10.,  nan,  4.],
+    array([[10., nan,  4.],
            [ 3.,  2.,  1.]])
     >>> np.median(a)
     array(nan)
