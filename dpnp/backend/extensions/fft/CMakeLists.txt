@@ -89,6 +89,10 @@ else()
     target_link_libraries(${python_module_name} PUBLIC MKL::MKL_SYCL::DFT)
 endif()
 
+if (DPNP_WITH_REDIST)
+    set_target_properties(${python_module_name} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../")
+endif()
+
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/fft"
 )
