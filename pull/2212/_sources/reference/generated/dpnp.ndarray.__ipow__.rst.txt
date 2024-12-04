@@ -1,0 +1,10 @@
+﻿:orphan:
+
+dpnp.ndarray.\_\_ipow\_\_
+=========================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.__ipow__
