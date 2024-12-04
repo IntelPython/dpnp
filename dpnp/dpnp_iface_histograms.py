@@ -50,7 +50,7 @@ import dpnp
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
 
 # pylint: disable=no-name-in-module
-from .dpnp_utils import map_dtype_to_device
+from .dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 __all__ = [
     "bincount",
@@ -409,9 +409,7 @@ def bincount(x, weights=None, minlength=None):
         x_casted, weights_casted, minlength, ntype_casted, usm_type
     )
 
-    n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type, order="C")
-
-    return n
+    return dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
 
 
 def digitize(x, bins, right=False):
@@ -657,7 +655,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
     )
     _manager.add_event_pair(mem_ev, ht_ev)
 
-    n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type, order="C")
+    n = dpnp.asarray(n_casted, dtype=ntype, usm_type=usm_type)
 
     if density:
         db = dpnp.astype(
@@ -811,12 +809,10 @@ def _histdd_make_edges(sample, bins, range, usm_type):
 
 
 def _histdd_flatten_binedges(bedges_list, edges_count_list, dtype):
-    queue = bedges_list[0].sycl_queue
-    usm_type = bedges_list[0].usm_type
     total_edges_size = numpy.sum(edges_count_list)
 
-    bin_edges_flat = dpnp.empty(
-        shape=total_edges_size, dtype=dtype, sycl_queue=queue, usm_type=usm_type
+    bin_edges_flat = dpnp.empty_like(
+        bedges_list[0], shape=total_edges_size, dtype=dtype
     )
 
     offset = numpy.pad(numpy.cumsum(edges_count_list), (1, 0))
@@ -932,13 +928,14 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
     ----------
     sample : {dpnp.ndarray, usm_ndarray}
         Input (N, D)-shaped array to be histogrammed.
-
     bins : {sequence, int}, optional
         The bin specification:
+
         * A sequence of arrays describing the monotonically increasing bin
           edges along each dimension.
         * The number of bins for each dimension (nx, ny, ... =bins)
         * The number of bins for all dimensions (nx=ny=...=bins).
+
         Default: ``10``
     range : {None, sequence}, optional
         A sequence of length D, each an optional (lower, upper) tuple giving
@@ -947,6 +944,7 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
         An entry of None in the sequence results in the minimum and maximum
         values being used for the corresponding dimension.
         None is equivalent to passing a tuple of D None values.
+
         Default: ``None``
     weights : {dpnp.ndarray, usm_ndarray}, optional
         An (N,)-shaped array of values `w_i` weighing each sample
@@ -954,11 +952,13 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
         Weights are normalized to 1 if density is True. If density is False,
         the values of the returned histogram are equal to the sum of the
         weights belonging to the samples falling into each bin.
+
         Default: ``None``
     density : {bool}, optional
         If ``False``, the default, returns the number of samples in each bin.
         If ``True``, returns the probability *density* function at the bin,
         ``bin_count / sample_count / bin_volume``.
+
         Default: ``False``
 
     Returns
@@ -966,7 +966,7 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
     H : {dpnp.ndarray}
         The multidimensional histogram of sample x. See density and weights
         for the different possible semantics.
-    edges : {list of ndarrays}
+    edges : {list of dpnp.ndarray}
         A list of D arrays describing the bin edges for each dimension.
 
     See Also
@@ -977,22 +977,18 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
     Examples
     --------
     >>> import dpnp as np
-    >>> r = np.random.normal(size=(100,3))
+    >>> r = np.random.normal(size=(100, 3))
     >>> H, edges = np.histogramdd(r, bins = (5, 8, 4))
     >>> H.shape, edges[0].size, edges[1].size, edges[2].size
     ((5, 8, 4), 6, 9, 5)
 
     """
 
-    if not dpnp.is_supported_array_type(sample):
-        raise ValueError("sample must be dpnp.ndarray or usm_ndarray")
+    dpnp.check_supported_arrays_type(sample)
+    if weights is not None:
+        dpnp.check_supported_arrays_type(weights)
 
-    if weights is not None and not dpnp.is_supported_array_type(weights):
-        raise ValueError("weights must be dpnp.ndarray or usm_ndarray")
-
-    if sample.ndim == 0 and sample.size == 1:
-        sample = dpnp.reshape(sample, (1, 1))
-    elif sample.ndim == 1:
+    if sample.ndim < 2:
         sample = dpnp.reshape(sample, (sample.size, 1))
     elif sample.ndim > 2:
         raise ValueError("sample must have no more than 2 dimensions")
@@ -1000,13 +996,7 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
     ndim = sample.shape[1] if sample.size > 0 else 1
 
     _arrays = _histdd_extract_arrays(sample, weights, bins)
-    usm_type = dpu.get_coerced_usm_type([a.usm_type for a in _arrays])
-    queue = dpu.get_execution_queue([a.sycl_queue for a in _arrays])
-
-    assert usm_type is not None
-
-    if queue is None:
-        raise ValueError("all arrays must be allocated on the same SYCL queue")
+    usm_type, queue = get_usm_allocations(_arrays)
 
     bins = _histdd_normalize_bins(bins, ndim)
     range = _histdd_normalize_range(range, ndim)
@@ -1037,7 +1027,7 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
     )
 
     expexted_hist_dtype = _histdd_hist_dtype(queue, weights)
-    n = dpnp.asarray(n, dtype=expexted_hist_dtype, usm_type=usm_type, order="C")
+    n = dpnp.asarray(n, dtype=expexted_hist_dtype, usm_type=usm_type)
 
     if density:
         # calculate the probability density function

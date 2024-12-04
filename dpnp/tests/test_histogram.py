@@ -771,13 +771,13 @@ class TestHistogramDd:
 
     def test_sample_array_like(self):
         v = [0, 1, 2, 3, 4]
-        with assert_raises(ValueError):
+        with assert_raises(TypeError):
             dpnp.histogramdd(v)
 
     def test_weights_array_like(self):
         v = dpnp.arange(5)
         w = [1, 2, 3, 4, 5]
-        with assert_raises(ValueError):
+        with assert_raises(TypeError):
             dpnp.histogramdd(v, weights=w)
 
     def test_weights_another_sycl_queue(self):

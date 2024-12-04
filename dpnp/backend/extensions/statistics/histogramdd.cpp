@@ -281,6 +281,10 @@ std::tuple<sycl::event, sycl::event> Histogramdd::call(
 {
     validate(sample, bins_edges, weights, histogram);
 
+    if (sample.get_size() == 0) {
+        return {sycl::event(), sycl::event()};
+    }
+
     const int sample_typenum = sample.get_typenum();
     const int hist_typenum = histogram.get_typenum();
 

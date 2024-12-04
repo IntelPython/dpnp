@@ -457,7 +457,7 @@ class TestDigitizeInvalid(unittest.TestCase):
     *testing.product(
         {
             "weights": [None, 1, 2],
-            "weights_dtype": [numpy.int32, numpy.float32],
+            "weights_dtype": [numpy.int32, cupy.default_float_type()],
             "density": [True, False],
             "bins": [
                 10,
@@ -473,7 +473,9 @@ class TestDigitizeInvalid(unittest.TestCase):
 )
 class TestHistogramdd:
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-3, rtol=1e-3, type_check=False)
+    @testing.numpy_cupy_allclose(
+        atol=1e-3, rtol=1e-3, type_check=has_support_aspect64()
+    )
     def test_histogramdd(self, xp, dtype):
         x = testing.shaped_random((100, 3), xp, dtype, scale=100)
         if self.bins == "array_list":
