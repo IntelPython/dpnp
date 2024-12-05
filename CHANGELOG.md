@@ -11,6 +11,7 @@ This is a bug-fix release.
 ### Changed
 
 * Updated `README.md` to reflect current installation requirements and available options [#2166](https://github.com/IntelPython/dpnp/pull/2166)
+* Corrected a list of owners and code maintainers [#2185](https://github.com/IntelPython/dpnp/pull/2185)
 
 ### Fixed
 
