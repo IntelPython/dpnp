@@ -68,8 +68,8 @@ __all__ = [
     "get_normalized_queue_device",
     "get_result_array",
     "get_usm_ndarray",
-    "is_cuda_backend",
     "get_usm_ndarray_or_scalar",
+    "is_cuda_backend",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
     "synchronize_array_data",
@@ -753,7 +753,8 @@ def is_cuda_backend(obj=None):
     Returns
     -------
     out : bool
-        Return ``True`` if object has a CUDA backend, otherwise ``False``.
+        Return ``True`` if data of the input object resides on a CUDA backend,
+        otherwise ``False``.
 
     """
 
