@@ -2084,7 +2084,7 @@ def from_dlpack(x, /, *, device=None, copy=None):
     copy : {bool, None}, optional
         Boolean indicating whether or not to copy the input.
 
-        * If `copy``is ``True``, the input will always be copied.
+        * If `copy` is ``True``, the input will always be copied.
         * If ``False``, a ``BufferError`` will be raised if a copy is deemed
           necessary.
         * If ``None``, a copy will be made only if deemed necessary, otherwise,
