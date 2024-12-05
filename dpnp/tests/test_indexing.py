@@ -337,6 +337,14 @@ class TestIx:
         assert_raises(ValueError, xp.ix_, xp.ones(shape))
 
 
+class TestIterable:
+    @pytest.mark.parametrize("data", [[1.0], [2, 3]])
+    def test_basic(self, data):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+        assert dpnp.iterable(ia) == numpy.iterable(a)
+
+
 @pytest.mark.parametrize(
     "shape", [[1, 2, 3], [(1, 2, 3)], [(3,)], [3], [], [()], [0]]
 )

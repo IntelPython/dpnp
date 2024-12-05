@@ -1,6 +1,5 @@
 function(build_dpnp_cython_ext _trgt _src _dest)
   set(options SYCL)
-  cmake_parse_arguments(BUILD_DPNP_EXT "${options}" "" "" ${ARGN})
   add_cython_target(${_trgt} ${_src} CXX OUTPUT_VAR _generated_src)
   message(STATUS "Using ${_trgt}")
 
@@ -41,15 +40,19 @@ function(build_dpnp_cython_ext _trgt _src _dest)
            VERBATIM COMMENT "Copying Cython-generated source for target ${_trgt} to dpnp source layout"
        )
   endif()
+
+  set(_rpath_value "$ORIGIN/..")
+  if (DPNP_WITH_REDIST)
+    set(_rpath_value "${_rpath_value}:$ORIGIN/../../../../")
+  endif()
+  set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH ${_rpath_value})
+
   install(TARGETS ${_trgt} LIBRARY DESTINATION ${_dest})
 endfunction()
 
 function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
   build_dpnp_cython_ext(${_trgt} ${_src} ${_dest})
   target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
-  if (UNIX)
-    set_target_properties(${_trgt} PROPERTIES INSTALL_RPATH "$ORIGIN/..")
-  endif()
 endfunction()
 
 add_subdirectory(backend)
