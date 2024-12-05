@@ -217,6 +217,7 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "numpy": ("https://docs.scipy.org/doc/numpy/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
+    "dpctl": ("https://intelpython.github.io/dpctl/latest/", None),
 }
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
