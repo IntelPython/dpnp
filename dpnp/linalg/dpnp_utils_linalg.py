@@ -2801,9 +2801,7 @@ def dpnp_svd(
         # For A^T = V S^T U^T, `u_h` becomes V and `vt_h` becomes U^T.
         # Transpose and swap them back to restore correct order for A.
         if trans_flag:
-            u_h = u_h.transpose()
-            vt_h = vt_h.transpose()
-            return vt_h, s_h, u_h
+            return vt_h.T, s_h, u_h.T
         # gesvd call writes `u_h` and `vt_h` in Fortran order;
         # Convert to contiguous to align with NumPy
         u_h = dpnp.ascontiguousarray(u_h)

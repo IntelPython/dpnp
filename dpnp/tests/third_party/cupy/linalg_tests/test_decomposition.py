@@ -7,7 +7,6 @@ import dpnp as cupy
 from dpnp.tests.helper import (
     has_support_aspect64,
     is_cpu_device,
-    is_win_platform,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
