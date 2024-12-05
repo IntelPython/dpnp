@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev2+56.g6aa19857698 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev3+33.ge5278170bc6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=36a81e6e"></script>
+      <script src="../../_static/documentation_options.js?v=5f985f7a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -153,8 +153,8 @@
     <span class="s2">&quot;get_normalized_queue_device&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_result_array&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_usm_ndarray&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;is_cuda_backend&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_usm_ndarray_or_scalar&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;is_cuda_backend&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_or_scalar&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_supported_array_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;synchronize_array_data&quot;</span><span class="p">,</span>
@@ -850,7 +850,8 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : bool</span>
-<span class="sd">        Return ``True`` if object has a CUDA backend, otherwise ``False``.</span>
+<span class="sd">        Return ``True`` if data of the input object resides on a CUDA backend,</span>
+<span class="sd">        otherwise ``False``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
