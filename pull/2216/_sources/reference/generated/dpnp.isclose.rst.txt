@@ -1,0 +1,6 @@
+﻿dpnp.isclose
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: isclose

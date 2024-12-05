@@ -1,0 +1,6 @@
+﻿dpnp.select
+===========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: select

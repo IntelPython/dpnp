@@ -1,0 +1,6 @@
+﻿dpnp.linalg.tensorsolve
+=======================
+
+.. currentmodule:: dpnp.linalg
+
+.. autofunction:: tensorsolve

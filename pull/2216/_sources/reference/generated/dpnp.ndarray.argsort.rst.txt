@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.argsort
+====================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.argsort

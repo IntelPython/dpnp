@@ -1,0 +1,6 @@
+﻿dpnp.ptp
+========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: ptp

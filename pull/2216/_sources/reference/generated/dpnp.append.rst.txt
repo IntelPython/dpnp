@@ -1,0 +1,6 @@
+﻿dpnp.append
+===========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: append
