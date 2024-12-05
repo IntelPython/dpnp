@@ -10,9 +10,9 @@ This is a bug-fix release.
 
 ### Changed
 
-* Changed to use `Miniforge` installer in GutHub actions [#2057](https://github.com/IntelPython/dpnp/pull/2057)
+* Changed to use `Miniforge` installer in GitHub actions [#2057](https://github.com/IntelPython/dpnp/pull/2057)
 * Updated `README.md` to reflect current installation requirements and available options [#2166](https://github.com/IntelPython/dpnp/pull/2166)
-* Corrected a list of owners and code maintainers [#2185](https://github.com/IntelPython/dpnp/pull/2185)
+* Corrected the list of owners and code maintainers [#2185](https://github.com/IntelPython/dpnp/pull/2185)
 * Bumped a version of `oneMKL` interface used in dpnp build by default to align it with `2025.0` oneAPI release [#2193](https://github.com/IntelPython/dpnp/pull/2193)
 
 ### Fixed
