@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.\_\_matmul\_\_
-===========================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.__matmul__

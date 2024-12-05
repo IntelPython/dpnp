@@ -1,6 +1,0 @@
-﻿dpnp.nanargmin
-==============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: nanargmin

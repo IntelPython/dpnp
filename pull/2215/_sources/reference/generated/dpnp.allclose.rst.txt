@@ -1,6 +1,0 @@
-﻿dpnp.allclose
-=============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: allclose

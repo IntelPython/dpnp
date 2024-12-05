@@ -1,6 +1,0 @@
-﻿dpnp.bincount
-=============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: bincount
