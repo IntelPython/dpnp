@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.diagonal
-=====================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.diagonal

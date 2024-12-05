@@ -1,6 +1,0 @@
-﻿dpnp.fft.fft2
-=============
-
-.. currentmodule:: dpnp.fft
-
-.. autofunction:: fft2
