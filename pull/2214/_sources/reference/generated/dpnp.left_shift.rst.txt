@@ -1,6 +1,0 @@
-﻿dpnp.left\_shift
-================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: left_shift

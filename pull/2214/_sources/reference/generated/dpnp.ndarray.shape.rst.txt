@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.shape
-==================
-
-.. currentmodule:: dpnp
-
-.. autoproperty:: ndarray.shape

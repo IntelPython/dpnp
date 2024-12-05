@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.min
-================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.min

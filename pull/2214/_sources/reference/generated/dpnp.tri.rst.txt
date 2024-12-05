@@ -1,6 +1,0 @@
-﻿dpnp.tri
-========
-
-.. currentmodule:: dpnp
-
-.. autofunction:: tri

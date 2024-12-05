@@ -1,6 +1,0 @@
-﻿dpnp.floor\_divide
-==================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: floor_divide

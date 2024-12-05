@@ -1,6 +1,0 @@
-﻿dpnp.identity
-=============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: identity
