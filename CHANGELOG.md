@@ -12,6 +12,7 @@ This is a bug-fix release.
 
 * Changed to use `Miniforge` installer in GutHub actions [#2057](https://github.com/IntelPython/dpnp/pull/2057)
 * Updated `README.md` to reflect current installation requirements and available options [#2166](https://github.com/IntelPython/dpnp/pull/2166)
+* Corrected a list of owners and code maintainers [#2185](https://github.com/IntelPython/dpnp/pull/2185)
 
 ### Fixed
 
