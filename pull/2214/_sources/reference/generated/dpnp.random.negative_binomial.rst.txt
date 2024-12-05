@@ -1,0 +1,6 @@
+﻿dpnp.random.negative\_binomial
+==============================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: negative_binomial

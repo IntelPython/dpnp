@@ -1,0 +1,6 @@
+﻿dpnp.rot90
+==========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: rot90

@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.put
+================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.put

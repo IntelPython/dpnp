@@ -1,0 +1,6 @@
+﻿dpnp.random.seed
+================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: seed

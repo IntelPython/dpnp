@@ -1,0 +1,6 @@
+﻿dpnp.acosh
+==========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: acosh

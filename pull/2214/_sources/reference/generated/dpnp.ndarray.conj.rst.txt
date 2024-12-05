@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.conj
+=================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.conj

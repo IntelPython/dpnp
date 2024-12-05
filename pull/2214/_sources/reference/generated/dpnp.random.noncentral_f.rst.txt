@@ -1,0 +1,6 @@
+﻿dpnp.random.noncentral\_f
+=========================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: noncentral_f

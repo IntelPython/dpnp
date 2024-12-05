@@ -1,0 +1,6 @@
+﻿dpnp.asin
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: asin

@@ -1,0 +1,6 @@
+﻿dpnp.random.random\_integers
+============================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: random_integers
