@@ -1,0 +1,6 @@
+﻿dpnp.asarray\_chkfinite
+=======================
+
+.. currentmodule:: dpnp
+
+.. autofunction:: asarray_chkfinite

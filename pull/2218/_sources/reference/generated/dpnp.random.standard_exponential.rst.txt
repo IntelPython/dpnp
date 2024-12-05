@@ -1,0 +1,6 @@
+﻿dpnp.random.standard\_exponential
+=================================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: standard_exponential

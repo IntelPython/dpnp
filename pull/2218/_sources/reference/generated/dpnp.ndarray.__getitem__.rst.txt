@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_getitem\_\_
+============================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__getitem__

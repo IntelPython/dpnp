@@ -1,0 +1,6 @@
+﻿dpnp.linalg.matrix\_rank
+========================
+
+.. currentmodule:: dpnp.linalg
+
+.. autofunction:: matrix_rank

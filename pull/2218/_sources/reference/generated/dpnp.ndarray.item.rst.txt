@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.item
+=================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.item
