@@ -12,6 +12,10 @@ This is a bug-fix release.
 
 * Updated `README.md` to reflect current installation requirements and available options [#2166](https://github.com/IntelPython/dpnp/pull/2166)
 
+### Fixed
+
+* Resolved an issue with Compute Follows Data inconsistency in `dpnp.extract` function [#2172](https://github.com/IntelPython/dpnp/pull/2172)
+
 
 ## [0.16.0] - 10/14/2024
 
