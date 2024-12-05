@@ -1,0 +1,6 @@
+﻿dpnp.reshape
+============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: reshape

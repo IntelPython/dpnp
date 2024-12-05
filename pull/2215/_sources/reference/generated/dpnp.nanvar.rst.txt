@@ -1,0 +1,6 @@
+﻿dpnp.nanvar
+===========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: nanvar
