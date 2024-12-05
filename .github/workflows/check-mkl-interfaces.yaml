@@ -25,8 +25,8 @@ env:
       scikit-build
 
 jobs:
-  test_by_tag:
-    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}'] with oneMKL tag
+  test_default:
+    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}']
 
     strategy:
       matrix:
@@ -100,8 +100,8 @@ jobs:
         env:
           SYCL_CACHE_PERSISTENT: 1
 
-  test_by_branch:
-    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}'] with oneMKL develop branch
+  test_build_option:
+    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}'] though build option
 
     strategy:
       matrix:
@@ -138,7 +138,7 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: 'oneapi-src/oneMKL'
-          ref: 'develop'
+          ref: 'v0.6'  # the same as handcoded by default
           path: ${{ env.onemkl-source-dir }}
           fetch-depth: 0
 
