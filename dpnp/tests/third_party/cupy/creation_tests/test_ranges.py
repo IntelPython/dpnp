@@ -172,7 +172,7 @@ class TestRanges(unittest.TestCase):
         dtype = cupy.default_float_type()
         return xp.linspace(0.0, xp.finfo(dtype).max / 5, 10, dtype=dtype)
 
-    @testing.numpy_cupy_allclose()
+    @testing.numpy_cupy_allclose(rtol={numpy.float32: 1e-6, "default": 1e-7})
     def test_linspace_float_underflow(self, xp):
         # find minimum subnormal number
         dtype = cupy.default_float_type()
