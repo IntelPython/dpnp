@@ -103,7 +103,6 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           channels: conda-forge
@@ -197,7 +196,6 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           channels: conda-forge
@@ -327,7 +325,6 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           channels: conda-forge
@@ -469,7 +466,6 @@ jobs:
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           channels: conda-forge
@@ -505,7 +501,6 @@ jobs:
     steps:
       - uses: conda-incubator/setup-miniconda@a4260408e20b96e80095f42ff7f1a15b27dd94ca # v3.0.4
         with:
-          miniforge-variant: Mambaforge
           miniforge-version: latest
           use-mamba: true
           channels: conda-forge
