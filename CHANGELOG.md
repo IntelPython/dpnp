@@ -15,6 +15,7 @@ This is a bug-fix release.
 
 ### Fixed
 
+* Resolved an issue with Compute Follows Data inconsistency in `dpnp.extract` function [#2172](https://github.com/IntelPython/dpnp/pull/2172)
 * Resolved a compilation error when building with DPC++ 2025.1 compiler [#2211](https://github.com/IntelPython/dpnp/pull/2211)
 
 

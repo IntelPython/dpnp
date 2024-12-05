@@ -769,6 +769,18 @@ def test_concat_stack(func, data1, data2, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_extract(usm_type_x, usm_type_y):
+    x = dp.arange(3, usm_type=usm_type_x)
+    y = dp.array([True, False, True], usm_type=usm_type_y)
+    z = dp.extract(y, x)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
 @pytest.mark.parametrize(
     "func,data1",
     [

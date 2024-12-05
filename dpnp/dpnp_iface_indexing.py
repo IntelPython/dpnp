@@ -51,10 +51,7 @@ from .dpnp_algo import (
     dpnp_putmask,
 )
 from .dpnp_array import dpnp_array
-from .dpnp_utils import (
-    call_origin,
-    get_usm_allocations,
-)
+from .dpnp_utils import call_origin, get_usm_allocations
 
 __all__ = [
     "choose",
@@ -585,11 +582,12 @@ def extract(condition, a):
     """
 
     usm_a = dpnp.get_usm_ndarray(a)
+    usm_type, exec_q = get_usm_allocations([usm_a, condition])
     usm_cond = dpnp.as_usm_ndarray(
         condition,
         dtype=dpnp.bool,
-        usm_type=usm_a.usm_type,
-        sycl_queue=usm_a.sycl_queue,
+        usm_type=usm_type,
+        sycl_queue=exec_q,
     )
 
     if usm_cond.size != usm_a.size:

@@ -411,6 +411,20 @@ def test_copy_operation(device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_extract(device):
+    x = dpnp.arange(3, device=device)
+    y = dpnp.array([True, False, True], device=device)
+    result = dpnp.extract(x, y)
+
+    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_meshgrid(device):
     x = dpnp.arange(100, device=device)
     y = dpnp.arange(100, device=device)
