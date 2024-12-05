@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.cumprod
-====================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.cumprod

@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.ravel
-==================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.ravel

@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.conjugate
-======================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.conjugate
