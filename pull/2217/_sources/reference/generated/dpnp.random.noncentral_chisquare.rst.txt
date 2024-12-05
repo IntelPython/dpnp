@@ -1,0 +1,6 @@
+﻿dpnp.random.noncentral\_chisquare
+=================================
+
+.. currentmodule:: dpnp.random
+
+.. autofunction:: noncentral_chisquare

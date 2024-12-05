@@ -1,0 +1,6 @@
+﻿dpnp.fromstring
+===============
+
+.. currentmodule:: dpnp
+
+.. autofunction:: fromstring

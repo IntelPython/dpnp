@@ -1,0 +1,6 @@
+﻿dpnp.mod
+========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: mod

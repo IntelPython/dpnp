@@ -1,0 +1,6 @@
+﻿dpnp.tile
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: tile
