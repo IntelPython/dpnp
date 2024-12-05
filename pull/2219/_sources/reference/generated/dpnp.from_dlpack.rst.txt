@@ -1,0 +1,6 @@
+﻿dpnp.from\_dlpack
+=================
+
+.. currentmodule:: dpnp
+
+.. autofunction:: from_dlpack

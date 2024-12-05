@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.argmin
+===================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.argmin
