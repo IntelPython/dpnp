@@ -396,12 +396,15 @@ def test_elemwise_comparison(op, x1, x2, dtype):
     "sh2", [[12], [4, 8], [1, 8, 6]], ids=["(12,)", "(4, 8)", "(1, 8, 6)"]
 )
 def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):
-    x1, x2 = dpnp.random.randn(*sh1), dpnp.random.randn(*sh2)
+    x1_np = numpy.random.randn(*sh1)
+    x2_np = numpy.random.randn(*sh2)
+    x1 = dpnp.asarray(x1_np)
+    x2 = dpnp.asarray(x2_np)
 
     # x1 OP x2
     with pytest.raises(ValueError):
         getattr(dpnp, op)(x1, x2)
-        getattr(numpy, op)(x1.asnumpy(), x2.asnumpy())
+        getattr(numpy, op)(x1_np, x2_np)
 
 
 @pytest.mark.parametrize(

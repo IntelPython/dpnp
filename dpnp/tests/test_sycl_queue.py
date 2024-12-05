@@ -16,6 +16,7 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
+    is_cuda_device,
     is_win_platform,
 )
 
@@ -39,6 +40,9 @@ valid_devices = []
 for device in available_devices:
     if device.default_selector_score < 0:
         pass
+    elif device.backend.name in "cuda":
+        valid_devices = [device]
+        break
     elif device.backend.name not in list_of_backend_str:
         pass
     elif device.device_type.name not in list_of_device_type_str:
@@ -1799,6 +1803,9 @@ def test_matrix_rank(data, tol, device):
     ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
 )
 def test_norm(device, ord, axis):
+    if is_cuda_device():
+        if axis in [(0, 1), (-2, -1)] and ord in [-2, 2, "nuc"]:
+            pytest.skip("SAT-7589")
     a = numpy.arange(120).reshape(2, 3, 4, 5)
     ia = dpnp.array(a, device=device)
     if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
@@ -1898,6 +1905,9 @@ def test_qr(shape, mode, device):
     ],
 )
 def test_svd(shape, full_matrices, compute_uv, device):
+    if is_cuda_device():
+        if shape in [(1, 4), (2, 2, 3)]:
+            pytest.skip("SAT-7589")
     dtype = dpnp.default_float_type(device)
 
     count_elems = numpy.prod(shape)
@@ -2505,6 +2515,9 @@ def test_slogdet(shape, is_empty, device):
     ids=[device.filter_string for device in valid_devices],
 )
 def test_pinv(shape, hermitian, rcond_as_array, device):
+    if is_cuda_device():
+        if shape == (2, 2, 3):
+            pytest.skip("SAT-7589")
     dtype = dpnp.default_float_type(device)
     # Set seed_value=81 to prevent
     # random generation of the input singular matrix

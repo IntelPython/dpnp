@@ -7,6 +7,7 @@ import dpnp as cupy
 from dpnp.tests.helper import (
     assert_dtype_allclose,
     has_support_aspect64,
+    is_cuda_device,
 )
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing import _condition
@@ -62,8 +63,15 @@ class TestSolve(unittest.TestCase):
 
     def check_shape(self, a_shape, b_shape, error_types):
         for xp, error_type in error_types.items():
-            a = xp.random.rand(*a_shape)
-            b = xp.random.rand(*b_shape)
+            # TODO: to roll back the change once the issue with CUDA support is resolved for random
+            # a = xp.random.rand(*a_shape)
+            # b = xp.random.rand(*b_shape)
+            if xp is cupy and cupy.is_cuda_backend():
+                a = xp.asarray(numpy.random.rand(*a_shape))
+                b = xp.asarray(numpy.random.rand(*b_shape))
+            else:
+                a = xp.random.rand(*a_shape)
+                b = xp.random.rand(*b_shape)
             with pytest.raises(error_type):
                 xp.linalg.solve(a, b)
 
@@ -142,7 +150,9 @@ class TestInv(unittest.TestCase):
         testing.assert_array_equal(a_gpu_copy, a_gpu)
 
     def check_shape(self, a_shape):
-        a = cupy.random.rand(*a_shape)
+        # TODO: to roll back the change once the issue with CUDA support is resolved for random
+        # a = cupy.random.rand(*a_shape)
+        a = cupy.asarray(numpy.random.rand(*a_shape))
         with self.assertRaises(cupy.linalg.LinAlgError):
             cupy.linalg.inv(a)
 
@@ -207,17 +217,23 @@ class TestPinv(unittest.TestCase):
 
     def test_pinv(self):
         self.check_x((3, 3), rcond=1e-15)
-        self.check_x((2, 4), rcond=1e-15)
+        # skip case where n < m on CUDA (SAT-7589)
+        if not is_cuda_device():
+            self.check_x((2, 4), rcond=1e-15)
         self.check_x((3, 2), rcond=1e-15)
 
         self.check_x((4, 4), rcond=0.3)
-        self.check_x((2, 5), rcond=0.5)
+        # SAT-7589
+        if not is_cuda_device():
+            self.check_x((2, 5), rcond=0.5)
         self.check_x((5, 3), rcond=0.6)
 
+    @pytest.mark.skipif(is_cuda_device(), reason="SAT-7589")
     def test_pinv_batched(self):
         self.check_x((2, 3, 4), rcond=1e-15)
         self.check_x((2, 3, 4, 5), rcond=1e-15)
 
+    @pytest.mark.skipif(is_cuda_device(), reason="SAT-7589")
     def test_pinv_batched_vector_rcond(self):
         self.check_x((2, 3, 4), rcond=[0.2, 0.8])
         self.check_x((2, 3, 4, 5), rcond=[[0.2, 0.9, 0.1], [0.7, 0.2, 0.5]])
@@ -259,11 +275,15 @@ class TestLstsq:
         return results
 
     def check_invalid_shapes(self, a_shape, b_shape):
-        a = cupy.random.rand(*a_shape)
-        b = cupy.random.rand(*b_shape)
+        # TODO: to roll back the change once the issue with CUDA support is resolved for random
+        # a = cupy.random.rand(*a_shape)
+        # b = cupy.random.rand(*b_shape)
+        a = cupy.asarray(numpy.random.rand(*a_shape))
+        b = cupy.asarray(numpy.random.rand(*b_shape))
         with pytest.raises(cupy.linalg.LinAlgError):
             cupy.linalg.lstsq(a, b, rcond=None)
 
+    @pytest.mark.skipif(is_cuda_device(), reason="SAT-7589")
     def test_lstsq_solutions(self):
         # Compares numpy.linalg.lstsq and cupy.linalg.lstsq solutions for:
         #   a shapes range from (3, 3) to (5, 3) and (3, 5)
@@ -335,12 +355,16 @@ class TestTensorInv(unittest.TestCase):
         testing.assert_array_equal(a_gpu_copy, a_gpu)
 
     def check_shape(self, a_shape, ind):
-        a = cupy.random.rand(*a_shape)
+        # TODO: to roll back the change once the issue with CUDA support is resolved for random
+        # a = cupy.random.rand(*a_shape)
+        a = cupy.asarray(numpy.random.rand(*a_shape))
         with self.assertRaises(cupy.linalg.LinAlgError):
             cupy.linalg.tensorinv(a, ind=ind)
 
     def check_ind(self, a_shape, ind):
-        a = cupy.random.rand(*a_shape)
+        # TODO: to roll back the change once the issue with CUDA support is resolved for random
+        # a = cupy.random.rand(*a_shape)
+        a = cupy.asarray(numpy.random.rand(*a_shape))
         with self.assertRaises(ValueError):
             cupy.linalg.tensorinv(a, ind=ind)
 

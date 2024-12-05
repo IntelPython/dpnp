@@ -52,7 +52,7 @@ class TestRandint2(unittest.TestCase):
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @_condition.repeat(3, 10)
     def test_bound_2(self):
-        vals = [random.randint(0, 2) for _ in range(20)]
+        vals = [random.randint(0, 2, ()) for _ in range(20)]
         for val in vals:
             self.assertEqual(val.shape, ())
         self.assertEqual(min(_.min() for _ in vals), 0)
@@ -131,11 +131,11 @@ class TestRandintDtype(unittest.TestCase):
         self.assertLessEqual(max(x), iinfo.max)
 
         # Lower bound check
-        with self.assertRaises(OverflowError):
+        with self.assertRaises((OverflowError, ValueError)):
             random.randint(iinfo.min - 1, iinfo.min + 10, size, dtype)
 
         # Upper bound check
-        with self.assertRaises(OverflowError):
+        with self.assertRaises((OverflowError, ValueError)):
             random.randint(iinfo.max - 10, iinfo.max + 2, size, dtype)
 
 

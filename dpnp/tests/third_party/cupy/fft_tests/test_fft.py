@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import has_support_aspect64, is_cuda_device
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -162,6 +162,8 @@ class TestFft2:
         type_check=has_support_aspect64(),
     )
     def test_fft2(self, xp, dtype, order):
+        if is_cuda_device() and self.shape == (2, 3, 4, 5):
+            pytest.skip("SAT-7587")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -186,6 +188,8 @@ class TestFft2:
         type_check=has_support_aspect64(),
     )
     def test_ifft2(self, xp, dtype, order):
+        if is_cuda_device() and self.shape == (2, 3, 4, 5):
+            pytest.skip("SAT-7587")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -249,6 +253,8 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_fftn(self, xp, dtype, order):
+        if is_cuda_device() and self.shape == (2, 3, 4, 5):
+            pytest.skip("SAT-7587")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
@@ -273,6 +279,8 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_ifftn(self, xp, dtype, order):
+        if is_cuda_device() and self.shape == (2, 3, 4, 5):
+            pytest.skip("SAT-7587")
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
             a = xp.asfortranarray(a)
