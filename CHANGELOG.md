@@ -1,8 +1,22 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.16.1] - 12/XX/2024
+
+This is a bug-fix release.
+
+### Changed
+
+* Changed to use `Miniforge` installer in GutHub actions [#2057](https://github.com/IntelPython/dpnp/pull/2057)
+* Updated `README.md` to reflect current installation requirements and available options [#2166](https://github.com/IntelPython/dpnp/pull/2166)
+
+### Fixed
+
+* Resolved a compilation error when building with DPC++ 2025.1 compiler [#2211](https://github.com/IntelPython/dpnp/pull/2211)
+
 
 ## [0.16.0] - 10/14/2024
 

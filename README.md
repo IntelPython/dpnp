@@ -6,117 +6,76 @@
 [![Build Sphinx](https://github.com/IntelPython/dpnp/workflows/Build%20Sphinx/badge.svg)](https://intelpython.github.io/dpnp)
 [![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/IntelPython/dpnp/badge)](https://securityscorecards.dev/viewer/?uri=github.com/IntelPython/dpnp)
 
+<img align="left" src="https://spec.oneapi.io/oneapi-logo-white-scaled.jpg" alt="oneAPI logo" width="75"/>
+
 # DPNP - Data Parallel Extension for NumPy*
+
+Data Parallel Extension for NumPy* or `dpnp` is a Python library that
+implements a subset of NumPy* that can be executed on any data parallel device.
+The subset is a drop-in replacement of core NumPy* functions and numerical data types.
+
 [API coverage summary](https://intelpython.github.io/dpnp/reference/comparison.html#summary)
 
 [Full documentation](https://intelpython.github.io/dpnp/)
 
-[DPNP C++ backend documentation](https://intelpython.github.io/dpnp/backend_doc/)
+`Dpnp` is the core part of a larger family of [data-parallel Python libraries and tools](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
+to program on XPUs.
 
-## Build from source:
-Ensure you have the following prerequisite packages installed:
 
-- `cython`
-- `cmake >=3.21`
-- `dpcpp_linux-64` or `dpcpp_win-64` (depending on your OS)
-- `dpctl`
-- `mkl-devel-dpcpp`
-- `onedpl-devel`
-- `ninja`
-- `numpy >=1.19,<1.25a0`
-- `python`
-- `scikit-build`
-- `setuptools`
-- `sysroot_linux-64 >=2.28` (only on Linux OS)
-- `tbb-devel`
+# Installing
 
-After these steps, `dpnp` can be built in debug mode as follows:
+You can install the library using `conda`, `mamba` or [pip](https://pypi.org/project/dpnp/)
+package managers. It is also available as part of the [Intel(R) Distribution for Python](https://www.intel.com/content/www/us/en/developer/tools/oneapi/distribution-for-python.html)
+(IDP).
+
+## Intel(R) Distribution for Python
+
+You can find the most recent release of `dpnp` every quarter as part of the IDP
+releases.
+
+To get the library from the latest release, follow the instructions from
+[Get Started With Intel® Distribution for Python](https://www.intel.com/content/www/us/en/developer/articles/technical/get-started-with-intel-distribution-for-python.html).
+
+## Conda
+
+To install `dpnp` from the Intel(R) conda channel, use the following command:
 
 ```bash
-git clone https://github.com/IntelPython/dpnp
-cd dpnp
-python scripts/build_locally.py
+conda install dpnp -c https://software.repos.intel.com/python/conda/ -c conda-forge
 ```
 
-## Install Wheel Package via pip
-Install DPNP
-```cmd
+## Pip
+
+The `dpnp` can be installed using `pip` obtaining wheel packages either from
+PyPi or from Intel(R) channel. To install `dpnp` wheel package from Intel(R)
+channel, run the following command:
+
+```bash
 python -m pip install --index-url https://software.repos.intel.com/python/pypi dpnp
 ```
 
-Set path to Performance Libraries in case of using venv or system Python:
-```cmd
-export LD_LIBRARY_PATH=<path_to_your_env>/lib
-```
+## Installing the bleeding edge
 
-It is also required to set following environment variables:
-```cmd
-export OCL_ICD_FILENAMES_RESET=1
-export OCL_ICD_FILENAMES=libintelocl.so
-```
+To try out the latest features, install `dpnp` using our development channel on
+Anaconda cloud:
 
-## Run test
 ```bash
-pytest
-# or
-pytest tests/test_matmul.py -s -v
-# or
-python -m unittest tests/test_mixins.py
+conda install dpnp -c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge
 ```
 
-## Run numpy external test
+
+# Building
+
+Refer to our [Documentation](https://intelpython.github.io/dpnp/quick_start_guide.html)
+for more information on setting up a development environment and building `dpnp`
+from the source.
+
+
+# Running Tests
+
+Tests are located in folder [dpnp/tests](dpnp/tests).
+
+To run the tests, use:
 ```bash
-. ./0.env.sh
-python -m tests.third_party.numpy_ext
-# or
-python -m tests.third_party.numpy_ext core/tests/test_umath.py
-# or
-python -m tests.third_party.numpy_ext core/tests/test_umath.py::TestHypot::test_simple
+python -m pytest --pyargs dpnp
 ```
-
-### Building documentation:
-```bash
-Prerequisites:
-$ conda install sphinx sphinx_rtd_theme
-Building:
-1. Install dpnp into your python environment
-2. $ cd doc && make html
-3. The documentation will be in doc/_build/html
-```
-
-## Packaging:
-```bash
-. ./0.env.sh
-conda-build conda-recipe/
-```
-
-## Run benchmark:
-```bash
-cd benchmarks/
-
-asv run --python=python --bench <filename without .py>
-# example:
-asv run --python=python --bench bench_elementwise
-
-# or
-
-asv run --python=python --bench <class>.<bench>
-# example:
-asv run --python=python --bench Elementwise.time_square
-
-# add --quick option to run every case once but looks like first execution has additional overheads and takes a lot of time (need to be investigated)
-```
-
-
-## Tests matrix:
-| # |Name                                |OS   |distributive|interpreter|python used from|SYCL queue manager|build commands set                                                                                                                              |forced environment                                                                                                       |
-|---|------------------------------------|-----|------------|-----------|:--------------:|:----------------:|------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|
-|1  |Ubuntu 20.04 Python37               |Linux|Ubuntu 20.04|Python 3.7 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace pytest                                 |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
-|2  |Ubuntu 20.04 Python38               |Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace pytest                                 |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
-|3  |Ubuntu 20.04 Python39               |Linux|Ubuntu 20.04|Python 3.9 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace pytest                                 |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
-|4  |Ubuntu 20.04 External Tests Python37|Linux|Ubuntu 20.04|Python 3.7 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace python -m tests_external.numpy.runtests|cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
-|5  |Ubuntu 20.04 External Tests Python38|Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace python -m tests_external.numpy.runtests|cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
-|6  |Ubuntu 20.04 External Tests Python39|Linux|Ubuntu 20.04|Python 3.9 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace python -m tests_external.numpy.runtests|cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
-|7  |Code style                          |Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |python ./setup.py style                                                                                                                         |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis, conda-verify, pycodestyle, autopep8, black     |
-|8  |Valgrind                            |Linux|Ubuntu 20.04|           |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace                                        |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis                                                 |
-|9  |Code coverage                       |Linux|Ubuntu 20.04|Python 3.8 |  IntelOneAPI   |      local       |export DPNP_DEBUG=1 python setup.py clean python setup.py build_clib python setup.py build_ext --inplace                                        |cmake-3.19.2, valgrind, pytest-valgrind, conda-build, pytest, hypothesis, conda-verify, pycodestyle, autopep8, pytest-cov|
