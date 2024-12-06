@@ -1,6 +1,0 @@
-﻿dpnp.meshgrid
-=============
-
-.. currentmodule:: dpnp
-
-.. autofunction:: meshgrid
