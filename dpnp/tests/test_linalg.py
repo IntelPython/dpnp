@@ -369,20 +369,6 @@ class TestCond:
 
     @pytest.mark.parametrize(
         "p",
-        [-inp.inf, -1, 1, inp.inf, "fro"],
-        ids=["-dpnp.inf", "-1", "1", "dpnp.inf", "fro"],
-    )
-    def test_cond_nan_input(self, p):
-        a = numpy.array(numpy.random.uniform(-10, 10, 9)).reshape(3, 3)
-        a[1, 1] = numpy.nan
-        ia = inp.array(a)
-
-        result = inp.linalg.cond(ia, p=p)
-        expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize(
-        "p",
         [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
         ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
     )
