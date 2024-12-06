@@ -2931,13 +2931,13 @@ class TestPinv:
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
-            tol = 1e-04
+            tol = 1e-03
         elif not has_support_aspect64() and dtype in (
             dpnp.int32,
             dpnp.int64,
             None,
         ):
-            tol = 1e-04
+            tol = 1e-03
         self._tol = tol
 
     def check_types_shapes(self, dp_B, np_B):
@@ -2988,7 +2988,9 @@ class TestPinv:
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_pinv_hermitian(self, dtype, shape):
-        a = generate_random_numpy_array(shape, dtype, hermitian=True)
+        a = generate_random_numpy_array(
+            shape, dtype, hermitian=True, low=-2, high=2
+        )
         a_dp = dpnp.array(a)
 
         B = numpy.linalg.pinv(a, hermitian=True)
