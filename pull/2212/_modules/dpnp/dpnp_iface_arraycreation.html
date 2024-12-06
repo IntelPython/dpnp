@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+5.gdfdb9b3bb25 documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+8.g100e35a5da documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=97c6223e"></script>
+      <script src="../../_static/documentation_options.js?v=fb5f0b73"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -160,6 +160,7 @@
     <span class="s2">&quot;fromfunction&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fromiter&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fromstring&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;full&quot;</span><span class="p">,</span>
     <span class="s2">&quot;full_like&quot;</span><span class="p">,</span>
     <span class="s2">&quot;geomspace&quot;</span><span class="p">,</span>
@@ -2180,6 +2181,96 @@
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
     <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="from_dlpack">
+<a class="viewcode-back" href="../../reference/generated/dpnp.from_dlpack.html#dpnp.from_dlpack">[docs]</a>
+<span class="k">def</span> <span class="nf">from_dlpack</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Constructs :class:`dpnp.ndarray` or :class:`numpy.ndarray` instance from</span>
+<span class="sd">    a Python object `x` that implements ``__dlpack__`` protocol.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.from_dlpack`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : object</span>
+<span class="sd">        A Python object representing an array that implements the ``__dlpack__``</span>
+<span class="sd">        and ``__dlpack_device__`` methods.</span>
+<span class="sd">    device : {None, string, tuple, device}, optional</span>
+<span class="sd">        Device where the output array is to be placed. `device` keyword values</span>
+<span class="sd">        can be:</span>
+
+<span class="sd">        * ``None`` : The data remains on the same device.</span>
+<span class="sd">        * oneAPI filter selector string : SYCL device selected by filter</span>
+<span class="sd">          selector string.</span>
+<span class="sd">        * :class:`dpctl.SyclDevice` : Explicit SYCL device that must correspond</span>
+<span class="sd">          to a non-partitioned SYCL device.</span>
+<span class="sd">        * :class:`dpctl.SyclQueue` : Implies SYCL device targeted by the SYCL</span>
+<span class="sd">          queue.</span>
+<span class="sd">        * :class:`dpctl.tensor.Device` : Implies SYCL device</span>
+<span class="sd">          ``device.sycl_queue``. The `device` object is obtained via</span>
+<span class="sd">          :attr:`dpctl.tensor.usm_ndarray.device`.</span>
+<span class="sd">        * ``(device_type, device_id)`` : 2-tuple matching the format of the</span>
+<span class="sd">          output of the ``__dlpack_device__`` method: an integer enumerator</span>
+<span class="sd">          representing the device type followed by an integer representing</span>
+<span class="sd">          the index of the device. The only supported :class:`dpnp.DLDeviceType`</span>
+<span class="sd">          device types are ``&quot;kDLCPU&quot;`` and ``&quot;kDLOneAPI&quot;``.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    copy : {bool, None}, optional</span>
+<span class="sd">        Boolean indicating whether or not to copy the input.</span>
+
+<span class="sd">        * If `copy` is ``True``, the input will always be copied.</span>
+<span class="sd">        * If ``False``, a ``BufferError`` will be raised if a copy is deemed</span>
+<span class="sd">          necessary.</span>
+<span class="sd">        * If ``None``, a copy will be made only if deemed necessary, otherwise,</span>
+<span class="sd">          the existing memory buffer will be reused.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : {dpnp.ndarray, numpy.ndarray}</span>
+<span class="sd">        An array containing the data in `x`. When `copy` is ``None`` or</span>
+<span class="sd">        ``False``, this may be a view into the original memory.</span>
+<span class="sd">        The type of the returned object depends on where the data backing up</span>
+<span class="sd">        input object `x` resides. If it resides in a USM allocation on a SYCL</span>
+<span class="sd">        device, the type :class:`dpnp.ndarray` is returned, otherwise if it</span>
+<span class="sd">        resides on ``&quot;kDLCPU&quot;`` device the type is :class:`numpy.ndarray`, and</span>
+<span class="sd">        otherwise an exception is raised.</span>
+
+<span class="sd">    Raises</span>
+<span class="sd">    ------</span>
+<span class="sd">    TypeError</span>
+<span class="sd">        if `obj` does not implement ``__dlpack__`` method</span>
+<span class="sd">    ValueError</span>
+<span class="sd">        if data of the input object resides on an unsupported device</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    If the return type is :class:`dpnp.ndarray`, the associated SYCL queue is</span>
+<span class="sd">    derived from the `device` keyword. When `device` keyword value has type</span>
+<span class="sd">    :class:`dpctl.SyclQueue`, the explicit queue instance is used, when `device`</span>
+<span class="sd">    keyword value has type :class:`dpctl.tensor.Device`, the</span>
+<span class="sd">    ``device.sycl_queue`` is used. In all other cases, the cached SYCL queue</span>
+<span class="sd">    corresponding to the implied SYCL device is used.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; import numpy</span>
+<span class="sd">    &gt;&gt;&gt; x = numpy.arange(10)</span>
+<span class="sd">    &gt;&gt;&gt; # create a view of the numpy array &quot;x&quot; in dpnp:</span>
+<span class="sd">    &gt;&gt;&gt; y = np.from_dlpack(x)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 
