@@ -21,7 +21,7 @@ These functions cover a subset of
    linalg
    logic
    math
-   .. polynomials
+   polynomials
    random
    sorting
    statistics

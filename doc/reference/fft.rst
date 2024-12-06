@@ -1,5 +1,7 @@
-Discrete Fourier Transform
-==========================
+.. module:: dpnp.fft
+
+Discrete Fourier Transform (:mod:`dpnp.fft`)
+============================================
 
 .. https://numpy.org/doc/stable/reference/routines.fft.html
 

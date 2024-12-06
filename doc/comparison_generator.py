@@ -180,6 +180,42 @@ def generate_table_numbers(base_mod, ref_mods, base_type, ref_types, cls=None):
     total = "   {}".format(cells)
     rows.append(total)
 
+    totals = []
+    totals_, counters_funcs_ = generate_totals_numbers(
+        "Polynomials",
+        base_mod + ".polynomial",
+        [m + ".polynomial" for m in ref_mods],
+    )
+    totals.append(totals_)
+    counters_funcs.append(counters_funcs_)
+    cells = ", ".join(str(t) for t in totals)
+    total = "   {}".format(cells)
+    rows.append(total)
+
+    totals = []
+    totals_, counters_funcs_ = generate_totals_numbers(
+        "Power Series",
+        base_mod + ".polynomial.polynomial",
+        [m + ".polynomial.polynomial" for m in ref_mods],
+    )
+    totals.append(totals_)
+    counters_funcs.append(counters_funcs_)
+    cells = ", ".join(str(t) for t in totals)
+    total = "   {}".format(cells)
+    rows.append(total)
+
+    totals = []
+    totals_, counters_funcs_ = generate_totals_numbers(
+        "Polyutils",
+        base_mod + ".polynomial.polyutils",
+        [m + ".polynomial.polyutils" for m in ref_mods],
+    )
+    totals.append(totals_)
+    counters_funcs.append(counters_funcs_)
+    cells = ", ".join(str(t) for t in totals)
+    total = "   {}".format(cells)
+    rows.append(total)
+
     counter_functions = []
     for i in range(len(counters_funcs[0])):
         counter = 0
@@ -263,5 +299,25 @@ def generate():
         base_type,
         ref_types,
     )
-
+    buf += section(
+        "Polynomials",
+        base_mod + ".polynomial",
+        [m + ".polynomial" for m in ref_mods],
+        base_type,
+        ref_types,
+    )
+    buf += section(
+        "Power Series",
+        base_mod + ".polynomial.polynomial",
+        [m + ".polynomial.polynomial" for m in ref_mods],
+        base_type,
+        ref_types,
+    )
+    buf += section(
+        "Polyutils",
+        base_mod + ".polynomial.polyutils",
+        [m + ".polynomial.polyutils" for m in ref_mods],
+        base_type,
+        ref_types,
+    )
     return "\n".join(buf)

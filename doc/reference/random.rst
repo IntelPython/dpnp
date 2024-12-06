@@ -1,5 +1,7 @@
-Random sampling (``dpnp.random``)
-=================================
+.. module:: dpnp.random
+
+Random sampling (:mod:`dpnp.random`)
+====================================
 
 .. https://numpy.org/doc/stable/reference/random/legacy.html
 

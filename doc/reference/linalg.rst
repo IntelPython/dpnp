@@ -1,5 +1,5 @@
-Linear algebra
-==============
+Linear algebra (:mod:`dpnp.linalg`)
+===================================
 
 .. https://numpy.org/doc/stable/reference/routines.linalg.html
 
