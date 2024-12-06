@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.16.1] - 12/05/2024
+## [0.16.1] - 12/06/2024
 
 This is a bug-fix release.
 
@@ -20,6 +20,7 @@ This is a bug-fix release.
 * Resolved an issue with Compute Follows Data inconsistency in `dpnp.extract` function [#2172](https://github.com/IntelPython/dpnp/pull/2172)
 * Resolves an import error when using `dpnp` in virtual environment on Linux [#2199](https://github.com/IntelPython/dpnp/pull/2199)
 * Fixed incorrect result produced by `dpnp.fft.fft` function when input array has negative strides [#2202](https://github.com/IntelPython/dpnp/pull/2202)
+* Fixed an issue with `numpy.ndarray` input processing in the `dpnp.from_dlpack` function and updated the documentation [#2209](https://github.com/IntelPython/dpnp/pull/2209)
 * Resolved a compilation error when building with DPC++ 2025.1 compiler [#2211](https://github.com/IntelPython/dpnp/pull/2211)
 
 
