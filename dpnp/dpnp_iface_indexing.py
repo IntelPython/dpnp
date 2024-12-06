@@ -69,6 +69,7 @@ __all__ = [
     "fill_diagonal",
     "flatnonzero",
     "indices",
+    "iterable",
     "ix_",
     "mask_indices",
     "ndindex",
@@ -1031,6 +1032,47 @@ def indices(
         else:
             res[i] = idx
     return res
+
+
+def iterable(y):
+    """
+    Check whether or not an object can be iterated over.
+
+    For full documentation refer to :obj:`numpy.iterable`.
+
+    Parameters
+    ----------
+    y : object
+        Input object.
+
+    Returns
+    -------
+    out : bool
+        Return ``True`` if the object has an iterator method or is a sequence
+        and ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.iterable([1, 2, 3])
+    True
+    >>> np.iterable(2)
+    False
+
+    In most cases, the results of ``np.iterable(obj)`` are consistent with
+    ``isinstance(obj, collections.abc.Iterable)``. One notable exception is
+    the treatment of 0-dimensional arrays:
+
+    >>> from collections.abc import Iterable
+    >>> a = np.array(1.0)  # 0-dimensional array
+    >>> isinstance(a, Iterable)
+    True
+    >>> np.iterable(a)
+    False
+
+    """
+
+    return numpy.iterable(y)
 
 
 def ix_(*args):
