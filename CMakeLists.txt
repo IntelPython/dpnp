@@ -115,11 +115,17 @@ if(_use_onemkl_interfaces)
         set(ENABLE_MKLGPU_BACKEND False)
         set(ENABLE_MKLCPU_BACKEND False)
     endif()
-    FetchContent_Declare(
-            onemkl_interfaces_library
-            GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
-            GIT_TAG f2d2dcb4213a435bb60fbb88320c5f24892423ce
-    )
+
+    if(DPNP_ONEMKL_INTERFACES_DIR)
+        FetchContent_Declare(onemkl_interfaces_library SOURCE_DIR "${DPNP_ONEMKL_INTERFACES_DIR}")
+    else()
+        FetchContent_Declare(
+                onemkl_interfaces_library
+                GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
+                GIT_TAG 8f4312ef966420b9b8b4b82b9d5c22e2c91a1fe7  # v0.6
+        )
+    endif()
+
     FetchContent_MakeAvailable(onemkl_interfaces_library)
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 endif()

@@ -10,9 +10,10 @@ This is a bug-fix release.
 
 ### Changed
 
-* Changed to use `Miniforge` installer in GutHub actions [#2057](https://github.com/IntelPython/dpnp/pull/2057)
+* Changed to use `Miniforge` installer in GitHub actions [#2057](https://github.com/IntelPython/dpnp/pull/2057)
 * Updated `README.md` to reflect current installation requirements and available options [#2166](https://github.com/IntelPython/dpnp/pull/2166)
-* Corrected a list of owners and code maintainers [#2185](https://github.com/IntelPython/dpnp/pull/2185)
+* Corrected the list of owners and code maintainers [#2185](https://github.com/IntelPython/dpnp/pull/2185)
+* Bumped the version of `oneMKL` interface used in dpnp build by default to align it with `2025.0` oneAPI release [#2193](https://github.com/IntelPython/dpnp/pull/2193)
 
 ### Fixed
 
@@ -20,6 +21,7 @@ This is a bug-fix release.
 * Resolves an import error when using `dpnp` in virtual environment on Linux [#2199](https://github.com/IntelPython/dpnp/pull/2199)
 * Fixed incorrect result produced by `dpnp.fft.fft` function when input array has negative strides [#2202](https://github.com/IntelPython/dpnp/pull/2202)
 * Resolved a compilation error when building with DPC++ 2025.1 compiler [#2211](https://github.com/IntelPython/dpnp/pull/2211)
+
 
 ## [0.16.0] - 10/14/2024
 
