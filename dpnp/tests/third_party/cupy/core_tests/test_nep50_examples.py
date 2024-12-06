@@ -44,6 +44,7 @@ examples = [
 ]
 
 
+@pytest.mark.filterwarnings("ignore::RuntimeWarning")
 @testing.with_requires("numpy>=2.0")
 @pytest.mark.parametrize("example", examples)
 @testing.numpy_cupy_allclose(atol=1e-15, accept_error=OverflowError)

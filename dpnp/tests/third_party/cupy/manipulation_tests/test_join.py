@@ -525,6 +525,7 @@ class TestJoin:
         # may raise TypeError or ComplexWarning
         return xp.stack((a, b), dtype=dtype2, casting=casting)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
