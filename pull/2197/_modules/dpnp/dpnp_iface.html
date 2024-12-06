@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev2+39.gb42303d90a7 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev3+19.gdb4e0dc1aa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=38b94202"></script>
+      <script src="../../_static/documentation_options.js?v=67e61cb1"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -147,7 +147,6 @@
     <span class="s2">&quot;check_limitations&quot;</span><span class="p">,</span>
     <span class="s2">&quot;check_supported_arrays_type&quot;</span><span class="p">,</span>
     <span class="s2">&quot;default_float_type&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;from_dlpack&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_dpnp_descriptor&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_include&quot;</span><span class="p">,</span>
     <span class="s2">&quot;get_normalized_queue_device&quot;</span><span class="p">,</span>
@@ -532,63 +531,6 @@
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
-
-
-<div class="viewcode-block" id="from_dlpack">
-<a class="viewcode-back" href="../../reference/generated/dpnp.from_dlpack.html#dpnp.from_dlpack">[docs]</a>
-<span class="k">def</span> <span class="nf">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Create a dpnp array from a Python object implementing the ``__dlpack__``</span>
-<span class="sd">    protocol.</span>
-
-<span class="sd">    See https://dmlc.github.io/dlpack/latest/ for more details.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    obj : object</span>
-<span class="sd">        A Python object representing an array that implements the ``__dlpack__``</span>
-<span class="sd">        and ``__dlpack_device__`` methods.</span>
-<span class="sd">    device : {:class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue`,</span>
-<span class="sd">              :class:`dpctl.tensor.Device`, tuple, None}, optional</span>
-<span class="sd">        Array API concept of a device where the output array is to be placed.</span>
-<span class="sd">        ``device`` can be ``None``, an oneAPI filter selector string,</span>
-<span class="sd">        an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        a :class:`dpctl.tensor.Device` object returned by</span>
-<span class="sd">        :attr:`dpctl.tensor.usm_ndarray.device`, or a 2-tuple matching</span>
-<span class="sd">        the format of the output of the ``__dlpack_device__`` method,</span>
-<span class="sd">        an integer enumerator representing the device type followed by</span>
-<span class="sd">        an integer representing the index of the device.</span>
-<span class="sd">        Default: ``None``.</span>
-<span class="sd">    copy {bool, None}, optional</span>
-<span class="sd">        Boolean indicating whether or not to copy the input.</span>
-
-<span class="sd">        * If `copy``is ``True``, the input will always be copied.</span>
-<span class="sd">        * If ``False``, a ``BufferError`` will be raised if a copy is deemed</span>
-<span class="sd">          necessary.</span>
-<span class="sd">        * If ``None``, a copy will be made only if deemed necessary, otherwise,</span>
-<span class="sd">          the existing memory buffer will be reused.</span>
-
-<span class="sd">        Default: ``None``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    out : dpnp_array</span>
-<span class="sd">        Returns a new dpnp array containing the data from another array</span>
-<span class="sd">        (obj) with the ``__dlpack__`` method on the same device as object.</span>
-
-<span class="sd">    Raises</span>
-<span class="sd">    ------</span>
-<span class="sd">    TypeError:</span>
-<span class="sd">        if `obj` does not implement ``__dlpack__`` method</span>
-<span class="sd">    ValueError:</span>
-<span class="sd">        if the input array resides on an unsupported device</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">from_dlpack</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
-
 
 
 <span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
