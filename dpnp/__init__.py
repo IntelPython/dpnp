@@ -49,6 +49,9 @@ if system() == "Windows":
         [os.getenv("PATH", ""), mypath, dpctlpath]
     )
 
+# Borrowed from DPCTL
+from dpctl.tensor import DLDeviceType
+
 from dpnp.dpnp_array import dpnp_array as ndarray
 from dpnp.dpnp_flatiter import flatiter as flatiter
 from dpnp.dpnp_iface_types import *
