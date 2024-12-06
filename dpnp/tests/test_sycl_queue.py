@@ -2060,7 +2060,6 @@ def test_broadcast_to(device):
         pytest.param("concatenate", [[1, 2], [3, 4]], [[5, 6]]),
         pytest.param("dstack", [[1], [2], [3]], [[2], [3], [4]]),
         pytest.param("hstack", (1, 2, 3), (4, 5, 6)),
-        pytest.param("row_stack", [[7], [1], [2], [3]], [[2], [3], [9], [4]]),
         pytest.param("stack", [1, 2, 3], [4, 5, 6]),
         pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
     ],
