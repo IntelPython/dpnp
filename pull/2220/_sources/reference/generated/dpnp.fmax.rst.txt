@@ -1,0 +1,6 @@
+﻿dpnp.fmax
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: fmax
