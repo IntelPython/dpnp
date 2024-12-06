@@ -1033,7 +1033,7 @@ def rand(*args, device=None, usm_type="device", sycl_queue=None):
 
     Parameters
     ----------
-    d0, d1, ..., dn : int, optional
+    *args : sequence of ints, optional
         The dimensions of the returned array, must be non-negative.
         If no argument is given a single Python float is returned.
     device : {None, string, SyclDevice, SyclQueue}, optional
