@@ -954,7 +954,7 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
         weights belonging to the samples falling into each bin.
 
         Default: ``None``
-    density : {bool}, optional
+    density : bool, optional
         If ``False``, the default, returns the number of samples in each bin.
         If ``True``, returns the probability *density* function at the bin,
         ``bin_count / sample_count / bin_volume``.
@@ -963,10 +963,10 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
 
     Returns
     -------
-    H : {dpnp.ndarray}
+    H : dpnp.ndarray
         The multidimensional histogram of sample x. See density and weights
         for the different possible semantics.
-    edges : {list of dpnp.ndarray}
+    edges : list of {dpnp.ndarray or usm_ndarray}
         A list of D arrays describing the bin edges for each dimension.
 
     See Also
@@ -1038,5 +1038,9 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
             shape[i] = diff.size
             n = n / dpnp.reshape(diff, shape=shape)
         n /= s
+
+    for i, b in enumerate(bins):
+        if dpnp.is_supported_array_type(b):
+            bin_edges_view_list[i] = b
 
     return n, bin_edges_view_list
