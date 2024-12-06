@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.\_\_ixor\_\_
-=========================
-
-.. currentmodule:: dpnp
-
-.. automethod:: ndarray.__ixor__

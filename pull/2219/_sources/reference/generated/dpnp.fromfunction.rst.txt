@@ -1,6 +1,0 @@
-﻿dpnp.fromfunction
-=================
-
-.. currentmodule:: dpnp
-
-.. autofunction:: fromfunction

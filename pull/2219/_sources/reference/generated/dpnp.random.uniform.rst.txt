@@ -1,6 +1,0 @@
-﻿dpnp.random.uniform
-===================
-
-.. currentmodule:: dpnp.random
-
-.. autofunction:: uniform

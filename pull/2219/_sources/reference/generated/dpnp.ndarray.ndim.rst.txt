@@ -1,6 +1,0 @@
-﻿dpnp.ndarray.ndim
-=================
-
-.. currentmodule:: dpnp
-
-.. autoproperty:: ndarray.ndim
