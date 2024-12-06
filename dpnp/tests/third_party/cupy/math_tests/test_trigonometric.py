@@ -5,6 +5,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestTrigonometric(unittest.TestCase):
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype):
@@ -57,6 +58,7 @@ class TestTrigonometric(unittest.TestCase):
 
 @testing.with_requires("numpy>=1.21.0")
 class TestUnwrap(unittest.TestCase):
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_unwrap_1dim(self, xp, dtype):

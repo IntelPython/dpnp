@@ -9,6 +9,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestTranspose(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_moveaxis1(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -51,6 +52,12 @@ class TestTranspose(unittest.TestCase):
             a = testing.shaped_arange((2, 3, 4), xp)
             with pytest.raises(AxisError):
                 xp.moveaxis(a, [0, 1], [1, 3])
+
+    def test_moveaxis_invalid1_3(self):
+        for xp in (numpy, cupy):
+            a = testing.shaped_arange((2, 3, 4), xp)
+            with pytest.raises(AxisError):
+                xp.moveaxis(a, 0, 3)
 
     # dim is too small
     def test_moveaxis_invalid2_1(self):
@@ -159,11 +166,36 @@ class TestTranspose(unittest.TestCase):
         return xp.transpose(a, (-1, 0, 1))
 
     @testing.numpy_cupy_array_equal()
-    def test_external_transpose_5d(self, xp):
-        a = testing.shaped_arange((2, 3, 4, 5, 6), xp)
-        return xp.transpose(a, (1, 0, 3, 4, 2))
-
-    @testing.numpy_cupy_array_equal()
     def test_external_transpose_all(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
         return xp.transpose(a)
+
+
+ARRAY_SHAPES_TO_TEST = (
+    (5, 2),
+    (5, 2, 3),
+    (5, 2, 3, 4),
+)
+
+
+class TestMatrixTranspose:
+
+    @testing.with_requires("numpy>=2.0")
+    def test_matrix_transpose_raises_error_for_1d(self):
+        msg = "matrix transpose with ndim < 2 is undefined"
+        arr = cupy.arange(48)
+        with pytest.raises(ValueError, match=msg):
+            arr.mT
+
+    @testing.numpy_cupy_array_equal()
+    def test_matrix_transpose_equals_transpose_2d(self, xp):
+        arr = xp.arange(48).reshape((6, 8))
+        return arr
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("shape", ARRAY_SHAPES_TO_TEST)
+    @testing.numpy_cupy_array_equal()
+    def test_matrix_transpose_equals_swapaxes(self, xp, shape):
+        vec = xp.arange(shape[-1])
+        arr = xp.broadcast_to(vec, shape)
+        return arr.mT
