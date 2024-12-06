@@ -40,6 +40,7 @@ class TestArrayBoolOp(unittest.TestCase):
 
 
 class TestArrayUnaryOp(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def check_array_op(self, op, xp, dtype):
@@ -111,6 +112,7 @@ class TestArrayUnaryOp(unittest.TestCase):
 
 
 class TestArrayIntUnaryOp(unittest.TestCase):
+
     @testing.for_int_dtypes()
     @testing.numpy_cupy_allclose()
     def check_array_op(self, op, xp, dtype):
@@ -141,6 +143,7 @@ class TestArrayIntUnaryOp(unittest.TestCase):
     *testing.product({"xp": [numpy, cupy], "shape": [(3, 2), (), (3, 0, 2)]})
 )
 class TestBoolNeg(unittest.TestCase):
+
     def test_bool_neg(self):
         xp = self.xp
         if xp is numpy and not testing.numpy_satisfies(">=1.13.0"):

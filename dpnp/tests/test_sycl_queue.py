@@ -1079,24 +1079,27 @@ def test_vecdot(device, shape_pair):
 
 
 @pytest.mark.parametrize(
-    "func, kwargs",
+    "func, args, kwargs",
     [
-        pytest.param("normal", {"loc": 1.0, "scale": 3.4, "size": (5, 12)}),
-        pytest.param("rand", {"d0": 20}),
+        pytest.param("normal", [], {"loc": 1.0, "scale": 3.4, "size": (5, 12)}),
+        pytest.param("rand", [20], {}),
         pytest.param(
             "randint",
+            [],
             {"low": 2, "high": 15, "size": (4, 8, 16), "dtype": dpnp.int32},
         ),
-        pytest.param("randn", {"d0": 20}),
-        pytest.param("random", {"size": (35, 45)}),
+        pytest.param("randn", [], {"d0": 20}),
+        pytest.param("random", [], {"size": (35, 45)}),
         pytest.param(
-            "random_integers", {"low": -17, "high": 3, "size": (12, 16)}
+            "random_integers", [], {"low": -17, "high": 3, "size": (12, 16)}
         ),
-        pytest.param("random_sample", {"size": (7, 7)}),
-        pytest.param("ranf", {"size": (10, 7, 12)}),
-        pytest.param("sample", {"size": (7, 9)}),
-        pytest.param("standard_normal", {"size": (4, 4, 8)}),
-        pytest.param("uniform", {"low": 1.0, "high": 2.0, "size": (4, 2, 5)}),
+        pytest.param("random_sample", [], {"size": (7, 7)}),
+        pytest.param("ranf", [], {"size": (10, 7, 12)}),
+        pytest.param("sample", [], {"size": (7, 9)}),
+        pytest.param("standard_normal", [], {"size": (4, 4, 8)}),
+        pytest.param(
+            "uniform", [], {"low": 1.0, "high": 2.0, "size": (4, 2, 5)}
+        ),
     ],
 )
 @pytest.mark.parametrize(
@@ -1105,11 +1108,11 @@ def test_vecdot(device, shape_pair):
     ids=[device.filter_string for device in valid_devices],
 )
 @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
-def test_random(func, kwargs, device, usm_type):
+def test_random(func, args, kwargs, device, usm_type):
     kwargs = {**kwargs, "device": device, "usm_type": usm_type}
 
     # test with default SYCL queue per a device
-    res_array = getattr(dpnp.random, func)(**kwargs)
+    res_array = getattr(dpnp.random, func)(*args, **kwargs)
     assert device == res_array.sycl_device
     assert usm_type == res_array.usm_type
 
@@ -1121,7 +1124,7 @@ def test_random(func, kwargs, device, usm_type):
     kwargs["sycl_queue"] = sycl_queue
 
     # test with in-order SYCL queue per a device and passed as argument
-    res_array = getattr(dpnp.random, func)(**kwargs)
+    res_array = getattr(dpnp.random, func)(*args, **kwargs)
     assert usm_type == res_array.usm_type
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
 
@@ -2057,7 +2060,6 @@ def test_broadcast_to(device):
         pytest.param("concatenate", [[1, 2], [3, 4]], [[5, 6]]),
         pytest.param("dstack", [[1], [2], [3]], [[2], [3], [4]]),
         pytest.param("hstack", (1, 2, 3), (4, 5, 6)),
-        pytest.param("row_stack", [[7], [1], [2], [3]], [[2], [3], [9], [4]]),
         pytest.param("stack", [1, 2, 3], [4, 5, 6]),
         pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
     ],

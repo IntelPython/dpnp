@@ -7,6 +7,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestMisc:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype, no_bool=False):
@@ -26,16 +27,11 @@ class TestMisc:
 
     @testing.for_dtypes(["?", "b", "h", "i", "q", "e", "f", "d", "F", "D"])
     @testing.numpy_cupy_allclose(atol=1e-5)
-    # TODO: remove no_comlex=True, once adopted to numpy 2.0
-    def check_unary_negative(
-        self, name, xp, dtype, no_bool=False, no_complex=False
-    ):
+    def check_unary_negative(self, name, xp, dtype, no_bool=False):
         if no_bool and numpy.dtype(dtype).char == "?":
             return numpy.int_(0)
         a = xp.array([-3, -2, -1, 1, 2, 3], dtype=dtype)
         if numpy.dtype(dtype).kind == "c":
-            if no_complex:
-                return numpy.int_(0)
             a += (a * 1j).astype(dtype)
         return getattr(xp, name)(a)
 
@@ -126,21 +122,12 @@ class TestMisc:
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return a.clip(3, None)
 
+    @testing.with_requires("numpy>=2.1")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    def test_clip_min_max_none(self, dtype):
-        for xp in (numpy, cupy):
-            a = testing.shaped_arange((2, 3, 4), xp, dtype)
-            # According to Python Array API, clip() should return an array
-            # with the same elements in `a` if `min` and `max` are `None`.
-            # Numpy < 2.1 is not compatible with this and raises a ValueError
-            if (
-                xp is numpy
-                and numpy.lib.NumpyVersion(numpy.__version__) < "2.1.0"
-            ):
-                with pytest.raises(ValueError):
-                    a.clip(None, None)
-            else:
-                return a.clip(None, None)
+    @testing.numpy_cupy_array_equal()
+    def test_clip_min_max_none(self, xp, dtype):
+        a = testing.shaped_arange((2, 3, 4), xp, dtype)
+        return a.clip(None, None)
 
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -209,18 +196,22 @@ class TestMisc:
         a = xp.array([2, 3, 4], dtype=dtype)
         return xp.fabs(a)
 
+    @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    @testing.numpy_cupy_allclose(atol=1e-5)
     def test_fabs_negative(self, xp, dtype):
+        if numpy.issubdtype(dtype, numpy.unsignedinteger):
+            pytest.skip("trying to set negative value to unsigned integer")
         a = xp.array([-2.0, -4.0, 0.0, 4.0], dtype=dtype)
         return xp.fabs(a)
 
+    @testing.with_requires("numpy>=2.0")
     def test_sign(self):
         self.check_unary("sign", no_bool=True)
 
-    # TODO: remove no_comlex=True, once adopted to numpy 2.0
+    @testing.with_requires("numpy>=2.0")
     def test_sign_negative(self):
-        self.check_unary_negative("sign", no_bool=True, no_complex=True)
+        self.check_unary_negative("sign", no_bool=True)
 
     def test_maximum(self):
         self.check_binary("maximum")
@@ -264,10 +255,9 @@ class TestMisc:
     def test_nan_to_num_nan(self):
         self.check_unary_nan("nan_to_num")
 
-    @pytest.mark.skip(reason="scalar input is not supported")
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_nan_to_num_scalar_nan(self, xp):
-        return xp.nan_to_num(xp.nan)
+        return xp.nan_to_num(xp.array(xp.nan))
 
     def test_nan_to_num_inf_nan(self):
         self.check_unary_inf_nan("nan_to_num")
@@ -292,15 +282,14 @@ class TestMisc:
         assert x is y
         return y
 
-    @pytest.mark.skip(reason="nan, posinf, neginf as array are not supported")
     @pytest.mark.parametrize("kwarg", ["nan", "posinf", "neginf"])
     def test_nan_to_num_broadcast(self, kwarg):
         for xp in (numpy, cupy):
             x = xp.asarray([0, 1, xp.nan, 4], dtype=cupy.default_float_type())
             y = xp.zeros((2, 4), dtype=cupy.default_float_type())
-            with pytest.raises(TypeError):
+            with pytest.raises((ValueError, TypeError)):
                 xp.nan_to_num(x, **{kwarg: y})
-            with pytest.raises(TypeError):
+            with pytest.raises((ValueError, TypeError)):
                 xp.nan_to_num(0.0, **{kwarg: y})
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
@@ -377,6 +366,7 @@ class TestMisc:
         assert x.dtype == out.dtype
         return out
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -387,6 +377,7 @@ class TestMisc:
         fy = xp.sin(fx).astype(dtype_y)
         return xp.interp(x, fx, fy)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -397,6 +388,7 @@ class TestMisc:
         fy = xp.sin(fx).astype(dtype_y)
         return xp.interp(x, fx, fy, period=5)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -409,6 +401,7 @@ class TestMisc:
         right = 20
         return xp.interp(x, fx, fy, left, right)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -421,6 +414,7 @@ class TestMisc:
         fy[0] = fy[2] = fy[-1] = numpy.nan
         return xp.interp(x, fx, fy)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -433,6 +427,7 @@ class TestMisc:
         fx[-1] = numpy.nan  # x and fx must remain sorted (NaNs are the last)
         return xp.interp(x, fx, fy)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -445,6 +440,7 @@ class TestMisc:
         x[-1] = numpy.nan  # x and fx must remain sorted (NaNs are the last)
         return xp.interp(x, fx, fy)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -457,6 +453,7 @@ class TestMisc:
         fy[0] = fy[2] = fy[-1] = numpy.inf
         return xp.interp(x, fx, fy)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -469,6 +466,7 @@ class TestMisc:
         fx[-1] = numpy.inf  # x and fx must remain sorted
         return xp.interp(x, fx, fy)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -481,6 +479,7 @@ class TestMisc:
         x[-1] = numpy.inf  # x and fx must remain sorted
         return xp.interp(x, fx, fy)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -493,6 +492,7 @@ class TestMisc:
         right = 20
         return xp.interp(x, fx, fy, left, right)
 
+    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -532,6 +532,7 @@ class TestMisc:
 )
 @pytest.mark.skip("convolve() is not implemented yet")
 class TestConvolveShapeCombination:
+
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3)
     def test_convolve(self, xp, dtype):
@@ -543,6 +544,7 @@ class TestConvolveShapeCombination:
 @pytest.mark.skip("convolve() is not implemented yet")
 @pytest.mark.parametrize("mode", ["valid", "same", "full"])
 class TestConvolve:
+
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_convolve_non_contiguous(self, xp, dtype, mode):
@@ -568,6 +570,7 @@ class TestConvolve:
 @pytest.mark.skip("convolve() is not implemented yet")
 @testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
 class TestConvolveInvalid:
+
     @testing.for_all_dtypes()
     def test_convolve_empty(self, dtype):
         for xp in (numpy, cupy):

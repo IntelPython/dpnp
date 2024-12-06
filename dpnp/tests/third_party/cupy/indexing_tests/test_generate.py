@@ -8,6 +8,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestIndices(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_indices_list0(self, xp, dtype):
@@ -31,6 +32,7 @@ class TestIndices(unittest.TestCase):
 
 
 class TestIX_(unittest.TestCase):
+
     @pytest.mark.skip("List input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_ix_list(self, xp):
@@ -52,6 +54,7 @@ class TestIX_(unittest.TestCase):
 
 @pytest.mark.skip("r_[] is not supported yet")
 class TestR_(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_r_1(self, xp, dtype):
@@ -113,6 +116,7 @@ class TestR_(unittest.TestCase):
 
 @pytest.mark.skip("c_[] is not supported yet")
 class TestC_(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_c_1(self, xp, dtype):
@@ -138,6 +142,7 @@ class TestC_(unittest.TestCase):
 
 @pytest.mark.skip("no AxisConcatenator is provided")
 class TestAxisConcatenator(unittest.TestCase):
+
     def test_AxisConcatenator_init1(self):
         with self.assertRaises(TypeError):
             generate.AxisConcatenator.__init__()
@@ -148,6 +153,7 @@ class TestAxisConcatenator(unittest.TestCase):
 
 
 class TestUnravelIndex(unittest.TestCase):
+
     @testing.for_orders(["C", "F", None])
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal(type_check=False)
@@ -182,6 +188,7 @@ class TestUnravelIndex(unittest.TestCase):
 
 
 class TestRavelMultiIndex(unittest.TestCase):
+
     @testing.for_orders(["C", "F", None])
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -288,6 +295,7 @@ class TestRavelMultiIndex(unittest.TestCase):
 
 
 class TestMaskIndices:
+
     @testing.numpy_cupy_array_equal()
     def test_mask_indices(self, xp):
         # arr is a square matrix with 50% density
@@ -305,6 +313,7 @@ class TestMaskIndices:
 
 
 class TestTrilIndices:
+
     @testing.numpy_cupy_array_equal()
     def test_tril_indices_1(self, xp):
         return xp.tril_indices(n=29, k=0)
@@ -330,6 +339,7 @@ class TestTrilIndices:
 
 
 class TestTrilIndicesForm:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_tril_indices_from_1(self, xp, dtype):
@@ -356,6 +366,7 @@ class TestTrilIndicesForm:
 
 
 class TestTriuIndices:
+
     @testing.numpy_cupy_array_equal()
     def test_triu_indices_1(self, xp):
         return xp.triu_indices(n=10, k=0)
@@ -381,6 +392,7 @@ class TestTriuIndices:
 
 
 class TestTriuIndicesFrom:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_triu_indices_from_1(self, xp, dtype):
