@@ -1022,25 +1022,31 @@ def power(a, size=None):
     return call_origin(numpy.random.power, a, size)
 
 
-def rand(d0, *dn, device=None, usm_type="device", sycl_queue=None):
+def rand(*args, device=None, usm_type="device", sycl_queue=None):
     """
     Random values in a given shape.
 
-    Create an array of the given shape and populate it with random samples
-    from a uniform distribution over [0, 1).
+    Create an array of the given shape and populate it with random samples from
+    a uniform distribution over ``[0, 1)``.
 
     For full documentation refer to :obj:`numpy.random.rand`.
 
     Parameters
     ----------
+    *args : sequence of ints, optional
+        The dimensions of the returned array, must be non-negative.
+        If no argument is given a single Python float is returned.
     device : {None, string, SyclDevice, SyclQueue}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector string,
-        an instance of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL device,
-        an instance of :class:`dpctl.SyclQueue`, or a `Device` object returned by
+        The `device` can be ``None`` (the default), an OneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a `Device` object returned by
         :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
@@ -1051,23 +1057,27 @@ def rand(d0, *dn, device=None, usm_type="device", sycl_queue=None):
     Returns
     -------
     out : dpnp.ndarray
-        Random values in a given shape.
-        Output array data type is :obj:`dpnp.float64` if device supports it, or :obj:`dpnp.float32` otherwise.
-
-    Examples
-    --------
-    >>> s = dpnp.random.rand(3, 2)
+        Random values in a given shape ``(d0, d1, ..., dn)``.
+        Output array data type is :obj:`dpnp.float64` if a device supports it,
+        or :obj:`dpnp.float32` type otherwise.
 
     See Also
     --------
-    :obj:`dpnp.random.random`
-    :obj:`dpnp.random.random_sample`
-    :obj:`dpnp.random.uniform`
+    :obj:`dpnp.random.random` : Return random floats in the half-open interval
+                                ``[0.0, 1.0)``.
+    :obj:`dpnp.random.random_sample` : Return random floats in the half-open
+                                       interval ``[0.0, 1.0)``.
+    :obj:`dpnp.random.uniform` : Draw samples from a uniform distribution.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> s = np.random.rand(3, 2)
 
     """
 
     rs = _get_random_state(device=device, sycl_queue=sycl_queue)
-    return rs.rand(d0, *dn, usm_type=usm_type)
+    return rs.rand(*args, usm_type=usm_type)
 
 
 def randint(

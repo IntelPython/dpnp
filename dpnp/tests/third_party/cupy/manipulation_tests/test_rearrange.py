@@ -26,6 +26,7 @@ from dpnp.tests.third_party.cupy import testing
     {"shape": (5, 2), "shift": (2, 1, 3), "axis": None},
 )
 class TestRoll(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_roll(self, xp, dtype):
@@ -37,17 +38,27 @@ class TestRoll(unittest.TestCase):
     def test_roll_cupy_shift(self, xp, dtype):
         x = testing.shaped_arange(self.shape, xp, dtype)
         shift = self.shift
+        if xp is cupy:
+            shift = cupy.array(shift)
         return xp.roll(x, shift, axis=self.axis)
 
 
 class TestRollTypeError(unittest.TestCase):
-    # TODO: update, once dpctl#1857 is resolved
-    @testing.with_requires("numpy<2.1.2")  # done in numpy#27437
+
+    @pytest.mark.skip("castable string shift is not supported")
+    @testing.with_requires("numpy>=2.1.2")
+    def test_roll_invalid_shift_castable(self):
+        for xp in (numpy, cupy):
+            x = testing.shaped_arange((5, 2), xp)
+            # Weird but works due to `int` call
+            xp.roll(x, "0", axis=0)
+
+    @testing.with_requires("numpy>=2.1.2")
     def test_roll_invalid_shift(self):
         for xp in (numpy, cupy):
             x = testing.shaped_arange((5, 2), xp)
-            with pytest.raises(TypeError):
-                xp.roll(x, "0", axis=0)
+            with pytest.raises((ValueError, TypeError)):
+                xp.roll(x, "a", axis=0)
 
     def test_roll_invalid_axis_type(self):
         for xp in (numpy, cupy):
@@ -75,11 +86,14 @@ class TestRollValueError(unittest.TestCase):
         for xp in (numpy, cupy):
             x = testing.shaped_arange(self.shape, xp)
             shift = self.shift
+            if xp is cupy:
+                shift = cupy.array(shift)
             with pytest.raises(ValueError):
                 xp.roll(x, shift, axis=self.axis)
 
 
 class TestFliplr(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_fliplr_2(self, xp, dtype):
@@ -101,6 +115,7 @@ class TestFliplr(unittest.TestCase):
 
 
 class TestFlipud(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_flipud_1(self, xp, dtype):
@@ -122,6 +137,7 @@ class TestFlipud(unittest.TestCase):
 
 
 class TestFlip(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_flip_1(self, xp, dtype):
@@ -205,6 +221,7 @@ class TestFlip(unittest.TestCase):
 
 
 class TestRot90(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_rot90_none(self, xp, dtype):

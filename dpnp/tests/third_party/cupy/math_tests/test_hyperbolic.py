@@ -5,6 +5,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestHyperbolic(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype):

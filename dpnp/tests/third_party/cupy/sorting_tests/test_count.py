@@ -7,6 +7,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestCount(unittest.TestCase):
+
     @testing.for_all_dtypes()
     def test_count_nonzero(self, dtype):
         def func(xp):
