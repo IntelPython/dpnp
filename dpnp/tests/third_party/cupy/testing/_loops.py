@@ -1250,9 +1250,9 @@ def for_dtypes_combination(types, names=("dtype",), full=None):
     """
     types = list(types)
 
-    if len(types) == 1:
-        (name,) = names
-        return for_dtypes(types, name)
+    # if len(types) == 1:
+    #     (name,) = names
+    #     return for_dtypes(types, name)
 
     if full is None:
         full = int(os.environ.get("CUPY_TEST_FULL_COMBINATION", "0")) != 0

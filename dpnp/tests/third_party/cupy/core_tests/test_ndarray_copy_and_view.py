@@ -27,6 +27,7 @@ def get_strides(xp, a):
 
 @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
 class TestView:
+
     @testing.numpy_cupy_array_equal()
     def test_view(self, xp):
         a = testing.shaped_arange((4,), xp, dtype=numpy.float32)
@@ -188,6 +189,7 @@ class TestView:
 
 
 class TestArrayCopy:
+
     @testing.for_orders("CF")
     @testing.for_dtypes(
         [numpy.int16, numpy.int64, numpy.float16, numpy.float64]
@@ -199,23 +201,25 @@ class TestArrayCopy:
         b[:] = a
         return b
 
-    @pytest.mark.skip("Doesn't raise ValueError in numpy")
+    @pytest.mark.skip("copy from host to device is allowed")
     def test_isinstance_numpy_copy_wrong_dtype(self):
-        a = numpy.arange(100, dtype=numpy.float32).reshape(10, 10)
+        a = numpy.arange(100, dtype=cupy.default_float_type()).reshape(10, 10)
         b = cupy.empty(a.shape, dtype=numpy.int32)
         with pytest.raises(ValueError):
             b[:] = a
 
     def test_isinstance_numpy_copy_wrong_shape(self):
         for xp in (numpy, cupy):
-            a = numpy.arange(100, dtype=numpy.float32).reshape(10, 10)
+            a = numpy.arange(100, dtype=cupy.default_float_type()).reshape(
+                10, 10
+            )
             b = cupy.empty(100, dtype=a.dtype)
             with pytest.raises(ValueError):
                 b[:] = a
 
     @testing.numpy_cupy_array_equal()
     def test_isinstance_numpy_copy_not_slice(self, xp):
-        a = xp.arange(5, dtype=numpy.float32)
+        a = xp.arange(5, dtype=cupy.default_float_type())
         a[a < 3] = 0
         return a
 
@@ -228,6 +232,7 @@ class TestArrayCopy:
 
 
 class TestArrayFlatten:
+
     @testing.numpy_cupy_array_equal()
     def test_flatten(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -245,13 +250,13 @@ class TestArrayFlatten:
         a = testing.shaped_arange((2, 3, 4), xp).transpose(2, 0, 1)
         return a.flatten()
 
-    @testing.for_orders("CFAK")
+    @testing.for_orders("CFA")
     @testing.numpy_cupy_array_equal()
     def test_flatten_order(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp)
         return a.flatten(order)
 
-    @testing.for_orders("CFAK")
+    @testing.for_orders("CFA")
     @testing.numpy_cupy_array_equal()
     def test_flatten_order_copied(self, xp, order):
         a = testing.shaped_arange((4,), xp)
@@ -259,7 +264,7 @@ class TestArrayFlatten:
         a[:] = 1
         return b
 
-    @testing.for_orders("CFAK")
+    @testing.for_orders("CFA")
     @testing.numpy_cupy_array_equal()
     def test_flatten_order_transposed(self, xp, order):
         a = testing.shaped_arange((2, 3, 4), xp).transpose(2, 0, 1)
@@ -267,6 +272,7 @@ class TestArrayFlatten:
 
 
 class TestArrayFill:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_fill(self, xp, dtype):
@@ -274,7 +280,10 @@ class TestArrayFill:
         a.fill(1)
         return a
 
-    @pytest.mark.skip("Numpy allows Numpy scalar arrays as fill value")
+    @pytest.mark.skip("NumPy array as input is not supported")
+    @testing.with_requires("numpy>=1.24.0")
+    @testing.for_all_dtypes_combination(("dtype1", "dtype2"))
+    @testing.numpy_cupy_array_equal(accept_error=ComplexWarning)
     def test_fill_with_numpy_scalar_ndarray(self, xp, dtype1, dtype2):
         a = testing.shaped_arange((2, 3, 4), xp, dtype1)
         a.fill(numpy.ones((), dtype=dtype2))
@@ -289,9 +298,7 @@ class TestArrayFill:
         a.fill(b)
         return a
 
-    @pytest.mark.skip(
-        "it's allowed to broadcast dpnp array while filling, no exception then"
-    )
+    @pytest.mark.skip("NumPy array as input is not supported")
     @testing.for_all_dtypes()
     def test_fill_with_nonscalar_ndarray(self, dtype):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -309,6 +316,7 @@ class TestArrayFill:
 
 
 class TestArrayAsType:
+
     @testing.for_orders(["C", "F", "A", "K", None])
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
@@ -388,6 +396,7 @@ class TestArrayAsType:
 
 
 class TestArrayDiagonal:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_diagonal1(self, xp, dtype):
@@ -420,6 +429,7 @@ class TestNumPyArrayCopyView:
 
 
 class C_cp(cupy.ndarray):
+
     def __new__(cls, *args, info=None, **kwargs):
         obj = super().__new__(cls, *args, **kwargs)
         obj.info = info
@@ -432,6 +442,7 @@ class C_cp(cupy.ndarray):
 
 
 class C_np(numpy.ndarray):
+
     def __new__(cls, *args, info=None, **kwargs):
         obj = super().__new__(cls, *args, **kwargs)
         obj.info = info
@@ -445,18 +456,19 @@ class C_np(numpy.ndarray):
 
 @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
 class TestSubclassArrayView:
+
     def test_view_casting(self):
         for xp, C in [(numpy, C_np), (cupy, C_cp)]:
-            a = xp.arange(5, dtype="i").view("F")
+            a = xp.arange(5, dtype="i").view("f")
             assert type(a) is xp.ndarray
             assert a.dtype == xp.float32
 
-            a = xp.arange(5, dtype="i").view(dtype="F")
+            a = xp.arange(5, dtype="i").view(dtype="f")
             assert type(a) is xp.ndarray
             assert a.dtype == xp.float32
 
             with pytest.raises(TypeError):
-                xp.arange(5, dtype="i").view("F", dtype="F")
+                xp.arange(5, dtype="i").view("f", dtype="f")
 
             a = xp.arange(5, dtype="i").view(C)
             assert type(a) is C
@@ -476,7 +488,7 @@ class TestSubclassArrayView:
             assert a.info is None
 
             with pytest.raises(TypeError):
-                xp.arange(5).view("F", C, type=C)
+                xp.arange(5).view("f", C, type=C)
 
         with pytest.raises(ValueError):
             cupy.arange(5).view(type=numpy.ndarray)

@@ -9,6 +9,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestConj(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal()
     def test_conj(self, xp, dtype):
@@ -20,7 +21,7 @@ class TestConj(unittest.TestCase):
     def test_conj_pass(self, xp, dtype):
         x = testing.shaped_arange((2, 3), xp, dtype)
         y = x.conj()
-        self.assertIs(x, y)
+        assert x is y
         return y
 
     @testing.for_all_dtypes()
@@ -34,11 +35,12 @@ class TestConj(unittest.TestCase):
     def test_conjugate_pass(self, xp, dtype):
         x = testing.shaped_arange((2, 3), xp, dtype)
         y = x.conjugate()
-        self.assertIs(x, y)
+        assert x is y
         return y
 
 
 class TestAngle(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal(type_check=has_support_aspect64())
     def test_angle(self, xp, dtype):
@@ -47,6 +49,7 @@ class TestAngle(unittest.TestCase):
 
 
 class TestRealImag(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal(accept_error=False)
     def test_real(self, xp, dtype):
@@ -154,11 +157,12 @@ class TestRealImag(unittest.TestCase):
 
 
 class TestScalarConversion(unittest.TestCase):
+
     @testing.for_all_dtypes()
     def test_scalar_conversion(self, dtype):
         scalar = 1 + 1j if numpy.dtype(dtype).kind == "c" else 1
-        x_1d = cupy.array([scalar]).astype(dtype)
-        self.assertEqual(complex(x_1d), scalar)
+        x_1d = cupy.array(scalar).astype(dtype)
+        assert complex(x_1d) == scalar
 
         x_0d = x_1d.reshape(())
-        self.assertEqual(complex(x_0d), scalar)
+        assert complex(x_0d) == scalar

@@ -40,6 +40,7 @@ it contains:
 import warnings
 
 import dpnp
+from dpnp.dpnp_utils.dpnp_utils_statistics import dpnp_median
 
 __all__ = [
     "nanargmax",
@@ -48,6 +49,7 @@ __all__ = [
     "nancumsum",
     "nanmax",
     "nanmean",
+    "nanmedian",
     "nanmin",
     "nanprod",
     "nanstd",
@@ -566,6 +568,107 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
     dpnp.divide(avg, cnt, out=avg)
 
     return avg
+
+
+def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
+    """
+    Compute the median along the specified axis, while ignoring NaNs.
+
+    For full documentation refer to :obj:`numpy.nanmedian`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int, tuple or list of ints}, optional
+        Axis or axes along which the medians are computed. The default,
+        ``axis=None``, will compute the median along a flattened version of
+        the array. If a sequence of axes, the array is first flattened along
+        the given axes, then the median is computed along the resulting
+        flattened axis.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have
+        the same shape as the expected output but the type (of the calculated
+        values) will be cast if necessary.
+        Default: ``None``.
+    overwrite_input : bool, optional
+       If ``True``, then allow use of memory of input array `a` for
+       calculations. The input array will be modified by the call to
+       :obj:`dpnp.nanmedian`. This will save memory when you do not need to
+       preserve the contents of the input array. Treat the input as undefined,
+       but it will probably be fully or partially sorted.
+       Default: ``False``.
+    keepdims : bool, optional
+        If ``True``, the reduced axes (dimensions) are included in the result
+        as singleton dimensions, so that the returned array remains
+        compatible with the input array according to Array Broadcasting
+        rules. Otherwise, if ``False``, the reduced axes are not included in
+        the returned array.
+        Default: ``False``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A new array holding the result. If `a` has a floating-point data type,
+        the returned array will have the same data type as `a`. If `a` has a
+        boolean or integral data type, the returned array will have the
+        default floating point data type for the device where input array `a`
+        is allocated.
+
+    See Also
+    --------
+    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.
+    :obj:`dpnp.median` : Compute the median along the specified axis.
+    :obj:`dpnp.percentile` : Compute the q-th percentile of the data
+                             along the specified axis.
+
+    Notes
+    -----
+    Given a vector ``V`` of length ``N``, the median of ``V`` is the
+    middle value of a sorted copy of ``V``, ``V_sorted`` - i.e.,
+    ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the
+    two middle values of ``V_sorted`` when ``N`` is even.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> a = np.array([[10.0, 7, 4], [3, 2, 1]])
+    >>> a[0, 1] = np.nan
+    >>> a
+    array([[10., nan,  4.],
+           [ 3.,  2.,  1.]])
+    >>> np.median(a)
+    array(nan)
+    >>> np.nanmedian(a)
+    array(3.)
+
+    >>> np.nanmedian(a, axis=0)
+    array([6.5, 2., 2.5])
+    >>> np.nanmedian(a, axis=1)
+    array([7., 2.])
+
+    >>> b = a.copy()
+    >>> np.nanmedian(b, axis=1, overwrite_input=True)
+    array([7., 2.])
+    >>> assert not np.all(a==b)
+    >>> b = a.copy()
+    >>> np.nanmedian(b, axis=None, overwrite_input=True)
+    array(3.)
+    >>> assert not np.all(a==b)
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    ignore_nan = False
+    if dpnp.issubdtype(a.dtype, dpnp.inexact):
+        mask = dpnp.isnan(a)
+        if dpnp.any(mask):
+            ignore_nan = True
+
+    return dpnp_median(
+        a, axis, out, overwrite_input, keepdims, ignore_nan=ignore_nan
+    )
 
 
 def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
