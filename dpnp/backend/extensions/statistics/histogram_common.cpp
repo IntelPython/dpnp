@@ -26,12 +26,9 @@
 #include <algorithm>
 #include <limits>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "dpctl4pybind11.hpp"
-#include "utils/memory_overlap.hpp"
-#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include <pybind11/pybind11.h>

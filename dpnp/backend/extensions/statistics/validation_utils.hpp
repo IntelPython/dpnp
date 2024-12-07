@@ -31,9 +31,7 @@
 
 #include "dpctl4pybind11.hpp"
 
-namespace statistics
-{
-namespace validation
+namespace statistics::validation
 {
 using array_ptr = const dpctl::tensor::usm_ndarray *;
 using array_names = std::unordered_map<array_ptr, std::string>;
@@ -69,5 +67,4 @@ void check_size_at_least(const array_ptr &arr,
 void common_checks(const std::vector<array_ptr> &inputs,
                    const std::vector<array_ptr> &outputs,
                    const array_names &names);
-} // namespace validation
-} // namespace statistics
+} // namespace statistics::validation

@@ -53,9 +53,7 @@ sycl::queue get_queue(const std::vector<array_ptr> &inputs,
 }
 } // namespace
 
-namespace statistics
-{
-namespace validation
+namespace statistics::validation
 {
 std::string name_of(const array_ptr &arr, const array_names &names)
 {
@@ -189,5 +187,4 @@ void common_checks(const std::vector<array_ptr> &inputs,
     check_no_overlap(inputs, outputs, names);
 }
 
-} // namespace validation
-} // namespace statistics
+} // namespace statistics::validation

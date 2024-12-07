@@ -23,12 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <algorithm>
 #include <complex>
 #include <memory>
-#include <string>
-#include <type_traits>
-#include <unordered_map>
 #include <vector>
 
 #include <pybind11/pybind11.h>
@@ -42,7 +38,7 @@
 #include "sliding_dot_product1d.hpp"
 #include "sliding_window1d.hpp"
 
-#include <iostream>
+// #include <iostream>
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
@@ -101,7 +97,9 @@ struct SlidingDotProductF
     }
 };
 
-using SupportedTypes = std::tuple<uint64_t,
+using SupportedTypes = std::tuple<uint32_t,
+                                  int32_t,
+                                  uint64_t,
                                   int64_t,
                                   float,
                                   double,

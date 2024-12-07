@@ -36,9 +36,7 @@
 #include "utils/math_utils.hpp"
 // clang-format on
 
-namespace statistics
-{
-namespace common
+namespace statistics::common
 {
 
 template <typename N, typename D>
@@ -200,5 +198,4 @@ sycl::nd_range<1>
 // headers of dpctl.
 pybind11::dtype dtype_from_typenum(int dst_typenum);
 
-} // namespace common
-} // namespace statistics
+} // namespace statistics::common
