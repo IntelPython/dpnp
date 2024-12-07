@@ -39,11 +39,8 @@
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 namespace py = pybind11;
 
-namespace statistics
+namespace statistics::common
 {
-namespace common
-{
-
 template <typename T, typename Rest>
 struct one_of
 {
@@ -386,5 +383,4 @@ private:
     Table2<FnT> table;
 };
 
-} // namespace common
-} // namespace statistics
+} // namespace statistics::common

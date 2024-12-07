@@ -26,22 +26,12 @@
 #pragma once
 
 #include "utils/math_utils.hpp"
-#include <complex>
 #include <sycl/sycl.hpp>
-#include <tuple>
 #include <type_traits>
 
 #include <stdio.h>
 
 #include "common.hpp"
-
-namespace dpctl
-{
-namespace tensor
-{
-class usm_ndarray;
-}
-} // namespace dpctl
 
 using dpctl::tensor::usm_ndarray;
 

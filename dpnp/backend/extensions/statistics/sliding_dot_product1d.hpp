@@ -26,15 +26,10 @@
 #pragma once
 
 #include "dispatch_table.hpp"
-#include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-
-namespace statistics
-{
-namespace sliding_window1d
+namespace statistics::sliding_window1d
 {
 struct SlidingDotProduct1d
 {
@@ -62,5 +57,4 @@ struct SlidingDotProduct1d
 };
 
 void populate_sliding_dot_product1d(py::module_ m);
-} // namespace sliding_window1d
-} // namespace statistics
+} // namespace statistics::sliding_window1d

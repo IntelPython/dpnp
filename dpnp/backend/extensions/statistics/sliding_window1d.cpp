@@ -23,10 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <algorithm>
-#include <limits>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "dpctl4pybind11.hpp"

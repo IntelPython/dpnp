@@ -32,9 +32,7 @@
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace statistics
-{
-namespace histogram
+namespace statistics::histogram
 {
 struct Bincount
 {
@@ -62,5 +60,4 @@ struct Bincount
 };
 
 void populate_bincount(py::module_ m);
-} // namespace histogram
-} // namespace statistics
+} // namespace statistics::histogram

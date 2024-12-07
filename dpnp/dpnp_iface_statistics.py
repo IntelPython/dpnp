@@ -440,8 +440,7 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
 
 
 def _get_padding(a_size, v_size, mode):
-    if v_size > a_size:
-        a_size, v_size = v_size, a_size
+    assert v_size <= a_size
 
     if mode == "valid":
         l_pad, r_pad = 0, 0
@@ -463,9 +462,8 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad):
 
     usm_type = dpu.get_coerced_usm_type([a.usm_type, v.usm_type])
     out_size = l_pad + r_pad + a.size - v.size + 1
-    out = dpnp.empty(
-        shape=out_size, sycl_queue=queue, dtype=a.dtype, usm_type=usm_type
-    )
+    # out type is the same as input type
+    out = dpnp.empty_like(a, shape=out_size, usm_type=usm_type)
 
     a_usm = dpnp.get_usm_ndarray(a)
     v_usm = dpnp.get_usm_ndarray(v)
@@ -491,11 +489,11 @@ def correlate(a, v, mode="valid"):
     Cross-correlation of two 1-dimensional sequences.
 
     This function computes the correlation as generally defined in signal
-    processing texts [1]:
+    processing texts [1]_:
 
     .. math:: c_k = \sum_n a_{n+k} \cdot \overline{v}_n
 
-    with a and v sequences being zero-padded where necessary and
+    with `a` and `v` sequences being zero-padded where necessary and
     :math:`\overline v` denoting complex conjugation.
 
     For full documentation refer to :obj:`numpy.correlate`.
@@ -506,16 +504,16 @@ def correlate(a, v, mode="valid"):
         First input array.
     v : {dpnp.ndarray, usm_ndarray}
         Second input array.
-    mode : {'valid', 'same', 'full'}, optional
+    mode : {"valid", "same", "full"}, optional
         Refer to the :obj:`dpnp.convolve` docstring. Note that the default
-        is ``'valid'``, unlike :obj:`dpnp.convolve`, which uses ``'full'``.
+        is ``"valid"``, unlike :obj:`dpnp.convolve`, which uses ``"full"``.
 
-        Default: ``'valid'``.
+        Default: ``"valid"``.
 
     Notes
     -----
     The definition of correlation above is not unique and sometimes
-    correlation may be defined differently. Another common definition is [1]:
+    correlation may be defined differently. Another common definition is [1]_:
 
     .. math:: c'_k = \sum_n a_{n} \cdot \overline{v_{n+k}}
 
@@ -533,8 +531,8 @@ def correlate(a, v, mode="valid"):
 
     See Also
     --------
-    :obj:`dpnp.convolve` : Discrete, linear convolution of two
-    one-dimensional sequences.
+    :obj:`dpnp.convolve` : Discrete, linear convolution of two one-dimensional
+                        sequences.
 
 
     Examples
@@ -546,7 +544,7 @@ def correlate(a, v, mode="valid"):
     array([3.5], dtype=float32)
     >>> np.correlate(a, v, "same")
     array([2. , 3.5, 3. ], dtype=float32)
-    >>> np.correlate([1, 2, 3], [0, 1, 0.5], "full")
+    >>> np.correlate([a, v, "full")
     array([0.5, 2. , 3.5, 3. , 0. ], dtype=float32)
 
     Using complex sequences:
@@ -557,10 +555,10 @@ def correlate(a, v, mode="valid"):
     array([0.5-0.5j, 1. +0.j , 1.5-1.5j, 3. -1.j , 0. +0.j ], dtype=complex64)
 
     Note that you get the time reversed, complex conjugated result
-    (:math:`\overline{c_{-k}}`) when the two input sequences a and v change
+    (:math:`\overline{c_{-k}}`) when the two input sequences `a` and `v` change
     places:
 
-    >>> np.correlate([0, 1, 0.5j], [1+1j, 2, 3-1j], 'full')
+    >>> np.correlate(vc, ac, 'full')
     array([0. +0.j , 3. +1.j , 1.5+1.5j, 1. +0.j , 0.5+0.5j], dtype=complex64)
 
     """
@@ -586,10 +584,11 @@ def correlate(a, v, mode="valid"):
 
     if supported_dtype is None:
         raise ValueError(
-            f"function '{correlate}' does not support input types "
-            f"({a.dtype}, {v.dtype}), "
+            f"function does not support input types "
+            f"({a.dtype.name}, {v.dtype.name}), "
             "and the inputs could not be coerced to any "
-            f"supported types. List of supported types: {supported_types}"
+            f"supported types. List of supported types: "
+            f"{[st.name for st in supported_types]}"
         )
 
     if dpnp.issubdtype(v.dtype, dpnp.complexfloating):

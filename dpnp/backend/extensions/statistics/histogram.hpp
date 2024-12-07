@@ -29,11 +29,9 @@
 
 #include "dispatch_table.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+// namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace statistics
-{
-namespace histogram
+namespace statistics::histogram
 {
 struct Histogram
 {
@@ -59,5 +57,4 @@ struct Histogram
 };
 
 void populate_histogram(py::module_ m);
-} // namespace histogram
-} // namespace statistics
+} // namespace statistics::histogram
