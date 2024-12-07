@@ -20,6 +20,7 @@ cupy.get_array_module = get_array_module
 
 
 class TestSort(unittest.TestCase):
+
     # Test ranks
 
     def test_sort_zero_dim(self):
@@ -68,11 +69,11 @@ class TestSort(unittest.TestCase):
         a.sort()
         return a
 
-    @testing.numpy_cupy_array_equal()
-    def test_sort_non_contiguous(self, xp):
-        a = testing.shaped_random((10,), xp)[::2]  # Non contiguous view
-        a.sort()
-        return a
+    @pytest.mark.skip("non-contiguous array is supported")
+    def test_sort_non_contiguous(self):
+        a = testing.shaped_random((10,), cupy)[::2]  # Non contiguous view
+        with self.assertRaises(NotImplementedError):
+            a.sort()
 
     @testing.numpy_cupy_array_equal()
     def test_external_sort_contiguous(self, xp):
@@ -214,6 +215,7 @@ class TestSort(unittest.TestCase):
 
 @pytest.mark.skip("lexsort() is not implemented yet")
 class TestLexsort(unittest.TestCase):
+
     # Test ranks
 
     # TODO(niboshi): Fix xfail
@@ -298,12 +300,15 @@ class TestLexsort(unittest.TestCase):
     )
 )
 class TestArgsort(unittest.TestCase):
-    def argsort(self, a, axis=-1, kind=None):
+
+    def argsort(self, a, axis=-1):
         if self.external:
+            # Need to explicitly specify kind="stable"
+            # numpy uses "quicksort" as default
             xp = cupy.get_array_module(a)
-            return xp.argsort(a, axis=axis, kind=kind)
+            return xp.argsort(a, axis=axis, kind="stable")
         else:
-            return a.argsort(axis=axis, kind=kind)
+            return a.argsort(axis=axis, kind="stable")
 
     # Test base cases
 
@@ -319,7 +324,7 @@ class TestArgsort(unittest.TestCase):
     @testing.numpy_cupy_array_equal()
     def test_argsort_one_dim(self, xp, dtype):
         a = testing.shaped_random((10,), xp, dtype)
-        return self.argsort(a, axis=-1, kind="stable")
+        return self.argsort(a)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -414,30 +419,8 @@ class TestArgsort(unittest.TestCase):
         return self.argsort(a)
 
 
-@pytest.mark.skip("msort() is deprecated")
-class TestMsort(unittest.TestCase):
-    # Test base cases
-
-    def test_msort_zero_dim(self):
-        for xp in (numpy, cupy):
-            a = testing.shaped_random((), xp)
-            with pytest.raises(AxisError):
-                xp.msort(a)
-
-    @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
-    def test_msort_one_dim(self, xp, dtype):
-        a = testing.shaped_random((10,), xp, dtype)
-        return xp.msort(a)
-
-    @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_equal()
-    def test_msort_multi_dim(self, xp, dtype):
-        a = testing.shaped_random((2, 3), xp, dtype)
-        return xp.msort(a)
-
-
 class TestSort_complex(unittest.TestCase):
+
     def test_sort_complex_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
@@ -474,6 +457,7 @@ class TestSort_complex(unittest.TestCase):
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPartition(unittest.TestCase):
+
     def partition(self, a, kth, axis=-1):
         if self.external:
             xp = cupy.get_array_module(a)
@@ -622,6 +606,7 @@ class TestPartition(unittest.TestCase):
 )
 @pytest.mark.skip("not fully supported yet")
 class TestArgpartition(unittest.TestCase):
+
     def argpartition(self, a, kth, axis=-1):
         if self.external:
             xp = cupy.get_array_module(a)

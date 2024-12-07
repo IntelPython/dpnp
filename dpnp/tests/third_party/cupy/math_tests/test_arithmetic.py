@@ -58,6 +58,7 @@ no_complex_types = [numpy.bool_] + float_types + int_types
     )
 )
 class TestArithmeticRaisesWithNumpyInput:
+
     def test_raises_with_numpy_input(self):
         nargs = self.nargs
         name = self.name
@@ -82,6 +83,8 @@ class TestArithmeticRaisesWithNumpyInput:
                         testing.shaped_arange((2, 3), numpy, dtype=d)
                         for d in all_types
                     ]
+                    # scalar input is not supported
+                    # + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
                 ),
                 "name": ["conj", "conjugate", "real", "imag"],
             }
@@ -93,6 +96,8 @@ class TestArithmeticRaisesWithNumpyInput:
                         testing.shaped_arange((2, 3), numpy, dtype=d)
                         for d in all_types
                     ]
+                    # scalar input is not supported
+                    # + [0, 0.0j, 0j, 2, 2.0, 2j, True, False]
                 ),
                 "deg": [True, False],
                 "name": ["angle"],
@@ -105,6 +110,8 @@ class TestArithmeticRaisesWithNumpyInput:
                         numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
                         for d in negative_types_wo_fp16
                     ]
+                    # scalar input is not supported
+                    # + [0, 0.0j, 0j, 2, 2.0, 2j, -2, -2.0, -2j, True, False]
                 ),
                 "deg": [True, False],
                 "name": ["angle"],
@@ -117,6 +124,8 @@ class TestArithmeticRaisesWithNumpyInput:
                         testing.shaped_arange((2, 3), numpy, dtype=d) + 1
                         for d in all_types
                     ]
+                    # scalar input is not supported
+                    # + [2, 2.0, 2j, True]
                 ),
                 "name": ["reciprocal"],
             }
@@ -124,6 +133,7 @@ class TestArithmeticRaisesWithNumpyInput:
     )
 )
 class TestArithmeticUnary:
+
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_unary(self, xp):
         arg1 = self.arg1
@@ -170,6 +180,7 @@ class TestArithmeticUnary:
     )
 )
 class TestComplex:
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_real_ndarray_nocomplex(self, xp, dtype):
@@ -254,6 +265,7 @@ class TestComplex:
 
 
 class ArithmeticBinaryBase:
+
     @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def check_binary(self, xp):
         arg1 = self.arg1
@@ -266,18 +278,6 @@ class ArithmeticBinaryBase:
         if xp.isscalar(arg1) and xp.isscalar(arg2):
             pytest.skip("both scalar inputs is not supported")
 
-        if self.name == "power" or self.name == "float_power":
-            # TODO(niboshi): Fix this: power(0, 1j)
-            #     numpy => 1+0j
-            #     cupy => 0j
-            if dtype2 in complex_types and (np1 == 0).any():
-                return xp.array(True)
-            # TODO: Fix this: power(0j, 0)
-            #     numpy => 1+0j
-            #     cupy => nan+nanj
-            elif dtype1 in complex_types and (np2 == 0).any():
-                return xp.array(True)
-
         if self.name in ("true_divide", "floor_divide", "fmod", "remainder"):
             if dtype1.kind in "u" and xp.isscalar(arg2) and arg2 < 0:
                 # TODO: Fix this: array(3, dtype=uint) / -2
@@ -289,6 +289,18 @@ class ArithmeticBinaryBase:
                 #     numpy => -0.666667
                 #     cupy => 84.666667
                 pytest.skip("due to dpctl gh-1711")
+
+        if self.name == "power" or self.name == "float_power":
+            # TODO(niboshi): Fix this: power(0, 1j)
+            #     numpy => 1+0j
+            #     cupy => 0j
+            if dtype2 in complex_types and (np1 == 0).any():
+                return xp.array(True)
+            # TODO: Fix this: power(0j, 0)
+            #     numpy => 1+0j
+            #     cupy => nan+nanj
+            elif dtype1 in complex_types and (np2 == 0).any():
+                return xp.array(True)
 
         if isinstance(arg1, numpy.ndarray):
             arg1 = xp.asarray(arg1)
@@ -340,6 +352,17 @@ class ArithmeticBinaryBase:
                 y = y.astype(cupy.float64)
             elif y.dtype == cupy.complex64:
                 y = y.astype(cupy.complex128)
+
+        # NumPy returns different values (nan/inf) on division by zero
+        # depending on the architecture.
+        # As it is not possible for CuPy to replicate this behavior, we ignore
+        # the difference here.
+        if self.name in ("floor_divide", "remainder"):
+            if y.dtype in (float_types + complex_types) and (np2 == 0).any():
+                y = xp.asarray(y)
+                y[y == numpy.inf] = numpy.nan
+                y[y == -numpy.inf] = numpy.nan
+
         return y
 
 
@@ -379,6 +402,7 @@ class ArithmeticBinaryBase:
     )
 )
 class TestArithmeticBinary(ArithmeticBinaryBase):
+
     def test_binary(self):
         self.use_dtype = False
         self.check_binary()
@@ -440,23 +464,6 @@ class TestArithmeticBinary(ArithmeticBinaryBase):
         + testing.product(
             {
                 "arg1": [
-                    testing.shaped_arange((2, 3), numpy, dtype=d)
-                    for d in no_complex_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0, True, False],
-                "arg2": [
-                    testing.shaped_reverse_arange((2, 3), numpy, dtype=d)
-                    for d in no_complex_types
-                ]
-                + [0, 0.0, 2, 2.0, -2, -2.0, True, False],
-                "name": ["floor_divide", "fmod", "remainder"],
-                "dtype": [cupy.default_float_type()],
-                "use_dtype": [True, False],
-            }
-        )
-        + testing.product(
-            {
-                "arg1": [
                     numpy.array([-3, -2, -1, 1, 2, 3], dtype=d)
                     for d in negative_no_complex_types
                 ]
@@ -474,12 +481,59 @@ class TestArithmeticBinary(ArithmeticBinaryBase):
     )
 )
 class TestArithmeticBinary2(ArithmeticBinaryBase):
+
     def test_binary(self):
         self.check_binary()
 
 
+@testing.with_requires("numpy>=2.0")
+class TestArithmeticBinary3(ArithmeticBinaryBase):
+
+    @pytest.mark.parametrize(
+        "arg1",
+        [
+            testing.shaped_arange((2, 3), numpy, dtype=d)
+            for d in no_complex_types
+        ]
+        + [0, 0.0, 2, 2.0, -2, -2.0, True, False],
+    )
+    @pytest.mark.parametrize(
+        "arg2",
+        [
+            testing.shaped_reverse_arange((2, 3), numpy, dtype=d)
+            for d in no_complex_types
+        ]
+        + [0, 0.0, 2, 2.0, -2, -2.0, True, False],
+    )
+    @pytest.mark.parametrize("name", ["floor_divide", "fmod", "remainder"])
+    @pytest.mark.parametrize("dtype", [cupy.default_float_type()])
+    @pytest.mark.parametrize("use_dtype", [True, False])
+    @testing.numpy_cupy_allclose(
+        accept_error=OverflowError, type_check=has_support_aspect64()
+    )
+    def test_both_raise(self, arg1, arg2, name, dtype, use_dtype, xp):
+        if xp.isscalar(arg1) and xp.isscalar(arg2):
+            pytest.skip("both scalar inputs is not supported")
+
+        func = getattr(xp, name)
+
+        if isinstance(arg1, numpy.ndarray):
+            arg1 = xp.asarray(arg1)
+        if isinstance(arg2, numpy.ndarray):
+            arg2 = xp.asarray(arg2)
+
+        dtype_arg = {"dtype": dtype} if use_dtype else {}
+        with numpy.errstate(divide="ignore"):
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore")
+                y = func(arg1, arg2, **dtype_arg)
+
+        return y
+
+
 @pytest.mark.skip("'casting' keyword is not supported yet")
 class UfuncTestBase:
+
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def check_casting_out(self, in0_type, in1_type, out_type, casting, xp):
         a = testing.shaped_arange((2, 3), xp, in0_type)
@@ -524,6 +578,7 @@ class UfuncTestBase:
 
 
 class TestUfunc(UfuncTestBase):
+
     @pytest.mark.parametrize(
         "casting",
         [
@@ -683,6 +738,7 @@ class TestUfuncSlow(UfuncTestBase):
 
 
 class TestArithmeticModf:
+
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_modf(self, xp, dtype):
@@ -698,6 +754,7 @@ class TestArithmeticModf:
     *testing.product({"xp": [numpy, cupy], "shape": [(3, 2), (), (3, 0, 2)]})
 )
 class TestBoolSubtract:
+
     def test_bool_subtract(self):
         xp = self.xp
         shape = self.shape

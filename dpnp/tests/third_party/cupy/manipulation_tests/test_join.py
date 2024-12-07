@@ -12,6 +12,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestJoin:
+
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
@@ -94,6 +95,20 @@ class TestJoin:
         b = testing.shaped_reverse_arange((2, 3, 4), xp, "i")
         return xp.concatenate((a, b) * 10, axis=-1)
 
+    @pytest.mark.skip("multi GPU is not supported")
+    @testing.multi_gpu(2)
+    def test_concatenate_large_different_devices(self):
+        arrs = []
+        for i in range(10):
+            with cuda.Device(i % 2):
+                arrs.append(cupy.empty((2, 3, 4)))
+        if cuda.runtime.deviceCanAccessPeer(0, 1) == 1:
+            with pytest.warns(cupy._util.PerformanceWarning):
+                cupy.concatenate(arrs)
+        else:
+            with pytest.raises(ValueError):
+                cupy.concatenate(arrs)
+
     @testing.for_all_dtypes(name="dtype")
     @testing.numpy_cupy_array_equal()
     def test_concatenate_f_contiguous(self, xp, dtype):
@@ -112,14 +127,12 @@ class TestJoin:
         e = testing.shaped_arange((2, 3, 2), xp, dtype)
         return xp.concatenate((a, b, c, d, e) * 2, axis=-1)
 
-    @pytest.mark.skip(reason="lead to crash due to reported issue in OCL RT")
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_concatenate_many_multi_dtype(self, xp):
         a = testing.shaped_arange((2, 1), xp, "i")
         b = testing.shaped_arange((2, 1), xp, "f")
         return xp.concatenate((a, b) * 1024, axis=1)
 
-    @pytest.mark.skip("dpnp.int8 is not supported yet")
     @testing.slow
     def test_concatenate_32bit_boundary(self):
         a = cupy.zeros((2**30,), dtype=cupy.int8)
@@ -129,7 +142,7 @@ class TestJoin:
         del b
         del ret
         # Free huge memory for slow test
-        cupy.get_default_memory_pool().free_all_blocks()
+        # cupy.get_default_memory_pool().free_all_blocks()
 
     def test_concatenate_wrong_ndim(self):
         a = cupy.empty((2, 3))
@@ -156,36 +169,40 @@ class TestJoin:
 
     @testing.numpy_cupy_array_equal()
     def test_concatenate_out_same_kind(self, xp):
-        a = testing.shaped_arange((3, 4), xp, xp.float32)
-        b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-        c = testing.shaped_arange((3, 4), xp, xp.float32)
+        dtype = cupy.default_float_type()
+        a = testing.shaped_arange((3, 4), xp, dtype)
+        b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+        c = testing.shaped_arange((3, 4), xp, dtype)
         out = xp.zeros((3, 12), dtype=xp.float32)
         xp.concatenate((a, b, c), axis=1, out=out)
         return out
 
     def test_concatenate_out_invalid_shape(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float32)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-            c = testing.shaped_arange((3, 4), xp, xp.float32)
-            out = xp.zeros((4, 10), dtype=xp.float32)
+            dtype = cupy.default_float_type()
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+            c = testing.shaped_arange((3, 4), xp, dtype)
+            out = xp.zeros((4, 10), dtype=dtype)
             with pytest.raises(ValueError):
                 xp.concatenate((a, b, c), axis=1, out=out)
 
     def test_concatenate_out_invalid_shape_2(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float32)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-            c = testing.shaped_arange((3, 4), xp, xp.float32)
-            out = xp.zeros((2, 2, 10), dtype=xp.float32)
+            dtype = cupy.default_float_type()
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+            c = testing.shaped_arange((3, 4), xp, dtype)
+            out = xp.zeros((2, 2, 10), dtype=dtype)
             with pytest.raises(ValueError):
                 xp.concatenate((a, b, c), axis=1, out=out)
 
     def test_concatenate_out_invalid_dtype(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float32)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-            c = testing.shaped_arange((3, 4), xp, xp.float32)
+            dtype = cupy.default_float_type()
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+            c = testing.shaped_arange((3, 4), xp, dtype)
             out = xp.zeros((3, 12), dtype=xp.int64)
             with pytest.raises(TypeError):
                 xp.concatenate((a, b, c), axis=1, out=out)
@@ -216,19 +233,31 @@ class TestJoin:
     @testing.with_requires("numpy>=1.20.0")
     def test_concatenate_dtype_invalid_out(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float32)
-            b = testing.shaped_arange((3, 4), xp, xp.float32)
+            dtype = cupy.default_float_type()
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            b = testing.shaped_arange((3, 4), xp, dtype)
             out = xp.zeros((6, 4), dtype=xp.int64)
             with pytest.raises(TypeError):
                 xp.concatenate((a, b), out=out, dtype=xp.int64)
 
     @testing.with_requires("numpy>=1.20.0")
-    @testing.for_castings()
+    # @pytest.mark.filterwarnings("error::cupy.exceptions.ComplexWarning")
+    @pytest.mark.parametrize(
+        "casting",
+        [
+            "no",
+            "equiv",
+            "safe",
+            "same_kind",
+            "unsafe",
+        ],
+    )
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_concatenate_casting(self, xp, dtype1, dtype2, casting):
         a = testing.shaped_arange((3, 4), xp, dtype1)
         b = testing.shaped_arange((3, 4), xp, dtype1)
+        # may raise TypeError or ComplexWarning
         return xp.concatenate((a, b), dtype=dtype2, casting=casting)
 
     @testing.numpy_cupy_array_equal()
@@ -282,7 +311,17 @@ class TestJoin:
         return xp.hstack((a, b), dtype=dtype2)
 
     @testing.with_requires("numpy>=1.24.0")
-    @testing.for_castings()
+    # @pytest.mark.filterwarnings("error::cupy.exceptions.ComplexWarning")
+    @pytest.mark.parametrize(
+        "casting",
+        [
+            "no",
+            "equiv",
+            "safe",
+            "same_kind",
+            "unsafe",
+        ],
+    )
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_hstack_casting(self, xp, dtype1, dtype2, casting):
@@ -317,7 +356,17 @@ class TestJoin:
         return xp.vstack((a, b), dtype=dtype2)
 
     @testing.with_requires("numpy>=1.24.0")
-    @testing.for_castings()
+    # @pytest.mark.filterwarnings("error::cupy.exceptions.ComplexWarning")
+    @pytest.mark.parametrize(
+        "casting",
+        [
+            "no",
+            "equiv",
+            "safe",
+            "same_kind",
+            "unsafe",
+        ],
+    )
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_vstack_casting(self, xp, dtype1, dtype2, casting):
@@ -410,36 +459,40 @@ class TestJoin:
 
     @testing.numpy_cupy_array_equal()
     def test_stack_out_same_kind(self, xp):
-        a = testing.shaped_arange((3, 4), xp, xp.float32)
-        b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-        c = testing.shaped_arange((3, 4), xp, xp.float32)
+        dtype = cupy.default_float_type()
+        a = testing.shaped_arange((3, 4), xp, dtype)
+        b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+        c = testing.shaped_arange((3, 4), xp, dtype)
         out = xp.zeros((3, 3, 4), dtype=xp.float32)
         xp.stack((a, b, c), axis=1, out=out)
         return out
 
     def test_stack_out_invalid_shape(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float32)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-            c = testing.shaped_arange((3, 4), xp, xp.float32)
-            out = xp.zeros((3, 3, 10), dtype=xp.float32)
+            dtype = cupy.default_float_type()
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+            c = testing.shaped_arange((3, 4), xp, dtype)
+            out = xp.zeros((3, 3, 10), dtype=dtype)
             with pytest.raises(ValueError):
                 xp.stack((a, b, c), axis=1, out=out)
 
     def test_stack_out_invalid_shape_2(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float32)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-            c = testing.shaped_arange((3, 4), xp, xp.float32)
-            out = xp.zeros((3, 3, 3, 10), dtype=xp.float32)
+            dtype = cupy.default_float_type()
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+            c = testing.shaped_arange((3, 4), xp, dtype)
+            out = xp.zeros((3, 3, 3, 10), dtype=dtype)
             with pytest.raises(ValueError):
                 xp.stack((a, b, c), axis=1, out=out)
 
     def test_stack_out_invalid_dtype(self):
         for xp in (numpy, cupy):
-            a = testing.shaped_arange((3, 4), xp, xp.float32)
-            b = testing.shaped_reverse_arange((3, 4), xp, xp.float32)
-            c = testing.shaped_arange((3, 4), xp, xp.float32)
+            dtype = cupy.default_float_type()
+            a = testing.shaped_arange((3, 4), xp, dtype)
+            b = testing.shaped_reverse_arange((3, 4), xp, dtype)
+            c = testing.shaped_arange((3, 4), xp, dtype)
             out = xp.zeros((3, 3, 4), dtype=xp.int64)
             with pytest.raises(TypeError):
                 xp.stack((a, b, c), axis=1, out=out)
@@ -453,7 +506,17 @@ class TestJoin:
         return xp.stack((a, b), dtype=dtype2)
 
     @testing.with_requires("numpy>=1.24.0")
-    @testing.for_castings()
+    # @pytest.mark.filterwarnings("error::cupy.exceptions.ComplexWarning")
+    @pytest.mark.parametrize(
+        "casting",
+        [
+            "no",
+            "equiv",
+            "safe",
+            "same_kind",
+            "unsafe",
+        ],
+    )
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     @testing.numpy_cupy_array_equal(accept_error=(TypeError, ComplexWarning))
     def test_stack_casting(self, xp, dtype1, dtype2, casting):
@@ -462,6 +525,8 @@ class TestJoin:
         # may raise TypeError or ComplexWarning
         return xp.stack((a, b), dtype=dtype2, casting=casting)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
+    @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
@@ -474,17 +539,17 @@ class TestJoin:
     def test_row_stack_wrong_ndim1(self):
         a = cupy.zeros(())
         b = cupy.zeros((3,))
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # pytest.warns(DeprecationWarning):
             cupy.row_stack((a, b))
 
     def test_row_stack_wrong_ndim2(self):
         a = cupy.zeros((3, 2, 3))
         b = cupy.zeros((3, 2))
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # pytest.warns(DeprecationWarning):
             cupy.row_stack((a, b))
 
     def test_row_stack_wrong_shape(self):
         a = cupy.zeros((3, 2))
         b = cupy.zeros((4, 3))
-        with pytest.raises(ValueError):
+        with pytest.raises(ValueError):  # pytest.warns(DeprecationWarning):
             cupy.row_stack((a, b))
