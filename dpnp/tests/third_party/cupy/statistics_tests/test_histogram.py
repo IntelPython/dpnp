@@ -5,7 +5,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import has_support_aspect64, numpy_version
 from dpnp.tests.third_party.cupy import testing
 
 # Note that numpy.bincount does not support uint64 on 64-bit environment
@@ -474,7 +474,9 @@ class TestDigitizeInvalid(unittest.TestCase):
 class TestHistogramdd:
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(
-        atol=1e-3, rtol=1e-3, type_check=has_support_aspect64()
+        atol=1e-3,
+        rtol=1e-3,
+        type_check=has_support_aspect64() and numpy_version() < "2.0.0",
     )
     def test_histogramdd(self, xp, dtype):
         x = testing.shaped_random((100, 3), xp, dtype, scale=100)
