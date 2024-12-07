@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.g2753715176a documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev3+12.g7f17036fd63 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=82622e50"></script>
+      <script src="../../../_static/documentation_options.js?v=5526629d"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -1759,17 +1759,23 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : (..., M, M) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Coefficient matrix.</span>
-<span class="sd">    b : {(…, M,), (…, M, K)} {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    b : {(M,), (..., M, K)} {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Ordinate or &quot;dependent variable&quot; values.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : {(…, M,), (…, M, K)} dpnp.ndarray</span>
+<span class="sd">    out : {(..., M,), (..., M, K)} dpnp.ndarray</span>
 <span class="sd">        Solution to the system `ax = b`. Returned shape is identical to `b`.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.dot` : Returns the dot product of two arrays.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The `b` array is only treated as a shape (M,) column vector if it is</span>
+<span class="sd">    exactly 1-dimensional. In all other instances it is treated as a stack</span>
+<span class="sd">    of (M, K) matrices.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1791,13 +1797,37 @@
     <span class="n">assert_stacked_2d</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="n">assert_stacked_square</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
-        <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="ow">in</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">ndim</span><span class="p">,</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span><span class="p">(</span>
-            <span class="s2">&quot;a must have (..., M, M) shape and b must have (..., M) &quot;</span>
-            <span class="s2">&quot;or (..., M, K)&quot;</span>
+    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
+
+    <span class="c1"># compatible with numpy&gt;=2.0</span>
+    <span class="k">if</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;b must have at least one dimension&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">b_ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;a must have (..., M, M) shape and b must have (M,) &quot;</span>
+                <span class="s2">&quot;for one-dimensional b&quot;</span>
+            <span class="p">)</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">dpnp_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;a must have (..., M, M) shape and b must have (..., M, K) shape&quot;</span>
         <span class="p">)</span>
+
+    <span class="c1"># Use dpnp.broadcast_shapes() to align the resulting batch shapes</span>
+    <span class="n">broadcasted_batch_shape</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_shapes</span><span class="p">(</span><span class="n">a_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="n">b_shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">a_broadcasted_shape</span> <span class="o">=</span> <span class="n">broadcasted_batch_shape</span> <span class="o">+</span> <span class="n">a_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+    <span class="n">b_broadcasted_shape</span> <span class="o">=</span> <span class="n">broadcasted_batch_shape</span> <span class="o">+</span> <span class="n">b_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span>
+
+    <span class="k">if</span> <span class="n">a_shape</span> <span class="o">!=</span> <span class="n">a_broadcasted_shape</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">a_broadcasted_shape</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">b_shape</span> <span class="o">!=</span> <span class="n">b_broadcasted_shape</span><span class="p">:</span>
+        <span class="n">b</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b_broadcasted_shape</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span></div>
 
