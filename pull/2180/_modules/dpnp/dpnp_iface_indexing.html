@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.g090015ca418 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev3+10.gdb4bef19efa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cd9d1f02"></script>
+      <script src="../../_static/documentation_options.js?v=8b40e9f0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -154,6 +154,7 @@
     <span class="s2">&quot;fill_diagonal&quot;</span><span class="p">,</span>
     <span class="s2">&quot;flatnonzero&quot;</span><span class="p">,</span>
     <span class="s2">&quot;indices&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;iterable&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ix_&quot;</span><span class="p">,</span>
     <span class="s2">&quot;mask_indices&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ndindex&quot;</span><span class="p">,</span>
@@ -1142,6 +1143,50 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">res</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">idx</span>
     <span class="k">return</span> <span class="n">res</span></div>
+
+
+
+<div class="viewcode-block" id="iterable">
+<a class="viewcode-back" href="../../reference/generated/dpnp.iterable.html#dpnp.iterable">[docs]</a>
+<span class="k">def</span> <span class="nf">iterable</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check whether or not an object can be iterated over.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.iterable`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    y : object</span>
+<span class="sd">        Input object.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        Return ``True`` if the object has an iterator method or is a sequence</span>
+<span class="sd">        and ``False`` otherwise.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.iterable([1, 2, 3])</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.iterable(2)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    In most cases, the results of ``np.iterable(obj)`` are consistent with</span>
+<span class="sd">    ``isinstance(obj, collections.abc.Iterable)``. One notable exception is</span>
+<span class="sd">    the treatment of 0-dimensional arrays:</span>
+
+<span class="sd">    &gt;&gt;&gt; from collections.abc import Iterable</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array(1.0)  # 0-dimensional array</span>
+<span class="sd">    &gt;&gt;&gt; isinstance(a, Iterable)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.iterable(a)</span>
+<span class="sd">    False</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">iterable</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
 
 
 
