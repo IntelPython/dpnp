@@ -444,7 +444,7 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
 
 
 def _get_padding(a_size, v_size, mode):
-    assert v_size > a_size
+    assert v_size <= a_size
 
     if mode == "valid":
         l_pad, r_pad = 0, 0
@@ -575,20 +575,20 @@ def correlate(a, v, mode="valid", method="auto"):
         is ``"valid"``, unlike :obj:`dpnp.convolve`, which uses ``"full"``.
 
         Default: ``"valid"``.
-    method : {'auto', 'direct', 'fft'}, optional
-        `'direct'`: The correlation is determined directly from sums.
+    method : {"auto", "direct", "fft"}, optional
+        `"direct"`: The correlation is determined directly from sums.
 
-        `'fft'`: The Fourier Transform is used to perform the calculations.
+        `"fft"`: The Fourier Transform is used to perform the calculations.
         This method is faster for long sequences but can have accuracy issues.
 
-        `'auto'`: Automatically chooses direct or Fourier method based on
+        `"auto"`: Automatically chooses direct or Fourier method based on
         an estimate of which is faster.
 
         Note: Use of the FFT convolution on input containing NAN or INF
         will lead to the entire output being NAN or INF.
         Use method='direct' when your input contains NAN or INF values.
 
-        Default: ``'auto'``.
+        Default: ``"auto"``.
 
     Notes
     -----
