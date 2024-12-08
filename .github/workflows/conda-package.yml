@@ -192,8 +192,85 @@ jobs:
 
             python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
+  test_linux_all_dtypes:
+    name: Test ['ubuntu-latest', python='${{ matrix.python }}']
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    strategy:
+      matrix:
+        python: ['3.12']
+
+    continue-on-error: true
+
+    env:
+      channel-path: '${{ github.workspace }}/channel/'
+      pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
+      extracted-pkg-path: '${{ github.workspace }}/pkg/'
+      ver-json-path: '${{ github.workspace }}/version.json'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Extract package archive
+        run: |
+          mkdir -p ${{ env.extracted-pkg-path }}
+          tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+          python-version: ${{ matrix.python }}
+          activate-environment: ${{ env.TEST_ENV_NAME }}
+
+      - name: Install conda-index
+        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+
+      - name: Create conda channel
+        run: |
+          python -m conda_index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          cat ${{ env.ver-json-path }}
+
+      - name: Get package version
+        run: |
+          export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
+
+          echo PACKAGE_VERSION=${PACKAGE_VERSION}
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+
+      - name: Install dpnp
+        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Smoke test
+        run: |
+          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
       - name: Run full tests
-        if: matrix.python == '3.12'
         env:
             DPNP_TEST_ALL_TYPES: 1
         run: |
@@ -330,6 +407,122 @@ jobs:
           retry_on: any
           command: |
             python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+
+  test_windows_all_dtypes:
+    name: Test ['windows-2019', python='${{ matrix.python }}']
+
+    needs: build
+
+    runs-on: windows-2019
+
+    defaults:
+      run:
+        shell: cmd /C CALL {0}
+
+    strategy:
+      matrix:
+        python: ['3.12']
+
+    continue-on-error: true
+
+    env:
+      channel-path: '${{ github.workspace }}\channel\'
+      pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
+      extracted-pkg-path: '${{ github.workspace }}\pkg'
+      ver-json-path: '${{ github.workspace }}\version.json'
+      workdir: '${{ github.workspace }}'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Extract package archive
+        run: |
+          @echo on
+          mkdir -p ${{ env.extracted-pkg-path }}
+
+          set SEARCH_SCRIPT="DIR ${{ env.pkg-path-in-channel }} /s/b | FINDSTR /r "dpnp-.*\.tar\.bz2""
+          FOR /F "tokens=* USEBACKQ" %%F IN (`%SEARCH_SCRIPT%`) DO (
+            SET FULL_PACKAGE_PATH=%%F
+          )
+          echo FULL_PACKAGE_PATH: %FULL_PACKAGE_PATH%
+
+          python -c "import shutil; shutil.unpack_archive(r\"%FULL_PACKAGE_PATH%\", extract_dir=r\"${{ env.extracted-pkg-path }}\")"
+          dir ${{ env.extracted-pkg-path }}
+
+      - name: Setup miniconda
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+          python-version: ${{ matrix.python }}
+          activate-environment: ${{ env.TEST_ENV_NAME }}
+
+      - name: Store conda paths as envs
+        run: |
+          @echo on
+          (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
+          (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
+
+      - name: Install conda-index
+        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+
+      - name: Create conda channel
+        run: |
+          @echo on
+          python -m conda_index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          @echo on
+          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+
+      - name: Dump version.json
+        run: more ${{ env.ver-json-path }}
+
+      - name: Get package version
+        run: |
+          @echo on
+          set "SCRIPT=${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}"
+          FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
+            set PACKAGE_VERSION=%%F
+          )
+          echo PACKAGE_VERSION: %PACKAGE_VERSION%
+          (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
+
+      - name: Install dpnp
+        run: |
+          @echo on
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Activate OCL CPU RT
+        shell: pwsh
+        run: |
+          $script_path="$env:CONDA_PREFIX\Scripts\set-intel-ocl-icd-registry.ps1"
+          if (Test-Path $script_path) {
+            &$script_path
+          } else {
+            Write-Warning "File $script_path was NOT found!"
+          }
+          # Check the variable assisting OpenCL CPU driver to find TBB DLLs which are not located where it expects them by default
+          $cl_cfg="$env:CONDA_PREFIX\Library\lib\cl.cfg"
+          Get-Content -Tail 5 -Path $cl_cfg
+
+      - name: Smoke test
+        run: |
+          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run full tests
         if: matrix.python == '3.12'

@@ -1049,7 +1049,7 @@ def _get_int_dtypes():
 
 _complex_dtypes = _get_supported_complex_dtypes()
 _regular_float_dtypes = _get_supported_float_dtypes()
-_float_dtypes = _regular_float_dtypes + (numpy.float16,)
+_float_dtypes = _regular_float_dtypes # + (numpy.float16,)
 _signed_dtypes = tuple(numpy.dtype(i).type for i in "bhilq")
 _unsigned_dtypes = tuple(numpy.dtype(i).type for i in "BHILQ")
 _int_dtypes = _get_int_dtypes()
