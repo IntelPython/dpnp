@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.correlate &mdash; Data Parallel Extension for NumPy 0.17.0dev3+11.g8b213b5847c documentation</title>
+  <title>dpnp.correlate &mdash; Data Parallel Extension for NumPy 0.17.0dev3+15.g62699f63175 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=36f584cc"></script>
+      <script src="../../_static/documentation_options.js?v=a09ca821"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -141,15 +141,15 @@ processing texts <a class="footnote-reference brackets" href="#id3" id="id1" rol
 is <code class="docutils literal notranslate"><span class="pre">&quot;valid&quot;</span></code>, unlike <a class="reference internal" href="dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a>, which uses <code class="docutils literal notranslate"><span class="pre">&quot;full&quot;</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;valid&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'direct'</em><em>, </em><em>'fft'}</em><em>, </em><em>optional</em>) -- <p><cite>'direct'</cite>: The correlation is determined directly from sums.</p>
-<p><cite>'fft'</cite>: The Fourier Transform is used to perform the calculations.
+<li><p><strong>method</strong> (<em>{&quot;auto&quot;</em><em>, </em><em>&quot;direct&quot;</em><em>, </em><em>&quot;fft&quot;}</em><em>, </em><em>optional</em>) -- <p><cite>&quot;direct&quot;</cite>: The correlation is determined directly from sums.</p>
+<p><cite>&quot;fft&quot;</cite>: The Fourier Transform is used to perform the calculations.
 This method is faster for long sequences but can have accuracy issues.</p>
-<p><cite>'auto'</cite>: Automatically chooses direct or Fourier method based on
+<p><cite>&quot;auto&quot;</cite>: Automatically chooses direct or Fourier method based on
 an estimate of which is faster.</p>
 <p>Note: Use of the FFT convolution on input containing NAN or INF
 will lead to the entire output being NAN or INF.
 Use method='direct' when your input contains NAN or INF values.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>.</p>
 </p></li>
 </ul>
 </dd>
