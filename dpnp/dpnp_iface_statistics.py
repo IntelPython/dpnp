@@ -324,7 +324,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
 
 
 def _get_padding(a_size, v_size, mode):
-    assert a.size >= v.size
+    assert a_size >= v_size
 
     if mode == "valid":
         l_pad, r_pad = 0, 0
