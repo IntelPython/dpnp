@@ -29,7 +29,7 @@ var NAVTREEINDEX0 =
 "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html":[2,0,0,0,2,2],
 "classdpnp__less__comp.html":[2,0,4],
 "classes.html":[2,1],
-"classstatistics_1_1common_1_1_dispatch_table2.html":[2,0,1,0,2],
+"classstatistics_1_1common_1_1_dispatch_table2.html":[2,0,1,0,1],
 "classstatistics_1_1histogram_1_1histogram__kernel.html":[2,0,1,1,7],
 "common__helpers_8hpp_source.html":[3,0,0,3,0],
 "conj_8hpp_source.html":[3,0,0,6,12],
