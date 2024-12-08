@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev3+12.g7f17036fd63 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev3+15.g154e7737bf9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5526629d"></script>
+      <script src="../../_static/documentation_options.js?v=535f03d6"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -418,7 +418,7 @@
 
 
 <span class="k">def</span> <span class="nf">_get_padding</span><span class="p">(</span><span class="n">a_size</span><span class="p">,</span> <span class="n">v_size</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">v_size</span> <span class="o">&gt;</span> <span class="n">a_size</span>
+    <span class="k">assert</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;=</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span>
 
     <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span>
         <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
@@ -833,20 +833,20 @@
 <span class="sd">        is ``&quot;valid&quot;``, unlike :obj:`dpnp.convolve`, which uses ``&quot;full&quot;``.</span>
 
 <span class="sd">        Default: ``&quot;valid&quot;``.</span>
-<span class="sd">    method : {&#39;auto&#39;, &#39;direct&#39;, &#39;fft&#39;}, optional</span>
-<span class="sd">        `&#39;direct&#39;`: The correlation is determined directly from sums.</span>
+<span class="sd">    method : {&quot;auto&quot;, &quot;direct&quot;, &quot;fft&quot;}, optional</span>
+<span class="sd">        `&quot;direct&quot;`: The correlation is determined directly from sums.</span>
 
-<span class="sd">        `&#39;fft&#39;`: The Fourier Transform is used to perform the calculations.</span>
+<span class="sd">        `&quot;fft&quot;`: The Fourier Transform is used to perform the calculations.</span>
 <span class="sd">        This method is faster for long sequences but can have accuracy issues.</span>
 
-<span class="sd">        `&#39;auto&#39;`: Automatically chooses direct or Fourier method based on</span>
+<span class="sd">        `&quot;auto&quot;`: Automatically chooses direct or Fourier method based on</span>
 <span class="sd">        an estimate of which is faster.</span>
 
 <span class="sd">        Note: Use of the FFT convolution on input containing NAN or INF</span>
 <span class="sd">        will lead to the entire output being NAN or INF.</span>
 <span class="sd">        Use method=&#39;direct&#39; when your input contains NAN or INF values.</span>
 
-<span class="sd">        Default: ``&#39;auto&#39;``.</span>
+<span class="sd">        Default: ``&quot;auto&quot;``.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
