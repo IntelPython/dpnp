@@ -29,11 +29,8 @@
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace statistics
+namespace statistics::common
 {
-namespace common
-{
-
 size_t get_max_local_size(const sycl::device &device)
 {
     constexpr const int default_max_cpu_local_size = 256;
@@ -120,5 +117,4 @@ pybind11::dtype dtype_from_typenum(int dst_typenum)
     }
 }
 
-} // namespace common
-} // namespace statistics
+} // namespace statistics::common

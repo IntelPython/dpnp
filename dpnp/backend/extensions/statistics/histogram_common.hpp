@@ -29,14 +29,6 @@
 
 #include "common.hpp"
 
-namespace dpctl
-{
-namespace tensor
-{
-class usm_ndarray;
-}
-} // namespace dpctl
-
 using dpctl::tensor::usm_ndarray;
 
 namespace statistics

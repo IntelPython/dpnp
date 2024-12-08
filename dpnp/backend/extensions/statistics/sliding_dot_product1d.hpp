@@ -25,36 +25,36 @@
 
 #pragma once
 
+#include "dispatch_table.hpp"
+#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "dispatch_table.hpp"
-
-// namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-
-namespace statistics::histogram
+namespace statistics::sliding_window1d
 {
-struct Histogram
+struct SlidingDotProduct1d
 {
     using FnT = sycl::event (*)(sycl::queue &,
-                                const void *,
                                 const void *,
                                 const void *,
                                 void *,
                                 const size_t,
                                 const size_t,
+                                const size_t,
+                                const size_t,
                                 const std::vector<sycl::event> &);
 
-    common::DispatchTable2<FnT> dispatch_table;
+    common::DispatchTable<FnT> dispatch_table;
 
-    Histogram();
+    SlidingDotProduct1d();
 
     std::tuple<sycl::event, sycl::event>
-        call(const dpctl::tensor::usm_ndarray &input,
-             const dpctl::tensor::usm_ndarray &bins_edges,
-             std::optional<const dpctl::tensor::usm_ndarray> &weights,
+        call(const dpctl::tensor::usm_ndarray &a,
+             const dpctl::tensor::usm_ndarray &v,
              dpctl::tensor::usm_ndarray &output,
+             const size_t l_pad,
+             const size_t r_pad,
              const std::vector<sycl::event> &depends);
 };
 
-void populate_histogram(py::module_ m);
-} // namespace statistics::histogram
+void populate_sliding_dot_product1d(py::module_ m);
+} // namespace statistics::sliding_window1d
