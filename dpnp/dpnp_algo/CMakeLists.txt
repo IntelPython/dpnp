@@ -1,6 +1,5 @@
 
 set(dpnp_algo_pyx_deps
-  ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_statistics.pxi
   ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_sorting.pxi
   ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_mathematical.pxi
   ${CMAKE_CURRENT_SOURCE_DIR}/dpnp_algo_indexing.pxi
