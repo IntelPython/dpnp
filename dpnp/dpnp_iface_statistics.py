@@ -440,7 +440,7 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
 
 
 def _get_padding(a_size, v_size, mode):
-    assert v_size > a_size
+    assert v_size <= a_size
 
     if mode == "valid":
         l_pad, r_pad = 0, 0
