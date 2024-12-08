@@ -31,37 +31,37 @@
 #include "dispatch_table.hpp"
 #include "dpctl4pybind11.hpp"
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-
 namespace statistics
 {
 namespace histogram
 {
-struct Bincount
+struct Histogramdd
 {
     using FnT = sycl::event (*)(sycl::queue &,
                                 const void *,
-                                const int64_t,
-                                const int64_t,
+                                const void *,
+                                const void *,
                                 const void *,
                                 void *,
+                                const size_t,
+                                const size_t,
                                 const size_t,
                                 const size_t,
                                 const std::vector<sycl::event> &);
 
     common::DispatchTable2<FnT> dispatch_table;
 
-    Bincount();
+    Histogramdd();
 
     std::tuple<sycl::event, sycl::event>
         call(const dpctl::tensor::usm_ndarray &input,
-             const int64_t min,
-             const int64_t max,
+             const dpctl::tensor::usm_ndarray &bins_edges,
+             const dpctl::tensor::usm_ndarray &bins_edges_count,
              const std::optional<const dpctl::tensor::usm_ndarray> &weights,
              dpctl::tensor::usm_ndarray &output,
              const std::vector<sycl::event> &depends);
 };
 
-void populate_bincount(py::module_ m);
+void populate_histogramdd(py::module_ m);
 } // namespace histogram
 } // namespace statistics
