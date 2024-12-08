@@ -1020,8 +1020,6 @@ tests/test_numeric.py::TestClip::test_type_cast_09
 tests/test_numeric.py::TestClip::test_type_cast_10
 tests/test_numeric.py::TestClip::test_type_cast_11
 tests/test_numeric.py::TestClip::test_type_cast_12
-tests/test_numeric.py::TestConvolve::test_no_overwrite
-tests/test_numeric.py::TestConvolve::test_object
 tests/test_numeric.py::TestCross::test_2x2
 tests/test_numeric.py::TestCross::test_broadcasting
 tests/test_numeric.py::TestCross::test_broadcasting_shapes
