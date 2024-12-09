@@ -26,12 +26,15 @@
 
 set(python_module_name _statistics_impl)
 set(_module_src
-    ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/bincount.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogramdd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/histogram_common.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sliding_dot_product1d.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/sliding_window1d.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/statistics_py.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/validation_utils.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})

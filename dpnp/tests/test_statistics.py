@@ -610,6 +610,79 @@ class TestCorrcoef:
         assert_dtype_allclose(result, expected)
 
 
+class TestCorrelate:
+    @pytest.mark.parametrize(
+        "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
+    )
+    @pytest.mark.parametrize("mode", [None, "full", "valid", "same"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_correlate(self, a, v, mode, dtype):
+        an = numpy.array(a, dtype=dtype)
+        vn = numpy.array(v, dtype=dtype)
+        ad = dpnp.array(an)
+        vd = dpnp.array(vn)
+
+        if mode is None:
+            expected = numpy.correlate(an, vn)
+            result = dpnp.correlate(ad, vd)
+        else:
+            expected = numpy.correlate(an, vn, mode=mode)
+            result = dpnp.correlate(ad, vd, mode=mode)
+
+        assert_dtype_allclose(result, expected)
+
+    def test_correlate_mode_error(self):
+        a = dpnp.arange(5)
+        v = dpnp.arange(3)
+
+        # invalid mode
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v, mode="unknown")
+
+    @pytest.mark.parametrize("a, v", [([], [1]), ([1], []), ([], [])])
+    def test_correlate_empty(self, a, v):
+        a = dpnp.asarray(a)
+        v = dpnp.asarray(v)
+
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v)
+
+    @pytest.mark.parametrize(
+        "a, v",
+        [
+            ([[1, 2], [2, 3]], [1]),
+            ([1], [[1, 2], [2, 3]]),
+            ([[1, 2], [2, 3]], [[1, 2], [2, 3]]),
+        ],
+    )
+    def test_correlate_shape_error(self, a, v):
+        a = dpnp.asarray(a)
+        v = dpnp.asarray(v)
+
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v)
+
+    @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
+    def test_correlate_different_sizes(self, size):
+        a = numpy.random.rand(size).astype(numpy.float32)
+        v = numpy.random.rand(size // 2).astype(numpy.float32)
+
+        ad = dpnp.array(a)
+        vd = dpnp.array(v)
+
+        expected = numpy.correlate(a, v)
+        result = dpnp.correlate(ad, vd)
+
+        assert_dtype_allclose(result, expected, factor=20)
+
+    def test_correlate_another_sycl_queue(self):
+        a = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        v = dpnp.arange(3, sycl_queue=dpctl.SyclQueue())
+
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v)
+
+
 class TestCov:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)

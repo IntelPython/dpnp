@@ -168,7 +168,6 @@ class TestCov(unittest.TestCase):
         }
     )
 )
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestCorrelateShapeCombination(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True)
@@ -180,7 +179,6 @@ class TestCorrelateShapeCombination(unittest.TestCase):
 
 
 @pytest.mark.parametrize("mode", ["valid", "full", "same"])
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestCorrelate:
 
     @testing.for_all_dtypes()
