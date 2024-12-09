@@ -187,14 +187,9 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *dst_shape = dst.get_shape_raw();
     const py::ssize_t *chc_shape = chc_rep.get_shape_raw();
 
-    bool shapes_equal(true);
-    size_t nelems(1);
-    for (int i = 0; i < nd; ++i) {
-        auto src_shape_i = src_shape[i];
-        nelems *= static_cast<size_t>(src_shape_i);
-        shapes_equal = shapes_equal && (src_shape_i == dst_shape[i]) &&
-                       (src_shape_i == chc_shape[i]);
-    }
+    size_t nelems = src.get_size();
+    bool shapes_equal = std::equal(src_shape, src_shape + nd, dst_shape);
+    shapes_equal &= std::equal(src_shape, src_shape + nd, chc_shape);
 
     if (!shapes_equal) {
         throw py::value_error("Array shapes don't match.");
