@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import has_support_aspect64, numpy_version
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -130,7 +130,9 @@ class TestCov(unittest.TestCase):
     def test_cov(self):
         self.check((2, 3))
         self.check((2,), (2,))
-        self.check((1, 3), (1, 3), rowvar=False)
+        if numpy_version() < "2.2.0":
+            # TODO: remove once numpy 2.2 resolve an error
+            self.check((1, 3), (1, 3), rowvar=False)
         self.check((2, 3), (2, 3), rowvar=False)
         self.check((2, 3), bias=True)
         self.check((2, 3), ddof=2)
