@@ -76,26 +76,6 @@ DPNPFuncData_t get_dpnp_function_ptr(DPNPFuncName func_name,
     return func_info;
 }
 
-template <typename _DataType_output,
-          typename _DataType_input1,
-          typename _DataType_input2>
-void (*dpnp_dot_default_c)(void *,
-                           const size_t,
-                           const size_t,
-                           const shape_elem_type *,
-                           const shape_elem_type *,
-                           const void *,
-                           const size_t,
-                           const size_t,
-                           const shape_elem_type *,
-                           const shape_elem_type *,
-                           const void *,
-                           const size_t,
-                           const size_t,
-                           const shape_elem_type *,
-                           const shape_elem_type *) =
-    dpnp_dot_c<_DataType_output, _DataType_input1, _DataType_input2>;
-
 /**
  * This operator is needed for compatibility with Cython 0.29 which has a bug in
  * Enum handling
@@ -122,7 +102,6 @@ static func_map_t func_map_init()
     func_map_init_mathematical(fmap);
     func_map_init_random(fmap);
     func_map_init_sorting(fmap);
-    func_map_init_statistics(fmap);
 
     return fmap;
 };
