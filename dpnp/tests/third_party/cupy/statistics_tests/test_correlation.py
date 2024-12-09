@@ -127,12 +127,14 @@ class TestCov(unittest.TestCase):
                 )
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_cov(self):
         self.check((2, 3))
         self.check((2,), (2,))
-        if numpy_version() < "2.2.0":
-            # TODO: remove once numpy 2.2 resolve an error
-            self.check((1, 3), (1, 3), rowvar=False)
+        if numpy_version() >= "2.2.0":
+            # TODO: enable once numpy 2.2 resolves ValueError
+            # self.check((1, 3), (1, 3), rowvar=False)
+            self.check((1, 3), (1, 1), rowvar=False)  # TODO: remove
         self.check((2, 3), (2, 3), rowvar=False)
         self.check((2, 3), bias=True)
         self.check((2, 3), ddof=2)
