@@ -1394,6 +1394,9 @@ class TestTrimZeros:
         expected = numpy.trim_zeros(a)
         assert_array_equal(result, expected)
 
+    # TODO: modify once SAT-7616
+    # numpy 2.2 validates trim rules
+    @testing.with_requires("numpy<2.2")
     def test_trim_no_rule(self):
         a = numpy.array([0, 0, 1, 0, 2, 3, 4, 0])
         ia = dpnp.array(a)
