@@ -102,6 +102,7 @@ var annotated_dup =
     [ "statistics", null, [
       [ "common", null, [
         [ "AtomicOp", "structstatistics_1_1common_1_1_atomic_op.html", null ],
+        [ "DispatchTable", "classstatistics_1_1common_1_1_dispatch_table.html", null ],
         [ "DispatchTable2", "classstatistics_1_1common_1_1_dispatch_table2.html", null ],
         [ "int_pair_hash", "structstatistics_1_1common_1_1int__pair__hash.html", null ],
         [ "IsNan", "structstatistics_1_1common_1_1_is_nan.html", null ],
@@ -109,6 +110,7 @@ var annotated_dup =
         [ "one_of", "structstatistics_1_1common_1_1one__of.html", null ],
         [ "one_of< T, std::tuple< Top > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
         [ "one_of< T, std::tuple< Top, Rest... > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
+        [ "TableBuilder", "structstatistics_1_1common_1_1_table_builder.html", "structstatistics_1_1common_1_1_table_builder" ],
         [ "TableBuilder2", "structstatistics_1_1common_1_1_table_builder2.html", "structstatistics_1_1common_1_1_table_builder2" ]
       ] ],
       [ "histogram", null, [
@@ -125,6 +127,16 @@ var annotated_dup =
         [ "NoWeights", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
         [ "UncachedData", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],
         [ "Weights", "structstatistics_1_1histogram_1_1_weights.html", null ]
+      ] ],
+      [ "sliding_window1d", null, [
+        [ "_RegistryDataStorage", "classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html", null ],
+        [ "PaddedSpan", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ],
+        [ "RegistryData", "structstatistics_1_1sliding__window1d_1_1_registry_data.html", null ],
+        [ "RegistryWindow", "structstatistics_1_1sliding__window1d_1_1_registry_window.html", null ],
+        [ "sliding_window1d_kernel", "classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html", null ],
+        [ "sliding_window1d_small_kernel", "classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html", null ],
+        [ "SlidingDotProduct1d", "structstatistics_1_1sliding__window1d_1_1_sliding_dot_product1d.html", null ],
+        [ "Span", "classstatistics_1_1sliding__window1d_1_1_span.html", null ]
       ] ]
     ] ],
     [ "are_same", "structare__same.html", null ],
