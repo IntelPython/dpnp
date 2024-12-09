@@ -239,39 +239,27 @@ std::pair<sycl::event, sycl::event>
     auto sh_nelems = std::max<int>(nd, 1);
     std::vector<py::ssize_t> chc_strides(n_chcs * sh_nelems, 0);
 
-    // first iteration for first choice array chc_rep
-    if (overlap(dst, chc_rep)) {
-        throw py::value_error("Arrays index overlapping segments of memory");
-    }
-
-    // chc_strides is initialized to 0 for 0D choices, so skip
-    if (nd > 0) {
-        auto chc_strides_ = chc_rep.get_strides_vector();
-        std::copy(chc_strides_.begin(), chc_strides_.end(),
-                  chc_strides.begin());
-    }
-
-    chc_ptrs.push_back(chc_rep.get_data());
-    chc_offsets.push_back(py::ssize_t(0));
-
-    for (auto i = 1; i < n_chcs; ++i) {
+    for (auto i = 0; i < n_chcs; ++i) {
         dpctl::tensor::usm_ndarray chc_ = chcs[i];
 
         // ndim, type, and shape are checked against the first array
-        if (!(chc_.get_ndim() == nd)) {
-            throw py::value_error("Choice array dimensions are not the same");
-        }
+        if (i > 0) {
+            if (!(chc_.get_ndim() == nd)) {
+                throw py::value_error(
+                    "Choice array dimensions are not the same");
+            }
 
-        if (!(chc_type_id ==
-              array_types.typenum_to_lookup_id(chc_.get_typenum()))) {
-            throw py::type_error(
-                "Choice array data types are not all the same.");
-        }
+            if (!(chc_type_id ==
+                  array_types.typenum_to_lookup_id(chc_.get_typenum()))) {
+                throw py::type_error(
+                    "Choice array data types are not all the same.");
+            }
 
-        const py::ssize_t *chc_shape_ = chc_.get_shape_raw();
-        for (int dim = 0; dim < nd; ++dim) {
-            if (!(chc_shape[dim] == chc_shape_[dim])) {
-                throw py::value_error("Choice shapes are not all equal.");
+            const py::ssize_t *chc_shape_ = chc_.get_shape_raw();
+            for (int dim = 0; dim < nd; ++dim) {
+                if (!(chc_shape[dim] == chc_shape_[dim])) {
+                    throw py::value_error("Choice shapes are not all equal.");
+                }
             }
         }
 
