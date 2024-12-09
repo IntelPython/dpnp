@@ -375,6 +375,13 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             return out
         return dpnp_array._create_from_usm_ndarray(res_usm)
 
+    def _inplace_op(self, x1, x2):
+        x1_usm = dpnp.get_usm_ndarray(x1)
+        x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
+
+        super()._inplace_op(x1_usm, x2_usm)
+        return x1
+
     def outer(
         self,
         x1,
