@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev3+6.g5721385f0a6 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev3+11.g325603242fb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=543dbe0a"></script>
+      <script src="../../_static/documentation_options.js?v=5032c31c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -122,9 +122,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
@@ -133,6 +131,7 @@
     <span class="n">dpnp_dot</span><span class="p">,</span>
     <span class="n">dpnp_kron</span><span class="p">,</span>
     <span class="n">dpnp_matmul</span><span class="p">,</span>
+    <span class="n">dpnp_tensordot</span><span class="p">,</span>
     <span class="n">dpnp_vecdot</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -1155,65 +1154,7 @@
         <span class="c1"># TODO: use specific scalar-vector kernel</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="nb">iter</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># pylint: disable=broad-exception-caught</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;Axes must be an integer.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">if</span> <span class="n">axes</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Axes must be a non-negative integer.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="n">axes_a</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="o">-</span><span class="n">axes</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
-        <span class="n">axes_b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">axes</span><span class="p">))</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Axes must consist of two sequences.&quot;</span><span class="p">)</span>
-
-        <span class="n">axes_a</span><span class="p">,</span> <span class="n">axes_b</span> <span class="o">=</span> <span class="n">axes</span>
-        <span class="n">axes_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes_a</span><span class="p">,)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">axes_a</span><span class="p">)</span> <span class="k">else</span> <span class="n">axes_a</span>
-        <span class="n">axes_b</span> <span class="o">=</span> <span class="p">(</span><span class="n">axes_b</span><span class="p">,)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">axes_b</span><span class="p">)</span> <span class="k">else</span> <span class="n">axes_b</span>
-
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes_a</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes_b</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Axes length mismatch.&quot;</span><span class="p">)</span>
-
-    <span class="c1"># Make the axes non-negative</span>
-    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">axes_a</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axes_a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="s2">&quot;axis_a&quot;</span><span class="p">)</span>
-    <span class="n">axes_b</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">axes_b</span><span class="p">,</span> <span class="n">b_ndim</span><span class="p">,</span> <span class="s2">&quot;axis_b&quot;</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-
-    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">b_shape</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">shape</span>
-    <span class="k">for</span> <span class="n">axis_a</span><span class="p">,</span> <span class="n">axis_b</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes_a</span><span class="p">,</span> <span class="n">axes_b</span><span class="p">):</span>
-        <span class="k">if</span> <span class="n">a_shape</span><span class="p">[</span><span class="n">axis_a</span><span class="p">]</span> <span class="o">!=</span> <span class="n">b_shape</span><span class="p">[</span><span class="n">axis_b</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="s2">&quot;shape of input arrays is not similar at requested axes.&quot;</span>
-            <span class="p">)</span>
-
-    <span class="c1"># Move the axes to sum over, to the end of &quot;a&quot;</span>
-    <span class="n">not_in</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_a</span><span class="p">)</span>
-    <span class="n">newaxes_a</span> <span class="o">=</span> <span class="n">not_in</span> <span class="o">+</span> <span class="n">axes_a</span>
-    <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]))</span>
-    <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">a_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes_a</span><span class="p">]))</span>
-    <span class="n">newshape_a</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
-    <span class="n">olda</span> <span class="o">=</span> <span class="p">[</span><span class="n">a_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]</span>
-
-    <span class="c1"># Move the axes to sum over, to the front of &quot;b&quot;</span>
-    <span class="n">not_in</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">b_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_b</span><span class="p">)</span>
-    <span class="n">newaxes_b</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">axes_b</span> <span class="o">+</span> <span class="n">not_in</span><span class="p">)</span>
-    <span class="n">n1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">b_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">axes_b</span><span class="p">]))</span>
-    <span class="n">n2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="n">b_shape</span><span class="p">[</span><span class="n">ax</span><span class="p">]</span> <span class="k">for</span> <span class="n">ax</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]))</span>
-    <span class="n">newshape_b</span> <span class="o">=</span> <span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
-    <span class="n">oldb</span> <span class="o">=</span> <span class="p">[</span><span class="n">b_shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">not_in</span><span class="p">]</span>
-
-    <span class="n">at</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">newaxes_a</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape_a</span><span class="p">)</span>
-    <span class="n">bt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">newaxes_b</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">newshape_b</span><span class="p">)</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">at</span><span class="p">,</span> <span class="n">bt</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">olda</span> <span class="o">+</span> <span class="n">oldb</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">dpnp_tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span></div>
 
 
 
