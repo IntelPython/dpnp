@@ -60,7 +60,9 @@ typedef sycl::event (*gemm_batch_impl_fn_ptr_t)(
     const char *,
     const char *,
     char *,
+#if !defined(USE_ONEMKL_CUBLAS)
     const bool,
+#endif // !USE_ONEMKL_CUBLAS
     const std::vector<sycl::event> &);
 
 static gemm_batch_impl_fn_ptr_t
@@ -83,7 +85,9 @@ static sycl::event gemm_batch_impl(sycl::queue &exec_q,
                                    const char *matrixA,
                                    const char *matrixB,
                                    char *resultC,
+#if !defined(USE_ONEMKL_CUBLAS)
                                    const bool is_row_major,
+#endif // !USE_ONEMKL_CUBLAS
                                    const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
@@ -311,6 +315,7 @@ std::tuple<sycl::event, sycl::event, bool>
     std::int64_t lda;
     std::int64_t ldb;
 
+// cuBLAS supports only column-major storage
 #if defined(USE_ONEMKL_CUBLAS)
     const bool is_row_major = false;
 
@@ -391,10 +396,17 @@ std::tuple<sycl::event, sycl::event, bool>
     const char *b_typeless_ptr = matrixB.get_data();
     char *r_typeless_ptr = resultC.get_data();
 
+#if defined(USE_ONEMKL_CUBLAS)
+    sycl::event gemm_batch_ev =
+        gemm_batch_fn(exec_q, m, n, k, batch_size, lda, ldb, ldc, stridea,
+                      strideb, stridec, transA, transB, a_typeless_ptr,
+                      b_typeless_ptr, r_typeless_ptr, depends);
+#else
     sycl::event gemm_batch_ev =
         gemm_batch_fn(exec_q, m, n, k, batch_size, lda, ldb, ldc, stridea,
                       strideb, stridec, transA, transB, a_typeless_ptr,
                       b_typeless_ptr, r_typeless_ptr, is_row_major, depends);
+#endif // USE_ONEMKL_CUBLAS
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, {gemm_batch_ev});
