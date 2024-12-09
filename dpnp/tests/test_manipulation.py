@@ -20,7 +20,6 @@ from .helper import (
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
-    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -578,13 +577,13 @@ class TestInsert:
         result = dpnp.insert(ia, obj, values)
         assert_equal(result, expected)
 
-    @pytest.mark.filterwarnings("ignore::FutureWarning")
+    @testing.with_requires("numpy>=2.2")
     @pytest.mark.parametrize(
         "obj",
-        [True, [False], numpy.array([True] * 4), [True, False, True, False]],
+        [[False], numpy.array([True] * 4), [True, False, True, False]],
     )
     def test_boolean_obj(self, obj):
-        if numpy_version() >= "2.2.0" and not isinstance(obj, numpy.ndarray):
+        if not isinstance(obj, numpy.ndarray):
             # numpy.insert raises exception
             # TODO: remove once NumPy resolves that
             obj = numpy.array(obj)
@@ -592,6 +591,19 @@ class TestInsert:
         a = numpy.array([1, 2, 3])
         ia = dpnp.array(a)
         assert_equal(dpnp.insert(ia, obj, 9), numpy.insert(a, obj, 9))
+
+    @testing.with_requires("numpy>=2.2")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "obj_data",
+        [True, [[True, False], [True, False]]],
+        ids=["0d", "2d"],
+    )
+    def test_boolean_obj_error(self, xp, obj_data):
+        a = xp.array([1, 2, 3])
+        obj = xp.array(obj_data)
+        with pytest.raises(ValueError):
+            xp.insert(a, obj, 9)
 
     def test_1D_array(self):
         a = numpy.array([1, 2, 3])
