@@ -2654,6 +2654,32 @@ def test_histogram(weights, device):
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
 
 
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_histogramdd(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_hist, expected_edges = numpy.histogramdd(v, weights=w)
+    result_hist, result_edges = dpnp.histogramdd(iv, weights=iw)
+    assert_array_equal(result_hist, expected_hist)
+    for result_edge, expected_edge in zip(result_edges, expected_edges):
+        assert_dtype_allclose(result_edge, expected_edge)
+
+    hist_queue = result_hist.sycl_queue
+    assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
+    for edge in result_edges:
+        edges_queue = edge.sycl_queue
+        assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
+
+
 @pytest.mark.parametrize(
     "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
 )

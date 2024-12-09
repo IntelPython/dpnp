@@ -1630,6 +1630,20 @@ def test_bincount(usm_type_v, usm_type_w):
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogramdd(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    hist, edges = dp.histogramdd(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
+    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    for e in edges:
+        assert e.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
 @pytest.mark.parametrize(
     "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
 )
