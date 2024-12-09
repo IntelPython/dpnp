@@ -4,7 +4,12 @@ import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from numpy.testing import assert_array_equal, assert_equal, assert_raises
+from numpy.testing import (
+    assert_array_equal,
+    assert_equal,
+    assert_raises,
+    numpy_version,
+)
 
 import dpnp
 
@@ -579,6 +584,11 @@ class TestInsert:
         [True, [False], numpy.array([True] * 4), [True, False, True, False]],
     )
     def test_boolean_obj(self, obj):
+        if numpy_version() >= "2.2.0" and not isinstance(numpy.ndarray):
+            # numpy.insert raises exception
+            # TODO: remove once NumPy resolves that
+            obj = numpy.array(obj)
+
         a = numpy.array([1, 2, 3])
         ia = dpnp.array(a)
         assert_equal(dpnp.insert(ia, obj, 9), numpy.insert(a, obj, 9))
