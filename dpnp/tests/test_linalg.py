@@ -513,7 +513,7 @@ class TestEigenvalue:
         # non-symmetric for eig() and eigvals()
         is_hermitian = func in ("eigh, eigvalsh")
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=is_hermitian, seed_value=81, low=-4, high=4
+            shape, dtype, hermitian=is_hermitian, low=-4, high=4
         )
         a_order = numpy.array(a, order=order)
         a_dp = dpnp.array(a, order=order)
@@ -2384,9 +2384,7 @@ class TestQr:
     )
     @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
     def test_qr(self, dtype, shape, mode):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
-        a = generate_random_numpy_array(shape, dtype, seed_value=81)
+        a = generate_random_numpy_array(shape, dtype)
         ia = dpnp.array(a)
 
         if mode == "r":
@@ -2514,13 +2512,8 @@ class TestSolve:
         ],
     )
     def test_solve_broadcast(self, a_shape, b_shape, dtype):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
-        a_np = generate_random_numpy_array(a_shape, dtype, seed_value=81)
-
-        # Set seed_value=76 to prevent
-        # random generation of the input singular matrix
-        b_np = generate_random_numpy_array(b_shape, dtype, seed_value=76)
+        a_np = generate_random_numpy_array(a_shape, dtype)
+        b_np = generate_random_numpy_array(b_shape, dtype)
 
         a_dp = dpnp.array(a_np)
         b_dp = dpnp.array(b_np)
@@ -2844,11 +2837,7 @@ class TestSvd:
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
-        a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=81
-        )
+        a = generate_random_numpy_array(shape, dtype, hermitian=True)
         dp_a = dpnp.array(a)
 
         if compute_vt:
@@ -2965,8 +2954,6 @@ class TestPinv:
         ],
     )
     def test_pinv(self, dtype, shape):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
         a_dp = dpnp.array(a)
 
@@ -2990,10 +2977,8 @@ class TestPinv:
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_pinv_hermitian(self, dtype, shape):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=81, low=-3, high=3
+            shape, dtype, hermitian=True, low=-5, high=5
         )
         a_dp = dpnp.array(a)
 

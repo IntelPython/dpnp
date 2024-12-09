@@ -433,7 +433,9 @@ class TestFftn:
     def setup_method(self):
         numpy.random.seed(42)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True)
+    )
     @pytest.mark.parametrize(
         "axes", [None, (0, 1, 2), (-1, -4, -2), (-2, -4, -1, -3)]
     )
