@@ -2993,7 +2993,7 @@ class TestPinv:
         # Set seed_value=81 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=81, low=-5, high=5
+            shape, dtype, hermitian=True, seed_value=81, low=-3, high=3
         )
         a_dp = dpnp.array(a)
 

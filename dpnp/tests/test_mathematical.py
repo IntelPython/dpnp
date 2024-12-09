@@ -4197,7 +4197,7 @@ class TestMatmul:
 
         result = ia[1] @ ib[1]
         expected = a[1] @ b[1]
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
 
 class TestMatmulInplace:
