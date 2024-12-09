@@ -29,13 +29,10 @@
 
 #include "common.hpp"
 
-namespace dpctl
-{
-namespace tensor
+namespace dpctl::tensor
 {
 class usm_ndarray;
 }
-} // namespace dpctl
 
 using dpctl::tensor::usm_ndarray;
 
