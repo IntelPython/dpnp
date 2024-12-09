@@ -256,10 +256,8 @@ std::pair<sycl::event, sycl::event>
             }
 
             const py::ssize_t *chc_shape_ = chc_.get_shape_raw();
-            for (int dim = 0; dim < nd; ++dim) {
-                if (!(chc_shape[dim] == chc_shape_[dim])) {
-                    throw py::value_error("Choice shapes are not all equal.");
-                }
+            if (!std::equal(chc_shape_, chc_shape_ + nd, chc_shape)) {
+                throw py::value_error("Choice shapes are not all equal.");
             }
         }
 
