@@ -584,7 +584,7 @@ class TestInsert:
         [True, [False], numpy.array([True] * 4), [True, False, True, False]],
     )
     def test_boolean_obj(self, obj):
-        if numpy_version() >= "2.2.0" and not isinstance(numpy.ndarray):
+        if numpy_version() >= "2.2.0" and not isinstance(obj, numpy.ndarray):
             # numpy.insert raises exception
             # TODO: remove once NumPy resolves that
             obj = numpy.array(obj)

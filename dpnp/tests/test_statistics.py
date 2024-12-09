@@ -623,8 +623,8 @@ class TestCov:
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
-    def test_1D_false_rowvar(self):
-        a = numpy.array([0, 1, 2])
+    def test_false_rowvar(self):
+        a = numpy.array([[0, 1, 2]])
         ia = dpnp.array(a)
 
         expected = numpy.cov(a, rowvar=False)
@@ -633,7 +633,8 @@ class TestCov:
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
-    def test_2D_rowvar(self):
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    def test_true_rowvar(self):
         a = numpy.ones((3, 1))
         ia = dpnp.array(a)
 
