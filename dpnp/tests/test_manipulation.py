@@ -8,7 +8,6 @@ from numpy.testing import (
     assert_array_equal,
     assert_equal,
     assert_raises,
-    numpy_version,
 )
 
 import dpnp
@@ -21,6 +20,7 @@ from .helper import (
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 from .third_party.cupy import testing
 

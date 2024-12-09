@@ -610,25 +610,36 @@ class TestCorrcoef:
         assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-)
-def test_cov_rowvar(dtype):
-    a = dpnp.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
-    b = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
-    assert_allclose(dpnp.cov(a.T), dpnp.cov(a, rowvar=False))
-    assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))
+class TestCov:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    def test_false_rowvar(self, dtype):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
+        ia = dpnp.array(a)
 
+        assert_allclose(dpnp.cov(ia.T), dpnp.cov(ia, rowvar=False))
+        assert_allclose(dpnp.cov(ia, rowvar=False), numpy.cov(a, rowvar=False))
 
-# numpy 2.2 properly transposes 2d array when rowvar=False
-@with_requires("numpy>=2.2")
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-)
-def test_cov_1D_rowvar(dtype):
-    a = dpnp.array([[0, 1, 2]], dtype=dtype)
-    b = numpy.array([[0, 1, 2]], dtype=dtype)
-    assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))
+    # numpy 2.2 properly transposes 2d array when rowvar=False
+    @with_requires("numpy>=2.2")
+    def test_1D_false_rowvar(self):
+        a = numpy.array([0, 1, 2])
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a, rowvar=False)
+        result = dpnp.cov(ia, rowvar=False)
+        assert_allclose(expected, result)
+
+    # numpy 2.2 properly transposes 2d array when rowvar=False
+    @with_requires("numpy>=2.2")
+    def test_2D_rowvar(self):
+        a = numpy.ones((3, 1))
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a, ddof=0, rowvar=True)
+        result = dpnp.cov(ia, ddof=0, rowvar=True)
+        assert_allclose(expected, result)
 
 
 @pytest.mark.parametrize("axis", [None, 0, 1])
