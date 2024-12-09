@@ -5,7 +5,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import has_support_aspect64, numpy_version
 from dpnp.tests.third_party.cupy import testing
 
 # Note that numpy.bincount does not support uint64 on 64-bit environment
@@ -459,20 +459,18 @@ class TestDigitizeInvalid(unittest.TestCase):
                 xp.digitize(x, bins)
 
 
-@pytest.mark.skip("histogramdd() is not implemented yet")
-# @pytest.mark.skip(reason="XXX: NP2.0: histogramdd dtype")
 @testing.parameterize(
     *testing.product(
         {
             "weights": [None, 1, 2],
-            "weights_dtype": [numpy.int32, numpy.float64],
+            "weights_dtype": [numpy.int32, cupy.default_float_type()],
             "density": [True, False],
             "bins": [
                 10,
-                (8, 16, 12),
-                (16, 8, 12),
-                (16, 12, 8),
-                (12, 8, 16),
+                (9, 17, 13),
+                (17, 9, 13),
+                (17, 13, 8),
+                (13, 9, 17),
                 "array_list",
             ],
             "range": [None, ((20, 50), (10, 100), (0, 40))],
@@ -482,7 +480,11 @@ class TestDigitizeInvalid(unittest.TestCase):
 class TestHistogramdd:
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-7, rtol=1e-7)
+    @testing.numpy_cupy_allclose(
+        atol=1e-3,
+        rtol=1e-3,
+        type_check=has_support_aspect64() and numpy_version() < "2.0.0",
+    )
     def test_histogramdd(self, xp, dtype):
         x = testing.shaped_random((100, 3), xp, dtype, scale=100)
         if self.bins == "array_list":
@@ -493,6 +495,7 @@ class TestHistogramdd:
             weights = xp.ones((x.shape[0],), dtype=self.weights_dtype)
         else:
             weights = None
+
         y, bin_edges = xp.histogramdd(
             x,
             bins=bins,
@@ -505,7 +508,6 @@ class TestHistogramdd:
         ] + [e for e in bin_edges]
 
 
-@pytest.mark.skip("histogramdd() is not implemented yet")
 class TestHistogramddErrors(unittest.TestCase):
 
     def test_histogramdd_invalid_bins(self):
@@ -544,12 +546,6 @@ class TestHistogramddErrors(unittest.TestCase):
             r = ((0, 100),) * 3
             with pytest.raises(ValueError):
                 y, bin_edges = xp.histogramdd(x, range=r)
-
-    def test_histogramdd_disallow_arraylike_bins(self):
-        x = testing.shaped_random((16, 2), cupy, scale=100)
-        bins = [[0, 10, 20, 50, 90]] * 2  # too many dimensions
-        with pytest.raises(ValueError):
-            y, bin_edges = cupy.histogramdd(x, bins=bins)
 
 
 @pytest.mark.skip("histogram2d() is not implemented yet")

@@ -29,6 +29,11 @@
 
 #include "common.hpp"
 
+namespace dpctl::tensor
+{
+class usm_ndarray;
+}
+
 using dpctl::tensor::usm_ndarray;
 
 namespace statistics
@@ -44,12 +49,15 @@ template <typename T, int Dims>
 struct CachedData
 {
     static constexpr bool const sync_after_init = true;
-    using pointer_type = T *;
+    using Shape = sycl::range<Dims>;
+    using value_type = T;
+    using pointer_type = value_type *;
+    static constexpr auto dims = Dims;
 
-    using ncT = typename std::remove_const<T>::type;
+    using ncT = typename std::remove_const<value_type>::type;
     using LocalData = sycl::local_accessor<ncT, Dims>;
 
-    CachedData(T *global_data, sycl::range<Dims> shape, sycl::handler &cgh)
+    CachedData(T *global_data, Shape shape, sycl::handler &cgh)
     {
         this->global_data = global_data;
         local_data = LocalData(shape, cgh);
@@ -63,13 +71,13 @@ struct CachedData
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &item) const
     {
-        int32_t llid = item.get_local_linear_id();
+        uint32_t llid = item.get_local_linear_id();
         auto local_ptr = &local_data[0];
-        int32_t size = local_data.size();
+        uint32_t size = local_data.size();
         auto group = item.get_group();
-        int32_t local_size = group.get_local_linear_range();
+        uint32_t local_size = group.get_local_linear_range();
 
-        for (int32_t i = llid; i < size; i += local_size) {
+        for (uint32_t i = llid; i < size; i += local_size) {
             local_ptr[i] = global_data[i];
         }
     }
@@ -79,9 +87,20 @@ struct CachedData
         return local_data.size();
     }
 
+    T &operator[](const sycl::id<Dims> &id) const
+    {
+        return local_data[id];
+    }
+
+    template <typename = std::enable_if_t<Dims == 1>>
+    T &operator[](const size_t id) const
+    {
+        return local_data[id];
+    }
+
 private:
     LocalData local_data;
-    T *global_data = nullptr;
+    value_type *global_data = nullptr;
 };
 
 template <typename T, int Dims>
@@ -89,7 +108,9 @@ struct UncachedData
 {
     static constexpr bool const sync_after_init = false;
     using Shape = sycl::range<Dims>;
-    using pointer_type = T *;
+    using value_type = T;
+    using pointer_type = value_type *;
+    static constexpr auto dims = Dims;
 
     UncachedData(T *global_data, const Shape &shape, sycl::handler &)
     {
@@ -110,6 +131,17 @@ struct UncachedData
     size_t size() const
     {
         return _shape.size();
+    }
+
+    T &operator[](const sycl::id<Dims> &id) const
+    {
+        return global_data[id];
+    }
+
+    template <typename = std::enable_if_t<Dims == 1>>
+    T &operator[](const size_t id) const
+    {
+        return global_data[id];
     }
 
 private:
@@ -183,15 +215,15 @@ struct HistWithLocalCopies
     template <int _Dims>
     void finalize(const sycl::nd_item<_Dims> &item) const
     {
-        int32_t llid = item.get_local_linear_id();
-        int32_t bins_count = local_hist.get_range().get(1);
-        int32_t local_hist_count = local_hist.get_range().get(0);
+        uint32_t llid = item.get_local_linear_id();
+        uint32_t bins_count = local_hist.get_range().get(1);
+        uint32_t local_hist_count = local_hist.get_range().get(0);
         auto group = item.get_group();
-        int32_t local_size = group.get_local_linear_range();
+        uint32_t local_size = group.get_local_linear_range();
 
-        for (int32_t i = llid; i < bins_count; i += local_size) {
+        for (uint32_t i = llid; i < bins_count; i += local_size) {
             auto value = local_hist[0][i];
-            for (int32_t lhc = 1; lhc < local_hist_count; ++lhc) {
+            for (uint32_t lhc = 1; lhc < local_hist_count; ++lhc) {
                 value += local_hist[lhc][i];
             }
             if (value != T(0)) {
@@ -282,9 +314,9 @@ class histogram_kernel;
 
 template <typename T, typename HistImpl, typename Edges, typename Weights>
 void submit_histogram(const T *in,
-                      size_t size,
-                      size_t dims,
-                      uint32_t WorkPI,
+                      const size_t size,
+                      const size_t dims,
+                      const uint32_t WorkPI,
                       const HistImpl &hist,
                       const Edges &edges,
                       const Weights &weights,
