@@ -614,7 +614,7 @@ class TestCov:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
     )
-    def test_false_rowvar(self, dtype):
+    def test_false_rowvar_dtype(self, dtype):
         a = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
         ia = dpnp.array(a)
 
@@ -623,7 +623,8 @@ class TestCov:
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
-    def test_false_rowvar(self):
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    def test_false_rowvar_1x3(self):
         a = numpy.array([[0, 1, 2]])
         ia = dpnp.array(a)
 
