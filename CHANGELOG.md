@@ -13,6 +13,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [0.16.1] - 12/06/2024
+
+This is a bug-fix release.
+
+### Changed
+
+* Changed to use `Miniforge` installer in GitHub actions [#2057](https://github.com/IntelPython/dpnp/pull/2057)
+* Updated `README.md` to reflect current installation requirements and available options [#2166](https://github.com/IntelPython/dpnp/pull/2166)
+* Corrected the list of owners and code maintainers [#2185](https://github.com/IntelPython/dpnp/pull/2185)
+* Bumped the version of `oneMKL` interface used in dpnp build by default to align it with `2025.0` oneAPI release [#2193](https://github.com/IntelPython/dpnp/pull/2193)
+
+### Fixed
+
+* Resolved an issue with Compute Follows Data inconsistency in `dpnp.extract` function [#2172](https://github.com/IntelPython/dpnp/pull/2172)
+* Resolved an import error when using `dpnp` in virtual environment on Linux [#2199](https://github.com/IntelPython/dpnp/pull/2199)
+* Fixed incorrect result produced by `dpnp.fft.fft` function when input array has negative strides [#2202](https://github.com/IntelPython/dpnp/pull/2202)
+* Fixed an issue with `numpy.ndarray` input processing in the `dpnp.from_dlpack` function and updated the documentation [#2209](https://github.com/IntelPython/dpnp/pull/2209)
+* Resolved a compilation error when building with DPC++ 2025.1 compiler [#2211](https://github.com/IntelPython/dpnp/pull/2211)
+
+
 ## [0.16.0] - 10/14/2024
 
 This release reaches an important milestone by making offloading fully asynchronous. Calls to `dpnp` submit tasks for execution to DPC++ runtime and return without waiting for execution of these tasks to finish. The sequential semantics a user comes to expect from execution of Python script is preserved though.

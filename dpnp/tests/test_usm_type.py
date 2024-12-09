@@ -808,7 +808,6 @@ def test_broadcast_to(usm_type):
         pytest.param("concatenate", [[1, 2], [3, 4]], [[5, 6]]),
         pytest.param("dstack", [[1], [2], [3]], [[2], [3], [4]]),
         pytest.param("hstack", (1, 2, 3), (4, 5, 6)),
-        pytest.param("row_stack", [[7], [1], [2], [3]], [[2], [3], [9], [4]]),
         pytest.param("stack", [1, 2, 3], [4, 5, 6]),
         pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
     ],
@@ -1629,6 +1628,20 @@ def test_bincount(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogramdd(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    hist, edges = dp.histogramdd(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
+    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    for e in edges:
+        assert e.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
 @pytest.mark.parametrize(

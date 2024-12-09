@@ -1,0 +1,260 @@
+import unittest
+
+import numpy
+import pytest
+from dpctl.tensor._numpy_helper import AxisError
+
+import dpnp as cupy
+
+# import cupy._core._accelerator as _acc
+# from cupy import _core
+from dpnp.tests.third_party.cupy import testing
+
+if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
+    from numpy.exceptions import ComplexWarning
+else:
+    from numpy import ComplexWarning
+
+pytest.skip(
+    "create/get_reduction_func() and ReductionKernel are not supported",
+    allow_module_level=True,
+)
+
+_noncontiguous_params = [
+    # reduce at head axes
+    {"shape": (2, 4, 3), "trans": (2, 1, 0), "axis": (0, 1)},
+    # reduce at middle axes
+    {"shape": (2, 4, 5, 3), "trans": (3, 2, 1, 0), "axis": (1, 2)},
+    # reduce at tail axes
+    {"shape": (2, 4, 3), "trans": (2, 1, 0), "axis": (1, 2)},
+    # out_axis = (0,)
+    {"shape": (0, 4, 3), "trans": (2, 1, 0), "axis": (0, 1)},
+    # out_axis = ()
+    {"shape": (2, 4, 3), "trans": (2, 1, 0), "axis": (0, 1, 2)},
+]
+
+
+class AbstractReductionTestBase:
+
+    def get_sum_func(self):
+        raise NotImplementedError()
+
+    @testing.numpy_cupy_allclose(contiguous_check=False)
+    def check_int8_sum(self, shape, xp, axis=None, keepdims=False, trans=None):
+        a = testing.shaped_random(shape, xp, "b")
+        if trans:
+            a = a.transpose(*trans)
+        sum_func = self.get_sum_func()
+        if xp == cupy:
+            return sum_func(a, axis=axis, keepdims=keepdims)
+        else:
+            return a.sum(axis=axis, keepdims=keepdims, dtype="b")
+
+
+class SimpleReductionFunctionTestBase(AbstractReductionTestBase):
+
+    def get_sum_func(self):
+        return _core.create_reduction_func(
+            "my_sum", ("b->b",), ("in0", "a + b", "out0 = a", None), 0
+        )
+
+
+class TestSimpleReductionFunction(
+    unittest.TestCase, SimpleReductionFunctionTestBase
+):
+    def test_shape1(self):
+        for i in range(1, 10):
+            self.check_int8_sum((2**i,))
+            self.check_int8_sum((2**i - 1,))
+            self.check_int8_sum((2**i + 1,))
+
+    def test_shape2(self):
+        for i in range(1, 10):
+            self.check_int8_sum((2**i, 1000), axis=0)
+            self.check_int8_sum((2**i - 1, 1000), axis=0)
+            self.check_int8_sum((2**i + 1, 1000), axis=0)
+
+    def test_shape3(self):
+        for i in range(1, 10):
+            self.check_int8_sum((2**i, 1000), axis=1)
+            self.check_int8_sum((2**i - 1, 1000), axis=1)
+            self.check_int8_sum((2**i + 1, 1000), axis=1)
+
+    def test_shape4(self):
+        self.check_int8_sum((512, 256 * 256), axis=0)
+        self.check_int8_sum((512, 256 * 256), axis=1)
+
+        self.check_int8_sum((512 + 1, 256 * 256 + 1), axis=0)
+        self.check_int8_sum((512 + 1, 256 * 256 + 1), axis=1)
+
+    def test_shape5(self):
+        block_size = 512
+        size = (2 << 32) // block_size
+        self.check_int8_sum((size, 1), axis=1)
+        self.check_int8_sum((size, 1), axis=0)
+
+
+@testing.parameterize(*_noncontiguous_params)
+class TestSimpleReductionFunctionNonContiguous(
+    SimpleReductionFunctionTestBase, unittest.TestCase
+):
+
+    def test_noncontiguous(self):
+        self.check_int8_sum(self.shape, trans=self.trans, axis=self.axis)
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "backend": ([], ["cub"]),
+        }
+    )
+)
+class TestSimpleReductionFunctionComplexWarning(unittest.TestCase):
+
+    def setUp(self):
+        self.accelerators = _core.get_reduction_accelerators()
+        _core.set_reduction_accelerators(self.backend)
+
+    def tearDown(self):
+        _core.set_reduction_accelerators(self.accelerators)
+
+    @testing.for_complex_dtypes(name="c_dtype")
+    @testing.for_float_dtypes(name="f_dtype")
+    @testing.numpy_cupy_allclose()
+    def test_warns(self, xp, c_dtype, f_dtype):
+        with pytest.warns(ComplexWarning):
+            out = xp.ones((8,), dtype=c_dtype).sum(dtype=f_dtype)
+        return out
+
+
+class TestSimpleReductionFunctionInvalidAxis:
+    @pytest.mark.parametrize(
+        "axis",
+        [
+            2,
+            (-3,),
+            (0, 7),
+        ],
+    )
+    def test_axis_overrun(self, axis):
+        for xp in (numpy, cupy):
+            a = xp.ones((2, 2))
+            with pytest.raises(AxisError):
+                a.sum(axis=axis)
+
+    @pytest.mark.parametrize(
+        "axis",
+        [
+            (1, 1),
+            (0, -2),
+        ],
+    )
+    def test_axis_repeated(self, axis):
+        for xp in (numpy, cupy):
+            a = xp.ones((2, 2))
+            with pytest.raises(ValueError):
+                a.sum(axis=axis)
+
+
+class ReductionKernelTestBase(AbstractReductionTestBase):
+
+    def get_sum_func(self):
+        return cupy.ReductionKernel(
+            "T x", "T out", "x", "a + b", "out = a", "0", "my_sum"
+        )
+
+
+class TestReductionKernel(ReductionKernelTestBase, unittest.TestCase):
+
+    def test_shape1(self):
+        for i in range(1, 10):
+            self.check_int8_sum((2**i,))
+            self.check_int8_sum((2**i - 1,))
+            self.check_int8_sum((2**i + 1,))
+
+    def test_shape2(self):
+        for i in range(1, 10):
+            self.check_int8_sum((2**i, 1000), axis=0)
+            self.check_int8_sum((2**i - 1, 1000), axis=0)
+            self.check_int8_sum((2**i + 1, 1000), axis=0)
+
+    def test_shape3(self):
+        for i in range(1, 10):
+            self.check_int8_sum((2**i, 1000), axis=1)
+            self.check_int8_sum((2**i - 1, 1000), axis=1)
+            self.check_int8_sum((2**i + 1, 1000), axis=1)
+
+    def test_shape4(self):
+        self.check_int8_sum((512, 256 * 256), axis=0)
+        self.check_int8_sum((512, 256 * 256), axis=1)
+        self.check_int8_sum((512 + 1, 256 * 256 + 1), axis=0)
+        self.check_int8_sum((512 + 1, 256 * 256 + 1), axis=1)
+
+
+@testing.parameterize(*_noncontiguous_params)
+class TestReductionKernelNonContiguous(
+    ReductionKernelTestBase, unittest.TestCase
+):
+
+    def test_noncontiguous(self):
+        self.check_int8_sum(self.shape, trans=self.trans, axis=self.axis)
+
+
+class TestReductionKernelInvalidArgument(unittest.TestCase):
+
+    def test_invalid_kernel_name(self):
+        with self.assertRaisesRegex(ValueError, "Invalid kernel name"):
+            cupy.ReductionKernel(
+                "T x", "T y", "x", "a + b", "y = a", "0", name="1"
+            )
+
+
+class TestReductionKernelCachedCode:
+
+    @pytest.fixture(autouse=True)
+    def setUp(self):
+        self.old_routine_accelerators = _acc.get_routine_accelerators()
+        self.old_reduction_accelerators = _acc.get_reduction_accelerators()
+        # Disable CUB
+        _acc.set_reduction_accelerators([])
+        _acc.set_routine_accelerators([])
+        yield
+        _acc.set_routine_accelerators(self.old_routine_accelerators)
+        _acc.set_reduction_accelerators(self.old_reduction_accelerators)
+
+    def test_cached_code(self):
+        kernel = cupy.ReductionKernel(
+            "T x", "T y", "x", "a + b", "y = a", "0", name="cached_code"
+        )
+        assert len(kernel._cached_codes) == 0
+        x = cupy.arange(10)
+        kernel(x)
+        assert len(kernel._cached_codes) == 1
+        kernel(x)
+        assert len(kernel._cached_codes) == 1
+        kernel(x.astype(cupy.float32))
+        assert len(kernel._cached_codes) == 2
+
+    def test_simple_cached_code(self):
+        kernel = _core.create_reduction_func(
+            "my_sum", ("q->q", "f->f"), ("in0", "a + b", "out0 = a", None), 0
+        )
+        assert len(kernel._cached_codes) == 0
+        x = cupy.arange(10)
+        kernel(x)
+        assert len(kernel._cached_codes) == 1
+        kernel(x)
+        assert len(kernel._cached_codes) == 1
+        kernel(x.astype(cupy.float32))
+        assert len(kernel._cached_codes) == 2
+
+
+class TestLargeMultiDimReduction(ReductionKernelTestBase, unittest.TestCase):
+
+    def test_large_dims_keep_kernels(self):
+        # This test creates a CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES
+        # if the output array dims are not reduced
+        shape = (4, 3, 2, 4, 3, 2, 2)
+        axis = (1, 4, 3, 6)
+        self.check_int8_sum(shape, axis=axis, keepdims=True)

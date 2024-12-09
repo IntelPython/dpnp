@@ -32,9 +32,11 @@
 
 #include "bincount.hpp"
 #include "histogram.hpp"
+#include "histogramdd.hpp"
 
 PYBIND11_MODULE(_statistics_impl, m)
 {
     statistics::histogram::populate_bincount(m);
     statistics::histogram::populate_histogram(m);
+    statistics::histogram::populate_histogramdd(m);
 }
