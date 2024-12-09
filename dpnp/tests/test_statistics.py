@@ -16,6 +16,7 @@ from .helper import (
     get_float_complex_dtypes,
     has_support_aspect64,
 )
+from .third_party.cupy.testing import with_requires
 
 
 class TestAverage:
@@ -619,6 +620,8 @@ def test_cov_rowvar(dtype):
     assert_allclose(numpy.cov(b, rowvar=False), dpnp.cov(a, rowvar=False))
 
 
+# numpy 2.2 properly transposes 2d array when rowvar=False
+@with_requires("numpy>=2.2")
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
 )
