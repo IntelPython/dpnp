@@ -81,6 +81,10 @@ if (DPNP_GENERATE_COVERAGE)
     target_link_options(${python_module_name} PRIVATE -fprofile-instr-generate -fcoverage-mapping)
 endif()
 
+if (DPNP_WITH_REDIST)
+    set_target_properties(${python_module_name} PROPERTIES INSTALL_RPATH "$ORIGIN/../../../../../../")
+endif()
+
 install(TARGETS ${python_module_name}
   DESTINATION "dpnp/backend/extensions/indexing"
 )
