@@ -207,9 +207,8 @@ def choose(x, choices, out=None, mode="wrap"):
         in `choices` to choose from. Behavior of out-of-bounds integers (i.e.,
         integers outside of `[0, n-1]` where `n` is the number of choices) is
         determined by the `mode` keyword.
-    choices : {dpnp.ndarray, usm_ndarray, tuple of dpnp.ndarrays,
-               tuple of usm_ndarrays, list of dpnp.ndarrays,
-               list of usm_ndarrays}
+    choices : {dpnp.ndarray, usm_ndarray, sequence of dpnp.ndarrays and
+    usm_ndarrays}
         Choice arrays. `x` and choice arrays must be broadcast-compatible.
         If `choices` is an array, the array is unstacked into a sequence of
         arrays.
@@ -234,7 +233,7 @@ def choose(x, choices, out=None, mode="wrap"):
 
     See also
     --------
-    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
+    :obj:`dpnp.ndarray.choose` : Equivalent method.
     """
     mode = _get_indexing_mode(mode)
 
