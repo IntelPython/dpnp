@@ -158,7 +158,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
             )
 
         if chcs[0].dtype != out.dtype:
-            raise ValueError(
+            raise TypeError(
                 f"Output array of type {chcs[0].dtype} is needed, "
                 f"got {out.dtype}"
             )
@@ -267,7 +267,12 @@ def choose(a, choices, out=None, mode="wrap"):
     inds = dpnp.get_usm_ndarray(a)
     ind_dt = inds.dtype
     if not dpnp.issubdtype(ind_dt, dpnp.integer):
-        raise ValueError("input index array must be of integer data type")
+        # NumPy will cast up to to int64 in general but
+        # int32 is more than safe for bool
+        if ind_dt == dpnp.bool:
+            inds = dpt.astype(inds, dpt.int32)
+        else:
+            raise TypeError("input index array must be of integer data type")
 
     choices = _build_choices_list(choices)
 
