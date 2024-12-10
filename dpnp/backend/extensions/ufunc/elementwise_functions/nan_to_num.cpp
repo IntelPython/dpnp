@@ -114,8 +114,54 @@ sycl::event nan_to_num_call(sycl::queue &exec_q,
     return to_num_ev;
 }
 
+typedef sycl::event (*nan_to_num_contig_fn_ptr_t)(
+    sycl::queue &,
+    size_t,
+    const py::object &,
+    const py::object &,
+    const py::object &,
+    const char *,
+    char *,
+    const std::vector<sycl::event> &);
+
+template <typename T>
+sycl::event nan_to_num_contig_call(sycl::queue &exec_q,
+                                   size_t nelems,
+                                   const py::object &py_nan,
+                                   const py::object &py_posinf,
+                                   const py::object &py_neginf,
+                                   const char *arg_p,
+                                   char *dst_p,
+                                   const std::vector<sycl::event> &depends)
+{
+    sycl::event to_num_contig_ev;
+
+    using dpctl::tensor::type_utils::is_complex;
+    if constexpr (is_complex<T>::value) {
+        using realT = typename T::value_type;
+        realT nan_v = py::cast<realT>(py_nan);
+        realT posinf_v = py::cast<realT>(py_posinf);
+        realT neginf_v = py::cast<realT>(py_neginf);
+
+        using dpnp::kernels::nan_to_num::nan_to_num_contig_impl;
+        to_num_contig_ev = nan_to_num_contig_impl<T, realT>(
+            exec_q, nelems, nan_v, posinf_v, neginf_v, arg_p, dst_p, depends);
+    }
+    else {
+        T nan_v = py::cast<T>(py_nan);
+        T posinf_v = py::cast<T>(py_posinf);
+        T neginf_v = py::cast<T>(py_neginf);
+
+        using dpnp::kernels::nan_to_num::nan_to_num_contig_impl;
+        to_num_contig_ev = nan_to_num_contig_impl<T, T>(
+            exec_q, nelems, nan_v, posinf_v, neginf_v, arg_p, dst_p, depends);
+    }
+    return to_num_contig_ev;
+}
+
 namespace td_ns = dpctl::tensor::type_dispatch;
 nan_to_num_fn_ptr_t nan_to_num_dispatch_vector[td_ns::num_types];
+nan_to_num_contig_fn_ptr_t nan_to_num_contig_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     py_nan_to_num(const dpctl::tensor::usm_ndarray &src,
@@ -176,6 +222,37 @@ std::pair<sycl::event, sycl::event>
     const char *src_data = src.get_data();
     char *dst_data = dst.get_data();
 
+    // handle contiguous inputs
+    bool is_src_c_contig = src.is_c_contiguous();
+    bool is_src_f_contig = src.is_f_contiguous();
+
+    bool is_dst_c_contig = dst.is_c_contiguous();
+    bool is_dst_f_contig = dst.is_f_contiguous();
+
+    bool both_c_contig = (is_src_c_contig && is_dst_c_contig);
+    bool both_f_contig = (is_src_f_contig && is_dst_f_contig);
+
+    if (both_c_contig || both_f_contig) {
+        auto contig_fn = nan_to_num_contig_dispatch_vector[src_typeid];
+
+        if (contig_fn == nullptr) {
+            throw std::runtime_error(
+                "Contiguous implementation is missing for src_typeid=" +
+                std::to_string(src_typeid));
+        }
+
+        auto comp_ev = contig_fn(q, nelems, py_nan, py_posinf, py_neginf,
+                                 src_data, dst_data, depends);
+        sycl::event ht_ev =
+            dpctl::utils::keep_args_alive(q, {src, dst}, {comp_ev});
+
+        return std::make_pair(ht_ev, comp_ev);
+    }
+
+    // simplify iteration space
+    //     if 1d with strides 1 - input is contig
+    //     dispatch to strided
+
     auto const &src_strides = src.get_strides_vector();
     auto const &dst_strides = dst.get_strides_vector();
 
@@ -194,6 +271,30 @@ std::pair<sycl::event, sycl::event>
         // output
         simplified_shape, simplified_src_strides, simplified_dst_strides,
         src_offset, dst_offset);
+
+    if (nd == 1 && simplified_src_strides[0] == 1 &&
+        simplified_dst_strides[0] == 1) {
+        // Special case of contiguous data
+        auto contig_fn = nan_to_num_contig_dispatch_vector[src_typeid];
+
+        if (contig_fn == nullptr) {
+            throw std::runtime_error(
+                "Contiguous implementation is missing for src_typeid=" +
+                std::to_string(src_typeid));
+        }
+
+        int src_elem_size = src.get_elemsize();
+        int dst_elem_size = dst.get_elemsize();
+        auto comp_ev =
+            contig_fn(q, nelems, py_nan, py_posinf, py_neginf,
+                      src_data + src_elem_size * src_offset,
+                      dst_data + dst_elem_size * dst_offset, depends);
+
+        sycl::event ht_ev =
+            dpctl::utils::keep_args_alive(q, {src, dst}, {comp_ev});
+
+        return std::make_pair(ht_ev, comp_ev);
+    }
 
     auto fn = nan_to_num_dispatch_vector[src_typeid];
 
@@ -277,12 +378,33 @@ struct NanToNumFactory
     }
 };
 
-void populate_nan_to_num_dispatch_vector(void)
+template <typename fnT, typename T>
+struct NanToNumContigFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename NanToNumOutputType<T>::value_type,
+                                     void>) {
+            return nullptr;
+        }
+        else {
+            using ::dpnp::extensions::ufunc::impl::nan_to_num_contig_call;
+            return nan_to_num_contig_call<T>;
+        }
+    }
+};
+
+void populate_nan_to_num_dispatch_vectors(void)
 {
     using namespace td_ns;
 
-    DispatchVectorBuilder<nan_to_num_fn_ptr_t, NanToNumFactory, num_types> dvb;
-    dvb.populate_dispatch_vector(nan_to_num_dispatch_vector);
+    DispatchVectorBuilder<nan_to_num_fn_ptr_t, NanToNumFactory, num_types> dvb1;
+    dvb1.populate_dispatch_vector(nan_to_num_dispatch_vector);
+
+    DispatchVectorBuilder<nan_to_num_contig_fn_ptr_t, NanToNumContigFactory,
+                          num_types>
+        dvb2;
+    dvb2.populate_dispatch_vector(nan_to_num_contig_dispatch_vector);
 }
 
 } // namespace impl
@@ -290,7 +412,7 @@ void populate_nan_to_num_dispatch_vector(void)
 void init_nan_to_num(py::module_ m)
 {
     {
-        impl::populate_nan_to_num_dispatch_vector();
+        impl::populate_nan_to_num_dispatch_vectors();
 
         using impl::py_nan_to_num;
         m.def("_nan_to_num", &py_nan_to_num, "", py::arg("src"),
