@@ -134,7 +134,7 @@ def _build_choices_list(choices):
         choices_ = []
         for chc in choices:
             chc_ = dpnp.get_usm_ndarray(chc)
-            choices_.append(dpnp.get_usm_ndarray(chc_))
+            choices_.append(chc_)
         choices = choices_
     else:
         raise TypeError("`choices` must be an array or sequence of arrays")
