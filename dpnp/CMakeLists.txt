@@ -62,6 +62,7 @@ add_subdirectory(backend/extensions/lapack)
 add_subdirectory(backend/extensions/vm)
 add_subdirectory(backend/extensions/ufunc)
 add_subdirectory(backend/extensions/statistics)
+add_subdirectory(backend/extensions/indexing)
 
 add_subdirectory(dpnp_algo)
 add_subdirectory(dpnp_utils)
