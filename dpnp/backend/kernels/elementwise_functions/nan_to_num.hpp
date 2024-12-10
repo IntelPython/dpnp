@@ -39,7 +39,7 @@ namespace dpnp::kernels::nan_to_num
 {
 
 template <typename T>
-T to_num(const T v, const T nan, const T posinf, const T neginf)
+inline T to_num(const T v, const T nan, const T posinf, const T neginf)
 {
     return (sycl::isnan(v))   ? nan
            : (sycl::isinf(v)) ? (v > 0) ? posinf : neginf
