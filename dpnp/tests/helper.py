@@ -203,7 +203,9 @@ def generate_random_numpy_array(
 
     """
 
-    numpy.random.seed(seed_value) if seed_value else numpy.random.seed(42)
+    if seed_value is None:
+        seed_value = 42
+    numpy.random.seed(seed_value)
 
     # dtype=int is needed for 0d arrays
     size = numpy.prod(shape, dtype=int)

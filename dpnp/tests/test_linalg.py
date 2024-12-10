@@ -1815,7 +1815,7 @@ class TestLstsq:
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)
 
-    @pytest.mark.parametrize("a_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("b_dtype", get_all_dtypes())
     def test_lstsq_diff_type(self, a_dtype, b_dtype):
         a_np = generate_random_numpy_array((2, 2), a_dtype)
