@@ -97,7 +97,7 @@ template <typename T, typename scT>
 sycl::event nan_to_num_impl(sycl::queue &q,
                             size_t nelems,
                             int nd,
-                            const ssize_t *shape_strides,
+                            const dpctl::tensor::ssize_t *shape_strides,
                             const scT nan,
                             const scT posinf,
                             const scT neginf,
