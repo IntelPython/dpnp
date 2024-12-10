@@ -227,6 +227,40 @@ def choose(a, choices, out=None, mode="wrap"):
     See also
     --------
     :obj:`dpnp.ndarray.choose` : Equivalent method.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> choices = np.array[[0, 1, 2, 3], [10, 11, 12, 13],
+    ...   [20, 21, 22, 23], [30, 31, 32, 33]])
+    >>> np.choose(np.array([2, 3, 1, 0]), choices
+    ... # the first element of the result will be the first element of the
+    ... # third (2+1) "array" in choices, namely, 20; the second element
+    ... # will be the second element of the fourth (3+1) choice array, i.e.,
+    ... # 31, etc.
+    ... )
+    array([20, 31, 12,  3])
+    >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='clip'
+    ... # 4 goes to 3 (4-1)
+    ... )
+    array([20, 31, 12,  3])
+    >>> # because there are 4 choice arrays
+    >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='wrap'
+    ... # 4 is clipped to 3
+    ... )
+    array([20,  31, 12,  3])
+    >>> np.choose(np.array([2, -1, 1, 0]), choices, mode='wrap'
+    ... # -1 goes to 3 (-1+4)
+    ... )
+    array([20,  31, 12,  3])
+
+    An example using broadcasting:
+    >>> a = np.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]])
+    >>> choices = np.array([-10, 10])
+    >>> np.choose(a, choices)
+    array([[ 10, -10,  10],
+        [-10,  10, -10],
+        [ 10, -10,  10]])
     """
     mode = _get_indexing_mode(mode)
 
