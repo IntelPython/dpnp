@@ -127,4 +127,41 @@ sycl::event nan_to_num_impl(sycl::queue &q,
     return comp_ev;
 }
 
+template <typename T>
+class NanToNumContigKernel;
+
+template <typename T, typename scT>
+sycl::event nan_to_num_contig_impl(sycl::queue &q,
+                                   size_t nelems,
+                                   const scT nan,
+                                   const scT posinf,
+                                   const scT neginf,
+                                   const char *in_cp,
+                                   char *out_cp,
+                                   const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+
+    const T *in_tp = reinterpret_cast<const T *>(in_cp);
+    T *out_tp = reinterpret_cast<T *>(out_cp);
+
+    using dpctl::tensor::offset_utils::NoOpIndexer;
+    using InOutIndexerT =
+        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<NoOpIndexer,
+                                                                NoOpIndexer>;
+    constexpr NoOpIndexer in_indexer{};
+    constexpr NoOpIndexer out_indexer{};
+    constexpr InOutIndexerT indexer{in_indexer, out_indexer};
+
+    sycl::event comp_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using KernelName = NanToNumContigKernel<T>;
+        cgh.parallel_for<KernelName>(
+            {nelems}, NanToNumFunctor<T, scT, InOutIndexerT>(
+                          in_tp, out_tp, indexer, nan, posinf, neginf));
+    });
+    return comp_ev;
+}
+
 } // namespace dpnp::kernels::nan_to_num
