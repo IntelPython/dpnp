@@ -3128,7 +3128,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     x_type = x.dtype.type
 
     if not issubclass(x_type, dpnp.inexact):
-        return x.copy() if copy else x
+        return dpnp.copy(x) if copy else x
 
     max_f, min_f = _get_max_min(x.real.dtype)
     if posinf is not None:
