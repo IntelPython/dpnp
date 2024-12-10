@@ -194,7 +194,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
     return out
 
 
-def choose(x, choices, out=None, mode="wrap"):
+def choose(a, choices, out=None, mode="wrap"):
     """
     Construct an array from an index array and a set of arrays to choose from.
 
@@ -202,14 +202,14 @@ def choose(x, choices, out=None, mode="wrap"):
 
     Parameters
     ----------
-    x : {dpnp.ndarray, usm_ndarray}
+    a : {dpnp.ndarray, usm_ndarray}
         An integer array of indices indicating the position of the array
         in `choices` to choose from. Behavior of out-of-bounds integers (i.e.,
         integers outside of `[0, n-1]` where `n` is the number of choices) is
         determined by the `mode` keyword.
     choices : {dpnp.ndarray, usm_ndarray, sequence of dpnp.ndarrays and
     usm_ndarrays}
-        Choice arrays. `x` and choice arrays must be broadcast-compatible.
+        Choice arrays. `a` and choice arrays must be broadcast-compatible.
         If `choices` is an array, the array is unstacked into a sequence of
         arrays.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
@@ -237,7 +237,7 @@ def choose(x, choices, out=None, mode="wrap"):
     """
     mode = _get_indexing_mode(mode)
 
-    inds = dpnp.get_usm_ndarray(x)
+    inds = dpnp.get_usm_ndarray(a)
     ind_dt = inds.dtype
     if ind_dt.kind not in "ui":
         raise ValueError("input index array must be of integer data type")
