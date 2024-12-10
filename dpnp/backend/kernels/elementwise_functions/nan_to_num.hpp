@@ -67,8 +67,8 @@ public:
         const dpctl::tensor::ssize_t &inp_offset = offsets_.get_first_offset();
         const dpctl::tensor::ssize_t &out_offset = offsets_.get_second_offset();
 
-        using dpctl::tensor::type_utils::is_complex;
-        if constexpr (is_complex<T>::value) {
+        using dpctl::tensor::type_utils::is_complex_v;
+        if constexpr (is_complex_v<T>) {
             using realT = typename T::value_type;
             static_assert(std::is_same_v<realT, scT>);
             T z = inp_[inp_offset];
