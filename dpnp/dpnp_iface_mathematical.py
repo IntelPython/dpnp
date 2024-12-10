@@ -3165,7 +3165,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     _manager.add_event_pair(h_ev, comp_ev)
 
-    return dpnp.get_result_array(out_ary) if copy else x
+    return dpnp.get_result_array(out) if copy else x
 
 
 _NEGATIVE_DOCSTRING = """
