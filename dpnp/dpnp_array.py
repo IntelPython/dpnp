@@ -857,7 +857,7 @@ class dpnp_array:
     # 'base',
     # 'byteswap',
 
-    def choose(input, choices, out=None, mode="wrap"):
+    def choose(self, /, choices, out=None, mode="wrap"):
         """
         Construct an array from an index array and a set of arrays to choose from.
 
@@ -865,7 +865,7 @@ class dpnp_array:
 
         """
 
-        return dpnp.choose(input, choices, out, mode)
+        return dpnp.choose(self, choices, out, mode)
 
     def clip(self, min=None, max=None, out=None, **kwargs):
         """
