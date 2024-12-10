@@ -228,8 +228,6 @@ class TestChoose(unittest.TestCase):
     def test_choose_wrap(self, xp, dtype):
         a = xp.array([0, 3, -1, 5])
         c = testing.shaped_arange((3, 4), xp, dtype)
-        print(a)
-        print(c)
         return a.choose(c, mode="wrap")
 
     @testing.for_all_dtypes()
