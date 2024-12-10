@@ -125,28 +125,21 @@ def _build_choices_list(choices):
     list of arrays. If a single array of dimension greater than one, the array
     will be unstacked.
 
-    Returns a list of :class:`dpctl.tensor.usm_ndarray`s, a list of
-    :class:`dpctl.SyclQueue`s, and a list of strings representing USM types.
+    Returns a list of :class:`dpctl.tensor.usm_ndarray`s.
     """
 
     if dpnp.is_supported_array_type(choices):
-        queues = [choices.sycl_queue]
-        usm_types = [choices.usm_type]
         choices = [dpnp.get_usm_ndarray(chc) for chc in dpnp.unstack(choices)]
     elif isinstance(choices, (tuple, list)):
-        queues = []
-        usm_types = []
         choices_ = []
         for chc in choices:
             chc_ = dpnp.get_usm_ndarray(chc)
             choices_.append(dpnp.get_usm_ndarray(chc_))
-            queues.append(chc_.sycl_queue)
-            usm_types.append(chc_.usm_type)
         choices = choices_
     else:
         raise TypeError("`choices` must be an array or sequence of arrays")
 
-    return choices, queues, usm_types
+    return choices
 
 
 def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
@@ -242,14 +235,9 @@ def choose(a, choices, out=None, mode="wrap"):
     if not dpnp.issubdtype(ind_dt, dpnp.integer):
         raise ValueError("input index array must be of integer data type")
 
-    choices, queues, usm_types = _build_choices_list(choices)
+    choices = _build_choices_list(choices)
 
-    res_usm_type = dpu.get_coerced_usm_type(usm_types)
-    exec_q = dpu.get_execution_queue(queues)
-    if exec_q is None:
-        raise dpu.ExecutionPlacementError(
-            "arrays must be allocated on the same SYCL queue"
-        )
+    res_usm_type, exec_q = get_usm_allocations(choices + [inds])
     # apply type promotion to input choices
     res_dt = dpt.result_type(*choices)
     if len(choices) > 1:
