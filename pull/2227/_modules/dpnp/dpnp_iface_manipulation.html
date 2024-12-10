@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+17.gb1056f657c6 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+19.ga6cabdf101b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9417955e"></script>
+      <script src="../../_static/documentation_options.js?v=cd0b3b00"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2326,11 +2326,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    arr : array_like</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    obj : {slice, int, array-like of ints}</span>
+<span class="sd">    obj : {slice, int, array-like of ints or bools}</span>
 <span class="sd">        Object that defines the index or indices before which `values` is</span>
 <span class="sd">        inserted. It supports multiple insertions when `obj` is a single</span>
 <span class="sd">        scalar or a sequence with one element (similar to calling insert</span>
 <span class="sd">        multiple times).</span>
+<span class="sd">        Boolean indices are treated as a mask of elements to insert.</span>
 <span class="sd">    values : array_like</span>
 <span class="sd">        Values to insert into `arr`. If the type of `values` is different</span>
 <span class="sd">        from that of `arr`, `values` is converted to the type of `arr`.</span>
@@ -2422,20 +2423,12 @@
             <span class="n">obj</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">params</span><span class="o">.</span><span class="n">usm_type</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;In the future insert will treat boolean arrays and array-likes&quot;</span>
-                <span class="s2">&quot; as a boolean index instead of casting it to integers&quot;</span><span class="p">,</span>
-                <span class="ne">FutureWarning</span><span class="p">,</span>
-                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
-            <span class="c1"># TODO: Code after warning period:</span>
-            <span class="c1"># if indices.ndim != 1:</span>
-            <span class="c1">#    raise ValueError(</span>
-            <span class="c1">#        &quot;boolean array argument `obj` to insert must be &quot;</span>
-            <span class="c1">#        &quot;one-dimensional&quot;</span>
-            <span class="c1">#    )</span>
-            <span class="c1"># indices = dpnp.nonzero(indices)[0]</span>
+            <span class="k">if</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;boolean array argument obj to insert &quot;</span>
+                    <span class="s2">&quot;must be one dimensional&quot;</span>
+                <span class="p">)</span>
+            <span class="n">indices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">flatnonzero</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">indices</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;index array argument `obj` to insert must be one-dimensional &quot;</span>
