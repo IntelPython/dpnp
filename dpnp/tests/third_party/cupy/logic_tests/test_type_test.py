@@ -88,20 +88,19 @@ class TestTypeTestingFunctions(unittest.TestCase):
     def test(self, xp, dtype):
         return getattr(xp, self.func)(xp.ones(5, dtype=dtype))
 
-    @pytest.mark.skip("support for scalar not implemented")
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_scalar(self, xp, dtype):
         return getattr(xp, self.func)(dtype(3))
 
-    @pytest.mark.skip("support for list not implemented")
+    @pytest.mark.skip("List input is not supported")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_list(self, xp, dtype):
-        a = testing.shaped_arange((2, 3), xp, dtype)
-        if xp == cupy:
-            a = a.asnumpy()
-        return getattr(xp, self.func)(a.tolist())
+        return getattr(xp, self.func)(
+            testing.shaped_arange((2, 3), xp, dtype).tolist()
+        )
 
 
 @testing.parameterize(

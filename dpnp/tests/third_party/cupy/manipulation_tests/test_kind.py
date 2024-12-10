@@ -4,11 +4,11 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
 class TestKind(unittest.TestCase):
+
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -28,22 +28,6 @@ class TestKind(unittest.TestCase):
             with pytest.raises(error):
                 xp.asarray_chkfinite(a, dtype=dtype, order=order)
 
-    @testing.with_requires("numpy<2.0")
-    @testing.for_all_dtypes()
-    def test_asfarray(self, dtype):
-        a = cupy.asarray([1, 2, 3])
-        a_gpu = cupy.asfarray(a, dtype)
-        a_cpu = numpy.asfarray(a, dtype)
-        if (
-            has_support_aspect64()
-            or cupy.issubdtype(dtype, cupy.complexfloating)
-            or cupy.issubdtype(dtype, cupy.floating)
-        ):
-            assert a_cpu.dtype == a_gpu.dtype
-        else:
-            assert a_cpu.dtype == cupy.float64
-            assert a_gpu.dtype == cupy.float32
-
     @testing.for_all_dtypes()
     def test_asfortranarray1(self, dtype):
         def func(xp):
@@ -51,6 +35,9 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(x)
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
+            if xp is cupy:
+                return tuple(el * ret.itemsize for el in ret.strides)
+            return ret.strides
 
         assert func(numpy) == func(cupy)
 
@@ -61,6 +48,9 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(x)
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
+            if xp is cupy:
+                return tuple(el * ret.itemsize for el in ret.strides)
+            return ret.strides
 
         assert func(numpy) == func(cupy)
 
@@ -71,6 +61,9 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(xp.asfortranarray(x))
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
+            if xp is cupy:
+                return tuple(el * ret.itemsize for el in ret.strides)
+            return ret.strides
 
         assert func(numpy) == func(cupy)
 
@@ -81,6 +74,9 @@ class TestKind(unittest.TestCase):
             x = xp.transpose(x, (1, 0))
             ret = xp.asfortranarray(x)
             assert ret.flags.f_contiguous
+            if xp is cupy:
+                return tuple(el * ret.itemsize for el in ret.strides)
+            return ret.strides
 
         assert func(numpy) == func(cupy)
 
@@ -91,6 +87,9 @@ class TestKind(unittest.TestCase):
             ret = xp.asfortranarray(x)
             assert x.flags.c_contiguous
             assert ret.flags.f_contiguous
+            if xp is cupy:
+                return tuple(el * ret.itemsize for el in ret.strides)
+            return ret.strides
 
         assert func(numpy) == func(cupy)
 

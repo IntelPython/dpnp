@@ -1,6 +1,6 @@
+import itertools
 import warnings
 
-import dpctl
 import numpy
 import pytest
 
@@ -14,6 +14,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestBasic:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_copyto(self, xp, dtype):
@@ -95,6 +96,15 @@ class TestBasic:
         xp.copyto(a, b, where=c)
         return a
 
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_copyto_where_squeeze_broadcast(self, xp, dtype):
+        a = testing.shaped_arange((2, 3, 4), xp, dtype)
+        b = testing.shaped_reverse_arange((1, 2, 1, 4), xp, dtype)
+        c = testing.shaped_arange((3, 4), xp, "?")
+        xp.copyto(a, b, where=c)
+        return a
+
     @pytest.mark.parametrize("shape", [(2, 3, 4), (0,)])
     @testing.for_all_dtypes(no_bool=True)
     def test_copyto_where_raises(self, dtype, shape):
@@ -105,38 +115,94 @@ class TestBasic:
             with pytest.raises(TypeError):
                 xp.copyto(a, b, where=c)
 
-    @testing.for_all_dtypes()
-    def test_copyto_where_multidevice_raises(self, dtype):
-        a = testing.shaped_arange(
-            (2, 3, 4), cupy, dtype, device=dpctl.SyclQueue()
-        )
-        b = testing.shaped_reverse_arange(
-            (2, 3, 4), cupy, dtype, device=dpctl.SyclQueue()
-        )
-        c = testing.shaped_arange(
-            (2, 3, 4), cupy, "?", device=dpctl.SyclQueue()
-        )
-        with pytest.raises(
-            dpctl.utils.ExecutionPlacementError,
-            match="arrays have different associated queues",
-        ):
-            cupy.copyto(a, b, where=c)
+    def _check_copyto_where_multigpu_raises(self, dtype, ngpus):
+        def get_numpy():
+            a = testing.shaped_arange((2, 3, 4), numpy, dtype)
+            b = testing.shaped_reverse_arange((2, 3, 4), numpy, dtype)
+            c = testing.shaped_arange((2, 3, 4), numpy, "?")
+            numpy.copyto(a, b, where=c)
+            return a
 
-    @testing.for_all_dtypes()
-    def test_copyto_noncontinguous(self, dtype):
-        src = testing.shaped_arange((2, 3, 4), cupy, dtype)
-        src = src.swapaxes(0, 1)
+        for dev1, dev2, dev3, dev4 in itertools.product(*[range(ngpus)] * 4):
+            if dev1 == dev2 == dev3 == dev4:
+                continue
+            if not dev1 <= dev2 <= dev3 <= dev4:
+                continue
 
-        dst = cupy.empty_like(src)
-        cupy.copyto(dst, src)
+            with cuda.Device(dev1):
+                a = testing.shaped_arange((2, 3, 4), cupy, dtype)
+            with cuda.Device(dev2):
+                b = testing.shaped_reverse_arange((2, 3, 4), cupy, dtype)
+            with cuda.Device(dev3):
+                c = testing.shaped_arange((2, 3, 4), cupy, "?")
+            with cuda.Device(dev4):
+                if all(
+                    [
+                        (peer == dev4)
+                        or (cuda.runtime.deviceCanAccessPeer(dev4, peer) == 1)
+                        for peer in (dev1, dev2, dev3)
+                    ]
+                ):
+                    with pytest.warns(cupy._util.PerformanceWarning):
+                        cupy.copyto(a, b, where=c)
+                else:
+                    with pytest.raises(
+                        ValueError, match="Peer access is unavailable"
+                    ):
+                        cupy.copyto(a, b, where=c)
+
+    @pytest.mark.skip("multi GPU is not supported")
+    @testing.multi_gpu(2)
+    @testing.for_all_dtypes()
+    def test_copyto_where_multigpu_raises(self, dtype):
+        self._check_copyto_where_multigpu_raises(dtype, 2)
+
+    @pytest.mark.skip("multi GPU is not supported")
+    @testing.multi_gpu(4)
+    @testing.for_all_dtypes()
+    def test_copyto_where_multigpu_raises_4(self, dtype):
+        self._check_copyto_where_multigpu_raises(dtype, 4)
+
+    @pytest.mark.skip("multi GPU is not supported")
+    @testing.multi_gpu(6)
+    @testing.for_all_dtypes()
+    def test_copyto_where_multigpu_raises_6(self, dtype):
+        self._check_copyto_where_multigpu_raises(dtype, 6)
+
+    @pytest.mark.skip("multi GPU is not supported")
+    @testing.multi_gpu(2)
+    @testing.for_all_dtypes()
+    @testing.numpy_cupy_array_equal()
+    def test_copyto_multigpu(self, xp, dtype):
+        with cuda.Device(0):
+            a = testing.shaped_arange((2, 3, 4), xp, dtype)
+        with cuda.Device(1):
+            b = xp.empty((2, 3, 4), dtype=dtype)
+        xp.copyto(b, a)
+        return b
+
+    @pytest.mark.skip("multi GPU is not supported")
+    @testing.multi_gpu(2)
+    @testing.for_all_dtypes()
+    def test_copyto_multigpu_noncontinguous(self, dtype):
+        with cuda.Device(0):
+            src = testing.shaped_arange((2, 3, 4), cupy, dtype)
+            src = src.swapaxes(0, 1)
+        with cuda.Device(1):
+            dst = cupy.empty_like(src)
+            cupy.copyto(dst, src)
 
         expected = testing.shaped_arange((2, 3, 4), numpy, dtype)
         expected = expected.swapaxes(0, 1)
 
-        testing.assert_array_equal(expected, src)
-        testing.assert_array_equal(expected, dst)
+        testing.assert_array_equal(expected, src.get())
+        testing.assert_array_equal(expected, dst.get())
 
 
+@pytest.mark.skipif(
+    numpy.__version__ < "2",
+    reason="XXX: NP2.0: copyto is in flux in numpy 2.0.0rc2",
+)
 @testing.parameterize(
     *testing.product(
         {
@@ -146,15 +212,16 @@ class TestBasic:
     )
 )
 class TestCopytoFromScalar:
+
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(accept_error=(TypeError, OverflowError))
     def test_copyto(self, xp, dtype):
         dst = xp.ones(self.dst_shape, dtype=dtype)
         xp.copyto(dst, self.src)
         return dst
 
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_allclose(accept_error=TypeError)
+    @testing.numpy_cupy_allclose(accept_error=(TypeError, OverflowError))
     def test_copyto_where(self, xp, dtype):
         dst = xp.ones(self.dst_shape, dtype=dtype)
         mask = (testing.shaped_arange(self.dst_shape, xp, dtype) % 2).astype(
@@ -164,18 +231,15 @@ class TestCopytoFromScalar:
         return dst
 
 
+@testing.with_requires("numpy>=2.1")
 @pytest.mark.parametrize(
     "casting", ["no", "equiv", "safe", "same_kind", "unsafe"]
 )
 class TestCopytoFromNumpyScalar:
+
     @testing.for_all_dtypes_combination(("dtype1", "dtype2"))
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_copyto(self, xp, dtype1, dtype2, casting):
-        if casting == "safe":
-            pytest.skip(
-                "NEP50 doesn't work properly in numpy with casting='safe'"
-            )
-
         dst = xp.zeros((2, 3, 4), dtype=dtype1)
         src = numpy.array(1, dtype=dtype2)
         with warnings.catch_warnings():
@@ -192,7 +256,6 @@ class TestCopytoFromNumpyScalar:
     def test_copyto2(self, xp, make_src, dtype, casting):
         dst = xp.zeros((2, 3, 4), dtype=dtype)
         src = make_src(dtype)
-
         with warnings.catch_warnings():
             warnings.simplefilter("ignore", ComplexWarning)
             xp.copyto(dst, src, casting)
@@ -201,11 +264,6 @@ class TestCopytoFromNumpyScalar:
     @testing.for_all_dtypes_combination(("dtype1", "dtype2"))
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_copyto_where(self, xp, dtype1, dtype2, casting):
-        if casting == "safe":
-            pytest.skip(
-                "NEP50 doesn't work properly in numpy with casting='safe'"
-            )
-
         shape = (2, 3, 4)
         dst = xp.ones(shape, dtype=dtype1)
         src = numpy.array(1, dtype=dtype2)

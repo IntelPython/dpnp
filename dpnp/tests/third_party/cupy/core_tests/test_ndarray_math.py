@@ -3,6 +3,7 @@ import unittest
 import numpy
 import pytest
 
+import dpnp as cupy
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
@@ -15,6 +16,7 @@ from dpnp.tests.third_party.cupy import testing
     )
 )
 class TestRound(unittest.TestCase):
+
     shape = (20,)
 
     @testing.for_all_dtypes()
@@ -33,8 +35,9 @@ class TestRound(unittest.TestCase):
 
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_round_out(self, xp):
-        dtype = "d" if has_support_aspect64() else "f"
-        a = testing.shaped_random(self.shape, xp, scale=100, dtype=dtype)
+        a = testing.shaped_random(
+            self.shape, xp, scale=100, dtype=cupy.default_float_type()
+        )
         out = xp.empty_like(a)
         a.round(self.decimals, out)
         return out
@@ -51,6 +54,7 @@ class TestRound(unittest.TestCase):
     )
 )
 class TestRoundHalfway(unittest.TestCase):
+
     shape = (20,)
 
     @testing.for_float_dtypes()
@@ -112,6 +116,7 @@ class TestRoundHalfway(unittest.TestCase):
 
 @testing.parameterize(*testing.product({"decimals": [-5, -4, -3, -2, -1, 0]}))
 class TestRoundMinMax(unittest.TestCase):
+
     @unittest.skip("Known incompatibility: see core.pyx")
     @testing.numpy_cupy_array_equal()
     def _test_round_int64(self, xp):
