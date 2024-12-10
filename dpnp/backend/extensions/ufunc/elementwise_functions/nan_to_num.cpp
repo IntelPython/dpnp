@@ -60,6 +60,22 @@ namespace dpnp::extensions::ufunc
 
 namespace impl
 {
+
+template <typename T>
+struct value_type_of
+{
+    using type = T;
+};
+
+template <typename T>
+struct value_type_of<std::complex<T>>
+{
+    using type = T;
+};
+
+template <typename T>
+using value_type_of_t = typename value_type_of<T>::type;
+
 typedef sycl::event (*nan_to_num_fn_ptr_t)(sycl::queue &,
                                            int,
                                            size_t,
@@ -87,30 +103,18 @@ sycl::event nan_to_num_call(sycl::queue &exec_q,
                             py::ssize_t dst_offset,
                             const std::vector<sycl::event> &depends)
 {
-    sycl::event to_num_ev;
+    using dpctl::tensor::type_utils::is_complex_v;
+    using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
-    using dpctl::tensor::type_utils::is_complex;
-    if constexpr (is_complex<T>::value) {
-        using realT = typename T::value_type;
-        realT nan_v = py::cast<realT>(py_nan);
-        realT posinf_v = py::cast<realT>(py_posinf);
-        realT neginf_v = py::cast<realT>(py_neginf);
+    scT nan_v = py::cast<scT>(py_nan);
+    scT posinf_v = py::cast<scT>(py_posinf);
+    scT neginf_v = py::cast<scT>(py_neginf);
 
-        using dpnp::kernels::nan_to_num::nan_to_num_impl;
-        to_num_ev = nan_to_num_impl<T, realT>(
-            exec_q, nd, nelems, shape_strides, nan_v, posinf_v, neginf_v, arg_p,
-            arg_offset, dst_p, dst_offset, depends);
-    }
-    else {
-        T nan_v = py::cast<T>(py_nan);
-        T posinf_v = py::cast<T>(py_posinf);
-        T neginf_v = py::cast<T>(py_neginf);
+    using dpnp::kernels::nan_to_num::nan_to_num_impl;
+    sycl::event to_num_ev = nan_to_num_impl<T, scT>(
+        exec_q, nd, nelems, shape_strides, nan_v, posinf_v, neginf_v, arg_p,
+        arg_offset, dst_p, dst_offset, depends);
 
-        using dpnp::kernels::nan_to_num::nan_to_num_impl;
-        to_num_ev = nan_to_num_impl<T, T>(
-            exec_q, nd, nelems, shape_strides, nan_v, posinf_v, neginf_v, arg_p,
-            arg_offset, dst_p, dst_offset, depends);
-    }
     return to_num_ev;
 }
 
@@ -134,28 +138,17 @@ sycl::event nan_to_num_contig_call(sycl::queue &exec_q,
                                    char *dst_p,
                                    const std::vector<sycl::event> &depends)
 {
-    sycl::event to_num_contig_ev;
+    using dpctl::tensor::type_utils::is_complex_v;
+    using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
-    using dpctl::tensor::type_utils::is_complex;
-    if constexpr (is_complex<T>::value) {
-        using realT = typename T::value_type;
-        realT nan_v = py::cast<realT>(py_nan);
-        realT posinf_v = py::cast<realT>(py_posinf);
-        realT neginf_v = py::cast<realT>(py_neginf);
+    scT nan_v = py::cast<scT>(py_nan);
+    scT posinf_v = py::cast<scT>(py_posinf);
+    scT neginf_v = py::cast<scT>(py_neginf);
 
-        using dpnp::kernels::nan_to_num::nan_to_num_contig_impl;
-        to_num_contig_ev = nan_to_num_contig_impl<T, realT>(
-            exec_q, nelems, nan_v, posinf_v, neginf_v, arg_p, dst_p, depends);
-    }
-    else {
-        T nan_v = py::cast<T>(py_nan);
-        T posinf_v = py::cast<T>(py_posinf);
-        T neginf_v = py::cast<T>(py_neginf);
+    using dpnp::kernels::nan_to_num::nan_to_num_contig_impl;
+    sycl::event to_num_contig_ev = nan_to_num_contig_impl<T, scT>(
+        exec_q, nelems, nan_v, posinf_v, neginf_v, arg_p, dst_p, depends);
 
-        using dpnp::kernels::nan_to_num::nan_to_num_contig_impl;
-        to_num_contig_ev = nan_to_num_contig_impl<T, T>(
-            exec_q, nelems, nan_v, posinf_v, neginf_v, arg_p, dst_p, depends);
-    }
     return to_num_contig_ev;
 }
 
