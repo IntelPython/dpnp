@@ -40,6 +40,7 @@ it contains:
 # pylint: disable=protected-access
 
 import operator
+from collections.abc import Iterable
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
@@ -130,7 +131,7 @@ def _build_choices_list(choices):
 
     if dpnp.is_supported_array_type(choices):
         choices = [dpnp.get_usm_ndarray(chc) for chc in dpnp.unstack(choices)]
-    elif isinstance(choices, (tuple, list)):
+    elif isinstance(choices, Iterable):
         choices_ = []
         for chc in choices:
             chc_ = dpnp.get_usm_ndarray(chc)
