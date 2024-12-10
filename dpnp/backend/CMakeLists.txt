@@ -56,17 +56,17 @@ set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
-if (WIN32)
-  target_compile_options(${_trgt} PRIVATE
-    /clang:-fno-approx-func
-    /clang:-fno-finite-math-only
-    )
-else()
-  target_compile_options(${_trgt} PRIVATE
-    -fno-approx-func
-    -fno-finite-math-only
-    )
-endif()
+# if (WIN32)
+#   target_compile_options(${_trgt} PRIVATE
+#     /clang:-fno-approx-func
+#     /clang:-fno-finite-math-only
+#     )
+# else()
+#   target_compile_options(${_trgt} PRIVATE
+#     -fno-approx-func
+#     -fno-finite-math-only
+#     )
+# endif()
 
 # if (WIN32)
 #   target_compile_definitions(${_trgt} PRIVATE _WIN=1)

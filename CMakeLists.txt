@@ -144,6 +144,7 @@ if(WIN32)
         "-Wunused-function "
         "-Wuninitialized "
         "-Wmissing-declarations "
+        "-Wstrict-prototypes "
         "-Wno-unused-parameter "
     )
     string(CONCAT SDL_FLAGS

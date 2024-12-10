@@ -24,7 +24,7 @@
 //*****************************************************************************
 
 #include <cmath>
-#include <iostream>
+// #include <iostream>
 #include <stdexcept>
 
 #include <dpnp_iface.hpp>
