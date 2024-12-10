@@ -1,0 +1,300 @@
+//*****************************************************************************
+// Copyright (c) 2024, Intel Corporation
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+// ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+// LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+// CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+// SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+// INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+// CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+// ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+// THE POSSIBILITY OF SUCH DAMAGE.
+//*****************************************************************************
+
+#include <stdexcept>
+
+#include <sycl/sycl.hpp>
+
+#include "dpctl4pybind11.hpp"
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+
+#include "kernels/elementwise_functions/nan_to_num.hpp"
+
+#include "../../elementwise_functions/simplify_iteration_space.hpp"
+
+// dpctl tensor headers
+#include "utils/memory_overlap.hpp"
+#include "utils/offset_utils.hpp"
+#include "utils/output_validation.hpp"
+#include "utils/sycl_alloc_utils.hpp"
+#include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
+
+namespace py = pybind11;
+namespace td_ns = dpctl::tensor::type_dispatch;
+
+// declare pybind11 wrappers in py_internal namespace
+namespace dpnp::extensions::ufunc
+{
+
+namespace impl
+{
+typedef sycl::event (*nan_to_num_fn_ptr_t)(sycl::queue &,
+                                           int,
+                                           size_t,
+                                           py::ssize_t *,
+                                           const py::object &,
+                                           const py::object &,
+                                           const py::object &,
+                                           const char *,
+                                           py::ssize_t,
+                                           char *,
+                                           py::ssize_t,
+                                           const std::vector<sycl::event> &);
+
+template <typename T>
+sycl::event nan_to_num_call(sycl::queue &exec_q,
+                            int nd,
+                            size_t nelems,
+                            py::ssize_t *shape_strides,
+                            const py::object &py_nan,
+                            const py::object &py_posinf,
+                            const py::object &py_neginf,
+                            const char *arg_p,
+                            py::ssize_t arg_offset,
+                            char *dst_p,
+                            py::ssize_t dst_offset,
+                            const std::vector<sycl::event> &depends)
+{
+    sycl::event to_num_ev;
+
+    using dpctl::tensor::type_utils::is_complex;
+    if constexpr (is_complex<T>::value) {
+        using realT = typename T::value_type;
+        realT nan_v = py::cast<realT>(py_nan);
+        realT posinf_v = py::cast<realT>(py_posinf);
+        realT neginf_v = py::cast<realT>(py_neginf);
+
+        using dpnp::kernels::nan_to_num::nan_to_num_impl;
+        to_num_ev = nan_to_num_impl<T, realT>(
+            exec_q, nd, nelems, shape_strides, nan_v, posinf_v, neginf_v, arg_p,
+            arg_offset, dst_p, dst_offset, depends);
+    }
+    else {
+        T nan_v = py::cast<T>(py_nan);
+        T posinf_v = py::cast<T>(py_posinf);
+        T neginf_v = py::cast<T>(py_neginf);
+
+        using dpnp::kernels::nan_to_num::nan_to_num_impl;
+        to_num_ev = nan_to_num_impl<T, T>(
+            exec_q, nd, nelems, shape_strides, nan_v, posinf_v, neginf_v, arg_p,
+            arg_offset, dst_p, dst_offset, depends);
+    }
+    return to_num_ev;
+}
+
+namespace td_ns = dpctl::tensor::type_dispatch;
+nan_to_num_fn_ptr_t nan_to_num_dispatch_vector[td_ns::num_types];
+
+std::pair<sycl::event, sycl::event>
+    py_nan_to_num(const dpctl::tensor::usm_ndarray &src,
+                  const py::object &py_nan,
+                  const py::object &py_posinf,
+                  const py::object &py_neginf,
+                  const dpctl::tensor::usm_ndarray &dst,
+                  sycl::queue &q,
+                  const std::vector<sycl::event> &depends)
+{
+    int src_typenum = src.get_typenum();
+    int dst_typenum = dst.get_typenum();
+
+    const auto &array_types = td_ns::usm_ndarray_types();
+    int src_typeid = array_types.typenum_to_lookup_id(src_typenum);
+    int dst_typeid = array_types.typenum_to_lookup_id(dst_typenum);
+
+    if (src_typeid != dst_typeid) {
+        throw py::value_error("Array data types are not the same.");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(q, {src, dst})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(dst);
+
+    int src_nd = src.get_ndim();
+    if (src_nd != dst.get_ndim()) {
+        throw py::value_error("Array dimensions are not the same.");
+    }
+
+    const py::ssize_t *src_shape = src.get_shape_raw();
+    const py::ssize_t *dst_shape = dst.get_shape_raw();
+
+    bool shapes_equal(true);
+    size_t nelems(1);
+    for (int i = 0; i < src_nd; ++i) {
+        nelems *= static_cast<size_t>(src_shape[i]);
+        shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
+    }
+    if (!shapes_equal) {
+        throw py::value_error("Array shapes are not the same.");
+    }
+
+    // if nelems is zero, return
+    if (nelems == 0) {
+        return std::make_pair(sycl::event(), sycl::event());
+    }
+
+    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(dst, nelems);
+
+    // check memory overlap
+    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
+    auto const &same_logical_tensors =
+        dpctl::tensor::overlap::SameLogicalTensors();
+    if (overlap(src, dst) && !same_logical_tensors(src, dst)) {
+        throw py::value_error("Arrays index overlapping segments of memory");
+    }
+
+    const char *src_data = src.get_data();
+    char *dst_data = dst.get_data();
+
+    auto const &src_strides = src.get_strides_vector();
+    auto const &dst_strides = dst.get_strides_vector();
+
+    using shT = std::vector<py::ssize_t>;
+    shT simplified_shape;
+    shT simplified_src_strides;
+    shT simplified_dst_strides;
+    py::ssize_t src_offset(0);
+    py::ssize_t dst_offset(0);
+
+    int nd = src_nd;
+    const py::ssize_t *shape = src_shape;
+
+    py_internal::simplify_iteration_space(
+        nd, shape, src_strides, dst_strides,
+        // output
+        simplified_shape, simplified_src_strides, simplified_dst_strides,
+        src_offset, dst_offset);
+
+    auto fn = nan_to_num_dispatch_vector[src_typeid];
+
+    if (fn == nullptr) {
+        throw std::runtime_error(
+            "nan_to_num implementation is missing for src_typeid=" +
+            std::to_string(src_typeid));
+    }
+
+    using dpctl::tensor::offset_utils::device_allocate_and_pack;
+
+    std::vector<sycl::event> host_tasks{};
+    host_tasks.reserve(2);
+
+    const auto &ptr_size_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+        q, host_tasks, simplified_shape, simplified_src_strides,
+        simplified_dst_strides);
+    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_triple_);
+    const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_triple_);
+
+    if (shape_strides == nullptr) {
+        throw std::runtime_error("Device memory allocation failed");
+    }
+
+    std::vector<sycl::event> all_deps;
+    all_deps.reserve(depends.size() + 1);
+    all_deps.insert(all_deps.end(), depends.begin(), depends.end());
+    all_deps.push_back(copy_shape_ev);
+
+    sycl::event comp_ev =
+        fn(q, nelems, nd, shape_strides, py_nan, py_posinf, py_neginf, src_data,
+           src_offset, dst_data, dst_offset, all_deps);
+
+    // async free of shape_strides temporary
+    auto ctx = q.get_context();
+    sycl::event tmp_cleanup_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(comp_ev);
+        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
+        cgh.host_task(
+            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
+    });
+    host_tasks.push_back(tmp_cleanup_ev);
+
+    return std::make_pair(
+        dpctl::utils::keep_args_alive(q, {src, dst}, host_tasks), comp_ev);
+}
+
+namespace py_int = dpnp::extensions::py_internal;
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * nan_to_num_call<T> function is available.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct NanToNumOutputType
+{
+    using value_type = typename std::disjunction<
+        td_ns::TypeMapResultEntry<T, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+template <typename fnT, typename T>
+struct NanToNumFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_same_v<typename NanToNumOutputType<T>::value_type,
+                                     void>) {
+            return nullptr;
+        }
+        else {
+            using ::dpnp::extensions::ufunc::impl::nan_to_num_call;
+            return nan_to_num_call<T>;
+        }
+    }
+};
+
+void populate_nan_to_num_dispatch_vector(void)
+{
+    using namespace td_ns;
+
+    DispatchVectorBuilder<nan_to_num_fn_ptr_t, NanToNumFactory, num_types> dvb;
+    dvb.populate_dispatch_vector(nan_to_num_dispatch_vector);
+}
+
+} // namespace impl
+
+void init_nan_to_num(py::module_ m)
+{
+    {
+        impl::populate_nan_to_num_dispatch_vector();
+
+        using impl::py_nan_to_num;
+        m.def("_nan_to_num", &py_nan_to_num, "", py::arg("src"),
+              py::arg("py_nan"), py::arg("py_posinf"), py::arg("py_neginf"),
+              py::arg("dst"), py::arg("sycl_queue"),
+              py::arg("depends") = py::list());
+    }
+}
+
+} // namespace dpnp::extensions::ufunc
