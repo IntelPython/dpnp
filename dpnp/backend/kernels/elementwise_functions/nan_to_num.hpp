@@ -95,16 +95,16 @@ class NanToNumKernel;
 
 template <typename T, typename scT>
 sycl::event nan_to_num_impl(sycl::queue &q,
-                            size_t nelems,
-                            int nd,
+                            const size_t nelems,
+                            const int nd,
                             const dpctl::tensor::ssize_t *shape_strides,
                             const scT nan,
                             const scT posinf,
                             const scT neginf,
                             const char *in_cp,
-                            dpctl::tensor::ssize_t in_offset,
+                            const dpctl::tensor::ssize_t in_offset,
                             char *out_cp,
-                            dpctl::tensor::ssize_t out_offset,
+                            const dpctl::tensor::ssize_t out_offset,
                             const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
@@ -132,7 +132,7 @@ class NanToNumContigKernel;
 
 template <typename T, typename scT>
 sycl::event nan_to_num_contig_impl(sycl::queue &q,
-                                   size_t nelems,
+                                   const size_t nelems,
                                    const scT nan,
                                    const scT posinf,
                                    const scT neginf,
