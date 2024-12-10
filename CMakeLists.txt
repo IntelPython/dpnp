@@ -17,6 +17,12 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY BOTH)
 
 
 find_package(IntelSYCL REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
+
+message(STATUS "CMAKE_SOURCE_DIR=" ${CMAKE_SOURCE_DIR})
+message(STATUS "CMAKE_MODULE_PATH=" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/dpnp/backend/cmake/Modules")
+find_package(IntelSyclCompiler REQUIRED)
+# find_package(IntelSyclCompiler REQUIRED PATHS ${CMAKE_SOURCE_DIR}/dpnp/backend/cmake/Modules NO_DEFAULT_PATH)
 find_package(TBB QUIET)
 if(TBB_FOUND)
     find_package(TBB REQUIRED)
