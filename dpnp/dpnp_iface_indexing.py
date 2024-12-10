@@ -239,7 +239,7 @@ def choose(a, choices, out=None, mode="wrap"):
 
     inds = dpnp.get_usm_ndarray(a)
     ind_dt = inds.dtype
-    if ind_dt.kind not in "ui":
+    if not dpnp.issubdtype(ind_dt, dpnp.integer):
         raise ValueError("input index array must be of integer data type")
 
     choices, queues, usm_types = _build_choices_list(choices)
