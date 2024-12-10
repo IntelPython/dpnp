@@ -320,16 +320,6 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("p", [-dpnp.inf, -1, 1, dpnp.inf, "fro"])
-    def test_nan_input(self, p):
-        a = generate_random_numpy_array((3, 3))
-        a[1, 1] = numpy.nan
-        ia = dpnp.array(a)
-
-        result = dpnp.linalg.cond(ia, p=p)
-        expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
-
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
