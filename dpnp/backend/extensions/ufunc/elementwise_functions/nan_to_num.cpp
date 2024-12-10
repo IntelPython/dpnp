@@ -342,8 +342,6 @@ std::pair<sycl::event, sycl::event>
         dpctl::utils::keep_args_alive(q, {src, dst}, host_tasks), comp_ev);
 }
 
-namespace py_int = dpnp::extensions::py_internal;
-
 /**
  * @brief A factory to define pairs of supported types for which
  * nan_to_num_call<T> function is available.
@@ -372,7 +370,6 @@ struct NanToNumFactory
             return nullptr;
         }
         else {
-            using ::dpnp::extensions::ufunc::impl::nan_to_num_call;
             return nan_to_num_call<T>;
         }
     }
@@ -388,7 +385,6 @@ struct NanToNumContigFactory
             return nullptr;
         }
         else {
-            using ::dpnp::extensions::ufunc::impl::nan_to_num_contig_call;
             return nan_to_num_contig_call<T>;
         }
     }
