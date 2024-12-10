@@ -145,7 +145,6 @@ def _build_choices_list(choices):
 def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
     # arg validation, broadcasting, type coercion assumed done by caller
     if out is not None:
-        dpnp.check_supported_arrays_type(out)
         out = dpnp.get_usm_ndarray(out)
 
         if not out.flags.writable:
