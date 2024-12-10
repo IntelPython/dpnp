@@ -23,7 +23,14 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <algorithm>
+#include <complex>
 #include <stdexcept>
+#include <string>
+#include <tuple>
+#include <type_traits>
+#include <utility>
+#include <vector>
 
 #include <sycl/sycl.hpp>
 
@@ -145,12 +152,8 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
-    bool shapes_equal(true);
-    size_t nelems(1);
-    for (int i = 0; i < src_nd; ++i) {
-        nelems *= static_cast<size_t>(src_shape[i]);
-        shapes_equal = shapes_equal && (src_shape[i] == dst_shape[i]);
-    }
+    size_t nelems = src.get_size();
+    bool shapes_equal = std::equal(src_shape, src_shape + src_nd, dst_shape);
     if (!shapes_equal) {
         throw py::value_error("Array shapes are not the same.");
     }
