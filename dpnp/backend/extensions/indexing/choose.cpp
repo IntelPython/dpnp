@@ -228,8 +228,10 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Array memory overlap.");
     }
 
-    py::ssize_t src_offset = py::ssize_t(0);
-    py::ssize_t dst_offset = py::ssize_t(0);
+    // trivial offsets as choose does not apply stride
+    // simplification, but may in the future
+    constexpr py::ssize_t src_offset = py::ssize_t(0);
+    constexpr py::ssize_t dst_offset = py::ssize_t(0);
 
     int src_typenum = src.get_typenum();
     int dst_typenum = dst.get_typenum();
