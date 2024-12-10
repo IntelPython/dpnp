@@ -879,21 +879,6 @@ class TestTakeAlongAxis:
         assert (result == dpnp.array([-2, 0, -2, 2])).all()
 
 
-def test_choose():
-    a = numpy.r_[:4]
-    ia = dpnp.array(a)
-    b = numpy.r_[-4:0]
-    ib = dpnp.array(b)
-    c = numpy.r_[100:500:100]
-    ic = dpnp.array(c)
-
-    inds_np = numpy.zeros(4, dtype="i4")
-    inds = dpnp.zeros(4, dtype="i4")
-    expected = numpy.choose(inds_np, [a, b, c])
-    result = dpnp.choose(inds, [ia, ib, ic])
-    assert_array_equal(expected, result)
-
-
 @pytest.mark.parametrize("val", [-1, 0, 1], ids=["-1", "0", "1"])
 @pytest.mark.parametrize(
     "array",
@@ -1448,3 +1433,76 @@ class TestCompress:
         result = dpnp.compress(cond, a)
         expected = numpy.compress(cond_np, a_np)
         assert_array_equal(result, expected)
+
+
+class TestChoose:
+    def test_choose_basic(self):
+        indices = [0, 1, 0]
+        # use a single array for choices
+        chcs_np = numpy.arange(2 * len(indices))
+        chcs = dpnp.arange(2 * len(indices))
+        inds_np = numpy.array(indices)
+        inds = dpnp.array(indices)
+        expected = numpy.choose(inds_np, chcs_np)
+        result = dpnp.choose(inds, chcs)
+        assert_array_equal(expected, result)
+
+    def test_choose_method_basic(self):
+        indices = [0, 1, 2]
+        # use a single array for choices
+        chcs_np = numpy.arange(3 * len(indices))
+        chcs = dpnp.arange(3 * len(indices))
+        inds_np = numpy.array(indices)
+        inds = dpnp.array(indices)
+        expected = inds_np.choose(chcs_np)
+        result = inds.choose(chcs)
+        assert_array_equal(expected, result)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    def test_choose_inds_all_dtypes(self, dtype):
+        if not dpnp.issubdtype(dtype, dpnp.integer) and dtype != dpnp.bool:
+            inds = dpnp.zeros(1, dtype=dtype)
+            chcs = dpnp.ones(1, dtype=dtype)
+            with pytest.raises(TypeError):
+                dpnp.choose(inds, chcs)
+        else:
+            inds_np = numpy.array([1, 0, 1], dtype=dtype)
+            inds = dpnp.array(inds_np)
+            chcs_np = numpy.array([1, 2, 3], dtype=dtype)
+            chcs = dpnp.array(chcs_np)
+            expected = numpy.choose(inds_np, chcs_np)
+            result = dpnp.choose(inds, chcs)
+            assert_array_equal(expected, result)
+
+    def test_choose_invalid_out_errors(self):
+        q1 = dpctl.SyclQueue()
+        q2 = dpctl.SyclQueue()
+        chcs = dpnp.ones(10, dtype="i4", sycl_queue=q1)
+        inds = dpnp.zeros(10, dtype="i4", sycl_queue=q1)
+        out_bad_shape = dpnp.empty(11, dtype=chcs.dtype, sycl_queue=q1)
+        with pytest.raises(ValueError):
+            dpnp.choose(inds, [chcs], out=out_bad_shape)
+        out_bad_queue = dpnp.empty(chcs.shape, dtype=chcs.dtype, sycl_queue=q2)
+        with pytest.raises(ExecutionPlacementError):
+            dpnp.choose(inds, [chcs], out=out_bad_queue)
+        out_bad_dt = dpnp.empty(chcs.shape, dtype="i8", sycl_queue=q1)
+        with pytest.raises(TypeError):
+            dpnp.choose(inds, [chcs], out=out_bad_dt)
+        out_read_only = dpnp.empty(chcs.shape, dtype=chcs.dtype, sycl_queue=q1)
+        out_read_only.flags.writable = False
+        with pytest.raises(ValueError):
+            dpnp.choose(inds, [chcs], out=out_read_only)
+
+    def test_choose_empty(self):
+        sh = (10, 0, 5)
+        inds = dpnp.ones(sh, dtype="i4")
+        chcs = dpnp.ones(sh)
+        r = dpnp.choose(inds, chcs)
+        assert r.shape == sh
+        r = dpnp.choose(inds, (chcs,) * 2)
+        assert r.shape == sh
+        inds = dpnp.unstack(inds)[0]
+        r = dpnp.choose(inds, chcs)
+        assert r.shape == sh[1:]
+        r = dpnp.choose(inds, [chcs])
+        assert r.shape == sh
