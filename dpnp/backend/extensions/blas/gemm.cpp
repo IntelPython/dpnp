@@ -55,7 +55,9 @@ typedef sycl::event (*gemm_impl_fn_ptr_t)(sycl::queue &,
                                           const std::int64_t,
                                           char *,
                                           const std::int64_t,
+#if !defined(USE_ONEMKL_CUBLAS)
                                           const bool,
+#endif // !USE_ONEMKL_CUBLAS
                                           const std::vector<sycl::event> &);
 
 static gemm_impl_fn_ptr_t gemm_dispatch_table[dpctl_td_ns::num_types]
@@ -74,7 +76,9 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
                              const std::int64_t ldb,
                              char *resultC,
                              const std::int64_t ldc,
+#if !defined(USE_ONEMKL_CUBLAS)
                              const bool is_row_major,
+#endif // !USE_ONEMKL_CUBLAS
                              const std::vector<sycl::event> &depends)
 {
     type_utils::validate_type_for_device<Tab>(exec_q);
@@ -236,6 +240,7 @@ std::tuple<sycl::event, sycl::event, bool>
     std::int64_t lda;
     std::int64_t ldb;
 
+// cuBLAS supports only column-major storage
 #if defined(USE_ONEMKL_CUBLAS)
     const bool is_row_major = false;
 
@@ -315,9 +320,15 @@ std::tuple<sycl::event, sycl::event, bool>
     const char *b_typeless_ptr = matrixB.get_data();
     char *r_typeless_ptr = resultC.get_data();
 
+#if defined(USE_ONEMKL_CUBLAS)
+    sycl::event gemm_ev =
+        gemm_fn(exec_q, transA, transB, m, n, k, a_typeless_ptr, lda,
+                b_typeless_ptr, ldb, r_typeless_ptr, ldc, depends);
+#else
     sycl::event gemm_ev = gemm_fn(exec_q, transA, transB, m, n, k,
                                   a_typeless_ptr, lda, b_typeless_ptr, ldb,
                                   r_typeless_ptr, ldc, is_row_major, depends);
+#endif // USE_ONEMKL_CUBLAS
 
     sycl::event args_ev = dpctl::utils::keep_args_alive(
         exec_q, {matrixA, matrixB, resultC}, {gemm_ev});
