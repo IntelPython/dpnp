@@ -163,7 +163,7 @@ class TestCholeskyInvalid(unittest.TestCase):
 class TestQRDecomposition(unittest.TestCase):
 
     @testing.for_dtypes("fdFD")
-    # skip cases with 'complete' and 'reduce' modes on CUDA (SAT-7589)
+    # skip cases with 'complete' and 'reduce' modes on CUDA (SAT-7611)
     def check_mode(self, array, mode, dtype):
         if (
             is_cuda_device()
