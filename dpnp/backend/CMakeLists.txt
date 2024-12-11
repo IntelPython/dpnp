@@ -72,6 +72,17 @@ target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 #   target_compile_definitions(${_trgt} PRIVATE _WIN=1)
 # endif()
 
+if (WIN32)
+  target_compile_options(${_trgt} PRIVATE
+    "/nologo"
+    "-fno-sycl-id-queries-fit-in-int"
+    "/bigobj"
+    "-Qipo"
+    "/EHsc"
+    "/clang:-fno-fast-math"
+  )
+endif()
+
 target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
 
 if(DPNP_GENERATE_COVERAGE)
