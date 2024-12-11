@@ -2955,7 +2955,7 @@ def modf(x1, **kwargs):
                 "Running on CUDA is currently not supported"
             )
 
-        if not kwargs:
+        if kwargs:
             pass
         else:
             return dpnp_modf(x1_desc)
