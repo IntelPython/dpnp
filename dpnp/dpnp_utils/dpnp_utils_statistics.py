@@ -153,7 +153,7 @@ def dpnp_cov(m, y=None, rowvar=True, dtype=None):
         elif x.ndim == 1:
             x = x[dpnp.newaxis, :]
 
-        if not rowvar and x.shape[0] != 1:
+        if not rowvar and x.ndim != 1:
             x = x.T
 
         if x.dtype != dtype:

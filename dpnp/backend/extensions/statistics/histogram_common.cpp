@@ -26,17 +26,16 @@
 #include <algorithm>
 #include <limits>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "dpctl4pybind11.hpp"
-#include "utils/memory_overlap.hpp"
-#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include <pybind11/pybind11.h>
 
 #include "histogram_common.hpp"
+
+#include "validation_utils.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
@@ -45,6 +44,15 @@ using dpctl_td_ns::typenum_t;
 namespace statistics
 {
 using common::CeilDiv;
+
+using validation::array_names;
+using validation::array_ptr;
+
+using validation::check_max_dims;
+using validation::check_num_dims;
+using validation::check_size_at_least;
+using validation::common_checks;
+using validation::name_of;
 
 namespace histogram
 {
@@ -55,11 +63,9 @@ void validate(const usm_ndarray &sample,
               const usm_ndarray &histogram)
 {
     auto exec_q = sample.get_queue();
-    using array_ptr = const usm_ndarray *;
 
     std::vector<array_ptr> arrays{&sample, &histogram};
-    std::unordered_map<array_ptr, std::string> names = {
-        {arrays[0], "sample"}, {arrays[1], "histogram"}};
+    array_names names = {{arrays[0], "sample"}, {arrays[1], "histogram"}};
 
     array_ptr bins_ptr = nullptr;
 
@@ -77,157 +83,99 @@ void validate(const usm_ndarray &sample,
         names.insert({weights_ptr, "weights"});
     }
 
-    auto get_name = [&](const array_ptr &arr) {
-        auto name_it = names.find(arr);
-        assert(name_it != names.end());
+    common_checks({&sample, bins.has_value() ? &bins.value() : nullptr,
+                   weights.has_value() ? &weights.value() : nullptr},
+                  {&histogram}, names);
 
-        return "'" + name_it->second + "'";
-    };
-
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(histogram);
-
-    auto unequal_queue =
-        std::find_if(arrays.cbegin(), arrays.cend(), [&](const array_ptr &arr) {
-            return arr->get_queue() != exec_q;
-        });
-
-    if (unequal_queue != arrays.cend()) {
-        throw py::value_error(
-            get_name(*unequal_queue) +
-            " parameter has incompatible queue with parameter " +
-            get_name(&sample));
-    }
-
-    auto non_contig_array =
-        std::find_if(arrays.cbegin(), arrays.cend(), [&](const array_ptr &arr) {
-            return !arr->is_c_contiguous();
-        });
-
-    if (non_contig_array != arrays.cend()) {
-        throw py::value_error(get_name(*non_contig_array) +
-                              " parameter is not c-contiguos");
-    }
-
-    auto check_overlaping = [&](const array_ptr &first,
-                                const array_ptr &second) {
-        if (first == nullptr || second == nullptr) {
-            return;
-        }
-
-        const auto &overlap = dpctl::tensor::overlap::MemoryOverlap();
-
-        if (overlap(*first, *second)) {
-            throw py::value_error(get_name(first) +
-                                  " has overlapping memory segments with " +
-                                  get_name(second));
-        }
-    };
-
-    check_overlaping(&sample, &histogram);
-    check_overlaping(bins_ptr, &histogram);
-    check_overlaping(weights_ptr, &histogram);
-
-    if (bins_ptr && bins_ptr->get_size() < 2) {
-        throw py::value_error(get_name(bins_ptr) +
-                              " parameter must have at least 2 elements");
-    }
-
-    if (histogram.get_size() < 1) {
-        throw py::value_error(get_name(&histogram) +
-                              " parameter must have at least 1 element");
-    }
-
-    if (histogram.get_ndim() != 1) {
-        throw py::value_error(get_name(&histogram) +
-                              " parameter must be 1d. Actual " +
-                              std::to_string(histogram.get_ndim()) + "d");
-    }
+    check_size_at_least(bins_ptr, 2, names);
+    check_size_at_least(&histogram, 1, names);
 
     if (weights_ptr) {
-        if (weights_ptr->get_ndim() != 1) {
-            throw py::value_error(
-                get_name(weights_ptr) + " parameter must be 1d. Actual " +
-                std::to_string(weights_ptr->get_ndim()) + "d");
-        }
+        check_num_dims(weights_ptr, 1, names);
 
-        auto sample_size = sample.get_size();
+        auto sample_size = sample.get_shape(0);
         auto weights_size = weights_ptr->get_size();
-        if (sample.get_size() != weights_ptr->get_size()) {
-            throw py::value_error(
-                get_name(&sample) + " size (" + std::to_string(sample_size) +
-                ") and " + get_name(weights_ptr) + " size (" +
-                std::to_string(weights_size) + ")" + " must match");
+        if (sample_size != weights_ptr->get_size()) {
+            throw py::value_error(name_of(&sample, names) + " size (" +
+                                  std::to_string(sample_size) + ") and " +
+                                  name_of(weights_ptr, names) + " size (" +
+                                  std::to_string(weights_size) + ")" +
+                                  " must match");
         }
     }
 
-    if (sample.get_ndim() > 2) {
-        throw py::value_error(
-            get_name(&sample) +
-            " parameter must have no more than 2 dimensions. Actual " +
-            std::to_string(sample.get_ndim()) + "d");
-    }
+    check_max_dims(&sample, 2, names);
 
     if (sample.get_ndim() == 1) {
-        if (bins_ptr != nullptr && bins_ptr->get_ndim() != 1) {
-            throw py::value_error(get_name(&sample) + " parameter is 1d, but " +
-                                  get_name(bins_ptr) + " is " +
-                                  std::to_string(bins_ptr->get_ndim()) + "d");
+        check_num_dims(bins_ptr, 1, names);
+
+        if (bins_ptr && histogram.get_size() != bins_ptr->get_size() - 1) {
+            auto hist_size = histogram.get_size();
+            auto bins_size = bins_ptr->get_size();
+            throw py::value_error(
+                name_of(&histogram, names) + " parameter and " +
+                name_of(bins_ptr, names) + " parameters shape mismatch. " +
+                name_of(&histogram, names) + " size is " +
+                std::to_string(hist_size) + name_of(bins_ptr, names) +
+                " must have size " + std::to_string(hist_size + 1) +
+                " but have " + std::to_string(bins_size));
         }
     }
     else if (sample.get_ndim() == 2) {
         auto sample_count = sample.get_shape(0);
         auto expected_dims = sample.get_shape(1);
 
-        if (bins_ptr != nullptr && bins_ptr->get_ndim() != expected_dims) {
-            throw py::value_error(get_name(&sample) + " parameter has shape {" +
-                                  std::to_string(sample_count) + "x" +
-                                  std::to_string(expected_dims) + "}" +
-                                  ", so " + get_name(bins_ptr) +
-                                  " parameter expected to be " +
-                                  std::to_string(expected_dims) +
-                                  "d. "
-                                  "Actual " +
-                                  std::to_string(bins->get_ndim()) + "d");
-        }
-    }
-
-    if (bins_ptr != nullptr) {
-        py::ssize_t expected_hist_size = 1;
-        for (int i = 0; i < bins_ptr->get_ndim(); ++i) {
-            expected_hist_size *= (bins_ptr->get_shape(i) - 1);
-        }
-
-        if (histogram.get_size() != expected_hist_size) {
+        if (histogram.get_ndim() != expected_dims) {
             throw py::value_error(
-                get_name(&histogram) + " and " + get_name(bins_ptr) +
-                " shape mismatch. " + get_name(&histogram) +
-                " expected to have size = " +
-                std::to_string(expected_hist_size) + ". Actual " +
-                std::to_string(histogram.get_size()));
+                name_of(&sample, names) + " parameter has shape (" +
+                std::to_string(sample_count) + ", " +
+                std::to_string(expected_dims) + ")" + ", so " +
+                name_of(&histogram, names) + " parameter expected to be " +
+                std::to_string(expected_dims) +
+                "d. "
+                "Actual " +
+                std::to_string(histogram.get_ndim()) + "d");
         }
-    }
 
-    int64_t max_hist_size = std::numeric_limits<uint32_t>::max() - 1;
-    if (histogram.get_size() > max_hist_size) {
-        throw py::value_error(get_name(&histogram) +
-                              " parameter size expected to be less than " +
-                              std::to_string(max_hist_size) + ". Actual " +
-                              std::to_string(histogram.get_size()));
-    }
+        if (bins_ptr != nullptr) {
+            py::ssize_t expected_bins_size = 0;
+            for (int i = 0; i < histogram.get_ndim(); ++i) {
+                expected_bins_size += histogram.get_shape(i) + 1;
+            }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
-    auto hist_type = static_cast<typenum_t>(
-        array_types.typenum_to_lookup_id(histogram.get_typenum()));
-    if (histogram.get_elemsize() == 8 && hist_type != typenum_t::CFLOAT) {
-        auto device = exec_q.get_device();
-        bool _64bit_atomics = device.has(sycl::aspect::atomic64);
+            auto actual_bins_size = bins_ptr->get_size();
+            if (actual_bins_size != expected_bins_size) {
+                throw py::value_error(
+                    name_of(&histogram, names) + " and " +
+                    name_of(bins_ptr, names) + " shape mismatch. " +
+                    name_of(bins_ptr, names) + " expected to have size = " +
+                    std::to_string(expected_bins_size) + ". Actual " +
+                    std::to_string(actual_bins_size));
+            }
+        }
 
-        if (!_64bit_atomics) {
-            auto device_name = device.get_info<sycl::info::device::name>();
-            throw py::value_error(
-                get_name(&histogram) +
-                " parameter has 64-bit type, but 64-bit atomics " +
-                " are not supported for " + device_name);
+        int64_t max_hist_size = std::numeric_limits<uint32_t>::max() - 1;
+        if (histogram.get_size() > max_hist_size) {
+            throw py::value_error(name_of(&histogram, names) +
+                                  " parameter size expected to be less than " +
+                                  std::to_string(max_hist_size) + ". Actual " +
+                                  std::to_string(histogram.get_size()));
+        }
+
+        auto array_types = dpctl_td_ns::usm_ndarray_types();
+        auto hist_type = static_cast<typenum_t>(
+            array_types.typenum_to_lookup_id(histogram.get_typenum()));
+        if (histogram.get_elemsize() == 8 && hist_type != typenum_t::CFLOAT) {
+            auto device = exec_q.get_device();
+            bool _64bit_atomics = device.has(sycl::aspect::atomic64);
+
+            if (!_64bit_atomics) {
+                auto device_name = device.get_info<sycl::info::device::name>();
+                throw py::value_error(
+                    name_of(&histogram, names) +
+                    " parameter has 64-bit type, but 64-bit atomics " +
+                    " are not supported for " + device_name);
+            }
         }
     }
 }

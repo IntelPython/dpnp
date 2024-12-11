@@ -726,6 +726,7 @@ def test_reduce_hypot(device):
             [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
             [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
         ),
+        pytest.param("correlate", [1, 2, 3], [4, 5, 6]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
@@ -1652,7 +1653,7 @@ def test_eigenvalue(func, shape, device):
     # Set seed_value=81 to prevent
     # random generation of the input singular matrix
     a = generate_random_numpy_array(
-        shape, dtype, hermitian=is_hermitian, seed_value=81
+        shape, dtype, hermitian=is_hermitian, seed_value=81, low=-5, high=5
     )
     dp_a = dpnp.array(a, device=device)
 
@@ -2652,6 +2653,32 @@ def test_histogram(weights, device):
     edges_queue = result_edges.sycl_queue
     assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
     assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_histogramdd(weights, device):
+    v = numpy.arange(5)
+    w = weights
+
+    iv = dpnp.array(v, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=iv.sycl_queue)
+
+    expected_hist, expected_edges = numpy.histogramdd(v, weights=w)
+    result_hist, result_edges = dpnp.histogramdd(iv, weights=iw)
+    assert_array_equal(result_hist, expected_hist)
+    for result_edge, expected_edge in zip(result_edges, expected_edges):
+        assert_dtype_allclose(result_edge, expected_edge)
+
+    hist_queue = result_hist.sycl_queue
+    assert_sycl_queue_equal(hist_queue, iv.sycl_queue)
+    for edge in result_edges:
+        edges_queue = edge.sycl_queue
+        assert_sycl_queue_equal(edges_queue, iv.sycl_queue)
 
 
 @pytest.mark.parametrize(
