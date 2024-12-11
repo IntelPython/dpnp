@@ -1599,8 +1599,8 @@ class TestChoose:
         expected = numpy.choose(inds_np, chcs_np)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("chc1_dt", get_all_dtypes())
-    @pytest.mark.parametrize("chc2_dt", get_all_dtypes())
+    @pytest.mark.parametrize("chc1_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("chc2_dt", get_all_dtypes(no_none=True))
     def test_choose_promote_choices(self, chc1_dt, chc2_dt):
         inds = dpnp.array([0, 1], dtype="i4")
         inds_np = dpnp.asnumpy(inds)
