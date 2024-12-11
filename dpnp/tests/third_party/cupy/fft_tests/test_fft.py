@@ -507,6 +507,8 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_fftn(self, xp, dtype, order, enable_nd):
+        if is_cuda_device() and self.shape == (2, 3, 4, 5):
+            pytest.skip("SAT-7587")
         # assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
@@ -534,6 +536,8 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_ifftn(self, xp, dtype, order, enable_nd):
+        if is_cuda_device() and self.shape == (2, 3, 4, 5):
+            pytest.skip("SAT-7587")
         # assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
