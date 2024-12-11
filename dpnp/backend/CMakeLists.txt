@@ -51,6 +51,7 @@ if(WIN32)
 endif()
 
 add_library(${_trgt} SHARED ${DPNP_SRC})
+add_sycl_to_target(TARGET ${_trgt} SOURCES ${${DPNP_SRC}})
 set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
