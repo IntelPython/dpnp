@@ -9,6 +9,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestRational(unittest.TestCase):
+
     @testing.for_dtypes(["?", "e", "f", "d", "F", "D"])
     def test_gcd_dtype_check(self, dtype):
         # TODO: remove it once the issue with CUDA support is resolved

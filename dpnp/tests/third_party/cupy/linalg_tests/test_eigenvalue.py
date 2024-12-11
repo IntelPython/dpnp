@@ -21,6 +21,7 @@ def _get_hermitian(xp, a, UPLO):
     )
 )
 class TestEigenvalue:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -47,9 +48,7 @@ class TestEigenvalue:
             tol = 1e-3
         else:
             tol = 1e-5
-
         testing.assert_allclose(A @ v, v @ xp.diag(w), atol=tol, rtol=tol)
-
         # Check if v @ vt is an identity matrix
         testing.assert_allclose(
             v @ v.swapaxes(-2, -1).conj(),
@@ -87,7 +86,7 @@ class TestEigenvalue:
             )
         return w
 
-    @testing.for_complex_dtypes()
+    @testing.for_dtypes("FD")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_eigh_complex_batched(self, xp, dtype):
         a = xp.array(
@@ -105,7 +104,6 @@ class TestEigenvalue:
         # eigenvectors, so v's are not directly comparable and we verify
         # them through the eigen equation A*v=w*v.
         A = _get_hermitian(xp, a, self.UPLO)
-
         for i in range(a.shape[0]):
             testing.assert_allclose(
                 A[i].dot(v[i]), w[i] * v[i], rtol=1e-5, atol=1e-5
@@ -165,44 +163,54 @@ class TestEigenvalue:
         return w
 
 
-@testing.parameterize(
-    *testing.product(
-        {"UPLO": ["U", "L"], "shape": [(0, 0), (2, 0, 0), (0, 3, 3)]}
-    )
+@pytest.mark.parametrize("UPLO", ["U", "L"])
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (0, 0),
+        (2, 0, 0),
+        (0, 3, 3),
+    ],
 )
 class TestEigenvalueEmpty:
-    @testing.for_dtypes("ifdFD")
-    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
-    def test_eigh(self, xp, dtype):
-        a = xp.empty(self.shape, dtype=dtype)
-        assert a.size == 0
-        return xp.linalg.eigh(a, UPLO=self.UPLO)
 
     @testing.for_dtypes("ifdFD")
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
-    def test_eigvalsh(self, xp, dtype):
-        a = xp.empty(self.shape, dtype=dtype)
+    def test_eigh(self, xp, dtype, shape, UPLO):
+        a = xp.empty(shape, dtype=dtype)
         assert a.size == 0
-        return xp.linalg.eigvalsh(a, UPLO=self.UPLO)
+        return xp.linalg.eigh(a, UPLO=UPLO)
+
+    @testing.for_dtypes("ifdFD")
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
+    def test_eigvalsh(self, xp, dtype, shape, UPLO):
+        a = xp.empty(shape, dtype=dtype)
+        assert a.size == 0
+        return xp.linalg.eigvalsh(a, UPLO=UPLO)
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "UPLO": ["U", "L"],
-            "shape": [(), (3,), (2, 3), (4, 0), (2, 2, 3), (0, 2, 3)],
-        }
-    )
+@pytest.mark.parametrize("UPLO", ["U", "L"])
+@pytest.mark.parametrize(
+    "shape",
+    [
+        (),
+        (3,),
+        (2, 3),
+        (4, 0),
+        (2, 2, 3),
+        (0, 2, 3),
+    ],
 )
 class TestEigenvalueInvalid:
-    def test_eigh_shape_error(self):
-        for xp in (numpy, cupy):
-            a = xp.zeros(self.shape)
-            with pytest.raises(xp.linalg.LinAlgError):
-                xp.linalg.eigh(a, self.UPLO)
 
-    def test_eigvalsh_shape_error(self):
+    def test_eigh_shape_error(self, UPLO, shape):
         for xp in (numpy, cupy):
-            a = xp.zeros(self.shape)
+            a = xp.zeros(shape)
             with pytest.raises(xp.linalg.LinAlgError):
-                xp.linalg.eigvalsh(a, self.UPLO)
+                xp.linalg.eigh(a, UPLO)
+
+    def test_eigvalsh_shape_error(self, UPLO, shape):
+        for xp in (numpy, cupy):
+            a = xp.zeros(shape)
+            with pytest.raises(xp.linalg.LinAlgError):
+                xp.linalg.eigvalsh(a, UPLO)

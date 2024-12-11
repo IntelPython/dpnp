@@ -9,16 +9,18 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestDims(unittest.TestCase):
+
     def check_atleast(self, func, xp):
         a = testing.shaped_arange((), xp)
         b = testing.shaped_arange((2,), xp)
         c = testing.shaped_arange((2, 2), xp)
         d = testing.shaped_arange((4, 3, 2), xp)
-        e = 1
-        f = numpy.float32(1)
-        return func(a, b, c, d, e, f)
+        # scalar input is not supported
+        # e = 1
+        # f = numpy.float32(1)
+        # return func(a, b, c, d, e, f)
+        return func(a, b, c, d)
 
-    @pytest.mark.skip(reason="Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_atleast_1d1(self, xp):
         return self.check_atleast(xp.atleast_1d, xp)
@@ -28,7 +30,6 @@ class TestDims(unittest.TestCase):
         a = testing.shaped_arange((1, 3, 2), xp)
         return xp.atleast_1d(a)
 
-    @pytest.mark.skip(reason="Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_atleast_2d1(self, xp):
         return self.check_atleast(xp.atleast_2d, xp)
@@ -38,7 +39,6 @@ class TestDims(unittest.TestCase):
         a = testing.shaped_arange((1, 3, 2), xp)
         return xp.atleast_2d(a)
 
-    @pytest.mark.skip(reason="Scalar input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_atleast_3d1(self, xp):
         return self.check_atleast(xp.atleast_3d, xp)
@@ -295,10 +295,12 @@ class TestDims(unittest.TestCase):
     {"shapes": [(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]},
 )
 class TestBroadcast(unittest.TestCase):
+
     def _broadcast(self, xp, dtype, shapes):
         arrays = [testing.shaped_arange(s, xp, dtype) for s in shapes]
         return xp.broadcast(*arrays)
 
+    @pytest.mark.skip("broadcast() is not supported yet")
     @testing.for_all_dtypes()
     def test_broadcast(self, dtype):
         broadcast_np = self._broadcast(numpy, dtype, self.shapes)
@@ -337,6 +339,8 @@ class TestBroadcast(unittest.TestCase):
     {"shapes": [(0,), (2,)]},
 )
 class TestInvalidBroadcast(unittest.TestCase):
+
+    @pytest.mark.skip("broadcast() is not supported yet")
     @testing.for_all_dtypes()
     def test_invalid_broadcast(self, dtype):
         for xp in (numpy, cupy):

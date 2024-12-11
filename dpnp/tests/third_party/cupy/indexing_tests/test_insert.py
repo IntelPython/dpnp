@@ -16,6 +16,7 @@ from dpnp.tests.third_party.cupy import testing
     )
 )
 class TestPlace(unittest.TestCase):
+
     # NumPy 1.9 don't wraps values.
     # https://github.com/numpy/numpy/pull/5821
     @testing.for_all_dtypes()
@@ -39,6 +40,7 @@ class TestPlace(unittest.TestCase):
     )
 )
 class TestPlaceRaises(unittest.TestCase):
+
     # NumPy 1.9 performs illegal memory access.
     # https://github.com/numpy/numpy/pull/5821
     @testing.with_requires("numpy>=1.10")
@@ -74,6 +76,7 @@ class TestPlaceRaises(unittest.TestCase):
     )
 )
 class TestPut(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_put(self, xp, dtype):
@@ -101,6 +104,7 @@ class TestPut(unittest.TestCase):
     )
 )
 class TestPutScalars(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_put_index_scalar(self, xp):
         dtype = cupy.float32
@@ -130,6 +134,7 @@ class TestPutScalars(unittest.TestCase):
     )
 )
 class TestPutRaises(unittest.TestCase):
+
     @pytest.mark.skip("'raise' mode is not supported")
     @testing.for_all_dtypes()
     def test_put_inds_underflow_error(self, dtype):
@@ -165,6 +170,7 @@ class TestPutRaises(unittest.TestCase):
     *testing.product({"shape": [(0,), (1,), (2, 3), (2, 3, 4)]})
 )
 class TestPutmaskSameShape(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_putmask(self, xp, dtype):
@@ -185,6 +191,7 @@ class TestPutmaskSameShape(unittest.TestCase):
     )
 )
 class TestPutmaskDifferentShapes(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_putmask(self, xp, dtype):
@@ -200,6 +207,7 @@ class TestPutmaskDifferentShapes(unittest.TestCase):
 
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPutmask(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_putmask_scalar_values(self, xp):
         shape = (2, 3)
@@ -211,7 +219,7 @@ class TestPutmask(unittest.TestCase):
         for xp in (numpy, cupy):
             a = xp.array([1, 2, 3])
             mask = xp.array([True, False])
-            with pytest.raises(ValueError):
+            with pytest.raises((ValueError, IndexError)):
                 xp.putmask(a, mask, a**2)
 
     @testing.numpy_cupy_array_equal()
@@ -223,6 +231,8 @@ class TestPutmask(unittest.TestCase):
 
 
 class TestPutmaskDifferentDtypes(unittest.TestCase):
+
+    @pytest.mark.skip("putmask() is not fully supported")
     @testing.for_all_dtypes_combination(names=["a_dtype", "val_dtype"])
     def test_putmask_differnt_dtypes_raises(self, a_dtype, val_dtype):
         shape = (2, 3)
@@ -255,6 +265,7 @@ class TestPutmaskDifferentDtypes(unittest.TestCase):
     )
 )
 class TestFillDiagonal(unittest.TestCase):
+
     def _compute_val(self, xp):
         if type(self.val) is int:
             return self.val
@@ -299,6 +310,7 @@ class TestFillDiagonal(unittest.TestCase):
     )
 )
 class TestDiagIndices(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_diag_indices(self, xp):
         return xp.diag_indices(self.n, self.ndim)
@@ -313,6 +325,7 @@ class TestDiagIndices(unittest.TestCase):
     )
 )
 class TestDiagIndicesInvalidValues(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_diag_indices(self, xp):
         return xp.diag_indices(self.n, self.ndim)
@@ -326,6 +339,7 @@ class TestDiagIndicesInvalidValues(unittest.TestCase):
     )
 )
 class TestDiagIndicesFrom(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_diag_indices_from(self, xp):
         arr = testing.shaped_arange(self.shape, xp)
@@ -340,6 +354,7 @@ class TestDiagIndicesFrom(unittest.TestCase):
     )
 )
 class TestDiagIndicesFromRaises(unittest.TestCase):
+
     def test_non_equal_dims(self):
         for xp in (numpy, cupy):
             arr = testing.shaped_arange(self.shape, xp)

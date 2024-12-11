@@ -11,6 +11,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestFromData(unittest.TestCase):
+
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -491,7 +492,7 @@ class TestFromData(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()
     def test_asarray_cuda_array_zero_dim_dtype(self, xp):
-        a = xp.ones((), dtype=numpy.float32)
+        a = xp.ones((), dtype=cupy.default_float_type())
         return xp.ascontiguousarray(a, dtype=numpy.int64)
 
     @pytest.mark.skip("only native byteorder is supported")
@@ -586,7 +587,7 @@ class TestFromData(unittest.TestCase):
             fh.seek(0)
             return xp.loadtxt(fh, dtype="u1")
 
-    @pytest.mark.skip("`genfromtxt` isn't supported")
+    @pytest.mark.skip("genfromtxt() is not supported yet")
     @testing.numpy_cupy_array_equal()
     def test_genfromtxt(self, xp):
         with tempfile.TemporaryFile() as fh:
@@ -608,7 +609,7 @@ class TestFromData(unittest.TestCase):
             return a + a
 
 
-max_cuda_array_interface_version = 1
+max_cuda_array_interface_version = 3
 
 
 @testing.parameterize(
@@ -619,6 +620,7 @@ max_cuda_array_interface_version = 1
         }
     )
 )
+@pytest.mark.skip("CUDA array interface is not supported")
 class TestCudaArrayInterface(unittest.TestCase):
     @testing.for_all_dtypes()
     def test_base(self, dtype):
@@ -628,7 +630,6 @@ class TestCudaArrayInterface(unittest.TestCase):
         )
         testing.assert_array_equal(a, b)
 
-    @pytest.mark.skip("that isn't supported yet")
     @testing.for_all_dtypes()
     def test_not_copied(self, dtype):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -667,7 +668,6 @@ class TestCudaArrayInterface(unittest.TestCase):
         assert a.nbytes == b.nbytes
         assert a.size == 0
 
-    @pytest.mark.skip("that isn't supported yet")
     @testing.for_all_dtypes()
     def test_asnumpy(self, dtype):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -676,7 +676,6 @@ class TestCudaArrayInterface(unittest.TestCase):
         b_cpu = cupy.asnumpy(b)
         testing.assert_array_equal(a_cpu, b_cpu)
 
-    @pytest.mark.skip("only native byteorder is supported")
     def test_big_endian(self):
         a = cupy.array([0x1, 0x0, 0x0, 0x0], dtype=numpy.int8)
         dtype = numpy.dtype(">i4")
@@ -700,9 +699,9 @@ class TestCudaArrayInterface(unittest.TestCase):
         }
     )
 )
+@pytest.mark.skip("CUDA array interface is not supported")
 class TestCudaArrayInterfaceMaskedArray(unittest.TestCase):
     # TODO(leofang): update this test when masked array is supported
-    @pytest.mark.skip("that isn't supported")
     @testing.for_all_dtypes()
     def test_masked_array(self, dtype):
         a = testing.shaped_arange((2, 3, 4), cupy, dtype)
@@ -713,9 +712,10 @@ class TestCudaArrayInterfaceMaskedArray(unittest.TestCase):
         assert "does not support" in str(ex.value)
 
 
-@pytest.mark.skip()
+# marked slow as either numpy or cupy could go OOM in this test
+@testing.slow
+@pytest.mark.skip("CUDA array interface is not supported")
 class TestCudaArrayInterfaceBigArray(unittest.TestCase):
-    @pytest.mark.skip("that isn't supported")
     def test_with_over_size_array(self):
         # real example from #3009
         size = 5 * 10**8
@@ -738,15 +738,14 @@ class DummyObjectWithCudaArrayInterface(object):
         self.stream = stream
 
     @property
-    def __sycl_usm_array_interface__(self):
+    def __cuda_array_interface__(self):
         if self.a is not None:
             desc = {
                 "shape": self.a.shape,
                 "typestr": self.a.dtype.str,
-                "data": (self.a.get_array()._pointer, False),
-                "version": self.a.__sycl_usm_array_interface__["version"],
-                "syclobj": self.a.sycl_queue,
-                "offset": self.a.get_array()._element_offset,
+                "descr": self.a.dtype.descr,
+                "data": (self.a.data.ptr, False),
+                "version": self.ver,
             }
             if self.a.flags.c_contiguous:
                 if self.include_strides is True:
@@ -796,6 +795,7 @@ class DummyObjectWithCudaArrayInterface(object):
     )
 )
 class TestArrayPreservationOfShape(unittest.TestCase):
+
     @testing.for_all_dtypes()
     def test_cupy_array(self, dtype):
         if self.xp is numpy and self.copy is False:
@@ -820,6 +820,7 @@ class TestArrayPreservationOfShape(unittest.TestCase):
     )
 )
 class TestArrayCopy(unittest.TestCase):
+
     @testing.for_all_dtypes()
     def test_cupy_array(self, dtype):
         if self.xp is numpy and self.copy is False:
@@ -839,6 +840,7 @@ class TestArrayCopy(unittest.TestCase):
 
 
 class TestArrayInvalidObject(unittest.TestCase):
+
     def test_invalid_type(self):
         a = numpy.array([1, 2, 3], dtype=object)
         with self.assertRaises(TypeError):

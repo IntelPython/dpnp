@@ -64,13 +64,18 @@ def _wrap_sort_argsort(
 
     if order is not None:
         raise NotImplementedError(
-            "order keyword argument is only supported with its default value."
+            "`order` keyword argument is only supported with its default value."
         )
-    if kind is not None and stable is not None:
-        raise ValueError(
-            "`kind` and `stable` parameters can't be provided at the same time."
-            " Use only one of them."
-        )
+    if stable is not None:
+        if stable not in [True, False]:
+            raise ValueError(
+                "`stable` parameter should be None, True, or False."
+            )
+        if kind is not None:
+            raise ValueError(
+                "`kind` and `stable` parameters can't be provided at"
+                " the same time. Use only one of them."
+            )
 
     usm_a = dpnp.get_usm_ndarray(a)
     if axis is None:

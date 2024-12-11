@@ -256,3 +256,7 @@ def has_support_aspect64(device=None):
     """
     dev = dpctl.select_default_device() if device is None else device
     return dev.has_aspect_fp64
+
+
+def numpy_version():
+    return numpy.lib.NumpyVersion(numpy.__version__)

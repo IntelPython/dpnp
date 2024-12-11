@@ -31,8 +31,8 @@ def _rand1_shape(shape, prob):
 def augment_einsum_testcases(*params):
     """Modify shapes in einsum tests
 
-    Shape parameter should be starts with "shape_".
-    The original parameter is stored as "_raw_params".
+    Shape parameter should be starts with 'shape_'.
+    The original parameter is stored as '_raw_params'.
 
     Args:
         params (sequence of dicts)
@@ -61,6 +61,7 @@ def augment_einsum_testcases(*params):
 
 
 class TestEinSumError:
+
     def test_irregular_ellipsis1(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
@@ -233,6 +234,7 @@ class TestEinSumError:
 
 
 class TestListArgEinSumError:
+
     @testing.with_requires("numpy>=1.19")
     def test_invalid_sub1(self):
         for xp in (numpy, cupy):
@@ -338,6 +340,7 @@ class TestListArgEinSum:
     )
 )
 class TestEinSumUnaryOperation:
+
     @testing.for_all_dtypes(no_bool=False)
     @testing.numpy_cupy_allclose(
         rtol={numpy.float16: 1e-1, "default": 1e-7}, contiguous_check=False
@@ -350,13 +353,15 @@ class TestEinSumUnaryOperation:
             testing.assert_allclose(optimized_out, out)
         return out
 
-    @pytest.mark.skip("view is not supported")
     @testing.for_all_dtypes(no_bool=False)
     @testing.numpy_cupy_equal()
     def test_einsum_unary_views(self, xp, dtype):
         a = testing.shaped_arange(self.shape_a, xp, dtype)
         b = xp.einsum(self.subscripts, a)
-
+        if xp is cupy:
+            return (
+                b.ndim == 0 or b.get_array()._pointer == a.get_array()._pointer
+            )
         return b.ndim == 0 or b.base is a
 
     @testing.for_all_dtypes_combination(
@@ -373,13 +378,13 @@ class TestEinSumUnaryOperation:
 
 
 class TestEinSumUnaryOperationWithScalar:
-    @pytest.mark.skip("All operands are scalar.")
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_scalar_int(self, xp, dtype):
         return xp.asarray(xp.einsum("->", 2, dtype=dtype))
 
-    @pytest.mark.skip("All operands are scalar.")
+    @pytest.mark.skip("Scalar input is not supported")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_scalar_float(self, xp, dtype):
@@ -574,7 +579,7 @@ class TestEinSumTernaryOperation:
 
         if xp is not numpy:  # Avoid numpy issues #11059, #11060
             for optimize in [
-                True,  # "greedy"
+                True,  # 'greedy'
                 "optimal",
                 ["einsum_path", (0, 1), (0, 1)],
                 ["einsum_path", (0, 2), (0, 1)],
@@ -616,6 +621,7 @@ class TestEinSumTernaryOperation:
     )
 )
 class TestEinSumLarge:
+
     chars = "abcdefghij"
     sizes = (2, 3, 4, 5, 4, 3, 2, 6, 5, 4, 3)
     size_dict = {}
@@ -638,7 +644,7 @@ class TestEinSumLarge:
         ]
         # TODO(kataoka): support memory efficient cupy.einsum
         with warnings.catch_warnings(record=True) as ws:
-            # I hope there"s no problem with np.einsum for these cases...
+            # I hope there's no problem with np.einsum for these cases...
             out = xp.einsum(self.subscript, *arrays, optimize=self.opt)
             if xp is not numpy and isinstance(
                 self.opt, tuple

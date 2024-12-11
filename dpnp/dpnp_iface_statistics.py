@@ -38,20 +38,22 @@ it contains:
 """
 
 import dpctl.tensor as dpt
+import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import (
-    normalize_axis_index,
-    normalize_axis_tuple,
-)
+from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
 
 # pylint: disable=no-name-in-module
-from .dpnp_algo import dpnp_correlate
-from .dpnp_array import dpnp_array
+import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
+from dpnp.dpnp_utils.dpnp_utils_common import (
+    result_type_for_device,
+    to_supported_dtypes,
+)
+
 from .dpnp_utils import call_origin, get_usm_allocations
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
-from .dpnp_utils.dpnp_utils_statistics import dpnp_cov
+from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
 
 __all__ = [
     "amax",
@@ -111,22 +113,6 @@ def _count_reduce_items(arr, axis, where=True):
             "where keyword argument is only supported with its default value."
         )
     return items
-
-
-def _flatten_array_along_axes(arr, axes_to_flatten):
-    """Flatten an array along a specific set of axes."""
-
-    axes_to_keep = (
-        axis for axis in range(arr.ndim) if axis not in axes_to_flatten
-    )
-
-    # Move the axes_to_flatten to the front
-    arr_moved = dpnp.moveaxis(arr, axes_to_flatten, range(len(axes_to_flatten)))
-
-    new_shape = (-1,) + tuple(arr.shape[axis] for axis in axes_to_keep)
-    flattened_arr = arr_moved.reshape(new_shape)
-
-    return flattened_arr
 
 
 def _get_comparison_res_dt(a, _dtype, _out):
@@ -453,54 +439,177 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
     return out
 
 
-def correlate(x1, x2, mode="valid"):
-    """
+def _get_padding(a_size, v_size, mode):
+    assert v_size <= a_size
+
+    if mode == "valid":
+        l_pad, r_pad = 0, 0
+    elif mode == "same":
+        l_pad = v_size // 2
+        r_pad = v_size - l_pad - 1
+    elif mode == "full":
+        l_pad, r_pad = v_size - 1, v_size - 1
+    else:
+        raise ValueError(
+            f"Unknown mode: {mode}. Only 'valid', 'same', 'full' are supported."
+        )
+
+    return l_pad, r_pad
+
+
+def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad):
+    queue = a.sycl_queue
+
+    usm_type = dpu.get_coerced_usm_type([a.usm_type, v.usm_type])
+    out_size = l_pad + r_pad + a.size - v.size + 1
+    # out type is the same as input type
+    out = dpnp.empty_like(a, shape=out_size, usm_type=usm_type)
+
+    a_usm = dpnp.get_usm_ndarray(a)
+    v_usm = dpnp.get_usm_ndarray(v)
+    out_usm = dpnp.get_usm_ndarray(out)
+
+    _manager = dpu.SequentialOrderManager[queue]
+
+    mem_ev, corr_ev = statistics_ext.sliding_dot_product1d(
+        a_usm,
+        v_usm,
+        out_usm,
+        l_pad,
+        r_pad,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(mem_ev, corr_ev)
+
+    return out
+
+
+def correlate(a, v, mode="valid"):
+    r"""
     Cross-correlation of two 1-dimensional sequences.
+
+    This function computes the correlation as generally defined in signal
+    processing texts [1]_:
+
+    .. math:: c_k = \sum_n a_{n+k} \cdot \overline{v}_n
+
+    with `a` and `v` sequences being zero-padded where necessary and
+    :math:`\overline v` denoting complex conjugation.
 
     For full documentation refer to :obj:`numpy.correlate`.
 
-    Limitations
-    -----------
-    Input arrays are supported as :obj:`dpnp.ndarray`.
-    Size and shape of input arrays are supported to be equal.
-    Parameter `mode` is supported only with default value ``"valid"``.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    v : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+    mode : {"valid", "same", "full"}, optional
+        Refer to the :obj:`dpnp.convolve` docstring. Note that the default
+        is ``"valid"``, unlike :obj:`dpnp.convolve`, which uses ``"full"``.
+
+        Default: ``"valid"``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Discrete cross-correlation of `a` and `v`.
+
+    Notes
+    -----
+    The definition of correlation above is not unique and sometimes
+    correlation may be defined differently. Another common definition is [1]_:
+
+    .. math:: c'_k = \sum_n a_{n} \cdot \overline{v_{n+k}}
+
+    which is related to :math:`c_k` by :math:`c'_k = c_{-k}`.
+
+    References
+    ----------
+    .. [1] Wikipedia, "Cross-correlation",
+           https://en.wikipedia.org/wiki/Cross-correlation
 
     See Also
     --------
-    :obj:`dpnp.convolve` : Discrete, linear convolution of
-                           two one-dimensional sequences.
+    :obj:`dpnp.convolve` : Discrete, linear convolution of two one-dimensional
+                        sequences.
+
 
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.correlate([1, 2, 3], [0, 1, 0.5])
-    >>> [i for i in x]
-    [3.5]
+    >>> a = np.array([1, 2, 3], dtype=np.float32)
+    >>> v = np.array([0, 1, 0.5], dtype=np.float32)
+    >>> np.correlate(a, v)
+    array([3.5], dtype=float32)
+    >>> np.correlate(a, v, "same")
+    array([2. , 3.5, 3. ], dtype=float32)
+    >>> np.correlate([a, v, "full")
+    array([0.5, 2. , 3.5, 3. , 0. ], dtype=float32)
+
+    Using complex sequences:
+
+    >>> ac = np.array([1+1j, 2, 3-1j], dtype=np.complex64)
+    >>> vc = np.array([0, 1, 0.5j], dtype=np.complex64)
+    >>> np.correlate(ac, vc, 'full')
+    array([0.5-0.5j, 1. +0.j , 1.5-1.5j, 3. -1.j , 0. +0.j ], dtype=complex64)
+
+    Note that you get the time reversed, complex conjugated result
+    (:math:`\overline{c_{-k}}`) when the two input sequences `a` and `v` change
+    places:
+
+    >>> np.correlate(vc, ac, 'full')
+    array([0. +0.j , 3. +1.j , 1.5+1.5j, 1. +0.j , 0.5+0.5j], dtype=complex64)
 
     """
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    x2_desc = dpnp.get_dpnp_descriptor(x2, copy_when_nondefault_queue=False)
-    if x1_desc and x2_desc:
-        if dpnp.is_cuda_backend(x1_desc.get_array()) or dpnp.is_cuda_backend(
-            x2_desc.get_array()
-        ):
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
+    dpnp.check_supported_arrays_type(a, v)
 
-        if x1_desc.size != x2_desc.size or x1_desc.size == 0:
-            pass
-        elif x1_desc.shape != x2_desc.shape:
-            pass
-        elif mode != "valid":
-            pass
-        else:
-            return dpnp_correlate(x1_desc, x2_desc).get_pyobj()
+    if a.size == 0 or v.size == 0:
+        raise ValueError(
+            f"Array arguments cannot be empty. "
+            f"Received sizes: a.size={a.size}, v.size={v.size}"
+        )
+    if a.ndim != 1 or v.ndim != 1:
+        raise ValueError(
+            f"Only 1-dimensional arrays are supported. "
+            f"Received shapes: a.shape={a.shape}, v.shape={v.shape}"
+        )
 
-    return call_origin(numpy.correlate, x1, x2, mode=mode)
+    supported_types = statistics_ext.sliding_dot_product1d_dtypes()
+
+    device = a.sycl_device
+    rdtype = result_type_for_device([a.dtype, v.dtype], device)
+    supported_dtype = to_supported_dtypes(rdtype, supported_types, device)
+
+    if supported_dtype is None:
+        raise ValueError(
+            f"function does not support input types "
+            f"({a.dtype.name}, {v.dtype.name}), "
+            "and the inputs could not be coerced to any "
+            f"supported types. List of supported types: "
+            f"{[st.name for st in supported_types]}"
+        )
+
+    if dpnp.issubdtype(v.dtype, dpnp.complexfloating):
+        v = dpnp.conj(v)
+
+    revert = False
+    if v.size > a.size:
+        revert = True
+        a, v = v, a
+
+    l_pad, r_pad = _get_padding(a.size, v.size, mode)
+
+    a_casted = dpnp.asarray(a, dtype=supported_dtype, order="C")
+    v_casted = dpnp.asarray(v, dtype=supported_dtype, order="C")
+
+    r = _run_native_sliding_dot_product1d(a_casted, v_casted, l_pad, r_pad)
+
+    if revert:
+        r = r[::-1]
+
+    return dpnp.asarray(r, dtype=rdtype, order="C")
 
 
 def cov(
@@ -772,7 +881,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
        preserve the contents of the input array. Treat the input as undefined,
        but it will probably be fully or partially sorted.
        Default: ``False``.
-    keepdims : {None, bool}, optional
+    keepdims : bool, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
@@ -782,7 +891,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
 
     Returns
     -------
-    dpnp.median : dpnp.ndarray
+    out : dpnp.ndarray
         A new array holding the result. If `a` has a floating-point data type,
         the returned array will have the same data type as `a`. If `a` has a
         boolean or integral data type, the returned array will have the
@@ -815,20 +924,20 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     >>> np.median(a, axis=0)
     array([6.5, 4.5, 2.5])
     >>> np.median(a, axis=1)
-    array([7.,  2.])
+    array([7., 2.])
     >>> np.median(a, axis=(0, 1))
     array(3.5)
 
     >>> m = np.median(a, axis=0)
     >>> out = np.zeros_like(m)
     >>> np.median(a, axis=0, out=m)
-    array([6.5,  4.5,  2.5])
+    array([6.5, 4.5, 2.5])
     >>> m
-    array([6.5,  4.5,  2.5])
+    array([6.5, 4.5, 2.5])
 
     >>> b = a.copy()
     >>> np.median(b, axis=1, overwrite_input=True)
-    array([7.,  2.])
+    array([7., 2.])
     >>> assert not np.all(a==b)
     >>> b = a.copy()
     >>> np.median(b, axis=None, overwrite_input=True)
@@ -838,62 +947,9 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
     """
 
     dpnp.check_supported_arrays_type(a)
-    a_ndim = a.ndim
-    a_shape = a.shape
-    _axis = range(a_ndim) if axis is None else axis
-    _axis = normalize_axis_tuple(_axis, a_ndim)
-
-    if isinstance(axis, (tuple, list)):
-        if len(axis) == 1:
-            axis = axis[0]
-        else:
-            # Need to flatten if `axis` is a sequence of axes since `dpnp.sort`
-            # only accepts integer `axis`
-            # Note that the output of _flatten_array_along_axes is not
-            # necessarily a view of the input since `reshape` is used there.
-            # If this is the case, using overwrite_input is meaningless
-            a = _flatten_array_along_axes(a, _axis)
-            axis = 0
-
-    if overwrite_input:
-        if axis is None:
-            a_sorted = dpnp.ravel(a)
-            a_sorted.sort()
-        else:
-            if isinstance(a, dpt.usm_ndarray):
-                # dpnp.ndarray.sort only works with dpnp_array
-                a = dpnp_array._create_from_usm_ndarray(a)
-            a.sort(axis=axis)
-            a_sorted = a
-    else:
-        a_sorted = dpnp.sort(a, axis=axis)
-
-    if axis is None:
-        axis = 0
-    indexer = [slice(None)] * a_sorted.ndim
-    index, remainder = divmod(a_sorted.shape[axis], 2)
-    if remainder == 1:
-        # index with slice to allow mean (below) to work
-        indexer[axis] = slice(index, index + 1)
-    else:
-        indexer[axis] = slice(index - 1, index + 1)
-
-    # Use `mean` in odd and even case to coerce data type and use `out` array
-    res = dpnp.mean(a_sorted[tuple(indexer)], axis=axis, out=out)
-    nan_mask = dpnp.isnan(a_sorted).any(axis=axis)
-    if nan_mask.any():
-        res[nan_mask] = dpnp.nan
-
-    if keepdims:
-        # We can't use dpnp.mean(..., keepdims) and dpnp.any(..., keepdims)
-        # above because of the reshape hack might have been used in
-        # `_flatten_array_along_axes` to handle cases when axis is a tuple.
-        res_shape = list(a_shape)
-        for i in _axis:
-            res_shape[i] = 1
-        res = res.reshape(tuple(res_shape))
-
-    return res
+    return dpnp_median(
+        a, axis, out, overwrite_input, keepdims, ignore_nan=False
+    )
 
 
 def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):

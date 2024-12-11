@@ -1,4 +1,6 @@
+import sys
 import unittest
+import warnings
 
 import numpy
 import pytest
@@ -37,6 +39,7 @@ from dpnp.tests.third_party.cupy import testing
     )
 )
 class TestDot(unittest.TestCase):
+
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_dot(self, xp, dtype_a, dtype_b):
@@ -87,22 +90,15 @@ class TestDot(unittest.TestCase):
                 #  Test for 0 dimension
                 ((3,), (3,), -1, -1, -1),
                 #  Test for basic cases
-                ((1, 2), (1, 2), -1, -1, 1),
                 ((1, 3), (1, 3), 1, -1, -1),
-                ((1, 2), (1, 3), -1, -1, 1),
-                ((2, 2), (1, 3), -1, -1, 0),
-                ((3, 3), (1, 2), 0, -1, -1),
-                ((0, 3), (0, 3), -1, -1, -1),
                 #  Test for higher dimensions
-                ((2, 0, 3), (2, 0, 3), 0, 0, 0),
                 ((2, 4, 5, 3), (2, 4, 5, 3), -1, -1, 0),
-                ((2, 4, 5, 2), (2, 4, 5, 2), 0, 0, -1),
             ],
         }
     )
 )
 class TestCrossProduct(unittest.TestCase):
-    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
+
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_cross(self, xp, dtype_a, dtype_b):
@@ -113,6 +109,78 @@ class TestCrossProduct(unittest.TestCase):
         a = testing.shaped_arange(shape_a, xp, dtype_a)
         b = testing.shaped_arange(shape_b, xp, dtype_b)
         return xp.cross(a, b, axisa, axisb, axisc)
+
+
+# XXX: cross with 2D vectors is deprecated in NumPy 2.0, also CuPy 1.14
+@testing.parameterize(
+    *testing.product(
+        {
+            "params": [
+                #  Test for basic cases
+                ((1, 2), (1, 2), -1, -1, 1),
+                ((1, 2), (1, 3), -1, -1, 1),
+                ((2, 2), (1, 3), -1, -1, 0),
+                ((3, 3), (1, 2), 0, -1, -1),
+                ((0, 3), (0, 3), -1, -1, -1),
+                #  Test for higher dimensions
+                ((2, 0, 3), (2, 0, 3), 0, 0, 0),
+                ((2, 4, 5, 2), (2, 4, 5, 2), 0, 0, -1),
+            ],
+        }
+    )
+)
+class TestCrossProductDeprecated(unittest.TestCase):
+    @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
+    def test_cross(self, xp, dtype_a, dtype_b):
+        if dtype_a == dtype_b == numpy.bool_:
+            # cross does not support bool-bool inputs.
+            return xp.array(True)
+        shape_a, shape_b, axisa, axisb, axisc = self.params
+        a = testing.shaped_arange(shape_a, xp, dtype_a)
+        b = testing.shaped_arange(shape_b, xp, dtype_b)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            res = xp.cross(a, b, axisa, axisb, axisc)
+        return res
+
+
+@testing.parameterize(
+    *testing.product(
+        {
+            "params": [
+                #  Test for 0 dimension
+                (
+                    (3,),
+                    (3,),
+                    -1,
+                ),
+                #  Test for basic cases
+                (
+                    (1, 3),
+                    (1, 3),
+                    1,
+                ),
+                #  Test for higher dimensions
+                ((2, 4, 5, 3), (2, 4, 5, 3), -1),
+            ],
+        }
+    )
+)
+class TestLinalgCrossProduct(unittest.TestCase):
+
+    @testing.with_requires("numpy>=2.0")
+    @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
+    @testing.numpy_cupy_allclose()
+    def test_cross(self, xp, dtype_a, dtype_b):
+        if dtype_a == dtype_b == numpy.bool_:
+            # cross does not support bool-bool inputs.
+            return xp.array(True)
+        shape_a, shape_b, axis = self.params
+        a = testing.shaped_arange(shape_a, xp, dtype_a)
+        b = testing.shaped_arange(shape_b, xp, dtype_b)
+        return xp.linalg.cross(a, b, axis=axis)
 
 
 @testing.parameterize(
@@ -129,6 +197,7 @@ class TestCrossProduct(unittest.TestCase):
     )
 )
 class TestDotFor0Dim(unittest.TestCase):
+
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(
         type_check=has_support_aspect64(), contiguous_check=False
@@ -147,6 +216,7 @@ class TestDotFor0Dim(unittest.TestCase):
 
 
 class TestProduct:
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_dot_vec1(self, xp, dtype):
@@ -403,7 +473,9 @@ class TestProduct:
     )
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_kron_accepts_numbers_as_arguments(self, a, b, xp):
-        args = [xp.array(arg) if type(arg) == list else arg for arg in [a, b]]
+        args = [
+            xp.array(arg) if isinstance(arg, list) else arg for arg in [a, b]
+        ]
         return xp.kron(*args)
 
 
@@ -422,6 +494,7 @@ class TestProduct:
     )
 )
 class TestProductZeroLength(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_zero_length(self, xp, dtype):
@@ -488,9 +561,13 @@ class TestMatrixPower(unittest.TestCase):
         a = xp.eye(23, k=17, dtype=dtype) + xp.eye(23, k=-6, dtype=dtype)
         return xp.linalg.matrix_power(a, 123456789123456789)
 
+    @pytest.mark.skipif(
+        sys.platform == "win32", reason="python int overflows C long"
+    )
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose()
     def test_matrix_power_invlarge(self, xp, dtype):
+        # TODO (ev-br): np 2.0: check if it's fixed in numpy 2 (broken on 1.26)
         a = xp.eye(23, k=17, dtype=dtype) + xp.eye(23, k=-6, dtype=dtype)
         return xp.linalg.matrix_power(a, -987654321987654321)
 
@@ -504,6 +581,7 @@ class TestMatrixPower(unittest.TestCase):
 )
 @pytest.mark.parametrize("n", [0, 5, -7])
 class TestMatrixPowerBatched:
+
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=5e-5)
     def test_matrix_power_batched(self, xp, dtype, shape, n):

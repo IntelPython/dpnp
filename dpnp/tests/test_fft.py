@@ -752,7 +752,7 @@ class TestIrfft:
     )
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
-    def test_fft_1D(self, dtype, n, norm):
+    def test_irfft_1D(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11, dtype=dtype)
         a = dpnp.sin(x)
         a_np = dpnp.asnumpy(a)
@@ -766,7 +766,7 @@ class TestIrfft:
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
-    def test_fft_1D_complex(self, dtype, n, norm):
+    def test_irfft_1D_complex(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
         a = _make_array_Hermitian(a, n)
@@ -782,7 +782,7 @@ class TestIrfft:
     @pytest.mark.parametrize("axis", [-1, 1, 0])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
-    def test_fft_1D_on_2D_array(self, dtype, n, axis, norm, order):
+    def test_irfft_1D_on_2D_array(self, dtype, n, axis, norm, order):
         a_np = numpy.arange(12, dtype=dtype).reshape(3, 4, order=order)
         a = dpnp.asarray(a_np)
 
@@ -795,7 +795,7 @@ class TestIrfft:
     @pytest.mark.parametrize("axis", [0, 1, 2])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
-    def test_fft_1D_on_3D_array(self, dtype, n, axis, norm, order):
+    def test_irfft_1D_on_3D_array(self, dtype, n, axis, norm, order):
         x1 = numpy.random.uniform(-10, 10, 120)
         x2 = numpy.random.uniform(-10, 10, 120)
         a_np = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(
@@ -830,7 +830,7 @@ class TestIrfft:
         )
 
     @pytest.mark.parametrize("n", [None, 5, 18])
-    def test_fft_usm_ndarray(self, n):
+    def test_irfft_usm_ndarray(self, n):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
         a = _make_array_Hermitian(a, n)
@@ -847,7 +847,7 @@ class TestIrfft:
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
-    def test_fft_1D_out(self, dtype, n, norm):
+    def test_irfft_1D_out(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
         a = _make_array_Hermitian(a, n)
@@ -867,7 +867,7 @@ class TestIrfft:
     @pytest.mark.parametrize("axis", [-1, 0])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
-    def test_fft_1D_on_2D_array_out(self, dtype, n, axis, norm, order):
+    def test_irfft_1D_on_2D_array_out(self, dtype, n, axis, norm, order):
         a_np = numpy.arange(12, dtype=dtype).reshape(3, 4, order=order)
         a = dpnp.asarray(a_np)
 
@@ -881,7 +881,7 @@ class TestIrfft:
         expected = numpy.fft.irfft(a_np, n=n, axis=axis, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    def test_fft_validate_out(self):
+    def test_irfft_validate_out(self):
         # Invalid dtype for c2r FFT
         a = dpnp.ones((10,), dtype=dpnp.complex64)
         out = dpnp.empty((18,), dtype=dpnp.complex64)
@@ -898,7 +898,7 @@ class TestRfft:
     @pytest.mark.parametrize(
         "shape", [(64,), (8, 8), (4, 16), (4, 4, 4), (2, 4, 4, 2)]
     )
-    def test_fft_rfft(self, dtype, shape):
+    def test_rfft(self, dtype, shape):
         np_data = numpy.arange(64, dtype=dtype).reshape(shape)
         dpnp_data = dpnp.arange(64, dtype=dtype).reshape(shape)
 
@@ -912,7 +912,7 @@ class TestRfft:
     )
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
-    def test_fft_1D(self, dtype, n, norm):
+    def test_rfft_1D(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11, dtype=dtype)
         a = dpnp.sin(x)
         a_np = dpnp.asnumpy(a)
@@ -923,7 +923,7 @@ class TestRfft:
 
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
-    def test_fft_bool(self, n, norm):
+    def test_rfft_bool(self, n, norm):
         a = dpnp.ones(11, dtype=dpnp.bool)
         a_np = dpnp.asnumpy(a)
 
@@ -936,7 +936,7 @@ class TestRfft:
     @pytest.mark.parametrize("axis", [-1, 1, 0])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
-    def test_fft_1D_on_2D_array(self, dtype, n, axis, norm, order):
+    def test_rfft_1D_on_2D_array(self, dtype, n, axis, norm, order):
         a_np = numpy.arange(12, dtype=dtype).reshape(3, 4, order=order)
         a = dpnp.asarray(a_np)
 
@@ -949,7 +949,7 @@ class TestRfft:
     @pytest.mark.parametrize("axis", [0, 1, 2])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
-    def test_fft_1D_on_3D_array(self, dtype, n, axis, norm, order):
+    def test_rfft_1D_on_3D_array(self, dtype, n, axis, norm, order):
         a_np = numpy.arange(24, dtype=dtype).reshape(2, 3, 4, order=order)
         a = dpnp.asarray(a_np)
 
@@ -958,7 +958,7 @@ class TestRfft:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("n", [None, 5, 20])
-    def test_fft_usm_ndarray(self, n):
+    def test_rfft_usm_ndarray(self, n):
         x = dpt.linspace(-1, 1, 11)
         a_usm = dpt.asarray(dpt.sin(x))
         a_np = dpt.asnumpy(a_usm)
@@ -974,7 +974,7 @@ class TestRfft:
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
-    def test_fft_1D_out(self, dtype, n, norm):
+    def test_rfft_1D_out(self, dtype, n, norm):
         x = dpnp.linspace(-1, 1, 11)
         a = dpnp.sin(x) + 1j * dpnp.cos(x)
         a = dpnp.asarray(a, dtype=dtype)
@@ -994,7 +994,7 @@ class TestRfft:
     @pytest.mark.parametrize("axis", [-1, 0])
     @pytest.mark.parametrize("norm", [None, "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
-    def test_fft_1D_on_2D_array_out(self, dtype, n, axis, norm, order):
+    def test_rfft_1D_on_2D_array_out(self, dtype, n, axis, norm, order):
         a_np = numpy.arange(12, dtype=dtype).reshape(3, 4, order=order)
         a = dpnp.asarray(a_np)
 
@@ -1010,7 +1010,7 @@ class TestRfft:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_fft_error(self, xp):
+    def test_rfft_error(self, xp):
         a = xp.ones((4, 3), dtype=xp.complex64)
         # invalid dtype of input array for r2c FFT
         if xp == dpnp:
@@ -1037,8 +1037,8 @@ class TestRfft2:
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_rfft2(self, dtype, axes, norm, order):
-        x1 = numpy.random.uniform(-10, 10, 24)
-        a_np = numpy.array(x1, dtype=dtype).reshape(2, 3, 4, order=order)
+        x = numpy.random.uniform(-10, 10, 24)
+        a_np = numpy.array(x, dtype=dtype).reshape(2, 3, 4, order=order)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfft2(a, axes=axes, norm=norm)
@@ -1052,9 +1052,9 @@ class TestRfft2:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_irfft2(self, dtype):
-        # x1 is Hermitian symmetric
-        x1 = numpy.array([[0, 1, 2], [5, 4, 6], [5, 7, 6]])
-        a_np = numpy.array(x1, dtype=dtype)
+        # x is Hermitian symmetric
+        x = numpy.array([[0, 1, 2], [5, 4, 6], [5, 7, 6]])
+        a_np = numpy.array(x, dtype=dtype)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.irfft2(a)
@@ -1063,8 +1063,8 @@ class TestRfft2:
 
     @pytest.mark.parametrize("s", [None, (3, 3), (10, 10), (3, 10)])
     def test_rfft2_s(self, s):
-        x1 = numpy.random.uniform(-10, 10, 48)
-        a_np = numpy.array(x1, dtype=numpy.float32).reshape(6, 8)
+        x = numpy.random.uniform(-10, 10, 48)
+        a_np = numpy.array(x, dtype=numpy.float32).reshape(6, 8)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfft2(a, s=s)
@@ -1076,7 +1076,7 @@ class TestRfft2:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_fft_error(self, xp):
+    def test_rfft2_error(self, xp):
         a = xp.ones((2, 3))
         # empty axes
         assert_raises(IndexError, xp.fft.rfft2, a, axes=())
@@ -1101,8 +1101,8 @@ class TestRfftn:
     @pytest.mark.parametrize("norm", ["forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_rfftn(self, dtype, axes, norm, order):
-        x1 = numpy.random.uniform(-10, 10, 120)
-        a_np = numpy.array(x1, dtype=dtype).reshape(2, 3, 4, 5, order=order)
+        x = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x, dtype=dtype).reshape(2, 3, 4, 5, order=order)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfftn(a, axes=axes, norm=norm)
@@ -1120,8 +1120,8 @@ class TestRfftn:
         "axes", [(2, 0, 2, 0), (0, 1, 1), (2, 0, 1, 3, 2, 1)]
     )
     def test_rfftn_repeated_axes(self, axes):
-        x1 = numpy.random.uniform(-10, 10, 120)
-        a_np = numpy.array(x1, dtype=numpy.float32).reshape(2, 3, 4, 5)
+        x = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x, dtype=numpy.float32).reshape(2, 3, 4, 5)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfftn(a, axes=axes)
@@ -1146,8 +1146,8 @@ class TestRfftn:
     @pytest.mark.parametrize("axes", [(2, 3, 3, 2), (0, 0, 3, 3)])
     @pytest.mark.parametrize("s", [(5, 4, 3, 3), (7, 8, 10, 9)])
     def test_rfftn_repeated_axes_with_s(self, axes, s):
-        x1 = numpy.random.uniform(-10, 10, 120)
-        a_np = numpy.array(x1, dtype=numpy.float32).reshape(2, 3, 4, 5)
+        x = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x, dtype=numpy.float32).reshape(2, 3, 4, 5)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfftn(a, s=s, axes=axes)
@@ -1170,8 +1170,8 @@ class TestRfftn:
         if is_cuda_device():
             if axes == (0, 1, 2, 3) and s == (2, 5, 1, 2):
                 pytest.skip("SAT-7587")
-        x1 = numpy.random.uniform(-10, 10, 120)
-        a_np = numpy.array(x1, dtype=numpy.float32).reshape(2, 3, 4, 5)
+        x = numpy.random.uniform(-10, 10, 120)
+        a_np = numpy.array(x, dtype=numpy.float32).reshape(2, 3, 4, 5)
         a = dpnp.asarray(a_np)
 
         out_shape = list(a.shape)
@@ -1204,8 +1204,8 @@ class TestRfftn:
         assert_dtype_allclose(iresult, iexpected, check_only_type_kind=True)
 
     def test_rfftn_1d_array(self):
-        x1 = numpy.random.uniform(-10, 10, 20)
-        a_np = numpy.array(x1, dtype=numpy.float32)
+        x = numpy.random.uniform(-10, 10, 20)
+        a_np = numpy.array(x, dtype=numpy.float32)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfftn(a)

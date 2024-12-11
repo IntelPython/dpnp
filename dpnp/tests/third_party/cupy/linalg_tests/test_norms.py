@@ -58,6 +58,7 @@ class TestTrace(unittest.TestCase):
     )
 )
 class TestNorm(unittest.TestCase):
+
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, type_check=False)
     # since dtype of sum is different in dpnp and NumPy, type_check=False
@@ -94,6 +95,7 @@ class TestNorm(unittest.TestCase):
     )
 )
 class TestMatrixRank(unittest.TestCase):
+
     @testing.for_all_dtypes(no_float16=True, no_complex=True)
     @testing.numpy_cupy_array_equal(type_check=True)
     def test_matrix_rank(self, xp, dtype):
@@ -109,6 +111,7 @@ class TestMatrixRank(unittest.TestCase):
 
 
 class TestDet(unittest.TestCase):
+
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_det(self, xp, dtype):
@@ -185,6 +188,7 @@ class TestDet(unittest.TestCase):
 
 
 class TestSlogdet(unittest.TestCase):
+
     @testing.for_dtypes("fdFD")
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4)
     def test_slogdet(self, xp, dtype):
