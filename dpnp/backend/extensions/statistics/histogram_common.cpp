@@ -88,16 +88,14 @@ void validate(const usm_ndarray &sample,
                   {&histogram}, names);
 
     check_size_at_least(bins_ptr, 2, names);
-
     check_size_at_least(&histogram, 1, names);
-    check_num_dims(&histogram, 1, names);
 
     if (weights_ptr) {
         check_num_dims(weights_ptr, 1, names);
 
-        auto sample_size = sample.get_size();
+        auto sample_size = sample.get_shape(0);
         auto weights_size = weights_ptr->get_size();
-        if (sample.get_size() != weights_ptr->get_size()) {
+        if (sample_size != weights_ptr->get_size()) {
             throw py::value_error(name_of(&sample, names) + " size (" +
                                   std::to_string(sample_size) + ") and " +
                                   name_of(weights_ptr, names) + " size (" +
@@ -110,61 +108,74 @@ void validate(const usm_ndarray &sample,
 
     if (sample.get_ndim() == 1) {
         check_num_dims(bins_ptr, 1, names);
+
+        if (bins_ptr && histogram.get_size() != bins_ptr->get_size() - 1) {
+            auto hist_size = histogram.get_size();
+            auto bins_size = bins_ptr->get_size();
+            throw py::value_error(
+                name_of(&histogram, names) + " parameter and " +
+                name_of(bins_ptr, names) + " parameters shape mismatch. " +
+                name_of(&histogram, names) + " size is " +
+                std::to_string(hist_size) + name_of(bins_ptr, names) +
+                " must have size " + std::to_string(hist_size + 1) +
+                " but have " + std::to_string(bins_size));
+        }
     }
     else if (sample.get_ndim() == 2) {
         auto sample_count = sample.get_shape(0);
         auto expected_dims = sample.get_shape(1);
 
-        if (bins_ptr != nullptr && bins_ptr->get_ndim() != expected_dims) {
+        if (histogram.get_ndim() != expected_dims) {
             throw py::value_error(
-                name_of(&sample, names) + " parameter has shape {" +
-                std::to_string(sample_count) + "x" +
-                std::to_string(expected_dims) + "}" + ", so " +
-                name_of(bins_ptr, names) + " parameter expected to be " +
+                name_of(&sample, names) + " parameter has shape (" +
+                std::to_string(sample_count) + ", " +
+                std::to_string(expected_dims) + ")" + ", so " +
+                name_of(&histogram, names) + " parameter expected to be " +
                 std::to_string(expected_dims) +
                 "d. "
                 "Actual " +
-                std::to_string(bins->get_ndim()) + "d");
-        }
-    }
-
-    if (bins_ptr != nullptr) {
-        py::ssize_t expected_hist_size = 1;
-        for (int i = 0; i < bins_ptr->get_ndim(); ++i) {
-            expected_hist_size *= (bins_ptr->get_shape(i) - 1);
+                std::to_string(histogram.get_ndim()) + "d");
         }
 
-        if (histogram.get_size() != expected_hist_size) {
-            throw py::value_error(
-                name_of(&histogram, names) + " and " +
-                name_of(bins_ptr, names) + " shape mismatch. " +
-                name_of(&histogram, names) + " expected to have size = " +
-                std::to_string(expected_hist_size) + ". Actual " +
-                std::to_string(histogram.get_size()));
+        if (bins_ptr != nullptr) {
+            py::ssize_t expected_bins_size = 0;
+            for (int i = 0; i < histogram.get_ndim(); ++i) {
+                expected_bins_size += histogram.get_shape(i) + 1;
+            }
+
+            auto actual_bins_size = bins_ptr->get_size();
+            if (actual_bins_size != expected_bins_size) {
+                throw py::value_error(
+                    name_of(&histogram, names) + " and " +
+                    name_of(bins_ptr, names) + " shape mismatch. " +
+                    name_of(bins_ptr, names) + " expected to have size = " +
+                    std::to_string(expected_bins_size) + ". Actual " +
+                    std::to_string(actual_bins_size));
+            }
         }
-    }
 
-    int64_t max_hist_size = std::numeric_limits<uint32_t>::max() - 1;
-    if (histogram.get_size() > max_hist_size) {
-        throw py::value_error(name_of(&histogram, names) +
-                              " parameter size expected to be less than " +
-                              std::to_string(max_hist_size) + ". Actual " +
-                              std::to_string(histogram.get_size()));
-    }
+        int64_t max_hist_size = std::numeric_limits<uint32_t>::max() - 1;
+        if (histogram.get_size() > max_hist_size) {
+            throw py::value_error(name_of(&histogram, names) +
+                                  " parameter size expected to be less than " +
+                                  std::to_string(max_hist_size) + ". Actual " +
+                                  std::to_string(histogram.get_size()));
+        }
 
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
-    auto hist_type = static_cast<typenum_t>(
-        array_types.typenum_to_lookup_id(histogram.get_typenum()));
-    if (histogram.get_elemsize() == 8 && hist_type != typenum_t::CFLOAT) {
-        auto device = exec_q.get_device();
-        bool _64bit_atomics = device.has(sycl::aspect::atomic64);
+        auto array_types = dpctl_td_ns::usm_ndarray_types();
+        auto hist_type = static_cast<typenum_t>(
+            array_types.typenum_to_lookup_id(histogram.get_typenum()));
+        if (histogram.get_elemsize() == 8 && hist_type != typenum_t::CFLOAT) {
+            auto device = exec_q.get_device();
+            bool _64bit_atomics = device.has(sycl::aspect::atomic64);
 
-        if (!_64bit_atomics) {
-            auto device_name = device.get_info<sycl::info::device::name>();
-            throw py::value_error(
-                name_of(&histogram, names) +
-                " parameter has 64-bit type, but 64-bit atomics " +
-                " are not supported for " + device_name);
+            if (!_64bit_atomics) {
+                auto device_name = device.get_info<sycl::info::device::name>();
+                throw py::value_error(
+                    name_of(&histogram, names) +
+                    " parameter has 64-bit type, but 64-bit atomics " +
+                    " are not supported for " + device_name);
+            }
         }
     }
 }

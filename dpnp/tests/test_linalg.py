@@ -13,7 +13,7 @@ from numpy.testing import (
     suppress_warnings,
 )
 
-import dpnp as inp
+import dpnp
 
 from .helper import (
     assert_dtype_allclose,
@@ -112,13 +112,13 @@ def test_usm_ndarray_linalg_batch(func, gen_kwargs, func_kwargs):
             dpt.asarray(generate_random_numpy_array(shape, **gen_kwargs))
         ]
 
-    result = getattr(inp.linalg, func)(*dpt_args, **func_kwargs)
+    result = getattr(dpnp.linalg, func)(*dpt_args, **func_kwargs)
 
     if isinstance(result, tuple):
         for res in result:
-            assert isinstance(res, inp.ndarray)
+            assert isinstance(res, dpnp.ndarray)
     else:
-        assert isinstance(result, inp.ndarray)
+        assert isinstance(result, dpnp.ndarray)
 
 
 # check linear algebra functions from dpnp
@@ -134,9 +134,9 @@ def test_usm_ndarray_linearalgebra_batch(func):
         for _ in range(2)
     ]
 
-    result = getattr(inp, func)(*dpt_args)
+    result = getattr(dpnp, func)(*dpt_args)
 
-    assert isinstance(result, inp.ndarray)
+    assert isinstance(result, dpnp.ndarray)
 
 
 class TestCholesky:
@@ -150,17 +150,13 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky(self, array, dtype):
         a = numpy.array(array, dtype=dtype)
-        ia = inp.array(a)
-        result = inp.linalg.cholesky(ia)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.cholesky(ia)
         expected = numpy.linalg.cholesky(a)
         assert_dtype_allclose(result, expected)
 
@@ -174,16 +170,12 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky_upper(self, array, dtype):
-        ia = inp.array(array, dtype=dtype)
-        result = inp.linalg.cholesky(ia, upper=True)
+        ia = dpnp.array(array, dtype=dtype)
+        result = dpnp.linalg.cholesky(ia, upper=True)
 
         if ia.ndim > 2:
             n = ia.shape[-1]
@@ -192,7 +184,7 @@ class TestCholesky:
             batch_size = ia_reshaped.shape[0]
             for idx in range(batch_size):
                 # Reconstruct the matrix using the Cholesky decomposition result
-                if inp.issubdtype(dtype, inp.complexfloating):
+                if dpnp.issubdtype(dtype, dpnp.complexfloating):
                     reconstructed = (
                         res_reshaped[idx].T.conj() @ res_reshaped[idx]
                     )
@@ -203,7 +195,7 @@ class TestCholesky:
                 )
         else:
             # Reconstruct the matrix using the Cholesky decomposition result
-            if inp.issubdtype(dtype, inp.complexfloating):
+            if dpnp.issubdtype(dtype, dpnp.complexfloating):
                 reconstructed = result.T.conj() @ result
             else:
                 reconstructed = result.T @ result
@@ -221,17 +213,13 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky_upper_numpy(self, array, dtype):
         a = numpy.array(array, dtype=dtype)
-        ia = inp.array(a)
-        result = inp.linalg.cholesky(ia, upper=True)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.cholesky(ia, upper=True)
         expected = numpy.linalg.cholesky(a, upper=True)
         assert_dtype_allclose(result, expected)
 
@@ -246,52 +234,46 @@ class TestCholesky:
             ]
         )
 
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         # positive strides
         expected = numpy.linalg.cholesky(a_np[::2, ::2])
-        result = inp.linalg.cholesky(a_dp[::2, ::2])
+        result = dpnp.linalg.cholesky(a_dp[::2, ::2])
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
         # negative strides
         expected = numpy.linalg.cholesky(a_np[::-2, ::-2])
-        result = inp.linalg.cholesky(a_dp[::-2, ::-2])
+        result = dpnp.linalg.cholesky(a_dp[::-2, ::-2])
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
     @pytest.mark.parametrize(
         "shape",
-        [
-            (0, 0),
-            (3, 0, 0),
-            (0, 2, 2),
-        ],
-        ids=[
-            "(0, 0)",
-            "(3, 0, 0)",
-            "(0, 2, 2)",
-        ],
+        [(0, 0), (3, 0, 0), (0, 2, 2)],
+        ids=["(0, 0)", "(3, 0, 0)", "(0, 2, 2)"],
     )
     def test_cholesky_empty(self, shape):
         a = numpy.empty(shape)
-        ia = inp.array(a)
-        result = inp.linalg.cholesky(ia)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.cholesky(ia)
         expected = numpy.linalg.cholesky(a)
         assert_array_equal(expected, result)
 
     def test_cholesky_errors(self):
-        a_dp = inp.array([[1, 2], [2, 5]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [2, 5]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.cholesky, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.cholesky, a_np)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.cholesky, a_dp_ndim_1)
+        assert_raises(
+            dpnp.linalg.LinAlgError, dpnp.linalg.cholesky, a_dp_ndim_1
+        )
 
         # a is not square
-        a_dp = inp.ones((2, 3))
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.cholesky, a_dp)
+        a_dp = dpnp.ones((2, 3))
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.cholesky, a_dp)
 
 
 class TestCond:
@@ -302,15 +284,13 @@ class TestCond:
         "shape", [(0, 4, 4), (4, 0, 3, 3)], ids=["(0, 5, 3)", "(4, 0, 2, 3)"]
     )
     @pytest.mark.parametrize(
-        "p",
-        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
-        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_cond_empty(self, shape, p):
+    def test_empty(self, shape, p):
         a = numpy.empty(shape)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.cond(ia, p=p)
+        result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
@@ -321,30 +301,15 @@ class TestCond:
         "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
     )
     @pytest.mark.parametrize(
-        "p",
-        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
-        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_cond(self, dtype, shape, p):
+    def test_basic(self, dtype, shape, p):
         a = numpy.array(
             numpy.random.uniform(-5, 5, numpy.prod(shape)), dtype=dtype
         ).reshape(shape)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.cond(ia, p=p)
-        expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize(
-        "p",
-        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
-        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
-    )
-    def test_cond_bool(self, p):
-        a = numpy.array([[True, True], [True, False]])
-        ia = inp.array(a)
-
-        result = inp.linalg.cond(ia, p=p)
+        result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
@@ -353,53 +318,44 @@ class TestCond:
         "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
     )
     @pytest.mark.parametrize(
-        "p",
-        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
-        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_cond_complex(self, dtype, shape, p):
+    def test_complex(self, dtype, shape, p):
         x1 = numpy.random.uniform(-5, 5, numpy.prod(shape))
         x2 = numpy.random.uniform(-5, 5, numpy.prod(shape))
         a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(shape)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.cond(ia, p=p)
+        result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "p",
-        [-inp.inf, -1, 1, inp.inf, "fro"],
-        ids=["-dpnp.inf", "-1", "1", "dpnp.inf", "fro"],
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_cond_nan_input(self, p):
-        a = numpy.array(numpy.random.uniform(-10, 10, 9)).reshape(3, 3)
-        a[1, 1] = numpy.nan
-        ia = inp.array(a)
+    def test_bool(self, p):
+        a = numpy.array([[True, True], [True, False]])
+        ia = dpnp.array(a)
 
-        result = inp.linalg.cond(ia, p=p)
+        result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "p",
-        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
-        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
-    def test_cond_nan(self, p):
+    def test_nan(self, p):
         a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(2, 2, 2, 2)
         a[0, 0] = 0
         a[1, 1] = 0
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.cond(ia, p=p)
+        result = dpnp.linalg.cond(ia, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "p",
-        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro"],
-        ids=["None", "-dpnp.inf", "-2", "-1", "1", "2", "dpnp.inf", "fro"],
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     @pytest.mark.parametrize(
         "stride",
@@ -411,22 +367,22 @@ class TestCond:
             "(-1, 3, 3, -3)",
         ],
     )
-    def test_cond_strided(self, p, stride):
+    def test_strided(self, p, stride):
         A = numpy.random.rand(6, 8, 10, 10)
-        B = inp.asarray(A)
+        B = dpnp.asarray(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
         a = A[slices]
         b = B[slices]
 
-        result = inp.linalg.cond(b, p=p)
+        result = dpnp.linalg.cond(b, p=p)
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected, factor=24)
 
-    def test_cond_error(self):
+    def test_error(self):
         # cond is not defined on empty arrays
-        ia = inp.empty((2, 0))
+        ia = dpnp.empty((2, 0))
         with pytest.raises(ValueError):
-            inp.linalg.cond(ia, p=1)
+            dpnp.linalg.cond(ia, p=1)
 
 
 class TestDet:
@@ -440,17 +396,13 @@ class TestDet:
                 [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_det(self, array, dtype):
         a = numpy.array(array, dtype=dtype)
-        ia = inp.array(a)
-        result = inp.linalg.det(ia)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.det(ia)
         expected = numpy.linalg.det(a)
         assert_allclose(expected, result)
 
@@ -465,24 +417,24 @@ class TestDet:
             ]
         )
 
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         # positive strides
         expected = numpy.linalg.det(a_np[::2, ::2])
-        result = inp.linalg.det(a_dp[::2, ::2])
+        result = dpnp.linalg.det(a_dp[::2, ::2])
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
         # negative strides
         expected = numpy.linalg.det(a_np[::-2, ::-2])
-        result = inp.linalg.det(a_dp[::-2, ::-2])
+        result = dpnp.linalg.det(a_dp[::-2, ::-2])
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
     def test_det_empty(self):
         a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
         np_det = numpy.linalg.det(a)
-        dpnp_det = inp.linalg.det(ia)
+        dpnp_det = dpnp.linalg.det(ia)
 
         assert dpnp_det.dtype == np_det.dtype
         assert dpnp_det.shape == np_det.shape
@@ -510,10 +462,10 @@ class TestDet:
     )
     def test_det_singular_matrix(self, matrix):
         a_np = numpy.array(matrix, dtype="float32")
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         expected = numpy.linalg.det(a_np)
-        result = inp.linalg.det(a_dp)
+        result = dpnp.linalg.det(a_dp)
 
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
@@ -525,19 +477,19 @@ class TestDet:
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
         )
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         expected = numpy.linalg.det(a_np)
-        result = inp.linalg.det(a_dp)
+        result = dpnp.linalg.det(a_dp)
 
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
     def test_det_errors(self):
-        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [3, 5]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.det, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.det, a_np)
 
 
 class TestEigenvalue:
@@ -547,7 +499,7 @@ class TestEigenvalue:
     def assert_eigen_decomposition(self, a, w, v, rtol=1e-5, atol=1e-5):
         a_ndim = a.ndim
         if a_ndim == 2:
-            assert_allclose(a @ v, v @ inp.diag(w), rtol=rtol, atol=atol)
+            assert_allclose(a @ v, v @ dpnp.diag(w), rtol=rtol, atol=atol)
         else:  # a_ndim > 2
             if a_ndim > 3:
                 a = a.reshape(-1, *a.shape[-2:])
@@ -558,28 +510,14 @@ class TestEigenvalue:
                     a[i].dot(v[i]), w[i] * v[i], rtol=rtol, atol=atol
                 )
 
-    @pytest.mark.parametrize(
-        "func",
-        [
-            "eig",
-            "eigvals",
-            "eigh",
-            "eigvalsh",
-        ],
-    )
+    @pytest.mark.parametrize("func", ["eig", "eigvals", "eigh", "eigvalsh"])
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (2, 3, 3), (2, 2, 3, 3)],
-        ids=["(2,2)", "(2,3,3)", "(2,2,3,3)"],
+        ids=["(2, 2)", "(2, 3, 3)", "(2, 2, 3, 3)"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize(
-        "order",
-        [
-            "C",
-            "F",
-        ],
-    )
+    @pytest.mark.parametrize("order", ["C", "F"])
     def test_eigenvalues(self, func, shape, dtype, order):
         # Set a `hermitian` flag for generate_random_numpy_array() to
         # get a symmetric array for eigh() and eigvalsh() or
@@ -589,7 +527,7 @@ class TestEigenvalue:
             shape, dtype, hermitian=is_hermitian, seed_value=81
         )
         a_order = numpy.array(a, order=order)
-        a_dp = inp.array(a, order=order)
+        a_dp = dpnp.array(a, order=order)
 
         # NumPy with OneMKL and with rocSOLVER sorts in ascending order,
         # so w's should be directly comparable.
@@ -598,70 +536,56 @@ class TestEigenvalue:
         # we verify them through the eigen equation A*v=w*v.
         if func in ("eig", "eigh"):
             w, _ = getattr(numpy.linalg, func)(a_order)
-            w_dp, v_dp = getattr(inp.linalg, func)(a_dp)
+            w_dp, v_dp = getattr(dpnp.linalg, func)(a_dp)
 
             self.assert_eigen_decomposition(a_dp, w_dp, v_dp)
 
         else:  # eighvals or eigvalsh
             w = getattr(numpy.linalg, func)(a_order)
-            w_dp = getattr(inp.linalg, func)(a_dp)
+            w_dp = getattr(dpnp.linalg, func)(a_dp)
 
         assert_dtype_allclose(w_dp, w)
 
     # eigh() and eigvalsh() are tested in cupy tests
-    @pytest.mark.parametrize(
-        "func",
-        [
-            "eig",
-            "eigvals",
-        ],
-    )
+    @pytest.mark.parametrize("func", ["eig", "eigvals"])
     @pytest.mark.parametrize(
         "shape",
         [(0, 0), (2, 0, 0), (0, 3, 3)],
-        ids=["(0,0)", "(2,0,0)", "(0,3,3)"],
+        ids=["(0, 0)", "(2, 0, 0)", "(0, 3, 3)"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_eigenvalue_empty(self, func, shape, dtype):
         a_np = numpy.empty(shape, dtype=dtype)
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         if func == "eig":
             w, v = getattr(numpy.linalg, func)(a_np)
-            w_dp, v_dp = getattr(inp.linalg, func)(a_dp)
+            w_dp, v_dp = getattr(dpnp.linalg, func)(a_dp)
 
             assert_dtype_allclose(v_dp, v)
 
         else:  # eigvals
             w = getattr(numpy.linalg, func)(a_np)
-            w_dp = getattr(inp.linalg, func)(a_dp)
+            w_dp = getattr(dpnp.linalg, func)(a_dp)
 
         assert_dtype_allclose(w_dp, w)
 
-    @pytest.mark.parametrize(
-        "func",
-        [
-            "eig",
-            "eigvals",
-            "eigh",
-            "eigvalsh",
-        ],
-    )
+    @pytest.mark.parametrize("func", ["eig", "eigvals", "eigh", "eigvalsh"])
     def test_eigenvalue_errors(self, func):
-        a_dp = inp.array([[1, 3], [3, 2]], dtype="float32")
+        a_dp = dpnp.array([[1, 3], [3, 2]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        dpnp_func = getattr(inp.linalg, func)
+        a_np = dpnp.asnumpy(a_dp)
+        dpnp_func = getattr(dpnp.linalg, func)
         assert_raises(TypeError, dpnp_func, a_np)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_ndim_1)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp_func, a_dp_ndim_1)
 
         # a is not square
-        a_dp_not_scquare = inp.ones((2, 3))
-        assert_raises(inp.linalg.LinAlgError, dpnp_func, a_dp_not_scquare)
+        a_dp_not_scquare = dpnp.ones((2, 3))
+        assert_raises(dpnp.linalg.LinAlgError, dpnp_func, a_dp_not_scquare)
 
         # invalid UPLO
         if func in ("eigh", "eigvalsh"):
@@ -670,61 +594,61 @@ class TestEigenvalue:
 
 class TestEinsum:
     def test_einsum_trivial_cases(self):
-        a = inp.arange(25).reshape(5, 5)
-        b = inp.arange(5)
+        a = dpnp.arange(25).reshape(5, 5)
+        b = dpnp.arange(5)
         a_np = a.asnumpy()
         b_np = b.asnumpy()
 
         # one input, no optimization is needed
-        result = inp.einsum("i", b, optimize="greedy")
+        result = dpnp.einsum("i", b, optimize="greedy")
         expected = numpy.einsum("i", b_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
         # two inputs, no optimization is needed
-        result = inp.einsum("ij,jk", a, a, optimize="greedy")
+        result = dpnp.einsum("ij,jk", a, a, optimize="greedy")
         expected = numpy.einsum("ij,jk", a_np, a_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
         # no optimization in optimal mode
-        result = inp.einsum("ij,jk", a, a, optimize=["optimal", 1])
+        result = dpnp.einsum("ij,jk", a, a, optimize=["optimal", 1])
         expected = numpy.einsum("ij,jk", a_np, a_np, optimize=["optimal", 1])
         assert_dtype_allclose(result, expected)
 
         # naive cost equal or smaller than optimized cost
-        result = inp.einsum("i,i,i", b, b, b, optimize="greedy")
+        result = dpnp.einsum("i,i,i", b, b, b, optimize="greedy")
         expected = numpy.einsum("i,i,i", b_np, b_np, b_np, optimize="greedy")
         assert_dtype_allclose(result, expected)
 
     def test_einsum_out(self):
-        a = inp.ones((5, 5))
-        out = inp.empty((5,))
-        result = inp.einsum("ii->i", a, out=out)
+        a = dpnp.ones((5, 5))
+        out = dpnp.empty((5,))
+        result = dpnp.einsum("ii->i", a, out=out)
         assert result is out
         expected = numpy.einsum("ii->i", a.asnumpy())
         assert_dtype_allclose(result, expected)
 
     def test_einsum_error1(self):
-        a = inp.ones((5, 5))
-        out = inp.empty((5,), sycl_queue=dpctl.SyclQueue())
+        a = dpnp.ones((5, 5))
+        out = dpnp.empty((5,), sycl_queue=dpctl.SyclQueue())
         # inconsistent sycl_queue
-        assert_raises(ExecutionPlacementError, inp.einsum, "ii->i", a, out=out)
+        assert_raises(ExecutionPlacementError, dpnp.einsum, "ii->i", a, out=out)
 
         # unknown value for optimize keyword
-        assert_raises(TypeError, inp.einsum, "ii->i", a, optimize="blah")
+        assert_raises(TypeError, dpnp.einsum, "ii->i", a, optimize="blah")
 
         # repeated scripts in output
-        assert_raises(ValueError, inp.einsum, "ij,jk->ii", a, a)
+        assert_raises(ValueError, dpnp.einsum, "ij,jk->ii", a, a)
 
-        a = inp.ones((5, 4))
+        a = dpnp.ones((5, 4))
         # different size for same label 5 != 4
-        assert_raises(ValueError, inp.einsum, "ii", a)
+        assert_raises(ValueError, dpnp.einsum, "ii", a)
 
-        a = inp.arange(25).reshape(5, 5)
+        a = dpnp.arange(25).reshape(5, 5)
         # subscript is not within the valid range [0, 52)
-        assert_raises(ValueError, inp.einsum, a, [53, 53])
+        assert_raises(ValueError, dpnp.einsum, a, [53, 53])
 
     @pytest.mark.parametrize("do_opt", [True, False])
-    @pytest.mark.parametrize("xp", [numpy, inp])
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_einsum_error2(self, do_opt, xp):
         a = xp.asarray(0)
         b = xp.asarray([0])
@@ -783,7 +707,7 @@ class TestEinsum:
             xp.einsum("aabcb,abc", a, b)
 
     @pytest.mark.parametrize("do_opt", [True, False])
-    @pytest.mark.parametrize("xp", [numpy, inp])
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_einsum_specific_errors(self, do_opt, xp):
         a = xp.asarray(0)
         # out parameter must be an array
@@ -817,23 +741,23 @@ class TestEinsum:
         # sum(a, axis=-1)
         for n in range(1, 17):
             a = numpy.arange(n, dtype=dtype)
-            a_dp = inp.array(a)
+            a_dp = dpnp.array(a)
             expected = numpy.einsum("i->", a, optimize=do_opt)
             assert_dtype_allclose(
-                inp.einsum("i->", a_dp, optimize=do_opt), expected
+                dpnp.einsum("i->", a_dp, optimize=do_opt), expected
             )
             assert_dtype_allclose(
-                inp.einsum(a_dp, [0], [], optimize=do_opt), expected
+                dpnp.einsum(a_dp, [0], [], optimize=do_opt), expected
             )
 
         for n in range(1, 17):
             a = numpy.arange(2 * 3 * n, dtype=dtype).reshape(2, 3, n)
-            a_dp = inp.array(a)
+            a_dp = dpnp.array(a)
             expected = numpy.einsum("...i->...", a, optimize=do_opt)
-            result = inp.einsum("...i->...", a_dp, optimize=do_opt)
+            result = dpnp.einsum("...i->...", a_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(
+            result = dpnp.einsum(
                 a_dp, [Ellipsis, 0], [Ellipsis], optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
@@ -841,24 +765,24 @@ class TestEinsum:
         # sum(a, axis=0)
         for n in range(1, 17):
             a = numpy.arange(2 * n, dtype=dtype).reshape(2, n)
-            a_dp = inp.array(a)
+            a_dp = dpnp.array(a)
             expected = numpy.einsum("i...->...", a, optimize=do_opt)
-            result = inp.einsum("i...->...", a_dp, optimize=do_opt)
+            result = dpnp.einsum("i...->...", a_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(
+            result = dpnp.einsum(
                 a_dp, [0, Ellipsis], [Ellipsis], optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
 
         for n in range(1, 17):
             a = numpy.arange(2 * 3 * n, dtype=dtype).reshape(2, 3, n)
-            a_dp = inp.array(a)
+            a_dp = dpnp.array(a)
             expected = numpy.einsum("i...->...", a, optimize=do_opt)
-            result = inp.einsum("i...->...", a_dp, optimize=do_opt)
+            result = dpnp.einsum("i...->...", a_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(
+            result = dpnp.einsum(
                 a_dp, [0, Ellipsis], [Ellipsis], optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
@@ -866,34 +790,34 @@ class TestEinsum:
         # trace(a)
         for n in range(1, 17):
             a = numpy.arange(n * n, dtype=dtype).reshape(n, n)
-            a_dp = inp.array(a)
+            a_dp = dpnp.array(a)
             expected = numpy.einsum("ii", a, optimize=do_opt)
-            result = inp.einsum("ii", a_dp, optimize=do_opt)
+            result = dpnp.einsum("ii", a_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(a_dp, [0, 0], optimize=do_opt)
+            result = dpnp.einsum(a_dp, [0, 0], optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
             # should accept dpnp array in subscript list
-            dp_array = inp.asarray([0, 0])
+            dp_array = dpnp.asarray([0, 0])
             assert_dtype_allclose(
-                inp.einsum(a_dp, dp_array, optimize=do_opt), expected
+                dpnp.einsum(a_dp, dp_array, optimize=do_opt), expected
             )
             assert_dtype_allclose(
-                inp.einsum(a_dp, list(dp_array), optimize=do_opt), expected
+                dpnp.einsum(a_dp, list(dp_array), optimize=do_opt), expected
             )
 
         # multiply(a, b)
         for n in range(1, 17):
             a = numpy.arange(3 * n, dtype=dtype).reshape(3, n)
             b = numpy.arange(2 * 3 * n, dtype=dtype).reshape(2, 3, n)
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             expected = numpy.einsum("..., ...", a, b, optimize=do_opt)
-            result = inp.einsum("..., ...", a_dp, b_dp, optimize=do_opt)
+            result = dpnp.einsum("..., ...", a_dp, b_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(
+            result = dpnp.einsum(
                 a_dp, [Ellipsis], b_dp, [Ellipsis], optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
@@ -902,13 +826,13 @@ class TestEinsum:
         for n in range(1, 17):
             a = numpy.arange(2 * 3 * n, dtype=dtype).reshape(2, 3, n)
             b = numpy.arange(n, dtype=dtype)
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             expected = numpy.einsum("...i, ...i", a, b, optimize=do_opt)
-            result = inp.einsum("...i, ...i", a_dp, b_dp, optimize=do_opt)
+            result = dpnp.einsum("...i, ...i", a_dp, b_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(
+            result = dpnp.einsum(
                 a_dp, [Ellipsis, 0], b_dp, [Ellipsis, 0], optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
@@ -916,13 +840,13 @@ class TestEinsum:
         for n in range(1, 11):
             a = numpy.arange(n * 3 * 2, dtype=dtype).reshape(n, 3, 2)
             b = numpy.arange(n, dtype=dtype)
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             expected = numpy.einsum("i..., i...", a, b, optimize=do_opt)
-            result = inp.einsum("i..., i...", a_dp, b_dp, optimize=do_opt)
+            result = dpnp.einsum("i..., i...", a_dp, b_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(
+            result = dpnp.einsum(
                 a_dp, [0, Ellipsis], b_dp, [0, Ellipsis], optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
@@ -931,14 +855,14 @@ class TestEinsum:
         for n in range(1, 17):
             a = numpy.arange(3, dtype=dtype) + 1
             b = numpy.arange(n, dtype=dtype) + 1
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             expected = numpy.einsum("i,j", a, b, optimize=do_opt)
             assert_dtype_allclose(
-                inp.einsum("i,j", a_dp, b_dp, optimize=do_opt), expected
+                dpnp.einsum("i,j", a_dp, b_dp, optimize=do_opt), expected
             )
             assert_dtype_allclose(
-                inp.einsum(a_dp, [0], b_dp, [1], optimize=do_opt), expected
+                dpnp.einsum(a_dp, [0], b_dp, [1], optimize=do_opt), expected
             )
 
         # Suppress the complex warnings for the 'as f8' tests
@@ -949,18 +873,18 @@ class TestEinsum:
             for n in range(1, 17):
                 a = numpy.arange(4 * n, dtype=dtype).reshape(4, n)
                 b = numpy.arange(n, dtype=dtype)
-                a_dp = inp.array(a)
-                b_dp = inp.array(b)
+                a_dp = dpnp.array(a)
+                b_dp = dpnp.array(b)
                 expected = numpy.einsum("ij, j", a, b, optimize=do_opt)
-                result = inp.einsum("ij, j", a_dp, b_dp, optimize=do_opt)
+                result = dpnp.einsum("ij, j", a_dp, b_dp, optimize=do_opt)
                 assert_dtype_allclose(result, expected)
 
-                result = inp.einsum(a_dp, [0, 1], b_dp, [1], optimize=do_opt)
+                result = dpnp.einsum(a_dp, [0, 1], b_dp, [1], optimize=do_opt)
                 assert_dtype_allclose(result, expected)
 
-                c = inp.arange(4, dtype=a_dp.dtype)
+                c = dpnp.arange(4, dtype=a_dp.dtype)
                 args = ["ij, j", a_dp, b_dp]
-                result = inp.einsum(
+                result = dpnp.einsum(
                     *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
                 )
                 assert result is c
@@ -968,7 +892,7 @@ class TestEinsum:
 
                 c[...] = 0
                 args = [a_dp, [0, 1], b_dp, [1]]
-                result = inp.einsum(
+                result = dpnp.einsum(
                     *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
                 )
                 assert result is c
@@ -977,20 +901,20 @@ class TestEinsum:
             for n in range(1, 17):
                 a = numpy.arange(4 * n, dtype=dtype).reshape(4, n)
                 b = numpy.arange(n, dtype=dtype)
-                a_dp = inp.array(a)
-                b_dp = inp.array(b)
+                a_dp = dpnp.array(a)
+                b_dp = dpnp.array(b)
                 expected = numpy.einsum("ji,j", a.T, b.T, optimize=do_opt)
-                result = inp.einsum("ji,j", a_dp.T, b_dp.T, optimize=do_opt)
+                result = dpnp.einsum("ji,j", a_dp.T, b_dp.T, optimize=do_opt)
                 assert_dtype_allclose(result, expected)
 
-                result = inp.einsum(
+                result = dpnp.einsum(
                     a_dp.T, [1, 0], b_dp.T, [1], optimize=do_opt
                 )
                 assert_dtype_allclose(result, expected)
 
-                c = inp.arange(4, dtype=a_dp.dtype)
+                c = dpnp.arange(4, dtype=a_dp.dtype)
                 args = ["ji,j", a_dp.T, b_dp.T]
-                result = inp.einsum(
+                result = dpnp.einsum(
                     *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
                 )
                 assert result is c
@@ -998,7 +922,7 @@ class TestEinsum:
 
                 c[...] = 0
                 args = [a_dp.T, [1, 0], b_dp.T, [1]]
-                result = inp.einsum(
+                result = dpnp.einsum(
                     *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
                 )
                 assert result is c
@@ -1008,28 +932,30 @@ class TestEinsum:
             for n in range(1, 17):
                 a = numpy.arange(4 * n, dtype=dtype).reshape(4, n)
                 b = numpy.arange(n * 6, dtype=dtype).reshape(n, 6)
-                a_dp = inp.array(a)
-                b_dp = inp.array(b)
+                a_dp = dpnp.array(a)
+                b_dp = dpnp.array(b)
                 expected = numpy.einsum("ij, jk", a, b, optimize=do_opt)
-                result = inp.einsum("ij, jk", a_dp, b_dp, optimize=do_opt)
+                result = dpnp.einsum("ij, jk", a_dp, b_dp, optimize=do_opt)
                 assert_dtype_allclose(result, expected)
 
-                result = inp.einsum(a_dp, [0, 1], b_dp, [1, 2], optimize=do_opt)
+                result = dpnp.einsum(
+                    a_dp, [0, 1], b_dp, [1, 2], optimize=do_opt
+                )
                 assert_dtype_allclose(result, expected)
 
             for n in range(1, 17):
                 a = numpy.arange(4 * n, dtype=dtype).reshape(4, n)
                 b = numpy.arange(n * 6, dtype=dtype).reshape(n, 6)
                 c = numpy.arange(24, dtype=dtype).reshape(4, 6)
-                a_dp = inp.array(a)
-                b_dp = inp.array(b)
-                d = inp.array(c)
+                a_dp = dpnp.array(a)
+                b_dp = dpnp.array(b)
+                d = dpnp.array(c)
                 args = ["ij, jk", a, b]
                 expected = numpy.einsum(
                     *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
                 )
                 args = ["ij, jk", a_dp, b_dp]
-                result = inp.einsum(
+                result = dpnp.einsum(
                     *args, out=d, dtype="f4", casting="unsafe", optimize=do_opt
                 )
                 assert result is d
@@ -1037,7 +963,7 @@ class TestEinsum:
 
                 d[...] = 0
                 args = [a_dp, [0, 1], b_dp, [1, 2]]
-                result = inp.einsum(
+                result = dpnp.einsum(
                     *args, out=d, dtype="f4", casting="unsafe", optimize=do_opt
                 )
                 assert result is d
@@ -1047,9 +973,9 @@ class TestEinsum:
             a = numpy.arange(12, dtype=dtype).reshape(3, 4)
             b = numpy.arange(20, dtype=dtype).reshape(4, 5)
             c = numpy.arange(30, dtype=dtype).reshape(5, 6)
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
-            c_dp = inp.array(c)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
+            c_dp = dpnp.array(c)
             # equivalent of a.dot(b).dot(c)
             # if optimize is True, NumPy does not respect the given dtype
             args = ["ij,jk,kl", a, b, c]
@@ -1057,25 +983,25 @@ class TestEinsum:
                 *args, dtype="f4", casting="unsafe", optimize=False
             )
             args = ["ij,jk,kl", a_dp, b_dp, c_dp]
-            result = inp.einsum(
+            result = dpnp.einsum(
                 *args, dtype="f4", casting="unsafe", optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
 
             args = a_dp, [0, 1], b_dp, [1, 2], c_dp, [2, 3]
-            result = inp.einsum(
+            result = dpnp.einsum(
                 *args, dtype="f4", casting="unsafe", optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
 
             d = numpy.arange(18, dtype=dtype).reshape(3, 6)
-            d_dp = inp.array(d)
+            d_dp = dpnp.array(d)
             args = ["ij,jk,kl", a, b, c]
             expected = numpy.einsum(
                 *args, out=d, dtype="f4", casting="unsafe", optimize=do_opt
             )
             args = ["ij,jk,kl", a_dp, b_dp, c_dp]
-            result = inp.einsum(
+            result = dpnp.einsum(
                 *args, out=d_dp, dtype="f4", casting="unsafe", optimize=do_opt
             )
             assert result is d_dp
@@ -1083,7 +1009,7 @@ class TestEinsum:
 
             d_dp[...] = 0
             args = [a_dp, [0, 1], b_dp, [1, 2], c_dp, [2, 3]]
-            result = inp.einsum(
+            result = dpnp.einsum(
                 *args, out=d_dp, dtype="f4", casting="unsafe", optimize=do_opt
             )
             assert result is d_dp
@@ -1092,21 +1018,21 @@ class TestEinsum:
             # tensordot(a, b)
             a = numpy.arange(60, dtype=dtype).reshape(3, 4, 5)
             b = numpy.arange(24, dtype=dtype).reshape(4, 3, 2)
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             # equivalent of numpy.tensordot(a, b, axes=([1, 0], [0, 1]))
             expected = numpy.einsum("ijk, jil -> kl", a, b, optimize=do_opt)
-            result = inp.einsum("ijk, jil -> kl", a_dp, b_dp, optimize=do_opt)
+            result = dpnp.einsum("ijk, jil -> kl", a_dp, b_dp, optimize=do_opt)
             assert_dtype_allclose(result, expected)
 
-            result = inp.einsum(
+            result = dpnp.einsum(
                 a_dp, [0, 1, 2], b_dp, [1, 0, 3], optimize=do_opt
             )
             assert_dtype_allclose(result, expected)
 
-            c = inp.arange(10, dtype=a_dp.dtype).reshape(5, 2)
+            c = dpnp.arange(10, dtype=a_dp.dtype).reshape(5, 2)
             args = ["ijk, jil -> kl", a_dp, b_dp]
-            result = inp.einsum(
+            result = dpnp.einsum(
                 *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
             )
             assert result is c
@@ -1114,7 +1040,7 @@ class TestEinsum:
 
             c[...] = 0
             args = [a_dp, [0, 1, 2], b_dp, [1, 0, 3]]
-            result = inp.einsum(
+            result = dpnp.einsum(
                 *args, out=c, dtype="f4", casting="unsafe", optimize=do_opt
             )
             assert result is c
@@ -1125,102 +1051,106 @@ class TestEinsum:
         a = numpy.array([1, 3, neg_val, 0, 12, 13, 0, 1], dtype=dtype)
         b = numpy.array([0, 3.5, 0, neg_val, 0, 1, 3, 12], dtype=dtype)
         c = numpy.array([True, True, False, True, True, False, True, True])
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
-        c_dp = inp.array(c)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
+        c_dp = dpnp.array(c)
         expected = numpy.einsum(
             "i,i,i->i", a, b, c, dtype="?", casting="unsafe", optimize=do_opt
         )
         args = ["i,i,i->i", a_dp, b_dp, c_dp]
-        result = inp.einsum(*args, dtype="?", casting="unsafe", optimize=do_opt)
+        result = dpnp.einsum(
+            *args, dtype="?", casting="unsafe", optimize=do_opt
+        )
         assert_dtype_allclose(result, expected)
 
         args = [a_dp, [0], b_dp, [0], c_dp, [0], [0]]
-        result = inp.einsum(*args, dtype="?", casting="unsafe", optimize=do_opt)
+        result = dpnp.einsum(
+            *args, dtype="?", casting="unsafe", optimize=do_opt
+        )
         assert_dtype_allclose(result, expected)
 
-        # NumPy >= 2.0 follows NEP-50 to determine the output dtype when one of
-        # the inputs is a scalar while NumPy < 2.0 does not
+        # NumPy >= 2.0 follows NEP-50 to determine the output dtype when one
+        # of the inputs is a scalar while NumPy < 2.0 does not
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
             check_type = False
         else:
             check_type = True
         a = numpy.arange(9, dtype=dtype)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
         expected = numpy.einsum(",i->", 3, a)
         assert_dtype_allclose(
-            inp.einsum(",i->", 3, a_dp), expected, check_type=check_type
+            dpnp.einsum(",i->", 3, a_dp), expected, check_type=check_type
         )
         assert_dtype_allclose(
-            inp.einsum(3, [], a_dp, [0], []), expected, check_type=check_type
+            dpnp.einsum(3, [], a_dp, [0], []), expected, check_type=check_type
         )
 
         expected = numpy.einsum("i,->", a, 3)
         assert_dtype_allclose(
-            inp.einsum("i,->", a_dp, 3), expected, check_type=check_type
+            dpnp.einsum("i,->", a_dp, 3), expected, check_type=check_type
         )
         assert_dtype_allclose(
-            inp.einsum(a_dp, [0], 3, [], []), expected, check_type=check_type
+            dpnp.einsum(a_dp, [0], 3, [], []), expected, check_type=check_type
         )
 
         # Various stride0, contiguous, and SSE aligned variants
         for n in range(1, 25):
             a = numpy.arange(n, dtype=dtype)
-            a_dp = inp.array(a)
+            a_dp = dpnp.array(a)
             assert_dtype_allclose(
-                inp.einsum("...,...", a_dp, a_dp, optimize=do_opt),
+                dpnp.einsum("...,...", a_dp, a_dp, optimize=do_opt),
                 numpy.einsum("...,...", a, a, optimize=do_opt),
             )
             assert_dtype_allclose(
-                inp.einsum("i,i", a_dp, a_dp, optimize=do_opt),
+                dpnp.einsum("i,i", a_dp, a_dp, optimize=do_opt),
                 numpy.einsum("i,i", a, a, optimize=do_opt),
             )
             assert_dtype_allclose(
-                inp.einsum("i,->i", a_dp, 2, optimize=do_opt),
+                dpnp.einsum("i,->i", a_dp, 2, optimize=do_opt),
                 numpy.einsum("i,->i", a, 2, optimize=do_opt),
                 check_type=check_type,
             )
             assert_dtype_allclose(
-                inp.einsum(",i->i", 2, a_dp, optimize=do_opt),
+                dpnp.einsum(",i->i", 2, a_dp, optimize=do_opt),
                 numpy.einsum(",i->i", 2, a, optimize=do_opt),
                 check_type=check_type,
             )
             assert_dtype_allclose(
-                inp.einsum("i,->", a_dp, 2, optimize=do_opt),
+                dpnp.einsum("i,->", a_dp, 2, optimize=do_opt),
                 numpy.einsum("i,->", a, 2, optimize=do_opt),
                 check_type=check_type,
             )
             assert_dtype_allclose(
-                inp.einsum(",i->", 2, a_dp, optimize=do_opt),
+                dpnp.einsum(",i->", 2, a_dp, optimize=do_opt),
                 numpy.einsum(",i->", 2, a, optimize=do_opt),
                 check_type=check_type,
             )
 
             assert_dtype_allclose(
-                inp.einsum("...,...", a_dp[1:], a_dp[:-1], optimize=do_opt),
+                dpnp.einsum("...,...", a_dp[1:], a_dp[:-1], optimize=do_opt),
                 numpy.einsum("...,...", a[1:], a[:-1], optimize=do_opt),
             )
             assert_dtype_allclose(
-                inp.einsum("i,i", a_dp[1:], a_dp[:-1], optimize=do_opt),
+                dpnp.einsum("i,i", a_dp[1:], a_dp[:-1], optimize=do_opt),
                 numpy.einsum("i,i", a[1:], a[:-1], optimize=do_opt),
             )
             assert_dtype_allclose(
-                inp.einsum("i,->i", a_dp[1:], 2, optimize=do_opt),
+                dpnp.einsum("i,->i", a_dp[1:], 2, optimize=do_opt),
                 numpy.einsum("i,->i", a[1:], 2, optimize=do_opt),
                 check_type=check_type,
             )
             assert_dtype_allclose(
-                inp.einsum(",i->i", 2, a_dp[1:], optimize=do_opt),
+                dpnp.einsum(",i->i", 2, a_dp[1:], optimize=do_opt),
                 numpy.einsum(",i->i", 2, a[1:], optimize=do_opt),
                 check_type=check_type,
             )
             assert_dtype_allclose(
-                inp.einsum("i,->", a_dp[1:], 2, optimize=do_opt),
+                dpnp.einsum("i,->", a_dp[1:], 2, optimize=do_opt),
                 numpy.einsum("i,->", a[1:], 2, optimize=do_opt),
                 check_type=check_type,
             )
             assert_dtype_allclose(
-                inp.einsum(",i->", 2, a_dp[1:], optimize=do_opt),
+                dpnp.einsum(",i->", 2, a_dp[1:], optimize=do_opt),
                 numpy.einsum(",i->", 2, a[1:], optimize=do_opt),
                 check_type=check_type,
             )
@@ -1229,63 +1159,63 @@ class TestEinsum:
         a = numpy.arange(2) + 1
         b = numpy.arange(4).reshape(2, 2) + 3
         c = numpy.arange(4).reshape(2, 2) + 7
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
-        c_dp = inp.array(c)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
+        c_dp = dpnp.array(c)
         assert_dtype_allclose(
-            inp.einsum("z,mz,zm->", a_dp, b_dp, c_dp, optimize=do_opt),
+            dpnp.einsum("z,mz,zm->", a_dp, b_dp, c_dp, optimize=do_opt),
             numpy.einsum("z,mz,zm->", a, b, c, optimize=do_opt),
         )
 
         # singleton dimensions broadcast
         a = numpy.ones((10, 2))
         b = numpy.ones((1, 2))
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         assert_dtype_allclose(
-            inp.einsum("ij,ij->j", a_dp, b_dp, optimize=do_opt),
+            dpnp.einsum("ij,ij->j", a_dp, b_dp, optimize=do_opt),
             numpy.einsum("ij,ij->j", a, b, optimize=do_opt),
         )
 
         # a blas-compatible contraction broadcasting case
         a = numpy.array([2.0, 3.0])
         b = numpy.array([4.0])
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         assert_dtype_allclose(
-            inp.einsum("i, i", a_dp, b_dp, optimize=do_opt),
+            dpnp.einsum("i, i", a_dp, b_dp, optimize=do_opt),
             numpy.einsum("i, i", a, b, optimize=do_opt),
         )
 
         # all-ones array
         a = numpy.ones((1, 5)) / 2
         b = numpy.ones((5, 5)) / 2
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         assert_dtype_allclose(
-            inp.einsum("...ij,...jk->...ik", a_dp, a_dp, optimize=do_opt),
+            dpnp.einsum("...ij,...jk->...ik", a_dp, a_dp, optimize=do_opt),
             numpy.einsum("...ij,...jk->...ik", a, a, optimize=do_opt),
         )
         assert_dtype_allclose(
-            inp.einsum("...ij,...jk->...ik", a_dp, b_dp, optimize=do_opt),
+            dpnp.einsum("...ij,...jk->...ik", a_dp, b_dp, optimize=do_opt),
             numpy.einsum("...ij,...jk->...ik", a, b, optimize=do_opt),
         )
 
         # special case
         a = numpy.eye(2, dtype=dtype)
         b = numpy.ones(2, dtype=dtype)
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         assert_dtype_allclose(  # contig_contig_outstride0_two
-            inp.einsum("ji,i->", a_dp, b_dp, optimize=do_opt),
+            dpnp.einsum("ji,i->", a_dp, b_dp, optimize=do_opt),
             numpy.einsum("ji,i->", a, b, optimize=do_opt),
         )
         assert_dtype_allclose(  # stride0_contig_outstride0_two
-            inp.einsum("i,ij->", b_dp, a_dp, optimize=do_opt),
+            dpnp.einsum("i,ij->", b_dp, a_dp, optimize=do_opt),
             numpy.einsum("i,ij->", b, a, optimize=do_opt),
         )
         assert_dtype_allclose(  # contig_stride0_outstride0_two
-            inp.einsum("ij,i->", a_dp, b_dp, optimize=do_opt),
+            dpnp.einsum("ij,i->", a_dp, b_dp, optimize=do_opt),
             numpy.einsum("ij,i->", a, b, optimize=do_opt),
         )
 
@@ -1321,172 +1251,173 @@ class TestEinsum:
         for opt in [True, False]:
             a = numpy.ones((1, 2))
             b = numpy.ones((2, 2, 1))
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             expected = numpy.einsum("ij...,j...->i...", a, b, optimize=opt)
-            result = inp.einsum("ij...,j...->i...", a_dp, b_dp, optimize=opt)
+            result = dpnp.einsum("ij...,j...->i...", a_dp, b_dp, optimize=opt)
             assert_dtype_allclose(result, expected)
 
             a = numpy.array([1, 2, 3])
             b = numpy.array([2, 3, 4])
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             expected = numpy.einsum("...i,...i", a, b, optimize=True)
-            result = inp.einsum("...i,...i", a_dp, b_dp, optimize=True)
+            result = dpnp.einsum("...i,...i", a_dp, b_dp, optimize=True)
             assert_dtype_allclose(result, expected)
 
             a = numpy.ones((5, 12, 4, 2, 3), numpy.int64)
             b = numpy.ones((5, 12, 11), numpy.int64)
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
             expected = numpy.einsum("ijklm,ijn,ijn->", a, b, b, optimize=opt)
-            result1 = inp.einsum(
+            result1 = dpnp.einsum(
                 "ijklm,ijn,ijn->", a_dp, b_dp, b_dp, optimize=opt
             )
             assert_dtype_allclose(result1, expected)
-            result2 = inp.einsum("ijklm,ijn->", a_dp, b_dp, optimize=opt)
+            result2 = dpnp.einsum("ijklm,ijn->", a_dp, b_dp, optimize=opt)
             assert_dtype_allclose(result2, expected)
 
             a = numpy.arange(1, 3)
             b = numpy.arange(1, 5).reshape(2, 2)
             c = numpy.arange(1, 9).reshape(4, 2)
-            a_dp = inp.array(a)
-            b_dp = inp.array(b)
-            c_dp = inp.array(c)
+            a_dp = dpnp.array(a)
+            b_dp = dpnp.array(b)
+            c_dp = dpnp.array(c)
             expected = numpy.einsum("x,yx,zx->xzy", a, b, c, optimize=opt)
-            result = inp.einsum("x,yx,zx->xzy", a_dp, b_dp, c_dp, optimize=opt)
+            result = dpnp.einsum("x,yx,zx->xzy", a_dp, b_dp, c_dp, optimize=opt)
             assert_dtype_allclose(result, expected)
 
         # Ensure explicitly setting out=None does not cause an error
         a = numpy.array([1])
         b = numpy.array([2])
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         expected = numpy.einsum("i,j", a, b, out=None)
-        result = inp.einsum("i,j", a_dp, b_dp, out=None)
+        result = dpnp.einsum("i,j", a_dp, b_dp, out=None)
         assert_dtype_allclose(result, expected)
 
     def test_subscript_range(self):
         # make sure that all letters of Latin alphabet (both uppercase & lowercase) can be used
         # when creating a subscript from arrays
-        a = inp.ones((2, 3))
-        b = inp.ones((3, 4))
-        inp.einsum(a, [0, 20], b, [20, 2], [0, 2])
-        inp.einsum(a, [0, 27], b, [27, 2], [0, 2])
-        inp.einsum(a, [0, 51], b, [51, 2], [0, 2])
-        assert_raises(ValueError, inp.einsum, a, [0, 52], b, [52, 2], [0, 2])
-        assert_raises(ValueError, inp.einsum, a, [-1, 5], b, [5, 2], [-1, 2])
+        a = dpnp.ones((2, 3))
+        b = dpnp.ones((3, 4))
+        dpnp.einsum(a, [0, 20], b, [20, 2], [0, 2])
+        dpnp.einsum(a, [0, 27], b, [27, 2], [0, 2])
+        dpnp.einsum(a, [0, 51], b, [51, 2], [0, 2])
+        assert_raises(ValueError, dpnp.einsum, a, [0, 52], b, [52, 2], [0, 2])
+        assert_raises(ValueError, dpnp.einsum, a, [-1, 5], b, [5, 2], [-1, 2])
 
     def test_einsum_broadcast(self):
         a = numpy.arange(2 * 3 * 4).reshape(2, 3, 4)
         b = numpy.arange(3)
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         expected = numpy.einsum("ijk,j->ijk", a, b, optimize=False)
-        result = inp.einsum("ijk,j->ijk", a_dp, b_dp, optimize=False)
+        result = dpnp.einsum("ijk,j->ijk", a_dp, b_dp, optimize=False)
         assert_dtype_allclose(result, expected)
         for opt in [True, False]:
             assert_dtype_allclose(
-                inp.einsum("ij...,j...->ij...", a_dp, b_dp, optimize=opt),
+                dpnp.einsum("ij...,j...->ij...", a_dp, b_dp, optimize=opt),
                 expected,
             )
             assert_dtype_allclose(
-                inp.einsum("ij...,...j->ij...", a_dp, b_dp, optimize=opt),
+                dpnp.einsum("ij...,...j->ij...", a_dp, b_dp, optimize=opt),
                 expected,
             )
             assert_dtype_allclose(
-                inp.einsum("ij...,j->ij...", a_dp, b_dp, optimize=opt), expected
+                dpnp.einsum("ij...,j->ij...", a_dp, b_dp, optimize=opt),
+                expected,
             )
 
         a = numpy.arange(12).reshape((4, 3))
         b = numpy.arange(6).reshape((3, 2))
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         expected = numpy.einsum("ik,kj->ij", a, b, optimize=False)
-        result = inp.einsum("ik,kj->ij", a_dp, b_dp, optimize=False)
+        result = dpnp.einsum("ik,kj->ij", a_dp, b_dp, optimize=False)
         assert_dtype_allclose(result, expected)
         for opt in [True, False]:
             assert_dtype_allclose(
-                inp.einsum("ik...,k...->i...", a_dp, b_dp, optimize=opt),
+                dpnp.einsum("ik...,k...->i...", a_dp, b_dp, optimize=opt),
                 expected,
             )
             assert_dtype_allclose(
-                inp.einsum("ik...,...kj->i...j", a_dp, b_dp, optimize=opt),
+                dpnp.einsum("ik...,...kj->i...j", a_dp, b_dp, optimize=opt),
                 expected,
             )
             assert_dtype_allclose(
-                inp.einsum("...k,kj", a_dp, b_dp, optimize=opt), expected
+                dpnp.einsum("...k,kj", a_dp, b_dp, optimize=opt), expected
             )
             assert_dtype_allclose(
-                inp.einsum("ik,k...->i...", a_dp, b_dp, optimize=opt), expected
+                dpnp.einsum("ik,k...->i...", a_dp, b_dp, optimize=opt), expected
             )
 
         dims = [2, 3, 4, 5]
         a = numpy.arange(numpy.prod(dims)).reshape(dims)
         v = numpy.arange(4)
-        a_dp = inp.array(a)
-        v_dp = inp.array(v)
+        a_dp = dpnp.array(a)
+        v_dp = dpnp.array(v)
         expected = numpy.einsum("ijkl,k->ijl", a, v, optimize=False)
-        result = inp.einsum("ijkl,k->ijl", a_dp, v_dp, optimize=False)
+        result = dpnp.einsum("ijkl,k->ijl", a_dp, v_dp, optimize=False)
         assert_dtype_allclose(result, expected)
         for opt in [True, False]:
             assert_dtype_allclose(
-                inp.einsum("ijkl,k", a_dp, v_dp, optimize=opt), expected
+                dpnp.einsum("ijkl,k", a_dp, v_dp, optimize=opt), expected
             )
             assert_dtype_allclose(
-                inp.einsum("...kl,k", a_dp, v_dp, optimize=opt), expected
+                dpnp.einsum("...kl,k", a_dp, v_dp, optimize=opt), expected
             )
             assert_dtype_allclose(
-                inp.einsum("...kl,k...", a_dp, v_dp, optimize=opt), expected
+                dpnp.einsum("...kl,k...", a_dp, v_dp, optimize=opt), expected
             )
 
         J, K, M = 8, 8, 6
         a = numpy.arange(J * K * M).reshape(1, 1, 1, J, K, M)
         b = numpy.arange(J * K * M * 3).reshape(J, K, M, 3)
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         expected = numpy.einsum("...lmn,...lmno->...o", a, b, optimize=False)
-        result = inp.einsum("...lmn,...lmno->...o", a_dp, b_dp, optimize=False)
+        result = dpnp.einsum("...lmn,...lmno->...o", a_dp, b_dp, optimize=False)
         assert_dtype_allclose(result, expected)
         for opt in [True, False]:
             assert_dtype_allclose(
-                inp.einsum("...lmn,lmno->...o", a_dp, b_dp, optimize=opt),
+                dpnp.einsum("...lmn,lmno->...o", a_dp, b_dp, optimize=opt),
                 expected,
             )
 
     def test_einsum_stride(self):
         a = numpy.arange(2 * 3).reshape(2, 3).astype(numpy.float32)
         b = numpy.arange(2 * 3 * 2731).reshape(2, 3, 2731).astype(numpy.int16)
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         expected = numpy.einsum("cl, cpx->lpx", a, b)
-        result = inp.einsum("cl, cpx->lpx", a_dp, b_dp)
+        result = dpnp.einsum("cl, cpx->lpx", a_dp, b_dp)
         assert_dtype_allclose(result, expected)
 
         a = numpy.arange(3 * 3).reshape(3, 3).astype(numpy.float64)
         b = numpy.arange(3 * 3 * 64 * 64)
         b = b.reshape(3, 3, 64, 64).astype(numpy.float32)
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         expected = numpy.einsum("cl, cpxy->lpxy", a, b)
-        result = inp.einsum("cl, cpxy->lpxy", a_dp, b_dp)
+        result = dpnp.einsum("cl, cpxy->lpxy", a_dp, b_dp)
         assert_dtype_allclose(result, expected)
 
     def test_einsum_collapsing(self):
         x = numpy.random.normal(0, 1, (5, 5, 5, 5))
         y = numpy.zeros((5, 5))
         expected = numpy.einsum("aabb->ab", x, out=y)
-        x_dp = inp.array(x)
-        y_dp = inp.array(y)
-        result = inp.einsum("aabb->ab", x_dp, out=y_dp)
+        x_dp = dpnp.array(x)
+        y_dp = dpnp.array(y)
+        result = dpnp.einsum("aabb->ab", x_dp, out=y_dp)
         assert result is y_dp
         assert_dtype_allclose(result, expected)
 
     def test_einsum_tensor(self):
         tensor = numpy.random.random_sample((10, 10, 10, 10))
-        tensor_dp = inp.array(tensor)
+        tensor_dp = dpnp.array(tensor)
         expected = numpy.einsum("ijij->", tensor)
-        result = inp.einsum("ijij->", tensor_dp)
+        result = dpnp.einsum("ijij->", tensor_dp)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
@@ -1499,80 +1430,80 @@ class TestEinsum:
         a = (numpy.arange(7) + 0.5).astype(dtype)
         s = numpy.array(2, dtype=dtype)
 
-        a_dp = inp.asarray(a)
-        s_dp = inp.asarray(s)
+        a_dp = dpnp.asarray(a)
+        s_dp = dpnp.asarray(s)
 
         # contig -> scalar:
         expected = numpy.einsum("i->", a)
-        result = inp.einsum("i->", a_dp)
+        result = dpnp.einsum("i->", a_dp)
         assert_dtype_allclose(result, expected)
 
         # contig, contig -> contig:
         expected = numpy.einsum("i,i->i", a, a)
-        result = inp.einsum("i,i->i", a_dp, a_dp)
+        result = dpnp.einsum("i,i->i", a_dp, a_dp)
         assert_dtype_allclose(result, expected)
 
         # noncontig, noncontig -> contig:
         expected = numpy.einsum("i,i->i", a.repeat(2)[::2], a.repeat(2)[::2])
-        result = inp.einsum("i,i->i", a_dp.repeat(2)[::2], a_dp.repeat(2)[::2])
+        result = dpnp.einsum("i,i->i", a_dp.repeat(2)[::2], a_dp.repeat(2)[::2])
         assert_dtype_allclose(result, expected)
 
         # contig + contig -> scalar
         expected = numpy.einsum("i,i->", a, a)
-        result = inp.einsum("i,i->", a_dp, a_dp)
+        result = dpnp.einsum("i,i->", a_dp, a_dp)
         assert_dtype_allclose(result, expected)
 
         # contig + scalar -> contig (with out)
-        out_dp = inp.ones(7, dtype=dtype)
+        out_dp = dpnp.ones(7, dtype=dtype)
         expected = numpy.einsum("i,->i", a, s)
-        result = inp.einsum("i,->i", a_dp, s_dp, out=out_dp)
+        result = dpnp.einsum("i,->i", a_dp, s_dp, out=out_dp)
         assert result is out_dp
         assert_dtype_allclose(result, expected)
 
         # scalar + contig -> contig (with out)
         expected = numpy.einsum(",i->i", s, a)
-        result = inp.einsum(",i->i", s_dp, a_dp)
+        result = dpnp.einsum(",i->i", s_dp, a_dp)
         assert_dtype_allclose(result, expected)
 
         # scalar + contig -> scalar
         # Use einsum to compare to not have difference due to sum round-offs:
-        result1 = inp.einsum(",i->", s_dp, a_dp)
-        result2 = inp.einsum("i->", s_dp * a_dp)
+        result1 = dpnp.einsum(",i->", s_dp, a_dp)
+        result2 = dpnp.einsum("i->", s_dp * a_dp)
         assert_array_equal(result1.asnumpy(), result2.asnumpy())
 
         # contig + scalar -> scalar
         # Use einsum to compare to not have difference due to sum round-offs:
-        result3 = inp.einsum("i,->", a_dp, s_dp)
+        result3 = dpnp.einsum("i,->", a_dp, s_dp)
         assert_array_equal(result2.asnumpy(), result3.asnumpy())
 
         # contig + contig + contig -> scalar
         a = numpy.array([0.5, 0.5, 0.25, 4.5, 3.0], dtype=dtype)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
         expected = numpy.einsum("i,i,i->", a, a, a)
-        result = inp.einsum("i,i,i->", a_dp, a_dp, a_dp)
+        result = dpnp.einsum("i,i,i->", a_dp, a_dp, a_dp)
         assert_dtype_allclose(result, expected)
 
         # four arrays:
         expected = numpy.einsum("i,i,i,i->", a, a, a, a)
-        result = inp.einsum("i,i,i,i->", a_dp, a_dp, a_dp, a_dp)
+        result = dpnp.einsum("i,i,i,i->", a_dp, a_dp, a_dp, a_dp)
         assert_dtype_allclose(result, expected)
 
     def test_small_boolean_arrays(self):
         # Use array of True embedded in False.
-        a = numpy.zeros((16, 1, 1), dtype=inp.bool)[:2]
+        a = numpy.zeros((16, 1, 1), dtype=dpnp.bool)[:2]
         a[...] = True
-        a_dp = inp.array(a)
-        out_dp = inp.zeros((16, 1, 1), dtype=inp.bool)[:2]
+        a_dp = dpnp.array(a)
+        out_dp = dpnp.zeros((16, 1, 1), dtype=dpnp.bool)[:2]
         expected = numpy.einsum("...ij,...jk->...ik", a, a)
-        result = inp.einsum("...ij,...jk->...ik", a_dp, a_dp, out=out_dp)
+        result = dpnp.einsum("...ij,...jk->...ik", a_dp, a_dp, out=out_dp)
         assert result is out_dp
         assert_dtype_allclose(result, expected)
 
     def test_out_is_res(self):
         a = numpy.arange(9).reshape(3, 3)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
         expected = numpy.einsum("...ij,...jk->...ik", a, a)
-        result = inp.einsum("...ij,...jk->...ik", a_dp, a_dp, out=a_dp)
+        result = dpnp.einsum("...ij,...jk->...ik", a_dp, a_dp, out=a_dp)
         assert result is a_dp
         assert_dtype_allclose(result, expected)
 
@@ -1595,17 +1526,17 @@ class TestEinsum:
 
         dpnp_args = [args[0]]
         for arr in args[1:]:
-            dpnp_args.append(inp.asarray(arr))
+            dpnp_args.append(dpnp.asarray(arr))
 
         expected = numpy.einsum(*args)
         # no optimization
-        result = inp.einsum(*dpnp_args, optimize=False)
+        result = dpnp.einsum(*dpnp_args, optimize=False)
         assert_dtype_allclose(result, expected, factor=16)
 
-        result = inp.einsum(*dpnp_args, optimize="greedy")
+        result = dpnp.einsum(*dpnp_args, optimize="greedy")
         assert_dtype_allclose(result, expected, factor=16)
 
-        result = inp.einsum(*dpnp_args, optimize="optimal")
+        result = dpnp.einsum(*dpnp_args, optimize="optimal")
         assert_dtype_allclose(result, expected, factor=16)
 
     def test_hadamard_like_products(self):
@@ -1686,9 +1617,9 @@ class TestEinsum:
         self.optimize_compare("aef,fbc,dca->bde")
 
     def test_combined_views_mapping(self):
-        a = inp.arange(9).reshape(1, 1, 3, 1, 3)
+        a = dpnp.arange(9).reshape(1, 1, 3, 1, 3)
         expected = numpy.einsum("bbcdc->d", a.asnumpy())
-        result = inp.einsum("bbcdc->d", a)
+        result = dpnp.einsum("bbcdc->d", a)
         assert_dtype_allclose(result, expected)
 
     def test_broadcasting_dot_cases(self):
@@ -1711,45 +1642,45 @@ class TestEinsum:
     def test_output_order(self):
         # Ensure output order is respected for optimize cases, the below
         # contraction should yield a reshaped tensor view
-        a = inp.ones((2, 3, 5), order="F")
-        b = inp.ones((4, 3), order="F")
+        a = dpnp.ones((2, 3, 5), order="F")
+        b = dpnp.ones((4, 3), order="F")
 
         for opt in [True, False]:
-            tmp = inp.einsum("...ft,mf->...mt", a, b, order="a", optimize=opt)
+            tmp = dpnp.einsum("...ft,mf->...mt", a, b, order="a", optimize=opt)
             assert tmp.flags.f_contiguous
 
-            tmp = inp.einsum("...ft,mf->...mt", a, b, order="f", optimize=opt)
+            tmp = dpnp.einsum("...ft,mf->...mt", a, b, order="f", optimize=opt)
             assert tmp.flags.f_contiguous
 
-            tmp = inp.einsum("...ft,mf->...mt", a, b, order="c", optimize=opt)
+            tmp = dpnp.einsum("...ft,mf->...mt", a, b, order="c", optimize=opt)
             assert tmp.flags.c_contiguous
 
-            tmp = inp.einsum("...ft,mf->...mt", a, b, order="k", optimize=opt)
+            tmp = dpnp.einsum("...ft,mf->...mt", a, b, order="k", optimize=opt)
             assert tmp.flags.c_contiguous is False
             assert tmp.flags.f_contiguous is False
 
-            tmp = inp.einsum("...ft,mf->...mt", a, b, optimize=opt)
+            tmp = dpnp.einsum("...ft,mf->...mt", a, b, optimize=opt)
             assert tmp.flags.c_contiguous is False
             assert tmp.flags.f_contiguous is False
 
-        c = inp.ones((4, 3), order="C")
+        c = dpnp.ones((4, 3), order="C")
         for opt in [True, False]:
-            tmp = inp.einsum("...ft,mf->...mt", a, c, order="a", optimize=opt)
+            tmp = dpnp.einsum("...ft,mf->...mt", a, c, order="a", optimize=opt)
             assert tmp.flags.c_contiguous
 
-        d = inp.ones((2, 3, 5), order="C")
+        d = dpnp.ones((2, 3, 5), order="C")
         for opt in [True, False]:
-            tmp = inp.einsum("...ft,mf->...mt", d, c, order="a", optimize=opt)
+            tmp = dpnp.einsum("...ft,mf->...mt", d, c, order="a", optimize=opt)
             assert tmp.flags.c_contiguous
 
     def test_einsum_path(self):
         # Test einsum path for covergae
         a = numpy.random.rand(1, 2, 3, 4)
         b = numpy.random.rand(4, 3, 2, 1)
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
         expected = numpy.einsum_path("ijkl,dcba->dcba", a, b)
-        result = inp.einsum_path("ijkl,dcba->dcba", a_dp, b_dp)
+        result = dpnp.einsum_path("ijkl,dcba->dcba", a_dp, b_dp)
         assert expected[0] == result[0]
         assert expected[1] == result[1]
 
@@ -1765,17 +1696,13 @@ class TestInv:
                 [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
             ],
         ],
-        ids=[
-            "2D_array",
-            "3D_array",
-            "4D_array",
-        ],
+        ids=["2D_array", "3D_array", "4D_array"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_inv(self, array, dtype):
         a = numpy.array(array, dtype=dtype)
-        ia = inp.array(a)
-        result = inp.linalg.inv(ia)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.inv(ia)
         expected = numpy.linalg.inv(a)
         assert_dtype_allclose(result, expected)
 
@@ -1790,35 +1717,27 @@ class TestInv:
             ]
         )
 
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         # positive strides
         expected = numpy.linalg.inv(a_np[::2, ::2])
-        result = inp.linalg.inv(a_dp[::2, ::2])
+        result = dpnp.linalg.inv(a_dp[::2, ::2])
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
         # negative strides
         expected = numpy.linalg.inv(a_np[::-2, ::-2])
-        result = inp.linalg.inv(a_dp[::-2, ::-2])
+        result = dpnp.linalg.inv(a_dp[::-2, ::-2])
         assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
 
     @pytest.mark.parametrize(
         "shape",
-        [
-            (0, 0),
-            (3, 0, 0),
-            (0, 2, 2),
-        ],
-        ids=[
-            "(0, 0)",
-            "(3, 0, 0)",
-            "(0, 2, 2)",
-        ],
+        [(0, 0), (3, 0, 0), (0, 2, 2)],
+        ids=["(0, 0)", "(3, 0, 0)", "(0, 2, 2)"],
     )
     def test_inv_empty(self, shape):
         a = numpy.empty(shape)
-        ia = inp.array(a)
-        result = inp.linalg.inv(ia)
+        ia = dpnp.array(a)
+        result = dpnp.linalg.inv(ia)
         expected = numpy.linalg.inv(a)
         assert_dtype_allclose(result, expected)
 
@@ -1843,10 +1762,10 @@ class TestInv:
     )
     def test_inv_singular_matrix(self, matrix):
         a_np = numpy.array(matrix, dtype="float32")
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.inv, a_dp)
 
     # TODO: remove skip when MKLD-13852 is resolved
     # _getrf_batch does not raise an error with singular matrices.
@@ -1855,25 +1774,25 @@ class TestInv:
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
         )
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         assert_raises(numpy.linalg.LinAlgError, numpy.linalg.inv, a_np)
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.inv, a_dp)
 
     def test_inv_errors(self):
-        a_dp = inp.array([[1, 2], [2, 5]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [2, 5]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.inv, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.inv, a_np)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp_ndim_1)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.inv, a_dp_ndim_1)
 
         # a is not square
-        a_dp = inp.ones((2, 3))
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.inv, a_dp)
+        a_dp = dpnp.ones((2, 3))
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.inv, a_dp)
 
 
 class TestLstsq:
@@ -1896,10 +1815,10 @@ class TestLstsq:
         a_np = numpy.random.rand(*a_shape).astype(dtype)
         b_np = numpy.random.rand(*b_shape).astype(dtype)
 
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
-        result = inp.linalg.lstsq(a_dp, b_dp)
+        result = dpnp.linalg.lstsq(a_dp, b_dp)
         # if rcond is not set, FutureWarning is given.
         # By default Numpy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
@@ -1912,14 +1831,13 @@ class TestLstsq:
     def test_lstsq_diff_type(self, a_dtype, b_dtype):
         a_np = numpy.array([[1, 2], [3, -5]], dtype=a_dtype)
         b_np = numpy.array([4, 1], dtype=b_dtype)
-
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
         # if rcond is not set, FutureWarning is given.
         # By default Numpy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
-        result = inp.linalg.lstsq(a_dp, b_dp)
+        result = dpnp.linalg.lstsq(a_dp, b_dp)
 
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)
@@ -1933,10 +1851,10 @@ class TestLstsq:
         a_np = numpy.arange(m * n).reshape(m, n).astype(dtype)
         b_np = numpy.ones((m, nrhs)).astype(dtype)
 
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
-        result = inp.linalg.lstsq(a_dp, b_dp)
+        result = dpnp.linalg.lstsq(a_dp, b_dp)
         # if rcond is not set, FutureWarning is given.
         # By default Numpy uses None for calculations
         expected = numpy.linalg.lstsq(a_np, b_np, rcond=None)
@@ -1945,24 +1863,24 @@ class TestLstsq:
             assert_dtype_allclose(param_dp, param_np)
 
     def test_lstsq_errors(self):
-        a_dp = inp.array([[1, 0.5], [0.5, 1]], dtype="float32")
-        b_dp = inp.array(a_dp, dtype="float32")
+        a_dp = dpnp.array([[1, 0.5], [0.5, 1]], dtype="float32")
+        b_dp = dpnp.array(a_dp, dtype="float32")
 
         # diffetent queue
         a_queue = dpctl.SyclQueue()
         b_queue = dpctl.SyclQueue()
-        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
-        b_dp_q = inp.array(b_dp, sycl_queue=b_queue)
-        assert_raises(ValueError, inp.linalg.lstsq, a_dp_q, b_dp_q)
+        a_dp_q = dpnp.array(a_dp, sycl_queue=a_queue)
+        b_dp_q = dpnp.array(b_dp, sycl_queue=b_queue)
+        assert_raises(ValueError, dpnp.linalg.lstsq, a_dp_q, b_dp_q)
 
         # unsupported type `a` and `b`
-        a_np = inp.asnumpy(a_dp)
-        b_np = inp.asnumpy(b_dp)
-        assert_raises(TypeError, inp.linalg.lstsq, a_np, b_dp)
-        assert_raises(TypeError, inp.linalg.lstsq, a_dp, b_np)
+        a_np = dpnp.asnumpy(a_dp)
+        b_np = dpnp.asnumpy(b_dp)
+        assert_raises(TypeError, dpnp.linalg.lstsq, a_np, b_dp)
+        assert_raises(TypeError, dpnp.linalg.lstsq, a_dp, b_np)
 
         # unsupported type `rcond`
-        assert_raises(TypeError, inp.linalg.lstsq, a_dp, b_dp, [-1])
+        assert_raises(TypeError, dpnp.linalg.lstsq, a_dp, b_dp, [-1])
 
 
 class TestMatrixPower:
@@ -1988,28 +1906,28 @@ class TestMatrixPower:
     )
     def test_matrix_power(self, data, power, dtype):
         a = data.astype(dtype)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
-        result = inp.linalg.matrix_power(a_dp, power)
+        result = dpnp.linalg.matrix_power(a_dp, power)
         expected = numpy.linalg.matrix_power(a, power)
 
         assert_dtype_allclose(result, expected)
 
     def test_matrix_power_errors(self):
-        a_dp = inp.eye(4, dtype="float32")
+        a_dp = dpnp.eye(4, dtype="float32")
 
         # unsupported type `a`
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.matrix_power, a_np, 2)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.matrix_power, a_np, 2)
 
         # unsupported type `power`
-        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, 1.5)
-        assert_raises(TypeError, inp.linalg.matrix_power, a_dp, [2])
+        assert_raises(TypeError, dpnp.linalg.matrix_power, a_dp, 1.5)
+        assert_raises(TypeError, dpnp.linalg.matrix_power, a_dp, [2])
 
         # not invertible
-        noninv = inp.array([[1, 0], [0, 0]])
+        noninv = dpnp.array([[1, 0], [0, 0]])
         assert_raises(
-            inp.linalg.LinAlgError, inp.linalg.matrix_power, noninv, -1
+            dpnp.linalg.LinAlgError, dpnp.linalg.matrix_power, noninv, -1
         )
 
 
@@ -2028,10 +1946,10 @@ class TestMatrixRank:
     )
     def test_matrix_rank(self, data, dtype):
         a = data.astype(dtype)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         np_rank = numpy.linalg.matrix_rank(a)
-        dp_rank = inp.linalg.matrix_rank(a_dp)
+        dp_rank = dpnp.linalg.matrix_rank(a_dp)
         assert np_rank == dp_rank
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -2046,10 +1964,10 @@ class TestMatrixRank:
     )
     def test_matrix_rank_hermitian(self, data, dtype):
         a = data.astype(dtype)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         np_rank = numpy.linalg.matrix_rank(a, hermitian=True)
-        dp_rank = inp.linalg.matrix_rank(a_dp, hermitian=True)
+        dp_rank = dpnp.linalg.matrix_rank(a_dp, hermitian=True)
         assert np_rank == dp_rank
 
     @pytest.mark.parametrize(
@@ -2059,22 +1977,18 @@ class TestMatrixRank:
             (numpy.array(0.99e-6), numpy.array(1.01e-6)),
             (numpy.array([0.99e-6]), numpy.array([1.01e-6])),
         ],
-        ids=[
-            "float",
-            "0-D array",
-            "1-D array",
-        ],
+        ids=["float", "0-D array", "1-D array"],
     )
     def test_matrix_rank_tolerance(self, high_tol, low_tol):
         a = numpy.eye(4)
         a[-1, -1] = 1e-6
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         if isinstance(high_tol, numpy.ndarray):
-            dp_high_tol = inp.array(
+            dp_high_tol = dpnp.array(
                 high_tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
             )
-            dp_low_tol = inp.array(
+            dp_low_tol = dpnp.array(
                 low_tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
             )
         else:
@@ -2084,7 +1998,7 @@ class TestMatrixRank:
         np_rank_high_tol = numpy.linalg.matrix_rank(
             a, hermitian=True, tol=high_tol
         )
-        dp_rank_high_tol = inp.linalg.matrix_rank(
+        dp_rank_high_tol = dpnp.linalg.matrix_rank(
             a_dp, hermitian=True, tol=dp_high_tol
         )
         assert np_rank_high_tol == dp_rank_high_tol
@@ -2092,7 +2006,7 @@ class TestMatrixRank:
         np_rank_low_tol = numpy.linalg.matrix_rank(
             a, hermitian=True, tol=low_tol
         )
-        dp_rank_low_tol = inp.linalg.matrix_rank(
+        dp_rank_low_tol = dpnp.linalg.matrix_rank(
             a_dp, hermitian=True, tol=dp_low_tol
         )
         assert np_rank_low_tol == dp_rank_low_tol
@@ -2106,50 +2020,50 @@ class TestMatrixRank:
     )
     def test_matrix_rank_tol(self, tol):
         a = numpy.zeros((4, 3, 2))
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         if isinstance(tol, numpy.ndarray):
-            dp_tol = inp.array(
+            dp_tol = dpnp.array(
                 tol, usm_type=a_dp.usm_type, sycl_queue=a_dp.sycl_queue
             )
         else:
             dp_tol = tol
 
         expected = numpy.linalg.matrix_rank(a, rtol=tol)
-        result = inp.linalg.matrix_rank(a_dp, rtol=dp_tol)
+        result = dpnp.linalg.matrix_rank(a_dp, rtol=dp_tol)
         assert_dtype_allclose(result, expected)
 
         expected = numpy.linalg.matrix_rank(a, tol=tol)
-        result = inp.linalg.matrix_rank(a_dp, tol=dp_tol)
+        result = dpnp.linalg.matrix_rank(a_dp, tol=dp_tol)
         assert_dtype_allclose(result, expected)
 
     def test_matrix_rank_errors(self):
-        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
 
         # unsupported type `a`
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.matrix_rank, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.matrix_rank, a_np)
 
         # unsupported type `tol`
         tol = numpy.array(0.5, dtype="float32")
-        assert_raises(TypeError, inp.linalg.matrix_rank, a_dp, tol)
-        assert_raises(TypeError, inp.linalg.matrix_rank, a_dp, [0.5])
+        assert_raises(TypeError, dpnp.linalg.matrix_rank, a_dp, tol)
+        assert_raises(TypeError, dpnp.linalg.matrix_rank, a_dp, [0.5])
 
         # diffetent queue
         a_queue = dpctl.SyclQueue()
         tol_queue = dpctl.SyclQueue()
-        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
-        tol_dp_q = inp.array([0.5], dtype="float32", sycl_queue=tol_queue)
+        a_dp_q = dpnp.array(a_dp, sycl_queue=a_queue)
+        tol_dp_q = dpnp.array([0.5], dtype="float32", sycl_queue=tol_queue)
         assert_raises(
             ExecutionPlacementError,
-            inp.linalg.matrix_rank,
+            dpnp.linalg.matrix_rank,
             a_dp_q,
             tol_dp_q,
         )
 
         # both tol and rtol are given
         assert_raises(
-            ValueError, inp.linalg.matrix_rank, a_dp, tol=1e-06, rtol=1e-04
+            ValueError, dpnp.linalg.matrix_rank, a_dp, tol=1e-06, rtol=1e-04
         )
 
 
@@ -2159,17 +2073,17 @@ class TestMatrixRank:
 # 1 test to increase code coverage
 def test_matrix_transpose():
     a = numpy.arange(6).reshape((2, 3))
-    a_dp = inp.array(a)
+    a_dp = dpnp.array(a)
 
     expected = numpy.linalg.matrix_transpose(a)
-    result = inp.linalg.matrix_transpose(a_dp)
+    result = dpnp.linalg.matrix_transpose(a_dp)
 
     assert_allclose(expected, result)
 
     with assert_raises_regex(
         ValueError, "array must be at least 2-dimensional"
     ):
-        inp.linalg.matrix_transpose(a_dp[:, 0])
+        dpnp.linalg.matrix_transpose(a_dp[:, 0])
 
 
 class TestNorm:
@@ -2183,18 +2097,18 @@ class TestNorm:
     @pytest.mark.parametrize("ord", [None, -2, -1, 0, 1, 2, 3])
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_empty(self, shape, ord, axis, keepdims):
+    def test_empty(self, shape, ord, axis, keepdims):
         a = numpy.empty(shape)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
         if axis is None and a.ndim > 1 and ord in [0, 3]:
             # Invalid norm order for matrices (a.ndim == 2) or
             # Improper number of dimensions to norm (a.ndim>2)
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         elif axis is None and a.ndim > 2 and ord is not None:
             # Improper number of dimensions to norm
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         elif (
             axis is None
             and ord is not None
@@ -2203,87 +2117,85 @@ class TestNorm:
         ):
             # reduction cannot be performed over zero-size axes
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         else:
-            result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3, inp.inf]
+        "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3, dpnp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
-    def test_norm_0D(self, ord, axis):
+    def test_0D(self, ord, axis):
         a = numpy.array(2)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
         if axis is None and ord is not None:
             # Improper number of dimensions to norm
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis)
         elif axis is not None:
             with pytest.raises(AxisError):
-                inp.linalg.norm(ia, ord=ord, axis=axis)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis)
         else:
-            result = inp.linalg.norm(ia, ord=ord, axis=axis)
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
             expected = numpy.linalg.norm(a, ord=ord, axis=axis)
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
+        "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_1D(self, dtype, ord, axis, keepdims):
+    def test_1D(self, dtype, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+        result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         expected = numpy.linalg.norm(a, ord=ord, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
+        "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_1D_complex(self, dtype, ord, axis, keepdims):
+    def test_1D_complex(self, dtype, ord, axis, keepdims):
         x1 = numpy.random.uniform(-5, 5, 10)
         x2 = numpy.random.uniform(-5, 5, 10)
         a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+        result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         expected = numpy.linalg.norm(a, ord=ord, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
+        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis", [0, 1, (1, 0), None], ids=["0", "1", "(1, 0)", "None"]
     )
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_2D(self, dtype, ord, axis, keepdims):
-        a = numpy.array(numpy.random.uniform(-5, 5, 15), dtype=dtype).reshape(
-            3, 5
-        )
-        ia = inp.array(a)
+    def test_2D(self, dtype, ord, axis, keepdims):
+        a = generate_random_numpy_array((3, 5), dtype)
+        ia = dpnp.array(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             (isinstance(axis, tuple) or axis is None) and ord == 3
         ):
             # Invalid norm order for vectors
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         else:
-            result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
@@ -2292,25 +2204,25 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
+        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis", [0, 1, (1, 0), None], ids=["0", "1", "(1, 0)", "None"]
     )
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_2D_complex(self, dtype, ord, axis, keepdims):
+    def test_2D_complex(self, dtype, ord, axis, keepdims):
         x1 = numpy.random.uniform(-5, 5, 15)
         x2 = numpy.random.uniform(-5, 5, 15)
         a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(3, 5)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             (isinstance(axis, tuple) or axis is None) and ord == 3
         ):
             # Invalid norm order for vectors
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         else:
-            result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
@@ -2319,7 +2231,7 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
+        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis",
@@ -2327,23 +2239,21 @@ class TestNorm:
         ids=["-1", "0", "1", "(0, 1)", "(-1, -2)", "None"],
     )
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_ND(self, dtype, ord, axis, keepdims):
-        a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
-            2, 3, 4, 5
-        )
-        ia = inp.array(a)
+    def test_ND(self, dtype, ord, axis, keepdims):
+        a = generate_random_numpy_array((2, 3, 4, 5), dtype)
+        ia = dpnp.array(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             isinstance(axis, tuple) and ord == 3
         ):
             # Invalid norm order for vectors
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         elif axis is None and ord is not None:
             # Improper number of dimensions to norm
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         else:
-            result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
@@ -2352,7 +2262,7 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
+        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis",
@@ -2360,23 +2270,23 @@ class TestNorm:
         ids=["-1", "0", "1", "(0, 1)", "(-1, -2)", "None"],
     )
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_ND_complex(self, dtype, ord, axis, keepdims):
+    def test_ND_complex(self, dtype, ord, axis, keepdims):
         x1 = numpy.random.uniform(-5, 5, 120)
         x2 = numpy.random.uniform(-5, 5, 120)
         a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(2, 3, 4, 5)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             isinstance(axis, tuple) and ord == 3
         ):
             # Invalid norm order for vectors
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         elif axis is None and ord is not None:
             # Improper number of dimensions to norm
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         else:
-            result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
@@ -2385,7 +2295,7 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 1, 2, 3, inp.inf, "fro", "nuc"]
+        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
     @pytest.mark.parametrize(
         "axis",
@@ -2393,7 +2303,7 @@ class TestNorm:
         ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
     )
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_norm_usm_ndarray(self, dtype, ord, axis, keepdims):
+    def test_usm_ndarray(self, dtype, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
             2, 3, 4, 5
         )
@@ -2403,45 +2313,43 @@ class TestNorm:
         ):
             # Invalid norm order for vectors
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         elif axis is None and ord is not None:
             # Improper number of dimensions to norm
             with pytest.raises(ValueError):
-                inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
         else:
-            result = inp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
             expected = numpy.linalg.norm(
                 a, ord=ord, axis=axis, keepdims=keepdims
             )
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("stride", [3, -1, -5])
-    def test_norm_strided_1D(self, stride):
+    def test_strided_1D(self, stride):
         a = numpy.arange(25)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.norm(ia[::stride])
+        result = dpnp.linalg.norm(ia[::stride])
         expected = numpy.linalg.norm(a[::stride])
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "axis",
-        [-1, 0, (0, 1), None],
-        ids=["-1", "0", "(0, 1)", "None"],
+        "axis", [-1, 0, (0, 1), None], ids=["-1", "0", "(0, 1)", "None"]
     )
     @pytest.mark.parametrize(
         "stride",
         [(-2, -4), (2, 4), (-3, 5), (3, -1)],
         ids=["(-2, -4)", "(2, 4)", "(-3, 5)", "(3, -1)"],
     )
-    def test_norm_strided_2D(self, axis, stride):
+    def test_strided_2D(self, axis, stride):
         A = numpy.random.rand(20, 30)
-        B = inp.asarray(A)
+        B = dpnp.asarray(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
         a = A[slices]
         b = B[slices]
 
-        result = inp.linalg.norm(b, axis=axis)
+        result = dpnp.linalg.norm(b, axis=axis)
         expected = numpy.linalg.norm(a, axis=axis)
         assert_dtype_allclose(result, expected)
 
@@ -2455,54 +2363,54 @@ class TestNorm:
         [(-2, -3, -1, -4), (-2, 4, -3, 5), (2, 3, 1, 4)],
         ids=["(-2, -3, -1, -4)", "(-2, 4, -3, 5)", "(2, 3, 1, 4)"],
     )
-    def test_norm_strided_ND(self, axis, stride):
+    def test_strided_ND(self, axis, stride):
         A = numpy.random.rand(12, 16, 20, 24)
-        B = inp.asarray(A)
+        B = dpnp.asarray(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
         a = A[slices]
         b = B[slices]
 
-        result = inp.linalg.norm(b, axis=axis)
+        result = dpnp.linalg.norm(b, axis=axis)
         expected = numpy.linalg.norm(a, axis=axis)
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
         "ord",
-        [None, -inp.inf, -2, -1, 1, 2, inp.inf, "fro", "nuc"],
+        [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro", "nuc"],
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_matrix_norm(self, ord, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 15)).reshape(3, 5)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.matrix_norm(ia, ord=ord, keepdims=keepdims)
+        result = dpnp.linalg.matrix_norm(ia, ord=ord, keepdims=keepdims)
         expected = numpy.linalg.matrix_norm(a, ord=ord, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
+        "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
     )
     def test_vector_norm_0D(self, ord):
         a = numpy.array(2)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.vector_norm(ia, ord=ord)
+        result = dpnp.linalg.vector_norm(ia, ord=ord)
         expected = numpy.linalg.vector_norm(a, ord=ord)
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 0, 1, 2, 3.5, inp.inf]
+        "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_vector_norm_1D(self, ord, axis, keepdims):
         a = numpy.array(numpy.random.uniform(-5, 5, 10))
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.vector_norm(
+        result = dpnp.linalg.vector_norm(
             ia, ord=ord, axis=axis, keepdims=keepdims
         )
         expected = numpy.linalg.vector_norm(
@@ -2513,7 +2421,7 @@ class TestNorm:
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize(
-        "ord", [None, -inp.inf, -2, -1, 1, 2, 3.5, inp.inf]
+        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3.5, dpnp.inf]
     )
     @pytest.mark.parametrize(
         "axis",
@@ -2523,9 +2431,9 @@ class TestNorm:
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_vector_norm_ND(self, ord, axis, keepdims):
         a = numpy.arange(120).reshape(2, 3, 4, 5)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
-        result = inp.linalg.vector_norm(
+        result = dpnp.linalg.vector_norm(
             ia, ord=ord, axis=axis, keepdims=keepdims
         )
         expected = numpy.linalg.vector_norm(
@@ -2533,20 +2441,20 @@ class TestNorm:
         )
         assert_dtype_allclose(result, expected)
 
-    def test_norm_error(self):
-        ia = inp.arange(120).reshape(2, 3, 4, 5)
+    def test_error(self):
+        ia = dpnp.arange(120).reshape(2, 3, 4, 5)
 
         # Duplicate axes given
         with pytest.raises(ValueError):
-            inp.linalg.norm(ia, axis=(2, 2))
+            dpnp.linalg.norm(ia, axis=(2, 2))
 
         #'axis' must be None, an integer or a tuple of integers
         with pytest.raises(TypeError):
-            inp.linalg.norm(ia, axis=[2])
+            dpnp.linalg.norm(ia, axis=[2])
 
         # Invalid norm order for vectors
         with pytest.raises(ValueError):
-            inp.linalg.norm(ia, axis=1, ord=[3])
+            dpnp.linalg.norm(ia, axis=1, ord=[3])
 
 
 class TestQr:
@@ -2564,35 +2472,31 @@ class TestQr:
             "(2, 2, 4)",
         ],
     )
-    @pytest.mark.parametrize(
-        "mode",
-        ["r", "raw", "complete", "reduced"],
-        ids=["r", "raw", "complete", "reduced"],
-    )
+    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
     def test_qr(self, dtype, shape, mode):
         # Set seed_value=81 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
         if mode == "r":
             np_r = numpy.linalg.qr(a, mode)
-            dpnp_r = inp.linalg.qr(ia, mode)
+            dpnp_r = dpnp.linalg.qr(ia, mode)
         else:
             np_q, np_r = numpy.linalg.qr(a, mode)
-            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
+            dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
 
             # check decomposition
             if mode in ("complete", "reduced"):
                 if a.ndim == 2:
                     assert_almost_equal(
-                        inp.dot(dpnp_q, dpnp_r),
+                        dpnp.dot(dpnp_q, dpnp_r),
                         a,
                         decimal=5,
                     )
                 else:  # a.ndim > 2
                     assert_almost_equal(
-                        inp.matmul(dpnp_q, dpnp_r),
+                        dpnp.matmul(dpnp_q, dpnp_r),
                         a,
                         decimal=5,
                     )
@@ -2615,42 +2519,34 @@ class TestQr:
             "(0, 2, 3)",
         ],
     )
-    @pytest.mark.parametrize(
-        "mode",
-        ["r", "raw", "complete", "reduced"],
-        ids=["r", "raw", "complete", "reduced"],
-    )
+    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
     def test_qr_empty(self, dtype, shape, mode):
         a = numpy.empty(shape, dtype=dtype)
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
         if mode == "r":
             np_r = numpy.linalg.qr(a, mode)
-            dpnp_r = inp.linalg.qr(ia, mode)
+            dpnp_r = dpnp.linalg.qr(ia, mode)
         else:
             np_q, np_r = numpy.linalg.qr(a, mode)
-            dpnp_q, dpnp_r = inp.linalg.qr(ia, mode)
+            dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
 
             assert_dtype_allclose(dpnp_q, np_q)
 
         assert_dtype_allclose(dpnp_r, np_r)
 
-    @pytest.mark.parametrize(
-        "mode",
-        ["r", "raw", "complete", "reduced"],
-        ids=["r", "raw", "complete", "reduced"],
-    )
+    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
     def test_qr_strides(self, mode):
         a = generate_random_numpy_array((5, 5))
-        ia = inp.array(a)
+        ia = dpnp.array(a)
 
         # positive strides
         if mode == "r":
             np_r = numpy.linalg.qr(a[::2, ::2], mode)
-            dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
+            dpnp_r = dpnp.linalg.qr(ia[::2, ::2], mode)
         else:
             np_q, np_r = numpy.linalg.qr(a[::2, ::2], mode)
-            dpnp_q, dpnp_r = inp.linalg.qr(ia[::2, ::2], mode)
+            dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::2, ::2], mode)
 
             assert_dtype_allclose(dpnp_q, np_q)
 
@@ -2659,38 +2555,38 @@ class TestQr:
         # negative strides
         if mode == "r":
             np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
-            dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+            dpnp_r = dpnp.linalg.qr(ia[::-2, ::-2], mode)
         else:
             np_q, np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
-            dpnp_q, dpnp_r = inp.linalg.qr(ia[::-2, ::-2], mode)
+            dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::-2, ::-2], mode)
 
             assert_dtype_allclose(dpnp_q, np_q)
 
         assert_dtype_allclose(dpnp_r, np_r)
 
     def test_qr_errors(self):
-        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [3, 5]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.qr, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.qr, a_np)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.qr, a_dp_ndim_1)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.qr, a_dp_ndim_1)
 
         # invalid mode
-        assert_raises(ValueError, inp.linalg.qr, a_dp, "c")
+        assert_raises(ValueError, dpnp.linalg.qr, a_dp, "c")
 
 
 class TestSolve:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_solve(self, dtype):
         a_np = numpy.array([[1, 0.5], [0.5, 1]], dtype=dtype)
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         expected = numpy.linalg.solve(a_np, a_np)
-        result = inp.linalg.solve(a_dp, a_dp)
+        result = dpnp.linalg.solve(a_dp, a_dp)
 
         assert_allclose(expected, result, rtol=1e-06)
 
@@ -2716,11 +2612,11 @@ class TestSolve:
         # random generation of the input singular matrix
         b_np = generate_random_numpy_array(b_shape, dtype, seed_value=76)
 
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
         expected = numpy.linalg.solve(a_np, b_np)
-        result = inp.linalg.solve(a_dp, b_dp)
+        result = dpnp.linalg.solve(a_dp, b_dp)
 
         assert_dtype_allclose(result, expected)
 
@@ -2731,11 +2627,11 @@ class TestSolve:
         a_np = numpy.array([[1, 2], [3, 5]], dtype=dtype)
         b_np = numpy.array([[1, 1, 1], [2, 2, 2]], dtype=dtype)
 
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
         expected = numpy.linalg.solve(a_np, b_np)
-        result = inp.linalg.solve(a_dp, b_dp)
+        result = dpnp.linalg.solve(a_dp, b_dp)
 
         assert_dtype_allclose(result, expected)
 
@@ -2744,12 +2640,11 @@ class TestSolve:
     def test_solve_diff_type(self, a_dtype, b_dtype):
         a_np = numpy.array([[1, 2], [3, -5]], dtype=a_dtype)
         b_np = numpy.array([4, 1], dtype=b_dtype)
-
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
         expected = numpy.linalg.solve(a_np, b_np)
-        result = inp.linalg.solve(a_dp, b_dp)
+        result = dpnp.linalg.solve(a_dp, b_dp)
 
         assert_dtype_allclose(result, expected)
 
@@ -2765,17 +2660,17 @@ class TestSolve:
         )
         b_np = numpy.array([5, 8, 9, 2, 1])
 
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
         # positive strides
         expected = numpy.linalg.solve(a_np[::2, ::2], b_np[::2])
-        result = inp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
+        result = dpnp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
         assert_allclose(expected, result, rtol=1e-05)
 
         # negative strides
         expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
-        result = inp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
+        result = dpnp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
         assert_allclose(expected, result, rtol=1e-05)
 
     @pytest.mark.parametrize(
@@ -2801,48 +2696,48 @@ class TestSolve:
         a_np = numpy.array(matrix, dtype="float32")
         b_np = numpy.array(vector, dtype="float32")
 
-        a_dp = inp.array(a_np)
-        b_dp = inp.array(b_np)
+        a_dp = dpnp.array(a_np)
+        b_dp = dpnp.array(b_np)
 
         assert_raises(numpy.linalg.LinAlgError, numpy.linalg.solve, a_np, b_np)
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.solve, a_dp, b_dp)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.solve, a_dp, b_dp)
 
     def test_solve_errors(self):
-        a_dp = inp.array([[1, 0.5], [0.5, 1]], dtype="float32")
-        b_dp = inp.array(a_dp, dtype="float32")
+        a_dp = dpnp.array([[1, 0.5], [0.5, 1]], dtype="float32")
+        b_dp = dpnp.array(a_dp, dtype="float32")
 
         # diffetent queue
         a_queue = dpctl.SyclQueue()
         b_queue = dpctl.SyclQueue()
-        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
-        b_dp_q = inp.array(b_dp, sycl_queue=b_queue)
-        assert_raises(ValueError, inp.linalg.solve, a_dp_q, b_dp_q)
+        a_dp_q = dpnp.array(a_dp, sycl_queue=a_queue)
+        b_dp_q = dpnp.array(b_dp, sycl_queue=b_queue)
+        assert_raises(ValueError, dpnp.linalg.solve, a_dp_q, b_dp_q)
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        b_np = inp.asnumpy(b_dp)
-        assert_raises(TypeError, inp.linalg.solve, a_np, b_dp)
-        assert_raises(TypeError, inp.linalg.solve, a_dp, b_np)
+        a_np = dpnp.asnumpy(a_dp)
+        b_np = dpnp.asnumpy(b_dp)
+        assert_raises(TypeError, dpnp.linalg.solve, a_np, b_dp)
+        assert_raises(TypeError, dpnp.linalg.solve, a_dp, b_np)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
         assert_raises(
-            inp.linalg.LinAlgError, inp.linalg.solve, a_dp_ndim_1, b_dp
+            dpnp.linalg.LinAlgError, dpnp.linalg.solve, a_dp_ndim_1, b_dp
         )
 
         # b.ndim == 0
-        b_dp_ndim_0 = inp.array(2)
-        assert_raises(ValueError, inp.linalg.solve, a_dp, b_dp_ndim_0)
+        b_dp_ndim_0 = dpnp.array(2)
+        assert_raises(ValueError, dpnp.linalg.solve, a_dp, b_dp_ndim_0)
 
 
 class TestSlogdet:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_slogdet_2d(self, dtype):
         a_np = numpy.array([[1, 2], [3, 4]], dtype=dtype)
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
@@ -2857,10 +2752,10 @@ class TestSlogdet:
             ],
             dtype=dtype,
         )
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
@@ -2876,17 +2771,17 @@ class TestSlogdet:
             ]
         )
 
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         # positive strides
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::2, ::2])
-        sign_result, logdet_result = inp.linalg.slogdet(a_dp[::2, ::2])
+        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp[::2, ::2])
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
         # negative strides
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::-2, ::-2])
-        sign_result, logdet_result = inp.linalg.slogdet(a_dp[::-2, ::-2])
+        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp[::-2, ::-2])
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
@@ -2911,10 +2806,10 @@ class TestSlogdet:
     )
     def test_slogdet_singular_matrix(self, matrix):
         a_np = numpy.array(matrix, dtype="float32")
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
@@ -2927,30 +2822,30 @@ class TestSlogdet:
         a_np = numpy.array(
             [[[1, 2], [3, 4]], [[1, 2], [1, 2]], [[1, 3], [3, 1]]]
         )
-        a_dp = inp.array(a_np)
+        a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = inp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
     def test_slogdet_errors(self):
-        a_dp = inp.array([[1, 2], [3, 5]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [3, 5]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.slogdet, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.slogdet, a_np)
 
 
 class TestSvd:
     def get_tol(self, dtype):
         tol = 1e-06
-        if dtype in (inp.float32, inp.complex64):
+        if dtype in (dpnp.float32, dpnp.complex64):
             tol = 1e-04
         elif not has_support_aspect64() and dtype in (
-            inp.int32,
-            inp.int64,
+            dpnp.int32,
+            dpnp.int64,
             None,
         ):
             tol = 1e-04
@@ -2985,10 +2880,10 @@ class TestSvd:
     ):
         tol = self._tol
         if compute_vt:
-            dpnp_diag_s = inp.zeros_like(dp_a, dtype=dp_s.dtype)
+            dpnp_diag_s = dpnp.zeros_like(dp_a, dtype=dp_s.dtype)
             for i in range(min(dp_a.shape[-2], dp_a.shape[-1])):
                 dpnp_diag_s[..., i, i] = dp_s[..., i]
-                reconstructed = inp.dot(dp_u, inp.dot(dpnp_diag_s, dp_vt))
+                reconstructed = dpnp.dot(dp_u, dpnp.dot(dpnp_diag_s, dp_vt))
             # TODO: use assert dpnp.allclose() inside check_decomposition()
             # when it will support complex dtypes
             assert_allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
@@ -3002,13 +2897,13 @@ class TestSvd:
                     np_vt[..., i, :] = -np_vt[..., i, :]
             for i in range(numpy.count_nonzero(np_s > tol)):
                 assert_allclose(
-                    inp.asnumpy(dp_u[..., :, i]),
+                    dpnp.asnumpy(dp_u[..., :, i]),
                     np_u[..., :, i],
                     rtol=tol,
                     atol=tol,
                 )
                 assert_allclose(
-                    inp.asnumpy(dp_vt[..., i, :]),
+                    dpnp.asnumpy(dp_vt[..., i, :]),
                     np_vt[..., i, :],
                     rtol=tol,
                     atol=tol,
@@ -3018,14 +2913,14 @@ class TestSvd:
     @pytest.mark.parametrize(
         "shape",
         [(2, 2), (3, 4), (5, 3), (16, 16)],
-        ids=["(2,2)", "(3,4)", "(5,3)", "(16,16)"],
+        ids=["(2, 2)", "(3, 4)", "(5, 3)", "(16, 16)"],
     )
     def test_svd(self, dtype, shape):
         a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
-        dp_a = inp.array(a)
+        dp_a = dpnp.array(a)
 
         np_u, np_s, np_vt = numpy.linalg.svd(a)
-        dp_u, dp_s, dp_vt = inp.linalg.svd(dp_a)
+        dp_u, dp_s, dp_vt = dpnp.linalg.svd(dp_a)
 
         self.check_types_shapes(dp_u, dp_s, dp_vt, np_u, np_s, np_vt)
         self.get_tol(dtype)
@@ -3034,11 +2929,9 @@ class TestSvd:
         )
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    @pytest.mark.parametrize("compute_vt", [True, False], ids=["True", "False"])
+    @pytest.mark.parametrize("compute_vt", [True, False])
     @pytest.mark.parametrize(
-        "shape",
-        [(2, 2), (16, 16)],
-        ids=["(2, 2)", "(16, 16)"],
+        "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
         # Set seed_value=81 to prevent
@@ -3046,18 +2939,18 @@ class TestSvd:
         a = generate_random_numpy_array(
             shape, dtype, hermitian=True, seed_value=81
         )
-        dp_a = inp.array(a)
+        dp_a = dpnp.array(a)
 
         if compute_vt:
             np_u, np_s, np_vt = numpy.linalg.svd(
                 a, compute_uv=compute_vt, hermitian=True
             )
-            dp_u, dp_s, dp_vt = inp.linalg.svd(
+            dp_u, dp_s, dp_vt = dpnp.linalg.svd(
                 dp_a, compute_uv=compute_vt, hermitian=True
             )
         else:
             np_s = numpy.linalg.svd(a, compute_uv=compute_vt, hermitian=True)
-            dp_s = inp.linalg.svd(dp_a, compute_uv=compute_vt, hermitian=True)
+            dp_s = dpnp.linalg.svd(dp_a, compute_uv=compute_vt, hermitian=True)
             np_u = np_vt = dp_u = dp_vt = None
 
         self.check_types_shapes(
@@ -3071,15 +2964,15 @@ class TestSvd:
         )
 
     def test_svd_errors(self):
-        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.svd, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.svd, a_np)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.svd, a_dp_ndim_1)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.svd, a_dp_ndim_1)
 
 
 # numpy.linalg.svdvals() is available since numpy >= 2.0
@@ -3089,51 +2982,51 @@ class TestSvdvals:
     @pytest.mark.parametrize(
         "shape",
         [(3, 5), (4, 2), (2, 3, 3), (3, 5, 2)],
-        ids=["(3,5)", "(4,2)", "(2,3,3)", "(3,5,2)"],
+        ids=["(3, 5)", "(4, 2)", "(2, 3, 3)", "(3, 5, 2)"],
     )
     def test_svdvals(self, dtype, shape):
         a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-        dp_a = inp.array(a)
+        dp_a = dpnp.array(a)
 
         expected = numpy.linalg.svdvals(a)
-        result = inp.linalg.svdvals(dp_a)
+        result = dpnp.linalg.svdvals(dp_a)
 
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "shape",
         [(0, 0), (1, 0, 0), (0, 2, 2)],
-        ids=["(0,0)", "(1,0,0)", "(0,2,2)"],
+        ids=["(0, 0)", "(1, 0, 0)", "(0, 2, 2)"],
     )
     def test_svdvals_empty(self, shape):
-        a = generate_random_numpy_array(shape, inp.default_float_type())
-        dp_a = inp.array(a)
+        a = generate_random_numpy_array(shape, dpnp.default_float_type())
+        dp_a = dpnp.array(a)
 
         expected = numpy.linalg.svdvals(a)
-        result = inp.linalg.svdvals(dp_a)
+        result = dpnp.linalg.svdvals(dp_a)
 
         assert_dtype_allclose(result, expected)
 
     def test_svdvals_errors(self):
-        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
 
         # unsupported type
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.svdvals, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.svdvals, a_np)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.svdvals, a_dp_ndim_1)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.svdvals, a_dp_ndim_1)
 
 
 class TestPinv:
     def get_tol(self, dtype):
         tol = 1e-06
-        if dtype in (inp.float32, inp.complex64):
+        if dtype in (dpnp.float32, dpnp.complex64):
             tol = 1e-04
         elif not has_support_aspect64() and dtype in (
-            inp.int32,
-            inp.int64,
+            dpnp.int32,
+            dpnp.int64,
             None,
         ):
             tol = 1e-04
@@ -3165,10 +3058,10 @@ class TestPinv:
         # Set seed_value=81 to prevent
         # random generation of the input singular matrix
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         B = numpy.linalg.pinv(a)
-        B_dp = inp.linalg.pinv(a_dp)
+        B_dp = dpnp.linalg.pinv(a_dp)
 
         self.check_types_shapes(B_dp, B)
         self.get_tol(dtype)
@@ -3176,17 +3069,15 @@ class TestPinv:
         assert_allclose(B_dp, B, rtol=tol, atol=tol)
 
         if a.ndim == 2:
-            reconstructed = inp.dot(a_dp, inp.dot(B_dp, a_dp))
+            reconstructed = dpnp.dot(a_dp, dpnp.dot(B_dp, a_dp))
         else:  # a.ndim > 2
-            reconstructed = inp.matmul(a_dp, inp.matmul(B_dp, a_dp))
+            reconstructed = dpnp.matmul(a_dp, dpnp.matmul(B_dp, a_dp))
 
         assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
-        "shape",
-        [(2, 2), (16, 16)],
-        ids=["(2, 2)", "(16, 16)"],
+        "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_pinv_hermitian(self, dtype, shape):
         # Set seed_value=81 to prevent
@@ -3194,26 +3085,26 @@ class TestPinv:
         a = generate_random_numpy_array(
             shape, dtype, hermitian=True, seed_value=81
         )
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         B = numpy.linalg.pinv(a, hermitian=True)
-        B_dp = inp.linalg.pinv(a_dp, hermitian=True)
+        B_dp = dpnp.linalg.pinv(a_dp, hermitian=True)
 
         self.check_types_shapes(B_dp, B)
         self.get_tol(dtype)
         tol = self._tol
 
-        reconstructed = inp.dot(inp.dot(a_dp, B_dp), a_dp)
+        reconstructed = dpnp.dot(dpnp.dot(a_dp, B_dp), a_dp)
         assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
 
     # rtol kwarg was added in numpy 2.0
     @testing.with_requires("numpy>=2.0")
     def test_pinv_rtol(self):
         a = numpy.ones((2, 2))
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         expected = numpy.linalg.pinv(a, rtol=1e-15)
-        result = inp.linalg.pinv(a_dp, rtol=1e-15)
+        result = dpnp.linalg.pinv(a_dp, rtol=1e-15)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -3231,60 +3122,60 @@ class TestPinv:
     )
     def test_pinv_empty(self, dtype, shape):
         a = numpy.empty(shape, dtype=dtype)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         B = numpy.linalg.pinv(a)
-        B_dp = inp.linalg.pinv(a_dp)
+        B_dp = dpnp.linalg.pinv(a_dp)
 
         assert_dtype_allclose(B_dp, B)
 
     def test_pinv_strides(self):
         a = generate_random_numpy_array((5, 5))
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         self.get_tol(a_dp.dtype)
         tol = self._tol
 
         # positive strides
         B = numpy.linalg.pinv(a[::2, ::2])
-        B_dp = inp.linalg.pinv(a_dp[::2, ::2])
+        B_dp = dpnp.linalg.pinv(a_dp[::2, ::2])
         assert_allclose(B_dp, B, rtol=tol, atol=tol)
 
         # negative strides
         B = numpy.linalg.pinv(a[::-2, ::-2])
-        B_dp = inp.linalg.pinv(a_dp[::-2, ::-2])
+        B_dp = dpnp.linalg.pinv(a_dp[::-2, ::-2])
         assert_allclose(B_dp, B, rtol=tol, atol=tol)
 
     def test_pinv_errors(self):
-        a_dp = inp.array([[1, 2], [3, 4]], dtype="float32")
+        a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
 
         # unsupported type `a`
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.pinv, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.pinv, a_np)
 
         # unsupported type `rcond`
         rcond = numpy.array(0.5, dtype="float32")
-        assert_raises(TypeError, inp.linalg.pinv, a_dp, rcond)
-        assert_raises(TypeError, inp.linalg.pinv, a_dp, [0.5])
+        assert_raises(TypeError, dpnp.linalg.pinv, a_dp, rcond)
+        assert_raises(TypeError, dpnp.linalg.pinv, a_dp, [0.5])
 
         # non-broadcastable `rcond`
-        rcond_dp = inp.array([0.5], dtype="float32")
-        assert_raises(ValueError, inp.linalg.pinv, a_dp, rcond_dp)
+        rcond_dp = dpnp.array([0.5], dtype="float32")
+        assert_raises(ValueError, dpnp.linalg.pinv, a_dp, rcond_dp)
 
         # a.ndim < 2
         a_dp_ndim_1 = a_dp.flatten()
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.pinv, a_dp_ndim_1)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.pinv, a_dp_ndim_1)
 
         # diffetent queue
         a_queue = dpctl.SyclQueue()
         rcond_queue = dpctl.SyclQueue()
-        a_dp_q = inp.array(a_dp, sycl_queue=a_queue)
-        rcond_dp_q = inp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
-        assert_raises(ValueError, inp.linalg.pinv, a_dp_q, rcond_dp_q)
+        a_dp_q = dpnp.array(a_dp, sycl_queue=a_queue)
+        rcond_dp_q = dpnp.array([0.5], dtype="float32", sycl_queue=rcond_queue)
+        assert_raises(ValueError, dpnp.linalg.pinv, a_dp_q, rcond_dp_q)
 
         # both rcond and rtol are given
         assert_raises(
-            ValueError, inp.linalg.pinv, a_dp, rcond=1e-06, rtol=1e-04
+            ValueError, dpnp.linalg.pinv, a_dp, rcond=1e-06, rtol=1e-04
         )
 
 
@@ -3292,39 +3183,33 @@ class TestTensorinv:
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "shape, ind",
-        [
-            ((4, 6, 8, 3), 2),
-            ((24, 8, 3), 1),
-        ],
-        ids=[
-            "(4, 6, 8, 3)",
-            "(24, 8, 3)",
-        ],
+        [((4, 6, 8, 3), 2), ((24, 8, 3), 1)],
+        ids=["(4, 6, 8, 3)", "(24, 8, 3)"],
     )
     def test_tensorinv(self, dtype, shape, ind):
         a = numpy.eye(24, dtype=dtype).reshape(shape)
-        a_dp = inp.array(a)
+        a_dp = dpnp.array(a)
 
         ainv = numpy.linalg.tensorinv(a, ind=ind)
-        ainv_dp = inp.linalg.tensorinv(a_dp, ind=ind)
+        ainv_dp = dpnp.linalg.tensorinv(a_dp, ind=ind)
 
         assert ainv.shape == ainv_dp.shape
         assert_dtype_allclose(ainv_dp, ainv)
 
     def test_test_tensorinv_errors(self):
-        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+        a_dp = dpnp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
 
         # unsupported type `a`
-        a_np = inp.asnumpy(a_dp)
-        assert_raises(TypeError, inp.linalg.pinv, a_np)
+        a_np = dpnp.asnumpy(a_dp)
+        assert_raises(TypeError, dpnp.linalg.pinv, a_np)
 
         # unsupported type `ind`
-        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, 2.0)
-        assert_raises(TypeError, inp.linalg.tensorinv, a_dp, [2.0])
-        assert_raises(ValueError, inp.linalg.tensorinv, a_dp, -1)
+        assert_raises(TypeError, dpnp.linalg.tensorinv, a_dp, 2.0)
+        assert_raises(TypeError, dpnp.linalg.tensorinv, a_dp, [2.0])
+        assert_raises(ValueError, dpnp.linalg.tensorinv, a_dp, -1)
 
         # non-square
-        assert_raises(inp.linalg.LinAlgError, inp.linalg.tensorinv, a_dp, 1)
+        assert_raises(dpnp.linalg.LinAlgError, dpnp.linalg.tensorinv, a_dp, 1)
 
 
 class TestTensorsolve:
@@ -3332,40 +3217,36 @@ class TestTensorsolve:
     @pytest.mark.parametrize(
         "axes",
         [None, (1,), (2,)],
-        ids=[
-            "None",
-            "(1,)",
-            "(2,)",
-        ],
+        ids=["None", "(1,)", "(2,)"],
     )
     def test_tensorsolve_axes(self, dtype, axes):
         a = numpy.eye(12).reshape(12, 3, 4).astype(dtype)
         b = numpy.ones(a.shape[0], dtype=dtype)
 
-        a_dp = inp.array(a)
-        b_dp = inp.array(b)
+        a_dp = dpnp.array(a)
+        b_dp = dpnp.array(b)
 
         res_np = numpy.linalg.tensorsolve(a, b, axes=axes)
-        res_dp = inp.linalg.tensorsolve(a_dp, b_dp, axes=axes)
+        res_dp = dpnp.linalg.tensorsolve(a_dp, b_dp, axes=axes)
 
         assert res_np.shape == res_dp.shape
         assert_dtype_allclose(res_dp, res_np)
 
     def test_tensorsolve_errors(self):
-        a_dp = inp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
-        b_dp = inp.ones(a_dp.shape[:2], dtype="float32")
+        a_dp = dpnp.eye(24, dtype="float32").reshape(4, 6, 8, 3)
+        b_dp = dpnp.ones(a_dp.shape[:2], dtype="float32")
 
         # unsupported type `a` and `b`
-        a_np = inp.asnumpy(a_dp)
-        b_np = inp.asnumpy(b_dp)
-        assert_raises(TypeError, inp.linalg.tensorsolve, a_np, b_dp)
-        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, b_np)
+        a_np = dpnp.asnumpy(a_dp)
+        b_np = dpnp.asnumpy(b_dp)
+        assert_raises(TypeError, dpnp.linalg.tensorsolve, a_np, b_dp)
+        assert_raises(TypeError, dpnp.linalg.tensorsolve, a_dp, b_np)
 
         # unsupported type `axes`
-        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, 2.0)
-        assert_raises(TypeError, inp.linalg.tensorsolve, a_dp, -2)
+        assert_raises(TypeError, dpnp.linalg.tensorsolve, a_dp, 2.0)
+        assert_raises(TypeError, dpnp.linalg.tensorsolve, a_dp, -2)
 
         # incorrect axes
         assert_raises(
-            inp.linalg.LinAlgError, inp.linalg.tensorsolve, a_dp, b_dp, (1,)
+            dpnp.linalg.LinAlgError, dpnp.linalg.tensorsolve, a_dp, b_dp, (1,)
         )

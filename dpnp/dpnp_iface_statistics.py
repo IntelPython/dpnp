@@ -510,6 +510,11 @@ def correlate(a, v, mode="valid"):
 
         Default: ``"valid"``.
 
+    Returns
+    -------
+    out : dpnp.ndarray
+        Discrete cross-correlation of `a` and `v`.
+
     Notes
     -----
     The definition of correlation above is not unique and sometimes
@@ -523,11 +528,6 @@ def correlate(a, v, mode="valid"):
     ----------
     .. [1] Wikipedia, "Cross-correlation",
            https://en.wikipedia.org/wiki/Cross-correlation
-
-    Returns
-    -------
-    out : {dpnp.ndarray}
-        Discrete cross-correlation of `a` and `v`.
 
     See Also
     --------
