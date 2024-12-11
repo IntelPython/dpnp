@@ -130,17 +130,10 @@ def _build_choices_list(choices):
     """
 
     if dpnp.is_supported_array_type(choices):
-        choices = [dpnp.get_usm_ndarray(chc) for chc in dpnp.unstack(choices)]
-    elif isinstance(choices, Iterable):
-        choices_ = []
-        for chc in choices:
-            chc_ = dpnp.get_usm_ndarray(chc)
-            choices_.append(chc_)
-        choices = choices_
-    else:
+        choices = dpnp.unstack(choices)
+    elif not isinstance(choices, Iterable):
         raise TypeError("`choices` must be an array or sequence of arrays")
-
-    return choices
+    return [dpnp.get_usm_ndarray(chc) for chc in choices]
 
 
 def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
