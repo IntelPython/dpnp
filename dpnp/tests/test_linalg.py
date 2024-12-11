@@ -347,6 +347,12 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_nan(self, p):
+        # dpnp.linalg.cond uses dpnp.linalg.inv()
+        # for the case when p is not None or p != -2 or p != 2
+        # For singular matrices cuSolver raises an error
+        # while OneMKL returns nans
+        if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
+            pytest.skip("Different behavior on CUDA")
         a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(2, 2, 2, 2)
         a[0, 0] = 0
         a[1, 1] = 0
