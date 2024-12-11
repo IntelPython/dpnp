@@ -1500,3 +1500,10 @@ class TestChoose:
         assert r.shape == sh[1:]
         r = dpnp.choose(inds, [chcs])
         assert r.shape == sh
+
+    def test_choose_0d_inputs(self):
+        sh = ()
+        inds = dpnp.zeros(sh, dtype="i4")
+        chc = dpnp.ones(sh, dtype="i4")
+        r = dpnp.choose(inds, [chc])
+        assert r == chc
