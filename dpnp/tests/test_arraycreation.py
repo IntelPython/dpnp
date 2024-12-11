@@ -709,9 +709,7 @@ def test_dpctl_tensor_input(func, args):
 )
 @pytest.mark.parametrize(
     "dtype",
-    get_all_dtypes(
-        no_bool=True, no_float16=False, exclude=[numpy.uint8, dpnp.int8]
-    ),
+    get_all_dtypes(no_bool=True, no_float16=False),
 )
 @pytest.mark.parametrize("retstep", [True, False])
 def test_linspace(start, stop, num, dtype, retstep):
