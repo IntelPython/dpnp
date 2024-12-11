@@ -330,17 +330,34 @@ std::pair<sycl::event, sycl::event>
             "Unable to allocate packed_chc_offsets device memory");
     }
 
-    auto src_strides = src.get_strides_vector();
-    auto dst_strides = dst.get_strides_vector();
-
     std::vector<sycl::event> host_task_events;
     host_task_events.reserve(2);
 
-    std::vector<sycl::event> pack_deps = _populate_choose_kernel_params(
-        exec_q, host_task_events, packed_chc_ptrs.get(),
-        packed_shapes_strides.get(), packed_chc_offsets.get(), src_shape,
-        sh_nelems, src_strides, dst_strides, chc_strides, chc_ptrs, chc_offsets,
-        n_chcs);
+    std::vector<sycl::event> pack_deps;
+    if (nd == 0) {
+        // special case where all inputs are scalars
+        // need to pass src, dst shape=1 and strides=0
+        // chc_strides already initialized to 0 so ignore
+        std::array<py::ssize_t, 1> scalar_sh{1};
+        std::vector<py::ssize_t> src_strides{0};
+        std::vector<py::ssize_t> dst_strides{0};
+
+        pack_deps = _populate_choose_kernel_params(
+            exec_q, host_task_events, packed_chc_ptrs.get(),
+            packed_shapes_strides.get(), packed_chc_offsets.get(),
+            scalar_sh.data(), sh_nelems, src_strides, dst_strides, chc_strides,
+            chc_ptrs, chc_offsets, n_chcs);
+    }
+    else {
+        auto src_strides = src.get_strides_vector();
+        auto dst_strides = dst.get_strides_vector();
+
+        pack_deps = _populate_choose_kernel_params(
+            exec_q, host_task_events, packed_chc_ptrs.get(),
+            packed_shapes_strides.get(), packed_chc_offsets.get(), src_shape,
+            sh_nelems, src_strides, dst_strides, chc_strides, chc_ptrs,
+            chc_offsets, n_chcs);
+    }
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + pack_deps.size());
