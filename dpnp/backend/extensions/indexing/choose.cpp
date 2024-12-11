@@ -397,15 +397,14 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(arg_cleanup_ev, choose_generic_ev);
 }
 
-template <typename fnT, typename IndT, typename T>
-struct ChooseWrapFactory
+template <typename fnT, typename IndT, typename T, typename Index>
+struct ChooseFactory
 {
     fnT get()
     {
         if constexpr (std::is_integral<IndT>::value &&
                       !std::is_same<IndT, bool>::value) {
-            using dpctl::tensor::indexing_utils::WrapIndex;
-            fnT fn = kernels::choose_impl<WrapIndex<IndT>, IndT, T>;
+            fnT fn = kernels::choose_impl<Index, IndT, T>;
             return fn;
         }
         else {
@@ -415,23 +414,14 @@ struct ChooseWrapFactory
     }
 };
 
+using dpctl::tensor::indexing_utils::ClipIndex;
+using dpctl::tensor::indexing_utils::WrapIndex;
+
 template <typename fnT, typename IndT, typename T>
-struct ChooseClipFactory
-{
-    fnT get()
-    {
-        if constexpr (std::is_integral<IndT>::value &&
-                      !std::is_same<IndT, bool>::value) {
-            using dpctl::tensor::indexing_utils::ClipIndex;
-            fnT fn = kernels::choose_impl<ClipIndex<IndT>, IndT, T>;
-            return fn;
-        }
-        else {
-            fnT fn = nullptr;
-            return fn;
-        }
-    }
-};
+using ChooseWrapFactory = ChooseFactory<fnT, IndT, T, WrapIndex<IndT>>;
+
+template <typename fnT, typename IndT, typename T>
+using ChooseClipFactory = ChooseFactory<fnT, IndT, T, ClipIndex<IndT>>;
 
 void init_choose_dispatch_tables(void)
 {
