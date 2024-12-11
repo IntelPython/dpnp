@@ -96,6 +96,15 @@ target_include_directories(${_trgt} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
 target_link_directories(${_trgt} PUBLIC "${Dpctl_INCLUDE_DIR}/..")
 target_link_libraries(${_trgt} PUBLIC DPCTLSyclInterface)
 
+# add similar thing like done for pybind11 extensions
+target_link_libraries(${_trgt} PUBLIC pybind11::headers)
+target_link_libraries(${_trgt} PUBLIC pybind11::module)
+target_link_libraries(${_trgt} PUBLIC pybind11::lto)
+if(MSVC)
+  message(STATUS "Adding windows_extras from pybind11")
+  target_link_libraries(${_trgt} PUBLIC pybind11::windows_extras)
+endif()
+
 add_library(dpnp_backend_library INTERFACE IMPORTED GLOBAL)
 target_include_directories(dpnp_backend_library BEFORE INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
