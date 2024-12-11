@@ -1,8 +1,14 @@
 var searchData=
 [
-  ['radiansfunctor_0',['RadiansFunctor',['../structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html',1,'dpnp::kernels::radians']]],
-  ['random_20api_1',['Backend C++ library interface RANDOM API',['../group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html',1,'']]],
-  ['return_5ftype_2',['return_type',['../struct_d_p_n_p_func_data.html#a59c07232bc3830e89d5abe5447a24816',1,'DPNPFuncData']]],
-  ['return_5ftype_5fno_5ffp64_3',['return_type_no_fp64',['../struct_d_p_n_p_func_data.html#a591831d25d776b9ce6ef0a328bda9ddc',1,'DPNPFuncData']]],
-  ['runtime_20interface_20api_4',['Backend C++ library runtime interface API',['../group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html',1,'']]]
+  ['paddedspan_0',['PaddedSpan',['../classstatistics_1_1sliding__window1d_1_1_padded_span.html',1,'statistics::sliding_window1d']]],
+  ['potrfbatchtypepairsupportfactory_1',['PotrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['potrftypepairsupportfactory_2',['PotrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['precisiontype_3',['PrecisionType',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type.html',1,'dpnp::extensions::fft']]],
+  ['precisiontype_3c_20mkl_5fdft_3a_3aprecision_3a_3adouble_20_3e_4',['PrecisionType&lt; mkl_dft::precision::DOUBLE &gt;',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html',1,'dpnp::extensions::fft']]],
+  ['precisiontype_3c_20mkl_5fdft_3a_3aprecision_3a_3asingle_20_3e_5',['PrecisionType&lt; mkl_dft::precision::SINGLE &gt;',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html',1,'dpnp::extensions::fft']]],
+  ['ptr_6',['ptr',['../struct_d_p_n_p_func_data.html#af40fd22f5954384788121f817fb02f0d',1,'DPNPFuncData']]],
+  ['ptr_5fno_5ffp64_7',['ptr_no_fp64',['../struct_d_p_n_p_func_data.html#aa88f90ce507ebffe7462bba4d2df6c76',1,'DPNPFuncData']]],
+  ['py_5fnan_8',['py_nan',['../structpython__constants.html#ad34c02509443758b7257406387f7a14c',1,'python_constants']]],
+  ['py_5fnone_9',['py_none',['../structpython__constants.html#a4b321c2c3693f0fedfe18e20c317dd24',1,'python_constants']]],
+  ['python_5fconstants_10',['python_constants',['../structpython__constants.html',1,'']]]
 ];

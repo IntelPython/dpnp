@@ -103,8 +103,10 @@ $(document).ready(function(){initNavTree('structstatistics_1_1histogram_1_1_unca
 Public Types</h2></td></tr>
 <tr class="memitem:aee57d6d7bf78f51b2932baaf8d591b5b" id="r_aee57d6d7bf78f51b2932baaf8d591b5b"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#aee57d6d7bf78f51b2932baaf8d591b5b">Shape</a> = sycl::range&lt; Dims &gt;</td></tr>
 <tr class="separator:aee57d6d7bf78f51b2932baaf8d591b5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aec1a8f38f4f8ddda2d2374d7b87bdc9c" id="r_aec1a8f38f4f8ddda2d2374d7b87bdc9c"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#aec1a8f38f4f8ddda2d2374d7b87bdc9c">pointer_type</a> = T *</td></tr>
-<tr class="separator:aec1a8f38f4f8ddda2d2374d7b87bdc9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14d10125e9302d3c2bba4dd668e16d1f" id="r_a14d10125e9302d3c2bba4dd668e16d1f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#a14d10125e9302d3c2bba4dd668e16d1f">value_type</a> = T</td></tr>
+<tr class="separator:a14d10125e9302d3c2bba4dd668e16d1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a40aa8f2a29307310c6bb0515956ed195" id="r_a40aa8f2a29307310c6bb0515956ed195"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#a40aa8f2a29307310c6bb0515956ed195">pointer_type</a> = value_type *</td></tr>
+<tr class="separator:a40aa8f2a29307310c6bb0515956ed195"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
@@ -117,19 +119,26 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:abc3b86c6e94689505fbec3115d96d448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2dadea3806ca42aa688e5607e8f155bd" id="r_a2dadea3806ca42aa688e5607e8f155bd"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#a2dadea3806ca42aa688e5607e8f155bd">size</a> () const</td></tr>
 <tr class="separator:a2dadea3806ca42aa688e5607e8f155bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52d794cd7e1906728d5f506f645271f4" id="r_a52d794cd7e1906728d5f506f645271f4"><td class="memItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#a52d794cd7e1906728d5f506f645271f4">operator[]</a> (const sycl::id&lt; Dims &gt; &amp;id) const</td></tr>
+<tr class="separator:a52d794cd7e1906728d5f506f645271f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b3cbe8b3c20eeedc7a284b50667cae7" id="r_a5b3cbe8b3c20eeedc7a284b50667cae7"><td class="memTemplParams" colspan="2">template&lt;typename  = std::enable_if_t&lt;Dims == 1&gt;&gt; </td></tr>
+<tr class="memitem:a5b3cbe8b3c20eeedc7a284b50667cae7"><td class="memTemplItemLeft" align="right" valign="top">T &amp;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#a5b3cbe8b3c20eeedc7a284b50667cae7">operator[]</a> (const size_t id) const</td></tr>
+<tr class="separator:a5b3cbe8b3c20eeedc7a284b50667cae7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-attribs" name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
 <tr class="memitem:a64bac28c9982612c705c47b307a665ec" id="r_a64bac28c9982612c705c47b307a665ec"><td class="memItemLeft" align="right" valign="top">static constexpr bool const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#a64bac28c9982612c705c47b307a665ec">sync_after_init</a> = false</td></tr>
 <tr class="separator:a64bac28c9982612c705c47b307a665ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afda69fddfbbd560296edbf7b7c32f328" id="r_afda69fddfbbd560296edbf7b7c32f328"><td class="memItemLeft" align="right" valign="top">static constexpr auto&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html#afda69fddfbbd560296edbf7b7c32f328">dims</a> = Dims</td></tr>
+<tr class="separator:afda69fddfbbd560296edbf7b7c32f328"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename T, int Dims&gt;<br />
 struct statistics::histogram::UncachedData&lt; T, Dims &gt;</div>
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00096">96</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00107">107</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="aec1a8f38f4f8ddda2d2374d7b87bdc9c" name="aec1a8f38f4f8ddda2d2374d7b87bdc9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aec1a8f38f4f8ddda2d2374d7b87bdc9c">&#9670;&#160;</a></span>pointer_type</h2>
+<a id="a40aa8f2a29307310c6bb0515956ed195" name="a40aa8f2a29307310c6bb0515956ed195"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a40aa8f2a29307310c6bb0515956ed195">&#9670;&#160;</a></span>pointer_type</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -137,12 +146,12 @@ struct statistics::histogram::UncachedData&lt; T, Dims &gt;</div>
 template&lt;typename T , int Dims&gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html">statistics::histogram::UncachedData</a>&lt; T, Dims &gt;::pointer_type =  T *</td>
+          <td class="memname">using <a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html">statistics::histogram::UncachedData</a>&lt; T, Dims &gt;::pointer_type =  value_type *</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00100">100</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00112">112</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -160,7 +169,25 @@ template&lt;typename T , int Dims&gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00099">99</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00110">110</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a14d10125e9302d3c2bba4dd668e16d1f" name="a14d10125e9302d3c2bba4dd668e16d1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14d10125e9302d3c2bba4dd668e16d1f">&#9670;&#160;</a></span>value_type</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , int Dims&gt; </div>
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html">statistics::histogram::UncachedData</a>&lt; T, Dims &gt;::value_type =  T</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00111">111</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -207,7 +234,7 @@ template&lt;typename T , int Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00102">102</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00115">115</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -237,7 +264,7 @@ template&lt;typename T , int Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00108">108</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00121">121</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -269,7 +296,69 @@ template&lt;int _Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00114">114</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00127">127</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a5b3cbe8b3c20eeedc7a284b50667cae7" name="a5b3cbe8b3c20eeedc7a284b50667cae7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b3cbe8b3c20eeedc7a284b50667cae7">&#9670;&#160;</a></span>operator[]() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , int Dims&gt; </div>
+<div class="memtemplate">
+template&lt;typename  = std::enable_if_t&lt;Dims == 1&gt;&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html">statistics::histogram::UncachedData</a>&lt; T, Dims &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">const size_t&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00142">142</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a52d794cd7e1906728d5f506f645271f4" name="a52d794cd7e1906728d5f506f645271f4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52d794cd7e1906728d5f506f645271f4">&#9670;&#160;</a></span>operator[]() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , int Dims&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">T &amp; <a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html">statistics::histogram::UncachedData</a>&lt; T, Dims &gt;::operator[] </td>
+          <td>(</td>
+          <td class="paramtype">const sycl::id&lt; Dims &gt; &amp;&#160;</td>
+          <td class="paramname"><em>id</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00136">136</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
@@ -298,11 +387,37 @@ template&lt;typename T , int Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00118">118</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00131">131</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="afda69fddfbbd560296edbf7b7c32f328" name="afda69fddfbbd560296edbf7b7c32f328"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afda69fddfbbd560296edbf7b7c32f328">&#9670;&#160;</a></span>dims</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename T , int Dims&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">constexpr auto <a class="el" href="structstatistics_1_1histogram_1_1_uncached_data.html">statistics::histogram::UncachedData</a>&lt; T, Dims &gt;::dims = Dims</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span><span class="mlabel">constexpr</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00113">113</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+
+</div>
+</div>
 <a id="a64bac28c9982612c705c47b307a665ec" name="a64bac28c9982612c705c47b307a665ec"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a64bac28c9982612c705c47b307a665ec">&#9670;&#160;</a></span>sync_after_init</h2>
 
@@ -325,7 +440,7 @@ template&lt;typename T , int Dims&gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00098">98</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="histogram__common_8hpp_source.html#l00109">109</a> of file <a class="el" href="histogram__common_8hpp_source.html">histogram_common.hpp</a>.</p>
 
 </div>
 </div>
