@@ -8,5 +8,6 @@ var searchData=
   ['histlocaltype_3c_20uint64_5ft_20_3e_5',['HistLocalType&lt; uint64_t &gt;',['../structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html',1,'statistics::histogram']]],
   ['histogram_6',['Histogram',['../structstatistics_1_1histogram_1_1_histogram.html',1,'statistics::histogram']]],
   ['histogram_5fkernel_7',['histogram_kernel',['../classstatistics_1_1histogram_1_1histogram__kernel.html',1,'statistics::histogram']]],
-  ['histwithlocalcopies_8',['HistWithLocalCopies',['../structstatistics_1_1histogram_1_1_hist_with_local_copies.html',1,'statistics::histogram']]]
+  ['histogramdd_8',['Histogramdd',['../structstatistics_1_1histogram_1_1_histogramdd.html',1,'statistics::histogram']]],
+  ['histwithlocalcopies_9',['HistWithLocalCopies',['../structstatistics_1_1histogram_1_1_hist_with_local_copies.html',1,'statistics::histogram']]]
 ];
