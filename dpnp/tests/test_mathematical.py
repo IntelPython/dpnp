@@ -81,7 +81,7 @@ class TestAngle:
 
 
 class TestConj:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_conj(self, dtype):
         a = generate_random_numpy_array(20, dtype)
         ia = dpnp.array(a)

@@ -2164,7 +2164,7 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
