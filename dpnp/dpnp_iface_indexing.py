@@ -241,13 +241,14 @@ def choose(a, choices, out=None, mode="wrap"):
     >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='wrap'
     ... # 4 is clipped to 3
     ... )
-    array([20,  31, 12,  3])
+    array([20, 31, 12,  3])
     >>> np.choose(np.array([2, -1, 1, 0]), choices, mode='wrap'
     ... # -1 goes to 3 (-1+4)
     ... )
-    array([20,  31, 12,  3])
+    array([20, 31, 12,  3])
 
     An example using broadcasting:
+
     >>> a = np.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]])
     >>> choices = np.array([-10, 10])
     >>> np.choose(a, choices)
