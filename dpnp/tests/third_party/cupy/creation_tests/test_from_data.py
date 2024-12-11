@@ -6,7 +6,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import has_support_aspect64, is_cuda_device
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -521,7 +521,13 @@ class TestFromData(unittest.TestCase):
         q1 = dpctl.SyclQueue()
         q2 = dpctl.SyclQueue()
 
-        src = cupy.random.uniform(-1, 1, (2, 3), device=q1).astype(dtype)
+        # TODO: remove it once the issue with CUDA support is resolved
+        # for dpnp.random
+        if is_cuda_device():
+            src_np = numpy.random.uniform(-1, 1, (2, 3)).astype(dtype)
+            src = cupy.array(src_np, device=q1)
+        else:
+            src = cupy.random.uniform(-1, 1, (2, 3), device=q1).astype(dtype)
         dst = cupy.copy(src, order, device=q2)
         testing.assert_allclose(src, dst, rtol=0, atol=0)
 

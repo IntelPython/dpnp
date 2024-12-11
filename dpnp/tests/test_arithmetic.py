@@ -9,7 +9,6 @@ class TestArithmetic(unittest.TestCase):
     def test_modf_part1(self, xp, dtype):
         a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
         b, _ = xp.modf(a)
-
         return b
 
     @testing.for_float_dtypes()
@@ -17,7 +16,6 @@ class TestArithmetic(unittest.TestCase):
     def test_modf_part2(self, xp, dtype):
         a = xp.array([-2.5, -1.5, -0.5, 0, 0.5, 1.5, 2.5], dtype=dtype)
         _, c = xp.modf(a)
-
         return c
 
     @testing.for_float_dtypes()
@@ -37,5 +35,4 @@ class TestArithmetic(unittest.TestCase):
     def test_remainder(self, xp, dtype):
         a = xp.array([5, -3, -2, -1, -5], dtype=dtype)
         b = xp.full(a.size, 3, dtype=dtype)
-
         return xp.remainder(a, b)
