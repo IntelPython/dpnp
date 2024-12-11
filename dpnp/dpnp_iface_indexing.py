@@ -220,11 +220,12 @@ def choose(a, choices, out=None, mode="wrap"):
     See also
     --------
     :obj:`dpnp.ndarray.choose` : Equivalent method.
+    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
 
     Examples
     --------
     >>> import dpnp as np
-    >>> choices = np.array[[0, 1, 2, 3], [10, 11, 12, 13],
+    >>> choices = np.array([[0, 1, 2, 3], [10, 11, 12, 13],
     ...   [20, 21, 22, 23], [30, 31, 32, 33]])
     >>> np.choose(np.array([2, 3, 1, 0]), choices
     ... # the first element of the result will be the first element of the
