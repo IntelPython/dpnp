@@ -179,10 +179,8 @@ sycl::event choose_impl(sycl::queue &q,
         using KernelName = choose_kernel<ProjectorT, InOutIndexerT,
                                          NthChoiceIndexerT, indTy, Ty>;
 
-        const size_t gws = nelems;
-
         cgh.parallel_for<KernelName>(
-            sycl::range<1>(gws),
+            sycl::range<1>(nelems),
             ChooseFunctor<ProjectorT, InOutIndexerT, NthChoiceIndexerT, indTy,
                           Ty>(ind_tp, dst_tp, chcs_cp, n_chcs, ind_out_indexer,
                               choices_indexer));
