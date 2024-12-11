@@ -546,9 +546,6 @@ def test_meshgrid(usm_type_x, usm_type_y):
     ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
 )
 def test_norm(usm_type, ord, axis):
-    if is_cuda_device():
-        if axis in [(0, 1), (-2, -1)] and ord in [-2, 2, "nuc"]:
-            pytest.skip("SAT-7589")
     ia = dp.arange(120, usm_type=usm_type).reshape(2, 3, 4, 5)
     if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
         isinstance(axis, tuple) and ord == 3
@@ -1458,9 +1455,6 @@ def test_inv(shape, is_empty, usm_type):
     ],
 )
 def test_svd(usm_type, shape, full_matrices_param, compute_uv_param):
-    if is_cuda_device():
-        if shape in [(1, 4), (2, 2, 3)]:
-            pytest.skip("SAT-7589")
     x = dp.ones(shape, usm_type=usm_type)
 
     if compute_uv_param:
@@ -1529,9 +1523,6 @@ def test_matrix_rank(data, tol, usm_type):
     ],
 )
 def test_pinv(shape, hermitian, usm_type):
-    if is_cuda_device():
-        if shape == (2, 2, 3):
-            pytest.skip("SAT-7589")
     a_np = generate_random_numpy_array(shape, hermitian=hermitian)
     a = dp.array(a_np, usm_type=usm_type)
 

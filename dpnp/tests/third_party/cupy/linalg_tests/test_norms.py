@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import is_cpu_device, is_cuda_device
+from dpnp.tests.helper import is_cpu_device
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -63,12 +63,6 @@ class TestNorm(unittest.TestCase):
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-4, type_check=False)
     # since dtype of sum is different in dpnp and NumPy, type_check=False
     def test_norm(self, xp, dtype):
-        if (
-            is_cuda_device()
-            and self.shape == (1, 2)
-            and self.ord in [-2, 2, "nuc"]
-        ):
-            pytest.skip("SAT-7589")
         a = testing.shaped_arange(self.shape, xp, dtype)
         res = xp.linalg.norm(a, self.ord, self.axis, self.keepdims)
         if xp == numpy and not isinstance(res, numpy.ndarray):
