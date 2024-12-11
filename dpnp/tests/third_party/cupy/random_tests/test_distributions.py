@@ -79,7 +79,7 @@ class TestDistributionsBeta(RandomDistributionsTestCase):
 )
 class TestDistributionsBinomial(RandomDistributionsTestCase):
 
-    @pytest.mark.skip()
+    @pytest.mark.skip("n and p params as arrays are not supported")
     @testing.for_signed_dtypes("n_dtype")
     @testing.for_float_dtypes("p_dtype")
     def test_binomial(self, n_dtype, p_dtype):
