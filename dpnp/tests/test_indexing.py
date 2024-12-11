@@ -1515,6 +1515,19 @@ class TestChoose:
         r = dpnp.choose(inds, [chc])
         assert r == chc
 
+    def test_choose_out_keyword(self):
+        inds = dpnp.tile(dpnp.array([0, 1, 2], dtype="i4"), (5, 3))
+        inds_np = dpnp.asnumpy(inds)
+        chc1 = dpnp.zeros(9, dtype="f4")
+        chc2 = dpnp.ones(9, dtype="f4")
+        chc3 = dpnp.full(9, 2, dtype="f4")
+        chcs = [chc1, chc2, chc3]
+        chcs_np = [dpnp.asnumpy(chc) for chc in chcs]
+        out = dpnp.empty_like(inds, dtype="f4")
+        dpnp.choose(inds, chcs, out=out)
+        expected = numpy.choose(inds_np, chcs_np)
+        assert_array_equal(out, expected)
+
     def test_choose_in_overlaps_out(self):
         # overlap with inds
         inds = dpnp.zeros(6, dtype="i4")
@@ -1574,8 +1587,10 @@ class TestChoose:
         assert_array_equal(expected, result)
 
     def test_choose_arg_validation(self):
+        # invalid choices
         with pytest.raises(TypeError):
-            dpnp.choose(dpnp.zeros(()), 1)
+            dpnp.choose(dpnp.zeros((), dtype="i4"), 1)
+        # invalid mode keyword
         with pytest.raises(ValueError):
             dpnp.choose(dpnp.zeros(()), dpnp.ones(()), mode="err")
 
