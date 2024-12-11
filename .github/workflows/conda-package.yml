@@ -272,7 +272,7 @@ jobs:
 
       - name: Run full tests
         env:
-            DPNP_TEST_ALL_TYPES: 1
+            DPNP_TEST_ALL_INT_TYPES: 1
         run: |
             pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
@@ -527,7 +527,7 @@ jobs:
       - name: Run full tests
         if: matrix.python == '3.12'
         env:
-          DPNP_TEST_ALL_TYPES: 1
+          DPNP_TEST_ALL_INT_TYPES: 1
         run: |
           pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
