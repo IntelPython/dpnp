@@ -23,6 +23,7 @@ requirements:
       - tbb-devel
       - wheel
       - scikit-build
+      - level-zero-devel >=1.16
     build:
       - {{ compiler('cxx') }}
       - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
@@ -46,6 +47,8 @@ build:
     script_env:
       - WHEELS_OUTPUT_FOLDER
       - OVERRIDE_INTEL_IPO  # [win]
+    ignore_run_exports:
+        - level-zero
 
 test:
     requires:
