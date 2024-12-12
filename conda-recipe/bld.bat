@@ -41,5 +41,30 @@ set "CMAKE_GENERATOR=Ninja"
 :: Make CMake verbose
 set "VERBOSE=1"
 
-%PYTHON% -m build -n -x
+%PYTHON% -m build -w -n -x
 if %ERRORLEVEL% neq 0 exit 1
+
+:: `pip install dist\numpy*.whl` does not work on windows,
+:: so use a loop; there's only one wheel in dist/ anyway
+for /f %%f in ('dir /b /S .\dist') do (
+    %PYTHON% -m wheel tags --remove --build %GIT_DESCRIBE_NUMBER% %%f
+    if %ERRORLEVEL% neq 0 exit 1
+)
+
+:: wheel file was renamed
+for /f %%f in ('dir /b /S .\dist') do (
+    %PYTHON% -m pip install %%f ^
+      --no-build-isolation ^
+      --no-deps ^
+      --only-binary :all: ^
+      --no-index ^
+      --prefix %PREFIX% ^
+      -vv
+    if %ERRORLEVEL% neq 0 exit 1
+)
+
+:: Copy wheel package
+if NOT "%WHEELS_OUTPUT_FOLDER%"=="" (
+    copy dist\dpnp*.whl %WHEELS_OUTPUT_FOLDER%
+    if errorlevel 1 exit 1
+)
