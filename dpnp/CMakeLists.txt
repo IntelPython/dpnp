@@ -55,7 +55,7 @@ function(build_dpnp_cython_ext_with_backend _trgt _src _dest)
   target_link_libraries(${_trgt} PRIVATE dpnp_backend_library)
 endfunction()
 
-add_subdirectory(backend)
+# add_subdirectory(backend)
 add_subdirectory(backend/extensions/blas)
 add_subdirectory(backend/extensions/fft)
 add_subdirectory(backend/extensions/lapack)
