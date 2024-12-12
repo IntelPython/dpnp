@@ -23,8 +23,8 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <cmath>
-// #include <iostream>
+#include <complex>
+#include <cstdint>
 #include <stdexcept>
 
 #include <dpnp_iface.hpp>

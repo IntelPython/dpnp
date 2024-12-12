@@ -11,19 +11,23 @@ source:
 requirements:
     host:
       - python
-      - setuptools
-      - numpy
-      - cython
-      - cmake >=3.21
-      - ninja
-      - git
+      - pip >=24.0
+      - setuptools >=69
+      - numpy >=1.23
+      - cython >=3.0.10
+      - cmake >=3.29.0
+      - ninja >=1.11.1 # [not win]
       - dpctl >={{ required_dpctl_version }}
       - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel
       - tbb-devel
-      - wheel
-      - scikit-build
+      - wheel >=0.43
+      - scikit-build >=0.17.0
       - level-zero-devel >=1.16
+      - pybind11 >=2.12
+      - python-build >=1.1
+      - versioneer[toml] =0.29
+      - tomli # [py<311]
     build:
       - {{ compiler('cxx') }}
       - {{ compiler('dpcpp') }} >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
