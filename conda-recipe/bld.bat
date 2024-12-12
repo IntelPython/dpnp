@@ -41,5 +41,5 @@ set "CMAKE_GENERATOR=Ninja"
 :: Make CMake verbose
 set "VERBOSE=1"
 
-%PYTHON% -m build -w -n -x
+%PYTHON% -m build -n -x
 if %ERRORLEVEL% neq 0 exit 1
