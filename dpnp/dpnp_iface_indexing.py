@@ -254,8 +254,8 @@ def choose(a, choices, out=None, mode="wrap"):
     >>> choices = np.array([-10, 10])
     >>> np.choose(a, choices)
     array([[ 10, -10,  10],
-        [-10,  10, -10],
-        [ 10, -10,  10]])
+           [-10,  10, -10],
+           [ 10, -10,  10]])
     """
     mode = _get_indexing_mode(mode)
 
