@@ -50,18 +50,19 @@ if(WIN32)
     endif()
 endif()
 
-if (WIN32)
-  target_compile_options(${_trgt} PRIVATE
-    "/nologo"
-    "-fno-sycl-id-queries-fit-in-int"
-    "/bigobj"
-    "-Qipo"
-    "/EHsc"
-    "/clang:-fno-fast-math"
-  )
-endif()
+# if (WIN32)
+#   target_compile_options(${_trgt} PRIVATE
+#     "/nologo"
+#     "-fno-sycl-id-queries-fit-in-int"
+#     "/bigobj"
+#     "-Qipo"
+#     "/EHsc"
+#     "/clang:-fno-fast-math"
+#   )
+# endif()
 
-add_library(${_trgt} STATIC ${DPNP_SRC})
+# add_library(${_trgt} STATIC ${DPNP_SRC})
+add_library(${_trgt} SHARED ${DPNP_SRC})
 add_sycl_to_target(TARGET ${_trgt} SOURCES ${${DPNP_SRC}})
 set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -130,7 +131,6 @@ target_link_libraries(${_trgt} PUBLIC DPCTLSyclInterface)
 #   target_link_libraries(${_trgt} PUBLIC pybind11::windows_extras)
 # endif()
 
-set(_static_lib_trgt dpnp_backend_library)
 add_library(dpnp_backend_library INTERFACE IMPORTED GLOBAL)
 target_include_directories(dpnp_backend_library BEFORE INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
