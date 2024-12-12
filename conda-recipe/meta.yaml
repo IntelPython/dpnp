@@ -18,6 +18,8 @@ requirements:
       - cmake >=3.29.0
       - ninja >=1.11.1 # [not win]
       - dpctl >={{ required_dpctl_version }}
+      - intel-sycl-rt
+      - intel-cmplr-lib-rt
       - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel
       - tbb-devel

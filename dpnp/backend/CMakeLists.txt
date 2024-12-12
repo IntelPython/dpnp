@@ -61,12 +61,14 @@ if (WIN32)
   )
 endif()
 
-add_library(${_trgt} SHARED ${DPNP_SRC})
+add_library(${_trgt} STATIC ${DPNP_SRC})
 add_sycl_to_target(TARGET ${_trgt} SOURCES ${${DPNP_SRC}})
 set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+target_include_directories(${_trgt} PRIVATE ${Python_INCLUDE_DIRS} ${Python_INCLUDE_DIRS}/..)
 
 # if (WIN32)
 #   target_compile_options(${_trgt} PRIVATE
@@ -120,14 +122,15 @@ target_link_directories(${_trgt} PUBLIC "${Dpctl_INCLUDE_DIR}/..")
 target_link_libraries(${_trgt} PUBLIC DPCTLSyclInterface)
 
 # add similar thing like done for pybind11 extensions
-target_link_libraries(${_trgt} PUBLIC pybind11::headers)
-target_link_libraries(${_trgt} PUBLIC pybind11::module)
-target_link_libraries(${_trgt} PUBLIC pybind11::lto)
-if(MSVC)
-  message(STATUS "Adding windows_extras from pybind11")
-  target_link_libraries(${_trgt} PUBLIC pybind11::windows_extras)
-endif()
+# target_link_libraries(${_trgt} PUBLIC pybind11::headers ${Python_LIBRARIES})
+# target_link_libraries(${_trgt} PUBLIC pybind11::module)
+# target_link_libraries(${_trgt} PUBLIC pybind11::lto)
+# if(MSVC)
+#   message(STATUS "Adding windows_extras from pybind11")
+#   target_link_libraries(${_trgt} PUBLIC pybind11::windows_extras)
+# endif()
 
+set(_static_lib_trgt dpnp_backend_library)
 add_library(dpnp_backend_library INTERFACE IMPORTED GLOBAL)
 target_include_directories(dpnp_backend_library BEFORE INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include ${CMAKE_CURRENT_SOURCE_DIR}/src)
 target_link_libraries(dpnp_backend_library INTERFACE ${_trgt})
