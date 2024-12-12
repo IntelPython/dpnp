@@ -50,6 +50,17 @@ if(WIN32)
     endif()
 endif()
 
+if (WIN32)
+  target_compile_options(${_trgt} PRIVATE
+    "/nologo"
+    "-fno-sycl-id-queries-fit-in-int"
+    "/bigobj"
+    "-Qipo"
+    "/EHsc"
+    "/clang:-fno-fast-math"
+  )
+endif()
+
 add_library(${_trgt} SHARED ${DPNP_SRC})
 add_sycl_to_target(TARGET ${_trgt} SOURCES ${${DPNP_SRC}})
 set_target_properties(${_trgt} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -73,16 +84,16 @@ target_include_directories(${_trgt} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 #   target_compile_definitions(${_trgt} PRIVATE _WIN=1)
 # endif()
 
-if (WIN32)
-  target_compile_options(${_trgt} PRIVATE
-    "/nologo"
-    "-fno-sycl-id-queries-fit-in-int"
-    "/bigobj"
-    "-Qipo"
-    "/EHsc"
-    "/clang:-fno-fast-math"
-  )
-endif()
+# if (WIN32)
+#   target_compile_options(${_trgt} PRIVATE
+#     "/nologo"
+#     "-fno-sycl-id-queries-fit-in-int"
+#     "/bigobj"
+#     "-Qipo"
+#     "/EHsc"
+#     "/clang:-fno-fast-math"
+#   )
+# endif()
 
 target_link_options(${_trgt} PUBLIC -fsycl-device-code-split=per_kernel)
 
@@ -98,9 +109,9 @@ if (UNIX)
   target_compile_definitions(${_trgt} PUBLIC _GLIBCXX_USE_TBB_PAR_BACKEND=0)
 endif()
 
-target_compile_definitions(${_trgt} PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
+# target_compile_definitions(${_trgt} PUBLIC PSTL_USE_PARALLEL_POLICIES=0)
 # work-around for Windows at exit crash with predefined policies
-target_compile_definitions(${_trgt} PUBLIC ONEDPL_USE_PREDEFINED_POLICIES=0)
+# target_compile_definitions(${_trgt} PUBLIC ONEDPL_USE_PREDEFINED_POLICIES=0)
 
 target_include_directories(${_trgt} PUBLIC ${Dpctl_INCLUDE_DIR})
 target_include_directories(${_trgt} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
