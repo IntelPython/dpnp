@@ -6,8 +6,9 @@ project(dpnp
   DESCRIPTION "NumPy-like API accelerated by SYCL."
 )
 
-option(DPNP_GENERATE_COVERAGE "Enable build DPNP with coverage instrumentation" FALSE)
-option(DPNP_BACKEND_TESTS "Enable building of DPNP backend test suite" FALSE)
+option(DPNP_GENERATE_COVERAGE "Enable build DPNP with coverage instrumentation" OFF)
+option(DPNP_BACKEND_TESTS "Enable building of DPNP backend test suite" OFF)
+option(DPNP_WITH_REDIST "Build DPNP assuming DPC++ redistributable is installed into Python prefix" OFF)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -111,8 +112,8 @@ if(_use_onemkl_interfaces)
         set(ENABLE_CUSOLVER_BACKEND True)
         set(ENABLE_CUFFT_BACKEND True)
         # set(ENABLE_CURAND_BACKEND True)
-        set(ENABLE_MKLGPU_BACKEND False)
-        set(ENABLE_MKLCPU_BACKEND False)
+        set(ENABLE_MKLGPU_BACKEND True)
+        set(ENABLE_MKLCPU_BACKEND True)
     endif()
 
     if(DPNP_ONEMKL_INTERFACES_DIR)

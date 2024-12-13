@@ -35,10 +35,22 @@
 #include "queue_sycl.hpp"
 #include <dpnp_iface.hpp>
 
+/**
+ * Version of SYCL DPC++ 2025.1 compiler where support of
+ * sycl::ext::oneapi::experimental::properties was added.
+ */
+#ifndef __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT
+#define __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT 20241210L
+#endif
+
 namespace mkl_blas = oneapi::mkl::blas;
 namespace mkl_blas_cm = oneapi::mkl::blas::column_major;
 namespace mkl_blas_rm = oneapi::mkl::blas::row_major;
 namespace mkl_lapack = oneapi::mkl::lapack;
+
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT
+namespace syclex = sycl::ext::oneapi::experimental;
+#endif
 
 template <typename _KernelNameSpecialization1,
           typename _KernelNameSpecialization2,
@@ -78,8 +90,13 @@ sycl::event dot(sycl::queue &queue,
             cgh.parallel_for(
                 sycl::range<1>{size},
                 sycl::reduction(
-                    result_out, std::plus<_DataType_output>(),
-                    sycl::property::reduction::initialize_to_identity{}),
+                    result_out, sycl::plus<_DataType_output>(),
+#if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT
+                    syclex::properties(syclex::initialize_to_identity)
+#else
+                    sycl::property::reduction::initialize_to_identity {}
+#endif
+                        ),
                 [=](sycl::id<1> idx, auto &sum) {
                     sum += static_cast<_DataType_output>(
                                input1_in[idx * input1_strides]) *

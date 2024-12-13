@@ -4,10 +4,12 @@ import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
 class TestMatrix(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_diag1(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -107,6 +109,7 @@ class TestMatrix(unittest.TestCase):
     {"shape": (4, 3)},
 )
 class TestTri(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_tri(self, xp, dtype):
@@ -130,13 +133,14 @@ class TestTri(unittest.TestCase):
     {"shape": (2, 3, 4)},
 )
 class TestTriLowerAndUpper(unittest.TestCase):
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_tril(self, xp, dtype):
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.tril(m)
 
-    @pytest.mark.skip("list as input arg is not supported")
+    @pytest.mark.skip("List input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_tril_array_like(self, xp):
         return xp.tril([[1, 2], [3, 4]])
@@ -159,7 +163,7 @@ class TestTriLowerAndUpper(unittest.TestCase):
         m = testing.shaped_arange(self.shape, xp, dtype)
         return xp.triu(m)
 
-    @pytest.mark.skip("list as input arg is not supported")
+    @pytest.mark.skip("List input is not supported")
     @testing.numpy_cupy_array_equal()
     def test_triu_array_like(self, xp):
         return xp.triu([[1, 2], [3, 4]])
@@ -181,8 +185,9 @@ class TestTriLowerAndUpper(unittest.TestCase):
     *testing.product({"N": [None, 0, 1, 2, 3], "increasing": [False, True]})
 )
 class TestVander(unittest.TestCase):
+
     @testing.for_all_dtypes(no_bool=True)
-    @testing.numpy_cupy_allclose(type_check=False)
+    @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_vander(self, xp, dtype):
         a = testing.shaped_arange((3,), xp, dtype=dtype)
         return xp.vander(a, N=self.N, increasing=self.increasing)

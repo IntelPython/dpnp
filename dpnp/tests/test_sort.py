@@ -7,6 +7,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
@@ -16,89 +17,69 @@ from .third_party.cupy import testing
 
 class TestArgsort:
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_basic(self, kind, dtype):
-        a = numpy.random.uniform(-5, 5, 10)
-        np_array = numpy.array(a, dtype=dtype)
-        dp_array = dpnp.array(np_array)
+        a = generate_random_numpy_array(10, dtype)
+        ia = dpnp.array(a)
 
-        result = dpnp.argsort(dp_array, kind=kind)
-        expected = numpy.argsort(np_array, kind="stable")
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_complex(self, kind, dtype):
-        a = numpy.random.uniform(-5, 5, 10)
-        b = numpy.random.uniform(-5, 5, 10)
-        np_array = numpy.array(a + b * 1j, dtype=dtype)
-        dp_array = dpnp.array(np_array)
-
-        if kind == "radixsort":
-            assert_raises(ValueError, dpnp.argsort, dp_array, kind=kind)
+        if dpnp.issubdtype(dtype, dpnp.complexfloating) and kind == "radixsort":
+            assert_raises(ValueError, dpnp.argsort, ia, kind=kind)
         else:
-            result = dpnp.argsort(dp_array, kind=kind)
-            expected = numpy.argsort(np_array)
+            result = dpnp.argsort(ia, kind=kind)
+            expected = numpy.argsort(a, kind="stable")
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1, 2])
     def test_axis(self, axis):
-        a = numpy.random.uniform(-10, 10, 36)
-        np_array = numpy.array(a).reshape(3, 4, 3)
-        dp_array = dpnp.array(np_array)
+        a = generate_random_numpy_array((3, 4, 3))
+        ia = dpnp.array(a)
 
-        result = dpnp.argsort(dp_array, axis=axis)
-        expected = numpy.argsort(np_array, axis=axis)
+        result = dpnp.argsort(ia, axis=axis)
+        expected = numpy.argsort(a, axis=axis)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1])
     def test_ndarray(self, dtype, axis):
-        if dtype and issubclass(dtype, numpy.integer):
-            a = numpy.random.choice(
-                numpy.arange(-10, 10), replace=False, size=12
-            )
-        else:
-            a = numpy.random.uniform(-10, 10, 12)
-        np_array = numpy.array(a, dtype=dtype).reshape(6, 2)
-        dp_array = dpnp.array(np_array)
+        a = generate_random_numpy_array((6, 2), dtype)
+        ia = dpnp.array(a)
 
-        result = dp_array.argsort(axis=axis)
-        expected = np_array.argsort(axis=axis)
+        result = ia.argsort(axis=axis)
+        expected = a.argsort(axis=axis, kind="stable")
         assert_dtype_allclose(result, expected)
 
     # this test validates that all different options of kind in dpnp are stable
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     def test_kind(self, kind):
-        np_array = numpy.repeat(numpy.arange(10), 10)
-        dp_array = dpnp.array(np_array)
+        a = numpy.repeat(numpy.arange(10), 10)
+        ia = dpnp.array(a)
 
-        result = dpnp.argsort(dp_array, kind=kind)
-        expected = numpy.argsort(np_array, kind="stable")
+        result = dpnp.argsort(ia, kind=kind)
+        expected = numpy.argsort(a, kind="stable")
         assert_dtype_allclose(result, expected)
 
     # `stable` keyword is supported in numpy 2.0 and above
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize("stable", [None, False, True])
     def test_stable(self, stable):
-        np_array = numpy.repeat(numpy.arange(10), 10)
-        dp_array = dpnp.array(np_array)
+        a = numpy.repeat(numpy.arange(10), 10)
+        ia = dpnp.array(a)
 
-        result = dpnp.argsort(dp_array, stable="stable")
-        expected = numpy.argsort(np_array, stable=True)
+        result = dpnp.argsort(ia, stable=stable)
+        expected = numpy.argsort(a, stable=True)
         assert_dtype_allclose(result, expected)
 
     def test_zero_dim(self):
-        np_array = numpy.array(2.5)
-        dp_array = dpnp.array(np_array)
+        a = numpy.array(2.5)
+        ia = dpnp.array(a)
 
         # with default axis=-1
         with pytest.raises(AxisError):
-            dpnp.argsort(dp_array)
+            dpnp.argsort(ia)
 
         # with axis = None
-        result = dpnp.argsort(dp_array, axis=None)
-        expected = numpy.argsort(np_array, axis=None)
+        result = dpnp.argsort(ia, axis=None)
+        expected = numpy.argsort(a, axis=None)
         assert_dtype_allclose(result, expected)
 
 
@@ -107,13 +88,13 @@ class TestSearchSorted:
     @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
     def test_nans_float(self, side, dtype):
         a = numpy.array([0, 1, numpy.nan], dtype=dtype)
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
 
-        result = dp_a.searchsorted(dp_a, side=side)
+        result = ia.searchsorted(ia, side=side)
         expected = a.searchsorted(a, side=side)
         assert_equal(result, expected)
 
-        result = dpnp.searchsorted(dp_a, dp_a[-1], side=side)
+        result = dpnp.searchsorted(ia, ia[-1], side=side)
         expected = numpy.searchsorted(a, a[-1], side=side)
         assert_equal(result, expected)
 
@@ -123,9 +104,9 @@ class TestSearchSorted:
         a = numpy.zeros(9, dtype=dtype)
         a.real += [0, 0, 1, 1, 0, 1, numpy.nan, numpy.nan, numpy.nan]
         a.imag += [0, 1, 0, 1, numpy.nan, numpy.nan, 0, 1, numpy.nan]
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
 
-        result = dp_a.searchsorted(dp_a, side=side)
+        result = ia.searchsorted(ia, side=side)
         expected = a.searchsorted(a, side=side)
         assert_equal(result, expected)
 
@@ -133,24 +114,24 @@ class TestSearchSorted:
     @pytest.mark.parametrize("side", ["left", "right"])
     def test_n_elements(self, n, side):
         a = numpy.ones(n)
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
 
         v = numpy.array([0, 1, 2])
-        dp_v = dpnp.array(v)
+        iv = dpnp.array(v)
 
-        result = dp_a.searchsorted(dp_v, side=side)
+        result = ia.searchsorted(iv, side=side)
         expected = a.searchsorted(v, side=side)
         assert_equal(result, expected)
 
     @pytest.mark.parametrize("side", ["left", "right"])
     def test_smart_resetting(self, side):
         a = numpy.arange(5)
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
 
         v = numpy.array([6, 5, 4])
-        dp_v = dpnp.array(v)
+        iv = dpnp.array(v)
 
-        result = dp_a.searchsorted(dp_v, side=side)
+        result = ia.searchsorted(iv, side=side)
         expected = a.searchsorted(v, side=side)
         assert_equal(result, expected)
 
@@ -161,16 +142,16 @@ class TestSearchSorted:
             a = numpy.arange(2, dtype=dtype)
         else:
             a = numpy.arange(0, 5, dtype=dtype)
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
 
-        result = dp_a.searchsorted(dp_a, side=side)
+        result = ia.searchsorted(ia, side=side)
         expected = a.searchsorted(a, side=side)
         assert_equal(result, expected)
 
         e = numpy.ndarray(shape=0, buffer=b"", dtype=dtype)
         dp_e = dpnp.array(e)
 
-        result = dp_e.searchsorted(dp_a, side=side)
+        result = dp_e.searchsorted(ia, side=side)
         expected = e.searchsorted(a, side=side)
         assert_array_equal(result, expected)
 
@@ -180,11 +161,11 @@ class TestSearchSorted:
         s = a.argsort()
         k = numpy.linspace(0, 1, 20, dtype=dtype)
 
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
         dp_s = dpnp.array(s)
         dp_k = dpnp.array(k)
 
-        result = dp_a.searchsorted(dp_k, sorter=dp_s)
+        result = ia.searchsorted(dp_k, sorter=dp_s)
         expected = a.searchsorted(k, sorter=s)
         assert_equal(result, expected)
 
@@ -194,11 +175,11 @@ class TestSearchSorted:
         s = a.argsort()
         k = [0, 1, 2, 3, 5]
 
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
         dp_s = dpnp.array(s)
         dp_k = dpnp.array(k)
 
-        result = dp_a.searchsorted(dp_k, side=side, sorter=dp_s)
+        result = ia.searchsorted(dp_k, side=side, sorter=dp_s)
         expected = a.searchsorted(k, side=side, sorter=s)
         assert_equal(result, expected)
 
@@ -216,10 +197,10 @@ class TestSearchSorted:
             # from np.intp in all platforms
             s = numpy.array([4, 2, 3, 0, 1], dtype=numpy.int16)
 
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
         dp_s = dpnp.array(s)
 
-        result = dp_a.searchsorted(dp_a, side, dp_s)
+        result = ia.searchsorted(ia, side, dp_s)
         expected = a.searchsorted(a, side, s)
         assert_equal(result, expected)
 
@@ -231,10 +212,10 @@ class TestSearchSorted:
         srt[::2] = [4, 2, 3, 0, 1]
         s = srt[::2]
 
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
         dp_s = dpnp.array(s)
 
-        result = dp_a.searchsorted(dp_a, side=side, sorter=dp_s)
+        result = ia.searchsorted(ia, side=side, sorter=dp_s)
         expected = a.searchsorted(a, side=side, sorter=s)
         assert_equal(result, expected)
 
@@ -264,114 +245,103 @@ class TestSearchSorted:
     def test_v_scalar(self):
         v = 0
         a = numpy.array([-8, -5, -1, 3, 6, 10])
-        dp_a = dpnp.array(a)
+        ia = dpnp.array(a)
 
-        result = dpnp.searchsorted(dp_a, v)
+        result = dpnp.searchsorted(ia, v)
         expected = numpy.searchsorted(a, v)
         assert_equal(result, expected)
 
 
 class TestSort:
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_basic(self, kind, dtype):
-        a = numpy.random.uniform(-5, 5, 10)
-        np_array = numpy.array(a, dtype=dtype)
-        dp_array = dpnp.array(np_array)
+        a = generate_random_numpy_array(10, dtype)
+        ia = dpnp.array(a)
 
-        result = dpnp.sort(dp_array, kind=kind)
-        expected = numpy.sort(np_array)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_complex(self, kind, dtype):
-        a = numpy.random.uniform(-5, 5, 10)
-        b = numpy.random.uniform(-5, 5, 10)
-        np_array = numpy.array(a + b * 1j, dtype=dtype)
-        dp_array = dpnp.array(np_array)
-
-        if kind == "radixsort":
-            assert_raises(ValueError, dpnp.argsort, dp_array, kind=kind)
+        if dpnp.issubdtype(dtype, dpnp.complexfloating) and kind == "radixsort":
+            assert_raises(ValueError, dpnp.argsort, ia, kind=kind)
         else:
-            result = dpnp.sort(dp_array, kind=kind)
-            expected = numpy.sort(np_array)
+            result = dpnp.sort(ia, kind=kind)
+            expected = numpy.sort(a)
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1, 2])
     def test_axis(self, axis):
-        a = numpy.random.uniform(-10, 10, 36)
-        np_array = numpy.array(a).reshape(3, 4, 3)
-        dp_array = dpnp.array(np_array)
+        a = generate_random_numpy_array((3, 4, 3))
+        ia = dpnp.array(a)
 
-        result = dpnp.sort(dp_array, axis=axis)
-        expected = numpy.sort(np_array, axis=axis)
+        result = dpnp.sort(ia, axis=axis)
+        expected = numpy.sort(a, axis=axis)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [-2, -1, 0, 1])
     def test_ndarray(self, dtype, axis):
-        a = numpy.random.uniform(-10, 10, 12)
-        np_array = numpy.array(a, dtype=dtype).reshape(6, 2)
-        dp_array = dpnp.array(np_array)
+        a = generate_random_numpy_array((6, 2), dtype)
+        ia = dpnp.array(a)
 
-        dp_array.sort(axis=axis)
-        np_array.sort(axis=axis)
-        assert_dtype_allclose(dp_array, np_array)
+        ia.sort(axis=axis)
+        a.sort(axis=axis)
+        assert_dtype_allclose(ia, a)
 
     # this test validates that all different options of kind in dpnp are stable
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
     def test_kind(self, kind):
-        np_array = numpy.repeat(numpy.arange(10), 10)
-        dp_array = dpnp.array(np_array)
+        a = numpy.repeat(numpy.arange(10), 10)
+        ia = dpnp.array(a)
 
-        result = dpnp.sort(dp_array, kind=kind)
-        expected = numpy.sort(np_array, kind="stable")
+        result = dpnp.sort(ia, kind=kind)
+        expected = numpy.sort(a, kind="stable")
         assert_dtype_allclose(result, expected)
 
     # `stable` keyword is supported in numpy 2.0 and above
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize("stable", [None, False, True])
     def test_stable(self, stable):
-        np_array = numpy.repeat(numpy.arange(10), 10)
-        dp_array = dpnp.array(np_array)
+        a = numpy.repeat(numpy.arange(10), 10)
+        ia = dpnp.array(a)
 
-        result = dpnp.sort(dp_array, stable="stable")
-        expected = numpy.sort(np_array, stable=True)
+        result = dpnp.sort(ia, stable=stable)
+        expected = numpy.sort(a, stable=True)
         assert_dtype_allclose(result, expected)
 
     def test_ndarray_axis_none(self):
         a = numpy.random.uniform(-10, 10, 12)
-        dp_array = dpnp.array(a).reshape(6, 2)
+        ia = dpnp.array(a).reshape(6, 2)
         with pytest.raises(TypeError):
-            dp_array.sort(axis=None)
+            ia.sort(axis=None)
 
     def test_zero_dim(self):
-        np_array = numpy.array(2.5)
-        dp_array = dpnp.array(np_array)
+        a = numpy.array(2.5)
+        ia = dpnp.array(a)
 
         # with default axis=-1
         with pytest.raises(AxisError):
-            dpnp.sort(dp_array)
+            dpnp.sort(ia)
 
         # with axis = None
-        result = dpnp.sort(dp_array, axis=None)
-        expected = numpy.sort(np_array, axis=None)
+        result = dpnp.sort(ia, axis=None)
+        expected = numpy.sort(a, axis=None)
         assert_dtype_allclose(result, expected)
 
     def test_error(self):
-        dp_array = dpnp.arange(10)
+        ia = dpnp.arange(10)
 
         # quicksort is currently not supported
         with pytest.raises(ValueError):
-            dpnp.sort(dp_array, kind="quicksort")
+            dpnp.sort(ia, kind="quicksort")
 
         with pytest.raises(NotImplementedError):
-            dpnp.sort(dp_array, order=["age"])
+            dpnp.sort(ia, order=["age"])
 
         # both kind and stable are given
         with pytest.raises(ValueError):
-            dpnp.sort(dp_array, kind="mergesort", stable=True)
+            dpnp.sort(ia, kind="mergesort", stable=True)
+
+        # stable is not valid
+        with pytest.raises(ValueError):
+            dpnp.sort(ia, stable="invalid")
 
 
 class TestSortComplex:

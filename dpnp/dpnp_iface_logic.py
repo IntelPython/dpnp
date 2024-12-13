@@ -199,9 +199,11 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
         Second input array, also expected to have numeric data type.
         Both inputs `a` and `b` can not be scalars at the same time.
     rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional
-        The relative tolerance parameter. Default: ``1e-05``.
+        The relative tolerance parameter.
+        Default: ``1e-05``.
     atol : {dpnp.ndarray, usm_ndarray, scalar}, optional
-        The absolute tolerance parameter. Default: ``1e-08``.
+        The absolute tolerance parameter.
+        Default: ``1e-08``.
     equal_nan : bool
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
@@ -213,13 +215,19 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
         A 0-dim array with ``True`` value if the two arrays are equal within
         the given tolerance; with ``False`` otherwise.
 
-
     See Also
     --------
     :obj:`dpnp.isclose` : Test whether two arrays are element-wise equal.
     :obj:`dpnp.all` : Test whether all elements evaluate to True.
     :obj:`dpnp.any` : Test whether any element evaluates to True.
     :obj:`dpnp.equal` : Return (x1 == x2) element-wise.
+
+    Notes
+    -----
+    The comparison of `a` and `b` uses standard broadcasting, which
+    means that `a` and `b` need not have the same shape in order for
+    ``dpnp.allclose(a, b)`` to evaluate to ``True``.
+    The same is true for :obj:`dpnp.equal` but not :obj:`dpnp.array_equal`.
 
     Examples
     --------
@@ -538,6 +546,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array have the correct shape and the expected data type.
@@ -609,6 +619,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -675,6 +687,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -753,9 +767,11 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         Second input array, also expected to have numeric data type.
         Both inputs `a` and `b` can not be scalars at the same time.
     rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional
-        The relative tolerance parameter. Default: ``1e-05``.
+        The relative tolerance parameter.
+        Default: ``1e-05``.
     atol : {dpnp.ndarray, usm_ndarray, scalar}, optional
-        The absolute tolerance parameter. Default: ``1e-08``.
+        The absolute tolerance parameter.
+        Default: ``1e-08``.
     equal_nan : bool
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
@@ -1446,6 +1462,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1512,6 +1530,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1578,6 +1598,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1590,6 +1612,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise logical AND results.
+    The shape is determined by broadcasting.
 
 Limitations
 -----------
@@ -1699,6 +1722,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1711,6 +1736,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise logical OR results.
+    The shape is determined by broadcasting.
 
 Limitations
 -----------
@@ -1767,6 +1793,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1779,6 +1807,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise logical XOR results.
+    The shape is determined by broadcasting.
 
 Limitations
 -----------
@@ -1833,6 +1862,8 @@ x1 : {dpnp.ndarray, usm_ndarray, scalar}
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have numeric data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
+    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.

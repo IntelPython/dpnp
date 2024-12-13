@@ -8,6 +8,7 @@ from dpnp.tests.third_party.cupy import testing
 
 @pytest.mark.parametrize("shape", [(2, 3), (), (4,)])
 class TestShape:
+
     def test_shape(self, shape):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(shape, xp)
@@ -20,10 +21,13 @@ class TestShape:
 
 
 class TestReshape:
-    def test_reshape_shapes(self):
+
+    def test_reshape_strides(self):
         def func(xp):
             a = testing.shaped_arange((1, 1, 1, 2, 2), xp)
-            return a.shape
+            if xp is cupy:
+                return tuple(el * a.itemsize for el in a.strides)
+            return a.strides
 
         assert func(numpy) == func(cupy)
 
@@ -98,7 +102,10 @@ class TestReshape:
     def test_reshape_zerosize(self, xp):
         a = xp.zeros((0,))
         b = a.reshape((0,))
-        # assert b.base is a
+        if xp is cupy:
+            assert a.get_array()._pointer == b.get_array()._pointer
+        else:
+            assert b.base is a
         return b
 
     @testing.for_orders("CFA")
@@ -106,7 +113,10 @@ class TestReshape:
     def test_reshape_zerosize2(self, xp, order):
         a = xp.zeros((2, 0, 3))
         b = a.reshape((5, 0, 4), order=order)
-        # assert b.base is a
+        if xp is cupy:
+            assert a.get_array()._pointer == b.get_array()._pointer
+        else:
+            assert b.base is a
         return b
 
     @testing.for_orders("CFA")
@@ -141,6 +151,7 @@ class TestReshape:
 
 
 class TestRavel:
+
     @testing.for_orders("CFA")
     # order = 'K' is not supported currently
     @testing.numpy_cupy_array_equal()
@@ -233,6 +244,7 @@ class TestRavel:
     ],
 )
 class TestReshapeOrder:
+
     def test_reshape_contiguity(self, order_init, order_reshape, shape_in_out):
         shape_init, shape_final = shape_in_out
 
@@ -247,4 +259,5 @@ class TestReshapeOrder:
         assert b_cupy.flags.f_contiguous == b_numpy.flags.f_contiguous
         assert b_cupy.flags.c_contiguous == b_numpy.flags.c_contiguous
 
+        # testing.assert_array_equal(b_cupy.strides, b_numpy.strides)
         testing.assert_array_equal(b_cupy, b_numpy)

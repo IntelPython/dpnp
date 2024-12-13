@@ -9,6 +9,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestIndexing(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal()
     def test_take_by_scalar(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
@@ -61,21 +62,18 @@ class TestIndexing(unittest.TestCase):
         b = testing.shaped_random((30,), xp, dtype="int64", scale=24)
         return xp.take_along_axis(a, b, axis=None)
 
-    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([True, False, True])
         return xp.compress(b, a, axis=1)
 
-    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_no_axis(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([True, False, True])
         return xp.compress(b, a)
 
-    @pytest.mark.skip("compress() is not implemented yet")
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_compress_no_bool(self, xp, dtype):
@@ -83,28 +81,24 @@ class TestIndexing(unittest.TestCase):
         b = testing.shaped_arange((3,), xp, dtype)
         return xp.compress(b, a, axis=1)
 
-    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_overrun_false(self, xp):
         a = testing.shaped_arange((3,), xp)
         b = xp.array([True, False, True, False, False, False])
         return xp.compress(b, a)
 
-    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_empty_1dim(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([])
         return xp.compress(b, a, axis=1)
 
-    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_empty_1dim_no_axis(self, xp):
         a = testing.shaped_arange((3, 4, 5), xp)
         b = xp.array([])
         return xp.compress(b, a)
 
-    @pytest.mark.skip("compress() is not implemented yet")
     @testing.numpy_cupy_array_equal()
     def test_compress_0dim(self, xp):
         a = xp.array(3)
@@ -206,6 +200,7 @@ class TestIndexing(unittest.TestCase):
 
 
 class TestChoose(unittest.TestCase):
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose(self, xp, dtype):
@@ -272,6 +267,8 @@ class TestChoose(unittest.TestCase):
 
 
 class TestSelect(unittest.TestCase):
+
+    @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_select(self, xp, dtype):
@@ -280,6 +277,7 @@ class TestSelect(unittest.TestCase):
         choicelist = [a, a**2]
         return xp.select(condlist, choicelist)
 
+    @testing.with_requires("numpy>=2.0")
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_array_almost_equal()
     def test_select_complex(self, xp, dtype):
@@ -288,6 +286,7 @@ class TestSelect(unittest.TestCase):
         choicelist = [a, a**2]
         return xp.select(condlist, choicelist)
 
+    @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_select_default(self, xp, dtype):
@@ -297,6 +296,7 @@ class TestSelect(unittest.TestCase):
         default = 3
         return xp.select(condlist, choicelist, default)
 
+    @testing.with_requires("numpy>=2.0")
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_array_almost_equal()
     def test_select_default_complex(self, xp, dtype):
@@ -306,6 +306,7 @@ class TestSelect(unittest.TestCase):
         default = 3
         return xp.select(condlist, choicelist, default)
 
+    @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_select_odd_shaped_broadcastable(self, xp, dtype):
@@ -315,6 +316,7 @@ class TestSelect(unittest.TestCase):
         choicelist = [a, b]
         return xp.select(condlist, choicelist)
 
+    @testing.with_requires("numpy>=2.0")
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_select_odd_shaped_broadcastable_complex(self, xp, dtype):
@@ -333,6 +335,7 @@ class TestSelect(unittest.TestCase):
         choicelist = [a, b]
         return xp.select(condlist, choicelist)
 
+    @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_select_choicelist_condlist_broadcast(self, xp, dtype):

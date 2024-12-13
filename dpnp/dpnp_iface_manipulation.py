@@ -2170,11 +2170,12 @@ def insert(arr, obj, values, axis=None):
     ----------
     arr : array_like
         Input array.
-    obj : {slice, int, array-like of ints}
+    obj : {slice, int, array-like of ints or bools}
         Object that defines the index or indices before which `values` is
         inserted. It supports multiple insertions when `obj` is a single
         scalar or a sequence with one element (similar to calling insert
         multiple times).
+        Boolean indices are treated as a mask of elements to insert.
     values : array_like
         Values to insert into `arr`. If the type of `values` is different
         from that of `arr`, `values` is converted to the type of `arr`.
@@ -2266,20 +2267,12 @@ def insert(arr, obj, values, axis=None):
             obj, sycl_queue=params.exec_q, usm_type=params.usm_type
         )
         if indices.dtype == dpnp.bool:
-            warnings.warn(
-                "In the future insert will treat boolean arrays and array-likes"
-                " as a boolean index instead of casting it to integers",
-                FutureWarning,
-                stacklevel=2,
-            )
-            indices = indices.astype(dpnp.intp)
-            # TODO: Code after warning period:
-            # if indices.ndim != 1:
-            #    raise ValueError(
-            #        "boolean array argument `obj` to insert must be "
-            #        "one-dimensional"
-            #    )
-            # indices = dpnp.nonzero(indices)[0]
+            if indices.ndim != 1:
+                raise ValueError(
+                    "boolean array argument obj to insert "
+                    "must be one dimensional"
+                )
+            indices = dpnp.flatnonzero(indices)
         elif indices.ndim > 1:
             raise ValueError(
                 "index array argument `obj` to insert must be one-dimensional "

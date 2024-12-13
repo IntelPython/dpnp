@@ -621,6 +621,7 @@ def test_norm(usm_type, ord, axis):
         pytest.param("nancumsum", [3.0, dp.nan]),
         pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmean", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanmedian", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanmin", [1.0, 2.0, 4.0, dp.nan]),
         pytest.param("nanprod", [1.0, 2.0, dp.nan]),
         pytest.param("nanstd", [1.0, 2.0, 4.0, dp.nan]),
@@ -686,6 +687,7 @@ def test_1in_1out(func, data, usm_type):
         ),
         pytest.param("append", [1, 2, 3], [4, 5, 6]),
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
+        pytest.param("compress", [False, True, True], [0, 1, 2, 3, 4]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
@@ -694,6 +696,7 @@ def test_1in_1out(func, data, usm_type):
             [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
             [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
         ),
+        pytest.param("correlate", [1, 2, 3], [0, 1, 0.5]),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
@@ -806,7 +809,6 @@ def test_broadcast_to(usm_type):
         pytest.param("concatenate", [[1, 2], [3, 4]], [[5, 6]]),
         pytest.param("dstack", [[1], [2], [3]], [[2], [3], [4]]),
         pytest.param("hstack", (1, 2, 3), (4, 5, 6)),
-        pytest.param("row_stack", [[7], [1], [2], [3]], [[2], [3], [9], [4]]),
         pytest.param("stack", [1, 2, 3], [4, 5, 6]),
         pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
     ],
@@ -1284,37 +1286,39 @@ class TestFft:
     "usm_type_matrix", list_of_usm_types, ids=list_of_usm_types
 )
 @pytest.mark.parametrize(
-    "usm_type_vector", list_of_usm_types, ids=list_of_usm_types
+    "usm_type_rhs", list_of_usm_types, ids=list_of_usm_types
 )
 @pytest.mark.parametrize(
-    "matrix, vector",
+    "matrix, rhs",
     [
-        ([[1, 2], [3, 5]], dp.empty((2, 0))),
+        ([[1, 2], [3, 5]], numpy.empty((2, 0))),
         ([[1, 2], [3, 5]], [1, 2]),
         (
             [
-                [[1, 1, 1], [0, 2, 5], [2, 5, -1]],
-                [[3, -1, 1], [1, 2, 3], [2, 3, 1]],
-                [[1, 4, 1], [1, 2, -2], [4, 1, 2]],
+                [[1, 1], [0, 2]],
+                [[3, -1], [1, 2]],
             ],
-            [[6, -4, 27], [9, -6, 15], [15, 1, 11]],
+            [
+                [[6, -4], [9, -6]],
+                [[15, 1], [15, 1]],
+            ],
         ),
     ],
     ids=[
-        "2D_Matrix_Empty_Vector",
-        "2D_Matrix_1D_Vector",
-        "3D_Matrix_and_Vectors",
+        "2D_Matrix_Empty_RHS",
+        "2D_Matrix_1D_RHS",
+        "3D_Matrix_and_3D_RHS",
     ],
 )
-def test_solve(matrix, vector, usm_type_matrix, usm_type_vector):
+def test_solve(matrix, rhs, usm_type_matrix, usm_type_rhs):
     x = dp.array(matrix, usm_type=usm_type_matrix)
-    y = dp.array(vector, usm_type=usm_type_vector)
+    y = dp.array(rhs, usm_type=usm_type_rhs)
     z = dp.linalg.solve(x, y)
 
     assert x.usm_type == usm_type_matrix
-    assert y.usm_type == usm_type_vector
+    assert y.usm_type == usm_type_rhs
     assert z.usm_type == du.get_coerced_usm_type(
-        [usm_type_matrix, usm_type_vector]
+        [usm_type_matrix, usm_type_rhs]
     )
 
 
@@ -1625,6 +1629,20 @@ def test_bincount(usm_type_v, usm_type_w):
     assert v.usm_type == usm_type_v
     assert w.usm_type == usm_type_w
     assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+
+
+@pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogramdd(usm_type_v, usm_type_w):
+    v = dp.arange(5, usm_type=usm_type_v)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    hist, edges = dp.histogramdd(v, weights=w)
+    assert v.usm_type == usm_type_v
+    assert w.usm_type == usm_type_w
+    assert hist.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
+    for e in edges:
+        assert e.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
 @pytest.mark.parametrize(

@@ -25,16 +25,15 @@
 
 #pragma once
 
-#include <dpctl4pybind11.hpp>
+#include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
 #include "dispatch_table.hpp"
+#include "dpctl4pybind11.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace statistics
-{
-namespace histogram
+namespace statistics::histogram
 {
 struct Bincount
 {
@@ -62,5 +61,4 @@ struct Bincount
 };
 
 void populate_bincount(py::module_ m);
-} // namespace histogram
-} // namespace statistics
+} // namespace statistics::histogram

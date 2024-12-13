@@ -9,6 +9,7 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestFloating(unittest.TestCase):
+
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_signbit(self, xp, dtype):

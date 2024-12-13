@@ -37,10 +37,16 @@ it contains:
 
 """
 
+# pylint: disable=protected-access
+
 import operator
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_impl as ti
+import dpctl.utils as dpu
 import numpy
+from dpctl.tensor._copy_utils import _nonzero_impl
+from dpctl.tensor._indexing_functions import _get_indexing_mode
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
@@ -55,6 +61,7 @@ from .dpnp_utils import call_origin, get_usm_allocations
 
 __all__ = [
     "choose",
+    "compress",
     "diag_indices",
     "diag_indices_from",
     "diagonal",
@@ -62,6 +69,7 @@ __all__ = [
     "fill_diagonal",
     "flatnonzero",
     "indices",
+    "iterable",
     "ix_",
     "mask_indices",
     "ndindex",
@@ -153,6 +161,157 @@ def choose(x1, choices, out=None, mode="raise"):
                 return dpnp_choose(x1_desc, choices_list).get_pyobj()
 
     return call_origin(numpy.choose, x1, choices, out, mode)
+
+
+def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
+    # arg validation assumed done by caller
+    x_sh = x.shape
+    axis_end = axis + 1
+    if 0 in x_sh[axis:axis_end] and inds.size != 0:
+        raise IndexError("cannot take non-empty indices from an empty axis")
+    res_sh = x_sh[:axis] + inds.shape + x_sh[axis_end:]
+
+    if out is not None:
+        out = dpnp.get_usm_ndarray(out)
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != res_sh:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {res_sh}, got {out.shape}"
+            )
+
+        if x.dtype != out.dtype:
+            raise TypeError(
+                f"Output array of type {x.dtype} is needed, " f"got {out.dtype}"
+            )
+
+        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(x, out):
+            # Allocate a temporary buffer to avoid memory overlapping.
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(res_sh, dtype=x.dtype, usm_type=usm_type, sycl_queue=q)
+
+    _manager = dpu.SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
+
+    h_ev, take_ev = ti._take(
+        src=x,
+        ind=(inds,),
+        dst=out,
+        axis_start=axis,
+        mode=mode,
+        sycl_queue=q,
+        depends=dep_evs,
+    )
+    _manager.add_event_pair(h_ev, take_ev)
+
+    return out
+
+
+def compress(condition, a, axis=None, out=None):
+    """
+    Return selected slices of an array along given axis.
+
+    A slice of `a` is returned for each index along `axis` where `condition`
+    is ``True``.
+
+    For full documentation refer to :obj:`numpy.choose`.
+
+    Parameters
+    ----------
+    condition : {array_like, dpnp.ndarray, usm_ndarray}
+        Array that selects which entries to extract. If the length of
+        `condition` is less than the size of `a` along `axis`, then
+        the output is truncated to the length of `condition`.
+    a : {dpnp.ndarray, usm_ndarray}
+        Array to extract from.
+    axis : {None, int}, optional
+        Axis along which to extract slices. If ``None``, works over the
+        flattened array.
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        If provided, the result will be placed in this array. It should
+        be of the appropriate shape and dtype.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        A copy of the slices of `a` where `condition` is ``True``.
+
+    See also
+    --------
+    :obj:`dpnp.take` :  Take elements from an array along an axis.
+    :obj:`dpnp.choose` : Construct an array from an index array and a set of
+                         arrays to choose from.
+    :obj:`dpnp.diag` : Extract a diagonal or construct a diagonal array.
+    :obj:`dpnp.diagonal` : Return specified diagonals.
+    :obj:`dpnp.select` : Return an array drawn from elements in `choicelist`,
+                         depending on conditions.
+    :obj:`dpnp.ndarray.compress` : Equivalent method.
+    :obj:`dpnp.extract` : Equivalent function when working on 1-D arrays.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> a = np.array([[1, 2], [3, 4], [5, 6]])
+    >>> a
+    array([[1, 2],
+           [3, 4],
+           [5, 6]])
+    >>> np.compress([0, 1], a, axis=0)
+    array([[3, 4]])
+    >>> np.compress([False, True, True], a, axis=0)
+    array([[3, 4],
+           [5, 6]])
+    >>> np.compress([False, True], a, axis=1)
+    array([[2],
+           [4],
+           [6]])
+
+    Working on the flattened array does not return slices along an axis but
+    selects elements.
+
+    >>> np.compress([False, True], a)
+    array([2])
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    if axis is None:
+        if a.ndim != 1:
+            a = dpnp.ravel(a)
+        axis = 0
+    axis = normalize_axis_index(operator.index(axis), a.ndim)
+
+    a_ary = dpnp.get_usm_ndarray(a)
+    cond_ary = dpnp.as_usm_ndarray(
+        condition,
+        dtype=dpnp.bool,
+        usm_type=a_ary.usm_type,
+        sycl_queue=a_ary.sycl_queue,
+    )
+
+    if not cond_ary.ndim == 1:
+        raise ValueError(
+            "`condition` must be a 1-D array or un-nested sequence"
+        )
+
+    res_usm_type, exec_q = get_usm_allocations([a_ary, cond_ary])
+
+    # _nonzero_impl synchronizes and returns a tuple of usm_ndarray indices
+    inds = _nonzero_impl(cond_ary)
+
+    res = _take_index(a_ary, inds[0], axis, exec_q, res_usm_type, out=out)
+
+    return dpnp.get_result_array(res, out=out)
 
 
 def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
@@ -873,6 +1032,47 @@ def indices(
         else:
             res[i] = idx
     return res
+
+
+def iterable(y):
+    """
+    Check whether or not an object can be iterated over.
+
+    For full documentation refer to :obj:`numpy.iterable`.
+
+    Parameters
+    ----------
+    y : object
+        Input object.
+
+    Returns
+    -------
+    out : bool
+        Return ``True`` if the object has an iterator method or is a sequence
+        and ``False`` otherwise.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.iterable([1, 2, 3])
+    True
+    >>> np.iterable(2)
+    False
+
+    In most cases, the results of ``np.iterable(obj)`` are consistent with
+    ``isinstance(obj, collections.abc.Iterable)``. One notable exception is
+    the treatment of 0-dimensional arrays:
+
+    >>> from collections.abc import Iterable
+    >>> a = np.array(1.0)  # 0-dimensional array
+    >>> isinstance(a, Iterable)
+    True
+    >>> np.iterable(a)
+    False
+
+    """
+
+    return numpy.iterable(y)
 
 
 def ix_(*args):
@@ -1806,8 +2006,8 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
 
     """
 
-    if mode not in ("wrap", "clip"):
-        raise ValueError(f"`mode` must be 'wrap' or 'clip', but got `{mode}`.")
+    # sets mode to 0 for "wrap" and 1 for "clip", raises otherwise
+    mode = _get_indexing_mode(mode)
 
     usm_a = dpnp.get_usm_ndarray(a)
     if not dpnp.is_supported_array_type(indices):
@@ -1817,34 +2017,28 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     else:
         usm_ind = dpnp.get_usm_ndarray(indices)
 
+    res_usm_type, exec_q = get_usm_allocations([usm_a, usm_ind])
+
     a_ndim = a.ndim
     if axis is None:
-        res_shape = usm_ind.shape
-
         if a_ndim > 1:
-            # dpt.take requires flattened input array
+            # flatten input array
             usm_a = dpt.reshape(usm_a, -1)
+        axis = 0
     elif a_ndim == 0:
         axis = normalize_axis_index(operator.index(axis), 1)
-        res_shape = usm_ind.shape
     else:
         axis = normalize_axis_index(operator.index(axis), a_ndim)
-        a_sh = a.shape
-        res_shape = a_sh[:axis] + usm_ind.shape + a_sh[axis + 1 :]
-
-    if usm_ind.ndim != 1:
-        # dpt.take supports only 1-D array of indices
-        usm_ind = dpt.reshape(usm_ind, -1)
 
     if not dpnp.issubdtype(usm_ind.dtype, dpnp.integer):
         # dpt.take supports only integer dtype for array of indices
         usm_ind = dpt.astype(usm_ind, dpnp.intp, copy=False, casting="safe")
 
-    usm_res = dpt.take(usm_a, usm_ind, axis=axis, mode=mode)
+    usm_res = _take_index(
+        usm_a, usm_ind, axis, exec_q, res_usm_type, out=out, mode=mode
+    )
 
-    # need to reshape the result if shape of indices array was changed
-    result = dpnp.reshape(usm_res, res_shape)
-    return dpnp.get_result_array(result, out)
+    return dpnp.get_result_array(usm_res, out=out)
 
 
 def take_along_axis(a, indices, axis, mode="wrap"):
