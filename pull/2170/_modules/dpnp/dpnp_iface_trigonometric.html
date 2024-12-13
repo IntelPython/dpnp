@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.ge7483c087a4 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.17.0dev3+30.g04dec61772e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1e7395c2"></script>
+      <script src="../../_static/documentation_options.js?v=d24a8ba2"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -601,6 +601,8 @@
 <span class="s2">    Second input array, also expected to have a real-valued</span>
 <span class="s2">    floating-point data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1286,6 +1288,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a real-valued data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1591,6 +1595,8 @@
 <span class="s2">    Second input array, also expected to have a real-valued</span>
 <span class="s2">    floating-point data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1663,6 +1669,8 @@
 <span class="s2">    Second input array, also expected to have a real-valued</span>
 <span class="s2">    floating-point data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>

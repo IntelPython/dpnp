@@ -20,6 +20,7 @@
          dpnp_array.astype
          dpnp_array.choose
          dpnp_array.clip
+         dpnp_array.compress
          dpnp_array.conj
          dpnp_array.conjugate
          dpnp_array.copy

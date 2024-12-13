@@ -1,12 +1,15 @@
 var searchData=
 [
-  ['heavisidefunctor_0',['HeavisideFunctor',['../structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html',1,'dpnp::kernels::heaviside']]],
-  ['heevdtypepairsupportfactory_1',['HeevdTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['histglobalmemory_2',['HistGlobalMemory',['../structstatistics_1_1histogram_1_1_hist_global_memory.html',1,'statistics::histogram']]],
-  ['histlocaltype_3',['HistLocalType',['../structstatistics_1_1histogram_1_1_hist_local_type.html',1,'statistics::histogram']]],
-  ['histlocaltype_3c_20int64_5ft_20_3e_4',['HistLocalType&lt; int64_t &gt;',['../structstatistics_1_1histogram_1_1_hist_local_type_3_01int64__t_01_4.html',1,'statistics::histogram']]],
-  ['histlocaltype_3c_20uint64_5ft_20_3e_5',['HistLocalType&lt; uint64_t &gt;',['../structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html',1,'statistics::histogram']]],
-  ['histogram_6',['Histogram',['../structstatistics_1_1histogram_1_1_histogram.html',1,'statistics::histogram']]],
-  ['histogram_5fkernel_7',['histogram_kernel',['../classstatistics_1_1histogram_1_1histogram__kernel.html',1,'statistics::histogram']]],
-  ['histwithlocalcopies_8',['HistWithLocalCopies',['../structstatistics_1_1histogram_1_1_hist_with_local_copies.html',1,'statistics::histogram']]]
+  ['gcdfunctor_0',['GcdFunctor',['../structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html',1,'dpnp::kernels::gcd']]],
+  ['gemmbatchtypepairsupportfactory_1',['GemmBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['gemmtypepairsupportfactory_2',['GemmTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['gemvtypepairsupportfactory_3',['GemvTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemv_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
+  ['geqrfbatchtypepairsupportfactory_4',['GeqrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_geqrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['geqrftypepairsupportfactory_5',['GeqrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_geqrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['gesvdtypepairsupportfactory_6',['GesvdTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_gesvd_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['gesvtypepairsupportfactory_7',['GesvTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_gesv_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getrfbatchtypepairsupportfactory_8',['GetrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getrftypepairsupportfactory_9',['GetrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getribatchtypepairsupportfactory_10',['GetriBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['getrstypepairsupportfactory_11',['GetrsTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
 ];

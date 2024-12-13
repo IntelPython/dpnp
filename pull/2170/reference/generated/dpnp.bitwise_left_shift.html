@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.bitwise_left_shift &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.ge7483c087a4 documentation</title>
+  <title>dpnp.bitwise_left_shift &mdash; Data Parallel Extension for NumPy 0.17.0dev3+30.g04dec61772e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1e7395c2"></script>
+      <script src="../../_static/documentation_options.js?v=d24a8ba2"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -123,7 +123,9 @@ the right of <cite>x1_i</cite>.</p>
 Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
 <li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have integer data type.
 Each element must be greater than or equal to <code class="docutils literal notranslate"><span class="pre">0</span></code>.
-Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
+Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.
+If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape
+(which becomes the shape of the output).</p></li>
 <li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Output array to populate.
 Array must have the correct shape and the expected data type.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>

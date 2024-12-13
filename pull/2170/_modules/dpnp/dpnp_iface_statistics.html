@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.ge7483c087a4 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev3+30.g04dec61772e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1e7395c2"></script>
+      <script src="../../_static/documentation_options.js?v=d24a8ba2"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -123,20 +123,22 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
+<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
 <span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">normalize_axis_index</span><span class="p">,</span>
-    <span class="n">normalize_axis_tuple</span><span class="p">,</span>
-<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_index</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="n">dpnp_correlate</span>
-<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">import</span> <span class="nn">dpnp.backend.extensions.statistics._statistics_impl</span> <span class="k">as</span> <span class="nn">statistics_ext</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_utils_common</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">result_type_for_device</span><span class="p">,</span>
+    <span class="n">to_supported_dtypes</span><span class="p">,</span>
+<span class="p">)</span>
+
 <span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
 <span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_reduction</span> <span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_statistics</span> <span class="kn">import</span> <span class="n">dpnp_cov</span>
+<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_statistics</span> <span class="kn">import</span> <span class="n">dpnp_cov</span><span class="p">,</span> <span class="n">dpnp_median</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;amax&quot;</span><span class="p">,</span>
@@ -196,22 +198,6 @@
             <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">items</span>
-
-
-<span class="k">def</span> <span class="nf">_flatten_array_along_axes</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axes_to_flatten</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Flatten an array along a specific set of axes.&quot;&quot;&quot;</span>
-
-    <span class="n">axes_to_keep</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">axis</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">axes_to_flatten</span>
-    <span class="p">)</span>
-
-    <span class="c1"># Move the axes_to_flatten to the front</span>
-    <span class="n">arr_moved</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">axes_to_flatten</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">axes_to_flatten</span><span class="p">)))</span>
-
-    <span class="n">new_shape</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="n">axes_to_keep</span><span class="p">)</span>
-    <span class="n">flattened_arr</span> <span class="o">=</span> <span class="n">arr_moved</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">new_shape</span><span class="p">)</span>
-
-    <span class="k">return</span> <span class="n">flattened_arr</span>
 
 
 <span class="k">def</span> <span class="nf">_get_comparison_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">,</span> <span class="n">_out</span><span class="p">):</span>
@@ -550,49 +536,179 @@
 
 
 
+<span class="k">def</span> <span class="nf">_get_padding</span><span class="p">(</span><span class="n">a_size</span><span class="p">,</span> <span class="n">v_size</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">v_size</span> <span class="o">&lt;=</span> <span class="n">a_size</span>
+
+    <span class="k">if</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span>
+        <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;same&quot;</span><span class="p">:</span>
+        <span class="n">l_pad</span> <span class="o">=</span> <span class="n">v_size</span> <span class="o">//</span> <span class="mi">2</span>
+        <span class="n">r_pad</span> <span class="o">=</span> <span class="n">v_size</span> <span class="o">-</span> <span class="n">l_pad</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;full&quot;</span><span class="p">:</span>
+        <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span> <span class="o">=</span> <span class="n">v_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">v_size</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown mode: </span><span class="si">{</span><span class="n">mode</span><span class="si">}</span><span class="s2">. Only &#39;valid&#39;, &#39;same&#39;, &#39;full&#39; are supported.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span>
+
+
+<span class="k">def</span> <span class="nf">_run_native_sliding_dot_product1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span><span class="p">):</span>
+    <span class="n">queue</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_queue</span>
+
+    <span class="n">usm_type</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_coerced_usm_type</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">usm_type</span><span class="p">])</span>
+    <span class="n">out_size</span> <span class="o">=</span> <span class="n">l_pad</span> <span class="o">+</span> <span class="n">r_pad</span> <span class="o">+</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">-</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="c1"># out type is the same as input type</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">out_size</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">)</span>
+
+    <span class="n">a_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">v_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="n">out_usm</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">queue</span><span class="p">]</span>
+
+    <span class="n">mem_ev</span><span class="p">,</span> <span class="n">corr_ev</span> <span class="o">=</span> <span class="n">statistics_ext</span><span class="o">.</span><span class="n">sliding_dot_product1d</span><span class="p">(</span>
+        <span class="n">a_usm</span><span class="p">,</span>
+        <span class="n">v_usm</span><span class="p">,</span>
+        <span class="n">out_usm</span><span class="p">,</span>
+        <span class="n">l_pad</span><span class="p">,</span>
+        <span class="n">r_pad</span><span class="p">,</span>
+        <span class="n">depends</span><span class="o">=</span><span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">mem_ev</span><span class="p">,</span> <span class="n">corr_ev</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+
 <div class="viewcode-block" id="correlate">
 <a class="viewcode-back" href="../../reference/generated/dpnp.correlate.html#dpnp.correlate">[docs]</a>
-<span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;valid&quot;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="k">def</span> <span class="nf">correlate</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;valid&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cross-correlation of two 1-dimensional sequences.</span>
+
+<span class="sd">    This function computes the correlation as generally defined in signal</span>
+<span class="sd">    processing texts [1]_:</span>
+
+<span class="sd">    .. math:: c_k = \sum_n a_{n+k} \cdot \overline{v}_n</span>
+
+<span class="sd">    with `a` and `v` sequences being zero-padded where necessary and</span>
+<span class="sd">    :math:`\overline v` denoting complex conjugation.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.correlate`.</span>
 
-<span class="sd">    Limitations</span>
-<span class="sd">    -----------</span>
-<span class="sd">    Input arrays are supported as :obj:`dpnp.ndarray`.</span>
-<span class="sd">    Size and shape of input arrays are supported to be equal.</span>
-<span class="sd">    Parameter `mode` is supported only with default value ``&quot;valid&quot;``.</span>
-<span class="sd">    Otherwise the function will be executed sequentially on CPU.</span>
-<span class="sd">    Input array data types are limited by supported DPNP :ref:`Data types`.</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    v : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
+<span class="sd">    mode : {&quot;valid&quot;, &quot;same&quot;, &quot;full&quot;}, optional</span>
+<span class="sd">        Refer to the :obj:`dpnp.convolve` docstring. Note that the default</span>
+<span class="sd">        is ``&quot;valid&quot;``, unlike :obj:`dpnp.convolve`, which uses ``&quot;full&quot;``.</span>
+
+<span class="sd">        Default: ``&quot;valid&quot;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Discrete cross-correlation of `a` and `v`.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The definition of correlation above is not unique and sometimes</span>
+<span class="sd">    correlation may be defined differently. Another common definition is [1]_:</span>
+
+<span class="sd">    .. math:: c&#39;_k = \sum_n a_{n} \cdot \overline{v_{n+k}}</span>
+
+<span class="sd">    which is related to :math:`c_k` by :math:`c&#39;_k = c_{-k}`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wikipedia, &quot;Cross-correlation&quot;,</span>
+<span class="sd">           https://en.wikipedia.org/wiki/Cross-correlation</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.convolve` : Discrete, linear convolution of</span>
-<span class="sd">                           two one-dimensional sequences.</span>
+<span class="sd">    :obj:`dpnp.convolve` : Discrete, linear convolution of two one-dimensional</span>
+<span class="sd">                        sequences.</span>
+
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; x = np.correlate([1, 2, 3], [0, 1, 0.5])</span>
-<span class="sd">    &gt;&gt;&gt; [i for i in x]</span>
-<span class="sd">    [3.5]</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3], dtype=np.float32)</span>
+<span class="sd">    &gt;&gt;&gt; v = np.array([0, 1, 0.5], dtype=np.float32)</span>
+<span class="sd">    &gt;&gt;&gt; np.correlate(a, v)</span>
+<span class="sd">    array([3.5], dtype=float32)</span>
+<span class="sd">    &gt;&gt;&gt; np.correlate(a, v, &quot;same&quot;)</span>
+<span class="sd">    array([2. , 3.5, 3. ], dtype=float32)</span>
+<span class="sd">    &gt;&gt;&gt; np.correlate([a, v, &quot;full&quot;)</span>
+<span class="sd">    array([0.5, 2. , 3.5, 3. , 0. ], dtype=float32)</span>
+
+<span class="sd">    Using complex sequences:</span>
+
+<span class="sd">    &gt;&gt;&gt; ac = np.array([1+1j, 2, 3-1j], dtype=np.complex64)</span>
+<span class="sd">    &gt;&gt;&gt; vc = np.array([0, 1, 0.5j], dtype=np.complex64)</span>
+<span class="sd">    &gt;&gt;&gt; np.correlate(ac, vc, &#39;full&#39;)</span>
+<span class="sd">    array([0.5-0.5j, 1. +0.j , 1.5-1.5j, 3. -1.j , 0. +0.j ], dtype=complex64)</span>
+
+<span class="sd">    Note that you get the time reversed, complex conjugated result</span>
+<span class="sd">    (:math:`\overline{c_{-k}}`) when the two input sequences `a` and `v` change</span>
+<span class="sd">    places:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.correlate(vc, ac, &#39;full&#39;)</span>
+<span class="sd">    array([0. +0.j , 3. +1.j , 1.5+1.5j, 1. +0.j , 0.5+0.5j], dtype=complex64)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="n">x2_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">x1_desc</span> <span class="ow">and</span> <span class="n">x2_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">size</span> <span class="ow">or</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">x2_desc</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;valid&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">dpnp_correlate</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">x2_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">correlate</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Array arguments cannot be empty. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Received sizes: a.size=</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, v.size=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Only 1-dimensional arrays are supported. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Received shapes: a.shape=</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, v.shape=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">supported_types</span> <span class="o">=</span> <span class="n">statistics_ext</span><span class="o">.</span><span class="n">sliding_dot_product1d_dtypes</span><span class="p">()</span>
+
+    <span class="n">device</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span>
+    <span class="n">rdtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">],</span> <span class="n">device</span><span class="p">)</span>
+    <span class="n">supported_dtype</span> <span class="o">=</span> <span class="n">to_supported_dtypes</span><span class="p">(</span><span class="n">rdtype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">supported_dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;function does not support input types &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">), &quot;</span>
+            <span class="s2">&quot;and the inputs could not be coerced to any &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;supported types. List of supported types: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">[</span><span class="n">st</span><span class="o">.</span><span class="n">name</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">st</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">supported_types</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+    <span class="n">revert</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">revert</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span>
+
+    <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span> <span class="o">=</span> <span class="n">_get_padding</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+    <span class="n">a_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">supported_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+    <span class="n">v_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">supported_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_run_native_sliding_dot_product1d</span><span class="p">(</span><span class="n">a_casted</span><span class="p">,</span> <span class="n">v_casted</span><span class="p">,</span> <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">rdtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span></div>
 
 
 
@@ -876,7 +992,7 @@
 <span class="sd">       preserve the contents of the input array. Treat the input as undefined,</span>
 <span class="sd">       but it will probably be fully or partially sorted.</span>
 <span class="sd">       Default: ``False``.</span>
-<span class="sd">    keepdims : {None, bool}, optional</span>
+<span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains</span>
 <span class="sd">        compatible with the input array according to Array Broadcasting</span>
@@ -886,7 +1002,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    dpnp.median : dpnp.ndarray</span>
+<span class="sd">    out : dpnp.ndarray</span>
 <span class="sd">        A new array holding the result. If `a` has a floating-point data type,</span>
 <span class="sd">        the returned array will have the same data type as `a`. If `a` has a</span>
 <span class="sd">        boolean or integral data type, the returned array will have the</span>
@@ -919,20 +1035,20 @@
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=0)</span>
 <span class="sd">    array([6.5, 4.5, 2.5])</span>
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=1)</span>
-<span class="sd">    array([7.,  2.])</span>
+<span class="sd">    array([7., 2.])</span>
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=(0, 1))</span>
 <span class="sd">    array(3.5)</span>
 
 <span class="sd">    &gt;&gt;&gt; m = np.median(a, axis=0)</span>
 <span class="sd">    &gt;&gt;&gt; out = np.zeros_like(m)</span>
 <span class="sd">    &gt;&gt;&gt; np.median(a, axis=0, out=m)</span>
-<span class="sd">    array([6.5,  4.5,  2.5])</span>
+<span class="sd">    array([6.5, 4.5, 2.5])</span>
 <span class="sd">    &gt;&gt;&gt; m</span>
-<span class="sd">    array([6.5,  4.5,  2.5])</span>
+<span class="sd">    array([6.5, 4.5, 2.5])</span>
 
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=1, overwrite_input=True)</span>
-<span class="sd">    array([7.,  2.])</span>
+<span class="sd">    array([7., 2.])</span>
 <span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
 <span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
 <span class="sd">    &gt;&gt;&gt; np.median(b, axis=None, overwrite_input=True)</span>
@@ -942,62 +1058,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-    <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">a_shape</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">_axis</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="n">a_ndim</span><span class="p">)</span> <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">axis</span>
-    <span class="n">_axis</span> <span class="o">=</span> <span class="n">normalize_axis_tuple</span><span class="p">(</span><span class="n">_axis</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axis</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># Need to flatten if `axis` is a sequence of axes since `dpnp.sort`</span>
-            <span class="c1"># only accepts integer `axis`</span>
-            <span class="c1"># Note that the output of _flatten_array_along_axes is not</span>
-            <span class="c1"># necessarily a view of the input since `reshape` is used there.</span>
-            <span class="c1"># If this is the case, using overwrite_input is meaningless</span>
-            <span class="n">a</span> <span class="o">=</span> <span class="n">_flatten_array_along_axes</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_axis</span><span class="p">)</span>
-            <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
-
-    <span class="k">if</span> <span class="n">overwrite_input</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">a_sorted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-            <span class="n">a_sorted</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">):</span>
-                <span class="c1"># dpnp.ndarray.sort only works with dpnp_array</span>
-                <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-            <span class="n">a</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-            <span class="n">a_sorted</span> <span class="o">=</span> <span class="n">a</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">a_sorted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">indexer</span> <span class="o">=</span> <span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)]</span> <span class="o">*</span> <span class="n">a_sorted</span><span class="o">.</span><span class="n">ndim</span>
-    <span class="n">index</span><span class="p">,</span> <span class="n">remainder</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="n">a_sorted</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">remainder</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="c1"># index with slice to allow mean (below) to work</span>
-        <span class="n">indexer</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">indexer</span><span class="p">[</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="nb">slice</span><span class="p">(</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-
-    <span class="c1"># Use `mean` in odd and even case to coerce data type and use `out` array</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">a_sorted</span><span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">indexer</span><span class="p">)],</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
-    <span class="n">nan_mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a_sorted</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">nan_mask</span><span class="o">.</span><span class="n">any</span><span class="p">():</span>
-        <span class="n">res</span><span class="p">[</span><span class="n">nan_mask</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nan</span>
-
-    <span class="k">if</span> <span class="n">keepdims</span><span class="p">:</span>
-        <span class="c1"># We can&#39;t use dpnp.mean(..., keepdims) and dpnp.any(..., keepdims)</span>
-        <span class="c1"># above because of the reshape hack might have been used in</span>
-        <span class="c1"># `_flatten_array_along_axes` to handle cases when axis is a tuple.</span>
-        <span class="n">res_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">a_shape</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">_axis</span><span class="p">:</span>
-            <span class="n">res_shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">res_shape</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">res</span></div>
+    <span class="k">return</span> <span class="n">dpnp_median</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span></div>
 
 
 

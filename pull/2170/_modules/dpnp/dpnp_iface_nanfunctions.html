@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev2+26.ge7483c087a4 documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev3+30.g04dec61772e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1e7395c2"></script>
+      <script src="../../_static/documentation_options.js?v=d24a8ba2"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -125,6 +125,7 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">from</span> <span class="nn">dpnp.dpnp_utils.dpnp_utils_statistics</span> <span class="kn">import</span> <span class="n">dpnp_median</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;nanargmax&quot;</span><span class="p">,</span>
@@ -133,6 +134,7 @@
     <span class="s2">&quot;nancumsum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanmax&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanmean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;nanmedian&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanmin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanprod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nanstd&quot;</span><span class="p">,</span>
@@ -668,6 +670,110 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">avg</span><span class="p">,</span> <span class="n">cnt</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">avg</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">avg</span></div>
+
+
+
+<div class="viewcode-block" id="nanmedian">
+<a class="viewcode-back" href="../../reference/generated/dpnp.nanmedian.html#dpnp.nanmedian">[docs]</a>
+<span class="k">def</span> <span class="nf">nanmedian</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the median along the specified axis, while ignoring NaNs.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.nanmedian`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : {None, int, tuple or list of ints}, optional</span>
+<span class="sd">        Axis or axes along which the medians are computed. The default,</span>
+<span class="sd">        ``axis=None``, will compute the median along a flattened version of</span>
+<span class="sd">        the array. If a sequence of axes, the array is first flattened along</span>
+<span class="sd">        the given axes, then the median is computed along the resulting</span>
+<span class="sd">        flattened axis.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have</span>
+<span class="sd">        the same shape as the expected output but the type (of the calculated</span>
+<span class="sd">        values) will be cast if necessary.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    overwrite_input : bool, optional</span>
+<span class="sd">       If ``True``, then allow use of memory of input array `a` for</span>
+<span class="sd">       calculations. The input array will be modified by the call to</span>
+<span class="sd">       :obj:`dpnp.nanmedian`. This will save memory when you do not need to</span>
+<span class="sd">       preserve the contents of the input array. Treat the input as undefined,</span>
+<span class="sd">       but it will probably be fully or partially sorted.</span>
+<span class="sd">       Default: ``False``.</span>
+<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
+<span class="sd">        as singleton dimensions, so that the returned array remains</span>
+<span class="sd">        compatible with the input array according to Array Broadcasting</span>
+<span class="sd">        rules. Otherwise, if ``False``, the reduced axes are not included in</span>
+<span class="sd">        the returned array.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A new array holding the result. If `a` has a floating-point data type,</span>
+<span class="sd">        the returned array will have the same data type as `a`. If `a` has a</span>
+<span class="sd">        boolean or integral data type, the returned array will have the</span>
+<span class="sd">        default floating point data type for the device where input array `a`</span>
+<span class="sd">        is allocated.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.mean` : Compute the arithmetic mean along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.median` : Compute the median along the specified axis.</span>
+<span class="sd">    :obj:`dpnp.percentile` : Compute the q-th percentile of the data</span>
+<span class="sd">                             along the specified axis.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    Given a vector ``V`` of length ``N``, the median of ``V`` is the</span>
+<span class="sd">    middle value of a sorted copy of ``V``, ``V_sorted`` - i.e.,</span>
+<span class="sd">    ``V_sorted[(N-1)/2]``, when ``N`` is odd, and the average of the</span>
+<span class="sd">    two middle values of ``V_sorted`` when ``N`` is even.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([[10.0, 7, 4], [3, 2, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; a[0, 1] = np.nan</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([[10., nan,  4.],</span>
+<span class="sd">           [ 3.,  2.,  1.]])</span>
+<span class="sd">    &gt;&gt;&gt; np.median(a)</span>
+<span class="sd">    array(nan)</span>
+<span class="sd">    &gt;&gt;&gt; np.nanmedian(a)</span>
+<span class="sd">    array(3.)</span>
+
+<span class="sd">    &gt;&gt;&gt; np.nanmedian(a, axis=0)</span>
+<span class="sd">    array([6.5, 2., 2.5])</span>
+<span class="sd">    &gt;&gt;&gt; np.nanmedian(a, axis=1)</span>
+<span class="sd">    array([7., 2.])</span>
+
+<span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
+<span class="sd">    &gt;&gt;&gt; np.nanmedian(b, axis=1, overwrite_input=True)</span>
+<span class="sd">    array([7., 2.])</span>
+<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
+<span class="sd">    &gt;&gt;&gt; b = a.copy()</span>
+<span class="sd">    &gt;&gt;&gt; np.nanmedian(b, axis=None, overwrite_input=True)</span>
+<span class="sd">    array(3.)</span>
+<span class="sd">    &gt;&gt;&gt; assert not np.all(a==b)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">ignore_nan</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="n">ignore_nan</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">return</span> <span class="n">dpnp_median</span><span class="p">(</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">overwrite_input</span><span class="p">,</span> <span class="n">keepdims</span><span class="p">,</span> <span class="n">ignore_nan</span><span class="o">=</span><span class="n">ignore_nan</span>
+    <span class="p">)</span></div>
 
 
 

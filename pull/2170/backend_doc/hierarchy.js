@@ -1,7 +1,13 @@
 var hierarchy =
 [
+    [ "statistics::sliding_window1d::_RegistryDataStorage< T, Size >", "classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html", [
+      [ "statistics::sliding_window1d::RegistryData< T, Size >", "structstatistics_1_1sliding__window1d_1_1_registry_data.html", [
+        [ "statistics::sliding_window1d::RegistryWindow< T, Size >", "structstatistics_1_1sliding__window1d_1_1_registry_window.html", null ]
+      ] ],
+      [ "statistics::sliding_window1d::RegistryData< T, Size >", "structstatistics_1_1sliding__window1d_1_1_registry_data.html", null ]
+    ] ],
+    [ "statistics::sliding_window1d::_RegistryDataStorage< T, 1 >", "classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html", null ],
     [ "statistics::common::AtomicOp< T, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op.html", null ],
-    [ "statistics::common::AtomicOp< std::complex< T >, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op_3_01std_1_1complex_3_01_t_01_4_00_01_order_00_01_scope_01_4.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
     [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
@@ -13,6 +19,7 @@ var hierarchy =
     [ "std::disjunction", null, [
       [ "is_any< T, Ts >", "structis__any.html", null ]
     ] ],
+    [ "statistics::common::DispatchTable< FnT >", "classstatistics_1_1common_1_1_dispatch_table.html", null ],
     [ "statistics::common::DispatchTable2< FnT >", "classstatistics_1_1common_1_1_dispatch_table2.html", null ],
     [ "dpnp::extensions::blas::DotcContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html", null ],
     [ "dpnp::extensions::blas::DotContigFactory< fnT, varT >", "structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html", null ],
@@ -58,16 +65,16 @@ var hierarchy =
     [ "statistics::histogram::HistLocalType< uint64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html", null ],
     [ "statistics::histogram::Histogram", "structstatistics_1_1histogram_1_1_histogram.html", null ],
     [ "statistics::histogram::histogram_kernel< T, HistImpl, Edges, Weights >", "classstatistics_1_1histogram_1_1histogram__kernel.html", null ],
+    [ "statistics::histogram::Histogramdd", "structstatistics_1_1histogram_1_1_histogramdd.html", null ],
     [ "statistics::histogram::HistWithLocalCopies< T, localT >", "structstatistics_1_1histogram_1_1_hist_with_local_copies.html", null ],
     [ "dpnp::kernels::i0::I0Functor< argT, resT >", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ],
     [ "statistics::common::TableBuilder2< FnT, SupportedTypes, Func >::impl< _FnT, T1, T2 >", "structstatistics_1_1common_1_1_table_builder2_1_1impl.html", null ],
+    [ "statistics::common::TableBuilder< FnT, SupportedTypes, Func >::impl< _FnT, T >", "structstatistics_1_1common_1_1_table_builder_1_1impl.html", null ],
     [ "statistics::common::int_pair_hash", "structstatistics_1_1common_1_1int__pair__hash.html", null ],
     [ "statistics::common::IsNan< T >", "structstatistics_1_1common_1_1_is_nan.html", null ],
-    [ "statistics::common::IsNan< std::complex< T > >", "structstatistics_1_1common_1_1_is_nan_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::kernels::lcm::LcmFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ],
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
     [ "statistics::common::Less< T >", "structstatistics_1_1common_1_1_less.html", null ],
-    [ "statistics::common::Less< std::complex< T > >", "structstatistics_1_1common_1_1_less_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
     [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
     [ "statistics::common::one_of< T, Rest >", "structstatistics_1_1common_1_1one__of.html", null ],
@@ -87,8 +94,16 @@ var hierarchy =
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::REAL, false >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01false_01_4.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::REAL, true >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01true_01_4.html", null ],
     [ "dpnp::kernels::sinc::SincFunctor< argT, Tp >", "structdpnp_1_1kernels_1_1sinc_1_1_sinc_functor.html", null ],
+    [ "statistics::sliding_window1d::sliding_window1d_kernel< WorkPI, T, SizeT, Op, Red >", "classstatistics_1_1sliding__window1d_1_1sliding__window1d__kernel.html", null ],
+    [ "statistics::sliding_window1d::sliding_window1d_small_kernel< WorkPI, T, SizeT, Op, Red >", "classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html", null ],
+    [ "statistics::sliding_window1d::SlidingDotProduct1d", "structstatistics_1_1sliding__window1d_1_1_sliding_dot_product1d.html", null ],
     [ "dpnp::kernels::spacing::SpacingFunctor< argT, resT >", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ],
+    [ "statistics::sliding_window1d::Span< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_span.html", [
+      [ "statistics::sliding_window1d::PaddedSpan< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ]
+    ] ],
+    [ "statistics::sliding_window1d::Span< T, size_t >", "classstatistics_1_1sliding__window1d_1_1_span.html", null ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
+    [ "statistics::common::TableBuilder< FnT, SupportedTypes, Func >", "structstatistics_1_1common_1_1_table_builder.html", null ],
     [ "statistics::common::TableBuilder2< FnT, SupportedTypes, Func >", "structstatistics_1_1common_1_1_table_builder2.html", null ],
     [ "statistics::histogram::UncachedData< T, Dims >", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],
     [ "dpnp::extensions::lapack::types::UngqrBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html", null ],

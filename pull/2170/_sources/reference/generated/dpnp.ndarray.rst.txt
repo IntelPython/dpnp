@@ -20,6 +20,7 @@
          ndarray.astype
          ndarray.choose
          ndarray.clip
+         ndarray.compress
          ndarray.conj
          ndarray.conjugate
          ndarray.copy
