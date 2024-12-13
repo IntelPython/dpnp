@@ -193,8 +193,8 @@ def choose(a, choices, out=None, mode="wrap"):
         in `choices` to choose from. Behavior of out-of-bounds integers (i.e.,
         integers outside of `[0, n-1]` where `n` is the number of choices) is
         determined by the `mode` keyword.
-    choices : {dpnp.ndarray, usm_ndarray, sequence of dpnp.ndarrays and
-    usm_ndarrays}
+    choices : {dpnp.ndarray, usm_ndarray, \
+               sequence of dpnp.ndarrays and usm_ndarrays}
         Choice arrays. `a` and choice arrays must be broadcast-compatible.
         If `choices` is an array, the array is unstacked into a sequence of
         arrays.
@@ -233,20 +233,20 @@ def choose(a, choices, out=None, mode="wrap"):
     ... # will be the second element of the fourth (3+1) choice array, i.e.,
     ... # 31, etc.
     ... )
-    array([20, 31, 12,  3])
+    array([20, 31, 12, 3])
     >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='clip'
     ... # 4 goes to 3 (4-1)
     ... )
-    array([20, 31, 12,  3])
+    array([20, 31, 12, 3])
     >>> # because there are 4 choice arrays
     >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='wrap'
     ... # 4 is clipped to 3
     ... )
-    array([20, 31, 12,  3])
+    array([20, 31, 12, 3])
     >>> np.choose(np.array([2, -1, 1, 0]), choices, mode='wrap'
     ... # -1 goes to 3 (-1+4)
     ... )
-    array([20, 31, 12,  3])
+    array([20, 31, 12, 3])
 
     An example using broadcasting:
 
