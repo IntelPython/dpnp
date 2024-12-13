@@ -1,6 +1,10 @@
-﻿dpnp.asfortranarray
+﻿
+
+dpnp.asfortranarray
 ===================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: asfortranarray

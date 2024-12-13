@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['backend_5fsycl_0',['backend_sycl',['../classbackend__sycl.html',1,'']]]
+  ['are_5fsame_0',['are_same',['../structare__same.html',1,'']]],
+  ['atomicop_1',['AtomicOp',['../structstatistics_1_1common_1_1_atomic_op.html',1,'statistics::common']]]
 ];

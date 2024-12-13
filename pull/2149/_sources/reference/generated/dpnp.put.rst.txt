@@ -1,6 +1,10 @@
-﻿dpnp.put
+﻿
+
+dpnp.put
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: put

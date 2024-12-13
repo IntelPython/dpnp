@@ -1,6 +1,10 @@
-﻿dpnp.linalg.tensorinv
+﻿
+
+dpnp.linalg.tensorinv
 =====================
 
 .. currentmodule:: dpnp.linalg
+
+
 
 .. autofunction:: tensorinv

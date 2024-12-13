@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.bitwise_xor &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>dpnp.bitwise_xor &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -121,7 +121,9 @@ of the input array <cite>x2</cite>.</p>
 <li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, expected to have integer or boolean data type.
 Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
 <li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have integer or boolean data
-type. Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
+type. Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.
+If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape
+(which becomes the shape of the output).</p></li>
 <li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Output array to populate.
 Array must have the correct shape and the expected data type.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
@@ -150,6 +152,8 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 </dd>
 <dt><a class="reference internal" href="dpnp.bitwise_or.html#dpnp.bitwise_or" title="dpnp.bitwise_or"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.bitwise_or</span></code></a></dt><dd><p>Compute the bit-wise OR of two arrays element-wise.</p>
 </dd>
+<dt><a class="reference internal" href="dpnp.binary_repr.html#dpnp.binary_repr" title="dpnp.binary_repr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.binary_repr</span></code></a></dt><dd><p>Return the binary representation of the input number as a string.</p>
+</dd>
 </dl>
 </div>
 <p class="rubric">Examples</p>
@@ -170,6 +174,14 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">^</span> <span class="n">b</span>
 <span class="go">array([ True, False])</span>
+</pre></div>
+</div>
+<p>The number 13 is represented by <code class="docutils literal notranslate"><span class="pre">00001101</span></code>. Likewise, 17 is represented by
+<code class="docutils literal notranslate"><span class="pre">00010001</span></code>. The bit-wise XOR of 13 and 17 is therefore <code class="docutils literal notranslate"><span class="pre">00011100</span></code>, or 28:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="mi">13</span><span class="p">),</span> <span class="mi">17</span><span class="p">)</span>
+<span class="go">array(28)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">binary_repr</span><span class="p">(</span><span class="mi">28</span><span class="p">)</span>
+<span class="go">&#39;11100&#39;</span>
 </pre></div>
 </div>
 </dd></dl>

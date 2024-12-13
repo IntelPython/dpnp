@@ -1,6 +1,10 @@
-﻿dpnp.random.zipf
+﻿
+
+dpnp.random.zipf
 ================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: zipf

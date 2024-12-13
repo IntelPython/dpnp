@@ -1,6 +1,10 @@
-﻿dpnp.histogram\_bin\_edges
+﻿
+
+dpnp.histogram\_bin\_edges
 ==========================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: histogram_bin_edges

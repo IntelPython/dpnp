@@ -1,6 +1,10 @@
-﻿dpnp.ix\_
+﻿
+
+dpnp.ix\_
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: ix_

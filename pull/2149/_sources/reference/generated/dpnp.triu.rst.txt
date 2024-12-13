@@ -1,6 +1,10 @@
-﻿dpnp.triu
+﻿
+
+dpnp.triu
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: triu

@@ -1,4 +1,4 @@
-Array Manipulation Routines
+Array manipulation routines
 ===========================
 
 .. https://numpy.org/doc/stable/reference/routines.array-manipulation.html

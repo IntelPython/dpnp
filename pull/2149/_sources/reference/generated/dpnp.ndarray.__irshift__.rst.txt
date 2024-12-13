@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_irshift\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_irshift\_\_
 ============================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__irshift__

@@ -1,6 +1,10 @@
-﻿dpnp.dsplit
+﻿
+
+dpnp.dsplit
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: dsplit

@@ -1,6 +1,10 @@
-﻿dpnp.diag\_indices
+﻿
+
+dpnp.diag\_indices
 ==================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: diag_indices

@@ -1,6 +1,10 @@
-﻿dpnp.var
+﻿
+
+dpnp.var
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: var

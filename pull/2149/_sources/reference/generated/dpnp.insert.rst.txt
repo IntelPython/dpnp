@@ -1,6 +1,10 @@
-﻿dpnp.insert
+﻿
+
+dpnp.insert
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: insert

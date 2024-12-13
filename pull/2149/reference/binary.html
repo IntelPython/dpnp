@@ -15,21 +15,22 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bit-wise operations &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>Bit-wise operations &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Data type routines" href="dtype.html" />
-    <link rel="prev" title="dpnp.flatiter" href="generated/dpnp.flatiter.html" /> 
+    <link rel="next" title="dpnp.binary_repr" href="generated/dpnp.binary_repr.html" />
+    <link rel="prev" title="dpnp.rot90" href="generated/dpnp.rot90.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,8 +60,7 @@
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array manipulation routines</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Bit-wise operations</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#element-wise-bit-operations">Element-wise bit operations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#bit-packing">Bit packing</a></li>
@@ -68,13 +68,15 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
@@ -165,6 +167,9 @@
 <h2>Output formatting<a class="headerlink" href="#output-formatting" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.binary_repr.html#dpnp.binary_repr" title="dpnp.binary_repr"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.binary_repr</span></code></a></p></td>
+<td><p>Return the binary representation of the input number as a string.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -174,8 +179,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="generated/dpnp.flatiter.html" class="btn btn-neutral float-left" title="dpnp.flatiter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dtype.html" class="btn btn-neutral float-right" title="Data type routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="generated/dpnp.rot90.html" class="btn btn-neutral float-left" title="dpnp.rot90" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="generated/dpnp.binary_repr.html" class="btn btn-neutral float-right" title="dpnp.binary_repr" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

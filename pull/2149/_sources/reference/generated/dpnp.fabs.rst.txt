@@ -1,6 +1,10 @@
-﻿dpnp.fabs
+﻿
+
+dpnp.fabs
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: fabs

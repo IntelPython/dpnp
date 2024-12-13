@@ -1,6 +1,10 @@
-﻿dpnp.bitwise\_not
+﻿
+
+dpnp.bitwise\_not
 =================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: bitwise_not

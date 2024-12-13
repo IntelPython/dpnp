@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.squeeze
+:orphan:
+
+dpnp.ndarray.squeeze
 ====================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.squeeze

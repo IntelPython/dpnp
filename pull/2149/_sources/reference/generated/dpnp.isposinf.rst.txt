@@ -1,6 +1,10 @@
-﻿dpnp.isposinf
+﻿
+
+dpnp.isposinf
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: isposinf

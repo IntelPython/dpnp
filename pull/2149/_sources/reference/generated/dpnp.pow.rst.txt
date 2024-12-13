@@ -1,6 +1,10 @@
-﻿dpnp.pow
+﻿
+
+dpnp.pow
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: pow

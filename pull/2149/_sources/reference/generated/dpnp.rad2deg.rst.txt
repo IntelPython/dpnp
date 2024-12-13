@@ -1,6 +1,10 @@
-﻿dpnp.rad2deg
+﻿
+
+dpnp.rad2deg
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: rad2deg

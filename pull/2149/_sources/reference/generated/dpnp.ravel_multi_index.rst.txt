@@ -1,6 +1,10 @@
-﻿dpnp.ravel\_multi\_index
+﻿
+
+dpnp.ravel\_multi\_index
 ========================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: ravel_multi_index

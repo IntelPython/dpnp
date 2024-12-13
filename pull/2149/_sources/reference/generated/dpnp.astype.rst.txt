@@ -1,6 +1,10 @@
-﻿dpnp.astype
+﻿
+
+dpnp.astype
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: astype

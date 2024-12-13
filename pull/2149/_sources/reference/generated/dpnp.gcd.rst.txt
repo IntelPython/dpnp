@@ -1,6 +1,10 @@
-﻿dpnp.gcd
+﻿
+
+dpnp.gcd
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: gcd

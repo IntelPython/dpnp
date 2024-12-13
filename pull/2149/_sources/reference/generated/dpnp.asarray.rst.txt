@@ -1,6 +1,10 @@
-﻿dpnp.asarray
+﻿
+
+dpnp.asarray
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: asarray

@@ -5,88 +5,42 @@
 
 .. autoclass:: dtype
 
-   ..
-      Methods
+   
+
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         dtype.newbyteorder
 
 
 
-   .. rubric:: Methods
+   
 
-   ..
-      Special methods
+   .. HACK -- the point here is that we don't want this to appear in the output, but the autosummary should still generate the pages.
+      .. autosummary::
+         :toctree:
+      
+         dtype.alignment
+         dtype.base
+         dtype.byteorder
+         dtype.char
+         dtype.descr
+         dtype.fields
+         dtype.flags
+         dtype.hasobject
+         dtype.isalignedstruct
+         dtype.isbuiltin
+         dtype.isnative
+         dtype.itemsize
+         dtype.kind
+         dtype.metadata
+         dtype.name
+         dtype.names
+         dtype.ndim
+         dtype.num
+         dtype.shape
+         dtype.str
+         dtype.subdtype
+         dtype.type
 
-
-
-   .. automethod:: __getitem__
-
-
-
-   .. automethod:: __len__
-
-
-
-
-   ..
-      Ordinary methods
-
-
-
-
-   .. automethod:: newbyteorder
-
-
-   ..
-      Special methods
-
-
-
-   .. automethod:: __eq__
-
-
-   .. automethod:: __ne__
-
-
-   .. automethod:: __lt__
-
-
-   .. automethod:: __le__
-
-
-   .. automethod:: __gt__
-
-
-   .. automethod:: __ge__
-
-
-
-   ..
-      Attributes
-
- 
-
-   .. rubric:: Attributes
-
-
-   .. autoattribute:: alignment
-   .. autoattribute:: base
-   .. autoattribute:: byteorder
-   .. autoattribute:: char
-   .. autoattribute:: descr
-   .. autoattribute:: fields
-   .. autoattribute:: flags
-   .. autoattribute:: hasobject
-   .. autoattribute:: isalignedstruct
-   .. autoattribute:: isbuiltin
-   .. autoattribute:: isnative
-   .. autoattribute:: itemsize
-   .. autoattribute:: kind
-   .. autoattribute:: metadata
-   .. autoattribute:: name
-   .. autoattribute:: names
-   .. autoattribute:: ndim
-   .. autoattribute:: num
-   .. autoattribute:: shape
-   .. autoattribute:: str
-   .. autoattribute:: subdtype
-   .. autoattribute:: type
- 

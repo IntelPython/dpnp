@@ -1,6 +1,10 @@
-﻿dpnp.random.standard\_gamma
+﻿
+
+dpnp.random.standard\_gamma
 ===========================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: standard_gamma

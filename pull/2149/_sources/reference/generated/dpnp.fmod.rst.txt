@@ -1,6 +1,10 @@
-﻿dpnp.fmod
+﻿
+
+dpnp.fmod
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: fmod

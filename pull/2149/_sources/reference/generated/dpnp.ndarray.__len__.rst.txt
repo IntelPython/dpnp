@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_len\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_len\_\_
 ========================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__len__

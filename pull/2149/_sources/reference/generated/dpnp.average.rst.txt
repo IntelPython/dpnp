@@ -1,6 +1,10 @@
-﻿dpnp.average
+﻿
+
+dpnp.average
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: average

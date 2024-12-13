@@ -1,6 +1,10 @@
-﻿dpnp.linalg.pinv
+﻿
+
+dpnp.linalg.pinv
 ================
 
 .. currentmodule:: dpnp.linalg
+
+
 
 .. autofunction:: pinv

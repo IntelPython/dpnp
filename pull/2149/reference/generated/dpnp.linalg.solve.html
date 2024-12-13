@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.solve &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>dpnp.linalg.solve &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -59,12 +59,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array manipulation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear Algebra</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../linalg.html">Linear algebra</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-and-vector-products">Matrix and vector products</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#decompositions">Decompositions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#matrix-eigenvalues">Matrix eigenvalues</a></li>
@@ -74,11 +75,11 @@
 <li class="toctree-l4"><a class="reference internal" href="../linalg.html#exceptions">Exceptions</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -109,7 +110,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../linalg.html">Linear Algebra</a></li>
+          <li class="breadcrumb-item"><a href="../linalg.html">Linear algebra</a></li>
       <li class="breadcrumb-item active">dpnp.linalg.solve</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.linalg.solve.rst.txt" rel="nofollow"> View page source</a>
@@ -131,14 +132,14 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>M</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Coefficient matrix.</p></li>
-<li><p><strong>b</strong> (<em>{</em><em>(</em><em>…</em><em>, </em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>…</em><em>, </em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Ordinate or &quot;dependent variable&quot; values.</p></li>
+<li><p><strong>b</strong> (<em>{</em><em>(</em><em>M</em><em>,</em><em>)</em><em>, </em><em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>K</em><em>)</em><em>} {dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Ordinate or &quot;dependent variable&quot; values.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> -- Solution to the system <cite>ax = b</cite>. Returned shape is identical to <cite>b</cite>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>{(…, M,), (…, M, K)} dpnp.ndarray</p>
+<dd class="field-odd"><p>{(..., M,), (..., M, K)} dpnp.ndarray</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -148,6 +149,10 @@
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>The <cite>b</cite> array is only treated as a shape (M,) column vector if it is
+exactly 1-dimensional. In all other instances it is treated as a stack
+of (M, K) matrices.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">dp</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">dp</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">]])</span>

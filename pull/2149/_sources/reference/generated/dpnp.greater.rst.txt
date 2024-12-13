@@ -1,6 +1,10 @@
-﻿dpnp.greater
+﻿
+
+dpnp.greater
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: greater

@@ -8,6 +8,7 @@ var dir_2dc4cca66e7325a4fed455b9bcd79a3e =
     [ "fmod.hpp", "kernels_2elementwise__functions_2fmod_8hpp_source.html", null ],
     [ "gcd.hpp", "kernels_2elementwise__functions_2gcd_8hpp_source.html", null ],
     [ "heaviside.hpp", "kernels_2elementwise__functions_2heaviside_8hpp_source.html", null ],
+    [ "i0.hpp", "kernels_2elementwise__functions_2i0_8hpp_source.html", null ],
     [ "lcm.hpp", "kernels_2elementwise__functions_2lcm_8hpp_source.html", null ],
     [ "ldexp.hpp", "kernels_2elementwise__functions_2ldexp_8hpp_source.html", null ],
     [ "logaddexp2.hpp", "kernels_2elementwise__functions_2logaddexp2_8hpp_source.html", null ],

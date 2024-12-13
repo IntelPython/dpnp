@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -145,6 +145,7 @@
 
 <span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="n">dpnp_modf</span>
 <span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DPNPI0</span><span class="p">,</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
     <span class="n">DPNPImag</span><span class="p">,</span>
@@ -179,6 +180,8 @@
     <span class="s2">&quot;cross&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cumprod&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cumsum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cumulative_prod&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cumulative_sum&quot;</span><span class="p">,</span>
     <span class="s2">&quot;diff&quot;</span><span class="p">,</span>
     <span class="s2">&quot;divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ediff1d&quot;</span><span class="p">,</span>
@@ -194,6 +197,7 @@
     <span class="s2">&quot;gradient&quot;</span><span class="p">,</span>
     <span class="s2">&quot;heaviside&quot;</span><span class="p">,</span>
     <span class="s2">&quot;imag&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;i0&quot;</span><span class="p">,</span>
     <span class="s2">&quot;lcm&quot;</span><span class="p">,</span>
     <span class="s2">&quot;ldexp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;maximum&quot;</span><span class="p">,</span>
@@ -509,6 +513,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -881,7 +887,7 @@
 
 
 
-<span class="n">_COPYSING_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_COPYSIGN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Composes a floating-point value with the magnitude of `x1_i` and the sign of</span>
 <span class="s2">`x2_i` for each element of input arrays `x1` and `x2`.</span>
 
@@ -896,6 +902,8 @@
 <span class="s2">    Second input array, also expected to have a real floating-point data</span>
 <span class="s2">    type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -942,7 +950,7 @@
     <span class="s2">&quot;copysign&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_copysign</span><span class="p">,</span>
-    <span class="n">_COPYSING_DOCSTRING</span><span class="p">,</span>
+    <span class="n">_COPYSIGN_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -1161,6 +1169,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.cumulative_prod` : Array API compatible alternative for</span>
+<span class="sd">                                :obj:`dpnp.cumprod`.</span>
 <span class="sd">    :obj:`dpnp.prod` : Product array elements.</span>
 
 <span class="sd">    Examples</span>
@@ -1245,6 +1255,8 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.cumulative_sum` : Array API compatible alternative for</span>
+<span class="sd">                                :obj:`dpnp.cumsum`.</span>
 <span class="sd">    :obj:`dpnp.sum` : Sum array elements.</span>
 <span class="sd">    :obj:`dpnp.trapezoid` : Integration of array values using composite</span>
 <span class="sd">                            trapezoidal rule.</span>
@@ -1259,8 +1271,8 @@
 <span class="sd">           [4, 5, 6]])</span>
 <span class="sd">    &gt;&gt;&gt; np.cumsum(a)</span>
 <span class="sd">    array([ 1,  3,  6, 10, 15, 21])</span>
-<span class="sd">    &gt;&gt;&gt; np.cumsum(a, dtype=float)     # specifies type of output value(s)</span>
-<span class="sd">    array([ 1.,  3.,  6., 10., 15., 21.])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumsum(a, dtype=np.float32)     # specifies type of output value(s)</span>
+<span class="sd">    array([ 1.,  3.,  6., 10., 15., 21.], dtype=np.float32)</span>
 
 <span class="sd">    &gt;&gt;&gt; np.cumsum(a, axis=0)     # sum over rows for each of the 3 columns</span>
 <span class="sd">    array([[1, 2, 3],</span>
@@ -1271,8 +1283,8 @@
 
 <span class="sd">    ``cumsum(b)[-1]`` may not be equal to ``sum(b)``</span>
 
-<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2e-9, 3e-9] * 10000)</span>
-<span class="sd">    &gt;&gt;&gt; b.cumsum().dtype == b.sum().dtype == np.float64</span>
+<span class="sd">    &gt;&gt;&gt; b = np.array([1, 2e-7, 3e-7] * 100000, dtype=np.float32)</span>
+<span class="sd">    &gt;&gt;&gt; b.cumsum().dtype == b.sum().dtype == np.float32</span>
 <span class="sd">    True</span>
 <span class="sd">    &gt;&gt;&gt; b.cumsum()[-1] == b.sum()</span>
 <span class="sd">    array(False)</span>
@@ -1293,6 +1305,190 @@
         <span class="n">usm_a</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="cumulative_prod">
+<a class="viewcode-back" href="../../reference/generated/dpnp.cumulative_prod.html#dpnp.cumulative_prod">[docs]</a>
+<span class="k">def</span> <span class="nf">cumulative_prod</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the cumulative product of elements along a given axis.</span>
+
+<span class="sd">    This function is an Array API compatible alternative to :obj:`dpnp.cumprod`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.cumulative_prod`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis along which the cumulative product is computed. The default value</span>
+<span class="sd">        is only allowed for one-dimensional arrays. For arrays with more than</span>
+<span class="sd">        one dimension `axis` is required.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
+<span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
+<span class="sd">        `x`, unless `x` has an integer dtype with a precision less than that of</span>
+<span class="sd">        the default platform integer. In that case, the default platform</span>
+<span class="sd">        integer is used.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have the</span>
+<span class="sd">        same shape and buffer length as the expected output but the type will</span>
+<span class="sd">        be cast if necessary.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    include_initial : bool, optional</span>
+<span class="sd">        Boolean indicating whether to include the initial value (ones) as</span>
+<span class="sd">        the first value in the output. With ``include_initial=True``</span>
+<span class="sd">        the shape of the output is different than the shape of the input.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A new array holding the result is returned unless `out` is specified,</span>
+<span class="sd">        in which case a reference to `out` is returned. The</span>
+<span class="sd">        result has the same shape as `x` if ``include_initial=False``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.prod` : Product array elements.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_prod(a) # intermediate results 1, 1*2</span>
+<span class="sd">    ...                       # total product 1*2*3 = 6</span>
+<span class="sd">    array([1, 2, 6])</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_prod(a, dtype=np.float32) # specify type of output</span>
+<span class="sd">    array([  1.,   2.,   6.,  24., 120., 720.], dtype=float32)</span>
+
+<span class="sd">    The cumulative product for each column (i.e., over the rows) of `b`:</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_prod(b, axis=0)</span>
+<span class="sd">    array([[ 1,  2,  3],</span>
+<span class="sd">           [ 4, 10, 18]])</span>
+
+<span class="sd">    The cumulative product for each row (i.e. over the columns) of `b`:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.cumulative_prod(b, axis=1)</span>
+<span class="sd">    array([[  1,   2,   6],</span>
+<span class="sd">           [  4,  20, 120]])</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="p">,</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">cumulative_prod</span><span class="p">,</span>
+        <span class="n">_get_reduction_res_dt</span><span class="p">,</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">include_initial</span><span class="o">=</span><span class="n">include_initial</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="cumulative_sum">
+<a class="viewcode-back" href="../../reference/generated/dpnp.cumulative_sum.html#dpnp.cumulative_sum">[docs]</a>
+<span class="k">def</span> <span class="nf">cumulative_sum</span><span class="p">(</span>
+    <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the cumulative sum of the elements along a given axis.</span>
+
+<span class="sd">    This function is an Array API compatible alternative to :obj:`dpnp.cumsum`.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.cumulative_sum`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        Axis along which the cumulative sum is computed. The default value</span>
+<span class="sd">        is only allowed for one-dimensional arrays. For arrays with more than</span>
+<span class="sd">        one dimension `axis` is required.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
+<span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
+<span class="sd">        `x`, unless `x` has an integer dtype with a precision less than that of</span>
+<span class="sd">        the default platform integer. In that case, the default platform</span>
+<span class="sd">        integer is used.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Alternative output array in which to place the result. It must have the</span>
+<span class="sd">        same shape and buffer length as the expected output but the type will</span>
+<span class="sd">        be cast if necessary.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    include_initial : bool, optional</span>
+<span class="sd">        Boolean indicating whether to include the initial value (ones) as</span>
+<span class="sd">        the first value in the output. With ``include_initial=True``</span>
+<span class="sd">        the shape of the output is different than the shape of the input.</span>
+<span class="sd">        Default: ``False``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        A new array holding the result is returned unless `out` is specified,</span>
+<span class="sd">        in which case a reference to `out` is returned. The</span>
+<span class="sd">        result has the same shape as `x` if ``include_initial=False``.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.sum` : Sum array elements.</span>
+<span class="sd">    :obj:`dpnp.trapezoid` : Integration of array values using composite</span>
+<span class="sd">                            trapezoidal rule.</span>
+<span class="sd">    :obj:`dpnp.diff` : Calculate the n-th discrete difference along given axis.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; a</span>
+<span class="sd">    array([1, 2, 3, 4, 5, 6])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_sum(a)</span>
+<span class="sd">    array([ 1,  3,  6, 10, 15, 21])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_sum(a, dtype=np.float32)   # specifies output dtype</span>
+<span class="sd">    array([ 1.,  3.,  6., 10., 15., 21.], dtype=np.float32)</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([[1, 2, 3], [4, 5, 6]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_sum(b, axis=0)  # sum over rows for each of the 3 columns</span>
+<span class="sd">    array([[1, 2, 3],</span>
+<span class="sd">           [5, 7, 9]])</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_sum(b, axis=1)  # sum over columns for each of the 2 rows</span>
+<span class="sd">    array([[ 1,  3,  6],</span>
+<span class="sd">           [ 4,  9, 15]])</span>
+
+<span class="sd">    ``cumulative_sum(c)[-1]`` may not be equal to ``sum(c)``</span>
+
+<span class="sd">    &gt;&gt;&gt; c = np.array([1, 2e-7, 3e-7] * 100000, dtype=np.float32)</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_sum(c).dtype == c.sum().dtype == np.float32</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.cumulative_sum(c)[-1] == c.sum()</span>
+<span class="sd">    array(False)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span>
+        <span class="n">out</span><span class="p">,</span>
+        <span class="n">dpt</span><span class="o">.</span><span class="n">cumulative_sum</span><span class="p">,</span>
+        <span class="n">_get_reduction_res_dt</span><span class="p">,</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x</span><span class="p">),</span>
+        <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">include_initial</span><span class="o">=</span><span class="n">include_initial</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -1382,6 +1578,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1682,6 +1880,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to floating-point data types.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -1833,6 +2033,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1907,6 +2109,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1992,6 +2196,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2074,6 +2280,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a real-valued data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2143,8 +2351,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    An array of floats to be rounded.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2410,6 +2618,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    The value of the function when `x1` is ``0``.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2444,6 +2654,50 @@
     <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_heaviside</span><span class="p">,</span>
     <span class="n">_HEAVISIDE_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="n">_I0_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Modified Bessel function of the first kind, order 0.</span>
+
+<span class="s2">Usually denoted :math:`I_0`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.i0`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Argument of the Bessel function, expected to have floating-point data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The modified Bessel function evaluated at each of the elements of `x`.</span>
+<span class="s2">    If the input is of either boolean or integer data type, the returned array</span>
+<span class="s2">    will have the default floating point data type of a device where `x` has</span>
+<span class="s2">    been allocated. Otherwise the returned array has the same data type.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; np.i0(np.array(0.0))</span>
+<span class="s2">array(1.)</span>
+<span class="s2">&gt;&gt;&gt; np.i0(np.array([0, 1, 2, 3]))</span>
+<span class="s2">array([1.        , 1.26606588, 2.2795853 , 4.88079259])</span>
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">i0</span> <span class="o">=</span> <span class="n">DPNPI0</span><span class="p">(</span>
+    <span class="s2">&quot;i0&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_i0_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_i0</span><span class="p">,</span>
+    <span class="n">_I0_DOCSTRING</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -2518,6 +2772,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2575,6 +2831,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Array of exponents of two, expected to have an integer data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -2640,6 +2898,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2720,6 +2980,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).s</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2828,6 +3090,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3093,6 +3357,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    The direction where to look for the next representable value of `x1`.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -3214,6 +3480,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -3582,6 +3850,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a real-valued data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4008,6 +4278,8 @@
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have numeric data type.</span>
 <span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>

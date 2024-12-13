@@ -1,6 +1,10 @@
-﻿dpnp.exp
+﻿
+
+dpnp.exp
 ========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: exp

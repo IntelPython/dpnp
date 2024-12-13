@@ -1,6 +1,10 @@
-﻿dpnp.random.permutation
+﻿
+
+dpnp.random.permutation
 =======================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: permutation

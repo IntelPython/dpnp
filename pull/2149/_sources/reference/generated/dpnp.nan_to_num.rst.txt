@@ -1,6 +1,10 @@
-﻿dpnp.nan\_to\_num
+﻿
+
+dpnp.nan\_to\_num
 =================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: nan_to_num

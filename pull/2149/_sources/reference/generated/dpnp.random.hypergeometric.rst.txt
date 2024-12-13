@@ -1,6 +1,10 @@
-﻿dpnp.random.hypergeometric
+﻿
+
+dpnp.random.hypergeometric
 ==========================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: hypergeometric

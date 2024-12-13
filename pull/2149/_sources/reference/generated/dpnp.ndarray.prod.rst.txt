@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.prod
+:orphan:
+
+dpnp.ndarray.prod
 =================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.prod

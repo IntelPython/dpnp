@@ -1,6 +1,10 @@
-﻿dpnp.logical\_and
+﻿
+
+dpnp.logical\_and
 =================
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: logical_and

@@ -1,6 +1,10 @@
-﻿dpnp.argwhere
+﻿
+
+dpnp.argwhere
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: argwhere

@@ -1,6 +1,10 @@
-﻿dpnp.random.multinomial
+﻿
+
+dpnp.random.multinomial
 =======================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: multinomial

@@ -1,6 +1,10 @@
-﻿dpnp.unstack
+﻿
+
+dpnp.unstack
 ============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: unstack

@@ -1,6 +1,10 @@
-﻿dpnp.choose
+﻿
+
+dpnp.choose
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: choose

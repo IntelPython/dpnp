@@ -1,6 +1,10 @@
-﻿dpnp.sinc
+﻿
+
+dpnp.sinc
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: sinc

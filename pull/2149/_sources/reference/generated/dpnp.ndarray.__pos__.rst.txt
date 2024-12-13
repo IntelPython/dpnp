@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_pos\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_pos\_\_
 ========================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__pos__

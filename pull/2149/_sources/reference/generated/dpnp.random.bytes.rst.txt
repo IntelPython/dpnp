@@ -1,6 +1,10 @@
-﻿dpnp.random.bytes
+﻿
+
+dpnp.random.bytes
 =================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: bytes

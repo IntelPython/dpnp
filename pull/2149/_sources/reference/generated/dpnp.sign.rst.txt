@@ -1,6 +1,10 @@
-﻿dpnp.sign
+﻿
+
+dpnp.sign
 =========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: sign

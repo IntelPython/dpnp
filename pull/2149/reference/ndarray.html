@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -113,6 +113,7 @@
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.partition.html">dpnp.ndarray.partition</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.searchsorted.html">dpnp.ndarray.searchsorted</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.nonzero.html">dpnp.ndarray.nonzero</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.compress.html">dpnp.ndarray.compress</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.diagonal.html">dpnp.ndarray.diagonal</a></li>
 </ul>
 </li>
@@ -368,7 +369,7 @@ more complete description.)</p>
 <a class="reference internal" href="generated/dpnp.argmax.html#dpnp.argmax" title="dpnp.argmax"><code class="xref py py-func docutils literal notranslate"><span class="pre">argmax</span></code></a>, <a class="reference internal" href="generated/dpnp.argmin.html#dpnp.argmin" title="dpnp.argmin"><code class="xref py py-func docutils literal notranslate"><span class="pre">argmin</span></code></a>,
 <code class="xref py py-func docutils literal notranslate"><span class="pre">argpartition</span></code>, <a class="reference internal" href="generated/dpnp.argsort.html#dpnp.argsort" title="dpnp.argsort"><code class="xref py py-func docutils literal notranslate"><span class="pre">argsort</span></code></a>,
 <a class="reference internal" href="generated/dpnp.choose.html#dpnp.choose" title="dpnp.choose"><code class="xref py py-func docutils literal notranslate"><span class="pre">choose</span></code></a>, <a class="reference internal" href="generated/dpnp.clip.html#dpnp.clip" title="dpnp.clip"><code class="xref py py-func docutils literal notranslate"><span class="pre">clip</span></code></a>,
-<code class="xref py py-func docutils literal notranslate"><span class="pre">compress</span></code>, <a class="reference internal" href="generated/dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-func docutils literal notranslate"><span class="pre">copy</span></code></a>,
+<a class="reference internal" href="generated/dpnp.compress.html#dpnp.compress" title="dpnp.compress"><code class="xref py py-func docutils literal notranslate"><span class="pre">compress</span></code></a>, <a class="reference internal" href="generated/dpnp.copy.html#dpnp.copy" title="dpnp.copy"><code class="xref py py-func docutils literal notranslate"><span class="pre">copy</span></code></a>,
 <a class="reference internal" href="generated/dpnp.cumprod.html#dpnp.cumprod" title="dpnp.cumprod"><code class="xref py py-func docutils literal notranslate"><span class="pre">cumprod</span></code></a>, <a class="reference internal" href="generated/dpnp.cumsum.html#dpnp.cumsum" title="dpnp.cumsum"><code class="xref py py-func docutils literal notranslate"><span class="pre">cumsum</span></code></a>,
 <a class="reference internal" href="generated/dpnp.diagonal.html#dpnp.diagonal" title="dpnp.diagonal"><code class="xref py py-func docutils literal notranslate"><span class="pre">diagonal</span></code></a>, <a class="reference internal" href="generated/dpnp.imag.html#dpnp.imag" title="dpnp.imag"><code class="xref py py-func docutils literal notranslate"><span class="pre">imag</span></code></a>,
 <a class="reference internal" href="generated/dpnp.max.html#dpnp.max" title="dpnp.max"><code class="xref py py-func docutils literal notranslate"><span class="pre">max</span></code></a>, <a class="reference internal" href="generated/dpnp.mean.html#dpnp.mean" title="dpnp.mean"><code class="xref py py-func docutils literal notranslate"><span class="pre">mean</span></code></a>, <a class="reference internal" href="generated/dpnp.min.html#dpnp.min" title="dpnp.min"><code class="xref py py-func docutils literal notranslate"><span class="pre">min</span></code></a>,
@@ -462,7 +463,10 @@ the operation should proceed.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.nonzero.html#dpnp.ndarray.nonzero" title="dpnp.ndarray.nonzero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.nonzero</span></code></a></p></td>
 <td><p>Return the indices of the elements that are non-zero.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.diagonal.html#dpnp.ndarray.diagonal" title="dpnp.ndarray.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.diagonal</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.compress.html#dpnp.ndarray.compress" title="dpnp.ndarray.compress"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.compress</span></code></a></p></td>
+<td><p>Select slices of an array along a given axis.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.diagonal.html#dpnp.ndarray.diagonal" title="dpnp.ndarray.diagonal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.diagonal</span></code></a></p></td>
 <td><p>Return specified diagonals.</p></td>
 </tr>
 </tbody>

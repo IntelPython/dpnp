@@ -1,6 +1,10 @@
-﻿dpnp.histogram
+﻿
+
+dpnp.histogram
 ==============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: histogram

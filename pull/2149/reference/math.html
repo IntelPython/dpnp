@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -60,13 +60,14 @@
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array manipulation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="binary.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Mathematical functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#trigonometric-functions">Trigonometric functions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#hyperbolic-functions">Hyperbolic functions</a></li>
@@ -82,9 +83,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, Searching, and Counting</a></li>
-<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
@@ -266,6 +267,12 @@
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.nansum.html#dpnp.nansum" title="dpnp.nansum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.nansum</span></code></a></p></td>
 <td><p>Return the sum of array elements over a given axis treating Not a Numbers (NaNs) as zero.</p></td>
 </tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.cumulative_sum.html#dpnp.cumulative_sum" title="dpnp.cumulative_sum"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cumulative_sum</span></code></a></p></td>
+<td><p>Return the cumulative sum of the elements along a given axis.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.cumulative_prod.html#dpnp.cumulative_prod" title="dpnp.cumulative_prod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cumulative_prod</span></code></a></p></td>
+<td><p>Return the cumulative product of elements along a given axis.</p></td>
+</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.cumprod.html#dpnp.cumprod" title="dpnp.cumprod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cumprod</span></code></a></p></td>
 <td><p>Return the cumulative product of elements along a given axis.</p></td>
 </tr>
@@ -340,7 +347,10 @@
 <h2>Other special functions<a class="headerlink" href="#other-special-functions" title="Link to this heading"></a></h2>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.sinc.html#dpnp.sinc" title="dpnp.sinc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sinc</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.i0.html#dpnp.i0" title="dpnp.i0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.i0</span></code></a></p></td>
+<td><p>Modified Bessel function of the first kind, order 0.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.sinc.html#dpnp.sinc" title="dpnp.sinc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sinc</span></code></a></p></td>
 <td><p>Return the normalized sinc function.</p></td>
 </tr>
 </tbody>

@@ -1,6 +1,10 @@
-﻿dpnp.nextafter
+﻿
+
+dpnp.nextafter
 ==============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: nextafter

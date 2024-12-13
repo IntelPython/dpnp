@@ -15,21 +15,21 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.sort &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>dpnp.sort &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.argsort" href="dpnp.argsort.html" />
-    <link rel="prev" title="Sorting, Searching, and Counting" href="../sorting.html" /> 
+    <link rel="prev" title="Sorting, searching, and counting" href="../sorting.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -59,22 +59,23 @@
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array Manipulation Routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array manipulation routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../binary.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../fft.html">FFT Functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear Algebra</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../random.html">Random Sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../sorting.html">Sorting, Searching, and Counting</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../sorting.html">Sorting, searching, and counting</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="../sorting.html#sorting">Sorting</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../sorting.html#searching">Searching</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../sorting.html#counting">Counting</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistical Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -105,7 +106,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../sorting.html">Sorting, Searching, and Counting</a></li>
+          <li class="breadcrumb-item"><a href="../sorting.html">Sorting, searching, and counting</a></li>
       <li class="breadcrumb-item active">dpnp.sort</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.sort.rst.txt" rel="nofollow"> View page source</a>
@@ -120,7 +121,7 @@
 <h1>dpnp.sort<a class="headerlink" href="#dpnp-sort" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.sort">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.sort" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_sorting.html#sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.sort" title="Link to this definition"></a></dt>
 <dd><p>Return a sorted copy of an array.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.sort.html#numpy.sort" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.sort</span></code></a>.</p>
 <dl class="field-list simple">
@@ -129,8 +130,8 @@
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be sorted.</p></li>
 <li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- Axis along which to sort. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the array is flattened before
 sorting. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which sorts along the last axis.</p></li>
-<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;stable&quot;}</em><em>, </em><em>optional</em>) -- Sorting algorithm. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is equivalent to
-<code class="docutils literal notranslate"><span class="pre">&quot;stable&quot;</span></code>. Unlike NumPy, no other option is accepted here.</p></li>
+<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;stable&quot;</em><em>, </em><em>&quot;mergesort&quot;</em><em>, </em><em>&quot;radixsort&quot;}</em><em>, </em><em>optional</em>) -- Sorting algorithm. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is equivalent to
+<code class="docutils literal notranslate"><span class="pre">&quot;stable&quot;</span></code>.</p></li>
 <li><p><strong>stable</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- Sort stability. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned array will maintain
 the relative order of <code class="docutils literal notranslate"><span class="pre">a</span></code> values which compare as equal.
 The same behavior applies when set to <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
@@ -150,8 +151,8 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
 returned as a one-dimensional array. Otherwise, an <code class="docutils literal notranslate"><span class="pre">AxisError</span></code> is raised.</p>
 <p class="rubric">Limitations</p>
 <p>Parameters <cite>order</cite> is only supported with its default value.
-Parameter <cite>kind</cite> can only be <code class="docutils literal notranslate"><span class="pre">None</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;stable&quot;</span></code> which are equivalent.
-Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.</p>
+Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplementedError</span></code> exception will be raised.
+Sorting algorithms <code class="docutils literal notranslate"><span class="pre">&quot;quicksort&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;heapsort&quot;</span></code> are not supported.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
@@ -188,7 +189,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../sorting.html" class="btn btn-neutral float-left" title="Sorting, Searching, and Counting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../sorting.html" class="btn btn-neutral float-left" title="Sorting, searching, and counting" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpnp.argsort.html" class="btn btn-neutral float-right" title="dpnp.argsort" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

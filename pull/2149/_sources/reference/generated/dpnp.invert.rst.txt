@@ -1,6 +1,10 @@
-﻿dpnp.invert
+﻿
+
+dpnp.invert
 ===========
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: invert

@@ -1,6 +1,10 @@
-﻿dpnp.linalg.norm
+﻿
+
+dpnp.linalg.norm
 ================
 
 .. currentmodule:: dpnp.linalg
+
+
 
 .. autofunction:: norm

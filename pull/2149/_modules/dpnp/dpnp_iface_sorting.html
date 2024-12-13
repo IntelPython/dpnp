@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.17.0dev1+17.ga6e3cea49e8 documentation</title>
+  <title>dpnp.dpnp_iface_sorting &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ea768b45"></script>
+      <script src="../../_static/documentation_options.js?v=771ccdad"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -149,12 +149,18 @@
 
     <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;order keyword argument is only supported with its default value.&quot;</span>
+            <span class="s2">&quot;`order` keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
-    <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kind</span> <span class="o">!=</span> <span class="s2">&quot;stable&quot;</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-            <span class="s2">&quot;kind keyword argument can only be None or &#39;stable&#39;.&quot;</span>
-        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">stable</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">stable</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`stable` parameter should be None, True, or False.&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">kind</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`kind` and `stable` parameters can&#39;t be provided at&quot;</span>
+                <span class="s2">&quot; the same time. Use only one of them.&quot;</span>
+            <span class="p">)</span>
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -162,13 +168,13 @@
         <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
 
     <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ndim</span><span class="o">=</span><span class="n">usm_a</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span>
-    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">_sorting_fn</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="n">stable</span><span class="p">)</span>
+    <span class="n">usm_res</span> <span class="o">=</span> <span class="n">_sorting_fn</span><span class="p">(</span><span class="n">usm_a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="n">stable</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="argsort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.argsort.html#dpnp.argsort">[docs]</a>
-<span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">argsort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices that would sort an array.</span>
 
@@ -181,9 +187,9 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        Axis along which to sort. If ``None``, the array is flattened before</span>
 <span class="sd">        sorting. The default is ``-1``, which sorts along the last axis.</span>
-<span class="sd">    kind : {None, &quot;stable&quot;}, optional</span>
+<span class="sd">    kind : {None, &quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;}, optional</span>
 <span class="sd">        Sorting algorithm. Default is ``None``, which is equivalent to</span>
-<span class="sd">         ``&quot;stable&quot;``. Unlike NumPy, no other option is accepted here.</span>
+<span class="sd">         ``&quot;stable&quot;``.</span>
 <span class="sd">    stable : {None, bool}, optional</span>
 <span class="sd">        Sort stability. If ``True``, the returned array will maintain</span>
 <span class="sd">        the relative order of ``a`` values which compare as equal.</span>
@@ -208,8 +214,9 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `order` is only supported with its default value.</span>
-<span class="sd">    Parameter `kind` can only be ``None`` or ``&quot;stable&quot;`` which are equivalent.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+<span class="sd">    Sorting algorithms ``&quot;quicksort&quot;`` and ``&quot;heapsort&quot;`` are not supported.</span>
+
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -296,7 +303,7 @@
 
 <div class="viewcode-block" id="sort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.sort.html#dpnp.sort">[docs]</a>
-<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a sorted copy of an array.</span>
 
@@ -309,9 +316,9 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        Axis along which to sort. If ``None``, the array is flattened before</span>
 <span class="sd">        sorting. The default is ``-1``, which sorts along the last axis.</span>
-<span class="sd">    kind : {None, &quot;stable&quot;}, optional</span>
+<span class="sd">    kind : {None, &quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;}, optional</span>
 <span class="sd">        Sorting algorithm. Default is ``None``, which is equivalent to</span>
-<span class="sd">        ``&quot;stable&quot;``. Unlike NumPy, no other option is accepted here.</span>
+<span class="sd">        ``&quot;stable&quot;``.</span>
 <span class="sd">    stable : {None, bool}, optional</span>
 <span class="sd">        Sort stability. If ``True``, the returned array will maintain</span>
 <span class="sd">        the relative order of ``a`` values which compare as equal.</span>
@@ -332,8 +339,8 @@
 <span class="sd">    Limitations</span>
 <span class="sd">    -----------</span>
 <span class="sd">    Parameters `order` is only supported with its default value.</span>
-<span class="sd">    Parameter `kind` can only be ``None`` or ``&quot;stable&quot;`` which are equivalent.</span>
 <span class="sd">    Otherwise ``NotImplementedError`` exception will be raised.</span>
+<span class="sd">    Sorting algorithms ``&quot;quicksort&quot;`` and ``&quot;heapsort&quot;`` are not supported.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>

@@ -1,6 +1,10 @@
-﻿dpnp.isneginf
+﻿
+
+dpnp.isneginf
 =============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: isneginf

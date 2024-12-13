@@ -1,6 +1,10 @@
-﻿dpnp.random.standard\_t
+﻿
+
+dpnp.random.standard\_t
 =======================
 
 .. currentmodule:: dpnp.random
+
+
 
 .. autofunction:: standard_t

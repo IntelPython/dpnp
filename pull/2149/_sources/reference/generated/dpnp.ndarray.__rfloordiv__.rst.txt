@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.\_\_rfloordiv\_\_
+﻿:orphan:
+
+dpnp.ndarray.\_\_rfloordiv\_\_
 ==============================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.__rfloordiv__

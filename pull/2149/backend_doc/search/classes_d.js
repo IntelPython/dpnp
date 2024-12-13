@@ -1,9 +1,8 @@
 var searchData=
 [
-  ['potrfbatchtypepairsupportfactory_0',['PotrfBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['potrftypepairsupportfactory_1',['PotrfTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_potrf_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
-  ['precisiontype_2',['PrecisionType',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type.html',1,'dpnp::extensions::fft']]],
-  ['precisiontype_3c_20mkl_5fdft_3a_3aprecision_3a_3adouble_20_3e_3',['PrecisionType&lt; mkl_dft::precision::DOUBLE &gt;',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html',1,'dpnp::extensions::fft']]],
-  ['precisiontype_3c_20mkl_5fdft_3a_3aprecision_3a_3asingle_20_3e_4',['PrecisionType&lt; mkl_dft::precision::SINGLE &gt;',['../structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html',1,'dpnp::extensions::fft']]],
-  ['python_5fconstants_5',['python_constants',['../structpython__constants.html',1,'']]]
+  ['one_5fof_0',['one_of',['../structstatistics_1_1common_1_1one__of.html',1,'statistics::common']]],
+  ['one_5fof_3c_20t_2c_20std_3a_3atuple_3c_20top_20_3e_20_3e_1',['one_of&lt; T, std::tuple&lt; Top &gt; &gt;',['../structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html',1,'statistics::common']]],
+  ['one_5fof_3c_20t_2c_20std_3a_3atuple_3c_20top_2c_20rest_2e_2e_2e_20_3e_20_3e_2',['one_of&lt; T, std::tuple&lt; Top, Rest... &gt; &gt;',['../structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html',1,'statistics::common']]],
+  ['orgqrbatchtypepairsupportfactory_3',['OrgqrBatchTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_batch_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]],
+  ['orgqrtypepairsupportfactory_4',['OrgqrTypePairSupportFactory',['../structdpnp_1_1extensions_1_1lapack_1_1types_1_1_orgqr_type_pair_support_factory.html',1,'dpnp::extensions::lapack::types']]]
 ];

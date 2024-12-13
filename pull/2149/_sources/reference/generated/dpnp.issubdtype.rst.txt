@@ -1,6 +1,10 @@
-﻿dpnp.issubdtype
+﻿
+
+dpnp.issubdtype
 ===============
 
 .. currentmodule:: dpnp
+
+
 
 .. autofunction:: issubdtype

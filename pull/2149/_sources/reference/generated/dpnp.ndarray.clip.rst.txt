@@ -1,6 +1,10 @@
-﻿dpnp.ndarray.clip
+:orphan:
+
+dpnp.ndarray.clip
 =================
 
 .. currentmodule:: dpnp
+
+method
 
 .. automethod:: ndarray.clip
