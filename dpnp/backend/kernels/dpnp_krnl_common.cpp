@@ -40,7 +40,7 @@
  * sycl::ext::oneapi::experimental::properties was added.
  */
 #ifndef __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT
-#define __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT 20241129
+#define __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT 20241210L
 #endif
 
 namespace mkl_blas = oneapi::mkl::blas;
