@@ -321,7 +321,7 @@ def bincount(x, weights=None, minlength=None):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input 1-dimensional array with nonnegative integer values.
+        Input 1-dimensional array with non-negative integer values.
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         Weights, array of the same shape as `x`.
         Default: ``None``
