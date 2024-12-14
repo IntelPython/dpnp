@@ -29,7 +29,7 @@ import dpnp
 __all__ = ["dpnp_wrap_reduction_call"]
 
 
-def dpnp_wrap_reduction_call(a, out, _reduction_fn, res_dt, **kwargs):
+def dpnp_wrap_reduction_call(usm_a, out, _reduction_fn, res_dt, **kwargs):
     """Wrap a reduction call from dpctl.tensor interface."""
 
     input_out = out
@@ -45,5 +45,5 @@ def dpnp_wrap_reduction_call(a, out, _reduction_fn, res_dt, **kwargs):
         usm_out = dpnp.get_usm_ndarray(out)
 
     kwargs["out"] = usm_out
-    res_usm = _reduction_fn(a, **kwargs)
+    res_usm = _reduction_fn(usm_a, **kwargs)
     return dpnp.get_result_array(res_usm, input_out, casting="unsafe")
