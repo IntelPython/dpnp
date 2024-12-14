@@ -4,7 +4,11 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import (
+    has_support_aspect64,
+    is_win_platform,
+    numpy_version,
+)
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -94,20 +98,22 @@ class TestElementwiseType(unittest.TestCase):
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_upper_1(self, xp, dtype):
-        a = xp.array([0], dtype=numpy.int8)
+        a = xp.array([0], dtype=xp.int8)
         b = xp.iinfo(dtype).max
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_upper_2(self, xp, dtype):
-        if (
-            numpy.issubdtype(dtype, numpy.unsignedinteger)
-            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
-        ):
-            pytest.skip("numpy promotes dtype differently")
+        if numpy_version() < "2.0.0":
+            flag = dtype in [xp.int16, xp.int32, xp.int64, xp.longlong]
+            if xp.issubdtype(dtype, xp.unsignedinteger) or flag:
+                pytest.skip("numpy doesn't raise OverflowError")
 
-        a = xp.array([1], dtype=numpy.int8)
+            if dtype == xp.int8 and is_win_platform():
+                pytest.skip("numpy promotes dtype differently")
+
+        a = xp.array([1], dtype=xp.int8)
         b = xp.iinfo(dtype).max - 1
         return a + b
 
@@ -116,7 +122,7 @@ class TestElementwiseType(unittest.TestCase):
     def test_large_int_upper_3(self, xp, dtype):
         if (
             numpy.issubdtype(dtype, numpy.unsignedinteger)
-            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            and numpy_version() < "2.0.0"
         ):
             pytest.skip("numpy promotes dtype differently")
         elif (
@@ -134,7 +140,7 @@ class TestElementwiseType(unittest.TestCase):
     def test_large_int_upper_4(self, xp, dtype):
         if (
             numpy.issubdtype(dtype, numpy.unsignedinteger)
-            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            and numpy_version() < "2.0.0"
         ):
             pytest.skip("numpy promotes dtype differently")
         elif (
@@ -150,14 +156,29 @@ class TestElementwiseType(unittest.TestCase):
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_lower_1(self, xp, dtype):
-        a = xp.array([0], dtype=numpy.int8)
+        if numpy_version() < "2.0.0":
+            if dtype in [xp.int16, xp.int32, xp.int64, xp.longlong]:
+                pytest.skip("numpy doesn't raise OverflowError")
+
+            if dtype == xp.int8 and is_win_platform():
+                pytest.skip("numpy promotes dtype differently")
+
+        a = xp.array([0], dtype=xp.int8)
         b = xp.iinfo(dtype).min
+        res = a + b
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal(accept_error=OverflowError)
     def test_large_int_lower_2(self, xp, dtype):
-        a = xp.array([-1], dtype=numpy.int8)
+        if numpy_version() < "2.0.0":
+            if dtype in [xp.int16, xp.int32, xp.int64, xp.longlong]:
+                pytest.skip("numpy doesn't raise OverflowError")
+
+            if dtype == xp.int8 and is_win_platform():
+                pytest.skip("numpy promotes dtype differently")
+
+        a = xp.array([-1], dtype=xp.int8)
         b = xp.iinfo(dtype).min + 1
         return a + b
 
@@ -166,7 +187,7 @@ class TestElementwiseType(unittest.TestCase):
     def test_large_int_lower_3(self, xp, dtype):
         if (
             numpy.issubdtype(dtype, numpy.unsignedinteger)
-            and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            and numpy_version() < "2.0.0"
         ):
             pytest.skip("numpy promotes dtype differently")
         elif (

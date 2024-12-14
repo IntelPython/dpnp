@@ -40,9 +40,21 @@ from dpnp.tests.third_party.cupy import testing
 )
 class TestDot(unittest.TestCase):
 
+    # Avoid overflow
+    skip_dtypes = {
+        (numpy.int8, numpy.int8),
+        (numpy.int8, numpy.uint8),
+        (numpy.uint8, numpy.uint8),
+    }
+
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_dot(self, xp, dtype_a, dtype_b):
+        if (dtype_a, dtype_b) in self.skip_dtypes or (
+            dtype_b,
+            dtype_a,
+        ) in self.skip_dtypes:
+            pytest.skip("avoid overflow")
         shape_a, shape_b = self.shape
         if self.trans_a:
             a = testing.shaped_arange(shape_a[::-1], xp, dtype_a).T
@@ -241,6 +253,8 @@ class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_transposed_dot(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(1, 0, 2)
         b = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(0, 2, 1)
         return xp.dot(a, b)
@@ -248,6 +262,8 @@ class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_transposed_dot_with_out(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(1, 0, 2)
         b = testing.shaped_arange((4, 2, 3), xp, dtype).transpose(2, 0, 1)
         c = xp.ndarray((3, 2, 3, 2), dtype=dtype)
@@ -323,6 +339,8 @@ class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_multidim_inner(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         b = testing.shaped_arange((3, 2, 4), xp, dtype)
         return xp.inner(a, b)
@@ -330,6 +348,8 @@ class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_transposed_higher_order_inner(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((2, 4, 3), xp, dtype).transpose(2, 0, 1)
         b = testing.shaped_arange((4, 2, 3), xp, dtype).transpose(1, 2, 0)
         return xp.inner(a, b)
@@ -358,6 +378,8 @@ class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         b = testing.shaped_arange((3, 4, 5), xp, dtype)
         return xp.tensordot(a, b)
@@ -365,6 +387,8 @@ class TestProduct:
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_transposed_tensordot(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((2, 3, 4), xp, dtype).transpose(1, 0, 2)
         b = testing.shaped_arange((4, 3, 2), xp, dtype).transpose(2, 0, 1)
         return xp.tensordot(a, b)
@@ -519,12 +543,16 @@ class TestMatrixPower(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_matrix_power_2(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 2)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_matrix_power_3(self, xp, dtype):
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 3)
 
