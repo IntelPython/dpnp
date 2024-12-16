@@ -214,7 +214,7 @@ jobs:
 
       - name: Test conda channel
         run: |
-          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
       - name: Collect dependencies
@@ -266,8 +266,7 @@ jobs:
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          shell: bash
-          timeout_minutes: 10
+          timeout_minutes: 12
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
@@ -351,7 +350,7 @@ jobs:
       - name: Test conda channel
         run: |
           @echo on
-          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
 
       - name: Dump version.json
         run: more ${{ env.ver-json-path }}
