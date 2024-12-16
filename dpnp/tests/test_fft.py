@@ -380,7 +380,8 @@ class TestFft2:
     @pytest.mark.parametrize("norm", [None, "forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_fft2(self, dtype, axes, norm, order):
-        a_np = generate_random_numpy_array((2, 3, 4), dtype)
+        x = generate_random_numpy_array((2, 3, 4), dtype)
+        a_np = numpy.array(x, order=order)
         a = dpnp.array(a_np)
 
         result = dpnp.fft.fft2(a, axes=axes, norm=norm)
@@ -442,7 +443,8 @@ class TestFftn:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_fftn(self, dtype, axes, norm, order):
-        a_np = generate_random_numpy_array((2, 3, 4, 5), dtype)
+        x = generate_random_numpy_array((2, 3, 4, 5), dtype)
+        a_np = numpy.array(x, order=order)
         a = dpnp.array(a_np)
 
         result = dpnp.fft.fftn(a, axes=axes, norm=norm)
