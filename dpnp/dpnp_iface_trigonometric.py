@@ -98,7 +98,7 @@ __all__ = [
 ]
 
 
-def _get_accumulation_res_dt(a, dtype, _out):
+def _get_accumulation_res_dt(a, dtype):
     """Get a dtype used by dpctl for result array in accumulation function."""
 
     if dtype is None:
@@ -893,11 +893,10 @@ def cumlogsumexp(
         usm_x = dpnp.get_usm_ndarray(x)
 
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.cumulative_logsumexp,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         include_initial=include_initial,
@@ -1705,11 +1704,10 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.logsumexp,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -1952,11 +1950,10 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.reduce_hypot,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
