@@ -148,7 +148,7 @@ jobs:
 
       - name: Test conda channel
         run: |
-          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
       - name: Get package version
@@ -264,7 +264,7 @@ jobs:
       - name: Test conda channel
         run: |
           @echo on
-          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
 
       - name: Dump version.json
         run: more ${{ env.ver-json-path }}
