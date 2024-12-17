@@ -191,7 +191,13 @@ def get_all_dtypes(
 
 
 def generate_random_numpy_array(
-    shape, dtype=None, hermitian=False, seed_value=None, low=-10, high=10
+    shape,
+    dtype=None,
+    order="C",
+    hermitian=False,
+    seed_value=None,
+    low=-10,
+    high=10,
 ):
     """
     Generate a random numpy array with the specified shape and dtype.
@@ -207,6 +213,9 @@ def generate_random_numpy_array(
         Desired data-type for the output array.
         If not specified, data type will be determined by numpy.
         Default : ``None``
+    order : {"C", "F"}, optional
+        Specify the memory layout of the output array.
+        Default: ``"C"``.
     hermitian : bool, optional
         If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
         Default : ``False``
@@ -223,7 +232,7 @@ def generate_random_numpy_array(
     Returns
     -------
     out : numpy.ndarray
-        A random numpy array of the specified shape and dtype.
+        A random numpy array of the specified shape, dtype and memory layout.
         The array is Hermitian or symmetric if `hermitian` is True.
 
     Note:
@@ -256,6 +265,10 @@ def generate_random_numpy_array(
             a = a.reshape(orig_shape)
         else:
             a = numpy.conj(a.T) @ a
+
+    # a.reshape(shape) returns an array in C order by default
+    if order != "C" and a.ndim > 1:
+        a = numpy.array(a, order=order)
     return a
 
 

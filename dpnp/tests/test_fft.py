@@ -380,7 +380,7 @@ class TestFft2:
     @pytest.mark.parametrize("norm", [None, "forward", "backward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_fft2(self, dtype, axes, norm, order):
-        a_np = generate_random_numpy_array((2, 3, 4), dtype)
+        a_np = generate_random_numpy_array((2, 3, 4), dtype, order)
         a = dpnp.array(a_np)
 
         result = dpnp.fft.fft2(a, axes=axes, norm=norm)
@@ -442,7 +442,7 @@ class TestFftn:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_fftn(self, dtype, axes, norm, order):
-        a_np = generate_random_numpy_array((2, 3, 4, 5), dtype)
+        a_np = generate_random_numpy_array((2, 3, 4, 5), dtype, order)
         a = dpnp.array(a_np)
 
         result = dpnp.fft.fftn(a, axes=axes, norm=norm)
@@ -696,8 +696,7 @@ class TestIrfft:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_irfft_1D_on_3D_array(self, dtype, n, axis, norm, order):
-        x = generate_random_numpy_array((4, 5, 6), dtype)
-        a_np = numpy.array(x, order=order)
+        a_np = generate_random_numpy_array((4, 5, 6), dtype, order)
         # each 1-D array of input should be Hermitian
         if axis == 0:
             a_np[0].imag = 0
@@ -937,8 +936,7 @@ class TestRfft2:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_rfft2(self, dtype, axes, norm, order):
-        x = generate_random_numpy_array((2, 3, 4), dtype)
-        a_np = numpy.array(x, order=order)
+        a_np = generate_random_numpy_array((2, 3, 4), dtype, order)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfft2(a, axes=axes, norm=norm)
@@ -1002,8 +1000,7 @@ class TestRfftn:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_rfftn(self, dtype, axes, norm, order):
-        x = generate_random_numpy_array((2, 3, 4, 5), dtype)
-        a_np = numpy.array(x, order=order)
+        a_np = generate_random_numpy_array((2, 3, 4, 5), dtype, order)
         a = dpnp.asarray(a_np)
 
         result = dpnp.fft.rfftn(a, axes=axes, norm=norm)
