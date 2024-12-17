@@ -87,6 +87,21 @@ class TestAdd:
             with pytest.raises(ValueError):
                 ia += ib
 
+    @pytest.mark.parametrize("dtype1", ALL_DTYPES)
+    @pytest.mark.parametrize("dtype2", ALL_DTYPES)
+    def test_inplace_dtype_explicit(self, dtype1, dtype2):
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+            result = dpnp.add(ia, ib, out=ia)
+            expected = numpy.add(a, b, out=a)
+            assert_dtype_allclose(result, expected)
+        else:
+            assert_raises(TypeError, numpy.add, a, b, out=a)
+            assert_raises(ValueError, dpnp.add, ia, ib, out=ia)
+
     @pytest.mark.parametrize("shape", [(0,), (15,), (2, 2)])
     def test_invalid_shape(self, shape):
         a, b = dpnp.arange(10), dpnp.arange(10)
@@ -228,6 +243,21 @@ class TestDivide:
 
             with pytest.raises(ValueError):
                 ia /= ib
+
+    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dtype2", get_float_complex_dtypes())
+    def test_inplace_dtype_explicit(self, dtype1, dtype2):
+        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = numpy.array([5, -2, -10, 1, 10], dtype=dtype2)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+            result = dpnp.divide(ia, ib, out=ia)
+            expected = numpy.divide(a, b, out=a)
+            assert_dtype_allclose(result, expected)
+        else:
+            assert_raises(TypeError, numpy.divide, a, b, out=a)
+            assert_raises(ValueError, dpnp.divide, ia, ib, out=ia)
 
     @pytest.mark.parametrize("shape", [(0,), (15,), (2, 2)])
     def test_invalid_shape(self, shape):
