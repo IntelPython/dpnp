@@ -741,6 +741,7 @@ class TestTake:
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_over_index(self, a_dt, mode):
         a = get_abs_array([-2, -1, 0, 1, 2], a_dt)
+        a = dpnp.array(a)
         ind = dpnp.array([-5, 5], dtype=numpy.intp)
 
         result = dpnp.take(a, ind, mode=mode)
