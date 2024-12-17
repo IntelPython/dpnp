@@ -1,0 +1,14 @@
+
+:orphan:
+
+
+dpnp.ndarray.imag
+=================
+
+.. currentmodule:: dpnp
+
+
+property
+
+
+.. autoproperty:: ndarray.imag
