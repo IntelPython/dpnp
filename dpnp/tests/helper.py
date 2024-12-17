@@ -142,6 +142,12 @@ def get_float_complex_dtypes(no_float16=True, device=None):
     return dtypes
 
 
+def get_abs_array(data, dtype=None):
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        data = numpy.abs(data)
+    return numpy.array(data, dtype=dtype)
+
+
 def get_all_dtypes(
     no_bool=False,
     no_float16=True,

@@ -4,23 +4,19 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
 
-from .helper import get_all_dtypes
+from .helper import get_abs_array, get_all_dtypes
 
 
 @pytest.mark.parametrize("func", ["amax", "amin"])
 @pytest.mark.parametrize("keepdims", [True, False])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_amax_amin(func, keepdims, dtype):
-    a = numpy.array(
-        [
-            [[-2.0, 3.0], [9.1, 0.2]],
-            [[-2.0, 5.0], [-2, -1.2]],
-            [[1.0, -2.0], [5.0, -1.1]],
-        ],
-    )
-    if numpy.issubdtype(dtype, numpy.unsignedinteger):
-        a = numpy.abs(a)
-    a = a.astype(dtype)
+    a = [
+        [[-2.0, 3.0], [9.1, 0.2]],
+        [[-2.0, 5.0], [-2, -1.2]],
+        [[1.0, -2.0], [5.0, -1.1]],
+    ]
+    a = get_abs_array(a, dtype)
     ia = dpnp.array(a)
 
     for axis in range(len(a)):

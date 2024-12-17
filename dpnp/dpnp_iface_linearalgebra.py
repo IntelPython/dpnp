@@ -73,7 +73,10 @@ def _call_multiply(a, b, out=None):
     sc, arr = (a, b) if dpnp.isscalar(a) else (b, a)
     sc_dtype = map_dtype_to_device(type(sc), arr.sycl_device)
     res_dtype = dpnp.result_type(sc_dtype, arr)
-    res = dpnp.multiply(a, b, dtype=res_dtype)
+    if out is not None and out.dtype == arr.dtype:
+        res = dpnp.multiply(a, b, out=out)
+    else:
+        res = dpnp.multiply(a, b, dtype=res_dtype)
     return dpnp.get_result_array(res, out, casting="no")
 
 

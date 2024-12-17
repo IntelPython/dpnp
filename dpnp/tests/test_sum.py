@@ -37,8 +37,7 @@ from .helper import (
 @pytest.mark.parametrize("keepdims", [True, False])
 @pytest.mark.parametrize("order", ["C", "F"])
 def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
-    a_np = generate_random_numpy_array(shape, dtype_in)
-    a_np = numpy.array(a_np, order=order)
+    a_np = generate_random_numpy_array(shape, dtype_in, order)
     a = dpnp.asarray(a_np)
 
     if transpose:

@@ -282,7 +282,7 @@ def _copy_array(x, complex_input):
         # r2c FFT, if input is integer or float16 dtype, convert to
         # float32 or float64 depending on device capabilities
         copy_flag = True
-        if dtype in [dpnp.float16]:
+        if dtype == dpnp.float16:
             dtype = dpnp.float32
         else:
             dtype = map_dtype_to_device(dpnp.float64, x.sycl_device)

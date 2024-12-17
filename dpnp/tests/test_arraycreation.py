@@ -14,10 +14,7 @@ from numpy.testing import (
 
 import dpnp
 
-from .helper import (
-    assert_dtype_allclose,
-    get_all_dtypes,
-)
+from .helper import assert_dtype_allclose, get_all_dtypes
 from .third_party.cupy import testing
 
 
@@ -176,8 +173,8 @@ def test_exception_subok(func, args):
 
 
 @pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
-@pytest.mark.parametrize("stop", [None, 10, -2, 20.5, 1000])
-@pytest.mark.parametrize("step", [None, 1, 2.7, -1.6, 100])
+@pytest.mark.parametrize("stop", [None, 10, -2, 20.5, 100])
+@pytest.mark.parametrize("step", [None, 1, 2.7, -1.6, 80])
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )

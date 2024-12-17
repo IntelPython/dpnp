@@ -17,7 +17,12 @@ from numpy.testing import (
 import dpnp
 from dpnp.dpnp_array import dpnp_array
 
-from .helper import get_all_dtypes, get_integer_dtypes, has_support_aspect64
+from .helper import (
+    get_abs_array,
+    get_all_dtypes,
+    get_integer_dtypes,
+    has_support_aspect64,
+)
 from .third_party.cupy import testing
 
 
@@ -122,14 +127,8 @@ class TestExtins:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("cond_dt", get_all_dtypes(no_none=True))
     def test_extract_diff_dtypes(self, a_dt, cond_dt):
-        x = [-2, -1, 0, 1, 2, 3]
-        y = [1, -1, 2, 0, -2, 3]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=a_dt)
-        if numpy.issubdtype(cond_dt, numpy.unsignedinteger):
-            y = numpy.abs(y)
-        cond = numpy.array(y, dtype=cond_dt)
+        a = get_abs_array([-2, -1, 0, 1, 2, 3], a_dt)
+        cond = get_abs_array([1, -1, 2, 0, -2, 3], cond_dt)
         ia, icond = dpnp.array(a), dpnp.array(cond)
 
         result = dpnp.extract(icond, ia)
@@ -459,17 +458,12 @@ class TestPut:
     )
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_input_1d(self, a_dt, indices, ind_dt, vals, mode):
-        x = [-2, -1, 0, 1, 2]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=a_dt)
+        a = get_abs_array([-2, -1, 0, 1, 2], a_dt)
         b = numpy.copy(a)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
-        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
-            indices = numpy.abs(indices)
-        ind = numpy.array(indices, dtype=ind_dt)
+        ind = get_abs_array(indices, ind_dt)
         if ind_dt == dpnp.bool and ind.all():
             ind[0] = False  # to get rid of duplicate indices
         iind = dpnp.array(ind)
@@ -510,16 +504,11 @@ class TestPut:
     @pytest.mark.parametrize("ind_dt", get_integer_dtypes())
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_input_2d(self, a_dt, indices, ind_dt, mode):
-        x = [[-1, 0, 1], [-2, -3, -4], [2, 3, 4]]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=a_dt)
+        a = get_abs_array([[-1, 0, 1], [-2, -3, -4], [2, 3, 4]], a_dt)
         ia = dpnp.array(a)
         vals = [10, 20]
 
-        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
-            indices = numpy.abs(indices)
-        ind = numpy.array(indices, dtype=ind_dt)
+        ind = get_abs_array(indices, ind_dt)
         iind = dpnp.array(ind)
 
         if numpy.issubdtype(ind_dt, numpy.uint64):
@@ -707,13 +696,8 @@ class TestTake:
     )
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_1d(self, a_dt, ind_dt, indices, mode):
-        x = [-2, -1, 0, 1, 2]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=a_dt)
-        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
-            indices = numpy.abs(indices)
-        ind = numpy.array(indices, dtype=ind_dt)
+        a = get_abs_array([-2, -1, 0, 1, 2], a_dt)
+        ind = get_abs_array(indices, ind_dt)
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
         if numpy.can_cast(ind_dt, numpy.intp, casting="safe"):
@@ -739,13 +723,8 @@ class TestTake:
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     @pytest.mark.parametrize("axis", [0, 1])
     def test_2d(self, a_dt, ind_dt, indices, mode, axis):
-        x = [[-1, 0, 1], [-2, -3, -4], [2, 3, 4]]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=a_dt)
-        if numpy.issubdtype(ind_dt, numpy.unsignedinteger):
-            indices = numpy.abs(indices)
-        ind = numpy.array(indices, dtype=ind_dt)
+        a = get_abs_array([[-1, 0, 1], [-2, -3, -4], [2, 3, 4]], a_dt)
+        ind = get_abs_array(indices, ind_dt)
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
         if numpy.issubdtype(ind_dt, numpy.uint64):
@@ -761,16 +740,11 @@ class TestTake:
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
     def test_over_index(self, a_dt, mode):
-        x = [-2, -1, 0, 1, 2]
-        y = [-2, 2]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-            y = numpy.abs(y)
-        a = dpnp.array(x, dtype=a_dt)
+        a = get_abs_array([-2, -1, 0, 1, 2], a_dt)
         ind = dpnp.array([-5, 5], dtype=numpy.intp)
 
         result = dpnp.take(a, ind, mode=mode)
-        expected = dpnp.array(y, dtype=a.dtype)
+        expected = get_abs_array([-2, 2], a_dt)
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])

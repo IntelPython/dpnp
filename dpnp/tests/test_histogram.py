@@ -14,6 +14,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    get_abs_array,
     get_all_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
@@ -44,10 +45,10 @@ class TestDigitize:
         ],
     )
     def test_digitize(self, x, bins, dtype, right):
+        x = get_abs_array(x, dtype)
         if numpy.issubdtype(dtype, numpy.unsignedinteger) and bins[0] == -4:
-            x = numpy.abs(x)
+            # bins should be monotonically increasing, cannot use get_abs_array
             bins = numpy.array([0, 2, 4, 6, 8])
-        x = x.astype(dtype)
         bins = bins.astype(dtype)
         x_dp = dpnp.array(x)
         bins_dp = dpnp.array(bins)
@@ -531,6 +532,7 @@ class TestBincount:
         iv = dpnp.array(v)
 
         if numpy.issubdtype(dtype, numpy.uint64):
+            # discussed in numpy issue 17760
             assert_raises(TypeError, numpy.bincount, v)
             assert_raises(ValueError, dpnp.bincount, iv)
         else:

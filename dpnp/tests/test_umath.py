@@ -12,6 +12,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    get_abs_array,
     get_all_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
@@ -325,10 +326,7 @@ class TestDegrees:
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dtype):
-        x = [numpy.pi, -0.5 * numpy.pi]
-        if numpy.issubdtype(dtype, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=dtype)
+        a = get_abs_array([numpy.pi, -0.5 * numpy.pi], dtype)
         ia = dpnp.array(a)
 
         result = dpnp.degrees(ia)
@@ -524,10 +522,7 @@ class TestRadians:
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dtype):
-        x = [120.0, -90.0]
-        if numpy.issubdtype(dtype, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=dtype)
+        a = get_abs_array([120.0, -90.0], dtype)
         ia = dpnp.array(a)
 
         result = dpnp.radians(ia)

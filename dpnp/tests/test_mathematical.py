@@ -24,6 +24,7 @@ from dpnp.dpnp_utils import map_dtype_to_device
 from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
+    get_abs_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
@@ -40,8 +41,8 @@ from .test_umath import (
 from .third_party.cupy import testing
 
 
+@pytest.mark.parametrize("deg", [True, False])
 class TestAngle:
-    @pytest.mark.parametrize("deg", [True, False])
     def test_angle_bool(self, deg):
         dp_a = dpnp.array([True, False])
         np_a = dp_a.asnumpy()
@@ -57,7 +58,6 @@ class TestAngle:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
-    @pytest.mark.parametrize("deg", [True, False])
     def test_angle(self, dtype, deg):
         dp_a = dpnp.arange(10, dtype=dtype)
         np_a = dp_a.asnumpy()
@@ -69,7 +69,6 @@ class TestAngle:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize("deg", [True, False])
     def test_angle_complex(self, dtype, deg):
         a = numpy.random.rand(10)
         b = numpy.random.rand(10)
@@ -874,10 +873,7 @@ class TestFix:
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dt):
-        x = [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]]
-        if dpnp.issubdtype(dt, dpnp.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=dt)
+        a = get_abs_array([[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dt)
         ia = dpnp.array(a)
 
         result = dpnp.fix(ia)
@@ -895,10 +891,9 @@ class TestFix:
         "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
     def test_out(self, a_dt):
-        x = [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]]
-        if dpnp.issubdtype(a_dt, dpnp.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=a_dt)
+        a = get_abs_array(
+            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], a_dt
+        )
         ia = dpnp.array(a)
 
         out_dt = _get_output_data_type(a.dtype)
@@ -1299,13 +1294,8 @@ class TestHeavside:
         "b_dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_both_input_as_arrays(self, a_dt, b_dt):
-        x = [-1.5, 0, 2.0]
-        y = [-0, 0.5, 1.0]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-            y = numpy.abs(y)
-        a = numpy.array(x, dtype=a_dt)
-        b = numpy.array(y, dtype=b_dt)
+        a = get_abs_array([-1.5, 0, 2.0], a_dt)
+        b = get_abs_array([-0, 0.5, 1.0], b_dt)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.heaviside(ia, ib)
@@ -1359,9 +1349,11 @@ class TestI0:
 
         result = dpnp.i0(ia)
         expected = numpy.i0(a)
-        # numpy promotes result for integer inputs to float64 dtype, but dpnp
+        # NumPy promotes result of integer inputs to float64, but dpnp
         # follows Type Promotion Rules
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        skip_dtype = [numpy.int8, numpy.int16, numpy.uint8, numpy.uint16]
+        flag = True if dt in skip_dtype else False
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     @pytest.mark.parametrize("dt", get_float_dtypes())
     def test_2d(self, dt):
@@ -1429,10 +1421,10 @@ class TestLdexp:
         if dpnp.issubdtype(exp_dt, dpnp.uint64):
             assert_raises(ValueError, dpnp.ldexp, imant, iexp)
             assert_raises(TypeError, numpy.ldexp, mant, exp)
-        elif dpnp.issubdtype(exp_dt, dpnp.uint32):
-            # For this special case, NumPy raises an error on Windows
-            # because it doesn't have a loop for the input types
-            # dpnp works fine
+        elif numpy.lib.NumpyVersion(
+            numpy.__version__
+        ) < "2.0.0" and dpnp.issubdtype(exp_dt, dpnp.uint32):
+            # For this special case, NumPy < "2.0.0" raises an error on Windows
             result = dpnp.ldexp(imant, iexp)
             expected = numpy.ldexp(mant, exp.astype(numpy.int32))
             assert_almost_equal(result, expected)
@@ -2178,10 +2170,7 @@ class TestSpacing:
 
     @pytest.mark.parametrize("dt", get_integer_dtypes())
     def test_integer(self, dt):
-        x = [1, 0, -3]
-        if dpnp.issubdtype(dt, dpnp.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=dt)
+        a = get_abs_array([1, 0, -3], dt)
         ia = dpnp.array(a)
 
         result = dpnp.spacing(ia)
