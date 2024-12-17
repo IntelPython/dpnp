@@ -115,12 +115,6 @@ def _count_reduce_items(arr, axis, where=True):
     return items
 
 
-def _get_comparison_res_dt(a, _dtype, _out):
-    """Get a data type used by dpctl for result array in comparison function."""
-
-    return a.dtype
-
-
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
@@ -760,11 +754,10 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.max,
-        _get_comparison_res_dt,
-        usm_a,
+        a.dtype,
         axis=axis,
         keepdims=keepdims,
     )
@@ -1026,11 +1019,10 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.min,
-        _get_comparison_res_dt,
-        usm_a,
+        a.dtype,
         axis=axis,
         keepdims=keepdims,
     )
