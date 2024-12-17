@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.17.0dev3+29.gf858d0b647f documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.17.0dev3+32.gc177f05813f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=bf3e5dd2"></script>
+      <script src="../../_static/documentation_options.js?v=14e1977f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -133,14 +133,14 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;argwhere&quot;</span><span class="p">,</span> <span class="s2">&quot;searchsorted&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a data type used by dpctl for result array in search function.&quot;&quot;&quot;</span>
 
     <span class="c1"># get a data type used by dpctl for result array in search function</span>
     <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
     <span class="c1"># numpy raises TypeError if &quot;out&quot; data type mismatch default index type</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Cannot cast from </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">res_dt</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="s2">&quot;according to the rule safe.&quot;</span>
@@ -230,11 +230,10 @@
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
+        <span class="n">usm_a</span><span class="p">,</span>
         <span class="n">out</span><span class="p">,</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">argmax</span><span class="p">,</span>
-        <span class="n">_get_search_res_dt</span><span class="p">,</span>
-        <span class="n">usm_a</span><span class="p">,</span>
+        <span class="n">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">),</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -324,11 +323,10 @@
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
+        <span class="n">usm_a</span><span class="p">,</span>
         <span class="n">out</span><span class="p">,</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">argmin</span><span class="p">,</span>
-        <span class="n">_get_search_res_dt</span><span class="p">,</span>
-        <span class="n">usm_a</span><span class="p">,</span>
+        <span class="n">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">),</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
     <span class="p">)</span></div>
