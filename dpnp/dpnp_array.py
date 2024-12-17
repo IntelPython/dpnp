@@ -347,22 +347,22 @@ class dpnp_array:
 
     def __iadd__(self, other):
         """Return ``self+=value``."""
-        dpnp.add._inplace_op(self, other)
+        dpnp.add(self, other, out=self)
         return self
 
     def __iand__(self, other):
         """Return ``self&=value``."""
-        dpnp.bitwise_and._inplace_op(self, other)
+        dpnp.bitwise_and(self, other, out=self)
         return self
 
     def __ifloordiv__(self, other):
         """Return ``self//=value``."""
-        dpnp.floor_divide._inplace_op(self, other)
+        dpnp.floor_divide(self, other, out=self)
         return self
 
     def __ilshift__(self, other):
         """Return ``self<<=value``."""
-        dpnp.left_shift._inplace_op(self, other)
+        dpnp.left_shift(self, other, out=self)
         return self
 
     def __imatmul__(self, other):
@@ -393,12 +393,12 @@ class dpnp_array:
 
     def __imod__(self, other):
         """Return ``self%=value``."""
-        dpnp.remainder._inplace_op(self, other)
+        dpnp.remainder(self, other, out=self)
         return self
 
     def __imul__(self, other):
         """Return ``self*=value``."""
-        dpnp.multiply._inplace_op(self, other)
+        dpnp.multiply(self, other, out=self)
         return self
 
     def __index__(self):
@@ -416,22 +416,22 @@ class dpnp_array:
 
     def __ior__(self, other):
         """Return ``self|=value``."""
-        dpnp.bitwise_or._inplace_op(self, other)
+        dpnp.bitwise_or(self, other, out=self)
         return self
 
     def __ipow__(self, other):
         """Return ``self**=value``."""
-        dpnp.power._inplace_op(self, other)
+        dpnp.power(self, other, out=self)
         return self
 
     def __irshift__(self, other):
         """Return ``self>>=value``."""
-        dpnp.right_shift._inplace_op(self, other)
+        dpnp.right_shift(self, other, out=self)
         return self
 
     def __isub__(self, other):
         """Return ``self-=value``."""
-        dpnp.subtract._inplace_op(self, other)
+        dpnp.subtract(self, other, out=self)
         return self
 
     def __iter__(self):
@@ -442,12 +442,12 @@ class dpnp_array:
 
     def __itruediv__(self, other):
         """Return ``self/=value``."""
-        dpnp.true_divide._inplace_op(self, other)
+        dpnp.true_divide(self, other, out=self)
         return self
 
     def __ixor__(self, other):
         """Return ``self^=value``."""
-        dpnp.bitwise_xor._inplace_op(self, other)
+        dpnp.bitwise_xor(self, other, out=self)
         return self
 
     def __le__(self, other):
