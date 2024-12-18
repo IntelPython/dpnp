@@ -251,7 +251,7 @@ def _make_positive_masks(impl, args, kw, name, sp_name, scipy_name):
     assert error is None
     if not isinstance(result, (tuple, list)):
         result = (result,)
-    return [cupy.asnumpy(r) >= 0 for r in result]
+    return [r >= 0 for r in result]
 
 
 def _contains_signed_and_unsigned(kw):
@@ -411,8 +411,8 @@ numpy: {}""".format(
                     if cupy_r.shape == ():
                         skip = (mask == 0).all()
                     else:
-                        cupy_r = cupy_r[mask].get()
-                        numpy_r = numpy_r[mask]
+                        cupy_r = cupy_r[mask]
+                        numpy_r = numpy_r[mask.asnumpy()]
 
                 if not skip:
                     check_func(cupy_r, numpy_r)
@@ -1082,17 +1082,30 @@ def _get_int_bool_dtypes():
 
 _complex_dtypes = _get_supported_complex_dtypes()
 _regular_float_dtypes = _get_supported_float_dtypes()
-_float_dtypes = _regular_float_dtypes
-_signed_dtypes = ()
-_unsigned_dtypes = tuple(numpy.dtype(i).type for i in "BHILQ")
-_int_dtypes = _signed_dtypes + _unsigned_dtypes
-_int_bool_dtypes = _int_dtypes
+_float_dtypes = _get_float_dtypes()
+_signed_dtypes = _get_signed_dtypes()
+_unsigned_dtypes = _get_unsigned_dtypes()
+_int_dtypes = _get_int_dtypes()
+_int_bool_dtypes = _get_int_bool_dtypes()
 _regular_dtypes = _regular_float_dtypes + _int_bool_dtypes
 _dtypes = _float_dtypes + _int_bool_dtypes
 
 
 def _make_all_dtypes(no_float16, no_bool, no_complex):
-    return (numpy.int64, numpy.int32) + _get_supported_float_dtypes()
+    if no_float16:
+        dtypes = _regular_float_dtypes
+    else:
+        dtypes = _float_dtypes
+
+    if no_bool:
+        dtypes += _int_dtypes
+    else:
+        dtypes += _int_bool_dtypes
+
+    if config.complex_types and not no_complex:
+        dtypes += _complex_dtypes
+
+    return dtypes
 
 
 def for_all_dtypes(

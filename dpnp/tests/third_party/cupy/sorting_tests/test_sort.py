@@ -478,6 +478,9 @@ class TestPartition(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_partition_one_dim(self, xp, dtype):
+        flag = xp.issubdtype(dtype, xp.unsignedinteger)
+        if flag or dtype in [xp.int8, xp.int16]:
+            pytest.skip("dpnp.partition() does not support new integer dtypes.")
         a = testing.shaped_random((self.length,), xp, dtype)
         kth = 2
         x = self.partition(a, kth)

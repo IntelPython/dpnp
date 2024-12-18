@@ -471,6 +471,8 @@ class TestEinSumBinaryOperation:
         type_check=has_support_aspect64(), contiguous_check=False
     )
     def test_einsum_binary(self, xp, dtype_a, dtype_b):
+        if all(dtype in [xp.int8, xp.uint8] for dtype in [dtype_a, dtype_b]):
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange(self.shape_a, xp, dtype_a)
         b = testing.shaped_arange(self.shape_b, xp, dtype_b)
         # casting should be added for dpnp to allow cast int64 to float32
@@ -555,6 +557,7 @@ class TestEinSumBinaryOperationWithScalar:
     )
 )
 class TestEinSumTernaryOperation:
+
     @testing.for_all_dtypes_combination(
         ["dtype_a", "dtype_b", "dtype_c"], no_bool=False, no_float16=False
     )
@@ -562,6 +565,12 @@ class TestEinSumTernaryOperation:
         type_check=has_support_aspect64(), contiguous_check=False
     )
     def test_einsum_ternary(self, xp, dtype_a, dtype_b, dtype_c):
+        flag = all(
+            dtype in [xp.int8, xp.uint8]
+            for dtype in [dtype_a, dtype_b, dtype_c]
+        )
+        if self.subscripts == "ij,jk,kl" and flag:
+            pytest.skip("avoid overflow")
         a = testing.shaped_arange(self.shape_a, xp, dtype_a)
         b = testing.shaped_arange(self.shape_b, xp, dtype_b)
         c = testing.shaped_arange(self.shape_c, xp, dtype_c)
