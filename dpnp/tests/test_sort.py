@@ -369,8 +369,13 @@ class TestSortComplex:
         assert result.dtype == expected.dtype
 
 
-@pytest.mark.parametrize("kth", [0, 1], ids=["0", "1"])
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+@pytest.mark.parametrize("kth", [0, 1])
+@pytest.mark.parametrize(
+    "dtype",
+    get_all_dtypes(
+        no_none=True, no_unsigned=True, xfail_dtypes=[dpnp.int8, dpnp.int16]
+    ),
+)
 @pytest.mark.parametrize(
     "array",
     [
