@@ -8,10 +8,12 @@ import warnings
 from typing import Tuple, Type
 
 import numpy
+import pytest
 from dpctl import select_default_device
 from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp as cupy
+from dpnp.tests import config
 from dpnp.tests.third_party.cupy.testing import _array, _parameterized
 from dpnp.tests.third_party.cupy.testing._pytest_impl import is_available
 
@@ -978,7 +980,7 @@ def numpy_cupy_raises(
     return decorator
 
 
-def for_dtypes(dtypes, name="dtype"):
+def for_dtypes(dtypes, name="dtype", xfail_dtypes=None):
     """Decorator for parameterized dtype test.
 
     Args:
@@ -1009,7 +1011,11 @@ def for_dtypes(dtypes, name="dtype"):
 
                 try:
                     kw[name] = numpy.dtype(dtype).type
-                    impl(*args, **kw)
+                    if xfail_dtypes is not None and dtype in xfail_dtypes:
+                        impl_ = pytest.mark.xfail(impl)
+                    else:
+                        impl_ = impl
+                    impl_(*args, **kw)
                 except _skip_classes as e:
                     print("skipped: {} = {} ({})".format(name, dtype, e))
                 except Exception:
@@ -1039,19 +1045,67 @@ def _get_supported_complex_dtypes():
         return (numpy.complex64,)
 
 
+def _get_int_dtypes():
+    if config.all_int_types:
+        return _signed_dtypes + _unsigned_dtypes
+    else:
+        return (numpy.int64, numpy.int32)
+
+
+def _get_float_dtypes():
+    if config.float16_types:
+        return _regular_float_dtypes + (numpy.float16,)
+    else:
+        return _regular_float_dtypes
+
+
+def _get_signed_dtypes():
+    if config.all_int_types:
+        return tuple(numpy.dtype(i).type for i in "bhilq")
+    else:
+        return (numpy.int32,)
+
+
+def _get_unsigned_dtypes():
+    if config.all_int_types:
+        return tuple(numpy.dtype(i).type for i in "BHILQ")
+    else:
+        return (numpy.uint32,)
+
+
+def _get_int_bool_dtypes():
+    if config.bool_types:
+        return _int_dtypes + (numpy.bool_,)
+    else:
+        return _int_dtypes
+
+
 _complex_dtypes = _get_supported_complex_dtypes()
 _regular_float_dtypes = _get_supported_float_dtypes()
-_float_dtypes = _regular_float_dtypes
-_signed_dtypes = ()
-_unsigned_dtypes = tuple(numpy.dtype(i).type for i in "BHILQ")
-_int_dtypes = _signed_dtypes + _unsigned_dtypes
-_int_bool_dtypes = _int_dtypes
+_float_dtypes = _get_float_dtypes()
+_signed_dtypes = _get_signed_dtypes()
+_unsigned_dtypes = _get_unsigned_dtypes()
+_int_dtypes = _get_int_dtypes()
+_int_bool_dtypes = _get_int_bool_dtypes()
 _regular_dtypes = _regular_float_dtypes + _int_bool_dtypes
 _dtypes = _float_dtypes + _int_bool_dtypes
 
 
 def _make_all_dtypes(no_float16, no_bool, no_complex):
-    return (numpy.int64, numpy.int32) + _get_supported_float_dtypes()
+    if no_float16:
+        dtypes = _regular_float_dtypes
+    else:
+        dtypes = _float_dtypes
+
+    if no_bool:
+        dtypes += _int_dtypes
+    else:
+        dtypes += _int_bool_dtypes
+
+    if config.complex_types and not no_complex:
+        dtypes += _complex_dtypes
+
+    return dtypes
 
 
 def for_all_dtypes(
