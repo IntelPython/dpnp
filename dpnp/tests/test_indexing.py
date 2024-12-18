@@ -22,6 +22,8 @@ from .helper import (
     get_all_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
+    is_win_platform,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -700,10 +702,12 @@ class TestTake:
             assert_array_equal(result, expected)
         elif numpy.issubdtype(ind_dt, numpy.uint64):
             # For this special case, although casting `ind_dt` to numpy.intp
-            # is not safe, dpnp do not raise an error
-            # NumPy only raises an error on Windows
+            # is not safe, both NumPy and dpnp work properly
+            # NumPy < "2.2.0" raises an error on Windows
+            if numpy_version() < "2.2.0" and is_win_platform():
+                ind = ind.astype(numpy.int64)
             result = dpnp.take(ia, iind, mode=mode)
-            expected = numpy.take(a, ind.astype(numpy.int64), mode=mode)
+            expected = numpy.take(a, ind, mode=mode)
             assert_array_equal(result, expected)
         else:
             assert_raises(TypeError, ia.take, iind, mode=mode)

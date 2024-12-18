@@ -67,7 +67,8 @@ class TestAngle:
         result = dpnp.angle(dp_a, deg=deg)
 
         # For dtype=int8, uint8, NumPy returns float16, but dpnp returns float32
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        dt_int8 = dtype in [dpnp.int8, dpnp.uint8]
+        assert_dtype_allclose(result, expected, check_only_type_kind=dt_int8)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     def test_angle_complex(self, dtype, deg):
@@ -1352,8 +1353,7 @@ class TestI0:
         expected = numpy.i0(a)
         # NumPy promotes result of integer inputs to float64, but dpnp
         # follows Type Promotion Rules
-        skip_dtype = [numpy.int8, numpy.int16, numpy.uint8, numpy.uint16]
-        flag = True if dt in skip_dtype else False
+        flag = dt in [numpy.int8, numpy.int16, numpy.uint8, numpy.uint16]
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     @pytest.mark.parametrize("dt", get_float_dtypes())
@@ -2034,7 +2034,8 @@ class TestSinc:
         expected = numpy.sinc(a)
         # numpy promotes result for integer inputs to float64 dtype, but dpnp
         # follows Type Promotion Rules similar to other trigonometric functions
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        flag = dt in [numpy.int8, numpy.int16, numpy.uint8, numpy.uint16]
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     def test_bool(self):
         a = numpy.array([True, False, True])
@@ -2054,7 +2055,8 @@ class TestSinc:
         expected = numpy.sinc(a)
         # numpy promotes result for integer inputs to float64 dtype, but dpnp
         # follows Type Promotion Rules similar to other trigonometric functions
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        flag = dt in [numpy.int8, numpy.int16, numpy.uint8, numpy.uint16]
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     # TODO: add a proper NumPy version once resolved
     @testing.with_requires("numpy>=2.0.0")
@@ -2499,7 +2501,7 @@ def test_divide_scalar(shape, dtype):
 )
 def test_negative(data, dtype):
     np_a = numpy.array(data, dtype=dtype)
-    dpnp_a = dpnp.array(data, dtype=dtype)
+    dpnp_a = dpnp.array(np_a)
 
     result = dpnp.negative(dpnp_a)
     expected = numpy.negative(np_a)
@@ -2529,12 +2531,10 @@ def test_negative_boolean():
     [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
     ids=["[[1., -1.], [0.1, -0.1]]", "[-2, -1, 0, 1, 2]"],
 )
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_unsigned=True)
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_positive(data, dtype):
-    np_a = numpy.array(data, dtype=dtype)
-    dpnp_a = dpnp.array(data, dtype=dtype)
+    np_a = get_abs_array(data, dtype=dtype)
+    dpnp_a = dpnp.array(np_a)
 
     result = dpnp.positive(dpnp_a)
     expected = numpy.positive(np_a)

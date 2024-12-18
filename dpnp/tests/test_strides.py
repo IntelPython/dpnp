@@ -163,13 +163,8 @@ def test_logsumexp(dtype):
     expected = numpy.logaddexp.reduce(a)
     # for int8, uint8, NumPy returns float16 but dpnp returns float64
     # for int16, uint16, NumPy returns float32 but dpnp returns float64
-    if dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]:
-        check_only_type_kind = True
-    else:
-        check_only_type_kind = False
-    assert_dtype_allclose(
-        result, expected, check_only_type_kind=check_only_type_kind
-    )
+    flag = dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+    assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -181,13 +176,8 @@ def test_cumlogsumexp(dtype):
     expected = numpy.logaddexp.accumulate(a)
     # for int8, uint8, NumPy returns float16 but dpnp returns float64
     # for int16, uint16, NumPy returns float32 but dpnp returns float64
-    if dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]:
-        check_only_type_kind = True
-    else:
-        check_only_type_kind = False
-    assert_dtype_allclose(
-        result, expected, check_only_type_kind=check_only_type_kind
-    )
+    flag = dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+    assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -199,13 +189,8 @@ def test_reduce_hypot(dtype):
     expected = numpy.hypot.reduce(a)
     # for int8, uint8, NumPy returns float16 but dpnp returns float64
     # for int16, uint16, NumPy returns float32 but dpnp returns float64
-    if dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]:
-        check_only_type_kind = True
-    else:
-        check_only_type_kind = False
-    assert_dtype_allclose(
-        result, expected, check_only_type_kind=check_only_type_kind
-    )
+    flag = dtype in [dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
+    assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
 @pytest.mark.parametrize(

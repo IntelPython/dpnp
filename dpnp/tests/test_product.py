@@ -12,6 +12,8 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
+    is_win_platform,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -508,8 +510,9 @@ class TestKron:
 
         result = dpnp.kron(ib, a)
         expected = numpy.kron(b, a)
-        # NumPy returns incorrect dtype on Windows, add check_type=False
-        assert_dtype_allclose(result, expected, check_type=False)
+        # NumPy returns incorrect dtype on Windows
+        flag = not is_win_platform() if numpy_version() < "2.0.0" else True
+        assert_dtype_allclose(result, expected, check_type=flag)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(

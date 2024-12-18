@@ -51,12 +51,15 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     axes.append(tuple(axes_range))
 
     for axis in axes:
-        if numpy.issubdtype(dtype_out, numpy.bool_):
+        if (
+            numpy.issubdtype(dtype_out, numpy.bool_)
+            and numpy.issubdtype(dtype_in, numpy.signedinteger)
+            and not a_np.sum(axis=axis).all()
+        ):
             # If summation is zero and dtype=numpy.bool is passed to numpy.sum
             # NumPy returns True which is not correct
-            numpy_res = a_np.sum(axis=axis, keepdims=keepdims).astype(
-                numpy.bool_
-            )
+            numpy_res = a_np.sum(axis=axis, keepdims=keepdims)
+            numpy_res = numpy_res.astype(numpy.bool_)
         else:
             numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
