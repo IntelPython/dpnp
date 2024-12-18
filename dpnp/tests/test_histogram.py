@@ -46,9 +46,11 @@ class TestDigitize:
     )
     def test_digitize(self, x, bins, dtype, right):
         x = get_abs_array(x, dtype)
-        if numpy.issubdtype(dtype, numpy.unsignedinteger) and bins[0] == -4:
-            # bins should be monotonically increasing, cannot use get_abs_array
-            bins = numpy.array([0, 2, 4, 6, 8])
+        if numpy.issubdtype(dtype, numpy.unsignedinteger):
+            min_bin = bins.min()
+            if min_bin < 0:
+                # bins should be monotonically increasing, cannot use get_abs_array
+                bins -= min_bin
         bins = bins.astype(dtype)
         x_dp = dpnp.array(x)
         bins_dp = dpnp.array(bins)

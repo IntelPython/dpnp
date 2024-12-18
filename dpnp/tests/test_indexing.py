@@ -137,10 +137,7 @@ class TestExtins:
 
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     def test_extract_list_cond(self, a_dt):
-        x = [-2, -1, 0, 1, 2, 3]
-        if numpy.issubdtype(a_dt, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=a_dt)
+        a = get_abs_array([-2, -1, 0, 1, 2, 3], a_dt)
         cond = [1, -1, 2, 0, -2, 3]
         ia = dpnp.array(a)
 
@@ -393,10 +390,7 @@ class TestNonzero:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_1d(self, dtype):
-        x = [1, 0, 2, -1, 0, 0, 8]
-        if numpy.issubdtype(dtype, numpy.unsignedinteger):
-            x = numpy.abs(x)
-        a = numpy.array(x, dtype=dtype)
+        a = get_abs_array([1, 0, 2, -1, 0, 0, 8], dtype)
         ia = dpnp.array(a)
 
         np_res = numpy.nonzero(a)

@@ -32,6 +32,7 @@ from .helper import (
     get_integer_dtypes,
     has_support_aspect16,
     has_support_aspect64,
+    numpy_version,
 )
 from .test_umath import (
     _get_numpy_arrays_1in_1out,
@@ -1408,7 +1409,7 @@ class TestLdexp:
     @pytest.mark.parametrize("exp_dt", get_integer_dtypes())
     def test_basic(self, mant_dt, exp_dt):
         if (
-            numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            numpy_version() < "2.0.0"
             and exp_dt == numpy.int64
             and numpy.dtype("l") != numpy.int64
         ):
@@ -1421,9 +1422,7 @@ class TestLdexp:
         if dpnp.issubdtype(exp_dt, dpnp.uint64):
             assert_raises(ValueError, dpnp.ldexp, imant, iexp)
             assert_raises(TypeError, numpy.ldexp, mant, exp)
-        elif numpy.lib.NumpyVersion(
-            numpy.__version__
-        ) < "2.0.0" and dpnp.issubdtype(exp_dt, dpnp.uint32):
+        elif numpy_version() < "2.0.0" and dpnp.issubdtype(exp_dt, dpnp.uint32):
             # For this special case, NumPy < "2.0.0" raises an error on Windows
             result = dpnp.ldexp(imant, iexp)
             expected = numpy.ldexp(mant, exp.astype(numpy.int32))
@@ -2130,7 +2129,7 @@ class TestSpacing:
 
         result = dpnp.spacing(ia)
         expected = numpy.spacing(a)
-        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+        if numpy_version() < "2.0.0":
             assert_equal(result, expected)
         else:
             # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
@@ -2193,7 +2192,7 @@ class TestSpacing:
 
 class TestTrapezoid:
     def get_numpy_func(self):
-        if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+        if numpy_version() < "2.0.0":
             # `trapz` is deprecated in NumPy 2.0
             return numpy.trapz
         return numpy.trapezoid
@@ -2753,10 +2752,7 @@ class TestRoundingFuncs:
         # NumPy < 2.0.0 while output has the dtype of input for NumPy >= 2.0.0
         # (dpnp follows the latter behavior except for boolean dtype where it
         # returns int8)
-        if (
-            numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
-            or dtype == numpy.bool
-        ):
+        if numpy_version() < "2.0.0" or dtype == numpy.bool:
             check_type = False
         else:
             check_type = True
