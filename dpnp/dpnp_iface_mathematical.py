@@ -152,7 +152,7 @@ def _get_max_min(dtype):
     return f.max, f.min
 
 
-def _get_reduction_res_dt(a, dtype, _out):
+def _get_reduction_res_dt(a, dtype):
     """Get a data type used by dpctl for result array in reduction function."""
 
     if dtype is None:
@@ -1106,11 +1106,10 @@ def cumprod(a, axis=None, dtype=None, out=None):
         usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.cumulative_prod,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
     )
@@ -1196,11 +1195,10 @@ def cumsum(a, axis=None, dtype=None, out=None):
         usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.cumulative_sum,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
     )
@@ -1281,11 +1279,10 @@ def cumulative_prod(
     """
 
     return dpnp_wrap_reduction_call(
-        x,
+        dpnp.get_usm_ndarray(x),
         out,
         dpt.cumulative_prod,
-        _get_reduction_res_dt,
-        dpnp.get_usm_ndarray(x),
+        _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         include_initial=include_initial,
@@ -1373,11 +1370,10 @@ def cumulative_sum(
     """
 
     return dpnp_wrap_reduction_call(
-        x,
+        dpnp.get_usm_ndarray(x),
         out,
         dpt.cumulative_sum,
-        _get_reduction_res_dt,
-        dpnp.get_usm_ndarray(x),
+        _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         include_initial=include_initial,
@@ -3532,11 +3528,10 @@ def prod(
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.prod,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -4305,11 +4300,10 @@ def sum(
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.sum,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,

@@ -1656,7 +1656,7 @@ def test_eigenvalue(func, shape, device):
     # Set seed_value=81 to prevent
     # random generation of the input singular matrix
     a = generate_random_numpy_array(
-        shape, dtype, hermitian=is_hermitian, seed_value=81
+        shape, dtype, hermitian=is_hermitian, seed_value=81, low=-5, high=5
     )
     dp_a = dpnp.array(a, device=device)
 
