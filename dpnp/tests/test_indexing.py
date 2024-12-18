@@ -703,8 +703,8 @@ class TestTake:
         elif numpy.issubdtype(ind_dt, numpy.uint64):
             # For this special case, although casting `ind_dt` to numpy.intp
             # is not safe, both NumPy and dpnp work properly
-            # NumPy < "2.2.0" raises an error on Windows
-            if numpy_version() < "2.2.0" and is_win_platform():
+            # NumPy < "2.2.0" raises an error
+            if numpy_version() < "2.2.0":
                 ind = ind.astype(numpy.int64)
             result = dpnp.take(ia, iind, mode=mode)
             expected = numpy.take(a, ind, mode=mode)

@@ -510,8 +510,9 @@ class TestKron:
 
         result = dpnp.kron(ib, a)
         expected = numpy.kron(b, a)
-        # NumPy returns incorrect dtype on Windows
-        flag = not is_win_platform() if numpy_version() < "2.0.0" else True
+        # NumPy returns incorrect dtype for numpy_version() < "2.0.0"
+        flag = dtype in [numpy.int64, numpy.float64, numpy.complex128]
+        flag = flag or numpy_version() >= "2.0.0"
         assert_dtype_allclose(result, expected, check_type=flag)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))

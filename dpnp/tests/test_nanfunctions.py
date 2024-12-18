@@ -15,6 +15,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    get_abs_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
@@ -648,7 +649,7 @@ class TestNanStd:
     )
     def test_nanstd(self, array, dtype):
         try:
-            a = numpy.array(array, dtype=dtype)
+            a = get_abs_array(array, dtype=dtype)
         except:
             pytest.skip("floating datat type is needed to store NaN")
         ia = dpnp.array(a)
@@ -835,9 +836,9 @@ class TestNanVar:
     )
     def test_nanvar(self, array, dtype):
         try:
-            a = numpy.array(array, dtype=dtype)
+            a = get_abs_array(array, dtype=dtype)
         except:
-            pytest.skip("floating datat type is needed to store NaN")
+            pytest.skip("floating data type is needed to store NaN")
         ia = dpnp.array(a)
         for ddof in range(a.ndim):
             expected = numpy.nanvar(a, ddof=ddof)
