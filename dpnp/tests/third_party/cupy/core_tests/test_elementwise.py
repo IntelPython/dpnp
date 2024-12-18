@@ -110,7 +110,7 @@ class TestElementwiseType(unittest.TestCase):
             if xp.issubdtype(dtype, xp.unsignedinteger) or flag:
                 pytest.skip("numpy doesn't raise OverflowError")
 
-            if dtype == xp.int8 and is_win_platform():
+            if dtype in [xp.int8, xp.intc] and is_win_platform():
                 pytest.skip("numpy promotes dtype differently")
 
         a = xp.array([1], dtype=xp.int8)
@@ -160,12 +160,11 @@ class TestElementwiseType(unittest.TestCase):
             if dtype in [xp.int16, xp.int32, xp.int64, xp.longlong]:
                 pytest.skip("numpy doesn't raise OverflowError")
 
-            if dtype == xp.int8 and is_win_platform():
+            if dtype in [xp.int8, xp.intc] and is_win_platform():
                 pytest.skip("numpy promotes dtype differently")
 
         a = xp.array([0], dtype=xp.int8)
         b = xp.iinfo(dtype).min
-        res = a + b
         return a + b
 
     @testing.for_int_dtypes(no_bool=True)
@@ -175,7 +174,7 @@ class TestElementwiseType(unittest.TestCase):
             if dtype in [xp.int16, xp.int32, xp.int64, xp.longlong]:
                 pytest.skip("numpy doesn't raise OverflowError")
 
-            if dtype == xp.int8 and is_win_platform():
+            if dtype in [xp.int8, xp.intc] and is_win_platform():
                 pytest.skip("numpy promotes dtype differently")
 
         a = xp.array([-1], dtype=xp.int8)

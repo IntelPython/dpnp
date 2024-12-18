@@ -595,7 +595,7 @@ class DPNPRound(DPNPUnaryFunc):
 
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
             # the output of x_usm multiplied by 10^decimals should be
-            # float avoid overflow for integer dtypes
+            # float to avoid overflow for integer dtypes
             x_usm = dpt.multiply(x_usm, float(10**decimals))
             x_usm = dpt.round(x_usm, out=out_usm)
             res_usm = dpt.divide(x_usm, 10**decimals, out=out_usm)
