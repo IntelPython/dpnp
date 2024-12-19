@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import os
+import sys
 
 mypath = os.path.dirname(os.path.realpath(__file__))
 
@@ -45,9 +46,21 @@ if system() == "Windows":
     if hasattr(os, "add_dll_directory"):
         os.add_dll_directory(mypath)
         os.add_dll_directory(dpctlpath)
+
     os.environ["PATH"] = os.pathsep.join(
         [os.getenv("PATH", ""), mypath, dpctlpath]
     )
+
+    # For virtual environments on Windows, add folder with DPC++ libraries
+    # to the DLL search path
+    if sys.base_exec_prefix != sys.exec_prefix and os.path.isfile(
+        os.path.join(sys.exec_prefix, "pyvenv.cfg")
+    ):
+        dll_path = os.path.join(sys.exec_prefix, "Library", "bin")
+        if os.path.isdir(dll_path):
+            os.environ["PATH"] = os.pathsep.join(
+                [os.getenv("PATH", ""), dll_path]
+            )
 
 # Borrowed from DPCTL
 from dpctl.tensor import DLDeviceType
