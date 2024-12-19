@@ -30,7 +30,11 @@ class TestPad:
         "empty": {},
     }
 
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    # .keys() returns set which is not ordered
+    # consistent order is required by xdist plugin
+    _modes = sorted(_all_modes.keys())
+
+    @pytest.mark.parametrize("mode", _modes)
     def test_basic(self, mode):
         a_np = numpy.arange(100)
         a_dp = dpnp.array(a_np)
@@ -43,7 +47,7 @@ class TestPad:
         else:
             assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_memory_layout_persistence(self, mode):
         """Test if C and F order is preserved for all pad modes."""
         x = dpnp.ones((5, 10), order="C")
@@ -52,13 +56,13 @@ class TestPad:
         assert dpnp.pad(x, 5, mode).flags.f_contiguous
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_dtype_persistence(self, dtype, mode):
         arr = dpnp.zeros((3, 2, 1), dtype=dtype)
         result = dpnp.pad(arr, 1, mode=mode)
         assert result.dtype == dtype
 
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_non_contiguous_array(self, mode):
         a_np = numpy.arange(24).reshape(4, 6)[::2, ::2]
         a_dp = dpnp.arange(24).reshape(4, 6)[::2, ::2]
@@ -73,12 +77,14 @@ class TestPad:
 
     # TODO: include "linear_ramp" when dpnp issue gh-2084 is resolved
     @pytest.mark.parametrize("pad_width", [0, (0, 0), ((0, 0), (0, 0))])
-    @pytest.mark.parametrize("mode", _all_modes.keys() - {"linear_ramp"})
+    @pytest.mark.parametrize(
+        "mode", [m for m in _modes if m not in {"linear_ramp"}]
+    )
     def test_zero_pad_width(self, pad_width, mode):
         arr = dpnp.arange(30).reshape(6, 5)
         assert_array_equal(arr, dpnp.pad(arr, pad_width, mode=mode))
 
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_pad_non_empty_dimension(self, mode):
         a_np = numpy.ones((2, 0, 2))
         a_dp = dpnp.array(a_np)
@@ -95,14 +101,14 @@ class TestPad:
             ((3, 4, 5), (0, 1, 2)),
         ],
     )
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_misshaped_pad_width1(self, pad_width, mode):
         arr = dpnp.arange(30).reshape((6, 5))
         match = "operands could not be broadcast together"
         with pytest.raises(ValueError, match=match):
             dpnp.pad(arr, pad_width, mode)
 
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_misshaped_pad_width2(self, mode):
         arr = dpnp.arange(30).reshape((6, 5))
         match = (
@@ -115,7 +121,7 @@ class TestPad:
     @pytest.mark.parametrize(
         "pad_width", [-2, (-2,), (3, -1), ((5, 2), (-2, 3)), ((-4,), (2,))]
     )
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_negative_pad_width(self, pad_width, mode):
         arr = dpnp.arange(30).reshape((6, 5))
         match = "index can't contain negative values"
@@ -126,14 +132,14 @@ class TestPad:
         "pad_width",
         ["3", "word", None, 3.4, complex(1, -1), ((-2.1, 3), (3, 2))],
     )
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_bad_type(self, pad_width, mode):
         arr = dpnp.arange(30).reshape((6, 5))
         match = "`pad_width` must be of integral type."
         with pytest.raises(TypeError, match=match):
             dpnp.pad(arr, pad_width, mode)
 
-    @pytest.mark.parametrize("mode", _all_modes.keys())
+    @pytest.mark.parametrize("mode", _modes)
     def test_kwargs(self, mode):
         """Test behavior of pad's kwargs for the given mode."""
         allowed = self._all_modes[mode]
@@ -439,7 +445,7 @@ class TestPad:
 
     @pytest.mark.parametrize(
         "mode",
-        _all_modes.keys() - {"constant", "empty"},
+        [m for m in _modes if m not in {"constant", "empty"}],
     )
     def test_pad_empty_dim_invalid(self, mode):
         match = (
