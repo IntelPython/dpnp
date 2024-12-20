@@ -242,11 +242,9 @@ class TestAllclose(unittest.TestCase):
 
 class TestIsclose(unittest.TestCase):
 
-    @testing.for_all_dtypes(no_complex=True)
+    @testing.for_all_dtypes(no_complex=True, no_int8=True)
     @testing.numpy_cupy_array_equal()
     def test_is_close_finite(self, xp, dtype):
-        if dtype in [xp.int8, xp.uint8]:
-            pytest.skip("avoid overflow")
         # In numpy<1.10 this test fails when dtype is bool
         a = xp.array([0.9e-5, 1.1e-5, 1000 + 1e-4, 1000 - 1e-4]).astype(dtype)
         b = xp.array([0, 0, 1000, 1000]).astype(dtype)

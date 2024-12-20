@@ -60,39 +60,22 @@ from dpnp.tests.third_party.cupy import testing
 )
 class TestMatmul(unittest.TestCase):
 
-    # Avoid overflow
-    skip_dtypes = {
-        (numpy.int8, numpy.int8),
-        (numpy.int8, numpy.uint8),
-        (numpy.uint8, numpy.uint8),
-    }
-
-    @testing.for_all_dtypes(name="dtype1")
-    @testing.for_all_dtypes(name="dtype2")
+    @testing.for_all_dtypes(name="dtype1", no_int8=True)
+    @testing.for_all_dtypes(name="dtype2", no_int8=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
     )  # required for uint8
     def test_operator_matmul(self, xp, dtype1, dtype2):
-        if (dtype1, dtype2) in self.skip_dtypes or (
-            dtype2,
-            dtype1,
-        ) in self.skip_dtypes:
-            pytest.skip("avoid overflow")
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
         x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         return operator.matmul(x1, x2)
 
-    @testing.for_all_dtypes(name="dtype1")
-    @testing.for_all_dtypes(name="dtype2")
+    @testing.for_all_dtypes(name="dtype1", no_int8=True)
+    @testing.for_all_dtypes(name="dtype2", no_int8=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-3, atol=1e-3, type_check=has_support_aspect64()
     )  # required for uint8
     def test_cupy_matmul(self, xp, dtype1, dtype2):
-        if (dtype1, dtype2) in self.skip_dtypes or (
-            dtype2,
-            dtype1,
-        ) in self.skip_dtypes:
-            pytest.skip("avoid overflow")
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
         x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         return xp.matmul(x1, x2)
@@ -114,25 +97,12 @@ class TestMatmul(unittest.TestCase):
 )
 class TestMatmulOut(unittest.TestCase):
 
-    # Avoid overflow
-    skip_dtypes = {
-        (numpy.int8, numpy.int8),
-        (numpy.int8, numpy.uint8),
-        (numpy.uint8, numpy.uint8),
-    }
-
-    @testing.for_all_dtypes(name="dtype1")
-    @testing.for_all_dtypes(name="dtype2")
+    @testing.for_all_dtypes(name="dtype1", no_int8=True)
+    @testing.for_all_dtypes(name="dtype2", no_int8=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-3, atol=1e-3, accept_error=TypeError  # required for uint8
     )
     def test_cupy_matmul_noncontiguous(self, xp, dtype1, dtype2):
-        if (dtype1, dtype2) in self.skip_dtypes or (
-            dtype2,
-            dtype1,
-        ) in self.skip_dtypes:
-            pytest.skip("avoid overflow")
-
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
         x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         out = xp.zeros(self.shape_pair[2], dtype=dtype1)[::-1]
@@ -170,11 +140,9 @@ class TestMatmulOutOverlap:
 
 class TestMatmulStrides:
 
-    @testing.for_all_dtypes()
+    @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_relaxed_c_contiguous_input(self, xp, dtype):
-        if dtype in [numpy.int8, numpy.uint8]:
-            pytest.skip("avoid overflow")
         x1 = testing.shaped_arange((2, 2, 3), xp, dtype)[:, None, :, :]
         x2 = testing.shaped_arange((2, 1, 3, 1), xp, dtype)
         return x1 @ x2
