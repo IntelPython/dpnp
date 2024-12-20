@@ -58,11 +58,11 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
         ):
             # If summation is zero and dtype=numpy.bool is passed to numpy.sum
             # NumPy returns True which is not correct
-            numpy_res = a_np.sum(axis=axis, keepdims=keepdims)
-            numpy_res = numpy_res.astype(numpy.bool_)
+            a = a.astype(dpnp.bool)
+            dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         else:
-            numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
-        dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+            dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+        numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         assert_dtype_allclose(dpnp_res, numpy_res, factor=16)
 
 
