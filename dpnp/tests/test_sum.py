@@ -56,8 +56,7 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
             and numpy.issubdtype(dtype_in, numpy.signedinteger)
             and not a_np.sum(axis=axis).all()
         ):
-            # If summation is zero and dtype=numpy.bool is passed to numpy.sum
-            # NumPy returns True which is not correct
+            # TODO: remove workaround when dpctl-issue#1944 is resolved
             a = a.astype(dpnp.bool)
             dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         else:
