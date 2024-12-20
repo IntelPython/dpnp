@@ -529,7 +529,7 @@ jobs:
         env:
           DPNP_TEST_ALL_INT_TYPES: 1
         run: |
-          pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:
     name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']

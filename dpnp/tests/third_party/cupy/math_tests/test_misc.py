@@ -176,7 +176,8 @@ class TestMisc:
         self.check_unary("sqrt")
 
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
+    # atol=1e-3 is needed for int8
+    @testing.numpy_cupy_allclose(atol=1e-3, type_check=has_support_aspect64())
     def test_cbrt(self, xp, dtype):
         a = testing.shaped_arange((2, 3, 4), xp, dtype)
         return xp.cbrt(a)
