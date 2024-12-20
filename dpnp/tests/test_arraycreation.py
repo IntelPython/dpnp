@@ -708,10 +708,15 @@ def test_dpctl_tensor_input(func, args):
     ids=["1", "5", "numpy.array(10)", "dpnp.array(17)", "dpt.asarray(100)"],
 )
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_float16=False)
+    "dtype",
+    get_all_dtypes(no_bool=True, no_float16=False),
 )
 @pytest.mark.parametrize("retstep", [True, False])
 def test_linspace(start, stop, num, dtype, retstep):
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        start = abs(start)
+        stop = abs(stop)
+
     res_np = numpy.linspace(start, stop, num, dtype=dtype, retstep=retstep)
     res_dp = dpnp.linspace(start, stop, num, dtype=dtype, retstep=retstep)
 
