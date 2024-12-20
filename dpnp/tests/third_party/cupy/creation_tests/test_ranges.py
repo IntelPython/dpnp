@@ -227,8 +227,8 @@ class TestRanges(unittest.TestCase):
         # TODO (ev-br): np 2.0: had to bump the default rtol on Windows
         #               and numpy 1.26+weak promotion from 0 to 5e-6
         if xp.dtype(dtype_range).kind in "u":
-            # to avoid overflow limit `val`` to be smaller
-            # than xp.iinfo(dtype_range).max
+            # to avoid overflow, limit `val` to be smaller
+            # than xp.iinfo(dtype).max
             if dtype_range == xp.uint8 or dtype_out == xp.uint8:
                 val = 125
             else:
