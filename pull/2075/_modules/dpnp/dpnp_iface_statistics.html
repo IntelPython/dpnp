@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev3+53.g0322aeabb67 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev3+76.gefd09c568fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=607a60d9"></script>
+      <script src="../../_static/documentation_options.js?v=e9052531"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -198,12 +198,6 @@
             <span class="s2">&quot;where keyword argument is only supported with its default value.&quot;</span>
         <span class="p">)</span>
     <span class="k">return</span> <span class="n">items</span>
-
-
-<span class="k">def</span> <span class="nf">_get_comparison_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">,</span> <span class="n">_out</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a data type used by dpctl for result array in comparison function.&quot;&quot;&quot;</span>
-
-    <span class="k">return</span> <span class="n">a</span><span class="o">.</span><span class="n">dtype</span>
 
 
 <div class="viewcode-block" id="amax">
@@ -865,11 +859,10 @@
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
+        <span class="n">usm_a</span><span class="p">,</span>
         <span class="n">out</span><span class="p">,</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
-        <span class="n">_get_comparison_res_dt</span><span class="p">,</span>
-        <span class="n">usm_a</span><span class="p">,</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -1140,11 +1133,10 @@
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
+        <span class="n">usm_a</span><span class="p">,</span>
         <span class="n">out</span><span class="p">,</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">min</span><span class="p">,</span>
-        <span class="n">_get_comparison_res_dt</span><span class="p">,</span>
-        <span class="n">usm_a</span><span class="p">,</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
     <span class="p">)</span></div>

@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+53.g0322aeabb67 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+76.gefd09c568fc documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=607a60d9"></script>
+      <script src="../../_static/documentation_options.js?v=e9052531"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -4122,25 +4122,40 @@
 
 <div class="viewcode-block" id="trim_zeros">
 <a class="viewcode-back" href="../../reference/generated/dpnp.trim_zeros.html#dpnp.trim_zeros">[docs]</a>
-<span class="k">def</span> <span class="nf">trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="s2">&quot;fb&quot;</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="s2">&quot;fb&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Trim the leading and/or trailing zeros from a 1-D array.</span>
+<span class="sd">    Remove values along a dimension which are zero along all other.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.trim_zeros`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    filt : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input 1-D array.</span>
-<span class="sd">    trim : str, optional</span>
-<span class="sd">        A string with &#39;f&#39; representing trim from front and &#39;b&#39; to trim from</span>
-<span class="sd">        back. By defaults, trim zeros from both front and back of the array.</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    trim : {&quot;fb&quot;, &quot;f&quot;, &quot;b&quot;}, optional</span>
+<span class="sd">        A string with `&quot;f&quot;` representing trim from front and `&quot;b&quot;` to trim from</span>
+<span class="sd">        back. By default, zeros are trimmed on both sides. Front and back refer</span>
+<span class="sd">        to the edges of a dimension, with &quot;front&quot; referring to the side with</span>
+<span class="sd">        the lowest index 0, and &quot;back&quot; referring to the highest index</span>
+<span class="sd">        (or index -1).</span>
 <span class="sd">        Default: ``&quot;fb&quot;``.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        If ``None``, `filt` is cropped such, that the smallest bounding box is</span>
+<span class="sd">        returned that still contains all values which are not zero.</span>
+<span class="sd">        If an `axis` is specified, `filt` will be sliced in that dimension only</span>
+<span class="sd">        on the sides specified by `trim`. The remaining area will be the</span>
+<span class="sd">        smallest that still contains all values which are not zero.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The result of trimming the input.</span>
+<span class="sd">        The result of trimming the input. The number of dimensions and the</span>
+<span class="sd">        input data type are preserved.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For all-zero arrays, the first axis is trimmed first.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4149,42 +4164,66 @@
 <span class="sd">    &gt;&gt;&gt; np.trim_zeros(a)</span>
 <span class="sd">    array([1, 2, 3, 0, 2, 1])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.trim_zeros(a, &#39;b&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.trim_zeros(a, trim=&#39;b&#39;)</span>
 <span class="sd">    array([0, 0, 0, 1, 2, 3, 0, 2, 1])</span>
+
+<span class="sd">    Multiple dimensions are supported:</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([[0, 0, 2, 3, 0, 0],</span>
+<span class="sd">    ...               [0, 1, 0, 3, 0, 0],</span>
+<span class="sd">    ...               [0, 0, 0, 0, 0, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; np.trim_zeros(b)</span>
+<span class="sd">    array([[0, 2, 3],</span>
+<span class="sd">           [1, 0, 3]])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.trim_zeros(b, axis=-1)</span>
+<span class="sd">    array([[0, 2, 3],</span>
+<span class="sd">           [1, 0, 3],</span>
+<span class="sd">           [0, 0, 0]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">filt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;0-d array cannot be trimmed&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">filt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multi-dimensional trim is not supported&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trim</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only string trim is supported&quot;</span><span class="p">)</span>
 
-    <span class="n">trim</span> <span class="o">=</span> <span class="n">trim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">trim</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="s2">&quot;FB&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">filt</span>  <span class="c1"># no trim rule is specified</span>
+    <span class="n">trim</span> <span class="o">=</span> <span class="n">trim</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">trim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fb&quot;</span><span class="p">,</span> <span class="s2">&quot;bf&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unexpected character(s) in `trim`: </span><span class="si">{</span><span class="n">trim</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">filt</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">filt</span>  <span class="c1"># no trailing zeros in empty array</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">filt</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">a_size</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
-    <span class="k">if</span> <span class="n">a_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># &#39;filt&#39; is array of zeros</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+    <span class="n">non_zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">non_zero</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># `filt` has all zeros, so assign `start` and `stop` to the same value,</span>
+        <span class="c1"># then the resulting slice will be empty</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nd</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;f&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">non_zero</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="n">nd</span>
 
-    <span class="n">first</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">if</span> <span class="s2">&quot;F&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
-        <span class="n">first</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;b&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">non_zero</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">stop</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Adjust for slicing</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="n">nd</span>
 
-    <span class="n">last</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">size</span>
-    <span class="k">if</span> <span class="s2">&quot;B&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
-        <span class="n">last</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># trim all axes</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># only trim single axis</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="n">axis</span> <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">stop</span><span class="p">[</span><span class="n">axis</span><span class="p">]),)</span> <span class="o">+</span> <span class="p">(</span><span class="o">...</span><span class="p">,)</span>
 
-    <span class="k">return</span> <span class="n">filt</span><span class="p">[</span><span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">filt</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span></div>
 
 
 
