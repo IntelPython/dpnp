@@ -20,6 +20,7 @@ from .helper import (
 )
 
 list_of_backend_str = [
+    "cuda",
     "host",
     "level_zero",
     "opencl",
@@ -39,9 +40,6 @@ valid_devices = []
 for device in available_devices:
     if device.default_selector_score < 0:
         pass
-    elif device.backend.name in "cuda":
-        valid_devices = [device]
-        break
     elif device.backend.name not in list_of_backend_str:
         pass
     elif device.device_type.name not in list_of_device_type_str:
