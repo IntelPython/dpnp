@@ -1,0 +1,6 @@
+﻿dpnp.sinh
+=========
+
+.. currentmodule:: dpnp
+
+.. autofunction:: sinh

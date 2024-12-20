@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.squeeze
+====================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.squeeze

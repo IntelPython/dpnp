@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.\_\_isub\_\_
+=========================
+
+.. currentmodule:: dpnp
+
+.. automethod:: ndarray.__isub__

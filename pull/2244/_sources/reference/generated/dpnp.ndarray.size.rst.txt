@@ -1,0 +1,6 @@
+﻿dpnp.ndarray.size
+=================
+
+.. currentmodule:: dpnp
+
+.. autoproperty:: ndarray.size
