@@ -503,10 +503,9 @@ class TestEigenvalue:
         # non-symmetric for eig() and eigvals()
         is_hermitian = func in ("eigh, eigvalsh")
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=is_hermitian, low=-4, high=4
+            shape, dtype, order, hermitian=is_hermitian, low=-4, high=4
         )
-        a_order = numpy.array(a, order=order)
-        a_dp = dpnp.array(a, order=order)
+        a_dp = dpnp.array(a)
 
         # NumPy with OneMKL and with rocSOLVER sorts in ascending order,
         # so w's should be directly comparable.
@@ -514,13 +513,13 @@ class TestEigenvalue:
         # constructing eigenvectors, so v's are not directly comparable and
         # we verify them through the eigen equation A*v=w*v.
         if func in ("eig", "eigh"):
-            w, _ = getattr(numpy.linalg, func)(a_order)
+            w, _ = getattr(numpy.linalg, func)(a)
             w_dp, v_dp = getattr(dpnp.linalg, func)(a_dp)
 
             self.assert_eigen_decomposition(a_dp, w_dp, v_dp)
 
         else:  # eighvals or eigvalsh
-            w = getattr(numpy.linalg, func)(a_order)
+            w = getattr(numpy.linalg, func)(a)
             w_dp = getattr(dpnp.linalg, func)(a_dp)
 
         assert_dtype_allclose(w_dp, w, factor=24)
@@ -2124,9 +2123,7 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(xfail_dtypes=[dpnp.uint64])
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
     )
@@ -2141,9 +2138,7 @@ class TestNorm:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(xfail_dtypes=[dpnp.uint64])
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
@@ -2170,9 +2165,7 @@ class TestNorm:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize(
         "dtype",
-        get_all_dtypes(
-            no_none=True, xfail_dtypes=[dpnp.uint16, dpnp.uint32, dpnp.uint64]
-        ),
+        get_all_dtypes(no_none=True),
     )
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
@@ -2204,10 +2197,7 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype",
-        get_all_dtypes(xfail_dtypes=[dpnp.uint16, dpnp.uint32, dpnp.uint64]),
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
