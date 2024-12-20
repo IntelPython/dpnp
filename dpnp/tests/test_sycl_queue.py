@@ -20,6 +20,7 @@ from .helper import (
 )
 
 list_of_backend_str = [
+    "cuda",
     "host",
     "level_zero",
     "opencl",

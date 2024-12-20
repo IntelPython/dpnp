@@ -68,6 +68,7 @@ __all__ = [
     "get_result_array",
     "get_usm_ndarray",
     "get_usm_ndarray_or_scalar",
+    "is_cuda_backend",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
     "synchronize_array_data",
@@ -679,6 +680,41 @@ def get_usm_ndarray_or_scalar(a):
     """
 
     return a if dpnp.isscalar(a) else get_usm_ndarray(a)
+
+
+def is_cuda_backend(obj=None):
+    """
+    Checks that object has a CUDA backend.
+
+    Parameters
+    ----------
+    obj : {Device, SyclDevice, SyclQueue, dpnp.ndarray, usm_ndarray, None},
+          optional
+        An input object with sycl_device property to check device backend.
+        If `obj` is ``None``, device backend will be checked for the default
+        queue.
+        Default: ``None``.
+
+    Returns
+    -------
+    out : bool
+        Return ``True`` if data of the input object resides on a CUDA backend,
+        otherwise ``False``.
+
+    """
+
+    if obj is None:
+        sycl_device = dpctl.select_default_device()
+    elif isinstance(obj, dpctl.SyclDevice):
+        sycl_device = obj
+    else:
+        sycl_device = getattr(obj, "sycl_device", None)
+    if (
+        sycl_device is not None
+        and sycl_device.backend == dpctl.backend_type.cuda
+    ):
+        return True
+    return False
 
 
 def is_supported_array_or_scalar(a):

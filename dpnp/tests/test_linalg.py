@@ -23,6 +23,7 @@ from .helper import (
     get_float_complex_dtypes,
     has_support_aspect64,
     is_cpu_device,
+    is_cuda_device,
 )
 from .third_party.cupy import testing
 
@@ -324,6 +325,12 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_nan(self, p):
+        # dpnp.linalg.cond uses dpnp.linalg.inv()
+        # for the case when p is not None or p != -2 or p != 2
+        # For singular matrices cuSolver raises an error
+        # while OneMKL returns nans
+        if is_cuda_device() and p in [-dpnp.inf, -1, 1, dpnp.inf, "fro"]:
+            pytest.skip("Different behavior on CUDA")
         a = generate_random_numpy_array((2, 2, 2, 2))
         a[0, 0] = 0
         a[1, 1] = 0
@@ -2373,6 +2380,12 @@ class TestQr:
     )
     @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
     def test_qr(self, dtype, shape, mode):
+        if (
+            is_cuda_device()
+            and mode in ["complete", "reduced"]
+            and shape in [(16, 16), (2, 2, 4)]
+        ):
+            pytest.skip("SAT-7589")
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
         ia = dpnp.array(a)
 
