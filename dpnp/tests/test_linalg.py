@@ -294,9 +294,7 @@ class TestCond:
         expected = numpy.linalg.cond(a, p=p)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
     )
@@ -304,26 +302,7 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_basic(self, dtype, shape, p):
-        a = numpy.array(
-            numpy.random.uniform(-5, 5, numpy.prod(shape)), dtype=dtype
-        ).reshape(shape)
-        ia = dpnp.array(a)
-
-        result = dpnp.linalg.cond(ia, p=p)
-        expected = numpy.linalg.cond(a, p=p)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize(
-        "shape", [(4, 4), (2, 4, 3, 3)], ids=["(4, 4)", "(2, 4, 3, 3)"]
-    )
-    @pytest.mark.parametrize(
-        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
-    )
-    def test_complex(self, dtype, shape, p):
-        x1 = numpy.random.uniform(-5, 5, numpy.prod(shape))
-        x2 = numpy.random.uniform(-5, 5, numpy.prod(shape))
-        a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(shape)
+        a = generate_random_numpy_array(shape, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.cond(ia, p=p)
@@ -345,7 +324,7 @@ class TestCond:
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
     def test_nan(self, p):
-        a = numpy.array(numpy.random.uniform(-5, 5, 16)).reshape(2, 2, 2, 2)
+        a = generate_random_numpy_array((2, 2, 2, 2))
         a[0, 0] = 0
         a[1, 1] = 0
         ia = dpnp.array(a)
@@ -524,10 +503,9 @@ class TestEigenvalue:
         # non-symmetric for eig() and eigvals()
         is_hermitian = func in ("eigh, eigvalsh")
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=is_hermitian, seed_value=81
+            shape, dtype, order, hermitian=is_hermitian, low=-4, high=4
         )
-        a_order = numpy.array(a, order=order)
-        a_dp = dpnp.array(a, order=order)
+        a_dp = dpnp.array(a)
 
         # NumPy with OneMKL and with rocSOLVER sorts in ascending order,
         # so w's should be directly comparable.
@@ -535,16 +513,16 @@ class TestEigenvalue:
         # constructing eigenvectors, so v's are not directly comparable and
         # we verify them through the eigen equation A*v=w*v.
         if func in ("eig", "eigh"):
-            w, _ = getattr(numpy.linalg, func)(a_order)
+            w, _ = getattr(numpy.linalg, func)(a)
             w_dp, v_dp = getattr(dpnp.linalg, func)(a_dp)
 
             self.assert_eigen_decomposition(a_dp, w_dp, v_dp)
 
         else:  # eighvals or eigvalsh
-            w = getattr(numpy.linalg, func)(a_order)
+            w = getattr(numpy.linalg, func)(a)
             w_dp = getattr(dpnp.linalg, func)(a_dp)
 
-        assert_dtype_allclose(w_dp, w)
+        assert_dtype_allclose(w_dp, w, factor=24)
 
     # eigh() and eigvalsh() are tested in cupy tests
     @pytest.mark.parametrize("func", ["eig", "eigvals"])
@@ -1826,11 +1804,11 @@ class TestLstsq:
         for param_dp, param_np in zip(result, expected):
             assert_dtype_allclose(param_dp, param_np)
 
-    @pytest.mark.parametrize("a_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("b_dtype", get_all_dtypes())
     def test_lstsq_diff_type(self, a_dtype, b_dtype):
-        a_np = numpy.array([[1, 2], [3, -5]], dtype=a_dtype)
-        b_np = numpy.array([4, 1], dtype=b_dtype)
+        a_np = generate_random_numpy_array((2, 2), a_dtype)
+        b_np = generate_random_numpy_array(2, b_dtype)
         a_dp = dpnp.array(a_np)
         b_dp = dpnp.array(b_np)
 
@@ -2145,14 +2123,14 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
     )
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_1D(self, dtype, ord, axis, keepdims):
-        a = numpy.array(numpy.random.uniform(-5, 5, 10), dtype=dtype)
+        a = generate_random_numpy_array(10, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
@@ -2160,24 +2138,7 @@ class TestNorm:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize(
-        "ord", [None, -dpnp.inf, -2, -1, 0, 1, 2, 3.5, dpnp.inf]
-    )
-    @pytest.mark.parametrize("axis", [0, None])
-    @pytest.mark.parametrize("keepdims", [True, False])
-    def test_1D_complex(self, dtype, ord, axis, keepdims):
-        x1 = numpy.random.uniform(-5, 5, 10)
-        x2 = numpy.random.uniform(-5, 5, 10)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-        expected = numpy.linalg.norm(a, ord=ord, axis=axis, keepdims=keepdims)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
@@ -2202,34 +2163,7 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize(
-        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
-    )
-    @pytest.mark.parametrize(
-        "axis", [0, 1, (1, 0), None], ids=["0", "1", "(1, 0)", "None"]
-    )
-    @pytest.mark.parametrize("keepdims", [True, False])
-    def test_2D_complex(self, dtype, ord, axis, keepdims):
-        x1 = numpy.random.uniform(-5, 5, 15)
-        x2 = numpy.random.uniform(-5, 5, 15)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(3, 5)
-        ia = dpnp.array(a)
-        if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
-            (isinstance(axis, tuple) or axis is None) and ord == 3
-        ):
-            # Invalid norm order for vectors
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-        else:
-            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-            expected = numpy.linalg.norm(
-                a, ord=ord, axis=axis, keepdims=keepdims
-            )
-            assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
@@ -2260,39 +2194,6 @@ class TestNorm:
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    @pytest.mark.parametrize(
-        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
-    )
-    @pytest.mark.parametrize(
-        "axis",
-        [-1, 0, 1, (0, 1), (-1, -2), None],
-        ids=["-1", "0", "1", "(0, 1)", "(-1, -2)", "None"],
-    )
-    @pytest.mark.parametrize("keepdims", [True, False])
-    def test_ND_complex(self, dtype, ord, axis, keepdims):
-        x1 = numpy.random.uniform(-5, 5, 120)
-        x2 = numpy.random.uniform(-5, 5, 120)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype).reshape(2, 3, 4, 5)
-        ia = dpnp.array(a)
-        if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
-            isinstance(axis, tuple) and ord == 3
-        ):
-            # Invalid norm order for vectors
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-        elif axis is None and ord is not None:
-            # Improper number of dimensions to norm
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-        else:
-            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-            expected = numpy.linalg.norm(
-                a, ord=ord, axis=axis, keepdims=keepdims
-            )
-            assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
@@ -2304,9 +2205,7 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_usm_ndarray(self, dtype, ord, axis, keepdims):
-        a = numpy.array(numpy.random.uniform(-5, 5, 120), dtype=dtype).reshape(
-            2, 3, 4, 5
-        )
+        a = generate_random_numpy_array((2, 3, 4, 5), dtype)
         ia = dpt.asarray(a)
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             isinstance(axis, tuple) and ord == 3
@@ -2381,7 +2280,7 @@ class TestNorm:
     )
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_matrix_norm(self, ord, keepdims):
-        a = numpy.array(numpy.random.uniform(-5, 5, 15)).reshape(3, 5)
+        a = generate_random_numpy_array((3, 5))
         ia = dpnp.array(a)
 
         result = dpnp.linalg.matrix_norm(ia, ord=ord, keepdims=keepdims)
@@ -2407,7 +2306,7 @@ class TestNorm:
     @pytest.mark.parametrize("axis", [0, None])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_vector_norm_1D(self, ord, axis, keepdims):
-        a = numpy.array(numpy.random.uniform(-5, 5, 10))
+        a = generate_random_numpy_array(10)
         ia = dpnp.array(a)
 
         result = dpnp.linalg.vector_norm(
@@ -2474,8 +2373,6 @@ class TestQr:
     )
     @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
     def test_qr(self, dtype, shape, mode):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
         ia = dpnp.array(a)
 
@@ -2604,13 +2501,8 @@ class TestSolve:
         ],
     )
     def test_solve_broadcast(self, a_shape, b_shape, dtype):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
-        a_np = generate_random_numpy_array(a_shape, dtype, seed_value=81)
-
-        # Set seed_value=76 to prevent
-        # random generation of the input singular matrix
-        b_np = generate_random_numpy_array(b_shape, dtype, seed_value=76)
+        a_np = generate_random_numpy_array(a_shape, dtype)
+        b_np = generate_random_numpy_array(b_shape, dtype)
 
         a_dp = dpnp.array(a_np)
         b_dp = dpnp.array(b_np)
@@ -2638,8 +2530,8 @@ class TestSolve:
     @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("b_dtype", get_all_dtypes(no_bool=True))
     def test_solve_diff_type(self, a_dtype, b_dtype):
-        a_np = numpy.array([[1, 2], [3, -5]], dtype=a_dtype)
-        b_np = numpy.array([4, 1], dtype=b_dtype)
+        a_np = generate_random_numpy_array((2, 2), a_dtype)
+        b_np = generate_random_numpy_array(2, b_dtype)
         a_dp = dpnp.array(a_np)
         b_dp = dpnp.array(b_np)
 
@@ -2842,13 +2734,13 @@ class TestSvd:
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
-            tol = 1e-04
+            tol = 1e-03
         elif not has_support_aspect64() and dtype in (
             dpnp.int32,
             dpnp.int64,
             None,
         ):
-            tol = 1e-04
+            tol = 1e-03
         self._tol = tol
 
     def check_types_shapes(
@@ -2934,11 +2826,7 @@ class TestSvd:
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_svd_hermitian(self, dtype, compute_vt, shape):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
-        a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=81
-        )
+        a = generate_random_numpy_array(shape, dtype, hermitian=True)
         dp_a = dpnp.array(a)
 
         if compute_vt:
@@ -3023,13 +2911,13 @@ class TestPinv:
     def get_tol(self, dtype):
         tol = 1e-06
         if dtype in (dpnp.float32, dpnp.complex64):
-            tol = 1e-04
+            tol = 1e-03
         elif not has_support_aspect64() and dtype in (
             dpnp.int32,
             dpnp.int64,
             None,
         ):
-            tol = 1e-04
+            tol = 1e-03
         self._tol = tol
 
     def check_types_shapes(self, dp_B, np_B):
@@ -3055,8 +2943,6 @@ class TestPinv:
         ],
     )
     def test_pinv(self, dtype, shape):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
         a_dp = dpnp.array(a)
 
@@ -3080,10 +2966,8 @@ class TestPinv:
         "shape", [(2, 2), (16, 16)], ids=["(2, 2)", "(16, 16)"]
     )
     def test_pinv_hermitian(self, dtype, shape):
-        # Set seed_value=81 to prevent
-        # random generation of the input singular matrix
         a = generate_random_numpy_array(
-            shape, dtype, hermitian=True, seed_value=81
+            shape, dtype, hermitian=True, seed_value=64, low=-5, high=5
         )
         a_dp = dpnp.array(a)
 

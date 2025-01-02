@@ -41,8 +41,11 @@
 using dpctl::tensor::kernels::alignment_utils::is_aligned;
 using dpctl::tensor::kernels::alignment_utils::required_alignment;
 
-using sycl::ext::oneapi::experimental::group_load;
-using sycl::ext::oneapi::experimental::group_store;
+namespace syclex = sycl::ext::oneapi::experimental;
+using syclex::group_load;
+using syclex::group_store;
+
+constexpr auto striped = syclex::properties{syclex::data_placement_striped};
 
 template <typename T>
 constexpr T dispatch_erf_op(T elem)

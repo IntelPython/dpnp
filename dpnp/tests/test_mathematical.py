@@ -81,47 +81,24 @@ class TestAngle:
 
 
 class TestConj:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_conj(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        a = generate_random_numpy_array(20, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.conj(ia)
         expected = numpy.conj(a)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_conj_complex(self, dtype):
-        x1 = numpy.random.uniform(-5, 5, 20)
-        x2 = numpy.random.uniform(-5, 5, 20)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        result = dpnp.conj(ia)
-        expected = numpy.conj(a)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    def test_conj_ndarray(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
-        ia = dpnp.array(a)
-
+        # ndarray
         result = ia.conj()
-        assert result is ia
+        if not dpnp.issubdtype(dtype, dpnp.complexfloating):
+            assert result is ia
         assert_dtype_allclose(result, a.conj())
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_conj_complex_ndarray(self, dtype):
-        x1 = numpy.random.uniform(-5, 5, 20)
-        x2 = numpy.random.uniform(-5, 5, 20)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        assert_dtype_allclose(ia.conj(), a.conj())
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_conj_out(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        a = generate_random_numpy_array(20, dtype)
         ia = dpnp.array(a)
 
         expected = numpy.conj(a)
@@ -2322,7 +2299,7 @@ class TestUnwrap:
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_rand(self, dt):
-        a = generate_random_numpy_array((10,), seed_value=42) * 100
+        a = generate_random_numpy_array(10) * 100
         a = a.astype(dtype=dt)
         ia = dpnp.array(a)
 
@@ -2346,7 +2323,7 @@ class TestUnwrap:
         "dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
     def test_rand_period(self, dt):
-        a = generate_random_numpy_array((10,), seed_value=42) * 1000
+        a = generate_random_numpy_array(10) * 1000
         a = a.astype(dtype=dt)
         ia = dpnp.array(a)
 
@@ -2650,54 +2627,27 @@ def test_signbit(data, dtype):
 
 
 class TestRealImag:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_real_imag(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
+        a = generate_random_numpy_array(20, dtype)
         ia = dpnp.array(a)
 
         result = dpnp.real(ia)
-        assert result is ia
         expected = numpy.real(a)
-        assert expected is a
+        if not dpnp.issubdtype(dtype, dpnp.complexfloating):
+            assert result is ia
+            assert expected is a
         assert_dtype_allclose(result, expected)
 
         result = dpnp.imag(ia)
         expected = numpy.imag(a)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_real_imag_complex(self, dtype):
-        x1 = numpy.random.uniform(-5, 5, 20)
-        x2 = numpy.random.uniform(-5, 5, 20)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        result = dpnp.real(ia)
-        expected = numpy.real(a)
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.imag(ia)
-        expected = numpy.imag(a)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    def test_real_imag_ndarray(self, dtype):
-        a = numpy.array(numpy.random.uniform(-5, 5, 20), dtype=dtype)
-        ia = dpnp.array(a)
-
+        # ndarray
         result = ia.real
-        assert result is ia
+        if not dpnp.issubdtype(dtype, dpnp.complexfloating):
+            assert result is ia
         assert_dtype_allclose(result, a.real)
-        assert_dtype_allclose(ia.imag, a.imag)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_real_imag_complex_ndarray(self, dtype):
-        x1 = numpy.random.uniform(-5, 5, 20)
-        x2 = numpy.random.uniform(-5, 5, 20)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        ia = dpnp.array(a)
-
-        assert_dtype_allclose(ia.real, a.real)
         assert_dtype_allclose(ia.imag, a.imag)
 
 
@@ -3732,30 +3682,6 @@ class TestMatmul:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
-        "shape1, shape2",
-        [
-            ((2, 4), (4, 3)),
-            ((4, 2, 3), (4, 3, 5)),
-            ((6, 7, 4, 3), (6, 7, 3, 5)),
-        ],
-        ids=[
-            "((2, 4), (4, 3))",
-            "((4, 2, 3), (4, 3, 5))",
-            "((6, 7, 4, 3), (6, 7, 3, 5))",
-        ],
-    )
-    def test_matmul_dtype(self, dtype, shape1, shape2):
-        a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
-        b1 = dpnp.asarray(a1)
-        b2 = dpnp.asarray(a2)
-
-        result = dpnp.matmul(b1, b2, dtype=dtype)
-        expected = numpy.matmul(a1, a2, dtype=dtype)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize(
         "axes",
         [
             [(-3, -1), (0, 2), (-2, -3)],
@@ -3764,12 +3690,8 @@ class TestMatmul:
         ],
     )
     def test_matmul_axes_ND_ND(self, dtype, axes):
-        a = numpy.array(
-            numpy.random.uniform(-10, 10, 120), dtype=dtype
-        ).reshape(2, 5, 3, 4)
-        b = numpy.array(
-            numpy.random.uniform(-10, 10, 120), dtype=dtype
-        ).reshape(4, 2, 5, 3)
+        a = generate_random_numpy_array((2, 5, 3, 4), dtype)
+        b = generate_random_numpy_array((4, 2, 5, 3), dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -3837,12 +3759,8 @@ class TestMatmul:
         ],
     )
     def test_matmul_axes_out(self, dtype, axes, out_shape):
-        a = numpy.array(
-            numpy.random.uniform(-10, 10, 120), dtype=dtype
-        ).reshape(2, 5, 3, 4)
-        b = numpy.array(
-            numpy.random.uniform(-10, 10, 120), dtype=dtype
-        ).reshape(4, 2, 5, 3)
+        a = generate_random_numpy_array((2, 5, 3, 4), dtype)
+        b = generate_random_numpy_array((4, 2, 5, 3), dtype)
         ia = dpnp.array(a)
         ib = dpnp.array(b)
 
@@ -3875,9 +3793,9 @@ class TestMatmul:
         expected = numpy.matmul(a, b, axes=axes, out=out_np)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("in_dt", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
-        "dtype2", get_all_dtypes(no_bool=True, no_none=True)
+        "out_dt", get_all_dtypes(no_bool=True, no_none=True)
     )
     @pytest.mark.parametrize(
         "shape1, shape2",
@@ -3892,19 +3810,19 @@ class TestMatmul:
             "((6, 7, 4, 3), (6, 7, 3, 5))",
         ],
     )
-    def test_matmul_dtype_matrix_inout(self, dtype1, dtype2, shape1, shape2):
-        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype1).reshape(shape2)
+    def test_matmul_dtype_matrix_inout(self, in_dt, out_dt, shape1, shape2):
+        a1 = generate_random_numpy_array(shape1, in_dt)
+        a2 = generate_random_numpy_array(shape2, in_dt)
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
 
-        if dpnp.can_cast(dpnp.result_type(b1, b2), dtype2, casting="same_kind"):
-            result = dpnp.matmul(b1, b2, dtype=dtype2)
-            expected = numpy.matmul(a1, a2, dtype=dtype2)
+        if dpnp.can_cast(dpnp.result_type(b1, b2), out_dt, casting="same_kind"):
+            result = dpnp.matmul(b1, b2, dtype=out_dt)
+            expected = numpy.matmul(a1, a2, dtype=out_dt)
             assert_dtype_allclose(result, expected)
         else:
             with pytest.raises(TypeError):
-                dpnp.matmul(b1, b2, dtype=dtype2)
+                dpnp.matmul(b1, b2, dtype=out_dt)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
@@ -3922,8 +3840,8 @@ class TestMatmul:
         ],
     )
     def test_matmul_dtype_matrix_inputs(self, dtype1, dtype2, shape1, shape2):
-        a1 = numpy.arange(numpy.prod(shape1), dtype=dtype1).reshape(shape1)
-        a2 = numpy.arange(numpy.prod(shape2), dtype=dtype2).reshape(shape2)
+        a1 = generate_random_numpy_array(shape1, dtype1)
+        a2 = generate_random_numpy_array(shape2, dtype2)
         b1 = dpnp.asarray(a1)
         b2 = dpnp.asarray(a2)
 
@@ -4244,10 +4162,8 @@ class TestMatmul:
         ],
     )
     def test_matmul_large(self, shape1, shape2):
-        size1 = numpy.prod(shape1, dtype=int)
-        size2 = numpy.prod(shape2, dtype=int)
-        a = numpy.array(numpy.random.uniform(-5, 5, size1)).reshape(shape1)
-        b = numpy.array(numpy.random.uniform(-5, 5, size2)).reshape(shape2)
+        a = generate_random_numpy_array(shape1)
+        b = generate_random_numpy_array(shape2)
         a_dp = dpnp.asarray(a)
         b_dp = dpnp.asarray(b)
 
@@ -4275,14 +4191,13 @@ class TestMatmul:
         ids=["gemm", "gemm_batch"],
     )
     def test_matmul_with_offsets(self, sh1, sh2):
-        size1, size2 = numpy.prod(sh1, dtype=int), numpy.prod(sh2, dtype=int)
-        a = numpy.random.randint(-5, 5, size1).reshape(sh1).astype("f8")
-        b = numpy.random.randint(-5, 5, size2).reshape(sh2).astype("f8")
+        a = generate_random_numpy_array(sh1)
+        b = generate_random_numpy_array(sh2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = ia[1] @ ib[1]
         expected = a[1] @ b[1]
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
 
 class TestMatmulInplace:

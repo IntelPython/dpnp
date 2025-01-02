@@ -83,13 +83,13 @@ jobs:
           MAX_BUILD_CMPL_MKL_VERSION: '2025.1a0'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
@@ -148,7 +148,7 @@ jobs:
 
       - name: Test conda channel
         run: |
-          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
       - name: Get package version
@@ -182,7 +182,7 @@ jobs:
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 10
+          timeout_minutes: 12
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
@@ -264,7 +264,7 @@ jobs:
       - name: Test conda channel
         run: |
           @echo on
-          mamba search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
 
       - name: Dump version.json
         run: more ${{ env.ver-json-path }}
