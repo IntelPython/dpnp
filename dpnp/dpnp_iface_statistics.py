@@ -527,7 +527,7 @@ def _convolve_fft(a, v, l_pad, r_pad, rtype):
 
     # +1 is needed to avoid circular convolution
     padded_size = a.size + r_pad + 1
-    fft_size = 2 ** math.ceil(math.log2(padded_size))
+    fft_size = 2 ** int(math.ceil(math.log2(padded_size)))
 
     af = dpnp.fft.fft(a, fft_size)  # pylint: disable=no-member
     vf = dpnp.fft.fft(v, fft_size)  # pylint: disable=no-member
