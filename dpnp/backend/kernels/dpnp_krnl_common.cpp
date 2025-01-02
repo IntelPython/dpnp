@@ -35,14 +35,6 @@
 #include "queue_sycl.hpp"
 #include <dpnp_iface.hpp>
 
-/**
- * Version of SYCL DPC++ 2025.1 compiler where support of
- * sycl::ext::oneapi::experimental::properties was added.
- */
-#ifndef __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT
-#define __SYCL_COMPILER_REDUCTION_PROPERTIES_SUPPORT 20241208L
-#endif
-
 template <typename _DataType>
 class dpnp_initval_c_kernel;
 

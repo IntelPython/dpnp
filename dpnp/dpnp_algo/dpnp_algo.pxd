@@ -95,10 +95,6 @@ cdef extern from "dpnp_iface_fptr.hpp":
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
-
-cdef extern from "constants.hpp":
-    void dpnp_python_constants_initialize_c(void * py_none, void * py_nan)
-
 cdef extern from "dpnp_iface.hpp":
 
     char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
