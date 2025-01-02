@@ -162,7 +162,13 @@ def get_all_dtypes(
 
 
 def generate_random_numpy_array(
-    shape, dtype=None, hermitian=False, seed_value=None
+    shape,
+    dtype=None,
+    order="C",
+    hermitian=False,
+    seed_value=None,
+    low=-10,
+    high=10,
 ):
     """
     Generate a random numpy array with the specified shape and dtype.
@@ -177,18 +183,27 @@ def generate_random_numpy_array(
     dtype : str or dtype, optional
         Desired data-type for the output array.
         If not specified, data type will be determined by numpy.
-        Default : None
+        Default : ``None``
+    order : {"C", "F"}, optional
+        Specify the memory layout of the output array.
+        Default: ``"C"``.
     hermitian : bool, optional
         If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
-        Default : False
+        Default : ``False``
     seed_value : int, optional
         The seed value to initialize the random number generator.
-        Default : None
+        Default : ``None``
+    low : {int, float}, optional
+        Lower boundary of the generated samples from a uniform distribution.
+        Default : ``-10``.
+    high : {int, float}, optional
+        Upper boundary of the generated samples from a uniform distribution.
+        Default : ``10``.
 
     Returns
     -------
     out : numpy.ndarray
-        A random numpy array of the specified shape and dtype.
+        A random numpy array of the specified shape, dtype and memory layout.
         The array is Hermitian or symmetric if `hermitian` is True.
 
     Note:
@@ -197,13 +212,17 @@ def generate_random_numpy_array(
 
     """
 
+    if seed_value is None:
+        seed_value = 42
     numpy.random.seed(seed_value)
 
-    a = numpy.random.randn(*shape).astype(dtype)
+    # dtype=int is needed for 0d arrays
+    size = numpy.prod(shape, dtype=int)
+    a = numpy.random.uniform(low, high, size).astype(dtype)
     if numpy.issubdtype(a.dtype, numpy.complexfloating):
-        numpy.random.seed(seed_value)
-        a += 1j * numpy.random.randn(*shape)
+        a += 1j * numpy.random.uniform(low, high, size)
 
+    a = a.reshape(shape)
     if hermitian and a.size > 0:
         if a.ndim > 2:
             orig_shape = a.shape
@@ -214,6 +233,10 @@ def generate_random_numpy_array(
             a = a.reshape(orig_shape)
         else:
             a = numpy.conj(a.T) @ a
+
+    # a.reshape(shape) returns an array in C order by default
+    if order != "C" and a.ndim > 1:
+        a = numpy.array(a, order=order)
     return a
 
 
@@ -248,3 +271,7 @@ def has_support_aspect64(device=None):
     """
     dev = dpctl.select_default_device() if device is None else device
     return dev.has_aspect_fp64
+
+
+def numpy_version():
+    return numpy.lib.NumpyVersion(numpy.__version__)

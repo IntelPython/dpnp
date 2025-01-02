@@ -22,23 +22,46 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._lapack_impl extensions
-//
-//*****************************************************************************
+
+#pragma once
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
+#include <sycl/sycl.hpp>
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "histogramdd.hpp"
-#include "sliding_dot_product1d.hpp"
+#include "dispatch_table.hpp"
+#include "dpctl4pybind11.hpp"
 
-PYBIND11_MODULE(_statistics_impl, m)
+namespace statistics
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-    statistics::histogram::populate_histogramdd(m);
-}
+namespace histogram
+{
+struct Histogramdd
+{
+    using FnT = sycl::event (*)(sycl::queue &,
+                                const void *,
+                                const void *,
+                                const void *,
+                                const void *,
+                                void *,
+                                const size_t,
+                                const size_t,
+                                const size_t,
+                                const size_t,
+                                const std::vector<sycl::event> &);
+
+    common::DispatchTable2<FnT> dispatch_table;
+
+    Histogramdd();
+
+    std::tuple<sycl::event, sycl::event>
+        call(const dpctl::tensor::usm_ndarray &input,
+             const dpctl::tensor::usm_ndarray &bins_edges,
+             const dpctl::tensor::usm_ndarray &bins_edges_count,
+             const std::optional<const dpctl::tensor::usm_ndarray> &weights,
+             dpctl::tensor::usm_ndarray &output,
+             const std::vector<sycl::event> &depends);
+};
+
+void populate_histogramdd(py::module_ m);
+} // namespace histogram
+} // namespace statistics

@@ -387,6 +387,7 @@ class TestTrim_zeros(unittest.TestCase):
         a = xp.array([1, 0, 2, 3, 0, 5, 0, 0, 0], dtype=dtype)
         return xp.trim_zeros(a, trim=self.trim)
 
+    @pytest.mark.skip("0-d array is supported")
     @testing.for_all_dtypes()
     def test_trim_zero_dim(self, dtype):
         for xp in (numpy, cupy):
@@ -394,6 +395,7 @@ class TestTrim_zeros(unittest.TestCase):
             with pytest.raises(TypeError):
                 xp.trim_zeros(a, trim=self.trim)
 
+    @pytest.mark.skip("nd array is supported")
     @testing.for_all_dtypes()
     def test_trim_ndim(self, dtype):
         for xp in (numpy, cupy):

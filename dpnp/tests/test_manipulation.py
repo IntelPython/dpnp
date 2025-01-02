@@ -4,7 +4,11 @@ import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from numpy.testing import assert_array_equal, assert_equal, assert_raises
+from numpy.testing import (
+    assert_array_equal,
+    assert_equal,
+    assert_raises,
+)
 
 import dpnp
 
@@ -573,15 +577,33 @@ class TestInsert:
         result = dpnp.insert(ia, obj, values)
         assert_equal(result, expected)
 
-    @pytest.mark.filterwarnings("ignore::FutureWarning")
+    @testing.with_requires("numpy>=2.2")
     @pytest.mark.parametrize(
         "obj",
-        [True, [False], numpy.array([True] * 4), [True, False, True, False]],
+        [[False], numpy.array([True] * 4), [True, False, True, False]],
     )
     def test_boolean_obj(self, obj):
+        if not isinstance(obj, numpy.ndarray):
+            # numpy.insert raises exception
+            # TODO: remove once NumPy resolves that
+            obj = numpy.array(obj)
+
         a = numpy.array([1, 2, 3])
         ia = dpnp.array(a)
         assert_equal(dpnp.insert(ia, obj, 9), numpy.insert(a, obj, 9))
+
+    @testing.with_requires("numpy>=2.2")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "obj_data",
+        [True, [[True, False], [True, False]]],
+        ids=["0d", "2d"],
+    )
+    def test_boolean_obj_error(self, xp, obj_data):
+        a = xp.array([1, 2, 3])
+        obj = xp.array(obj_data)
+        with pytest.raises(ValueError):
+            xp.insert(a, obj, 9)
 
     def test_1D_array(self):
         a = numpy.array([1, 2, 3])
@@ -1356,6 +1378,20 @@ class TestTrimZeros:
         expected = numpy.trim_zeros(a)
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.2")
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("trim", ["F", "B", "fb"])
+    @pytest.mark.parametrize("ndim", [0, 1, 2, 3])
+    def test_basic_nd(self, dtype, trim, ndim):
+        a = numpy.ones((2,) * ndim, dtype=dtype)
+        a = numpy.pad(a, (2, 1), mode="constant", constant_values=0)
+        ia = dpnp.array(a)
+
+        for axis in list(range(ndim)) + [None]:
+            result = dpnp.trim_zeros(ia, trim=trim, axis=axis)
+            expected = numpy.trim_zeros(a, trim=trim, axis=axis)
+            assert_array_equal(result, expected)
+
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("trim", ["F", "B"])
     def test_trim(self, dtype, trim):
@@ -1376,6 +1412,19 @@ class TestTrimZeros:
         expected = numpy.trim_zeros(a, trim)
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.2")
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("trim", ["F", "B", "fb"])
+    @pytest.mark.parametrize("ndim", [0, 1, 2, 3])
+    def test_all_zero_nd(self, dtype, trim, ndim):
+        a = numpy.zeros((3,) * ndim, dtype=dtype)
+        ia = dpnp.array(a)
+
+        for axis in list(range(ndim)) + [None]:
+            result = dpnp.trim_zeros(ia, trim=trim, axis=axis)
+            expected = numpy.trim_zeros(a, trim=trim, axis=axis)
+            assert_array_equal(result, expected)
+
     def test_size_zero(self):
         a = numpy.zeros(0)
         ia = dpnp.array(a)
@@ -1394,14 +1443,11 @@ class TestTrimZeros:
         expected = numpy.trim_zeros(a)
         assert_array_equal(result, expected)
 
-    def test_trim_no_rule(self):
-        a = numpy.array([0, 0, 1, 0, 2, 3, 4, 0])
-        ia = dpnp.array(a)
-        trim = "ADE"  # no "F" or "B" in trim string
-
-        result = dpnp.trim_zeros(ia, trim)
-        expected = numpy.trim_zeros(a, trim)
-        assert_array_equal(result, expected)
+    @testing.with_requires("numpy>=2.2")
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_trim_no_fb_in_rule(self, xp):
+        a = xp.array([0, 0, 1, 0, 2, 3, 4, 0])
+        assert_raises(ValueError, xp.trim_zeros, a, "ADE")
 
     def test_list_array(self):
         assert_raises(TypeError, dpnp.trim_zeros, [0, 0, 1, 0, 2, 3, 4, 0])

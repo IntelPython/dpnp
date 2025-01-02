@@ -119,12 +119,6 @@ def _count_reduce_items(arr, axis, where=True):
     return items
 
 
-def _get_comparison_res_dt(a, _dtype, _out):
-    """Get a data type used by dpctl for result array in comparison function."""
-
-    return a.dtype
-
-
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     """
     Return the maximum of an array or maximum along an axis.
@@ -506,7 +500,7 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
     usm_type = dpu.get_coerced_usm_type([a_casted.usm_type, v_casted.usm_type])
     out_size = l_pad + r_pad + a_casted.size - v_casted.size + 1
     # out type is the same as input type
-    out = dpnp.empty_like(a, shape=out_size, usm_type=usm_type)
+    out = dpnp.empty_like(a_casted, shape=out_size, usm_type=usm_type)
 
     a_usm = dpnp.get_usm_ndarray(a_casted)
     v_usm = dpnp.get_usm_ndarray(v_casted)
@@ -590,6 +584,11 @@ def correlate(a, v, mode="valid", method="auto"):
 
         Default: ``"auto"``.
 
+    Returns
+    -------
+    out : {dpnp.ndarray}
+        Discrete cross-correlation of `a` and `v`.
+
     Notes
     -----
     The definition of correlation above is not unique and sometimes
@@ -603,11 +602,6 @@ def correlate(a, v, mode="valid", method="auto"):
     ----------
     .. [1] Wikipedia, "Cross-correlation",
            https://en.wikipedia.org/wiki/Cross-correlation
-
-    Returns
-    -------
-    out : {dpnp.ndarray}
-        Discrete cross-correlation of `a` and `v`.
 
     See Also
     --------
@@ -839,11 +833,10 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.max,
-        _get_comparison_res_dt,
-        usm_a,
+        a.dtype,
         axis=axis,
         keepdims=keepdims,
     )
@@ -1105,11 +1098,10 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.min,
-        _get_comparison_res_dt,
-        usm_a,
+        a.dtype,
         axis=axis,
         keepdims=keepdims,
     )
