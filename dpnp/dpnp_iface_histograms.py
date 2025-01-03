@@ -57,6 +57,7 @@ __all__ = [
     "digitize",
     "histogram",
     "histogram_bin_edges",
+    "histogram2d"
     "histogramdd",
 ]
 
@@ -749,6 +750,167 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
     a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
     bin_edges, _ = _get_bin_edges(a, bins, range, usm_type)
     return bin_edges
+
+
+def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
+    """
+    Compute the bi-dimensional histogram of two data samples.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray} of shape (N,)
+        An array containing the x coordinates of the points to be
+        histogrammed.
+    y : {dpnp.ndarray, usm_ndarray} of shape (N,)
+        An array containing the y coordinates of the points to be
+        histogrammed.
+    bins : {int, list of dpnp.ndarray, list of usm_ndarray, sequence of scalars}, optional
+        The bin specification:
+
+        * If int, the number of bins for the two dimensions (nx=ny=bins).
+        * If array, the bin edges for the two dimensions
+          (x_edges=y_edges=bins).
+        * If [int, int], the number of bins in each dimension
+          (nx, ny = bins).
+        * If [array, array], the bin edges in each dimension
+          (x_edges, y_edges = bins).
+        * A combination [int, array] or [array, int], where int
+          is the number of bins and array is the bin edges.
+
+    range : {dpnp.ndarray, usm_ndarray} of shape (2,2), optional
+        The leftmost and rightmost edges of the bins along each dimension
+        (if not specified explicitly in the `bins` parameters):
+        ``[[xmin, xmax], [ymin, ymax]]``. All values outside of this range
+        will be considered outliers and not tallied in the histogram.
+    density : bool, optional
+        If ``False``, the default, returns the number of samples in each bin.
+        If ``True``, returns the probability *density* function at the bin,
+        ``bin_count / sample_count / bin_area``.
+    weights : {dpnp.ndarray, usm_ndarray} of shape(N,), optional
+        An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.
+        Weights are normalized to 1 if `density` is True. If `density` is
+        False, the values of the returned histogram are equal to the sum of
+        the weights belonging to the samples falling into each bin.
+
+    Returns
+    -------
+    H : ndarray, shape(nx, ny)
+        The bi-dimensional histogram of samples `x` and `y`. Values in `x`
+        are histogrammed along the first dimension and values in `y` are
+        histogrammed along the second dimension.
+    xedges : dpnp.ndarray, shape(nx+1,)
+        The bin edges along the first dimension.
+    yedges : dpnp.ndarray, shape(ny+1,)
+        The bin edges along the second dimension.
+
+    See Also
+    --------
+    :obj:`dpnp.histogram` : 1D histogram
+    :obj:`dpnp.histogramdd` : Multidimensional histogram
+
+    Notes
+    -----
+    When `density` is True, then the returned histogram is the sample
+    density, defined such that the sum over bins of the product
+    ``bin_value * bin_area`` is 1.
+
+    Please note that the histogram does not follow the Cartesian convention
+    where `x` values are on the abscissa and `y` values on the ordinate
+    axis.  Rather, `x` is histogrammed along the first dimension of the
+    array (vertical), and `y` along the second dimension of the array
+    (horizontal).  This ensures compatibility with `histogramdd`.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from matplotlib.image import NonUniformImage
+    >>> import matplotlib.pyplot as plt
+
+    Construct a 2-D histogram with variable bin width. First define the bin
+    edges:
+
+    >>> xedges = [0, 1, 3, 5]
+    >>> yedges = [0, 2, 3, 4, 6]
+
+    Next we create a histogram H with random bin content:
+
+    >>> x = np.random.normal(2, 1, 100)
+    >>> y = np.random.normal(1, 1, 100)
+    >>> H, xedges, yedges = np.histogram2d(x, y, bins=(xedges, yedges))
+    >>> # Histogram does not follow Cartesian convention (see Notes),
+    >>> # therefore transpose H for visualization purposes.
+    >>> H = H.T
+
+    :func:`imshow <matplotlib.pyplot.imshow>` can only display square bins:
+
+    >>> fig = plt.figure(figsize=(7, 3))
+    >>> ax = fig.add_subplot(131, title='imshow: square bins')
+    >>> plt.imshow(H, interpolation='nearest', origin='lower',
+    ...         extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
+    <matplotlib.image.AxesImage object at 0x...>
+
+    :func:`pcolormesh <matplotlib.pyplot.pcolormesh>` can display actual edges:
+
+    >>> ax = fig.add_subplot(132, title='pcolormesh: actual edges',
+    ...         aspect='equal')
+    >>> X, Y = np.meshgrid(xedges, yedges)
+    >>> ax.pcolormesh(X, Y, H)
+    <matplotlib.collections.QuadMesh object at 0x...>
+
+    :class:`NonUniformImage <matplotlib.image.NonUniformImage>` can be used to
+    display actual bin edges with interpolation:
+
+    >>> ax = fig.add_subplot(133, title='NonUniformImage: interpolated',
+    ...         aspect='equal', xlim=xedges[[0, -1]], ylim=yedges[[0, -1]])
+    >>> im = NonUniformImage(ax, interpolation='bilinear')
+    >>> xcenters = (xedges[:-1] + xedges[1:]) / 2
+    >>> ycenters = (yedges[:-1] + yedges[1:]) / 2
+    >>> im.set_data(xcenters, ycenters, H)
+    >>> ax.add_image(im)
+    >>> plt.show()
+
+    It is also possible to construct a 2-D histogram without specifying bin
+    edges:
+
+    >>> # Generate non-symmetric test data
+    >>> n = 10000
+    >>> x = np.linspace(1, 100, n)
+    >>> y = 2*np.log(x) + np.random.rand(n) - 0.5
+    >>> # Compute 2d histogram. Note the order of x/y and xedges/yedges
+    >>> H, yedges, xedges = np.histogram2d(y, x, bins=20)
+
+    Now we can plot the histogram using
+    :func:`pcolormesh <matplotlib.pyplot.pcolormesh>`, and a
+    :func:`hexbin <matplotlib.pyplot.hexbin>` for comparison.
+
+    >>> # Plot histogram using pcolormesh
+    >>> fig, (ax1, ax2) = plt.subplots(ncols=2, sharey=True)
+    >>> ax1.pcolormesh(xedges, yedges, H, cmap='rainbow')
+    >>> ax1.plot(x, 2*np.log(x), 'k-')
+    >>> ax1.set_xlim(x.min(), x.max())
+    >>> ax1.set_ylim(y.min(), y.max())
+    >>> ax1.set_xlabel('x')
+    >>> ax1.set_ylabel('y')
+    >>> ax1.set_title('histogram2d')
+    >>> ax1.grid()
+
+    >>> # Create hexbin plot for comparison
+    >>> ax2.hexbin(x, y, gridsize=20, cmap='rainbow')
+    >>> ax2.plot(x, 2*np.log(x), 'k-')
+    >>> ax2.set_title('hexbin')
+    >>> ax2.set_xlim(x.min(), x.max())
+    >>> ax2.set_xlabel('x')
+    >>> ax2.grid()
+
+    >>> plt.show()
+    """
+
+    if len(x) != len(y):
+        raise ValueError(f'x and y must have the same length. Got {len(x)} and {len(y)} respectively')
+
+
+    hist, edges = histogramdd([x, y], bins, range, density, weights)
+    return hist, edges[0], edges[1]
 
 
 def _histdd_validate_bins(bins):
