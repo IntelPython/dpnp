@@ -45,6 +45,17 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+      - name: Find the latest tag
+        id: find_latest_tag
+        uses: oprypin/find-latest-tag@dd2729fe78b0bb55523ae2b2a310c6773a652bd1 # 1.1.2
+        with:
+          repository: IntelPython/dpnp
+          releases-only: false
+
+      - name: Print latest tag
+        run: |
+          echo "Latest tag is ${{ steps.find_latest_tag.outputs.tag }}"
+
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
@@ -57,7 +68,7 @@ jobs:
 
       - name: Install dpnp
         run: |
-          mamba install ${{ env.PACKAGE_NAME }} pytest ${{ env.CHANNELS }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
         env:
           MAMBA_NO_LOW_SPEED_LIMIT: 1
 
