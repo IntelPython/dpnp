@@ -28,7 +28,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2019]
 
     permissions:
@@ -107,7 +107,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     continue-on-error: true
 
@@ -205,7 +205,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     continue-on-error: true
 
@@ -254,7 +254,7 @@ jobs:
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
       - name: Install conda-index
-        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+        run: mamba install conda-index"<=${{ env.CONDA_INDEX_VERSION }}"
 
       - name: Create conda channel
         run: |
@@ -331,7 +331,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2019]
 
     runs-on: ${{ matrix.os }}
@@ -406,7 +406,7 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: 'true'
           run-post: 'false'
-          python-version: '3.12'
+          python-version: '3.13'
           activate-environment: 'cleanup'
 
       - name: Install anaconda-client

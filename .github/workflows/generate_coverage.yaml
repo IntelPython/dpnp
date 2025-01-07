@@ -20,7 +20,7 @@ jobs:
         shell: bash -el {0}
 
     env:
-      python-ver: '3.12'
+      python-ver: '3.13'
       CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
       NO_INTEL_CHANNELS: '-c dppy/label/dev -c conda-forge --override-channels'
       # Install the latest oneAPI compiler to work around an issue
