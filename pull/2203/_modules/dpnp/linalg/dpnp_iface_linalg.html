@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev3+15.g62699f63175 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev3+45.gd74cf3e749a documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=a09ca821"></script>
+      <script src="../../../_static/documentation_options.js?v=4982c5de"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -124,12 +124,12 @@
 <span class="c1"># pylint: disable=invalid-name</span>
 <span class="c1"># pylint: disable=no-member</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_utils_linalg</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils_linalg</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">assert_2d</span><span class="p">,</span>
     <span class="n">assert_stacked_2d</span><span class="p">,</span>
     <span class="n">assert_stacked_square</span><span class="p">,</span>
@@ -187,7 +187,7 @@
 
 <div class="viewcode-block" id="cholesky">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky">[docs]</a>
-<span class="k">def</span> <span class="nf">cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Cholesky decomposition.</span>
 
@@ -250,7 +250,7 @@
 
 <div class="viewcode-block" id="cond">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cond.html#dpnp.linalg.cond">[docs]</a>
-<span class="k">def</span> <span class="nf">cond</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cond</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the condition number of a matrix.</span>
 
@@ -313,7 +313,7 @@
 
 <div class="viewcode-block" id="cross">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cross.html#dpnp.linalg.cross">[docs]</a>
-<span class="k">def</span> <span class="nf">cross</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cross</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the cross product of 3-element vectors.</span>
 
@@ -391,7 +391,7 @@
 
 <div class="viewcode-block" id="det">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.det.html#dpnp.linalg.det">[docs]</a>
-<span class="k">def</span> <span class="nf">det</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">det</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the determinant of an array.</span>
 
@@ -441,7 +441,7 @@
 
 <div class="viewcode-block" id="diagonal">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.diagonal.html#dpnp.linalg.diagonal">[docs]</a>
-<span class="k">def</span> <span class="nf">diagonal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">diagonal</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns specified diagonals of a matrix (or a stack of matrices) `x`.</span>
 
@@ -539,7 +539,7 @@
 
 <div class="viewcode-block" id="eig">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eig.html#dpnp.linalg.eig">[docs]</a>
-<span class="k">def</span> <span class="nf">eig</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eig</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the eigenvalues and right eigenvectors of a square array.</span>
 
@@ -643,7 +643,7 @@
 
 <div class="viewcode-block" id="eigh">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigh.html#dpnp.linalg.eigh">[docs]</a>
-<span class="k">def</span> <span class="nf">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eigh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the eigenvalues and eigenvectors of a complex Hermitian</span>
 <span class="sd">    (conjugate symmetric) or a real symmetric matrix.</span>
@@ -714,7 +714,7 @@
 
 <div class="viewcode-block" id="eigvals">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigvals.html#dpnp.linalg.eigvals">[docs]</a>
-<span class="k">def</span> <span class="nf">eigvals</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eigvals</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the eigenvalues of a general matrix.</span>
 
@@ -789,7 +789,7 @@
 
 <div class="viewcode-block" id="eigvalsh">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.eigvalsh.html#dpnp.linalg.eigvalsh">[docs]</a>
-<span class="k">def</span> <span class="nf">eigvalsh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">eigvalsh</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">UPLO</span><span class="o">=</span><span class="s2">&quot;L&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the eigenvalues of a complex Hermitian or real symmetric matrix.</span>
 
@@ -850,7 +850,7 @@
 
 <div class="viewcode-block" id="inv">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.inv.html#dpnp.linalg.inv">[docs]</a>
-<span class="k">def</span> <span class="nf">inv</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">inv</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the (multiplicative) inverse of a matrix.</span>
 
@@ -905,7 +905,7 @@
 
 <div class="viewcode-block" id="lstsq">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.lstsq.html#dpnp.linalg.lstsq">[docs]</a>
-<span class="k">def</span> <span class="nf">lstsq</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">lstsq</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the least-squares solution to a linear matrix equation.</span>
 
@@ -982,7 +982,7 @@
 
 <div class="viewcode-block" id="matmul">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matmul.html#dpnp.linalg.matmul">[docs]</a>
-<span class="k">def</span> <span class="nf">matmul</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matmul</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the matrix product.</span>
 
@@ -1055,7 +1055,7 @@
 
 <div class="viewcode-block" id="matrix_norm">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_norm.html#dpnp.linalg.matrix_norm">[docs]</a>
-<span class="k">def</span> <span class="nf">matrix_norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="s2">&quot;fro&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="s2">&quot;fro&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the matrix norm of a matrix (or a stack of matrices) `x`.</span>
 
@@ -1125,7 +1125,7 @@
 
 <div class="viewcode-block" id="matrix_power">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_power.html#dpnp.linalg.matrix_power">[docs]</a>
-<span class="k">def</span> <span class="nf">matrix_power</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_power</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raise a square matrix to the (integer) power `n`.</span>
 
@@ -1192,7 +1192,7 @@
 
 <div class="viewcode-block" id="matrix_rank">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.matrix_rank.html#dpnp.linalg.matrix_rank">[docs]</a>
-<span class="k">def</span> <span class="nf">matrix_rank</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_rank</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return matrix rank of array using SVD method.</span>
 
@@ -1259,7 +1259,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">matrix_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transposes a matrix (or a stack of matrices) `x`.</span>
 
@@ -1305,7 +1305,7 @@
 
 <div class="viewcode-block" id="multi_dot">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.multi_dot.html#dpnp.linalg.multi_dot">[docs]</a>
-<span class="k">def</span> <span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">multi_dot</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the dot product of two or more arrays in a single function call.</span>
 
@@ -1374,7 +1374,7 @@
 
 <div class="viewcode-block" id="norm">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.norm.html#dpnp.linalg.norm">[docs]</a>
-<span class="k">def</span> <span class="nf">norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Matrix or vector norm.</span>
 
@@ -1531,7 +1531,7 @@
 
 <div class="viewcode-block" id="outer">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.outer.html#dpnp.linalg.outer">[docs]</a>
-<span class="k">def</span> <span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the outer product of two vectors.</span>
 
@@ -1608,7 +1608,7 @@
 
 <div class="viewcode-block" id="pinv">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.pinv.html#dpnp.linalg.pinv">[docs]</a>
-<span class="k">def</span> <span class="nf">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">rcond</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the (Moore-Penrose) pseudo-inverse of a matrix.</span>
 
@@ -1675,7 +1675,7 @@
 
 <div class="viewcode-block" id="qr">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.qr.html#dpnp.linalg.qr">[docs]</a>
-<span class="k">def</span> <span class="nf">qr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reduced&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">qr</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;reduced&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the qr factorization of a matrix.</span>
 
@@ -1749,7 +1749,7 @@
 
 <div class="viewcode-block" id="solve">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.solve.html#dpnp.linalg.solve">[docs]</a>
-<span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solve a linear matrix equation, or system of linear scalar equations.</span>
 
@@ -1835,7 +1835,7 @@
 
 <div class="viewcode-block" id="svd">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.svd.html#dpnp.linalg.svd">[docs]</a>
-<span class="k">def</span> <span class="nf">svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">svd</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">full_matrices</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_uv</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">hermitian</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Singular Value Decomposition.</span>
 
@@ -1936,7 +1936,7 @@
 
 <div class="viewcode-block" id="svdvals">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.svdvals.html#dpnp.linalg.svdvals">[docs]</a>
-<span class="k">def</span> <span class="nf">svdvals</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">svdvals</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the singular values of a matrix (or a stack of matrices) `x`.</span>
 
@@ -1995,7 +1995,7 @@
 
 <div class="viewcode-block" id="slogdet">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.slogdet.html#dpnp.linalg.slogdet">[docs]</a>
-<span class="k">def</span> <span class="nf">slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">slogdet</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the sign and (natural) logarithm of the determinant of an array.</span>
 
@@ -2054,7 +2054,7 @@
 
 <div class="viewcode-block" id="tensordot">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.tensordot.html#dpnp.linalg.tensordot">[docs]</a>
-<span class="k">def</span> <span class="nf">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute tensor dot product along specified axes.</span>
 
@@ -2157,7 +2157,7 @@
 
 <div class="viewcode-block" id="tensorinv">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.tensorinv.html#dpnp.linalg.tensorinv">[docs]</a>
-<span class="k">def</span> <span class="nf">tensorinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tensorinv</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">ind</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the &#39;inverse&#39; of an N-dimensional array.</span>
 
@@ -2220,7 +2220,7 @@
 
 <div class="viewcode-block" id="tensorsolve">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.tensorsolve.html#dpnp.linalg.tensorsolve">[docs]</a>
-<span class="k">def</span> <span class="nf">tensorsolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tensorsolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Solve the tensor equation ``a x = b`` for x.</span>
 
@@ -2297,7 +2297,7 @@
 
 <div class="viewcode-block" id="trace">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.trace.html#dpnp.linalg.trace">[docs]</a>
-<span class="k">def</span> <span class="nf">trace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the sum along the specified diagonals of a matrix</span>
 <span class="sd">    (or a stack of matrices) `x`.</span>
@@ -2387,7 +2387,7 @@
 
 <div class="viewcode-block" id="vecdot">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.vecdot.html#dpnp.linalg.vecdot">[docs]</a>
-<span class="k">def</span> <span class="nf">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vecdot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the vector dot product.</span>
 
@@ -2445,7 +2445,7 @@
 
 <div class="viewcode-block" id="vector_norm">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.vector_norm.html#dpnp.linalg.vector_norm">[docs]</a>
-<span class="k">def</span> <span class="nf">vector_norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vector_norm</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="nb">ord</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes the vector norm of a vector (or batch of vectors) `x`.</span>
 
@@ -2560,7 +2560,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
