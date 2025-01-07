@@ -13,6 +13,7 @@ env:
   # Follow oneAPI installation instruction for conda, since intel channel is not longer available
   # CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
+  CONDA_BUILD_INDEX_ENV_PY_VER: '3.12' # conda does not support python 3.13
   CONDA_BUILD_VERSION: '24.11.2'
   CONDA_INDEX_VERSION: '0.5.0'
   RERUN_TESTS_ON_FAILURE: 'true'
@@ -61,7 +62,7 @@ jobs:
           use-mamba: 'true'
           channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
+          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
           activate-environment: 'build'
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
@@ -136,8 +137,8 @@ jobs:
           use-mamba: 'true'
           channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
+          activate-environment: 'index'
 
       - name: Install conda-index
         run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
@@ -159,7 +160,9 @@ jobs:
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
       - name: Install dpnp
-        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: |
+          mamba create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba activate ${{ env.TEST_ENV_NAME }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -244,8 +247,8 @@ jobs:
           use-mamba: 'true'
           channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
+          activate-environment: 'index'
 
       - name: Store conda paths as envs
         run: |
@@ -254,7 +257,7 @@ jobs:
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
       - name: Install conda-index
-        run: mamba install conda-index"<=${{ env.CONDA_INDEX_VERSION }}"
+        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
 
       - name: Create conda channel
         run: |
@@ -282,7 +285,8 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba activate ${{ env.TEST_ENV_NAME }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
