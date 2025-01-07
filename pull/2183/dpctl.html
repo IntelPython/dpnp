@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Interplay with the Data Parallel Control Library &mdash; Data Parallel Extension for NumPy 0.17.0dev3+21.gf22789ad125 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+  <title>Interplay with the Data Parallel Control Library &mdash; Data Parallel Extension for NumPy 0.17.0dev3+47.g1e4f18c11e4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=f5d2d497"></script>
+      <script src="_static/documentation_options.js?v=28679150"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -89,8 +89,8 @@
 <a class="reference external" href="https://www.khronos.org/sycl/">SYCL*</a> resources for SYCL-based Python packages.</p>
 <p>An example below demonstrates how the Data Parallel Extension for NumPy* can be
 easily combined with the device management interface provided by dpctl package.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>    <span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="linenos"> 2</span>    <span class="kn">import</span> <span class="nn">dpnp</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>    <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="linenos"> 2</span>    <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="linenos"> 3</span>
 <span class="linenos"> 4</span>    <span class="n">d</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_cpu_device</span><span class="p">()</span>
 <span class="linenos"> 5</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">device</span><span class="o">=</span><span class="n">d</span><span class="p">)</span>
@@ -108,14 +108,14 @@ easily combined with the device management interface provided by dpctl package.<
 documentation.</p>
 <section id="example">
 <h2>Example<a class="headerlink" href="#example" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span> <span class="nn">time</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="linenos"> 2</span>
-<span class="linenos"> 3</span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="linenos"> 3</span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="linenos"> 4</span>
-<span class="linenos"> 5</span><span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="linenos"> 5</span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="linenos"> 6</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">test_type</span><span class="p">,</span> <span class="n">repetition</span><span class="p">):</span>
+<span class="linenos"> 8</span><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="n">executor</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">test_type</span><span class="p">,</span> <span class="n">repetition</span><span class="p">):</span>
 <span class="linenos"> 9</span>    <span class="n">x</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
 <span class="linenos">10</span>        <span class="n">executor</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="n">size</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">test_type</span><span class="p">),</span> <span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">)</span>
 <span class="linenos">11</span>    <span class="p">)</span>
@@ -130,7 +130,7 @@ documentation.</p>
 <span class="linenos">20</span>    <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="n">result</span>
 <span class="linenos">21</span>
 <span class="linenos">22</span>
-<span class="linenos">23</span><span class="k">def</span> <span class="nf">get_dtypes</span><span class="p">():</span>
+<span class="linenos">23</span><span class="k">def</span><span class="w"> </span><span class="nf">get_dtypes</span><span class="p">():</span>
 <span class="linenos">24</span>    <span class="n">_dtypes_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">int32</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float32</span><span class="p">]</span>
 <span class="linenos">25</span>    <span class="n">device</span> <span class="o">=</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span>
 <span class="linenos">26</span>    <span class="k">if</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span><span class="p">:</span>
@@ -138,7 +138,7 @@ documentation.</p>
 <span class="linenos">28</span>    <span class="k">return</span> <span class="n">_dtypes_list</span>
 <span class="linenos">29</span>
 <span class="linenos">30</span>
-<span class="linenos">31</span><span class="k">def</span> <span class="nf">example</span><span class="p">():</span>
+<span class="linenos">31</span><span class="k">def</span><span class="w"> </span><span class="nf">example</span><span class="p">():</span>
 <span class="linenos">32</span>    <span class="n">test_repetition</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="linenos">33</span>    <span class="k">for</span> <span class="n">test_type</span> <span class="ow">in</span> <span class="n">get_dtypes</span><span class="p">():</span>
 <span class="linenos">34</span>        <span class="n">type_name</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">test_type</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
@@ -163,7 +163,7 @@ documentation.</p>
 <span class="linenos">53</span>
 <span class="linenos">54</span>
 <span class="linenos">55</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
-<span class="linenos">56</span>    <span class="kn">import</span> <span class="nn">dpctl</span>
+<span class="linenos">56</span>    <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
 <span class="linenos">57</span>
 <span class="linenos">58</span>    <span class="n">dpctl</span><span class="o">.</span><span class="n">select_default_device</span><span class="p">()</span><span class="o">.</span><span class="n">print_device_info</span><span class="p">()</span>
 <span class="linenos">59</span>    <span class="n">example</span><span class="p">()</span>
@@ -180,7 +180,7 @@ documentation.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

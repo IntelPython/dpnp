@@ -142,9 +142,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga77f60af228fba6ec73c66217bd7a4ee7" id="r_ga77f60af228fba6ec73c66217bd7a4ee7"><td class="memItemLeft" align="right" valign="top">INP_DLLEXPORT void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga77f60af228fba6ec73c66217bd7a4ee7">get_dpnp_function_ptr1</a> (<a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> &amp;result_type, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ga8b20590525bff7c7ce4f728d2021b558">DPNPFuncName</a> name, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> first_type, <a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#gaec54569b58e937e84099479f078bce15">DPNPFuncType</a> second_type=<a class="el" href="group___b_a_c_k_e_n_d___f_u_n_c___p_t_r___a_p_i.html#ggaec54569b58e937e84099479f078bce15a4dd2e447249c9f1ed5b4a01263bd8d06">DPNPFuncType::DPNP_FT_NONE</a>)</td></tr>
 <tr class="memdesc:ga77f60af228fba6ec73c66217bd7a4ee7"><td class="mdescLeft">&#160;</td><td class="mdescRight">get runtime pointer to selected function  <br /></td></tr>
 <tr class="separator:ga77f60af228fba6ec73c66217bd7a4ee7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga96eabd32a2b65f49e715ccdbc33c45d4" id="r_ga96eabd32a2b65f49e715ccdbc33c45d4"><td class="memItemLeft" align="right" valign="top">INP_DLLEXPORT void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga96eabd32a2b65f49e715ccdbc33c45d4">dpnp_python_constants_initialize_c</a> (void *py_none, void *py_nan)</td></tr>
-<tr class="memdesc:ga96eabd32a2b65f49e715ccdbc33c45d4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Python constants initialization in the backend.  <br /></td></tr>
-<tr class="separator:ga96eabd32a2b65f49e715ccdbc33c45d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga27e7a066bbe9e7bb42ea0bb4aa80fa5a" id="r_ga27e7a066bbe9e7bb42ea0bb4aa80fa5a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___a_p_i.html#ga27e7a066bbe9e7bb42ea0bb4aa80fa5a">MT19937_InitScalarSeed</a> (<a class="el" href="structmt19937__struct.html">mt19937_struct</a> *mt19937, DPCTLSyclQueueRef q_ref, uint32_t seed=1)</td></tr>
 <tr class="memdesc:ga27e7a066bbe9e7bb42ea0bb4aa80fa5a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a MKL engine from scalar seed.  <br /></td></tr>
 <tr class="separator:ga27e7a066bbe9e7bb42ea0bb4aa80fa5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -604,44 +601,6 @@ template&lt;typename _DataType &gt; </div>
     <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>Shape of input array. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>Number of elements in shape. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga96eabd32a2b65f49e715ccdbc33c45d4" name="ga96eabd32a2b65f49e715ccdbc33c45d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga96eabd32a2b65f49e715ccdbc33c45d4">&#9670;&#160;</a></span>dpnp_python_constants_initialize_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">INP_DLLEXPORT void dpnp_python_constants_initialize_c </td>
-          <td>(</td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>py_none</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *&#160;</td>
-          <td class="paramname"><em>py_nan</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Python constants initialization in the backend. </p>
-<p>Global values from Python to use in algorithms.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">py_none</td><td>Python NONE representation </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">py_nan</td><td>Python NAN representation </td></tr>
   </table>
   </dd>
 </dl>

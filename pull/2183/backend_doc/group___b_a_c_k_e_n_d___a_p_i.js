@@ -7,7 +7,6 @@ var group___b_a_c_k_e_n_d___a_p_i =
     [ "dpnp_ones_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga709d9a7ac1174112ecc6d807e0c0a1e4", null ],
     [ "dpnp_ones_like_c", "group___b_a_c_k_e_n_d___a_p_i.html#gab27ed0161e18e2ff77dae7482fc67ceb", null ],
     [ "dpnp_partition_c", "group___b_a_c_k_e_n_d___a_p_i.html#gad6b710733eb11c4f51e92cab7e34dcb5", null ],
-    [ "dpnp_python_constants_initialize_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga96eabd32a2b65f49e715ccdbc33c45d4", null ],
     [ "dpnp_queue_is_cpu_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga2df766b3642aa4e94c8cef7927d6022d", null ],
     [ "dpnp_zeros_c", "group___b_a_c_k_e_n_d___a_p_i.html#gacd17ba5828ba92fae45ab9c3b82419ae", null ],
     [ "dpnp_zeros_like_c", "group___b_a_c_k_e_n_d___a_p_i.html#ga701ba350a76dc444f53a7e7d59c7a143", null ],

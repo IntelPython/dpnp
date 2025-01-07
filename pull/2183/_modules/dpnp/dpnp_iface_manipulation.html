@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+21.gf22789ad125 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev3+47.g1e4f18c11e4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f5d2d497"></script>
+      <script src="../../_static/documentation_options.js?v=28679150"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -123,26 +123,26 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">import</span> <span class="nn">math</span>
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">NamedTuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="n">AxisError</span><span class="p">,</span> <span class="n">normalize_axis_index</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">AxisError</span><span class="p">,</span> <span class="n">normalize_axis_index</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">get_usm_allocations</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_pad</span> <span class="kn">import</span> <span class="n">dpnp_pad</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_pad</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_pad</span>
 
 
-<span class="k">class</span> <span class="nc">InsertDeleteParams</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">InsertDeleteParams</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Parameters used for ``dpnp.delete`` and ``dpnp.insert``.&quot;&quot;&quot;</span>
 
     <span class="n">a</span><span class="p">:</span> <span class="n">dpnp_array</span>
@@ -213,7 +213,7 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_check_stack_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_check_stack_arrays</span><span class="p">(</span><span class="n">arrays</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Validate a sequence type of arrays to stack.&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="s2">&quot;__getitem__&quot;</span><span class="p">):</span>
@@ -223,7 +223,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_delete_with_slice</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delete_with_slice</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` when obj is slice.&quot;&quot;&quot;</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">params</span>
@@ -284,7 +284,7 @@
     <span class="k">return</span> <span class="n">new</span>
 
 
-<span class="k">def</span> <span class="nf">_delete_without_slice</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">single_value</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_delete_without_slice</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">single_value</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` when obj is int or array of int.&quot;&quot;&quot;</span>
 
     <span class="n">a</span><span class="p">,</span> <span class="n">a_ndim</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">slobj</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">newshape</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">usm_type</span> <span class="o">=</span> <span class="n">params</span>
@@ -334,7 +334,7 @@
     <span class="k">return</span> <span class="n">new</span>
 
 
-<span class="k">def</span> <span class="nf">_calc_parameters</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_calc_parameters</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Utility function for ``dpnp.delete`` and ``dpnp.insert``.&quot;&quot;&quot;</span>
 
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
@@ -358,7 +358,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_insert_array_indices</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_insert_array_indices</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility function for ``dpnp.insert`` when indices is an array with</span>
 <span class="sd">    multiple elements.</span>
@@ -402,7 +402,7 @@
     <span class="k">return</span> <span class="n">new</span>
 
 
-<span class="k">def</span> <span class="nf">_insert_singleton_index</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_insert_singleton_index</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility function for ``dpnp.insert`` when indices is an array with</span>
 <span class="sd">    one element.</span>
@@ -465,7 +465,7 @@
     <span class="k">return</span> <span class="n">new</span>
 
 
-<span class="k">def</span> <span class="nf">_unique_1d</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_unique_1d</span><span class="p">(</span>
     <span class="n">ar</span><span class="p">,</span>
     <span class="n">return_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -474,7 +474,7 @@
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Find the unique elements of a 1D array.&quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_get_first_nan_index</span><span class="p">(</span><span class="n">usm_a</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_first_nan_index</span><span class="p">(</span><span class="n">usm_a</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Find the first index of NaN in the input array with at least two NaNs.</span>
 
@@ -551,7 +551,7 @@
     <span class="k">return</span> <span class="n">_unpack_tuple</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_unique_build_sort_indices</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">index_sh</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_unique_build_sort_indices</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">index_sh</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Build the indices of an input array (when axis is provided) which result</span>
 <span class="sd">    in the unique array.</span>
@@ -566,7 +566,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">ar_cmp</span> <span class="o">=</span> <span class="n">a</span>
 
-    <span class="k">def</span> <span class="nf">compare_axis_elems</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compare_axis_elems</span><span class="p">(</span><span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">):</span>
         <span class="n">comp</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">trim_zeros</span><span class="p">(</span><span class="n">ar_cmp</span><span class="p">[</span><span class="n">idx1</span><span class="p">]</span> <span class="o">-</span> <span class="n">ar_cmp</span><span class="p">[</span><span class="n">idx2</span><span class="p">],</span> <span class="s2">&quot;f&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">comp</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="n">diff</span> <span class="o">=</span> <span class="n">comp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
@@ -620,7 +620,7 @@
     <span class="k">return</span> <span class="n">sorted_indices</span>
 
 
-<span class="k">def</span> <span class="nf">_unpack_tuple</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_unpack_tuple</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Unpacks one-element tuples for use as return values.&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
@@ -630,7 +630,7 @@
 
 <div class="viewcode-block" id="append">
 <a class="viewcode-back" href="../../reference/generated/dpnp.append.html#dpnp.append">[docs]</a>
-<span class="k">def</span> <span class="nf">append</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">append</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Append values to the end of an array.</span>
 
@@ -706,7 +706,7 @@
 
 <div class="viewcode-block" id="array_split">
 <a class="viewcode-back" href="../../reference/generated/dpnp.array_split.html#dpnp.array_split">[docs]</a>
-<span class="k">def</span> <span class="nf">array_split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">array_split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split an array into multiple sub-arrays.</span>
 
@@ -767,7 +767,7 @@
         <span class="c1"># indices_or_sections is a scalar, not an array.</span>
         <span class="n">n_sec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">indices_or_sections</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">n_sec</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number sections must be larger than 0.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;number sections must be larger than 0.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
         <span class="n">n_each_sec</span><span class="p">,</span> <span class="n">extras</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">divmod</span><span class="p">(</span><span class="n">n_tot</span><span class="p">,</span> <span class="n">n_sec</span><span class="p">)</span>
         <span class="n">section_sizes</span> <span class="o">=</span> <span class="p">(</span>
             <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">extras</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">n_sec</span> <span class="o">-</span> <span class="n">extras</span><span class="p">)</span> <span class="o">*</span> <span class="p">[</span><span class="n">n_each_sec</span><span class="p">]</span>
@@ -792,7 +792,7 @@
 
 <div class="viewcode-block" id="asarray_chkfinite">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asarray_chkfinite.html#dpnp.asarray_chkfinite">[docs]</a>
-<span class="k">def</span> <span class="nf">asarray_chkfinite</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">asarray_chkfinite</span><span class="p">(</span>
     <span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -905,7 +905,7 @@
 
 <div class="viewcode-block" id="asfarray">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asfarray.html#dpnp.asfarray">[docs]</a>
-<span class="k">def</span> <span class="nf">asfarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">asfarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return an array converted to a float type.</span>
 
@@ -973,7 +973,7 @@
 
 <div class="viewcode-block" id="atleast_1d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.atleast_1d.html#dpnp.atleast_1d">[docs]</a>
-<span class="k">def</span> <span class="nf">atleast_1d</span><span class="p">(</span><span class="o">*</span><span class="n">arys</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">atleast_1d</span><span class="p">(</span><span class="o">*</span><span class="n">arys</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert inputs to arrays with at least one dimension.</span>
 
@@ -1036,7 +1036,7 @@
 
 <div class="viewcode-block" id="atleast_2d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.atleast_2d.html#dpnp.atleast_2d">[docs]</a>
-<span class="k">def</span> <span class="nf">atleast_2d</span><span class="p">(</span><span class="o">*</span><span class="n">arys</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">atleast_2d</span><span class="p">(</span><span class="o">*</span><span class="n">arys</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View inputs as arrays with at least two dimensions.</span>
 
@@ -1095,7 +1095,7 @@
 
 <div class="viewcode-block" id="atleast_3d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.atleast_3d.html#dpnp.atleast_3d">[docs]</a>
-<span class="k">def</span> <span class="nf">atleast_3d</span><span class="p">(</span><span class="o">*</span><span class="n">arys</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">atleast_3d</span><span class="p">(</span><span class="o">*</span><span class="n">arys</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    View inputs as arrays with at least three dimensions.</span>
 
@@ -1160,7 +1160,7 @@
 
 <div class="viewcode-block" id="broadcast_arrays">
 <a class="viewcode-back" href="../../reference/generated/dpnp.broadcast_arrays.html#dpnp.broadcast_arrays">[docs]</a>
-<span class="k">def</span> <span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_arrays</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadcast any number of arrays against each other.</span>
 
@@ -1210,7 +1210,7 @@
 
 <div class="viewcode-block" id="broadcast_shapes">
 <a class="viewcode-back" href="../../reference/generated/dpnp.broadcast_shapes.html#dpnp.broadcast_shapes">[docs]</a>
-<span class="k">def</span> <span class="nf">broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_shapes</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadcast the input shapes into a single shape.</span>
 
@@ -1249,7 +1249,7 @@
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="broadcast_to">
 <a class="viewcode-back" href="../../reference/generated/dpnp.broadcast_to.html#dpnp.broadcast_to">[docs]</a>
-<span class="k">def</span> <span class="nf">broadcast_to</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">broadcast_to</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Broadcast an array to a new shape.</span>
 
@@ -1301,7 +1301,7 @@
 
 <div class="viewcode-block" id="can_cast">
 <a class="viewcode-back" href="../../reference/generated/dpnp.can_cast.html#dpnp.can_cast">[docs]</a>
-<span class="k">def</span> <span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">can_cast</span><span class="p">(</span><span class="n">from_</span><span class="p">,</span> <span class="n">to</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns ``True`` if cast between data types can occur according</span>
 <span class="sd">    to the casting rule.</span>
@@ -1393,7 +1393,7 @@
 
 <div class="viewcode-block" id="column_stack">
 <a class="viewcode-back" href="../../reference/generated/dpnp.column_stack.html#dpnp.column_stack">[docs]</a>
-<span class="k">def</span> <span class="nf">column_stack</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">column_stack</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stacks 1-D and 2-D arrays as columns into a 2-D array.</span>
 
@@ -1454,7 +1454,7 @@
 
 <div class="viewcode-block" id="concatenate">
 <a class="viewcode-back" href="../../reference/generated/dpnp.concatenate.html#dpnp.concatenate">[docs]</a>
-<span class="k">def</span> <span class="nf">concatenate</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">concatenate</span><span class="p">(</span>
     <span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1549,7 +1549,7 @@
 
 <div class="viewcode-block" id="copyto">
 <a class="viewcode-back" href="../../reference/generated/dpnp.copyto.html#dpnp.copyto">[docs]</a>
-<span class="k">def</span> <span class="nf">copyto</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">copyto</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copies values from one array to another, broadcasting as necessary.</span>
 
@@ -1635,7 +1635,7 @@
 
 <div class="viewcode-block" id="delete">
 <a class="viewcode-back" href="../../reference/generated/dpnp.delete.html#dpnp.delete">[docs]</a>
-<span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array with sub-arrays along an axis deleted. For a one</span>
 <span class="sd">    dimensional array, this returns those entries not returned by</span>
@@ -1740,7 +1740,7 @@
 
 <div class="viewcode-block" id="dsplit">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dsplit.html#dpnp.dsplit">[docs]</a>
-<span class="k">def</span> <span class="nf">dsplit</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dsplit</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split array into multiple sub-arrays along the 3rd axis (depth).</span>
 
@@ -1812,7 +1812,7 @@
 
 <div class="viewcode-block" id="dstack">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dstack.html#dpnp.dstack">[docs]</a>
-<span class="k">def</span> <span class="nf">dstack</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dstack</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stack arrays in sequence depth wise (along third axis).</span>
 
@@ -1875,7 +1875,7 @@
 
 <div class="viewcode-block" id="expand_dims">
 <a class="viewcode-back" href="../../reference/generated/dpnp.expand_dims.html#dpnp.expand_dims">[docs]</a>
-<span class="k">def</span> <span class="nf">expand_dims</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">expand_dims</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Expand the shape of an array.</span>
 
@@ -1970,7 +1970,7 @@
 
 <div class="viewcode-block" id="flip">
 <a class="viewcode-back" href="../../reference/generated/dpnp.flip.html#dpnp.flip">[docs]</a>
-<span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flip</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reverse the order of elements in an array along the given axis.</span>
 
@@ -2041,7 +2041,7 @@
 
 <div class="viewcode-block" id="fliplr">
 <a class="viewcode-back" href="../../reference/generated/dpnp.fliplr.html#dpnp.fliplr">[docs]</a>
-<span class="k">def</span> <span class="nf">fliplr</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fliplr</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reverse the order of elements along axis 1 (left/right).</span>
 
@@ -2096,7 +2096,7 @@
 
 <div class="viewcode-block" id="flipud">
 <a class="viewcode-back" href="../../reference/generated/dpnp.flipud.html#dpnp.flipud">[docs]</a>
-<span class="k">def</span> <span class="nf">flipud</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">flipud</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reverse the order of elements along axis 0 (up/down).</span>
 
@@ -2153,7 +2153,7 @@
 
 <div class="viewcode-block" id="hsplit">
 <a class="viewcode-back" href="../../reference/generated/dpnp.hsplit.html#dpnp.hsplit">[docs]</a>
-<span class="k">def</span> <span class="nf">hsplit</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hsplit</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split an array into multiple sub-arrays horizontally (column-wise).</span>
 
@@ -2249,7 +2249,7 @@
 
 <div class="viewcode-block" id="hstack">
 <a class="viewcode-back" href="../../reference/generated/dpnp.hstack.html#dpnp.hstack">[docs]</a>
-<span class="k">def</span> <span class="nf">hstack</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hstack</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stack arrays in sequence horizontally (column wise).</span>
 
@@ -2316,7 +2316,7 @@
 
 <div class="viewcode-block" id="insert">
 <a class="viewcode-back" href="../../reference/generated/dpnp.insert.html#dpnp.insert">[docs]</a>
-<span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">insert</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Insert values along the given axis before the given indices.</span>
 
@@ -2444,7 +2444,7 @@
 
 <div class="viewcode-block" id="matrix_transpose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.matrix_transpose.html#dpnp.matrix_transpose">[docs]</a>
-<span class="k">def</span> <span class="nf">matrix_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">matrix_transpose</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Transposes a matrix (or a stack of matrices) `x`.</span>
 
@@ -2499,7 +2499,7 @@
 
 <div class="viewcode-block" id="moveaxis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.moveaxis.html#dpnp.moveaxis">[docs]</a>
-<span class="k">def</span> <span class="nf">moveaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">moveaxis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">destination</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Move axes of an array to new positions. Other axes remain in their original</span>
 <span class="sd">    order.</span>
@@ -2546,7 +2546,7 @@
 
 <div class="viewcode-block" id="ndim">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ndim.html#dpnp.ndim">[docs]</a>
-<span class="k">def</span> <span class="nf">ndim</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ndim</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the number of dimensions of array-like input.</span>
 
@@ -2591,7 +2591,7 @@
 
 <div class="viewcode-block" id="pad">
 <a class="viewcode-back" href="../../reference/generated/dpnp.pad.html#dpnp.pad">[docs]</a>
-<span class="k">def</span> <span class="nf">pad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">pad</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">pad_width</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;constant&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Pad an array.</span>
 
@@ -2795,7 +2795,7 @@
 
 <div class="viewcode-block" id="ravel">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ravel.html#dpnp.ravel">[docs]</a>
-<span class="k">def</span> <span class="nf">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a contiguous flattened array.</span>
 
@@ -2890,7 +2890,7 @@
 
 <div class="viewcode-block" id="repeat">
 <a class="viewcode-back" href="../../reference/generated/dpnp.repeat.html#dpnp.repeat">[docs]</a>
-<span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">repeat</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">repeats</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Repeat elements of an array.</span>
 
@@ -2957,7 +2957,7 @@
 
 <div class="viewcode-block" id="require">
 <a class="viewcode-back" href="../../reference/generated/dpnp.require.html#dpnp.require">[docs]</a>
-<span class="k">def</span> <span class="nf">require</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">require</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">requirements</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a :class:`dpnp.ndarray` of the provided type that satisfies</span>
 <span class="sd">    requirements.</span>
@@ -3045,7 +3045,7 @@
         <span class="n">incorrect_flag</span> <span class="o">=</span> <span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">requirements</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">possible_flags</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Incorrect flag </span><span class="si">{</span><span class="n">incorrect_flag</span><span class="si">}</span><span class="s2"> in requirements&quot;</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
 
     <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
     <span class="k">if</span> <span class="n">requirements</span><span class="o">.</span><span class="n">issuperset</span><span class="p">({</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="s2">&quot;F&quot;</span><span class="p">}):</span>
@@ -3067,7 +3067,7 @@
 
 <div class="viewcode-block" id="reshape">
 <a class="viewcode-back" href="../../reference/generated/dpnp.reshape.html#dpnp.reshape">[docs]</a>
-<span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">reshape</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">newshape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gives a new shape to an array without changing its data.</span>
 
@@ -3203,7 +3203,7 @@
 
 <div class="viewcode-block" id="resize">
 <a class="viewcode-back" href="../../reference/generated/dpnp.resize.html#dpnp.resize">[docs]</a>
-<span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">new_shape</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">resize</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">new_shape</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a new array with the specified shape.</span>
 
@@ -3291,7 +3291,7 @@
 
 <div class="viewcode-block" id="result_type">
 <a class="viewcode-back" href="../../reference/generated/dpnp.result_type.html#dpnp.result_type">[docs]</a>
-<span class="k">def</span> <span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays_and_dtypes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    result_type(*arrays_and_dtypes)</span>
 
@@ -3340,7 +3340,7 @@
 
 <div class="viewcode-block" id="roll">
 <a class="viewcode-back" href="../../reference/generated/dpnp.roll.html#dpnp.roll">[docs]</a>
-<span class="k">def</span> <span class="nf">roll</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">roll</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shift</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Roll the elements of an array by a number of positions along a given axis.</span>
 
@@ -3407,7 +3407,7 @@
 
 <div class="viewcode-block" id="rollaxis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.rollaxis.html#dpnp.rollaxis">[docs]</a>
-<span class="k">def</span> <span class="nf">rollaxis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rollaxis</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Roll the specified axis backwards, until it lies in a given position.</span>
 
@@ -3469,7 +3469,7 @@
 
 <div class="viewcode-block" id="rot90">
 <a class="viewcode-back" href="../../reference/generated/dpnp.rot90.html#dpnp.rot90">[docs]</a>
-<span class="k">def</span> <span class="nf">rot90</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rot90</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Rotate an array by 90 degrees in the plane specified by axes.</span>
 
@@ -3573,7 +3573,7 @@
 
 <div class="viewcode-block" id="shape">
 <a class="viewcode-back" href="../../reference/generated/dpnp.shape.html#dpnp.shape">[docs]</a>
-<span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the shape of an array.</span>
 
@@ -3618,7 +3618,7 @@
 
 <div class="viewcode-block" id="size">
 <a class="viewcode-back" href="../../reference/generated/dpnp.size.html#dpnp.size">[docs]</a>
-<span class="k">def</span> <span class="nf">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the number of elements along a given axis.</span>
 
@@ -3674,7 +3674,7 @@
 
 <div class="viewcode-block" id="split">
 <a class="viewcode-back" href="../../reference/generated/dpnp.split.html#dpnp.split">[docs]</a>
-<span class="k">def</span> <span class="nf">split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split an array into multiple sub-arrays as views into `ary`.</span>
 
@@ -3759,7 +3759,7 @@
                 <span class="s2">&quot;indices_or_sections must divide the size along the axes.</span><span class="se">\n</span><span class="s2">&quot;</span>
                 <span class="s2">&quot;If you want to split the array into non-equally-sized &quot;</span>
                 <span class="s2">&quot;arrays, use array_split instead.&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">array_split</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span></div>
 
@@ -3767,7 +3767,7 @@
 
 <div class="viewcode-block" id="squeeze">
 <a class="viewcode-back" href="../../reference/generated/dpnp.squeeze.html#dpnp.squeeze">[docs]</a>
-<span class="k">def</span> <span class="nf">squeeze</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">squeeze</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Removes singleton dimensions (axes) from array `a`.</span>
 
@@ -3818,7 +3818,7 @@
 
 <div class="viewcode-block" id="stack">
 <a class="viewcode-back" href="../../reference/generated/dpnp.stack.html#dpnp.stack">[docs]</a>
-<span class="k">def</span> <span class="nf">stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">stack</span><span class="p">(</span><span class="n">arrays</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Join a sequence of arrays along a new axis.</span>
 
@@ -3908,7 +3908,7 @@
 
 <div class="viewcode-block" id="swapaxes">
 <a class="viewcode-back" href="../../reference/generated/dpnp.swapaxes.html#dpnp.swapaxes">[docs]</a>
-<span class="k">def</span> <span class="nf">swapaxes</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">swapaxes</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis1</span><span class="p">,</span> <span class="n">axis2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Interchange two axes of an array.</span>
 
@@ -3966,7 +3966,7 @@
 <span class="c1"># pylint: disable=invalid-name</span>
 <div class="viewcode-block" id="tile">
 <a class="viewcode-back" href="../../reference/generated/dpnp.tile.html#dpnp.tile">[docs]</a>
-<span class="k">def</span> <span class="nf">tile</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">reps</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">tile</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">reps</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct an array by repeating `A` the number of times given by reps.</span>
 
@@ -4048,7 +4048,7 @@
 
 <div class="viewcode-block" id="transpose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.transpose.html#dpnp.transpose">[docs]</a>
-<span class="k">def</span> <span class="nf">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">transpose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns an array with axes transposed.</span>
 
@@ -4122,25 +4122,40 @@
 
 <div class="viewcode-block" id="trim_zeros">
 <a class="viewcode-back" href="../../reference/generated/dpnp.trim_zeros.html#dpnp.trim_zeros">[docs]</a>
-<span class="k">def</span> <span class="nf">trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="s2">&quot;fb&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trim_zeros</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">trim</span><span class="o">=</span><span class="s2">&quot;fb&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Trim the leading and/or trailing zeros from a 1-D array.</span>
+<span class="sd">    Remove values along a dimension which are zero along all other.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.trim_zeros`.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    filt : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input 1-D array.</span>
-<span class="sd">    trim : str, optional</span>
-<span class="sd">        A string with &#39;f&#39; representing trim from front and &#39;b&#39; to trim from</span>
-<span class="sd">        back. By defaults, trim zeros from both front and back of the array.</span>
+<span class="sd">        Input array.</span>
+<span class="sd">    trim : {&quot;fb&quot;, &quot;f&quot;, &quot;b&quot;}, optional</span>
+<span class="sd">        A string with `&quot;f&quot;` representing trim from front and `&quot;b&quot;` to trim from</span>
+<span class="sd">        back. By default, zeros are trimmed on both sides. Front and back refer</span>
+<span class="sd">        to the edges of a dimension, with &quot;front&quot; referring to the side with</span>
+<span class="sd">        the lowest index 0, and &quot;back&quot; referring to the highest index</span>
+<span class="sd">        (or index -1).</span>
 <span class="sd">        Default: ``&quot;fb&quot;``.</span>
+<span class="sd">    axis : {None, int}, optional</span>
+<span class="sd">        If ``None``, `filt` is cropped such, that the smallest bounding box is</span>
+<span class="sd">        returned that still contains all values which are not zero.</span>
+<span class="sd">        If an `axis` is specified, `filt` will be sliced in that dimension only</span>
+<span class="sd">        on the sides specified by `trim`. The remaining area will be the</span>
+<span class="sd">        smallest that still contains all values which are not zero.</span>
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
-<span class="sd">        The result of trimming the input.</span>
+<span class="sd">        The result of trimming the input. The number of dimensions and the</span>
+<span class="sd">        input data type are preserved.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    For all-zero arrays, the first axis is trimmed first.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4149,48 +4164,72 @@
 <span class="sd">    &gt;&gt;&gt; np.trim_zeros(a)</span>
 <span class="sd">    array([1, 2, 3, 0, 2, 1])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.trim_zeros(a, &#39;b&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; np.trim_zeros(a, trim=&#39;b&#39;)</span>
 <span class="sd">    array([0, 0, 0, 1, 2, 3, 0, 2, 1])</span>
+
+<span class="sd">    Multiple dimensions are supported:</span>
+
+<span class="sd">    &gt;&gt;&gt; b = np.array([[0, 0, 2, 3, 0, 0],</span>
+<span class="sd">    ...               [0, 1, 0, 3, 0, 0],</span>
+<span class="sd">    ...               [0, 0, 0, 0, 0, 0]])</span>
+<span class="sd">    &gt;&gt;&gt; np.trim_zeros(b)</span>
+<span class="sd">    array([[0, 2, 3],</span>
+<span class="sd">           [1, 0, 3]])</span>
+
+<span class="sd">    &gt;&gt;&gt; np.trim_zeros(b, axis=-1)</span>
+<span class="sd">    array([[0, 2, 3],</span>
+<span class="sd">           [1, 0, 3],</span>
+<span class="sd">           [0, 0, 0]])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">filt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;0-d array cannot be trimmed&quot;</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">filt</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Multi-dimensional trim is not supported&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">trim</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;only string trim is supported&quot;</span><span class="p">)</span>
 
-    <span class="n">trim</span> <span class="o">=</span> <span class="n">trim</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="ow">in</span> <span class="n">trim</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="s2">&quot;FB&quot;</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">filt</span>  <span class="c1"># no trim rule is specified</span>
+    <span class="n">trim</span> <span class="o">=</span> <span class="n">trim</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">trim</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;fb&quot;</span><span class="p">,</span> <span class="s2">&quot;bf&quot;</span><span class="p">,</span> <span class="s2">&quot;f&quot;</span><span class="p">,</span> <span class="s2">&quot;b&quot;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;unexpected character(s) in `trim`: </span><span class="si">{</span><span class="n">trim</span><span class="si">!r}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">nd</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">ndim</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">axis</span> <span class="o">=</span> <span class="n">normalize_axis_index</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">nd</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">filt</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">filt</span>  <span class="c1"># no trailing zeros in empty array</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">filt</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">a_size</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span>
-    <span class="k">if</span> <span class="n">a_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="c1"># &#39;filt&#39; is array of zeros</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span>
+    <span class="n">non_zero</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argwhere</span><span class="p">(</span><span class="n">filt</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">non_zero</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="c1"># `filt` has all zeros, so assign `start` and `stop` to the same value,</span>
+        <span class="c1"># then the resulting slice will be empty</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">filt</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">nd</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;f&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">non_zero</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="n">nd</span>
 
-    <span class="n">first</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">if</span> <span class="s2">&quot;F&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
-        <span class="n">first</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;b&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="n">non_zero</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">stop</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># Adjust for slicing</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">stop</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,)</span> <span class="o">*</span> <span class="n">nd</span>
 
-    <span class="n">last</span> <span class="o">=</span> <span class="n">filt</span><span class="o">.</span><span class="n">size</span>
-    <span class="k">if</span> <span class="s2">&quot;B&quot;</span> <span class="ow">in</span> <span class="n">trim</span><span class="p">:</span>
-        <span class="n">last</span> <span class="o">=</span> <span class="n">a</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">axis</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># trim all axes</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="o">*</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">stop</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># only trim single axis</span>
+        <span class="n">sl</span> <span class="o">=</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),)</span> <span class="o">*</span> <span class="n">axis</span> <span class="o">+</span> <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="n">start</span><span class="p">[</span><span class="n">axis</span><span class="p">],</span> <span class="n">stop</span><span class="p">[</span><span class="n">axis</span><span class="p">]),)</span> <span class="o">+</span> <span class="p">(</span><span class="o">...</span><span class="p">,)</span>
 
-    <span class="k">return</span> <span class="n">filt</span><span class="p">[</span><span class="n">first</span><span class="p">:</span><span class="n">last</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="n">filt</span><span class="p">[</span><span class="n">sl</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="unique">
 <a class="viewcode-back" href="../../reference/generated/dpnp.unique.html#dpnp.unique">[docs]</a>
-<span class="k">def</span> <span class="nf">unique</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unique</span><span class="p">(</span>
     <span class="n">ar</span><span class="p">,</span>
     <span class="n">return_index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="n">return_inverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
@@ -4320,7 +4359,7 @@
         <span class="n">ar</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
     <span class="k">except</span> <span class="n">AxisError</span><span class="p">:</span>
         <span class="c1"># this removes the &quot;axis1&quot; or &quot;axis2&quot; prefix from the error message</span>
-        <span class="k">raise</span> <span class="n">AxisError</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ar</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="n">AxisError</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">ar</span><span class="o">.</span><span class="n">ndim</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
 
     <span class="c1"># reshape input array into a contiguous 2D array</span>
     <span class="n">orig_sh</span> <span class="o">=</span> <span class="n">ar</span><span class="o">.</span><span class="n">shape</span>
@@ -4372,7 +4411,7 @@
 
 <div class="viewcode-block" id="unstack">
 <a class="viewcode-back" href="../../reference/generated/dpnp.unstack.html#dpnp.unstack">[docs]</a>
-<span class="k">def</span> <span class="nf">unstack</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">unstack</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split an array into a sequence of arrays along the given axis.</span>
 
@@ -4453,7 +4492,7 @@
 
 <div class="viewcode-block" id="vsplit">
 <a class="viewcode-back" href="../../reference/generated/dpnp.vsplit.html#dpnp.vsplit">[docs]</a>
-<span class="k">def</span> <span class="nf">vsplit</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vsplit</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">indices_or_sections</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split an array into multiple sub-arrays vertically (row-wise).</span>
 
@@ -4530,7 +4569,7 @@
 
 <div class="viewcode-block" id="vstack">
 <a class="viewcode-back" href="../../reference/generated/dpnp.vstack.html#dpnp.vstack">[docs]</a>
-<span class="k">def</span> <span class="nf">vstack</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">vstack</span><span class="p">(</span><span class="n">tup</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;same_kind&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Stack arrays in sequence vertically (row wise).</span>
 
@@ -4607,7 +4646,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

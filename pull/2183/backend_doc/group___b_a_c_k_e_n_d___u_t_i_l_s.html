@@ -130,10 +130,6 @@ Functions</h2></td></tr>
 <tr class="memitem:ga4706968b8ce210d69309a0cae330cea5"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga4706968b8ce210d69309a0cae330cea5">get_shape_offsets_inkernel</a> (const _DataType *shape, size_t shape_size, _DataType *offsets)</td></tr>
 <tr class="memdesc:ga4706968b8ce210d69309a0cae330cea5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Shape offset calculation used in kernels.  <br /></td></tr>
 <tr class="separator:ga4706968b8ce210d69309a0cae330cea5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga81df4307ea53001fc552b6cd76c0ebf8" id="r_ga81df4307ea53001fc552b6cd76c0ebf8"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
-<tr class="memitem:ga81df4307ea53001fc552b6cd76c0ebf8"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga81df4307ea53001fc552b6cd76c0ebf8">get_xyz_by_id</a> (size_t idx, size_t ndim, const _DataType *offsets, _DataType *xyz)</td></tr>
-<tr class="memdesc:ga81df4307ea53001fc552b6cd76c0ebf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculation of indices in array.  <br /></td></tr>
-<tr class="separator:ga81df4307ea53001fc552b6cd76c0ebf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad37eb9ce0ad29590cc931a9b6cd538e2" id="r_gad37eb9ce0ad29590cc931a9b6cd538e2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:gad37eb9ce0ad29590cc931a9b6cd538e2"><td class="memTemplItemLeft" align="right" valign="top">_DataType&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2">get_xyz_id_by_id_inkernel</a> (size_t global_id, const _DataType *offsets, size_t offsets_size, size_t axis)</td></tr>
 <tr class="memdesc:gad37eb9ce0ad29590cc931a9b6cd538e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Calculate xyz id for given axis from linear index.  <br /></td></tr>
@@ -365,62 +361,6 @@ template&lt;typename _DataType &gt; </div>
 
 </div>
 </div>
-<a id="ga81df4307ea53001fc552b6cd76c0ebf8" name="ga81df4307ea53001fc552b6cd76c0ebf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga81df4307ea53001fc552b6cd76c0ebf8">&#9670;&#160;</a></span>get_xyz_by_id()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">void get_xyz_by_id </td>
-          <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>idx</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t&#160;</td>
-          <td class="paramname"><em>ndim</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const _DataType *&#160;</td>
-          <td class="paramname"><em>offsets</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">_DataType *&#160;</td>
-          <td class="paramname"><em>xyz</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Calculation of indices in array. </p>
-<p>Calculates indices of element in array with given linear position for example: idx = 5, shape = (2, 3), ndim = 2, indices xyz should be [1, 1]</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">idx</td><td>linear index of the element in multy-D array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">ndim</td><td>number of dimensions. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">shape</td><td>offsets of array. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">xyz</td><td>indices. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00133">133</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
-
-</div>
-</div>
 <a id="gad37eb9ce0ad29590cc931a9b6cd538e2" name="gad37eb9ce0ad29590cc931a9b6cd538e2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gad37eb9ce0ad29590cc931a9b6cd538e2">&#9670;&#160;</a></span>get_xyz_id_by_id_inkernel()</h2>
 
@@ -473,7 +413,7 @@ template&lt;typename _DataType &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00166">166</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00135">135</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -514,7 +454,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00414">414</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00383">383</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
 
 </div>
 </div>
@@ -555,7 +495,7 @@ template&lt;typename T &gt; </div>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00442">442</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="dpnp__utils_8hpp_source.html#l00411">411</a> of file <a class="el" href="dpnp__utils_8hpp_source.html">dpnp_utils.hpp</a>.</p>
 
 </div>
 </div>

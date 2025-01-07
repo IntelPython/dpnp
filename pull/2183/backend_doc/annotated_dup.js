@@ -151,6 +151,5 @@ var annotated_dup =
     [ "func_type_pair_t", "structfunc__type__pair__t.html", null ],
     [ "is_any", "structis__any.html", null ],
     [ "mcg59_struct", "structmcg59__struct.html", null ],
-    [ "mt19937_struct", "structmt19937__struct.html", null ],
-    [ "python_constants", "structpython__constants.html", null ]
+    [ "mt19937_struct", "structmt19937__struct.html", null ]
 ];
