@@ -162,7 +162,7 @@ jobs:
       - name: Install dpnp
         run: |
           mamba create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
-          mamba activate ${{ env.TEST_ENV_NAME }}
+          conda activate ${{ env.TEST_ENV_NAME }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -286,7 +286,7 @@ jobs:
         run: |
           @echo on
           mamba create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
-          mamba activate ${{ env.TEST_ENV_NAME }}
+          conda activate ${{ env.TEST_ENV_NAME }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
