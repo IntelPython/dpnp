@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev3+34.g3ceb358540 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev3+35.g4d1a6a926e0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e1cbd664"></script>
+      <script src="../../_static/documentation_options.js?v=ef37bb42"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -127,24 +127,24 @@
 <span class="c1"># pylint: disable=no-name-in-module</span>
 
 
-<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_elementwise_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="k">as</span> <span class="nn">dtu</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dtu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
     <span class="n">normalize_axis_tuple</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_acceptance_fn_divide</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_acceptance_fn_divide</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">import</span> <span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span> <span class="k">as</span> <span class="nn">ufi</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="n">dpnp_modf</span>
-<span class="kn">from</span> <span class="nn">.dpnp_algo.dpnp_elementwise_common</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_modf</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DPNPI0</span><span class="p">,</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
@@ -160,10 +160,10 @@
     <span class="n">acceptance_fn_subtract</span><span class="p">,</span>
     <span class="n">resolve_weak_types_2nd_arg_int</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span> <span class="kn">import</span> <span class="n">dpnp_cross</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_reduction</span> <span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">call_origin</span><span class="p">,</span> <span class="n">get_usm_allocations</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_cross</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
@@ -230,14 +230,14 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_get_max_min</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_max_min</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the maximum and minimum representable values for an inexact dtype.&quot;&quot;&quot;</span>
 
     <span class="n">f</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">f</span><span class="o">.</span><span class="n">max</span><span class="p">,</span> <span class="n">f</span><span class="o">.</span><span class="n">min</span>
 
 
-<span class="k">def</span> <span class="nf">_get_reduction_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_reduction_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a data type used by dpctl for result array in reduction function.&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -247,7 +247,7 @@
     <span class="k">return</span> <span class="n">dtu</span><span class="o">.</span><span class="n">_to_device_supported_dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_gradient_build_dx</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_gradient_build_dx</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">axes</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Build an array with distance per each dimension.&quot;&quot;&quot;</span>
 
     <span class="n">len_axes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
@@ -297,7 +297,7 @@
     <span class="k">return</span> <span class="n">dx</span>
 
 
-<span class="k">def</span> <span class="nf">_gradient_num_diff_2nd_order_interior</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_gradient_num_diff_2nd_order_interior</span><span class="p">(</span>
     <span class="n">f</span><span class="p">,</span> <span class="n">ax_dx</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">slices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">uniform_spacing</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Numerical differentiation: 2nd order interior.&quot;&quot;&quot;</span>
@@ -341,7 +341,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_gradient_num_diff_edges</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_gradient_num_diff_edges</span><span class="p">(</span>
     <span class="n">f</span><span class="p">,</span> <span class="n">ax_dx</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">slices</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">uniform_spacing</span><span class="p">,</span> <span class="n">edge_order</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Numerical differentiation: 1st and 2nd order edges.&quot;&quot;&quot;</span>
@@ -409,7 +409,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_process_ediff1d_args</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg_name</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_process_ediff1d_args</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">arg_name</span><span class="p">,</span> <span class="n">ary_dtype</span><span class="p">,</span> <span class="n">ary_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Process the argument for ediff1d.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">arg</span><span class="p">):</span>
         <span class="n">arg</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">ary_sycl_queue</span><span class="p">)</span>
@@ -638,7 +638,7 @@
 
 <div class="viewcode-block" id="around">
 <a class="viewcode-back" href="../../reference/generated/dpnp.around.html#dpnp.around">[docs]</a>
-<span class="k">def</span> <span class="nf">around</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">around</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Round an array to the given number of decimals.</span>
 
@@ -737,7 +737,7 @@
 
 <div class="viewcode-block" id="clip">
 <a class="viewcode-back" href="../../reference/generated/dpnp.clip.html#dpnp.clip">[docs]</a>
-<span class="k">def</span> <span class="nf">clip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">clip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Clip (limit) the values in an array.</span>
 
@@ -869,7 +869,7 @@
 
 <div class="viewcode-block" id="convolve">
 <a class="viewcode-back" href="../../reference/generated/dpnp.convolve.html#dpnp.convolve">[docs]</a>
-<span class="k">def</span> <span class="nf">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the discrete, linear convolution of two one-dimensional sequences.</span>
 
@@ -956,7 +956,7 @@
 
 <div class="viewcode-block" id="cross">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cross.html#dpnp.cross">[docs]</a>
-<span class="k">def</span> <span class="nf">cross</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axisa</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisb</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cross</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axisa</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisb</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axisc</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cross product of two (arrays of) vectors.</span>
 
@@ -1132,7 +1132,7 @@
 
 <div class="viewcode-block" id="cumprod">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cumprod.html#dpnp.cumprod">[docs]</a>
-<span class="k">def</span> <span class="nf">cumprod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cumprod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative product of elements along a given axis.</span>
 
@@ -1217,7 +1217,7 @@
 
 <div class="viewcode-block" id="cumsum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cumsum.html#dpnp.cumsum">[docs]</a>
-<span class="k">def</span> <span class="nf">cumsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cumsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the cumulative sum of the elements along a given axis.</span>
 
@@ -1309,7 +1309,7 @@
 
 <div class="viewcode-block" id="cumulative_prod">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cumulative_prod.html#dpnp.cumulative_prod">[docs]</a>
-<span class="k">def</span> <span class="nf">cumulative_prod</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cumulative_prod</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1397,7 +1397,7 @@
 
 <div class="viewcode-block" id="cumulative_sum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.cumulative_sum.html#dpnp.cumulative_sum">[docs]</a>
-<span class="k">def</span> <span class="nf">cumulative_sum</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">cumulative_sum</span><span class="p">(</span>
     <span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">include_initial</span><span class="o">=</span><span class="kc">False</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1491,7 +1491,7 @@
 
 <div class="viewcode-block" id="diff">
 <a class="viewcode-back" href="../../reference/generated/dpnp.diff.html#dpnp.diff">[docs]</a>
-<span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">diff</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">prepend</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the n-th discrete difference along the given axis.</span>
 
@@ -1641,7 +1641,7 @@
 
 <div class="viewcode-block" id="ediff1d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.ediff1d.html#dpnp.ediff1d">[docs]</a>
-<span class="k">def</span> <span class="nf">ediff1d</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">ediff1d</span><span class="p">(</span><span class="n">ary</span><span class="p">,</span> <span class="n">to_end</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">to_begin</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The differences between consecutive elements of an array.</span>
 
@@ -2392,7 +2392,7 @@
 
 <div class="viewcode-block" id="gradient">
 <a class="viewcode-back" href="../../reference/generated/dpnp.gradient.html#dpnp.gradient">[docs]</a>
-<span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">gradient</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="o">*</span><span class="n">varargs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">edge_order</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the gradient of an N-dimensional array.</span>
 
@@ -3041,7 +3041,7 @@
 
 <div class="viewcode-block" id="modf">
 <a class="viewcode-back" href="../../reference/generated/dpnp.modf.html#dpnp.modf">[docs]</a>
-<span class="k">def</span> <span class="nf">modf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">modf</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the fractional and integral parts of an array, element-wise.</span>
 
@@ -3148,7 +3148,7 @@
 
 <div class="viewcode-block" id="nan_to_num">
 <a class="viewcode-back" href="../../reference/generated/dpnp.nan_to_num.html#dpnp.nan_to_num">[docs]</a>
-<span class="k">def</span> <span class="nf">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">nan_to_num</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace ``NaN`` with zero and infinity with large finite numbers (default</span>
 <span class="sd">    behavior) or with the numbers defined by the user using the `nan`,</span>
@@ -3556,7 +3556,7 @@
 
 <div class="viewcode-block" id="prod">
 <a class="viewcode-back" href="../../reference/generated/dpnp.prod.html#dpnp.prod">[docs]</a>
-<span class="k">def</span> <span class="nf">prod</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">prod</span><span class="p">(</span>
     <span class="n">a</span><span class="p">,</span>
     <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -3765,7 +3765,7 @@
 
 <div class="viewcode-block" id="real_if_close">
 <a class="viewcode-back" href="../../reference/generated/dpnp.real_if_close.html#dpnp.real_if_close">[docs]</a>
-<span class="k">def</span> <span class="nf">real_if_close</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">real_if_close</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">tol</span><span class="o">=</span><span class="mi">100</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If input is complex with all imaginary parts close to zero, return real</span>
 <span class="sd">    parts.</span>
@@ -4335,7 +4335,7 @@
 
 <div class="viewcode-block" id="sum">
 <a class="viewcode-back" href="../../reference/generated/dpnp.sum.html#dpnp.sum">[docs]</a>
-<span class="k">def</span> <span class="nf">sum</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">sum</span><span class="p">(</span>
     <span class="n">a</span><span class="p">,</span>
     <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -4437,7 +4437,7 @@
 
 <div class="viewcode-block" id="trapezoid">
 <a class="viewcode-back" href="../../reference/generated/dpnp.trapezoid.html#dpnp.trapezoid">[docs]</a>
-<span class="k">def</span> <span class="nf">trapezoid</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">trapezoid</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dx</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Integrate along the given axis using the composite trapezoidal rule.</span>
 
@@ -4626,7 +4626,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
