@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.ndarray.sum
+================
+
+.. currentmodule:: dpnp
+
+method
+
+.. automethod:: ndarray.sum

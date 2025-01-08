@@ -1,0 +1,10 @@
+﻿
+
+dpnp.nancumprod
+===============
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: nancumprod
