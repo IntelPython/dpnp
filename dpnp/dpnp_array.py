@@ -353,7 +353,7 @@ class dpnp_array:
         key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
-        return dpnp._create_from_usm_ndarray(item)
+        return dpnp_array._create_from_usm_ndarray(item)
 
     # '__getstate__',
 
@@ -1777,7 +1777,7 @@ class dpnp_array:
                 axes = tuple((ndim - x - 1) for x in range(ndim))
 
             usm_res = dpt.permute_dims(self._array_obj, axes)
-        return dpnp._create_from_usm_ndarray(usm_res)
+        return dpnp_array._create_from_usm_ndarray(usm_res)
 
     def var(
         self,
