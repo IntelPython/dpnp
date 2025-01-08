@@ -138,7 +138,7 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: 'true'
           python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
-          activate-environment: 'index'
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Install conda-index
         run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
@@ -159,10 +159,13 @@ jobs:
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
+      # conda-index does not support python 3.13
+      - name: Remove conda-index
+        run: mamba remove conda-index
+
       - name: Install dpnp
         run: |
-          mamba create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
-          conda activate ${{ env.TEST_ENV_NAME }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -248,7 +251,7 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: 'true'
           python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
-          activate-environment: 'index'
+          activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Store conda paths as envs
         run: |
@@ -282,11 +285,14 @@ jobs:
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
 
+      # conda-index does not support python 3.13
+      - name: Remove conda-index
+        run: mamba remove conda-index
+
       - name: Install dpnp
         run: |
           @echo on
-          mamba create -n ${{ env.TEST_ENV_NAME }} ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
-          conda activate ${{ env.TEST_ENV_NAME }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
