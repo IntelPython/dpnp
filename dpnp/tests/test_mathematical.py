@@ -2112,13 +2112,13 @@ class TestSpacing:
         result = dpnp.spacing(ia)
         expected = numpy.spacing(a)
         if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
-            assert_equal(result, expected)
+            assert_dtype_allclose(result, expected)
         else:
             # numpy.spacing(-0.0) == numpy.spacing(0.0), i.e. NumPy returns
             # positive value (looks as a bug in NumPy), because for any other
             # negative input the NumPy result will be also a negative value.
             expected[1] *= -1
-            assert_equal(result, expected)
+            assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dt", get_float_dtypes(no_float16=False))
     @pytest.mark.parametrize("val", [1, 1e-5, 1000])
