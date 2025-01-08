@@ -79,13 +79,6 @@ namespace dpnp::extensions::indexing::kernels
 template <typename ProjectorT,
           typename IndOutIndexerT,
           typename ChoicesIndexerT,
-          typename T,
-          typename IndT>
-class choose_kernel;
-
-template <typename ProjectorT,
-          typename IndOutIndexerT,
-          typename ChoicesIndexerT,
           typename IndT,
           typename T>
 class ChooseFunctor
@@ -176,14 +169,13 @@ sycl::event choose_impl(sycl::queue &q,
         const NthChoiceIndexerT choices_indexer{
             nd, chc_offsets, shape_and_strides, shape_and_strides + 3 * nd};
 
-        using KernelName = choose_kernel<ProjectorT, InOutIndexerT,
+        using ChooseFunc = ChooseFunctor<ProjectorT, InOutIndexerT,
                                          NthChoiceIndexerT, indTy, Ty>;
 
-        cgh.parallel_for<KernelName>(
-            sycl::range<1>(nelems),
-            ChooseFunctor<ProjectorT, InOutIndexerT, NthChoiceIndexerT, indTy,
-                          Ty>(ind_tp, dst_tp, chcs_cp, n_chcs, ind_out_indexer,
-                              choices_indexer));
+        cgh.parallel_for<ChooseFunc>(sycl::range<1>(nelems),
+                                     ChooseFunc(ind_tp, dst_tp, chcs_cp, n_chcs,
+                                                ind_out_indexer,
+                                                choices_indexer));
     });
 
     return choose_ev;
