@@ -94,6 +94,7 @@ class dpnp_array:
             offset=offset,
             order=order,
             buffer_ctor_kwargs={"queue": sycl_queue_normalized},
+            array_namespace=dpnp,
         )
 
     @property
@@ -200,6 +201,31 @@ class dpnp_array:
     # '__array_struct__',
     # '__array_ufunc__',
     # '__array_wrap__',
+
+    def __array_namespace__(self, /, *, api_version=None):
+        """
+        Returns array namespace, member functions of which implement data API.
+
+        Parameters
+        ----------
+        api_version : str, optional
+            Request namespace compliant with given version of array API. If
+            ``None``, namespace for the most recent supported version is
+            returned.
+            Default: ``None``.
+
+        Returns
+        -------
+        out : any
+            An object representing the array API namespace. It should have
+            every top-level function defined in the specification as
+            an attribute. It may contain other public names as well, but it is
+            recommended to only include those names that are part of the
+            specification.
+
+        """
+
+        return self._array_obj.__array_namespace__(api_version=api_version)
 
     def __bool__(self):
         """``True`` if self else ``False``."""
