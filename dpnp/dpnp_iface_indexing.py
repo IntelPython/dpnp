@@ -622,14 +622,8 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
         out_strides = a_straides[:-2] + (1,)
         out_offset = a_element_offset
 
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.usm_ndarray(
-            out_shape,
-            dtype=a.dtype,
-            buffer=a.get_array(),
-            strides=out_strides,
-            offset=out_offset,
-        )
+    return dpnp_array(
+        out_shape, buffer=a, strides=out_strides, offset=out_offset
     )
 
 
