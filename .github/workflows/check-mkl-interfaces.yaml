@@ -32,7 +32,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.12']
+        python: ['3.13']
         os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
 
     permissions:
@@ -125,7 +125,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.12']
+        python: ['3.13']
         os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
 
     permissions:
