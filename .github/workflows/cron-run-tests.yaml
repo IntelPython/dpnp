@@ -79,6 +79,7 @@ jobs:
 
       - name: Install dpnp
         id: install_dpnp
+        continue-on-error: true
         run: |
           mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
 
