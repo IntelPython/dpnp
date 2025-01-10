@@ -28,7 +28,7 @@ env:
 
 jobs:
   test_by_tag:
-    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}'] with oneMKL tag
+    name: Run tests with oneMKL tag
 
     strategy:
       matrix:
@@ -121,7 +121,7 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
 
   test_by_branch:
-    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}'] with oneMKL develop branch
+    name: Run tests with oneMKL develop branch
 
     strategy:
       matrix:

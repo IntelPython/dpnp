@@ -25,7 +25,7 @@ env:
 
 jobs:
   build:
-    name: Build ['${{ matrix.os }}', python='${{ matrix.python }}']
+    name: Build
 
     strategy:
       matrix:
@@ -96,7 +96,7 @@ jobs:
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
 
   test_linux:
-    name: Test ['ubuntu-latest', python='${{ matrix.python }}']
+    name: Test
 
     needs: build
 
@@ -199,7 +199,7 @@ jobs:
             python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows:
-    name: Test ['windows-2019', python='${{ matrix.python }}']
+    name: Test
 
     needs: build
 
@@ -335,7 +335,7 @@ jobs:
             python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   upload:
-    name: Upload ['${{ matrix.os }}', python='${{ matrix.python }}']
+    name: Upload
 
     needs: [test_linux, test_windows]
 

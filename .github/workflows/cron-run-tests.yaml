@@ -19,7 +19,7 @@ env:
 
 jobs:
   test:
-    name: Test ['${{ matrix.runner }}', python='${{ matrix.python }}']
+    name: Test
 
     runs-on:  ${{ matrix.runner }}
 
