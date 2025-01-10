@@ -33,11 +33,10 @@ jobs:
       actions: write
 
     strategy:
+      fail-fast: false
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         runner: [ubuntu-22.04, ubuntu-24.04, windows-2019]
-
-    continue-on-error: false
 
     steps:
       - name: Cancel Previous Runs
