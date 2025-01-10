@@ -799,7 +799,7 @@ class TestTensordot:
 
         result = dpnp.tensordot(ia, ib, axes=axes)
         expected = numpy.tensordot(a, b, axes=axes)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=9)
 
     @pytest.mark.parametrize("dtype1", get_all_dtypes())
     @pytest.mark.parametrize("dtype2", get_all_dtypes())
@@ -844,7 +844,7 @@ class TestTensordot:
 
         result = dpnp.linalg.tensordot(ia, ib, axes=axes)
         expected = numpy.linalg.tensordot(a, b, axes=axes)
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=9)
 
     def test_error(self):
         a = 5

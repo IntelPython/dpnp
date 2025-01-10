@@ -13,6 +13,7 @@ env:
   # Follow oneAPI installation instruction for conda, since intel channel is not longer available
   # CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
+  CONDA_BUILD_INDEX_ENV_PY_VER: '3.12' # conda does not support python 3.13
   CONDA_BUILD_VERSION: '24.11.2'
   CONDA_INDEX_VERSION: '0.5.0'
   RERUN_TESTS_ON_FAILURE: 'true'
@@ -28,7 +29,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2019]
 
     permissions:
@@ -61,7 +62,7 @@ jobs:
           use-mamba: 'true'
           channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
+          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
           activate-environment: 'build'
 
       # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
@@ -83,13 +84,13 @@ jobs:
           MAX_BUILD_CMPL_MKL_VERSION: '2025.1a0'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        uses: actions/upload-artifact@6f51ac03b9356f520e9adb1b1b7802705f340c2b # v4.5.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
@@ -107,7 +108,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     continue-on-error: true
 
@@ -136,7 +137,7 @@ jobs:
           use-mamba: 'true'
           channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
+          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
           activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Install conda-index
@@ -158,8 +159,13 @@ jobs:
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
+      # conda-index does not support python 3.13
+      - name: Remove conda-index
+        run: mamba remove conda-index
+
       - name: Install dpnp
-        run: mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        run: |
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -205,7 +211,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
 
     continue-on-error: true
 
@@ -244,7 +250,7 @@ jobs:
           use-mamba: 'true'
           channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
+          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
           activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Store conda paths as envs
@@ -278,6 +284,10 @@ jobs:
           )
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
+
+      # conda-index does not support python 3.13
+      - name: Remove conda-index
+        run: mamba remove conda-index
 
       - name: Install dpnp
         run: |
@@ -331,7 +341,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2019]
 
     runs-on: ${{ matrix.os }}
@@ -406,7 +416,7 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: 'true'
           run-post: 'false'
-          python-version: '3.12'
+          python-version: '3.13'
           activate-environment: 'cleanup'
 
       - name: Install anaconda-client
