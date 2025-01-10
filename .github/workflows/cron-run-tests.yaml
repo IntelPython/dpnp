@@ -78,10 +78,14 @@ jobs:
           activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Install dpnp
+        id: install_dpnp
         run: |
           mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
-        env:
-          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: ReInstall dpnp
+        if: steps.install_dpnp.outcome == 'failure'
+        run: |
+          mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
 
       - name: List installed packages
         run: mamba list
