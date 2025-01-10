@@ -446,8 +446,6 @@ class TestFftn:
         if is_cuda_device():
             if order == "C" and axes == (0, 1, 2):
                 pass
-            elif order == "F" and axes == (-1, -4, -2):
-                pass
             else:
                 pytest.skip("SAT-7587")
         a_np = generate_random_numpy_array((2, 3, 4, 5), dtype, order)
