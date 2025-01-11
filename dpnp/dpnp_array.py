@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -94,6 +94,7 @@ class dpnp_array:
             offset=offset,
             order=order,
             buffer_ctor_kwargs={"queue": sycl_queue_normalized},
+            array_namespace=dpnp,
         )
 
     @property
@@ -200,6 +201,31 @@ class dpnp_array:
     # '__array_struct__',
     # '__array_ufunc__',
     # '__array_wrap__',
+
+    def __array_namespace__(self, /, *, api_version=None):
+        """
+        Returns array namespace, member functions of which implement data API.
+
+        Parameters
+        ----------
+        api_version : str, optional
+            Request namespace compliant with given version of array API. If
+            ``None``, namespace for the most recent supported version is
+            returned.
+            Default: ``None``.
+
+        Returns
+        -------
+        out : any
+            An object representing the array API namespace. It should have
+            every top-level function defined in the specification as
+            an attribute. It may contain other public names as well, but it is
+            recommended to only include those names that are part of the
+            specification.
+
+        """
+
+        return self._array_obj.__array_namespace__(api_version=api_version)
 
     def __bool__(self):
         """``True`` if self else ``False``."""
@@ -327,15 +353,7 @@ class dpnp_array:
         key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
-        if not isinstance(item, dpt.usm_ndarray):
-            raise RuntimeError(
-                "Expected dpctl.tensor.usm_ndarray, got {}"
-                "".format(type(item))
-            )
-
-        res = self.__new__(dpnp_array)
-        res._array_obj = item
-        return res
+        return dpnp_array._create_from_usm_ndarray(item)
 
     # '__getstate__',
 
@@ -606,6 +624,7 @@ class dpnp_array:
             )
         res = dpnp_array.__new__(dpnp_array)
         res._array_obj = usm_ary
+        res._array_obj._set_namespace(dpnp)
         return res
 
     def all(self, axis=None, out=None, keepdims=False, *, where=True):
@@ -1749,17 +1768,16 @@ class dpnp_array:
         if axes_len == 1 and isinstance(axes[0], (tuple, list)):
             axes = axes[0]
 
-        res = self.__new__(dpnp_array)
         if ndim == 2 and axes_len == 0:
-            res._array_obj = self._array_obj.T
+            usm_res = self._array_obj.T
         else:
             if len(axes) == 0 or axes[0] is None:
                 # self.transpose().shape == self.shape[::-1]
                 # self.transpose(None).shape == self.shape[::-1]
                 axes = tuple((ndim - x - 1) for x in range(ndim))
 
-            res._array_obj = dpt.permute_dims(self._array_obj, axes)
-        return res
+            usm_res = dpt.permute_dims(self._array_obj, axes)
+        return dpnp_array._create_from_usm_ndarray(usm_res)
 
     def var(
         self,
