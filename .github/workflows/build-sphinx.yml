@@ -25,7 +25,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
