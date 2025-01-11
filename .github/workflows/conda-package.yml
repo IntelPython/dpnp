@@ -28,6 +28,7 @@ jobs:
     name: Build
 
     strategy:
+      fail-fast: false
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-22.04, windows-2019]
@@ -41,8 +42,6 @@ jobs:
     defaults:
       run:
         shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
-
-    continue-on-error: true
 
     steps:
       - name: Cancel Previous Runs
@@ -122,11 +121,10 @@ jobs:
         shell: bash -el {0}
 
     strategy:
+      fail-fast: false
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [ubuntu-latest]
-
-    continue-on-error: true
 
     env:
       channel-path: '${{ github.workspace }}/channel/'
@@ -180,11 +178,19 @@ jobs:
         run: mamba remove conda-index
 
       - name: Install dpnp
+        id: install_dpnp
+        continue-on-error: true
         run: |
           mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
-          MAMBA_NO_LOW_SPEED_LIMIT: 1
+
+      - name: ReInstall dpnp
+        if: steps.install_dpnp.outcome == 'failure'
+        run: |
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
       - name: List installed packages
         run: mamba list
@@ -226,11 +232,10 @@ jobs:
         shell: cmd /C CALL {0}
 
     strategy:
+      fail-fast: false
       matrix:
         python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         os: [windows-2019]
-
-    continue-on-error: true
 
     env:
       channel-path: '${{ github.workspace }}\channel\'
