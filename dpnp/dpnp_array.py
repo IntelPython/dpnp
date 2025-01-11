@@ -399,7 +399,7 @@ class dpnp_array:
             axes = [(-2, -1), (-2, -1), (-2, -1)]
 
         try:
-            dpnp.matmul(self, other, out=self, axes=axes)
+            dpnp.matmul(self, other, out=self, dtype=self.dtype, axes=axes)
         except AxisError:
             # AxisError should indicate that the axes argument didn't work out
             # which should mean the second operand not being 2 dimensional.
