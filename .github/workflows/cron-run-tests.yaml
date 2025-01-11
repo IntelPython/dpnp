@@ -21,6 +21,9 @@ jobs:
   test:
     name: Test
 
+    # disable scheduled workflow to be run in forks
+    if: github.event.repository.fork == false
+
     runs-on:  ${{ matrix.runner }}
 
     defaults:
