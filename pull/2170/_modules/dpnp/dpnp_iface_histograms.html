@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev3+41.gde27ec98e21 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev3+56.g1cfa8b1620f documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d3992957"></script>
+      <script src="../../_static/documentation_options.js?v=19e50c8b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface_histograms</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2024-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -122,20 +122,20 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">operator</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">Iterable</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._type_utils</span> <span class="kn">import</span> <span class="n">_can_cast</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_can_cast</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
-
-<span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">import</span> <span class="nn">dpnp.backend.extensions.statistics._statistics_impl</span> <span class="k">as</span> <span class="nn">statistics_ext</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="n">get_usm_allocations</span><span class="p">,</span> <span class="n">map_dtype_to_device</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.statistics._statistics_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">statistics_ext</span>
+
+<span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span><span class="p">,</span> <span class="n">map_dtype_to_device</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;bincount&quot;</span><span class="p">,</span>
@@ -150,12 +150,12 @@
 <span class="n">_range</span> <span class="o">=</span> <span class="nb">range</span>
 
 
-<span class="k">def</span> <span class="nf">_result_type_for_device</span><span class="p">(</span><span class="n">dtypes</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_result_type_for_device</span><span class="p">(</span><span class="n">dtypes</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
     <span class="n">rt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_align_dtypes</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_align_dtypes</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
     <span class="n">has_fp64</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
     <span class="n">has_fp16</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
 
@@ -179,7 +179,7 @@
     <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check input `a` and `weights` arrays, and ravel both.</span>
 <span class="sd">    The returned array have :class:`dpnp.ndarray` type always.</span>
@@ -209,14 +209,14 @@
     <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">usm_type</span>
 
 
-<span class="k">def</span> <span class="nf">_get_outer_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_outer_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="nb">range</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the outer bin edges to use, from either the data or the range</span>
 <span class="sd">    argument.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">_is_finite</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_finite</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
@@ -252,7 +252,7 @@
     <span class="k">return</span> <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span>
 
 
-<span class="k">def</span> <span class="nf">_get_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Computes the bins used internally by `histogram`.&quot;&quot;&quot;</span>
 
     <span class="c1"># parse the overloaded bins argument</span>
@@ -268,7 +268,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">n_equal_bins</span> <span class="o">=</span> <span class="n">operator</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`bins` must be an integer or an array&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`bins` must be an integer or an array&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
         <span class="k">if</span> <span class="n">n_equal_bins</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`bins` must be positive, when an integer&quot;</span><span class="p">)</span>
 
@@ -320,7 +320,7 @@
     <span class="k">return</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="kc">None</span>
 
 
-<span class="k">def</span> <span class="nf">_bincount_validate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bincount_validate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object too deep for desired array&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -347,7 +347,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;minlength must be non-negative&quot;</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_bincount_run_native</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_bincount_run_native</span><span class="p">(</span>
     <span class="n">x_casted</span><span class="p">,</span> <span class="n">weights_casted</span><span class="p">,</span> <span class="n">minlength</span><span class="p">,</span> <span class="n">n_dtype</span><span class="p">,</span> <span class="n">usm_type</span>
 <span class="p">):</span>
     <span class="n">queue</span> <span class="o">=</span> <span class="n">x_casted</span><span class="o">.</span><span class="n">sycl_queue</span>
@@ -397,7 +397,7 @@
 
 <div class="viewcode-block" id="bincount">
 <a class="viewcode-back" href="../../reference/generated/dpnp.bincount.html#dpnp.bincount">[docs]</a>
-<span class="k">def</span> <span class="nf">bincount</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bincount</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    bincount(x, /, weights=None, minlength=None)</span>
 
@@ -502,7 +502,7 @@
 
 <div class="viewcode-block" id="digitize">
 <a class="viewcode-back" href="../../reference/generated/dpnp.digitize.html#dpnp.digitize">[docs]</a>
-<span class="k">def</span> <span class="nf">digitize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">digitize</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the indices of the bins to which each value in input array belongs.</span>
 
@@ -597,7 +597,7 @@
 
 <div class="viewcode-block" id="histogram">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram.html#dpnp.histogram">[docs]</a>
-<span class="k">def</span> <span class="nf">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">histogram</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the histogram of a data set.</span>
 
@@ -762,7 +762,7 @@
 
 <div class="viewcode-block" id="histogram_bin_edges">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram_bin_edges.html#dpnp.histogram_bin_edges">[docs]</a>
-<span class="k">def</span> <span class="nf">histogram_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">histogram_bin_edges</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to calculate only the edges of the bins used by the</span>
 <span class="sd">    :obj:`dpnp.histogram` function.</span>
@@ -848,7 +848,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">_histdd_validate_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_validate_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">b</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
@@ -865,7 +865,7 @@
             <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_normalize_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">ndims</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_normalize_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">ndims</span><span class="p">):</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">bins</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;&#39;bins&#39; must be an integer, when a scalar&quot;</span><span class="p">)</span>
@@ -883,7 +883,7 @@
     <span class="k">return</span> <span class="n">bins</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_normalize_range</span><span class="p">(</span><span class="nb">range</span><span class="p">,</span> <span class="n">ndims</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_normalize_range</span><span class="p">(</span><span class="nb">range</span><span class="p">,</span> <span class="n">ndims</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">range</span> <span class="o">=</span> <span class="p">[</span><span class="kc">None</span><span class="p">]</span> <span class="o">*</span> <span class="n">ndims</span>
 
@@ -896,7 +896,7 @@
     <span class="k">return</span> <span class="nb">range</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_make_edges</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_make_edges</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">):</span>
     <span class="n">bedges_list</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">_bins</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">,</span> <span class="n">bins</span><span class="p">)):</span>
         <span class="n">bedges</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_get_bin_edges</span><span class="p">(</span><span class="n">sample</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">_bins</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">)</span>
@@ -905,7 +905,7 @@
     <span class="k">return</span> <span class="n">bedges_list</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_flatten_binedges</span><span class="p">(</span><span class="n">bedges_list</span><span class="p">,</span> <span class="n">edges_count_list</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_flatten_binedges</span><span class="p">(</span><span class="n">bedges_list</span><span class="p">,</span> <span class="n">edges_count_list</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
     <span class="n">total_edges_size</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">edges_count_list</span><span class="p">)</span>
 
     <span class="n">bin_edges_flat</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span>
@@ -922,7 +922,7 @@
     <span class="k">return</span> <span class="n">bin_edges_flat</span><span class="p">,</span> <span class="n">bin_edges_view_list</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_run_native</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_run_native</span><span class="p">(</span>
     <span class="n">sample</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">hist_dtype</span><span class="p">,</span> <span class="n">bin_edges</span><span class="p">,</span> <span class="n">edges_count_list</span><span class="p">,</span> <span class="n">usm_type</span>
 <span class="p">):</span>
     <span class="n">queue</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">sycl_queue</span>
@@ -962,7 +962,7 @@
     <span class="k">return</span> <span class="n">n</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_hist_dtype</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_hist_dtype</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
     <span class="n">hist_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">default_float_type</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">queue</span><span class="p">)</span>
     <span class="n">device</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">sycl_device</span>
 
@@ -977,7 +977,7 @@
     <span class="k">return</span> <span class="n">hist_dtype</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_sample_dtype</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">bin_edges_list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_sample_dtype</span><span class="p">(</span><span class="n">queue</span><span class="p">,</span> <span class="n">sample</span><span class="p">,</span> <span class="n">bin_edges_list</span><span class="p">):</span>
     <span class="n">device</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">sycl_device</span>
 
     <span class="n">dtypes_</span> <span class="o">=</span> <span class="p">[</span><span class="n">bin_edges</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">bin_edges</span> <span class="ow">in</span> <span class="n">bin_edges_list</span><span class="p">]</span>
@@ -986,7 +986,7 @@
     <span class="k">return</span> <span class="n">_result_type_for_device</span><span class="p">(</span><span class="n">dtypes_</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_supported_dtypes</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bin_edges_list</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_supported_dtypes</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bin_edges_list</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
     <span class="n">queue</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">device</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">sycl_device</span>
 
@@ -1004,7 +1004,7 @@
     <span class="k">return</span> <span class="n">sample_dtype</span><span class="p">,</span> <span class="n">hist_dtype</span>
 
 
-<span class="k">def</span> <span class="nf">_histdd_extract_arrays</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_histdd_extract_arrays</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
     <span class="n">all_arrays</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample</span><span class="p">]</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">all_arrays</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
@@ -1017,7 +1017,7 @@
 
 <div class="viewcode-block" id="histogramdd">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogramdd.html#dpnp.histogramdd">[docs]</a>
-<span class="k">def</span> <span class="nf">histogramdd</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">histogramdd</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the multidimensional histogram of some data.</span>
 
@@ -1153,7 +1153,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
