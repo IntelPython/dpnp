@@ -1,7 +1,11 @@
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_raises_regex,
+)
 
 import dpnp
 
@@ -102,6 +106,48 @@ def test_flags_writable():
 
     assert not a.real.flags.writable
     assert not a.imag.flags.writable
+
+
+class TestArrayNamespace:
+    def test_basic(self):
+        a = dpnp.arange(2)
+        xp = a.__array_namespace__()
+        assert xp is dpnp
+
+    @pytest.mark.parametrize("api_version", [None, "2023.12"])
+    def test_api_version(self, api_version):
+        a = dpnp.arange(2)
+        xp = a.__array_namespace__(api_version=api_version)
+        assert xp is dpnp
+
+    @pytest.mark.parametrize("api_version", ["2021.12", "2022.12", "2024.12"])
+    def test_unsupported_api_version(self, api_version):
+        a = dpnp.arange(2)
+        assert_raises_regex(
+            ValueError,
+            "Only 2023.12 is supported",
+            a.__array_namespace__,
+            api_version=api_version,
+        )
+
+    @pytest.mark.parametrize(
+        "api_version",
+        [
+            2023,
+            (2022,),
+            [
+                2021,
+            ],
+        ],
+    )
+    def test_wrong_api_version(self, api_version):
+        a = dpnp.arange(2)
+        assert_raises_regex(
+            TypeError,
+            "Expected type str",
+            a.__array_namespace__,
+            api_version=api_version,
+        )
 
 
 class TestItem:
