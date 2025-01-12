@@ -79,7 +79,7 @@ using value_type_of_t = typename value_type_of<T>::type;
 typedef sycl::event (*nan_to_num_fn_ptr_t)(sycl::queue &,
                                            int,
                                            size_t,
-                                           py::ssize_t *,
+                                           const py::ssize_t *,
                                            const py::object &,
                                            const py::object &,
                                            const py::object &,
@@ -93,7 +93,7 @@ template <typename T>
 sycl::event nan_to_num_call(sycl::queue &exec_q,
                             int nd,
                             size_t nelems,
-                            py::ssize_t *shape_strides,
+                            const py::ssize_t *shape_strides,
                             const py::object &py_nan,
                             const py::object &py_posinf,
                             const py::object &py_neginf,
@@ -302,15 +302,12 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_tasks{};
     host_tasks.reserve(2);
 
-    const auto &ptr_size_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         q, host_tasks, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_triple_);
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_triple_));
     const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_triple_);
-
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Device memory allocation failed");
-    }
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     std::vector<sycl::event> all_deps;
     all_deps.reserve(depends.size() + 1);
@@ -322,13 +319,9 @@ std::pair<sycl::event, sycl::event>
            src_offset, dst_data, dst_offset, all_deps);
 
     // async free of shape_strides temporary
-    auto ctx = q.get_context();
-    sycl::event tmp_cleanup_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(comp_ev);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task(
-            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
-    });
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        q, {comp_ev}, shape_strides_owner);
+
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
