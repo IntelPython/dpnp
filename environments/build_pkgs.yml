@@ -1,0 +1,8 @@
+name: Packages to build DPNP
+channels:
+  - https://software.repos.intel.com/python/conda/
+dependencies:
+  - dpcpp_linux-64
+  - mkl-devel-dpcpp
+  - onedpl-devel
+  - tbb-devel

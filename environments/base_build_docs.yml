@@ -1,0 +1,18 @@
+name: Base building docs env
+channels:
+  - dppy/label/dev
+  - conda-forge
+dependencies:
+  - python=3.12
+  - cmake
+  - cupy
+  - cython
+  - dpctl>=0.19.0dev0
+  - ninja
+  - numpy
+  - pytest
+  - scikit-build
+  - sphinx
+  - sphinx_rtd_theme
+  - pip:
+    - -r base_build_docs.txt

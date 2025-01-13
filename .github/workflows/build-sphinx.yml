@@ -36,11 +36,11 @@ jobs:
       pull-requests: write
 
     env:
-      python-ver: '3.12'
-      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
-      NO_INTEL_CHANNELS: '-c dppy/label/dev -c conda-forge --override-channels'
-      # Install the latest oneAPI compiler to work around an issue
-      INSTALL_ONE_API: 'yes'
+      environment-file: 'environments/environment.yml'
+      base-doc-env: 'environments/base_build_docs.yml'
+      build-pkgs-env: ''
+      # Enable env when it's required to use only conda packages without OneAPI installation
+      # build-pkgs-env: 'environments/build_pkgs.yml'
 
     steps:
       - name: Cancel Previous Runs
@@ -101,6 +101,16 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install conda-merge tool
+        uses: BSFishy/pip-action@8f2d471d809dc20b6ada98c91910b6ae6243f318 # v1
+        with:
+          packages: conda-merge
+
+      - name: Merge conda env files
+        run: |
+          conda-merge ${{ env.base-doc-env }} ${{ env.build-pkgs-env }} > ${{ env.environment-file }}
+          cat ${{ env.environment-file }}
+
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
@@ -108,9 +118,8 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.python-ver }}
+          environment-file: '${{ env.environment-file }}'
           activate-environment: 'docs'
 
       - name: ReSetup miniconda
@@ -119,34 +128,9 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.python-ver }}
+          environment-file: '${{ env.environment-file }}'
           activate-environment: 'docs'
-
-      # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
-      - name: Disable speed limit check in mamba
-        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
-
-      - name: Install sphinx dependencies
-        run: |
-          mamba install sphinx sphinx_rtd_theme
-          pip install sphinxcontrib-googleanalytics==0.4 \
-            pyenchant sphinxcontrib-spelling
-
-      - name: Install dpnp dependencies
-        if: env.INSTALL_ONE_API == 'yes'
-        run: |
-          mamba install numpy dpctl">=0.18.0dev0" cmake cython pytest ninja scikit-build ${{ env.NO_INTEL_CHANNELS }}
-
-      - name: Install dpnp dependencies
-        if: env.INSTALL_ONE_API != 'yes'
-        run: |
-          mamba install numpy dpctl">=0.18.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
-              cmake cython pytest ninja scikit-build ${{ env.CHANNELS }}
-
-      - name: Install cuPy dependencies
-        run: mamba install cupy
 
       - name: Conda info
         run: mamba info
@@ -178,7 +162,6 @@ jobs:
           echo PROJECT_NUMBER=${PROJECT_NUMBER}
           echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> $GITHUB_ENV
 
-      # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
         uses: mattnotmitt/doxygen-action@b84fe17600245bb5db3d6c247cc274ea98c15a3b # v1.12
         with:
@@ -187,7 +170,6 @@ jobs:
       - name: Copy backend docs
         run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}/backend_doc
 
-      # https://github.com/marketplace/actions/github-pages-action
       # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
         if: env.GH_EVENT_PUSH_UPSTREAM == 'true'
