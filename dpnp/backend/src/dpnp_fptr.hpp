@@ -157,12 +157,6 @@ static auto dpnp_vec_cast(const sycl::vec<srcT, N> &s)
 }
 
 /**
- * Removes parentheses for a passed list of types separated by comma.
- * It's intended to be used in operations macro.
- */
-#define MACRO_UNPACK_TYPES(...) __VA_ARGS__
-
-/**
  * Implements std::is_same<> with variadic number of types to compare with
  * and when type T has to match only one of types Ts.
  */
@@ -271,6 +265,5 @@ void func_map_init_linalg(func_map_t &fmap);
 void func_map_init_mathematical(func_map_t &fmap);
 void func_map_init_random(func_map_t &fmap);
 void func_map_init_sorting(func_map_t &fmap);
-void func_map_init_statistics(func_map_t &fmap);
 
 #endif // BACKEND_FPTR_H
