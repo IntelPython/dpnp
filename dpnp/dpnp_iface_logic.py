@@ -1168,8 +1168,6 @@ See Also
 :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
                         return result as bool array.
 :obj:`dpnp.isfinite` : Test element-wise for finiteness.
-:obj:`dpnp.isnat` : Test element-wise for NaT (not a time)
-                    and return result as a boolean array.
 
 Examples
 --------
