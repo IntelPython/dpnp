@@ -44,7 +44,6 @@ var hierarchy =
     [ "dpnp::kernels::fmax::FmaxFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ],
     [ "dpnp::kernels::fmin::FminFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ],
     [ "dpnp::kernels::fmod::FmodFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ],
-    [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
     [ "dpnp::kernels::gcd::GcdFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ],
     [ "dpnp::extensions::blas::types::GemmBatchTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::types::GemmTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
@@ -87,7 +86,6 @@ var hierarchy =
     [ "dpnp::extensions::fft::PrecisionType< prec >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
-    [ "python_constants", "structpython__constants.html", null ],
     [ "dpnp::kernels::radians::RadiansFunctor< argT, resT >", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, dom, is_forward >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
@@ -110,8 +108,5 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::UngqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< T >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
-    [ "statistics::histogram::Weights< T >", "structstatistics_1_1histogram_1_1_weights.html", null ],
-    [ "Ps", null, [
-      [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]
-    ] ]
+    [ "statistics::histogram::Weights< T >", "structstatistics_1_1histogram_1_1_weights.html", null ]
 ];

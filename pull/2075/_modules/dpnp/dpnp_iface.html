@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev3+76.gefd09c568fc documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev4+54.g4d9d06571f6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e9052531"></script>
+      <script src="../../_static/documentation_options.js?v=6abb9e5e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -123,21 +123,21 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># pylint: disable=protected-access</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="kn">import</span> <span class="nn">dpctl</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">ti</span>
-<span class="kn">import</span> <span class="nn">dpctl.utils</span> <span class="k">as</span> <span class="nn">dpu</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
-<span class="kn">from</span> <span class="nn">dpctl.tensor._device</span> <span class="kn">import</span> <span class="n">normalize_queue_device</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._device</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_queue_device</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_algo</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">dpnp.fft</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.linalg</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.random</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.fft</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.linalg</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.random</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;are_same_logical_tensors&quot;</span><span class="p">,</span>
@@ -159,42 +159,42 @@
     <span class="s2">&quot;synchronize_array_data&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="kn">from</span> <span class="nn">dpnp</span> <span class="kn">import</span> <span class="n">float64</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_arraycreation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_bitwise</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__bitwise</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_counting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__counting</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_functional</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_functional</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__functional</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_histograms</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_histograms</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__histograms</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_indexing</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_indexing</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__indexing</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_libmath</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__libmath</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_linearalgebra</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__linearalgebra</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_logic</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__logic</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_manipulation</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__manipulation</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_mathematical</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__mathematical</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_nanfunctions</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_nanfunctions</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__nanfunctions</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_searching</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__searching</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_sorting</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__sorting</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_statistics</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__statistics</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">dpnp.dpnp_iface_trigonometric</span> <span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_arraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_arraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_bitwise</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_bitwise</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__bitwise</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_counting</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_counting</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__counting</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_functional</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_functional</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__functional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_histograms</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_histograms</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__histograms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_indexing</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_indexing</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__indexing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_libmath</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_libmath</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__libmath</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__linearalgebra</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_logic</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__logic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_manipulation</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_manipulation</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__manipulation</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_mathematical</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_mathematical</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__mathematical</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_nanfunctions</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_nanfunctions</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__nanfunctions</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_searching</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_searching</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__searching</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_sorting</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_sorting</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__sorting</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__statistics</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_trigonometric</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_trigonometric</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_descriptor</span><span class="p">,</span>
     <span class="n">map_dtype_to_device</span><span class="p">,</span>
     <span class="n">use_origin_backend</span><span class="p">,</span>
@@ -218,7 +218,7 @@
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__trigonometric</span>
 
 
-<span class="k">def</span> <span class="nf">are_same_logical_tensors</span><span class="p">(</span><span class="n">ar1</span><span class="p">,</span> <span class="n">ar2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">are_same_logical_tensors</span><span class="p">(</span><span class="n">ar1</span><span class="p">,</span> <span class="n">ar2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if two arrays are logical views into the same memory.</span>
 
@@ -261,7 +261,7 @@
 
 <div class="viewcode-block" id="asnumpy">
 <a class="viewcode-back" href="../../reference/generated/dpnp.asnumpy.html#dpnp.asnumpy">[docs]</a>
-<span class="k">def</span> <span class="nf">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the NumPy array with input data.</span>
 
@@ -299,7 +299,7 @@
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="astype">
 <a class="viewcode-back" href="../../reference/generated/dpnp.astype.html#dpnp.astype">[docs]</a>
-<span class="k">def</span> <span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Copy the array with data type casting.</span>
 
@@ -364,7 +364,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">as_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">as_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
 
@@ -413,7 +413,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checking limitation kwargs for their supported values.</span>
 
@@ -451,7 +451,7 @@
         <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if each array has either type of scalar,</span>
 <span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray`.</span>
@@ -500,7 +500,7 @@
     <span class="k">return</span> <span class="kc">True</span>
 
 
-<span class="k">def</span> <span class="nf">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">default_float_type</span><span class="p">(</span><span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return a floating type used by default in DPNP depending on device</span>
 <span class="sd">    capabilities.</span>
@@ -534,7 +534,7 @@
     <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
     <span class="n">ext_obj</span><span class="p">,</span>
     <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
     <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -611,7 +611,7 @@
 
 <div class="viewcode-block" id="get_include">
 <a class="viewcode-back" href="../../reference/generated/dpnp.get_include.html#dpnp.get_include">[docs]</a>
-<span class="k">def</span> <span class="nf">get_include</span><span class="p">():</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_include</span><span class="p">():</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the directory that contains \*.h header files of dpnp C++ backend.</span>
 
@@ -624,7 +624,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_normalized_queue_device</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Utility to process complementary keyword arguments &#39;device&#39; and &#39;sycl_queue&#39;</span>
 <span class="sd">    in subsequent calls of functions from `dpctl.tensor` module.</span>
@@ -675,7 +675,7 @@
     <span class="k">return</span> <span class="n">normalize_queue_device</span><span class="p">(</span><span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_result_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_result_array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If `out` is provided, value of `a` array will be copied into the</span>
 <span class="sd">    `out` array according to ``safe`` casting rule.</span>
@@ -719,7 +719,7 @@
     <span class="k">return</span> <span class="n">out</span>
 
 
-<span class="k">def</span> <span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input array `a`.</span>
 
@@ -750,7 +750,7 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_usm_ndarray_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return scalar or :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
 
@@ -776,7 +776,7 @@
     <span class="k">return</span> <span class="n">a</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">is_cuda_backend</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_cuda_backend</span><span class="p">(</span><span class="n">obj</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks that object has a CUDA backend.</span>
 
@@ -811,7 +811,7 @@
     <span class="k">return</span> <span class="kc">False</span>
 
 
-<span class="k">def</span> <span class="nf">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_supported_array_or_scalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if `a` is a scalar or an array of either</span>
 <span class="sd">    :class:`dpnp.ndarray` or :class:`dpctl.tensor.usm_ndarray` type,</span>
@@ -833,7 +833,7 @@
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_supported_array_type</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return ``True`` if an array of either type :class:`dpnp.ndarray`</span>
 <span class="sd">    or :class:`dpctl.tensor.usm_ndarray` type, ``False`` otherwise.</span>
@@ -854,7 +854,7 @@
     <span class="k">return</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">(</span><span class="n">dpnp_array</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">usm_ndarray</span><span class="p">))</span>
 
 
-<span class="k">def</span> <span class="nf">synchronize_array_data</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">synchronize_array_data</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    The dpctl interface was reworked to make asynchronous execution.</span>
 <span class="sd">    That function makes a synchronization call to ensure array data is valid</span>
@@ -873,7 +873,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
