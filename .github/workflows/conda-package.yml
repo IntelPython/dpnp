@@ -210,7 +210,7 @@ jobs:
 
       - name: Smoke test
         run: |
-          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
@@ -350,7 +350,7 @@ jobs:
 
       - name: Smoke test
         run: |
-          python -c "import dpnp, dpctl; dpctl.lsplatform()"
+          python -c "import dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
@@ -431,6 +431,190 @@ jobs:
           anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
+
+  array-api-conformity:
+    name: Array API conformity
+
+    needs: build
+
+    permissions:
+      # Needed to add a comment to a pull request's issue
+      pull-requests: write
+
+    strategy:
+      matrix:
+        python: ['3.12']
+        os: [ubuntu-22.04]
+
+    runs-on:  ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    continue-on-error: true
+
+    env:
+      array-api-tests-path: '${{ github.workspace }}/array-api-tests/'
+      json-report-file: '${{ github.workspace }}/.report.json'
+      dpnp-repo-path: '${{ github.workspace }}/dpnp/'
+      array-api-skips-file: '${{ github.workspace }}/dpnp/.github/workflows/array-api-skips.txt'
+      channel-path: '${{ github.workspace }}/channel/'
+      pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
+      extracted-pkg-path: '${{ github.workspace }}/pkg/'
+      ver-json-path: '${{ github.workspace }}/version.json'
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.pkg-path-in-channel }}
+
+      - name: Extract package archive
+        run: |
+          mkdir -p ${{ env.extracted-pkg-path }}
+          tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
+
+      - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+          python-version: ${{ matrix.python }}
+          activate-environment: 'array-api-conformity'
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+          python-version: ${{ matrix.python }}
+          activate-environment: 'array-api-conformity'
+
+      - name: Install conda-index
+        id: install_conda_index
+        continue-on-error: true
+        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+
+      - name: ReInstall conda-index
+        if: steps.install_conda_index.outcome == 'failure'
+        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+
+      - name: Create conda channel
+        run: |
+          python -m conda_index ${{ env.channel-path }}
+
+      - name: Test conda channel
+        run: |
+          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          cat ${{ env.ver-json-path }}
+
+      - name: Get package version
+        run: |
+          export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
+
+          echo PACKAGE_VERSION=${PACKAGE_VERSION}
+          echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
+
+      - name: Install dpnp
+        id: install_dpnp
+        continue-on-error: true
+        run: |
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+
+      - name: ReInstall dpnp
+        if: steps.install_dpnp.outcome == 'failure'
+        run: |
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+        env:
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Smoke test
+        run: |
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      - name: Clone array API tests repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: 'data-apis/array-api-tests'
+          path: ${{ env.array-api-tests-path }}
+          fetch-depth: 0
+          submodules: 'recursive'
+
+      - name: Install array API test dependencies
+        run: |
+          pip install -r requirements.txt
+        working-directory: ${{ env.array-api-tests-path }}
+
+      - name: Install jq
+        run: |
+          sudo apt-get install jq
+
+      - name: List installed packages
+        run: mamba list
+
+      - name: Smoke test
+        run: |
+          python -c "import dpctl; dpctl.lsplatform()"
+          python -c "import dpnp; print(dpnp.__version__)"
+
+      # need to fetch array-api-skips.txt
+      - name: Checkout DPNP repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: ${{ env.dpnp-repo-path }}
+
+      - name: Run array API conformance tests
+        run: |
+          python -m pytest --json-report --json-report-file=${{ env.json-report-file }} --disable-deadline --skips-file ${{ env.array-api-skips-file }} array_api_tests || true
+        env:
+          ARRAY_API_TESTS_MODULE: 'dpnp'
+          SYCL_CACHE_PERSISTENT: 1
+        working-directory: ${{ env.array-api-tests-path }}
+
+      - name: Set Github environment variables
+        run: |
+          FILE=${{ env.json-report-file }}
+          if test -f "$FILE"; then
+            PASSED_TESTS=$(jq '.summary | .passed // 0' $FILE)
+            FAILED_TESTS=$(jq '.summary | .failed // 0' $FILE)
+            SKIPPED_TESTS=$(jq '.summary | .skipped // 0' $FILE)
+            MESSAGE="Array API standard conformance tests for dpnp=$PACKAGE_VERSION ran successfully.
+            Passed: $PASSED_TESTS
+            Failed: $FAILED_TESTS
+            Skipped: $SKIPPED_TESTS"
+            echo "MESSAGE<<EOF" >> $GITHUB_ENV
+            echo "$MESSAGE" >> $GITHUB_ENV
+            echo "EOF" >> $GITHUB_ENV
+          else
+            echo "Array API standard conformance tests failed to run for dpnp=$PACKAGE_VERSION."
+            exit 1
+          fi
+
+      - name: Output API summary
+        run: echo "::notice ${{ env.MESSAGE }}"
+
+      - name: Post result to PR
+        if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
+        uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
+        with:
+          message: |
+            ${{ env.MESSAGE }}
+          refresh-message-position: true
 
   cleanup_packages:
     name: Clean up anaconda packages
