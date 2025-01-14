@@ -548,13 +548,11 @@ class TestHistogramddErrors(unittest.TestCase):
                 y, bin_edges = xp.histogramdd(x, range=r)
 
 
-@pytest.mark.skip("histogram2d() is not implemented yet")
-# @pytest.mark.skip(reason="XXX: NP2.0: histogram2d dtype")
 @testing.parameterize(
     *testing.product(
         {
             "weights": [None, 1, 2],
-            "weights_dtype": [numpy.int32, numpy.float64],
+            "weights_dtype": [numpy.int32, numpy.float32],
             "density": [True, False],
             "bins": [10, (8, 16), (16, 8), "array_list", "array"],
             "range": [None, ((20, 50), (10, 100))],
@@ -564,7 +562,11 @@ class TestHistogramddErrors(unittest.TestCase):
 class TestHistogram2d:
 
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-2, rtol=1e-7)
+    @testing.numpy_cupy_allclose(
+        atol=1e-2,
+        rtol=1e-7,
+        type_check=has_support_aspect64() and numpy_version() < "2.0.0",
+    )
     def test_histogram2d(self, xp, dtype):
         x = testing.shaped_random((100,), xp, dtype, scale=100)
         y = testing.shaped_random((100,), xp, dtype, scale=100)
@@ -590,7 +592,6 @@ class TestHistogram2d:
         return y, edges0, edges1
 
 
-@pytest.mark.skip("histogram2d() is not implemented yet")
 class TestHistogram2dErrors(unittest.TestCase):
 
     def test_histogram2d_disallow_arraylike_bins(self):
