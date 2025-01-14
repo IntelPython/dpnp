@@ -30,7 +30,6 @@ from .helper import (
     get_integer_dtypes,
     has_support_aspect16,
     has_support_aspect64,
-    is_cuda_device,
 )
 from .test_umath import (
     _get_numpy_arrays_1in_1out,
