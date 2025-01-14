@@ -218,28 +218,21 @@ std::pair<sycl::event, sycl::event>
     std::vector<sycl::event> host_tasks{};
     host_tasks.reserve(2);
 
-    const auto &ptr_size_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_size_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         q, host_tasks, simplified_shape, simplified_src_strides,
         simplified_dst_strides);
-    py::ssize_t *shape_strides = std::get<0>(ptr_size_event_triple_);
-    const sycl::event &copy_shape_ev = std::get<2>(ptr_size_event_triple_);
-
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Device memory allocation failed");
-    }
+    auto shape_strides_owner = std::move(std::get<0>(ptr_size_event_triple_));
+    const auto &copy_shape_ev = std::get<2>(ptr_size_event_triple_);
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     sycl::event strided_fn_ev =
         strided_fn(q, src_nelems, nd, shape_strides, src_data, src_offset,
                    dst_data, dst_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    auto ctx = q.get_context();
-    sycl::event tmp_cleanup_ev = q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(strided_fn_ev);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task(
-            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
-    });
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        q, {strided_fn_ev}, shape_strides_owner);
+
     host_tasks.push_back(tmp_cleanup_ev);
 
     return std::make_pair(
@@ -543,30 +536,21 @@ std::pair<sycl::event, sycl::event> py_binary_ufunc(
     }
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_src1_strides,
         simplified_src2_strides, simplified_dst_strides);
+    auto shape_strides_owner = std::move(std::get<0>(ptr_sz_event_triple_));
+    auto &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
 
-    py::ssize_t *shape_strides = std::get<0>(ptr_sz_event_triple_);
-    const sycl::event &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
-
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Unable to allocate device memory");
-    }
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     sycl::event strided_fn_ev = strided_fn(
         exec_q, src_nelems, nd, shape_strides, src1_data, src1_offset,
         src2_data, src2_offset, dst_data, dst_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    auto ctx = exec_q.get_context();
-
-    sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(strided_fn_ev);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task(
-            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
-    });
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {strided_fn_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 
@@ -796,30 +780,21 @@ std::pair<sycl::event, sycl::event>
     }
 
     using dpctl::tensor::offset_utils::device_allocate_and_pack;
-    const auto &ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
+    auto ptr_sz_event_triple_ = device_allocate_and_pack<py::ssize_t>(
         exec_q, host_tasks, simplified_shape, simplified_rhs_strides,
         simplified_lhs_strides);
+    auto shape_strides_owner = std::move(std::get<0>(ptr_sz_event_triple_));
+    auto copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
 
-    py::ssize_t *shape_strides = std::get<0>(ptr_sz_event_triple_);
-    const sycl::event &copy_shape_ev = std::get<2>(ptr_sz_event_triple_);
-
-    if (shape_strides == nullptr) {
-        throw std::runtime_error("Unable to allocate device memory");
-    }
+    const py::ssize_t *shape_strides = shape_strides_owner.get();
 
     sycl::event strided_fn_ev =
         strided_fn(exec_q, rhs_nelems, nd, shape_strides, rhs_data, rhs_offset,
                    lhs_data, lhs_offset, depends, {copy_shape_ev});
 
     // async free of shape_strides temporary
-    auto ctx = exec_q.get_context();
-
-    sycl::event tmp_cleanup_ev = exec_q.submit([&](sycl::handler &cgh) {
-        cgh.depends_on(strided_fn_ev);
-        using dpctl::tensor::alloc_utils::sycl_free_noexcept;
-        cgh.host_task(
-            [ctx, shape_strides]() { sycl_free_noexcept(shape_strides, ctx); });
-    });
+    sycl::event tmp_cleanup_ev = dpctl::tensor::alloc_utils::async_smart_free(
+        exec_q, {strided_fn_ev}, shape_strides_owner);
 
     host_tasks.push_back(tmp_cleanup_ev);
 

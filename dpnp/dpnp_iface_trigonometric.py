@@ -2450,7 +2450,5 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
 
     up = dpnp.astype(p, dtype=dt, copy=True)
     up[slice1] = p[slice1]
-    # TODO: replace, once dpctl-1757 resolved
-    # up[slice1] += ph_correct.cumsum(axis=axis)
-    up[slice1] += ph_correct.cumsum(axis=axis, dtype=dt)
+    up[slice1] += ph_correct.cumsum(axis=axis)
     return up

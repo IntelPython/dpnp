@@ -25,7 +25,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -89,7 +89,6 @@ jobs:
         run: |
           sudo apt-get install enchant-2
 
-      # https://github.com/marketplace/actions/checkout
       - name: Install nvidia-cuda support drivers
         run: |
           sudo add-apt-repository ppa:graphics-drivers/ppa
@@ -102,8 +101,20 @@ jobs:
         with:
           fetch-depth: 0
 
-      # https://github.com/marketplace/actions/setup-miniconda
       - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+          python-version: ${{ env.python-ver }}
+          activate-environment: 'docs'
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
