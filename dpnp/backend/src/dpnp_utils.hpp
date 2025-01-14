@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2016-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -112,37 +112,6 @@ void get_shape_offsets_inkernel(const _DataType *shape,
         dim_prod_input *= shape[i_reverse];
     }
 
-    return;
-}
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Calculation of indices in array
- *
- * Calculates indices of element in array with given linear position
- * for example:
- *   idx = 5, shape = (2, 3), ndim = 2,
- *   indices xyz should be [1, 1]
- *
- * @param [in]  idx     linear index of the element in multy-D array.
- * @param [in]  ndim    number of dimensions.
- * @param [in]  shape   offsets of array.
- * @param [out] xyz     indices.
- */
-template <typename _DataType>
-void get_xyz_by_id(size_t idx,
-                   size_t ndim,
-                   const _DataType *offsets,
-                   _DataType *xyz)
-{
-    size_t quotient;
-    size_t remainder = idx;
-
-    for (size_t i = 0; i < ndim; ++i) {
-        quotient = remainder / offsets[i];
-        remainder = remainder - quotient * offsets[i];
-        xyz[i] = quotient;
-    }
     return;
 }
 
