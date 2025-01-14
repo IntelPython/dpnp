@@ -87,7 +87,6 @@ var hierarchy =
     [ "dpnp::extensions::fft::PrecisionType< prec >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
-    [ "python_constants", "structpython__constants.html", null ],
     [ "dpnp::kernels::radians::RadiansFunctor< argT, resT >", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, dom, is_forward >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
