@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev4+6.g981c29db33c documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev4+6.g75fac8c45a6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5b2c6ac4"></script>
+      <script src="../../_static/documentation_options.js?v=9c716add"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -852,6 +852,7 @@
 <div class="viewcode-block" id="histogram2d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram2d.html#dpnp.histogram2d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the bi-dimensional histogram of two data samples.</span>
 
@@ -863,8 +864,7 @@
 <span class="sd">    y : {dpnp.ndarray, usm_ndarray} of shape (N,)</span>
 <span class="sd">        An array containing the y coordinates of the points to be</span>
 <span class="sd">        histogrammed.</span>
-<span class="sd">    bins : {int, list of dpnp.ndarray or usm_ndarray,</span>
-<span class="sd">    sequence of scalars}, optional</span>
+<span class="sd">    bins : {int, list of dpnp.ndarray or usm_ndarray, sequence of scalars}, optional</span>
 <span class="sd">        The bin specification:</span>
 
 <span class="sd">        * If int, the number of bins for the two dimensions (nx=ny=bins).</span>
@@ -922,29 +922,21 @@
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
-<span class="sd">    &gt;&gt;&gt; import numpy as np</span>
-<span class="sd">    &gt;&gt;&gt; from matplotlib.image import NonUniformImage</span>
-<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
-
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-
 <span class="sd">    &gt;&gt;&gt; x = np.random.randn(20)</span>
 <span class="sd">    &gt;&gt;&gt; y = np.random.randn(20)</span>
-
 <span class="sd">    &gt;&gt;&gt; hist, edges_x, edges_y = np.histogram2d(x, y, bins=(4, 3))</span>
-
 <span class="sd">    &gt;&gt;&gt; hist</span>
 <span class="sd">    [[1. 0. 0.]</span>
 <span class="sd">     [0. 0. 0.]</span>
 <span class="sd">     [5. 6. 4.]</span>
 <span class="sd">     [1. 2. 1.]]</span>
-
 <span class="sd">    &gt;&gt;&gt; edges_x</span>
 <span class="sd">    [-5.6575713 -3.5574734 -1.4573755  0.6427226  2.74282  ]</span>
-
 <span class="sd">    &gt;&gt;&gt; edges_y</span>
 <span class="sd">    [-1.1889046  -0.07263839  1.0436279   2.159894  ]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># pylint: enable=line-too-long</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
