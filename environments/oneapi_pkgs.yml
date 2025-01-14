@@ -1,4 +1,4 @@
-name: Packages to build DPNP
+name: OneAPI packages to build DPNP without OneAPI env activated
 channels:
   - https://software.repos.intel.com/python/conda/
 dependencies:
