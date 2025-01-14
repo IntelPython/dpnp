@@ -612,6 +612,25 @@ class dpnp_array:
         """Return ``self/value``."""
         return dpnp.true_divide(self, other)
 
+    @property
+    def __usm_ndarray__(self):
+        """
+        Property to support `__usm_ndarray__` protocol.
+
+        It assumes to return :class:`dpctl.tensor.usm_ndarray` instance
+        corresponding to the content of the object.
+
+        This property is intended to speed-up conversion from
+        :class:`dpnp.ndarray` to :class:`dpctl.tensor.usm_ndarray` passed
+        into  `dpctl.tensor.asarray` function. The input object that implements
+        `__usm_ndarray__` protocol is recognized as owner of USM allocation
+        that is managed by a smart pointer, and asynchronous deallocation
+        will not involve GIL.
+
+        """
+
+        return self._array_obj
+
     def __xor__(self, other):
         """Return ``self^value``."""
         return dpnp.bitwise_xor(self, other)
