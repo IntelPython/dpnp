@@ -30,22 +30,8 @@
 #include <dpnp_iface.hpp>
 
 #include "dpnp_fptr.hpp"
-#include "dpnp_iterator.hpp"
 #include "dpnp_utils.hpp"
-#include "dpnpc_memory_adapter.hpp"
 #include "queue_sycl.hpp"
-
-// dpctl tensor headers
-#include "kernels/alignment.hpp"
-
-using dpctl::tensor::kernels::alignment_utils::is_aligned;
-using dpctl::tensor::kernels::alignment_utils::required_alignment;
-
-namespace syclex = sycl::ext::oneapi::experimental;
-using syclex::group_load;
-using syclex::group_store;
-
-constexpr auto striped = syclex::properties{syclex::data_placement_striped};
 
 template <typename T>
 constexpr T dispatch_erf_op(T elem)
