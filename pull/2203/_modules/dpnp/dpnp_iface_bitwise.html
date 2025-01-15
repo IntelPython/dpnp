@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.17.0dev3+45.gd74cf3e749a documentation</title>
+  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.17.0dev4+12.gfafbb6cef90 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4982c5de"></script>
+      <script src="../../_static/documentation_options.js?v=9f51fc7c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface_bitwise</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -296,6 +296,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_and_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_and</span><span class="p">,</span>
     <span class="n">_BITWISE_AND_DOCSTRING</span><span class="p">,</span>
+    <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_and_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -373,6 +374,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_or_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_or</span><span class="p">,</span>
     <span class="n">_BITWISE_OR_DOCSTRING</span><span class="p">,</span>
+    <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_or_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -454,6 +456,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_xor_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_xor</span><span class="p">,</span>
     <span class="n">_BITWISE_XOR_DOCSTRING</span><span class="p">,</span>
+    <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_xor_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
 
@@ -606,6 +609,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_left_shift_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_left_shift</span><span class="p">,</span>
     <span class="n">_LEFT_SHIFT_DOCSTRING</span><span class="p">,</span>
+    <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_left_shift_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">bitwise_left_shift</span> <span class="o">=</span> <span class="n">left_shift</span>  <span class="c1"># bitwise_left_shift is an alias for left_shift</span>
@@ -683,6 +687,7 @@
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_right_shift_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_right_shift</span><span class="p">,</span>
     <span class="n">_RIGHT_SHIFT_DOCSTRING</span><span class="p">,</span>
+    <span class="n">binary_inplace_fn</span><span class="o">=</span><span class="n">ti</span><span class="o">.</span><span class="n">_bitwise_right_shift_inplace</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="c1"># bitwise_right_shift is an alias for right_shift</span>
