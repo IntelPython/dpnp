@@ -866,7 +866,7 @@ def test_split(func, data1, usm_type):
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("p", [None, -dp.inf, -2, -1, 1, 2, dp.inf, "fro"])
 def test_cond(usm_type, p):
-    a = generate_random_numpy_array((4, 4), seed_value=42)
+    a = generate_random_numpy_array((2, 4, 4), seed_value=42)
     ia = dp.array(a, usm_type=usm_type)
 
     result = dp.linalg.cond(ia, p=p)

@@ -1581,7 +1581,7 @@ def test_cholesky(data, is_empty, device):
 )
 @pytest.mark.parametrize("p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"])
 def test_cond(device, p):
-    a = generate_random_numpy_array((4, 4), seed_value=42)
+    a = generate_random_numpy_array((2, 4, 4), seed_value=42)
     ia = dpnp.array(a, device=device)
 
     result = dpnp.linalg.cond(ia, p=p)
