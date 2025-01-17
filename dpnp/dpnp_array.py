@@ -153,13 +153,6 @@ class dpnp_array:
 
         return dpnp_array._create_from_usm_ndarray(self._array_obj.mT)
 
-    def to_device(self, target_device):
-        """Transfer array to target device."""
-
-        return dpnp_array(
-            shape=self.shape, buffer=self.get_array().to_device(target_device)
-        )
-
     @property
     def sycl_queue(self):
         return self._array_obj.sycl_queue
@@ -1692,6 +1685,48 @@ class dpnp_array:
         """
 
         return dpnp.take(self, indices, axis=axis, out=out, mode=mode)
+
+    def to_device(self, device, /, *, stream=None):
+        """
+        Transfers this array to specified target device.
+
+        Parameters
+        ----------
+        device : {string, SyclDevice, SyclQueue}
+            Array API concept of target device. It can be an OneAPI filter
+            selector string, an instance of :class:`dpctl.SyclDevice`
+            corresponding to a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        stream : {SyclQueue, None}, optional
+            Execution queue to synchronize with. If ``None``, synchronization
+            is not performed.
+            Default: ``None``.
+
+        Returns
+        -------
+        out : dpnp.ndarray
+            A view if data copy is not required, and a copy otherwise.
+            If copying is required, it is done by copying from the original
+            allocation device to the host, followed by copying from host
+            to the target device.
+
+        Examples
+        --------
+        >>> import dpnp as np, dpctl
+        >>> x = np.full(100, 2, dtype=np.int64)
+        >>> q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+        >>> # return a view with profile-enabled queue
+        >>> y = x.to_device(q_prof)
+        >>> timer = dpctl.SyclTimer()
+        >>> with timer(q_prof):
+        ...     z = y * y
+        >>> print(timer.dt)
+
+        """
+
+        usm_res = self._array_obj.to_device(device, stream=stream)
+        return dpnp_array._create_from_usm_ndarray(usm_res)
 
     # 'tobytes',
     # 'tofile',

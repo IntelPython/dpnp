@@ -1932,23 +1932,66 @@ def test_svd(shape, full_matrices, compute_uv, device):
         assert_sycl_queue_equal(dpnp_s_queue, expected_queue)
 
 
-@pytest.mark.parametrize(
-    "device_from",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-@pytest.mark.parametrize(
-    "device_to",
-    valid_devices,
-    ids=[device.filter_string for device in valid_devices],
-)
-def test_to_device(device_from, device_to):
-    data = [1.0, 1.0, 1.0, 1.0, 1.0]
+class TestToDevice:
+    @pytest.mark.parametrize(
+        "device_from",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    @pytest.mark.parametrize(
+        "device_to",
+        valid_devices,
+        ids=[device.filter_string for device in valid_devices],
+    )
+    def test_basic(self, device_from, device_to):
+        data = [1.0, 1.0, 1.0, 1.0, 1.0]
+        x = dpnp.array(data, dtype=dpnp.float32, device=device_from)
 
-    x = dpnp.array(data, dtype=dpnp.float32, device=device_from)
-    y = x.to_device(device_to)
+        y = x.to_device(device_to)
+        assert y.sycl_device == device_to
+        assert (x.asnumpy() == y.asnumpy()).all()
 
-    assert y.sycl_device == device_to
+    def test_to_queue(self):
+        x = dpnp.full(100, 2, dtype=dpnp.int64)
+        q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+
+        y = x.to_device(q_prof)
+        assert (x.asnumpy() == y.asnumpy()).all()
+        assert_sycl_queue_equal(y.sycl_queue, q_prof)
+
+    def test_stream(self):
+        x = dpnp.full(100, 2, dtype=dpnp.int64)
+        q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+        q_exec = dpctl.SyclQueue(x.sycl_device)
+
+        y = x.to_device(q_prof, stream=q_exec)
+        assert (x.asnumpy() == y.asnumpy()).all()
+        assert_sycl_queue_equal(y.sycl_queue, q_prof)
+
+        q_exec = dpctl.SyclQueue(x.sycl_device)
+        _ = dpnp.linspace(0, 20, num=10**5, sycl_queue=q_exec)
+        y = x.to_device(q_prof, stream=q_exec)
+        assert (x.asnumpy() == y.asnumpy()).all()
+        assert_sycl_queue_equal(y.sycl_queue, q_prof)
+
+    def test_stream_no_sync(self):
+        x = dpnp.full(100, 2, dtype=dpnp.int64)
+        q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+
+        for stream in [None, x.sycl_queue]:
+            y = x.to_device(q_prof, stream=stream)
+            assert (x.asnumpy() == y.asnumpy()).all()
+            assert_sycl_queue_equal(y.sycl_queue, q_prof)
+
+    @pytest.mark.parametrize(
+        "stream",
+        [1, dict(), dpctl.SyclDevice()],
+        ids=["scalar", "dictionary", "device"],
+    )
+    def test_invalid_stream(self, stream):
+        x = dpnp.ones(2, dtype=dpnp.int64)
+        q_prof = dpctl.SyclQueue(x.sycl_device, property="enable_profiling")
+        assert_raises(TypeError, x.to_device, q_prof, stream=stream)
 
 
 @pytest.mark.parametrize(
