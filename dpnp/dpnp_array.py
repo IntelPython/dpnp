@@ -1698,7 +1698,7 @@ class dpnp_array:
             corresponding to a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
             returned by :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-        stream : SyclQueue, optional
+        stream : {SyclQueue, None}, optional
             Execution queue to synchronize with. If ``None``, synchronization
             is not performed.
             Default: ``None``.
