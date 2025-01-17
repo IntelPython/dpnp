@@ -206,7 +206,13 @@ class TestNewDLPackConversion:
         for src_s in [self._get_stream(s) for s in allowed_streams]:
             for dst_s in [self._get_stream(s) for s in allowed_streams]:
                 orig_array = _gen_array(cupy.float32, alloc_q=src_s)
-                dltensor = orig_array.__dlpack__(stream=orig_array)
+
+                q = dpctl.SyclQueue(
+                    orig_array.sycl_context,
+                    orig_array.sycl_device,
+                    property="enable_profiling",
+                )
+                dltensor = orig_array.__dlpack__(stream=q)
 
                 out_array = dlp.from_dlpack_capsule(dltensor)
                 out_array = cupy.from_dlpack(out_array, device=dst_s)
