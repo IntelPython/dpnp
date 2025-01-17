@@ -128,6 +128,7 @@ def choose(x1, choices, out=None, mode="raise"):
     :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
 
     """
+
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
 
     choices_list = []
@@ -137,6 +138,11 @@ def choose(x1, choices, out=None, mode="raise"):
         )
 
     if x1_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if any(not desc for desc in choices_list):
             pass
         elif out is not None:
