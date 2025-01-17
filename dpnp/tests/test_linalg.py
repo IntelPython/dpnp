@@ -2380,12 +2380,6 @@ class TestQr:
     )
     @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
     def test_qr(self, dtype, shape, mode):
-        if (
-            is_cuda_device()
-            and mode in ["complete", "reduced"]
-            and shape in [(16, 16), (2, 2, 4)]
-        ):
-            pytest.skip("SAT-7589")
         a = generate_random_numpy_array(shape, dtype, seed_value=81)
         ia = dpnp.array(a)
 
@@ -2398,23 +2392,47 @@ class TestQr:
 
             # check decomposition
             if mode in ("complete", "reduced"):
-                if a.ndim == 2:
-                    assert_almost_equal(
-                        dpnp.dot(dpnp_q, dpnp_r),
-                        a,
-                        decimal=5,
-                    )
-                else:  # a.ndim > 2
-                    assert_almost_equal(
-                        dpnp.matmul(dpnp_q, dpnp_r),
-                        a,
-                        decimal=5,
-                    )
+                assert_almost_equal(
+                    dpnp.matmul(dpnp_q, dpnp_r),
+                    a,
+                    decimal=5,
+                )
             else:  # mode=="raw"
                 assert_dtype_allclose(dpnp_q, np_q)
 
         if mode in ("raw", "r"):
             assert_dtype_allclose(dpnp_r, np_r)
+
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize(
+        "shape",
+        [(32, 32), (8, 16, 16)],
+        ids=[
+            "(32, 32)",
+            "(8, 16, 16)",
+        ],
+    )
+    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
+    def test_qr_large(self, dtype, shape, mode):
+        a = generate_random_numpy_array(shape, dtype, seed_value=81)
+        ia = dpnp.array(a)
+        if mode == "r":
+            np_r = numpy.linalg.qr(a, mode)
+            dpnp_r = dpnp.linalg.qr(ia, mode)
+        else:
+            np_q, np_r = numpy.linalg.qr(a, mode)
+            dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
+            # check decomposition
+            if mode in ("complete", "reduced"):
+                assert_almost_equal(
+                    dpnp.matmul(dpnp_q, dpnp_r),
+                    a,
+                    decimal=5,
+                )
+            else:  # mode=="raw"
+                assert_dtype_allclose(dpnp_q, np_q, factor=12)
+        if mode in ("raw", "r"):
+            assert_dtype_allclose(dpnp_r, np_r, factor=12)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
