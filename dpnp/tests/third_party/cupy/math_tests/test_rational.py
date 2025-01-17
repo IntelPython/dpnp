@@ -1,8 +1,10 @@
 import unittest
 
+import numpy
 import pytest
 
 import dpnp as cupy
+from dpnp.tests.helper import is_cuda_device
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -10,8 +12,18 @@ class TestRational(unittest.TestCase):
 
     @testing.for_dtypes(["?", "e", "f", "d", "F", "D"])
     def test_gcd_dtype_check(self, dtype):
-        a = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
-        b = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+        # TODO: remove it once the issue with CUDA support is resolved
+        # for dpnp.random
+        if is_cuda_device():
+            a = cupy.asarray(
+                numpy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+            )
+            b = cupy.asarray(
+                numpy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+            )
+        else:
+            a = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+            b = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
         with pytest.raises(ValueError):
             cupy.gcd(a, b)
 
@@ -24,8 +36,16 @@ class TestRational(unittest.TestCase):
 
     @testing.for_dtypes(["?", "e", "f", "d", "F", "D"])
     def test_lcm_dtype_check(self, dtype):
-        a = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
-        b = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+        if is_cuda_device():
+            a = cupy.asarray(
+                numpy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+            )
+            b = cupy.asarray(
+                numpy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+            )
+        else:
+            a = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
+            b = cupy.random.randint(-10, 10, size=(10, 10)).astype(dtype)
         with pytest.raises(ValueError):
             cupy.lcm(a, b)
 
