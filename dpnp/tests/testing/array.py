@@ -30,6 +30,7 @@ from dpnp.dpnp_utils import convert_item
 
 assert_allclose_orig = numpy.testing.assert_allclose
 assert_almost_equal_orig = numpy.testing.assert_almost_equal
+assert_array_almost_equal_orig = numpy.testing.assert_array_almost_equal
 assert_array_equal_orig = numpy.testing.assert_array_equal
 assert_equal_orig = numpy.testing.assert_equal
 
@@ -47,6 +48,10 @@ def assert_allclose(result, expected, *args, **kwargs):
 
 def assert_almost_equal(result, expected, *args, **kwargs):
     _assert(assert_almost_equal_orig, result, expected, *args, **kwargs)
+
+
+def assert_array_almost_equal(result, expected, *args, **kwargs):
+    _assert(assert_array_almost_equal_orig, result, expected, *args, **kwargs)
 
 
 def assert_array_equal(result, expected, *args, **kwargs):
