@@ -161,6 +161,20 @@ def get_all_dtypes(
     return dtypes
 
 
+def get_array(xp, a):
+    """
+    Cast input array `a` to a type supported by `xp` initerface.
+
+    Implicit conversion of either DPNP or DPCTL array to a NumPy array is not
+    allowed. Input array has to be explicitly casted with `asnumpy` function.
+
+    """
+
+    if xp is numpy and dpnp.is_supported_array_type(a):
+        return dpnp.asnumpy(a)
+    return a
+
+
 def generate_random_numpy_array(
     shape,
     dtype=None,
