@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.histogram2d &mdash; Data Parallel Extension for NumPy 0.17.0dev4+12.g03b3e9896a1 documentation</title>
+  <title>dpnp.histogram2d &mdash; Data Parallel Extension for NumPy 0.17.0dev4+14.gb6d8ebcf8b3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6ad8a8ef"></script>
+      <script src="../../_static/documentation_options.js?v=b4c183d1"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -131,8 +131,7 @@
 histogrammed.</p></li>
 <li><p><strong>y</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>y</cite> coordinates of the points to be
 histogrammed.</p></li>
-<li><p><strong>bins</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>,         </em><em>optional</em>) -- <p>Histogram bins.</p>
-<p>The bins specification:</p>
+<li><p><strong>bins</strong> (<em>{int</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><em>array</em><em>]</em><em>,         </em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>array</em><em>]</em><em>, </em><em>[</em><em>array</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em><em>}</em><em>, </em><em>optional</em>) -- <p>The bins specification:</p>
 <ul>
 <li><p>If int, the number of bins for the two dimensions (nx=ny=bins).</p></li>
 <li><p>If array, the bin edges for the two dimensions
@@ -144,18 +143,27 @@ histogrammed.</p></li>
 <li><p>A combination [int, array] or [array, int], where int
 is the number of bins and array is the bin edges.</p></li>
 </ul>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
 </p></li>
-<li><p><strong>range</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>2</em><em>,</em><em>2</em><em>)</em><em>, </em><em>optional</em>) -- The leftmost and rightmost edges of the bins along each dimension
+<li><p><strong>range</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>2</em><em>,</em><em>2</em><em>)</em><em>, </em><em>optional</em>) -- <p>The leftmost and rightmost edges of the bins along each dimension
 (if not specified explicitly in the <cite>bins</cite> parameters):
 <code class="docutils literal notranslate"><span class="pre">[[xmin,</span> <span class="pre">xmax],</span> <span class="pre">[ymin,</span> <span class="pre">ymax]]</span></code>. All values outside of this range
-will be considered outliers and not tallied in the histogram.</p></li>
-<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the default, returns the number of samples in each bin.
+will be considered outliers and not tallied in the histogram.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</p></li>
+<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default, returns the number of
+samples in each bin.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the probability <em>density</em> function at the bin,
-<code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_area</span></code>.</p></li>
-<li><p><strong>weights</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
-Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. If <cite>density</cite> is
-<code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram are equal to the sum of
-the weights belonging to the samples falling into each bin.</p></li>
+<code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_volume</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</p></li>
+<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- <p>An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
+Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+If <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram
+are equal to the sum of the weights belonging to the samples
+falling into each bin.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -163,8 +171,8 @@ the weights belonging to the samples falling into each bin.</p></li>
 <li><p><strong>H</strong> (<em>dpnp.ndarray of shape (nx, ny)</em>) -- The bi-dimensional histogram of samples <cite>x</cite> and <cite>y</cite>. Values in <cite>x</cite>
 are histogrammed along the first dimension and values in <cite>y</cite> are
 histogrammed along the second dimension.</p></li>
-<li><p><strong>xedges</strong> (<em>dpnp.ndarray, shape(nx+1,)</em>) -- The bin edges along the first dimension.</p></li>
-<li><p><strong>yedges</strong> (<em>dpnp.ndarray, shape(ny+1,)</em>) -- The bin edges along the second dimension.</p></li>
+<li><p><strong>xedges</strong> (<em>dpnp.ndarray of shape (nx+1,)</em>) -- The bin edges along the first dimension.</p></li>
+<li><p><strong>yedges</strong> (<em>dpnp.ndarray of shape (ny+1,)</em>) -- The bin edges along the second dimension.</p></li>
 </ul>
 </p>
 </dd>

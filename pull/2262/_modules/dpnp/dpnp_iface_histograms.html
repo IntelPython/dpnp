@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev4+12.g03b3e9896a1 documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev4+14.gb6d8ebcf8b3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6ad8a8ef"></script>
+      <script src="../../_static/documentation_options.js?v=b4c183d1"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -855,7 +855,6 @@
 <div class="viewcode-block" id="histogram2d">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogram2d.html#dpnp.histogram2d">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="c1"># pylint: disable=line-too-long</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the bi-dimensional histogram of two data samples.</span>
 
@@ -867,9 +866,8 @@
 <span class="sd">    y : {dpnp.ndarray, usm_ndarray} of shape (N,)</span>
 <span class="sd">        An array containing the `y` coordinates of the points to be</span>
 <span class="sd">        histogrammed.</span>
-<span class="sd">    bins : {int, list of dpnp.ndarray or usm_ndarray, sequence of scalars}, \</span>
-<span class="sd">        optional</span>
-<span class="sd">        Histogram bins.</span>
+<span class="sd">    bins : {int, dpnp.ndarray, usm_ndarray, [int, int], [array, array], \</span>
+<span class="sd">        [int, array], [array, int]}, optional</span>
 
 <span class="sd">        The bins specification:</span>
 
@@ -883,30 +881,38 @@
 <span class="sd">        * A combination [int, array] or [array, int], where int</span>
 <span class="sd">          is the number of bins and array is the bin edges.</span>
 
-<span class="sd">    range : {dpnp.ndarray, usm_ndarray} of shape (2,2), optional</span>
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    range : {None, dpnp.ndarray, usm_ndarray} of shape (2,2), optional</span>
 <span class="sd">        The leftmost and rightmost edges of the bins along each dimension</span>
 <span class="sd">        (if not specified explicitly in the `bins` parameters):</span>
 <span class="sd">        ``[[xmin, xmax], [ymin, ymax]]``. All values outside of this range</span>
 <span class="sd">        will be considered outliers and not tallied in the histogram.</span>
-<span class="sd">    density : {None, bool}, optional</span>
-<span class="sd">        If ``False``, the default, returns the number of samples in each bin.</span>
-<span class="sd">        If ``True``, returns the probability *density* function at the bin,</span>
-<span class="sd">        ``bin_count / sample_count / bin_area``.</span>
-<span class="sd">    weights : {dpnp.ndarray, usm_ndarray} of shape (N,), optional</span>
-<span class="sd">        An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.</span>
-<span class="sd">        Weights are normalized to ``1`` if `density` is ``True``. If `density` is</span>
-<span class="sd">        ``False``, the values of the returned histogram are equal to the sum of</span>
-<span class="sd">        the weights belonging to the samples falling into each bin.</span>
 
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    density : {None, bool}, optional</span>
+<span class="sd">        If ``False`` or ``None``, the default, returns the number of</span>
+<span class="sd">        samples in each bin.</span>
+<span class="sd">        If ``True``, returns the probability *density* function at the bin,</span>
+<span class="sd">        ``bin_count / sample_count / bin_volume``.</span>
+
+<span class="sd">        Default: ``None``</span>
+<span class="sd">    weights : {None, dpnp.ndarray, usm_ndarray} of shape (N,), optional</span>
+<span class="sd">        An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.</span>
+<span class="sd">        Weights are normalized to ``1`` if `density` is ``True``.</span>
+<span class="sd">        If `density` is ``False``, the values of the returned histogram</span>
+<span class="sd">        are equal to the sum of the weights belonging to the samples</span>
+<span class="sd">        falling into each bin.</span>
+
+<span class="sd">        Default: ``None``</span>
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    H : dpnp.ndarray of shape (nx, ny)</span>
 <span class="sd">        The bi-dimensional histogram of samples `x` and `y`. Values in `x`</span>
 <span class="sd">        are histogrammed along the first dimension and values in `y` are</span>
 <span class="sd">        histogrammed along the second dimension.</span>
-<span class="sd">    xedges : dpnp.ndarray, shape(nx+1,)</span>
+<span class="sd">    xedges : dpnp.ndarray of shape (nx+1,)</span>
 <span class="sd">        The bin edges along the first dimension.</span>
-<span class="sd">    yedges : dpnp.ndarray, shape(ny+1,)</span>
+<span class="sd">    yedges : dpnp.ndarray of shape (ny+1,)</span>
 <span class="sd">        The bin edges along the second dimension.</span>
 
 <span class="sd">    See Also</span>
@@ -942,7 +948,6 @@
 <span class="sd">    &gt;&gt;&gt; edges_y</span>
 <span class="sd">    [-1.1889046  -0.07263839  1.0436279   2.159894  ]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># pylint: enable=line-too-long</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1168,7 +1173,7 @@
 
 <div class="viewcode-block" id="histogramdd">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogramdd.html#dpnp.histogramdd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">histogramdd</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">histogramdd</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the multidimensional histogram of some data.</span>
 
@@ -1196,6 +1201,13 @@
 <span class="sd">        None is equivalent to passing a tuple of D None values.</span>
 
 <span class="sd">        Default: ``None``</span>
+<span class="sd">    density : {None, bool}, optional</span>
+<span class="sd">        If ``False`` or ``None``, the default, returns the number of</span>
+<span class="sd">        samples in each bin.</span>
+<span class="sd">        If ``True``, returns the probability *density* function at the bin,</span>
+<span class="sd">        ``bin_count / sample_count / bin_volume``.</span>
+
+<span class="sd">        Default: ``None``</span>
 <span class="sd">    weights : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        An (N,)-shaped array of values `w_i` weighing each sample</span>
 <span class="sd">        `(x_i, y_i, z_i, ...)`.</span>
@@ -1204,12 +1216,6 @@
 <span class="sd">        weights belonging to the samples falling into each bin.</span>
 
 <span class="sd">        Default: ``None``</span>
-<span class="sd">    density : bool, optional</span>
-<span class="sd">        If ``False``, the default, returns the number of samples in each bin.</span>
-<span class="sd">        If ``True``, returns the probability *density* function at the bin,</span>
-<span class="sd">        ``bin_count / sample_count / bin_volume``.</span>
-
-<span class="sd">        Default: ``False``</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
