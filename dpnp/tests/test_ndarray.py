@@ -176,6 +176,18 @@ class TestItem:
             ia.item()
 
 
+class TestUsmNdarrayProtocol:
+    def test_basic(self):
+        a = dpnp.arange(256, dtype=dpnp.int64)
+        usm_a = dpt.asarray(a)
+
+        assert a.sycl_queue == usm_a.sycl_queue
+        assert a.usm_type == usm_a.usm_type
+        assert a.dtype == usm_a.dtype
+        assert usm_a.usm_data.reference_obj is None
+        assert (a == usm_a).all()
+
+
 def test_print_dpnp_int():
     result = repr(dpnp.array([1, 0, 2, -3, -1, 2, 21, -9], dtype="i4"))
     expected = "array([ 1,  0,  2, -3, -1,  2, 21, -9], dtype=int32)"
