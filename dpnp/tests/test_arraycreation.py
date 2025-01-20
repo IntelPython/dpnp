@@ -968,6 +968,41 @@ def test_meshgrid_raise_error():
         dpnp.meshgrid(b, indexing="ab")
 
 
+class TestMgrid:
+    def check_results(self, result, expected):
+        if isinstance(result, (list, tuple)):
+            assert len(result) == len(expected)
+            for dp_arr, np_arr in zip(result, expected):
+                assert_allclose(dp_arr, np_arr)
+        else:
+            assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "slice",
+        [
+            slice(0, 5, 0.5),  # float step
+            slice(0, 5, 5j),  # complex step
+        ],
+    )
+    def test_single_slice(self, slice):
+        dpnp_result = dpnp.mgrid[slice]
+        numpy_result = numpy.mgrid[slice]
+        self.check_results(dpnp_result, numpy_result)
+
+    @pytest.mark.parametrize(
+        "slices",
+        [
+            (slice(None, 5, 1), slice(None, 10, 2)),  # no start
+            (slice(0, 5), slice(0, 10)),  # no step
+            (slice(0, 5.5, 1), slice(0, 10, 3j)),  # float stop and complex step
+        ],
+    )
+    def test_md_slice(self, slices):
+        dpnp_result = dpnp.mgrid[slices]
+        numpy_result = numpy.mgrid[slices]
+        self.check_results(dpnp_result, numpy_result)
+
+
 def test_exception_tri():
     x = dpnp.ones((2, 2))
     with pytest.raises(TypeError):
