@@ -214,6 +214,20 @@ def test_arange(start, stop, step, dtype):
         assert_array_equal(exp_array, res_array)
 
 
+@pytest.mark.parametrize(
+    "arr",
+    [
+        numpy.array([1]),
+        dpnp.array([1]),
+        [1],
+    ],
+    ids=["numpy", "dpnp", "list"],
+)
+def test_create_from_usm_ndarray_error(arr):
+    with pytest.raises(TypeError):
+        dpnp.dpnp_array.dpnp_array._create_from_usm_ndarray(arr)
+
+
 @pytest.mark.parametrize("func", ["diag", "diagflat"])
 @pytest.mark.parametrize("k", [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6])
 @pytest.mark.parametrize(
