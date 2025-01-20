@@ -57,9 +57,6 @@ array_api_tests/test_sorting_functions.py::test_sort
 array_api_tests/test_signatures.py::test_func_signature[std]
 array_api_tests/test_signatures.py::test_func_signature[var]
 
-# missing 'stream' keyword argument
-array_api_tests/test_signatures.py::test_array_method_signature[to_device]
-
 # wrong shape is returned
 array_api_tests/test_linalg.py::test_vecdot
 array_api_tests/test_linalg.py::test_linalg_vecdot

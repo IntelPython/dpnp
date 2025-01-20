@@ -150,6 +150,27 @@ class TestArrayNamespace:
         )
 
 
+class TestArrayUfunc:
+    def test_add(self):
+        a = numpy.ones(10)
+        b = dpnp.ones(10)
+        msg = "An array must be any of supported type"
+
+        with assert_raises_regex(TypeError, msg):
+            a + b
+
+        with assert_raises_regex(TypeError, msg):
+            b + a
+
+    def test_add_inplace(self):
+        a = numpy.ones(10)
+        b = dpnp.ones(10)
+        with assert_raises_regex(
+            TypeError, "operand 'dpnp_array' does not support ufuncs"
+        ):
+            a += b
+
+
 class TestItem:
     @pytest.mark.parametrize("args", [2, 7, (1, 2), (2, 0)])
     def test_basic(self, args):
@@ -174,6 +195,18 @@ class TestItem:
         ia = dpnp.arange(12).reshape(3, 4)
         with pytest.raises(ValueError):
             ia.item()
+
+
+class TestUsmNdarrayProtocol:
+    def test_basic(self):
+        a = dpnp.arange(256, dtype=dpnp.int64)
+        usm_a = dpt.asarray(a)
+
+        assert a.sycl_queue == usm_a.sycl_queue
+        assert a.usm_type == usm_a.usm_type
+        assert a.dtype == usm_a.dtype
+        assert usm_a.usm_data.reference_obj is None
+        assert (a == usm_a).all()
 
 
 def test_print_dpnp_int():
