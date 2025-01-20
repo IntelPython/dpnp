@@ -756,7 +756,6 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
 
 
 def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
-    # pylint: disable=line-too-long
     """
     Compute the bi-dimensional histogram of two data samples.
 
@@ -768,9 +767,8 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
     y : {dpnp.ndarray, usm_ndarray} of shape (N,)
         An array containing the `y` coordinates of the points to be
         histogrammed.
-    bins : {int, list of dpnp.ndarray or usm_ndarray, sequence of scalars}, \
-        optional
-        Histogram bins.
+    bins : {int, dpnp.ndarray, usm_ndarray, [int, int], [array, array], \
+        [int, array], [array, int]}, optional
 
         The bins specification:
 
@@ -784,30 +782,38 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
         * A combination [int, array] or [array, int], where int
           is the number of bins and array is the bin edges.
 
-    range : {dpnp.ndarray, usm_ndarray} of shape (2,2), optional
+        Default: ``None``
+    range : {None, dpnp.ndarray, usm_ndarray} of shape (2,2), optional
         The leftmost and rightmost edges of the bins along each dimension
         (if not specified explicitly in the `bins` parameters):
         ``[[xmin, xmax], [ymin, ymax]]``. All values outside of this range
         will be considered outliers and not tallied in the histogram.
-    density : {None, bool}, optional
-        If ``False``, the default, returns the number of samples in each bin.
-        If ``True``, returns the probability *density* function at the bin,
-        ``bin_count / sample_count / bin_area``.
-    weights : {dpnp.ndarray, usm_ndarray} of shape (N,), optional
-        An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.
-        Weights are normalized to ``1`` if `density` is ``True``. If `density` is
-        ``False``, the values of the returned histogram are equal to the sum of
-        the weights belonging to the samples falling into each bin.
 
+        Default: ``None``
+    density : {None, bool}, optional
+        If ``False`` or ``None``, the default, returns the number of
+        samples in each bin.
+        If ``True``, returns the probability *density* function at the bin,
+        ``bin_count / sample_count / bin_volume``.
+
+        Default: ``None``
+    weights : {None, dpnp.ndarray, usm_ndarray} of shape (N,), optional
+        An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.
+        Weights are normalized to ``1`` if `density` is ``True``.
+        If `density` is ``False``, the values of the returned histogram
+        are equal to the sum of the weights belonging to the samples
+        falling into each bin.
+
+        Default: ``None``
     Returns
     -------
     H : dpnp.ndarray of shape (nx, ny)
         The bi-dimensional histogram of samples `x` and `y`. Values in `x`
         are histogrammed along the first dimension and values in `y` are
         histogrammed along the second dimension.
-    xedges : dpnp.ndarray, shape(nx+1,)
+    xedges : dpnp.ndarray of shape (nx+1,)
         The bin edges along the first dimension.
-    yedges : dpnp.ndarray, shape(ny+1,)
+    yedges : dpnp.ndarray of shape (ny+1,)
         The bin edges along the second dimension.
 
     See Also
@@ -843,7 +849,6 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
     >>> edges_y
     [-1.1889046  -0.07263839  1.0436279   2.159894  ]
     """
-    # pylint: enable=line-too-long
 
     dpnp.check_supported_arrays_type(x, y)
     if weights is not None:
@@ -1066,7 +1071,7 @@ def _histdd_extract_arrays(sample, weights, bins):
     return all_arrays
 
 
-def histogramdd(sample, bins=10, range=None, density=False, weights=None):
+def histogramdd(sample, bins=10, range=None, density=None, weights=None):
     """
     Compute the multidimensional histogram of some data.
 
@@ -1094,6 +1099,13 @@ def histogramdd(sample, bins=10, range=None, density=False, weights=None):
         None is equivalent to passing a tuple of D None values.
 
         Default: ``None``
+    density : {None, bool}, optional
+        If ``False`` or ``None``, the default, returns the number of
+        samples in each bin.
+        If ``True``, returns the probability *density* function at the bin,
+        ``bin_count / sample_count / bin_volume``.
+
+        Default: ``None``
     weights : {dpnp.ndarray, usm_ndarray}, optional
         An (N,)-shaped array of values `w_i` weighing each sample
         `(x_i, y_i, z_i, ...)`.
@@ -1102,12 +1114,6 @@ def histogramdd(sample, bins=10, range=None, density=False, weights=None):
         weights belonging to the samples falling into each bin.
 
         Default: ``None``
-    density : bool, optional
-        If ``False``, the default, returns the number of samples in each bin.
-        If ``True``, returns the probability *density* function at the bin,
-        ``bin_count / sample_count / bin_volume``.
-
-        Default: ``False``
 
     Returns
     -------
