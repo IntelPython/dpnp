@@ -763,12 +763,13 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray} of shape (N,)
-        An array containing the x coordinates of the points to be
+        An array containing the `x` coordinates of the points to be
         histogrammed.
     y : {dpnp.ndarray, usm_ndarray} of shape (N,)
-        An array containing the y coordinates of the points to be
+        An array containing the `y` coordinates of the points to be
         histogrammed.
-    bins : {int, list of dpnp.ndarray or usm_ndarray, sequence of scalars}, optional
+    bins : {int, list of dpnp.ndarray or usm_ndarray, sequence of scalars}, \
+        optional
         Histogram bins.
 
         The bins specification:
@@ -788,19 +789,19 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
         (if not specified explicitly in the `bins` parameters):
         ``[[xmin, xmax], [ymin, ymax]]``. All values outside of this range
         will be considered outliers and not tallied in the histogram.
-    density : bool, optional
+    density : {None, bool}, optional
         If ``False``, the default, returns the number of samples in each bin.
         If ``True``, returns the probability *density* function at the bin,
         ``bin_count / sample_count / bin_area``.
-    weights : {dpnp.ndarray, usm_ndarray} of shape(N,), optional
+    weights : {dpnp.ndarray, usm_ndarray} of shape (N,), optional
         An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.
-        Weights are normalized to 1 if `density` is True. If `density` is
-        False, the values of the returned histogram are equal to the sum of
+        Weights are normalized to ``1`` if `density` is ``True``. If `density` is
+        ``False``, the values of the returned histogram are equal to the sum of
         the weights belonging to the samples falling into each bin.
 
     Returns
     -------
-    H : ndarray, shape(nx, ny)
+    H : dpnp.ndarray of shape (nx, ny)
         The bi-dimensional histogram of samples `x` and `y`. Values in `x`
         are histogrammed along the first dimension and values in `y` are
         histogrammed along the second dimension.
@@ -816,15 +817,15 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
 
     Notes
     -----
-    When `density` is True, then the returned histogram is the sample
+    When `density` is ``True``, then the returned histogram is the sample
     density, defined such that the sum over bins of the product
     ``bin_value * bin_area`` is 1.
 
     Please note that the histogram does not follow the Cartesian convention
     where `x` values are on the abscissa and `y` values on the ordinate
-    axis.  Rather, `x` is histogrammed along the first dimension of the
+    axis. Rather, `x` is histogrammed along the first dimension of the
     array (vertical), and `y` along the second dimension of the array
-    (horizontal).  This ensures compatibility with `histogramdd`.
+    (horizontal). This ensures compatibility with `histogramdd`.
 
     Examples
     --------
