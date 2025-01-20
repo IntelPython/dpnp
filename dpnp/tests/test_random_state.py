@@ -15,7 +15,7 @@ import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.random import RandomState
 
-from .helper import is_cpu_device
+from .helper import get_array, is_cpu_device
 
 # aspects of default device:
 _def_device = dpctl.SyclQueue().sycl_device
@@ -224,7 +224,7 @@ class TestNormal:
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
         actual = data.asnumpy()
         expected = numpy.random.RandomState(seed).normal(
-            loc=loc, scale=scale, size=size
+            loc=get_array(numpy, loc), scale=get_array(numpy, scale), size=size
         )
 
         dtype = get_default_floating()
@@ -557,7 +557,7 @@ class TestRandInt:
             RandomState(seed).randint(low=low, high=high, size=size).asnumpy()
         )
         expected = numpy.random.RandomState(seed).randint(
-            low=low, high=high, size=size
+            low=get_array(numpy, low), high=get_array(numpy, high), size=size
         )
         assert_equal(actual, expected)
 
@@ -1139,7 +1139,7 @@ class TestUniform:
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
         actual = data.asnumpy()
         expected = numpy.random.RandomState(seed).uniform(
-            low=low, high=high, size=size
+            low=get_array(numpy, low), high=get_array(numpy, high), size=size
         )
 
         dtype = get_default_floating()
