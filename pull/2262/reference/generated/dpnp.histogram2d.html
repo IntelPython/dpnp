@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.histogram2d &mdash; Data Parallel Extension for NumPy 0.17.0dev4+6.gb83cb492ce3 documentation</title>
+  <title>dpnp.histogram2d &mdash; Data Parallel Extension for NumPy 0.17.0dev4+12.g03b3e9896a1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e69c7dc4"></script>
+      <script src="../../_static/documentation_options.js?v=6ad8a8ef"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -127,11 +127,11 @@
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the x coordinates of the points to be
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>x</cite> coordinates of the points to be
 histogrammed.</p></li>
-<li><p><strong>y</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the y coordinates of the points to be
+<li><p><strong>y</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em>) -- An array containing the <cite>y</cite> coordinates of the points to be
 histogrammed.</p></li>
-<li><p><strong>bins</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>, </em><em>optional</em>) -- <p>Histogram bins.</p>
+<li><p><strong>bins</strong> (<em>{int</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>,         </em><em>optional</em>) -- <p>Histogram bins.</p>
 <p>The bins specification:</p>
 <ul>
 <li><p>If int, the number of bins for the two dimensions (nx=ny=bins).</p></li>
@@ -149,18 +149,18 @@ is the number of bins and array is the bin edges.</p></li>
 (if not specified explicitly in the <cite>bins</cite> parameters):
 <code class="docutils literal notranslate"><span class="pre">[[xmin,</span> <span class="pre">xmax],</span> <span class="pre">[ymin,</span> <span class="pre">ymax]]</span></code>. All values outside of this range
 will be considered outliers and not tallied in the histogram.</p></li>
-<li><p><strong>density</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the default, returns the number of samples in each bin.
+<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the default, returns the number of samples in each bin.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the probability <em>density</em> function at the bin,
 <code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_area</span></code>.</p></li>
-<li><p><strong>weights</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em>(</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
-Weights are normalized to 1 if <cite>density</cite> is True. If <cite>density</cite> is
-False, the values of the returned histogram are equal to the sum of
+<li><p><strong>weights</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
+Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>. If <cite>density</cite> is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram are equal to the sum of
 the weights belonging to the samples falling into each bin.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><ul class="simple">
-<li><p><strong>H</strong> (<em>ndarray, shape(nx, ny)</em>) -- The bi-dimensional histogram of samples <cite>x</cite> and <cite>y</cite>. Values in <cite>x</cite>
+<li><p><strong>H</strong> (<em>dpnp.ndarray of shape (nx, ny)</em>) -- The bi-dimensional histogram of samples <cite>x</cite> and <cite>y</cite>. Values in <cite>x</cite>
 are histogrammed along the first dimension and values in <cite>y</cite> are
 histogrammed along the second dimension.</p></li>
 <li><p><strong>xedges</strong> (<em>dpnp.ndarray, shape(nx+1,)</em>) -- The bin edges along the first dimension.</p></li>
@@ -179,14 +179,14 @@ histogrammed along the second dimension.</p></li>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>When <cite>density</cite> is True, then the returned histogram is the sample
+<p>When <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the returned histogram is the sample
 density, defined such that the sum over bins of the product
 <code class="docutils literal notranslate"><span class="pre">bin_value</span> <span class="pre">*</span> <span class="pre">bin_area</span></code> is 1.</p>
 <p>Please note that the histogram does not follow the Cartesian convention
 where <cite>x</cite> values are on the abscissa and <cite>y</cite> values on the ordinate
-axis.  Rather, <cite>x</cite> is histogrammed along the first dimension of the
+axis. Rather, <cite>x</cite> is histogrammed along the first dimension of the
 array (vertical), and <cite>y</cite> along the second dimension of the array
-(horizontal).  This ensures compatibility with <cite>histogramdd</cite>.</p>
+(horizontal). This ensures compatibility with <cite>histogramdd</cite>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>

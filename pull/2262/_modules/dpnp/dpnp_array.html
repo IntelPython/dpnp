@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev4+6.gb83cb492ce3 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev4+12.g03b3e9896a1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e69c7dc4"></script>
+      <script src="../../_static/documentation_options.js?v=6ad8a8ef"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -242,16 +242,6 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;matrix transpose with ndim &lt; 2 is undefined&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">mT</span><span class="p">)</span>
-
-<div class="viewcode-block" id="dpnp_array.to_device">
-<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.to_device.html#dpnp.dpnp_array.dpnp_array.to_device">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_device</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfer array to target device.&quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
-            <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">target_device</span><span class="p">)</span>
-        <span class="p">)</span></div>
-
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -704,6 +694,25 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__truediv__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self/value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__usm_ndarray__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property to support `__usm_ndarray__` protocol.</span>
+
+<span class="sd">        It assumes to return :class:`dpctl.tensor.usm_ndarray` instance</span>
+<span class="sd">        corresponding to the content of the object.</span>
+
+<span class="sd">        This property is intended to speed-up conversion from</span>
+<span class="sd">        :class:`dpnp.ndarray` to :class:`dpctl.tensor.usm_ndarray` passed</span>
+<span class="sd">        into  `dpctl.tensor.asarray` function. The input object that implements</span>
+<span class="sd">        `__usm_ndarray__` protocol is recognized as owner of USM allocation</span>
+<span class="sd">        that is managed by a smart pointer, and asynchronous deallocation</span>
+<span class="sd">        will not involve GIL.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self^value``.&quot;&quot;&quot;</span>
@@ -1898,6 +1907,51 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dpnp_array.to_device">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.to_device.html#dpnp.dpnp_array.dpnp_array.to_device">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transfers this array to specified target device.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : {string, SyclDevice, SyclQueue}</span>
+<span class="sd">            Array API concept of target device. It can be an OneAPI filter</span>
+<span class="sd">            selector string, an instance of :class:`dpctl.SyclDevice`</span>
+<span class="sd">            corresponding to a non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object</span>
+<span class="sd">            returned by :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        stream : {SyclQueue, None}, optional</span>
+<span class="sd">            Execution queue to synchronize with. If ``None``, synchronization</span>
+<span class="sd">            is not performed.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            A view if data copy is not required, and a copy otherwise.</span>
+<span class="sd">            If copying is required, it is done by copying from the original</span>
+<span class="sd">            allocation device to the host, followed by copying from host</span>
+<span class="sd">            to the target device.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np, dpctl</span>
+<span class="sd">        &gt;&gt;&gt; x = np.full(100, 2, dtype=np.int64)</span>
+<span class="sd">        &gt;&gt;&gt; q_prof = dpctl.SyclQueue(x.sycl_device, property=&quot;enable_profiling&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; # return a view with profile-enabled queue</span>
+<span class="sd">        &gt;&gt;&gt; y = x.to_device(q_prof)</span>
+<span class="sd">        &gt;&gt;&gt; timer = dpctl.SyclTimer()</span>
+<span class="sd">        &gt;&gt;&gt; with timer(q_prof):</span>
+<span class="sd">        ...     z = y * y</span>
+<span class="sd">        &gt;&gt;&gt; print(timer.dt)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
     <span class="c1"># &#39;tobytes&#39;,</span>
