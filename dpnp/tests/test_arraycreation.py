@@ -382,6 +382,12 @@ def test_identity(n, dtype):
     assert_array_equal(func(numpy), func(dpnp))
 
 
+def test_identity_error():
+    # negative dimensions
+    with pytest.raises(ValueError):
+        _ = dpnp.identity(-5)
+
+
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
 def test_loadtxt(dtype):
     func = lambda xp: xp.loadtxt(fh, dtype=dtype)
