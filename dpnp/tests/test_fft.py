@@ -670,6 +670,12 @@ class TestHfft:
         expected = numpy.fft.ihfft(a_np, n=n, norm=norm)
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
+    def test_ihfft_error(self):
+        a = dpnp.ones(11)
+        # incorrect norm
+        with pytest.raises(ValueError):
+            _ = dpnp.fft.ihfft(a, norm="backwards")
+
 
 class TestIrfft:
     def setup_method(self):
