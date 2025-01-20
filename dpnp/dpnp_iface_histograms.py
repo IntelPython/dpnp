@@ -782,7 +782,7 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
         * A combination [int, array] or [array, int], where int
           is the number of bins and array is the bin edges.
 
-        Default: ``None``
+        Default: ``10``
     range : {None, dpnp.ndarray, usm_ndarray} of shape (2,2), optional
         The leftmost and rightmost edges of the bins along each dimension
         (if not specified explicitly in the `bins` parameters):
