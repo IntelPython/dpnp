@@ -163,7 +163,7 @@ def get_all_dtypes(
 
 def get_array(xp, a):
     """
-    Cast input array `a` to a type supported by `xp` initerface.
+    Cast input array `a` to a type supported by `xp` interface.
 
     Implicit conversion of either DPNP or DPCTL array to a NumPy array is not
     allowed. Input array has to be explicitly casted with `asnumpy` function.
