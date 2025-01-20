@@ -1,0 +1,10 @@
+:orphan:
+
+dpnp.dtype.alignment
+====================
+
+.. currentmodule:: dpnp
+
+attribute
+
+.. autoattribute:: dtype.alignment
