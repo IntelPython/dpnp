@@ -56,6 +56,33 @@ class TestArray:
         assert_raises(TypeError, dpnp.array, x, ndmin=3.0)
 
 
+class TestAttributes:
+    def setup_method(self):
+        self.one = dpnp.arange(10)
+        self.two = dpnp.arange(20).reshape(4, 5)
+        self.three = dpnp.arange(60).reshape(2, 5, 6)
+
+    def test_attributes(self):
+        assert_equal(self.one.shape, (10,))
+        assert_equal(self.two.shape, (4, 5))
+        assert_equal(self.three.shape, (2, 5, 6))
+        self.three.shape = (10, 3, 2)
+        assert_equal(self.three.shape, (10, 3, 2))
+        self.three.shape = (2, 5, 6)
+        assert_equal(self.one.strides, (self.one.itemsize / self.one.itemsize,))
+        num = self.two.itemsize / self.two.itemsize
+        assert_equal(self.two.strides, (5 * num, num))
+        num = self.three.itemsize / self.three.itemsize
+        assert_equal(self.three.strides, (30 * num, 6 * num, num))
+        assert_equal(self.one.ndim, 1)
+        assert_equal(self.two.ndim, 2)
+        assert_equal(self.three.ndim, 3)
+        num = self.two.itemsize
+        assert_equal(self.two.size, 20)
+        assert_equal(self.two.nbytes, 20 * num)
+        assert_equal(self.two.itemsize, self.two.dtype.itemsize)
+
+
 class TestTrace:
     @pytest.mark.parametrize("a_sh", [(3, 4), (2, 2, 2)])
     @pytest.mark.parametrize(
