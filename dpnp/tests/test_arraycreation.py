@@ -1028,8 +1028,10 @@ class TestMgrid:
         "slice",
         [
             slice(0, 5, 0.5),  # float step
+            slice(0, 5, 1j),  # complex step
             slice(0, 5, 5j),  # complex step
             slice(None, 5, 1),  # no start
+            slice(0, 5, None),  # no step
         ],
     )
     def test_single_slice(self, slice):
@@ -1043,6 +1045,10 @@ class TestMgrid:
             (slice(None, 5, 1), slice(None, 10, 2)),  # no start
             (slice(0, 5), slice(0, 10)),  # no step
             (slice(0, 5.5, 1), slice(0, 10, 3j)),  # float stop and complex step
+            (
+                slice(0.0, 5, 1),
+                slice(0, 10, 1j),
+            ),  # float start and complex step
         ],
     )
     def test_md_slice(self, slices):
