@@ -17,6 +17,7 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_array,
 )
 from .third_party.cupy import testing
 
@@ -773,7 +774,7 @@ def test_space_numpy_dtype(func, start_dtype, stop_dtype):
     ],
 )
 def test_linspace_arrays(start, stop):
-    func = lambda xp: xp.linspace(start, stop, 10)
+    func = lambda xp: xp.linspace(get_array(xp, start), get_array(xp, stop), 10)
     assert func(numpy).shape == func(dpnp).shape
 
 

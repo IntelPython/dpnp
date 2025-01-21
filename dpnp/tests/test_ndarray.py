@@ -196,6 +196,27 @@ class TestArrayNamespace:
         )
 
 
+class TestArrayUfunc:
+    def test_add(self):
+        a = numpy.ones(10)
+        b = dpnp.ones(10)
+        msg = "An array must be any of supported type"
+
+        with assert_raises_regex(TypeError, msg):
+            a + b
+
+        with assert_raises_regex(TypeError, msg):
+            b + a
+
+    def test_add_inplace(self):
+        a = numpy.ones(10)
+        b = dpnp.ones(10)
+        with assert_raises_regex(
+            TypeError, "operand 'dpnp_array' does not support ufuncs"
+        ):
+            a += b
+
+
 class TestItem:
     @pytest.mark.parametrize("args", [2, 7, (1, 2), (2, 0)])
     def test_basic(self, args):

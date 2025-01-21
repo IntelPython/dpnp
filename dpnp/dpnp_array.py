@@ -192,7 +192,9 @@ class dpnp_array:
     # '__array_prepare__',
     # '__array_priority__',
     # '__array_struct__',
-    # '__array_ufunc__',
+
+    __array_ufunc__ = None
+
     # '__array_wrap__',
 
     def __array_namespace__(self, /, *, api_version=None):
