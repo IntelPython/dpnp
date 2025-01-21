@@ -691,7 +691,6 @@ class TestPythonInterface(unittest.TestCase):
         return format(x, ".2f")
 
 
-@pytest.mark.skip("implicit conversation to numpy does not raise an exception")
 class TestNdarrayImplicitConversion(unittest.TestCase):
 
     def test_array(self):

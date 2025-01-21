@@ -89,7 +89,7 @@ class TestRandint2(unittest.TestCase):
     def test_goodness_of_fit(self):
         mx = 5
         trial = 100
-        vals = [random.randint(mx) for _ in range(trial)]
+        vals = [random.randint(mx).asnumpy() for _ in range(trial)]
         counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(trial) / mx] * mx)
         assert _hypothesis.chi_square_test(counts, expected)
@@ -97,7 +97,7 @@ class TestRandint2(unittest.TestCase):
     @_condition.repeat(3, 10)
     def test_goodness_of_fit_2(self):
         mx = 5
-        vals = random.randint(mx, size=(5, 20))
+        vals = random.randint(mx, size=(5, 20)).asnumpy()
         counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(vals.size) / mx] * mx)
         assert _hypothesis.chi_square_test(counts, expected)
@@ -191,7 +191,7 @@ class TestRandomIntegers2(unittest.TestCase):
     def test_goodness_of_fit(self):
         mx = 5
         trial = 100
-        vals = [random.randint(0, mx) for _ in range(trial)]
+        vals = [random.randint(0, mx).asnumpy() for _ in range(trial)]
         counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(trial) / mx] * mx)
         assert _hypothesis.chi_square_test(counts, expected)
@@ -199,7 +199,7 @@ class TestRandomIntegers2(unittest.TestCase):
     @_condition.repeat(3, 10)
     def test_goodness_of_fit_2(self):
         mx = 5
-        vals = random.randint(0, mx, (5, 20))
+        vals = random.randint(0, mx, (5, 20)).asnumpy()
         counts = numpy.histogram(vals, bins=numpy.arange(mx + 1))[0]
         expected = numpy.array([float(vals.size) / mx] * mx)
         assert _hypothesis.chi_square_test(counts, expected)

@@ -185,7 +185,12 @@ class dpnp_array:
         """Return ``self&value``."""
         return dpnp.bitwise_and(self, other)
 
-    # '__array__',
+    def __array__(self, dtype=None, /, *, copy=None):
+        raise TypeError(
+            "Implicit conversion to a NumPy array is not allowed. "
+            "Please use `.asnumpy()` to construct a NumPy array explicitly."
+        )
+
     # '__array_finalize__',
     # '__array_function__',
     # '__array_interface__',
