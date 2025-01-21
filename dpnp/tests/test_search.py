@@ -272,7 +272,7 @@ class TestWhere:
         assert_array_equal(np_res, dpnp_res)
 
         np_res = numpy.where(c, a.T, b.T)
-        dpnp_res = numpy.where(ic, ia.T, ib.T)
+        dpnp_res = dpnp.where(ic, ia.T, ib.T)
         assert_array_equal(np_res, dpnp_res)
 
     def test_dtype_mix(self):

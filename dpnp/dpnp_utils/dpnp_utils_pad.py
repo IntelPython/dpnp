@@ -74,7 +74,12 @@ def _as_pairs(x, ndim, as_index=False):
             x = round(x)
         return ((x, x),) * ndim
 
-    x = numpy.array(x)
+    # explicitly cast input "x" to NumPy array
+    if dpnp.is_supported_array_type(x):
+        x = dpnp.asnumpy(x)
+    else:
+        x = numpy.array(x)
+
     if as_index:
         x = numpy.asarray(numpy.round(x), dtype=numpy.intp)
 
