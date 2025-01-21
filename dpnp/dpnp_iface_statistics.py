@@ -38,6 +38,7 @@ it contains:
 """
 
 import dpctl.tensor as dpt
+import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
@@ -113,6 +114,42 @@ def _count_reduce_items(arr, axis, where=True):
             "where keyword argument is only supported with its default value."
         )
     return items
+
+
+def _divide_by_scalar(a, v):
+    """
+    Divide input array by a scalar.
+
+    The division is implemented through dedicated ``ti._divide_by_scalar``
+    function which has a better performance comparing to standard ``divide``
+    function, because there is no need to have internal call of ``asarray``
+    for the denominator `v` and so it avoids allocating extra device memory.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    v : scalar
+        The scalar denominator.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array containing the result of division.
+
+    """
+
+    usm_a = dpnp.get_usm_ndarray(a)
+    queue = usm_a.sycl_queue
+    _manager = dpu.SequentialOrderManager[queue]
+    dep_evs = _manager.submitted_events
+
+    # pylint: disable=protected-access
+    ht_ev, div_ev = ti._divide_by_scalar(
+        src=usm_a, scalar=v, dst=usm_a, sycl_queue=queue, depends=dep_evs
+    )
+    _manager.add_event_pair(ht_ev, div_ev)
+    return a
 
 
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -1072,10 +1109,19 @@ def ptp(
     )
 
 
+# pylint: disable=redefined-outer-name
 def std(
-    a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+    a,
+    axis=None,
+    dtype=None,
+    out=None,
+    ddof=0,
+    keepdims=False,
+    *,
+    where=True,
+    mean=None,
 ):
-    """
+    r"""
     Compute the standard deviation along the specified axis.
 
     For full documentation refer to :obj:`numpy.std`.
@@ -1091,34 +1137,41 @@ def std(
         is computed over the entire array.
         Default: ``None``.
     dtype : {None, dtype}, optional
-        Type to use in computing the standard deviation. By default,
-        if `a` has a floating-point data type, the returned array
-        will have the same data type as `a`.
-        If `a` has a boolean or integral data type, the returned array
-        will have the default floating point data type for the device
+        Type to use in computing the standard deviation. By default, if `a` has
+        a floating-point data type, the returned array will have the same data
+        type as `a`. If `a` has a boolean or integral data type, the returned
+        array will have the default floating point data type for the device
         where input array `a` is allocated.
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+        Default: ``None``.
     ddof : {int, float}, optional
-        Means Delta Degrees of Freedom.  The divisor used in calculations
-        is ``N - ddof``, where ``N`` corresponds to the total
-        number of elements over which the standard deviation is calculated.
-        Default: `0.0`.
+        Means Delta Degrees of Freedom. The divisor used in calculations is
+        ``N - ddof``, where ``N`` corresponds to the total number of elements
+        over which the standard deviation is calculated.
+        Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input array according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        as singleton dimensions, so that the returned array remains compatible
+        with the input array according to Array Broadcasting rules. Otherwise,
+        if ``False``, the reduced axes are not included in the returned array.
+        Default: ``False``.
+    mean : {dpnp.ndarray, usm_ndarray}, optional
+        Provide the mean to prevent its recalculation. The mean should have
+        a shape as if it was calculated with ``keepdims=True``.
+        The axis for the calculation of the mean should be the same as used in
+        the call to this `std` function.
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the standard deviations. If the standard
-        deviation was computed over the entire array, a zero-dimensional
-        array is returned.
+        An array containing the standard deviations. If the standard deviation
+        was computed over the entire array, a zero-dimensional array is
+        returned.
 
     Limitations
     -----------
@@ -1127,6 +1180,45 @@ def std(
 
     Notes
     -----
+    There are several common variants of the array standard deviation
+    calculation. Assuming the input `a` is a one-dimensional array and `mean`
+    is either provided as an argument or computed as ``a.mean()``, DPNP
+    computes the standard deviation of an array as::
+
+        N = len(a)
+        d2 = abs(a - mean)**2  # abs is for complex `a`
+        var = d2.sum() / (N - ddof)  # note use of `ddof`
+        std = var**0.5
+
+    Different values of the argument `ddof` are useful in different contexts.
+    The default ``ddof=0`` corresponds with the expression:
+
+    .. math::
+
+        \sqrt{\frac{\sum_i{|a_i - \bar{a}|^2 }}{N}}
+
+    which is sometimes called the "population standard deviation" in the field
+    of statistics because it applies the definition of standard deviation to `a`
+    as if `a` were a complete population of possible observations.
+
+    Many other libraries define the standard deviation of an array
+    differently, e.g.:
+
+    .. math::
+
+        \sqrt{\frac{\sum_i{|a_i - \bar{a}|^2 }}{N - 1}}
+
+    In statistics, the resulting quantity is sometimes called the "sample
+    standard deviation" because if `a` is a random sample from a larger
+    population, this calculation provides the square root of an unbiased
+    estimate of the variance of the population. The use of :math:`N-1` in the
+    denominator is often called "Bessel's correction" because it corrects for
+    bias (toward lower values) in the variance estimate introduced when the
+    sample mean of `a` is used in place of the true mean of the population.
+    The resulting estimate of the standard deviation is still biased, but less
+    than it would have been without the correction. For this quantity, use
+    ``ddof=1``.
+
     Note that, for complex numbers, the absolute value is taken before squaring,
     so that the result is always real and non-negative.
 
@@ -1147,11 +1239,18 @@ def std(
     >>> import dpnp as np
     >>> a = np.array([[1, 2], [3, 4]])
     >>> np.std(a)
-    array(1.118033988749895)
+    array(1.11803399)
     >>> np.std(a, axis=0)
-    array([1.,  1.])
+    array([1., 1.])
     >>> np.std(a, axis=1)
-    array([0.5,  0.5])
+    array([0.5, 0.5])
+
+    Using the mean keyword to save computation time:
+
+    >>> a = np.array([[14, 8, 11, 10], [7, 9, 10, 11], [10, 15, 5, 10]])
+    >>> mean = np.mean(a, axis=1, keepdims=True)
+    >>> np.std(a, axis=1, mean=mean)
+    array([2.16506351, 1.47901995, 3.53553391])
 
     """
 
@@ -1163,7 +1262,7 @@ def std(
             f"An integer or float is required, but got {type(ddof)}"
         )
 
-    if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
+    if dpnp.issubdtype(a.dtype, dpnp.complexfloating) or mean is not None:
         result = dpnp.var(
             a,
             axis=axis,
@@ -1172,6 +1271,7 @@ def std(
             ddof=ddof,
             keepdims=keepdims,
             where=where,
+            mean=mean,
         )
         dpnp.sqrt(result, out=result)
     else:
@@ -1184,10 +1284,19 @@ def std(
     return result
 
 
+# pylint: disable=redefined-outer-name
 def var(
-    a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+    a,
+    axis=None,
+    dtype=None,
+    out=None,
+    ddof=0,
+    keepdims=False,
+    *,
+    where=True,
+    mean=None,
 ):
-    """
+    r"""
     Compute the variance along the specified axis.
 
     For full documentation refer to :obj:`numpy.var`.
@@ -1197,38 +1306,45 @@ def var(
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : {None, int, tuple of ints}, optional
-        axis or axes along which the variances must be computed. If a tuple
+        Axis or axes along which the variances must be computed. If a tuple
         of unique integers is given, the variances are computed over multiple
         axes. If ``None``, the variance is computed over the entire array.
         Default: ``None``.
     dtype : {None, dtype}, optional
         Type to use in computing the variance. By default, if `a` has a
-        floating-point data type, the returned array will have
-        the same data type as `a`.
-        If `a` has a boolean or integral data type, the returned array
-        will have the default floating point data type for the device
+        floating-point data type, the returned array will have the same data
+        type as `a`. If `a` has a boolean or integral data type, the returned
+        array will have the default floating point data type for the device
         where input array `a` is allocated.
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+        Default: ``None``.
     ddof : {int, float}, optional
-        Means Delta Degrees of Freedom.  The divisor used in calculations
-        is ``N - ddof``, where ``N`` corresponds to the total
-        number of elements over which the variance is calculated.
-        Default: `0.0`.
+        Means Delta Degrees of Freedom. The divisor used in calculations is
+        ``N - ddof``, where ``N`` corresponds to the total number of elements
+        over which the variance is calculated.
+        Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input array according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        as singleton dimensions, so that the returned array remains compatible
+        with the input array according to Array Broadcasting rules. Otherwise,
+        if ``False``, the reduced axes are not included in the returned array.
+        Default: ``False``.
+    mean : {dpnp.ndarray, usm_ndarray}, optional
+        Provide the mean to prevent its recalculation. The mean should have
+        a shape as if it was calculated with ``keepdims=True``.
+        The axis for the calculation of the mean should be the same as used in
+        the call to this `var` function.
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the variances. If the variance was computed
-        over the entire array, a zero-dimensional array is returned.
+        An array containing the variances. If the variance was computed over
+        the entire array, a zero-dimensional array is returned.
 
     Limitations
     -----------
@@ -1237,6 +1353,40 @@ def var(
 
     Notes
     -----
+    There are several common variants of the array variance calculation.
+    Assuming the input `a` is a one-dimensional array and `mean` is either
+    provided as an argument or computed as ``a.mean()``, DPNP computes the
+    variance of an array as::
+
+        N = len(a)
+        d2 = abs(a - mean)**2  # abs is for complex `a`
+        var = d2.sum() / (N - ddof)  # note use of `ddof`
+
+    Different values of the argument `ddof` are useful in different contexts.
+    The default ``ddof=0`` corresponds with the expression:
+
+    .. math::
+
+        \frac{\sum_i{|a_i - \bar{a}|^2 }}{N}
+
+    which is sometimes called the "population variance" in the field of
+    statistics because it applies the definition of variance to `a` as if `a`
+    were a complete population of possible observations.
+
+    Many other libraries define the variance of an array differently, e.g.:
+
+    .. math::
+
+        \frac{\sum_i{|a_i - \bar{a}|^2}}{N - 1}
+
+    In statistics, the resulting quantity is sometimes called the "sample
+    variance" because if `a` is a random sample from a larger population, this
+    calculation provides an unbiased estimate of the variance of the population.
+    The use of :math:`N-1` in the denominator is often called "Bessel's
+    correction" because it corrects for bias (toward lower values) in the
+    variance estimate introduced when the sample mean of `a` is used in place
+    of the true mean of the population. For this quantity, use ``ddof=1``.
+
     Note that, for complex numbers, the absolute value is taken before squaring,
     so that the result is always real and non-negative.
 
@@ -1259,9 +1409,16 @@ def var(
     >>> np.var(a)
     array(1.25)
     >>> np.var(a, axis=0)
-    array([1.,  1.])
+    array([1., 1.])
     >>> np.var(a, axis=1)
-    array([0.25,  0.25])
+    array([0.25, 0.25])
+
+    Using the mean keyword to save computation time:
+
+    >>> a = np.array([[14, 8, 11, 10], [7, 9, 10, 11], [10, 15, 5, 10]])
+    >>> mean = np.mean(a, axis=1, keepdims=True)
+    >>> np.var(a, axis=1, mean=mean)
+    array([ 4.6875,  2.1875, 12.5   ])
 
     """
 
@@ -1273,29 +1430,46 @@ def var(
             f"An integer or float is required, but got {type(ddof)}"
         )
 
-    if dpnp.issubdtype(a.dtype, dpnp.complexfloating):
-        # Note that if dtype is not of inexact type then arrmean
-        # will not be either.
-        arrmean = dpnp.mean(
-            a, axis=axis, dtype=dtype, keepdims=True, where=where
-        )
+    if dpnp.issubdtype(a.dtype, dpnp.complexfloating) or mean is not None:
+        # cast bool and integer types to default floating type
+        if dtype is None and not dpnp.issubdtype(a.dtype, dpnp.inexact):
+            dtype = dpnp.default_float_type()
+
+        if mean is not None:
+            arrmean = mean
+        else:
+            # Compute the mean.
+            # Note that if dtype is not of inexact type
+            # then `arrmean` will not be either.
+            arrmean = dpnp.mean(
+                a, axis=axis, dtype=dtype, keepdims=True, where=where
+            )
+
+        # Compute sum of squared deviations from mean.
+        # Note that `x`` may not be inexact.
         x = dpnp.subtract(a, arrmean)
-        x = dpnp.multiply(x, x.conj(), out=x).real
+        if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
+            x = dpnp.multiply(x, x.conj(), out=x).real
+        else:
+            x = dpnp.square(x, out=x)
+
         result = dpnp.sum(
             x,
             axis=axis,
-            dtype=a.real.dtype,
+            dtype=dtype,
             out=out,
             keepdims=keepdims,
             where=where,
         )
 
+        # compute degrees of freedom and make sure it is not negative
         cnt = _count_reduce_items(a, axis, where)
         cnt = numpy.max(cnt - ddof, 0).astype(result.dtype, casting="same_kind")
         if not cnt:
             cnt = dpnp.nan
 
-        dpnp.divide(result, cnt, out=result)
+        # divide by degrees of freedom
+        result = _divide_by_scalar(result, cnt)
     else:
         usm_a = dpnp.get_usm_ndarray(a)
         usm_res = dpt.var(usm_a, axis=axis, correction=ddof, keepdims=keepdims)
