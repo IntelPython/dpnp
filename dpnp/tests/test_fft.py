@@ -673,8 +673,7 @@ class TestHfft:
     def test_ihfft_error(self):
         a = dpnp.ones(11)
         # incorrect norm
-        with pytest.raises(ValueError):
-            _ = dpnp.fft.ihfft(a, norm="backwards")
+        assert_raises(ValueError, dpnp.fft.ihfft, a, norm="backwards")
 
 
 class TestIrfft:

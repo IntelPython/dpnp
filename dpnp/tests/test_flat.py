@@ -1,6 +1,6 @@
 import numpy as np
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
 
@@ -28,8 +28,7 @@ class TestFlatiter:
             assert dp_val == np_val
 
     def test_init_error(self):
-        with pytest.raises(TypeError):
-            _ = dpnp.flatiter([1, 2, 3])
+        assert_raises(TypeError, dpnp.flatiter, [1, 2, 3])
 
     def test_flat_key_error(self):
         a_dp = dpnp.array(42)
