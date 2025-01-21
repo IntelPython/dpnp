@@ -1433,7 +1433,7 @@ def var(
     if dpnp.issubdtype(a.dtype, dpnp.complexfloating) or mean is not None:
         # cast bool and integer types to default floating type
         if dtype is None and not dpnp.issubdtype(a.dtype, dpnp.inexact):
-            dtype = dpnp.default_float_type()
+            dtype = dpnp.default_float_type(device=a.device)
 
         if mean is not None:
             arrmean = mean
