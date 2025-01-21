@@ -83,7 +83,7 @@ class TestAttributes:
 )
 def test_create_from_usm_ndarray_error(arr):
     with pytest.raises(TypeError):
-        dpnp.dpnp_array.dpnp_array._create_from_usm_ndarray(arr)
+        dpnp.ndarray._create_from_usm_ndarray(arr)
 
 
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
