@@ -320,6 +320,17 @@ class TestFloorDivideRemainder:
 
         assert_dtype_allclose(ia, a)
 
+    @pytest.mark.parametrize("dtype", ALL_DTYPES)
+    def test_inplace_scalar(self, func, dtype):
+
+        a = numpy.array(10, dtype=dtype)
+        self.do_inplace_op(10, a, func)
+
+        ia = dpnp.array(10, dtype=dtype)
+        self.do_inplace_op(10, ia, func)
+
+        assert_dtype_allclose(ia, a)
+
     @pytest.mark.parametrize("dtype1", [dpnp.bool] + ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", get_float_dtypes())
     def test_inplace_dtype(self, func, dtype1, dtype2):
