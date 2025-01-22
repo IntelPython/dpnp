@@ -31,7 +31,7 @@ class TestArgsort:
 
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1, 2])
     def test_axis(self, axis):
-        a = generate_random_numpy_array((3, 4, 3))
+        a = generate_random_numpy_array((3, 4, 3), dtype="i8")
         ia = dpnp.array(a)
 
         result = dpnp.argsort(ia, axis=axis)
@@ -40,13 +40,13 @@ class TestArgsort:
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1])
-    def test_ndarray(self, dtype, axis):
+    def test_ndarray_method(self, dtype, axis):
         a = generate_random_numpy_array((6, 2), dtype)
         ia = dpnp.array(a)
 
         result = ia.argsort(axis=axis)
         expected = a.argsort(axis=axis, kind="stable")
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     # this test validates that all different options of kind in dpnp are stable
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
@@ -291,16 +291,16 @@ class TestSort:
 
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1, 2])
     def test_axis(self, axis):
-        a = generate_random_numpy_array((3, 4, 3))
+        a = generate_random_numpy_array((3, 4, 3), dtype="i8")
         ia = dpnp.array(a)
 
         result = dpnp.sort(ia, axis=axis)
         expected = numpy.sort(a, axis=axis)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [-2, -1, 0, 1])
-    def test_ndarray(self, dtype, axis):
+    def test_ndarray_method(self, dtype, axis):
         a = generate_random_numpy_array((6, 2), dtype)
         ia = dpnp.array(a)
 
