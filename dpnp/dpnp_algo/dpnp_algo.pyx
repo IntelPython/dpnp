@@ -2,7 +2,7 @@
 # cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,6 @@ import operator
 import numpy
 
 __all__ = [
-    "dpnp_queue_initialize",
 ]
 
 
@@ -62,23 +61,6 @@ include "dpnp_algo_indexing.pxi"
 include "dpnp_algo_mathematical.pxi"
 include "dpnp_algo_sorting.pxi"
 include "dpnp_algo_special.pxi"
-include "dpnp_algo_statistics.pxi"
-
-
-cpdef dpnp_queue_initialize():
-    """
-    Initialize SYCL queue which will be used for any library operations.
-    It takes visible time and needs to be done in the module loading procedure.
-    """
-    cdef time_t seed_from_time
-
-    dpnp_python_constants_initialize_c(< void*> None,
-                                        < void * > dpnp.nan)
-
-    # TODO:
-    # choose seed number as is in numpy
-    seed_from_time = time(NULL)
-    dpnp_rng_srand_c(< size_t > seed_from_time)
 
 
 """

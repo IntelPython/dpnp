@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -81,6 +81,7 @@ class RandomState:
         self._sycl_queue = dpnp.get_normalized_queue_device(
             device=device, sycl_queue=sycl_queue
         )
+
         self._sycl_device = self._sycl_queue.sycl_device
 
         is_cpu = self._sycl_device.is_cpu
@@ -234,6 +235,11 @@ class RandomState:
         """
 
         if not use_origin_backend():
+            if dpnp.is_cuda_backend(self):
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(loc):
                 pass
             elif not dpnp.isscalar(scale):
@@ -363,6 +369,11 @@ class RandomState:
         """
 
         if not use_origin_backend(low):
+            if dpnp.is_cuda_backend(self):
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(low):
                 pass
             elif not (high is None or dpnp.isscalar(high)):
@@ -587,6 +598,11 @@ class RandomState:
         """
 
         if not use_origin_backend():
+            if dpnp.is_cuda_backend(self):
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(low):
                 pass
             elif not dpnp.isscalar(high):

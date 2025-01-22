@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -3207,10 +3207,14 @@ def roll(x, shift, axis=None):
            [3, 4, 0, 1, 2]])
 
     """
-    if axis is None:
-        return roll(x.reshape(-1), shift, 0).reshape(x.shape)
 
     usm_x = dpnp.get_usm_ndarray(x)
+    if dpnp.is_supported_array_type(shift):
+        shift = dpnp.asnumpy(shift)
+
+    if axis is None:
+        return roll(dpt.reshape(usm_x, -1), shift, 0).reshape(x.shape)
+
     usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 

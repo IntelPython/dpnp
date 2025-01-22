@@ -161,6 +161,20 @@ def get_all_dtypes(
     return dtypes
 
 
+def get_array(xp, a):
+    """
+    Cast input array `a` to a type supported by `xp` interface.
+
+    Implicit conversion of either DPNP or DPCTL array to a NumPy array is not
+    allowed. Input array has to be explicitly casted with `asnumpy` function.
+
+    """
+
+    if xp is numpy and dpnp.is_supported_array_type(a):
+        return dpnp.asnumpy(a)
+    return a
+
+
 def generate_random_numpy_array(
     shape,
     dtype=None,
@@ -246,6 +260,14 @@ def is_cpu_device(device=None):
     """
     dev = dpctl.select_default_device() if device is None else device
     return dev.has_aspect_cpu
+
+
+def is_cuda_device(device=None):
+    """
+    Return True if a test is running on CUDA device, False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.backend == dpctl.backend_type.cuda
 
 
 def is_win_platform():

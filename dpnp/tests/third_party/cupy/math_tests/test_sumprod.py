@@ -1037,8 +1037,8 @@ class TestGradientErrors:
     def test_gradient_invalid_spacings2(self):
         # wrong length array in spacing
         shape = (32, 16)
-        spacing = (15, cupy.arange(shape[1] + 1))
         for xp in [numpy, cupy]:
+            spacing = (15, xp.arange(shape[1] + 1))
             x = testing.shaped_random(shape, xp)
             with pytest.raises(ValueError):
                 xp.gradient(x, *spacing)
@@ -1046,8 +1046,8 @@ class TestGradientErrors:
     def test_gradient_invalid_spacings3(self):
         # spacing array with ndim != 1
         shape = (32, 16)
-        spacing = (15, cupy.arange(shape[0]).reshape(4, -1))
         for xp in [numpy, cupy]:
+            spacing = (15, xp.arange(shape[0]).reshape(4, -1))
             x = testing.shaped_random(shape, xp)
             with pytest.raises(ValueError):
                 xp.gradient(x, *spacing)

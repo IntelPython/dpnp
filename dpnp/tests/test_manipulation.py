@@ -15,6 +15,7 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_array,
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
@@ -1232,7 +1233,10 @@ class TestRot90:
     def test_axes_type(self, axes):
         a = numpy.ones((50, 40, 3))
         ia = dpnp.array(a)
-        assert_equal(dpnp.rot90(ia, axes=axes), numpy.rot90(a, axes=axes))
+        assert_equal(
+            dpnp.rot90(ia, axes=axes),
+            numpy.rot90(a, axes=get_array(numpy, axes)),
+        )
 
     def test_rotation_axes(self):
         a = numpy.arange(8).reshape((2, 2, 2))

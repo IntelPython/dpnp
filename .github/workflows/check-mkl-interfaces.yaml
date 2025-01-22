@@ -28,11 +28,11 @@ env:
 
 jobs:
   test_by_tag:
-    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}'] with oneMKL tag
+    name: Run tests with oneMKL tag
 
     strategy:
       matrix:
-        python: ['3.12']
+        python: ['3.13']
         os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
 
     permissions:
@@ -108,7 +108,7 @@ jobs:
         id: run_tests
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 10
+          timeout_minutes: 12
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
@@ -121,11 +121,11 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
 
   test_by_branch:
-    name: Run on ['${{ matrix.os }}', python='${{ matrix.python }}'] with oneMKL develop branch
+    name: Run tests with oneMKL develop branch
 
     strategy:
       matrix:
-        python: ['3.12']
+        python: ['3.13']
         os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
 
     permissions:
@@ -216,7 +216,7 @@ jobs:
         id: run_tests
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 10
+          timeout_minutes: 12
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |

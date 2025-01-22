@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -547,6 +547,12 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
        5               defg,hd->efgh                               efgh->efgh
 
     """
+
+    # explicit casting to numpy array if applicable
+    operands = [
+        dpnp.asnumpy(x) if dpnp.is_supported_array_type(x) else x
+        for x in operands
+    ]
 
     return numpy.einsum_path(
         *operands,

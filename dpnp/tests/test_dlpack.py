@@ -1,6 +1,7 @@
+import dpctl
 import numpy
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_array_equal, assert_raises
 
 import dpnp
 
@@ -10,10 +11,19 @@ from .helper import (
 
 
 class TestDLPack:
-    @pytest.mark.parametrize("stream", [None, 1])
+    @pytest.mark.parametrize("stream", [None, dpctl.SyclQueue()])
     def test_stream(self, stream):
         x = dpnp.arange(5)
         x.__dlpack__(stream=stream)
+
+    @pytest.mark.parametrize(
+        "stream",
+        [1, dict(), dpctl.SyclDevice()],
+        ids=["scalar", "dictionary", "device"],
+    )
+    def test_invaid_stream(self, stream):
+        x = dpnp.arange(5)
+        assert_raises(TypeError, x.__dlpack__, stream=stream)
 
     @pytest.mark.parametrize("copy", [True, None, False])
     def test_copy(self, copy):

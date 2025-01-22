@@ -1,7 +1,12 @@
 import dpctl.tensor as dpt
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal
+from numpy.testing import (
+    assert_allclose,
+    assert_array_equal,
+    assert_equal,
+    assert_raises_regex,
+)
 
 import dpnp
 
@@ -34,6 +39,51 @@ def test_astype_subok_error():
     x = dpnp.ones((4))
     with pytest.raises(NotImplementedError):
         x.astype("i4", subok=False)
+
+
+class TestAttributes:
+    def setup_method(self):
+        self.one = dpnp.arange(10)
+        self.two = dpnp.arange(20).reshape(4, 5)
+        self.three = dpnp.arange(60).reshape(2, 5, 6)
+
+    def test_attributes(self):
+        assert_equal(self.one.shape, (10,))
+        assert_equal(self.two.shape, (4, 5))
+        assert_equal(self.three.shape, (2, 5, 6))
+
+        self.three.shape = (10, 3, 2)
+        assert_equal(self.three.shape, (10, 3, 2))
+        self.three.shape = (2, 5, 6)
+
+        assert_equal(self.one.strides, (self.one.itemsize / self.one.itemsize,))
+        num = self.two.itemsize / self.two.itemsize
+        assert_equal(self.two.strides, (5 * num, num))
+        num = self.three.itemsize / self.three.itemsize
+        assert_equal(self.three.strides, (30 * num, 6 * num, num))
+
+        assert_equal(self.one.ndim, 1)
+        assert_equal(self.two.ndim, 2)
+        assert_equal(self.three.ndim, 3)
+
+        num = self.two.itemsize
+        assert_equal(self.two.size, 20)
+        assert_equal(self.two.nbytes, 20 * num)
+        assert_equal(self.two.itemsize, self.two.dtype.itemsize)
+
+
+@pytest.mark.parametrize(
+    "arr",
+    [
+        numpy.array([1]),
+        dpnp.array([1]),
+        [1],
+    ],
+    ids=["numpy", "dpnp", "list"],
+)
+def test_create_from_usm_ndarray_error(arr):
+    with pytest.raises(TypeError):
+        dpnp.ndarray._create_from_usm_ndarray(arr)
 
 
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
@@ -104,6 +154,69 @@ def test_flags_writable():
     assert not a.imag.flags.writable
 
 
+class TestArrayNamespace:
+    def test_basic(self):
+        a = dpnp.arange(2)
+        xp = a.__array_namespace__()
+        assert xp is dpnp
+
+    @pytest.mark.parametrize("api_version", [None, "2023.12"])
+    def test_api_version(self, api_version):
+        a = dpnp.arange(2)
+        xp = a.__array_namespace__(api_version=api_version)
+        assert xp is dpnp
+
+    @pytest.mark.parametrize("api_version", ["2021.12", "2022.12", "2024.12"])
+    def test_unsupported_api_version(self, api_version):
+        a = dpnp.arange(2)
+        assert_raises_regex(
+            ValueError,
+            "Only 2023.12 is supported",
+            a.__array_namespace__,
+            api_version=api_version,
+        )
+
+    @pytest.mark.parametrize(
+        "api_version",
+        [
+            2023,
+            (2022,),
+            [
+                2021,
+            ],
+        ],
+    )
+    def test_wrong_api_version(self, api_version):
+        a = dpnp.arange(2)
+        assert_raises_regex(
+            TypeError,
+            "Expected type str",
+            a.__array_namespace__,
+            api_version=api_version,
+        )
+
+
+class TestArrayUfunc:
+    def test_add(self):
+        a = numpy.ones(10)
+        b = dpnp.ones(10)
+        msg = "An array must be any of supported type"
+
+        with assert_raises_regex(TypeError, msg):
+            a + b
+
+        with assert_raises_regex(TypeError, msg):
+            b + a
+
+    def test_add_inplace(self):
+        a = numpy.ones(10)
+        b = dpnp.ones(10)
+        with assert_raises_regex(
+            TypeError, "operand 'dpnp_array' does not support ufuncs"
+        ):
+            a += b
+
+
 class TestItem:
     @pytest.mark.parametrize("args", [2, 7, (1, 2), (2, 0)])
     def test_basic(self, args):
@@ -128,6 +241,18 @@ class TestItem:
         ia = dpnp.arange(12).reshape(3, 4)
         with pytest.raises(ValueError):
             ia.item()
+
+
+class TestUsmNdarrayProtocol:
+    def test_basic(self):
+        a = dpnp.arange(256, dtype=dpnp.int64)
+        usm_a = dpt.asarray(a)
+
+        assert a.sycl_queue == usm_a.sycl_queue
+        assert a.usm_type == usm_a.usm_type
+        assert a.dtype == usm_a.dtype
+        assert usm_a.usm_data.reference_obj is None
+        assert (a == usm_a).all()
 
 
 def test_print_dpnp_int():

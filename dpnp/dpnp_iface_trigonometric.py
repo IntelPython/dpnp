@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -2450,7 +2450,5 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
 
     up = dpnp.astype(p, dtype=dt, copy=True)
     up[slice1] = p[slice1]
-    # TODO: replace, once dpctl-1757 resolved
-    # up[slice1] += ph_correct.cumsum(axis=axis)
-    up[slice1] += ph_correct.cumsum(axis=axis, dtype=dt)
+    up[slice1] += ph_correct.cumsum(axis=axis)
     return up

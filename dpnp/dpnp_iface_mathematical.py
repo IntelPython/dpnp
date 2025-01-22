@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -2945,8 +2945,16 @@ def modf(x1, **kwargs):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_modf(x1_desc)
+    if x1_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()):
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
+        if kwargs:
+            pass
+        else:
+            return dpnp_modf(x1_desc)
 
     return call_origin(numpy.modf, x1, **kwargs)
 

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2023-2024, Intel Corporation
+# Copyright (c) 2023-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -335,6 +335,20 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 "as an argument, but both were provided."
             )
 
+        x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
+        x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
+        out_usm = None if out is None else dpnp.get_usm_ndarray(out)
+
+        if (
+            isinstance(x1, dpnp_array)
+            and x1 is out
+            and order == "K"
+            and dtype is None
+        ):
+            # in-place operation
+            super()._inplace_op(x1_usm, x2_usm)
+            return x1
+
         if order is None:
             order = "K"
         elif order in "afkcAFKC":
@@ -343,9 +357,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
             raise ValueError(
                 "order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
             )
-
-        x1_usm = dpnp.get_usm_ndarray_or_scalar(x1)
-        x2_usm = dpnp.get_usm_ndarray_or_scalar(x2)
 
         if dtype is not None:
             if dpnp.isscalar(x1):
@@ -368,7 +379,6 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
                 x1_usm = dpt.astype(x1_usm, dtype, copy=False)
                 x2_usm = dpt.astype(x2_usm, dtype, copy=False)
 
-        out_usm = None if out is None else dpnp.get_usm_ndarray(out)
         res_usm = super().__call__(x1_usm, x2_usm, out=out_usm, order=order)
 
         if out is not None and isinstance(out, dpnp_array):
