@@ -35,7 +35,7 @@ class TestArgsort:
         ia = dpnp.array(a)
 
         result = dpnp.argsort(ia, axis=axis)
-        expected = numpy.argsort(a, axis=axis)
+        expected = numpy.argsort(a, axis=axis, kind="stable")
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -295,7 +295,7 @@ class TestSort:
         ia = dpnp.array(a)
 
         result = dpnp.sort(ia, axis=axis)
-        expected = numpy.sort(a, axis=axis)
+        expected = numpy.sort(a, axis=axis, kind="stable")
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
