@@ -78,4 +78,4 @@ def to_supported_dtypes(dtypes, supported_types, device):
             ):
                 return stypes
 
-    return None
+    return None  # pragma: no cover

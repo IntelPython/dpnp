@@ -138,7 +138,7 @@ def choose(x1, choices, out=None, mode="raise"):
         )
 
     if x1_desc:
-        if dpnp.is_cuda_backend(x1_desc.get_array()):
+        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
