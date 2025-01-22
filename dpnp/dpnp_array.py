@@ -700,14 +700,63 @@ class dpnp_array:
 
     # 'argpartition',
 
-    def argsort(self, axis=-1, kind=None, order=None):
+    def argsort(
+        self, axis=-1, kind=None, order=None, *, descending=False, stable=None
+    ):
         """
         Return an ndarray of indices that sort the array along the specified axis.
 
         Refer to :obj:`dpnp.argsort` for full documentation.
 
+        Parameters
+        ----------
+        axis : {None, int}, optional
+            Axis along which to sort. If ``None``, the array is flattened
+            before sorting. The default is ``-1``, which sorts along the last
+            axis.
+            Default: ``-1``.
+        kind : {None, "stable", "mergesort", "radixsort"}, optional
+            Sorting algorithm. The default is ``None``, which uses parallel
+            merge-sort or parallel radix-sort algorithms depending on the array
+            data type.
+            Default: ``None``.
+        descending : bool, optional
+            Sort order. If ``True``, the array must be sorted in descending
+            order (by value). If ``False``, the array must be sorted in
+            ascending order (by value).
+            Default: ``False``.
+        stable : {None, bool}, optional
+            Sort stability. If ``True``, the returned array will maintain the
+            relative order of `a` values which compare as equal. The same
+            behavior applies when set to ``False`` or ``None``.
+            Internally, this option selects ``kind="stable"``.
+            Default: ``None``.
+
+        See Also
+        --------
+        :obj:`dpnp.sort` : Return a sorted copy of an array.
+        :obj:`dpnp.argsort` : Return the indices that would sort an array.
+        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
+        :obj:`dpnp.searchsorted` : Find elements in a sorted array.
+        :obj:`dpnp.partition` : Partial sort.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([3, 1, 2])
+        >>> a.argsort()
+        array([1, 2, 0])
+
+        >>> a = np.array([[0, 3], [2, 2]])
+        >>> a.argsort(axis=0)
+        array([[0, 1],
+               [1, 0]])
+
         """
-        return dpnp.argsort(self, axis, kind, order)
+
+        return dpnp.argsort(
+            self, axis, kind, order, descending=descending, stable=stable
+        )
 
     def asnumpy(self):
         """
@@ -1589,11 +1638,44 @@ class dpnp_array:
 
         return self._array_obj.size
 
-    def sort(self, axis=-1, kind=None, order=None):
+    def sort(
+        self, axis=-1, kind=None, order=None, *, descending=False, stable=None
+    ):
         """
         Sort an array in-place.
 
         Refer to :obj:`dpnp.sort` for full documentation.
+
+        Parameters
+        ----------
+        axis : int, optional
+            Axis along which to sort. The default is ``-1``, which sorts along
+            the last axis.
+            Default: ``-1``.
+        kind : {None, "stable", "mergesort", "radixsort"}, optional
+            Sorting algorithm. The default is ``None``, which uses parallel
+            merge-sort or parallel radix-sort algorithms depending on the array
+            data type.
+            Default: ``None``.
+        descending : bool, optional
+            Sort order. If ``True``, the array must be sorted in descending
+            order (by value). If ``False``, the array must be sorted in
+            ascending order (by value).
+            Default: ``False``.
+        stable : {None, bool}, optional
+            Sort stability. If ``True``, the returned array will maintain the
+            relative order of `a` values which compare as equal. The same
+            behavior applies when set to ``False`` or ``None``.
+            Internally, this option selects ``kind="stable"``.
+            Default: ``None``.
+
+        See Also
+        --------
+        :obj:`dpnp.sort` : Return a sorted copy of an array.
+        :obj:`dpnp.argsort` : Return the indices that would sort an array.
+        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.
+        :obj:`dpnp.searchsorted` : Find elements in a sorted array.
+        :obj:`dpnp.partition` : Partial sort.
 
         Note
         ----
@@ -1605,7 +1687,7 @@ class dpnp_array:
         Examples
         --------
         >>> import dpnp as np
-        >>> a = np.array([[1,4],[3,1]])
+        >>> a = np.array([[1, 4], [3, 1]])
         >>> a.sort(axis=1)
         >>> a
         array([[1, 4],
@@ -1621,7 +1703,14 @@ class dpnp_array:
             raise TypeError(
                 "'NoneType' object cannot be interpreted as an integer"
             )
-        self[...] = dpnp.sort(self, axis=axis, kind=kind, order=order)
+        self[...] = dpnp.sort(
+            self,
+            axis=axis,
+            kind=kind,
+            order=order,
+            descending=descending,
+            stable=stable,
+        )
 
     def squeeze(self, axis=None):
         """
