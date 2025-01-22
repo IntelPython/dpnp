@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev4+21.g564e0566bbb documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev4+22.g9ad32905278 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dfa5ca90"></script>
+      <script src="../../_static/documentation_options.js?v=aba6a12c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -121,6 +121,8 @@
 <span class="sd"> - The functions parameters check</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=duplicate-code</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 
@@ -1097,6 +1099,7 @@
 <span class="sd">        If a tuple of unique integers is given, the standard deviations are</span>
 <span class="sd">        computed over multiple axes. If ``None``, the standard deviation is</span>
 <span class="sd">        computed over the entire array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        Type to use in computing the standard deviation. By default, if `a` has</span>
@@ -1104,27 +1107,32 @@
 <span class="sd">        type as `a`. If `a` has a boolean or integral data type, the returned</span>
 <span class="sd">        array will have the default floating point data type for the device</span>
 <span class="sd">        where input array `a` is allocated.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    ddof : {int, float}, optional</span>
 <span class="sd">        Means Delta Degrees of Freedom. The divisor used in calculations is</span>
 <span class="sd">        ``N - ddof``, where ``N`` the number of non-NaN elements.</span>
+
 <span class="sd">        Default: ``0.0``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains compatible</span>
 <span class="sd">        with the input array according to Array Broadcasting rules. Otherwise,</span>
 <span class="sd">        if ``False``, the reduced axes are not included in the returned array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    mean : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Provide the mean to prevent its recalculation. The mean should have</span>
 <span class="sd">        a shape as if it was calculated with ``keepdims=True``.</span>
 <span class="sd">        The axis for the calculation of the mean should be the same as used in</span>
 <span class="sd">        the call to this `nanstd` function.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1234,6 +1242,7 @@
 <span class="sd">        Axis or axes along which the variances must be computed. If a tuple</span>
 <span class="sd">        of unique integers is given, the variances are computed over multiple</span>
 <span class="sd">        axes. If ``None``, the variance is computed over the entire array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : {None, dtype}, optional</span>
 <span class="sd">        Type to use in computing the variance. By default, if `a` has a</span>
@@ -1241,27 +1250,32 @@
 <span class="sd">        the same data type as `a`. If `a` has a boolean or integral data type,</span>
 <span class="sd">        the returned array will have the default floating point data type for</span>
 <span class="sd">        the device where input array `a` is allocated.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Alternative output array in which to place the result. It must have</span>
 <span class="sd">        the same shape as the expected output but the type (of the calculated</span>
 <span class="sd">        values) will be cast if necessary.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    ddof : {int, float}, optional</span>
 <span class="sd">        Means Delta Degrees of Freedom. The divisor used in calculations is</span>
 <span class="sd">        ``N - ddof``, where ``N`` represents the number of non-NaN elements.</span>
+
 <span class="sd">        Default: ``0.0``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If ``True``, the reduced axes (dimensions) are included in the result</span>
 <span class="sd">        as singleton dimensions, so that the returned array remains compatible</span>
 <span class="sd">        with the input array according to Array Broadcasting rules. Otherwise,</span>
 <span class="sd">        if ``False``, the reduced axes are not included in the returned array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    mean : {dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Provide the mean to prevent its recalculation. The mean should have</span>
 <span class="sd">        a shape as if it was calculated with ``keepdims=True``.</span>
 <span class="sd">        The axis for the calculation of the mean should be the same as used in</span>
 <span class="sd">        the call to this `nanvar` function.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
