@@ -2946,7 +2946,7 @@ def modf(x1, **kwargs):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
-        if dpnp.is_cuda_backend(x1_desc.get_array()):
+        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
