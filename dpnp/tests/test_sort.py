@@ -36,7 +36,7 @@ class TestArgsort:
 
         result = dpnp.argsort(ia, axis=axis)
         expected = numpy.argsort(a, axis=axis)
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [None, -2, -1, 0, 1])
@@ -46,7 +46,7 @@ class TestArgsort:
 
         result = ia.argsort(axis=axis)
         expected = a.argsort(axis=axis, kind="stable")
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     # this test validates that all different options of kind in dpnp are stable
     @pytest.mark.parametrize("kind", [None, "stable", "mergesort", "radixsort"])
@@ -56,7 +56,30 @@ class TestArgsort:
 
         result = dpnp.argsort(ia, kind=kind)
         expected = numpy.argsort(a, kind="stable")
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("descending", [False, True])
+    def test_descending(self, descending):
+        a = numpy.repeat(numpy.arange(10), 10)
+        ia = dpnp.array(a)
+
+        result = dpnp.argsort(ia, descending=descending)
+        if not descending:
+            expected = numpy.argsort(a, kind="stable")
+        else:
+            expected = numpy.flip(numpy.argsort(numpy.flip(a), kind="stable"))
+            expected = (a.shape[0] - 1) - expected
+        assert_array_equal(result, expected)
+
+        # test ndarray method
+        result = ia.argsort(descending=descending)
+        if not descending:
+            expected = a.argsort(kind="stable")
+        else:
+            a = numpy.flip(a)
+            expected = numpy.flip(a.argsort(kind="stable"))
+            expected = (a.shape[0] - 1) - expected
+        assert_array_equal(result, expected)
 
     # `stable` keyword is supported in numpy 2.0 and above
     @testing.with_requires("numpy>=2.0")
@@ -67,7 +90,7 @@ class TestArgsort:
 
         result = dpnp.argsort(ia, stable=stable)
         expected = numpy.argsort(a, stable=True)
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     def test_zero_dim(self):
         a = numpy.array(2.5)
@@ -80,7 +103,7 @@ class TestArgsort:
         # with axis = None
         result = dpnp.argsort(ia, axis=None)
         expected = numpy.argsort(a, axis=None)
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
 
 
 class TestSearchSorted:
@@ -273,7 +296,7 @@ class TestSort:
 
         result = dpnp.sort(ia, axis=axis)
         expected = numpy.sort(a, axis=axis)
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     @pytest.mark.parametrize("axis", [-2, -1, 0, 1])
@@ -293,7 +316,25 @@ class TestSort:
 
         result = dpnp.sort(ia, kind=kind)
         expected = numpy.sort(a, kind="stable")
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("descending", [False, True])
+    def test_descending(self, descending):
+        a = numpy.repeat(numpy.arange(10), 10)
+        ia = dpnp.array(a)
+
+        result = dpnp.sort(ia, descending=descending)
+        expected = numpy.sort(a, kind="stable")
+        if descending:
+            expected = numpy.flip(expected)
+        assert_array_equal(result, expected)
+
+        # test ndarray method
+        ia.sort(descending=descending)
+        a.sort(kind="stable")
+        if descending:
+            a = numpy.flip(a)
+        assert_array_equal(ia, a)
 
     # `stable` keyword is supported in numpy 2.0 and above
     @testing.with_requires("numpy>=2.0")
@@ -304,7 +345,7 @@ class TestSort:
 
         result = dpnp.sort(ia, stable=stable)
         expected = numpy.sort(a, stable=True)
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     def test_ndarray_axis_none(self):
         a = numpy.random.uniform(-10, 10, 12)
@@ -323,7 +364,7 @@ class TestSort:
         # with axis = None
         result = dpnp.sort(ia, axis=None)
         expected = numpy.sort(a, axis=None)
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     def test_error(self):
         ia = dpnp.arange(10)
