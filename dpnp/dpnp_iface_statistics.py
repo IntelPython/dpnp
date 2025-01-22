@@ -87,7 +87,8 @@ def _count_reduce_items(arr, axis, where=True):
         operation must be counted. If a tuple of unique integers is given,
         the items are counted over multiple axes. If ``None``, the variance
         is computed over the entire array.
-        Default: `None`.
+
+        Default: ``None``.
 
     Returns
     -------
