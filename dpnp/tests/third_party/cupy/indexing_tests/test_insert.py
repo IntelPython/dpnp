@@ -205,7 +205,6 @@ class TestPutmaskDifferentShapes(unittest.TestCase):
         return a
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPutmask(unittest.TestCase):
 
     @testing.numpy_cupy_array_equal()

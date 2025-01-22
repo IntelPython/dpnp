@@ -924,9 +924,9 @@ def test_logspace_axis(axis):
 
 
 def test_logspace_list_input():
-    res_np = numpy.logspace([0], [2], base=[5])
-    res_dp = dpnp.logspace([0], [2], base=[5])
-    assert_allclose(res_dp, res_np)
+    expected = numpy.logspace([0], [2], base=[5])
+    result = dpnp.logspace([0], [2], base=[5])
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
