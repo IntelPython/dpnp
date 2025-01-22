@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.histogram2d &mdash; Data Parallel Extension for NumPy 0.17.0dev4+16.gc7f85debf7c documentation</title>
+  <title>dpnp.histogram2d &mdash; Data Parallel Extension for NumPy 0.17.0dev4+20.gf688e947c68 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3522cdfe"></script>
+      <script src="../../_static/documentation_options.js?v=ade5fe94"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -143,26 +143,28 @@ histogrammed.</p></li>
 <li><p>A combination [int, array] or [array, int], where int
 is the number of bins and array is the bin edges.</p></li>
 </ul>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code></p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
 </p></li>
 <li><p><strong>range</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>2</em><em>,</em><em>2</em><em>)</em><em>, </em><em>optional</em>) -- <p>The leftmost and rightmost edges of the bins along each dimension
-(if not specified explicitly in the <cite>bins</cite> parameters):
-<code class="docutils literal notranslate"><span class="pre">[[xmin,</span> <span class="pre">xmax],</span> <span class="pre">[ymin,</span> <span class="pre">ymax]]</span></code>. All values outside of this range
-will be considered outliers and not tallied in the histogram.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> the ranges are
+<code class="docutils literal notranslate"><span class="pre">[[x.min(),</span> <span class="pre">x.max()],</span> <span class="pre">[y.min(),</span> <span class="pre">y.max()]]</span></code>. All values outside
+of this range will be considered outliers and not tallied in the
+histogram.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default, returns the number of
 samples in each bin.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the probability <em>density</em> function at the bin,
 <code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_volume</span></code>.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em> of </em><em>shape</em><em> (</em><em>N</em><em>,</em><em>)</em><em>, </em><em>optional</em>) -- <p>An array of values <code class="docutils literal notranslate"><span class="pre">w_i</span></code> weighing each sample <code class="docutils literal notranslate"><span class="pre">(x_i,</span> <span class="pre">y_i)</span></code>.
 Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
 If <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram
 are equal to the sum of the weights belonging to the samples
-falling into each bin.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+falling into each bin.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> all samples are assigned a weight of <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>
 </dd>
@@ -197,20 +199,28 @@ array (vertical), and <cite>y</cite> along the second dimension of the array
 (horizontal). This ensures compatibility with <cite>histogramdd</cite>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span><span class="p">,</span> <span class="n">edges_x</span><span class="p">,</span> <span class="n">edges_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4, 3)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">hist</span>
-<span class="go">[[1. 0. 0.]</span>
-<span class="go"> [0. 0. 0.]</span>
-<span class="go"> [5. 6. 4.]</span>
-<span class="go"> [1. 2. 1.]]</span>
+<span class="go">array([[1., 2., 0.],</span>
+<span class="go">       [0., 3., 1.],</span>
+<span class="go">       [1., 4., 1.],</span>
+<span class="go">       [1., 3., 3.]], dtype=float32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges_x</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(5,)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">edges_x</span>
-<span class="go">[-5.6575713 -3.5574734 -1.4573755  0.6427226  2.74282  ]</span>
+<span class="go">array([-1.7516936 , -0.96109843, -0.17050326,  0.62009203,  1.4106871 ],</span>
+<span class="go">      dtype=float32)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edges_y</span><span class="o">.</span><span class="n">shape</span>
+<span class="go">(4,)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">edges_y</span>
-<span class="go">[-1.1889046  -0.07263839  1.0436279   2.159894  ]</span>
+<span class="go">array([-2.6604428 , -0.94615364,  0.76813555,  2.4824247 ], dtype=float32)</span>
 </pre></div>
 </div>
+<p>Please note, that resulting values of histogram and edges would be different</p>
 </dd></dl>
 
 </section>

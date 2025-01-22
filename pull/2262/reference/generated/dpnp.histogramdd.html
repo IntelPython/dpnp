@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.histogramdd &mdash; Data Parallel Extension for NumPy 0.17.0dev4+16.gc7f85debf7c documentation</title>
+  <title>dpnp.histogramdd &mdash; Data Parallel Extension for NumPy 0.17.0dev4+20.gf688e947c68 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3522cdfe"></script>
+      <script src="../../_static/documentation_options.js?v=ade5fe94"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,28 +136,30 @@ edges along each dimension.</p></li>
 <li><p>The number of bins for each dimension (nx, ny, ... =bins)</p></li>
 <li><p>The number of bins for all dimensions (nx=ny=...=bins).</p></li>
 </ul>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code></p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
 </p></li>
 <li><p><strong>range</strong> (<em>{None</em><em>, </em><em>sequence}</em><em>, </em><em>optional</em>) -- <p>A sequence of length D, each an optional (lower, upper) tuple giving
 the outer bin edges to be used if the edges are not given explicitly in
 <cite>bins</cite>.
-An entry of None in the sequence results in the minimum and maximum
+An entry of <code class="docutils literal notranslate"><span class="pre">None</span></code> in the sequence results in the minimum and maximum
 values being used for the corresponding dimension.
-None is equivalent to passing a tuple of D None values.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">None</span></code> is equivalent to passing a tuple of D <code class="docutils literal notranslate"><span class="pre">None</span></code> values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default, returns the number of
 samples in each bin.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the probability <em>density</em> function at the bin,
 <code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_volume</span></code>.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>weights</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An (N,)-shaped array of values <cite>w_i</cite> weighing each sample
+<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An (N,)-shaped array of values <cite>w_i</cite> weighing each sample
 <cite>(x_i, y_i, z_i, ...)</cite>.
-Weights are normalized to 1 if density is True. If density is False,
-the values of the returned histogram are equal to the sum of the
-weights belonging to the samples falling into each bin.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if density is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+If density is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram
+are equal to the sum of the weights belonging to the samples
+falling into each bin.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> all samples are assigned a weight of <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>
 </dd>
