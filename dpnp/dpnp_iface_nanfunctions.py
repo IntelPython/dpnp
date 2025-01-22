@@ -37,6 +37,8 @@ it contains:
 
 """
 
+# pylint: disable=duplicate-code
+
 import warnings
 
 import dpnp
@@ -980,6 +982,7 @@ def nanstd(
         If a tuple of unique integers is given, the standard deviations are
         computed over multiple axes. If ``None``, the standard deviation is
         computed over the entire array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
         Type to use in computing the standard deviation. By default, if `a` has
@@ -987,27 +990,32 @@ def nanstd(
         type as `a`. If `a` has a boolean or integral data type, the returned
         array will have the default floating point data type for the device
         where input array `a` is allocated.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+
         Default: ``None``.
     ddof : {int, float}, optional
         Means Delta Degrees of Freedom. The divisor used in calculations is
         ``N - ddof``, where ``N`` the number of non-NaN elements.
+
         Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains compatible
         with the input array according to Array Broadcasting rules. Otherwise,
         if ``False``, the reduced axes are not included in the returned array.
+
         Default: ``False``.
     mean : {dpnp.ndarray, usm_ndarray}, optional
         Provide the mean to prevent its recalculation. The mean should have
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `nanstd` function.
+
         Default: ``None``.
 
     Returns
@@ -1114,6 +1122,7 @@ def nanvar(
         Axis or axes along which the variances must be computed. If a tuple
         of unique integers is given, the variances are computed over multiple
         axes. If ``None``, the variance is computed over the entire array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
         Type to use in computing the variance. By default, if `a` has a
@@ -1121,27 +1130,32 @@ def nanvar(
         the same data type as `a`. If `a` has a boolean or integral data type,
         the returned array will have the default floating point data type for
         the device where input array `a` is allocated.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+
         Default: ``None``.
     ddof : {int, float}, optional
         Means Delta Degrees of Freedom. The divisor used in calculations is
         ``N - ddof``, where ``N`` represents the number of non-NaN elements.
+
         Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains compatible
         with the input array according to Array Broadcasting rules. Otherwise,
         if ``False``, the reduced axes are not included in the returned array.
+
         Default: ``False``.
     mean : {dpnp.ndarray, usm_ndarray}, optional
         Provide the mean to prevent its recalculation. The mean should have
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `nanvar` function.
+
         Default: ``None``.
 
     Returns
