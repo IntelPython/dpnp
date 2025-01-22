@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev4+15.gc27669de689 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev4+19.ga5ec191972b documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9cc1dd46"></script>
+      <script src="../../_static/documentation_options.js?v=0c60159b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -804,14 +804,63 @@
 
 <div class="viewcode-block" id="dpnp_array.argsort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.argsort.html#dpnp.dpnp_array.dpnp_array.argsort">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an ndarray of indices that sort the array along the specified axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.argsort` for full documentation.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : {None, int}, optional</span>
+<span class="sd">            Axis along which to sort. If ``None``, the array is flattened</span>
+<span class="sd">            before sorting. The default is ``-1``, which sorts along the last</span>
+<span class="sd">            axis.</span>
+<span class="sd">            Default: ``-1``.</span>
+<span class="sd">        kind : {None, &quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;}, optional</span>
+<span class="sd">            Sorting algorithm. The default is ``None``, which uses parallel</span>
+<span class="sd">            merge-sort or parallel radix-sort algorithms depending on the array</span>
+<span class="sd">            data type.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        descending : bool, optional</span>
+<span class="sd">            Sort order. If ``True``, the array must be sorted in descending</span>
+<span class="sd">            order (by value). If ``False``, the array must be sorted in</span>
+<span class="sd">            ascending order (by value).</span>
+<span class="sd">            Default: ``False``.</span>
+<span class="sd">        stable : {None, bool}, optional</span>
+<span class="sd">            Sort stability. If ``True``, the returned array will maintain the</span>
+<span class="sd">            relative order of `a` values which compare as equal. The same</span>
+<span class="sd">            behavior applies when set to ``False`` or ``None``.</span>
+<span class="sd">            Internally, this option selects ``kind=&quot;stable&quot;``.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.sort` : Return a sorted copy of an array.</span>
+<span class="sd">        :obj:`dpnp.argsort` : Return the indices that would sort an array.</span>
+<span class="sd">        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
+<span class="sd">        :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
+<span class="sd">        :obj:`dpnp.partition` : Partial sort.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([3, 1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; a.argsort()</span>
+<span class="sd">        array([1, 2, 0])</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.array([[0, 3], [2, 2]])</span>
+<span class="sd">        &gt;&gt;&gt; a.argsort(axis=0)</span>
+<span class="sd">        array([[0, 1],</span>
+<span class="sd">               [1, 0]])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="n">stable</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dpnp_array.asnumpy">
@@ -1777,11 +1826,44 @@
 
 <div class="viewcode-block" id="dpnp_array.sort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.sort.html#dpnp.dpnp_array.dpnp_array.sort">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sort an array in-place.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.sort` for full documentation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, optional</span>
+<span class="sd">            Axis along which to sort. The default is ``-1``, which sorts along</span>
+<span class="sd">            the last axis.</span>
+<span class="sd">            Default: ``-1``.</span>
+<span class="sd">        kind : {None, &quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;}, optional</span>
+<span class="sd">            Sorting algorithm. The default is ``None``, which uses parallel</span>
+<span class="sd">            merge-sort or parallel radix-sort algorithms depending on the array</span>
+<span class="sd">            data type.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        descending : bool, optional</span>
+<span class="sd">            Sort order. If ``True``, the array must be sorted in descending</span>
+<span class="sd">            order (by value). If ``False``, the array must be sorted in</span>
+<span class="sd">            ascending order (by value).</span>
+<span class="sd">            Default: ``False``.</span>
+<span class="sd">        stable : {None, bool}, optional</span>
+<span class="sd">            Sort stability. If ``True``, the returned array will maintain the</span>
+<span class="sd">            relative order of `a` values which compare as equal. The same</span>
+<span class="sd">            behavior applies when set to ``False`` or ``None``.</span>
+<span class="sd">            Internally, this option selects ``kind=&quot;stable&quot;``.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.sort` : Return a sorted copy of an array.</span>
+<span class="sd">        :obj:`dpnp.argsort` : Return the indices that would sort an array.</span>
+<span class="sd">        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
+<span class="sd">        :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
+<span class="sd">        :obj:`dpnp.partition` : Partial sort.</span>
 
 <span class="sd">        Note</span>
 <span class="sd">        ----</span>
@@ -1793,7 +1875,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">        &gt;&gt;&gt; a = np.array([[1,4],[3,1]])</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 4], [3, 1]])</span>
 <span class="sd">        &gt;&gt;&gt; a.sort(axis=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
 <span class="sd">        array([[1, 4],</span>
@@ -1809,7 +1891,14 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;NoneType&#39; object cannot be interpreted as an integer&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">,</span>
+            <span class="n">stable</span><span class="o">=</span><span class="n">stable</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dpnp_array.squeeze">
