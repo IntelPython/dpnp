@@ -54,6 +54,19 @@ def to_supported_dtypes(dtypes, supported_types, device):
     def is_castable(dtype, stype):
         return _can_cast(dtype, stype, has_fp16, has_fp64)
 
+    if not isinstance(supported_types, Iterable):
+        supported_types = (supported_types,)
+
+    if isinstance(dtypes, Iterable):
+        sdtypes_elem = supported_types[0]
+        if not isinstance(sdtypes_elem, Iterable):
+            raise ValueError(
+                "Input and supported types must have the same length"
+            )
+
+        typ = type(sdtypes_elem)
+        dtypes = typ(dtypes)
+
     if dtypes in supported_types:
         return dtypes
 
@@ -78,4 +91,7 @@ def to_supported_dtypes(dtypes, supported_types, device):
             ):
                 return stypes
 
-    return None
+    if not isinstance(dtypes, Iterable):
+        return None
+
+    return (None,) * len(dtypes)

@@ -930,7 +930,7 @@ class TestHistogram2d:
     def test_finite_range(self, xp):
         x = y = xp.linspace(0.0, 1.0, num=100)
 
-        # normal ranges should be fine
+        # normal ranges should be finite
         _, _, _ = xp.histogram2d(x, y, range=[[0.25, 0.75]] * 2)
         assert_raises(
             ValueError, xp.histogram2d, x, y, range=[[xp.nan, 0.75]] * 2
