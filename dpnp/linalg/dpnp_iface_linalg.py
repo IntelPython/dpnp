@@ -39,12 +39,18 @@ it contains:
 # pylint: disable=invalid-name
 # pylint: disable=no-member
 
+from typing import NamedTuple
+
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_tuple
 
 import dpnp
 
 from .dpnp_utils_linalg import (
+    EighResult,
+    QRResult,
+    SlogdetResult,
+    SVDResult,
     assert_2d,
     assert_stacked_2d,
     assert_stacked_square,
@@ -66,6 +72,11 @@ from .dpnp_utils_linalg import (
 )
 
 __all__ = [
+    "EigResult",
+    "EighResult",
+    "QRResult",
+    "SlogdetResult",
+    "SVDResult",
     "cholesky",
     "cond",
     "cross",
@@ -98,6 +109,12 @@ __all__ = [
     "vecdot",
     "vector_norm",
 ]
+
+
+# pylint:disable=missing-class-docstring
+class EigResult(NamedTuple):
+    eigenvalues: dpnp.ndarray
+    eigenvectors: dpnp.ndarray
 
 
 def cholesky(a, /, *, upper=False):
@@ -532,7 +549,7 @@ def eig(a):
     # Since geev function from OneMKL LAPACK is not implemented yet,
     # use NumPy for this calculation.
     w_np, v_np = numpy.linalg.eig(dpnp.asnumpy(a))
-    return (
+    return EigResult(
         dpnp.array(w_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
         dpnp.array(v_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
     )
