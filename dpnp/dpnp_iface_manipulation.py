@@ -1469,7 +1469,20 @@ def copyto(dst, src, casting="same_kind", where=True):
             f"but got {type(dst)}"
         )
     if not dpnp.is_supported_array_type(src):
+        no_dtype_attr = not hasattr(src, "dtype")
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
+        if no_dtype_attr:
+            # This case (scalar, list, etc) needs special handling to
+            # behave similar to NumPy
+            if dpnp.issubdtype(src, dpnp.integer) and dpnp.issubdtype(
+                dst, dpnp.unsignedinteger
+            ):
+                if dpnp.any(src < 0):
+                    raise OverflowError(
+                        "Cannot copy negative values to an unsigned int array"
+                    )
+
+                src = src.astype(dst.dtype)
 
     if not dpnp.can_cast(src.dtype, dst.dtype, casting=casting):
         raise TypeError(
