@@ -1,6 +1,6 @@
 .. _routines.fft:
 
-.. module:: dpnp.fft
+.. py:module:: dpnp.fft
 
 Discrete Fourier Transform
 ==========================

@@ -1,6 +1,6 @@
 .. _routines.linalg:
 
-.. module:: dpnp.linalg
+.. py:module:: dpnp.linalg
 
 Linear algebra
 ==============
