@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,8 +31,6 @@ set(DPNP_SRC
     kernels/dpnp_krnl_mathematical.cpp
     kernels/dpnp_krnl_random.cpp
     kernels/dpnp_krnl_sorting.cpp
-    kernels/dpnp_krnl_statistics.cpp
-    src/constants.cpp
     src/dpnp_iface_fptr.cpp
     src/memory_sycl.cpp
     src/queue_sycl.cpp

@@ -15,12 +15,14 @@ env:
   PACKAGE_NAME: dpnp
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   TEST_ENV_NAME: test
-  RERUN_TESTS_ON_FAILURE: 'true'
   RUN_TESTS_MAX_ATTEMPTS: 2
 
 jobs:
   test:
-    name: Test ['${{ matrix.runner }}', python='${{ matrix.python }}']
+    name: Test
+
+    # disable scheduled workflow to be run in forks
+    if: github.event.repository.fork == false
 
     runs-on:  ${{ matrix.runner }}
 
@@ -33,11 +35,10 @@ jobs:
       actions: write
 
     strategy:
+      fail-fast: false
       matrix:
-        python: ['3.9', '3.10', '3.11', '3.12']
+        python: ['3.9', '3.10', '3.11', '3.12', '3.13']
         runner: [ubuntu-22.04, ubuntu-24.04, windows-2019]
-
-    continue-on-error: false
 
     steps:
       - name: Cancel Previous Runs
@@ -45,7 +46,31 @@ jobs:
         with:
           access_token: ${{ github.token }}
 
+      - name: Find the latest tag
+        id: find_latest_tag
+        uses: oprypin/find-latest-tag@dd2729fe78b0bb55523ae2b2a310c6773a652bd1 # 1.1.2
+        with:
+          repository: IntelPython/dpnp
+          releases-only: false
+
+      - name: Print latest tag
+        run: |
+          echo "Latest tag is ${{ steps.find_latest_tag.outputs.tag }}"
+
       - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          channels: conda-forge
+          conda-remove-defaults: 'true'
+          python-version: ${{ matrix.python }}
+          activate-environment: ${{ env.TEST_ENV_NAME }}
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
         uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
         with:
           miniforge-version: latest
@@ -56,10 +81,15 @@ jobs:
           activate-environment: ${{ env.TEST_ENV_NAME }}
 
       - name: Install dpnp
+        id: install_dpnp
+        continue-on-error: true
         run: |
-          mamba install ${{ env.PACKAGE_NAME }} pytest ${{ env.CHANNELS }}
-        env:
-          MAMBA_NO_LOW_SPEED_LIMIT: 1
+          mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
+
+      - name: ReInstall dpnp
+        if: steps.install_dpnp.outcome == 'failure'
+        run: |
+          mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
 
       - name: List installed packages
         run: mamba list
@@ -84,18 +114,19 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        id: run_tests
+        continue-on-error: true
         run: |
           python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Linux
-        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.runner != 'windows-2019'
+        if: steps.run_tests.outcome == 'failure' && matrix.runner != 'windows-2019'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 10
+          timeout_minutes: 12
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
@@ -108,7 +139,7 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Windows
-        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.runner == 'windows-2019'
+        if: steps.run_tests.outcome == 'failure' && matrix.runner == 'windows-2019'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:

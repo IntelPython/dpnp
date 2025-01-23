@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2023-2024, Intel Corporation
+# Copyright (c) 2023-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -78,4 +78,4 @@ def to_supported_dtypes(dtypes, supported_types, device):
             ):
                 return stypes
 
-    return None
+    return None  # pragma: no cover

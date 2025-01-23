@@ -8,6 +8,7 @@ import unittest
 import numpy
 
 import dpnp as cupy
+from dpnp.tests.helper import is_cuda_device
 
 _old_python_random_state = None
 _old_numpy_random_state = None
@@ -33,11 +34,15 @@ def do_setup(deterministic=True):
     if not deterministic:
         random.seed()
         numpy.random.seed()
-        cupy.random.seed()
+        # TODO: remove it once the issue with CUDA support is resolved
+        # for dpnp.random
+        if not is_cuda_device():
+            cupy.random.seed()
     else:
         random.seed(99)
         numpy.random.seed(100)
-        cupy.random.seed(101)
+        if not is_cuda_device():
+            cupy.random.seed(101)
 
 
 def do_teardown():

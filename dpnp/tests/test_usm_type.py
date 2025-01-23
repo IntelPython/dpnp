@@ -10,7 +10,10 @@ import pytest
 import dpnp as dp
 from dpnp.dpnp_utils import get_usm_allocations
 
-from .helper import assert_dtype_allclose, generate_random_numpy_array
+from .helper import (
+    assert_dtype_allclose,
+    generate_random_numpy_array,
+)
 
 list_of_usm_types = ["device", "shared", "host"]
 
@@ -864,7 +867,8 @@ def test_split(func, data1, usm_type):
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("p", [None, -dp.inf, -2, -1, 1, 2, dp.inf, "fro"])
 def test_cond(usm_type, p):
-    ia = dp.arange(32, usm_type=usm_type).reshape(2, 4, 4)
+    a = generate_random_numpy_array((2, 4, 4), seed_value=42)
+    ia = dp.array(a, usm_type=usm_type)
 
     result = dp.linalg.cond(ia, p=p)
     assert ia.usm_type == usm_type

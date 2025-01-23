@@ -159,7 +159,7 @@ class TestPermutationSoundness(unittest.TestCase):
 
     def setUp(self):
         a = cupy.random.permutation(self.num)
-        self.a = a
+        self.a = a.asnumpy()
 
     # Test soundness
 

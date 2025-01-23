@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -3220,10 +3220,14 @@ def roll(x, shift, axis=None):
            [3, 4, 0, 1, 2]])
 
     """
-    if axis is None:
-        return roll(x.reshape(-1), shift, 0).reshape(x.shape)
 
     usm_x = dpnp.get_usm_ndarray(x)
+    if dpnp.is_supported_array_type(shift):
+        shift = dpnp.asnumpy(shift)
+
+    if axis is None:
+        return roll(dpt.reshape(usm_x, -1), shift, 0).reshape(x.shape)
+
     usm_res = dpt.roll(usm_x, shift=shift, axis=axis)
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
@@ -3913,25 +3917,40 @@ def transpose(a, axes=None):
 permute_dims = transpose  # permute_dims is an alias for transpose
 
 
-def trim_zeros(filt, trim="fb"):
+def trim_zeros(filt, trim="fb", axis=None):
     """
-    Trim the leading and/or trailing zeros from a 1-D array.
+    Remove values along a dimension which are zero along all other.
 
     For full documentation refer to :obj:`numpy.trim_zeros`.
 
     Parameters
     ----------
     filt : {dpnp.ndarray, usm_ndarray}
-        Input 1-D array.
-    trim : str, optional
-        A string with 'f' representing trim from front and 'b' to trim from
-        back. By defaults, trim zeros from both front and back of the array.
+        Input array.
+    trim : {"fb", "f", "b"}, optional
+        A string with `"f"` representing trim from front and `"b"` to trim from
+        back. By default, zeros are trimmed on both sides. Front and back refer
+        to the edges of a dimension, with "front" referring to the side with
+        the lowest index 0, and "back" referring to the highest index
+        (or index -1).
         Default: ``"fb"``.
+    axis : {None, int}, optional
+        If ``None``, `filt` is cropped such, that the smallest bounding box is
+        returned that still contains all values which are not zero.
+        If an `axis` is specified, `filt` will be sliced in that dimension only
+        on the sides specified by `trim`. The remaining area will be the
+        smallest that still contains all values which are not zero.
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        The result of trimming the input.
+        The result of trimming the input. The number of dimensions and the
+        input data type are preserved.
+
+    Notes
+    -----
+    For all-zero arrays, the first axis is trimmed first.
 
     Examples
     --------
@@ -3940,42 +3959,66 @@ def trim_zeros(filt, trim="fb"):
     >>> np.trim_zeros(a)
     array([1, 2, 3, 0, 2, 1])
 
-    >>> np.trim_zeros(a, 'b')
+    >>> np.trim_zeros(a, trim='b')
     array([0, 0, 0, 1, 2, 3, 0, 2, 1])
+
+    Multiple dimensions are supported:
+
+    >>> b = np.array([[0, 0, 2, 3, 0, 0],
+    ...               [0, 1, 0, 3, 0, 0],
+    ...               [0, 0, 0, 0, 0, 0]])
+    >>> np.trim_zeros(b)
+    array([[0, 2, 3],
+           [1, 0, 3]])
+
+    >>> np.trim_zeros(b, axis=-1)
+    array([[0, 2, 3],
+           [1, 0, 3],
+           [0, 0, 0]])
 
     """
 
     dpnp.check_supported_arrays_type(filt)
-    if filt.ndim == 0:
-        raise TypeError("0-d array cannot be trimmed")
-    if filt.ndim > 1:
-        raise ValueError("Multi-dimensional trim is not supported")
 
     if not isinstance(trim, str):
         raise TypeError("only string trim is supported")
 
-    trim = trim.upper()
-    if not any(x in trim for x in "FB"):
-        return filt  # no trim rule is specified
+    trim = trim.lower()
+    if trim not in ["fb", "bf", "f", "b"]:
+        raise ValueError(f"unexpected character(s) in `trim`: {trim!r}")
+
+    nd = filt.ndim
+    if axis is not None:
+        axis = normalize_axis_index(axis, nd)
 
     if filt.size == 0:
         return filt  # no trailing zeros in empty array
 
-    a = dpnp.nonzero(filt)[0]
-    a_size = a.size
-    if a_size == 0:
-        # 'filt' is array of zeros
-        return dpnp.empty_like(filt, shape=(0,))
+    non_zero = dpnp.argwhere(filt)
+    if non_zero.size == 0:
+        # `filt` has all zeros, so assign `start` and `stop` to the same value,
+        # then the resulting slice will be empty
+        start = stop = dpnp.zeros_like(filt, shape=nd, dtype=dpnp.intp)
+    else:
+        if "f" in trim:
+            start = non_zero.min(axis=0)
+        else:
+            start = (None,) * nd
 
-    first = 0
-    if "F" in trim:
-        first = a[0]
+        if "b" in trim:
+            stop = non_zero.max(axis=0)
+            stop += 1  # Adjust for slicing
+        else:
+            stop = (None,) * nd
 
-    last = filt.size
-    if "B" in trim:
-        last = a[-1] + 1
+    if axis is None:
+        # trim all axes
+        sl = tuple(slice(*x) for x in zip(start, stop))
+    else:
+        # only trim single axis
+        sl = (slice(None),) * axis + (slice(start[axis], stop[axis]),) + (...,)
 
-    return filt[first:last]
+    return filt[sl]
 
 
 def unique(

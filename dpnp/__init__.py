@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
 # *****************************************************************************
 
 import os
+import sys
 
 mypath = os.path.dirname(os.path.realpath(__file__))
 
@@ -41,13 +42,25 @@ dpctlpath = os.path.dirname(dpctl.__file__)
 # are not installed under any of default paths where Python is searching.
 from platform import system
 
-if system() == "Windows":
+if system() == "Windows":  # pragma: no cover
     if hasattr(os, "add_dll_directory"):
         os.add_dll_directory(mypath)
         os.add_dll_directory(dpctlpath)
+
     os.environ["PATH"] = os.pathsep.join(
         [os.getenv("PATH", ""), mypath, dpctlpath]
     )
+
+    # For virtual environments on Windows, add folder with DPC++ libraries
+    # to the DLL search path
+    if sys.base_exec_prefix != sys.exec_prefix and os.path.isfile(
+        os.path.join(sys.exec_prefix, "pyvenv.cfg")
+    ):
+        dll_path = os.path.join(sys.exec_prefix, "Library", "bin")
+        if os.path.isdir(dll_path):
+            os.environ["PATH"] = os.pathsep.join(
+                [os.getenv("PATH", ""), dll_path]
+            )
 
 # Borrowed from DPCTL
 from dpctl.tensor import DLDeviceType

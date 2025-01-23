@@ -14,7 +14,11 @@ from numpy.testing import (
 
 import dpnp
 
-from .helper import assert_dtype_allclose, get_all_dtypes
+from .helper import (
+    assert_dtype_allclose,
+    get_all_dtypes,
+    get_array,
+)
 from .third_party.cupy import testing
 
 
@@ -338,6 +342,11 @@ def test_fromstring(dtype):
 def test_identity(n, dtype):
     func = lambda xp: xp.identity(n, dtype=dtype)
     assert_array_equal(func(numpy), func(dpnp))
+
+
+def test_identity_error():
+    # negative dimensions
+    assert_raises(ValueError, dpnp.identity, -5)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
@@ -772,7 +781,7 @@ def test_space_numpy_dtype(func, start_dtype, stop_dtype):
     ],
 )
 def test_linspace_arrays(start, stop):
-    func = lambda xp: xp.linspace(start, stop, 10)
+    func = lambda xp: xp.linspace(get_array(xp, start), get_array(xp, stop), 10)
     assert func(numpy).shape == func(dpnp).shape
 
 
@@ -921,6 +930,12 @@ def test_logspace_axis(axis):
     assert_dtype_allclose(func(dpnp), func(numpy))
 
 
+def test_logspace_list_input():
+    expected = numpy.logspace([0], [2], base=[5])
+    result = dpnp.logspace([0], [2], base=[5])
+    assert_dtype_allclose(result, expected)
+
+
 @pytest.mark.parametrize(
     "data", [(), 1, (2, 3), [4], numpy.array(5), numpy.array([6, 7])]
 )
@@ -964,6 +979,48 @@ def test_meshgrid_raise_error():
     b = dpnp.array([1, 2, 3, 4])
     with pytest.raises(ValueError):
         dpnp.meshgrid(b, indexing="ab")
+
+
+class TestMgrid:
+    def check_results(self, result, expected):
+        if isinstance(result, (list, tuple)):
+            assert len(result) == len(expected)
+            for dp_arr, np_arr in zip(result, expected):
+                assert_allclose(dp_arr, np_arr)
+        else:
+            assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "slice",
+        [
+            slice(0, 5, 0.5),  # float step
+            slice(0, 5, 1j),  # complex step
+            slice(0, 5, 5j),  # complex step
+            slice(None, 5, 1),  # no start
+            slice(0, 5, None),  # no step
+        ],
+    )
+    def test_single_slice(self, slice):
+        dpnp_result = dpnp.mgrid[slice]
+        numpy_result = numpy.mgrid[slice]
+        self.check_results(dpnp_result, numpy_result)
+
+    @pytest.mark.parametrize(
+        "slices",
+        [
+            (slice(None, 5, 1), slice(None, 10, 2)),  # no start
+            (slice(0, 5), slice(0, 10)),  # no step
+            (slice(0, 5.5, 1), slice(0, 10, 3j)),  # float stop and complex step
+            (
+                slice(0.0, 5, 1),
+                slice(0, 10, 1j),
+            ),  # float start and complex step
+        ],
+    )
+    def test_md_slice(self, slices):
+        dpnp_result = dpnp.mgrid[slices]
+        numpy_result = numpy.mgrid[slices]
+        self.check_results(dpnp_result, numpy_result)
 
 
 def test_exception_tri():

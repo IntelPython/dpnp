@@ -1,0 +1,57 @@
+# array API tests to be skipped
+
+# no 'uint8' dtype
+array_api_tests/test_array_object.py::test_getitem_masking
+
+# missing unique-like functions
+array_api_tests/test_has_names.py::test_has_names[set-unique_all]
+array_api_tests/test_has_names.py::test_has_names[set-unique_counts]
+array_api_tests/test_has_names.py::test_has_names[set-unique_inverse]
+array_api_tests/test_has_names.py::test_has_names[set-unique_values]
+array_api_tests/test_set_functions.py::test_unique_all
+array_api_tests/test_set_functions.py::test_unique_counts
+array_api_tests/test_set_functions.py::test_unique_inverse
+array_api_tests/test_set_functions.py::test_unique_values
+array_api_tests/test_signatures.py::test_func_signature[unique_all]
+array_api_tests/test_signatures.py::test_func_signature[unique_counts]
+array_api_tests/test_signatures.py::test_func_signature[unique_inverse]
+array_api_tests/test_signatures.py::test_func_signature[unique_values]
+
+# no '__array_namespace_info__' function
+array_api_tests/test_has_names.py::test_has_names[info-__array_namespace_info__]
+array_api_tests/test_inspection_functions.py::test_array_namespace_info
+array_api_tests/test_inspection_functions.py::test_array_namespace_info_dtypes
+array_api_tests/test_searching_functions.py::test_searchsorted
+array_api_tests/test_signatures.py::test_func_signature[__array_namespace_info__]
+array_api_tests/test_signatures.py::test_info_func_signature[capabilities]
+array_api_tests/test_signatures.py::test_info_func_signature[default_device]
+array_api_tests/test_signatures.py::test_info_func_signature[default_dtypes]
+array_api_tests/test_signatures.py::test_info_func_signature[devices]
+array_api_tests/test_signatures.py::test_info_func_signature[dtypes]
+
+# do not return a namedtuple
+array_api_tests/test_linalg.py::test_eigh
+array_api_tests/test_linalg.py::test_slogdet
+array_api_tests/test_linalg.py::test_svd
+
+# hypothesis found failures
+array_api_tests/test_linalg.py::test_qr
+array_api_tests/test_operators_and_elementwise_functions.py::test_clip
+
+# unexpected result is returned
+array_api_tests/test_operators_and_elementwise_functions.py::test_asin
+array_api_tests/test_operators_and_elementwise_functions.py::test_asinh
+
+# missing 'correction' keyword argument
+array_api_tests/test_signatures.py::test_func_signature[std]
+array_api_tests/test_signatures.py::test_func_signature[var]
+
+# wrong shape is returned
+array_api_tests/test_linalg.py::test_vecdot
+array_api_tests/test_linalg.py::test_linalg_vecdot
+
+# tuple index out of range
+array_api_tests/test_linalg.py::test_linalg_matmul
+
+# arrays have different values
+array_api_tests/test_linalg.py::test_linalg_tensordot

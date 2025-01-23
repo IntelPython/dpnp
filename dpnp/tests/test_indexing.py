@@ -20,6 +20,7 @@ from dpnp.dpnp_array import dpnp_array
 from .helper import (
     get_abs_array,
     get_all_dtypes,
+    get_array,
     get_integer_dtypes,
     has_support_aspect64,
     is_win_platform,
@@ -448,16 +449,15 @@ class TestPut:
     )
     @pytest.mark.parametrize("ind_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
-        "vals",
+        "ivals",
         [0, [1, 2], (2, 2), dpnp.array([1, 2])],
         ids=["0", "[1, 2]", "(2, 2)", "dpnp.array([1, 2])"],
     )
     @pytest.mark.parametrize("mode", ["clip", "wrap"])
-    def test_input_1d(self, a_dt, indices, ind_dt, vals, mode):
+    def test_input_1d(self, a_dt, indices, ind_dt, ivals, mode):
         a = get_abs_array([-2, -1, 0, 1, 2], a_dt)
-        b = numpy.copy(a)
-        ia = dpnp.array(a)
-        ib = dpnp.array(b)
+        b, vals = numpy.copy(a), get_array(numpy, ivals)
+        ia, ib = dpnp.array(a), dpnp.array(b)
 
         ind = get_abs_array(indices, ind_dt)
         if ind_dt == dpnp.bool and ind.all():
@@ -466,11 +466,11 @@ class TestPut:
 
         if numpy.can_cast(ind_dt, numpy.intp, casting="safe"):
             numpy.put(a, ind, vals, mode=mode)
-            dpnp.put(ia, iind, vals, mode=mode)
+            dpnp.put(ia, iind, ivals, mode=mode)
             assert_array_equal(ia, a)
 
             b.put(ind, vals, mode=mode)
-            ib.put(iind, vals, mode=mode)
+            ib.put(iind, ivals, mode=mode)
             assert_array_equal(ib, b)
         elif numpy.issubdtype(ind_dt, numpy.uint64):
             # For this special case, NumPy raises an error but dpnp works
@@ -486,10 +486,10 @@ class TestPut:
             assert_array_equal(ib, b)
         else:
             assert_raises(TypeError, numpy.put, a, ind, vals, mode=mode)
-            assert_raises(TypeError, dpnp.put, ia, iind, vals, mode=mode)
+            assert_raises(TypeError, dpnp.put, ia, iind, ivals, mode=mode)
 
             assert_raises(TypeError, b.put, ind, vals, mode=mode)
-            assert_raises(TypeError, ib.put, iind, vals, mode=mode)
+            assert_raises(TypeError, ib.put, iind, ivals, mode=mode)
 
     @pytest.mark.parametrize("a_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
@@ -637,7 +637,7 @@ class TestPutAlongAxis:
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
         for axis in range(ndim):
-            numpy.put_along_axis(a, ind, values, axis)
+            numpy.put_along_axis(a, ind, get_array(numpy, values), axis)
             dpnp.put_along_axis(ia, iind, values, axis)
             assert_array_equal(ia, a)
 
@@ -799,7 +799,9 @@ class TestTakeAlongAxis:
         ],
     )
     def test_argequivalent(self, func, argfunc, kwargs):
-        a = dpnp.random.random(size=(3, 4, 5))
+        # TODO: to roll back the change once the issue with CUDA support is resolved for random
+        # a = dpnp.random.random(size=(3, 4, 5))
+        a = dpnp.asarray(numpy.random.random(size=(3, 4, 5)))
 
         for axis in list(range(a.ndim)) + [None]:
             a_func = func(a, axis=axis, **kwargs)

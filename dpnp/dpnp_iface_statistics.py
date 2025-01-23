@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -108,17 +108,11 @@ def _count_reduce_items(arr, axis, where=True):
         for ax in axis:
             items *= arr.shape[normalize_axis_index(ax, arr.ndim)]
         items = dpnp.intp(items)
-    else:
+    else:  # pragma: no cover
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )
     return items
-
-
-def _get_comparison_res_dt(a, _dtype, _out):
-    """Get a data type used by dpctl for result array in comparison function."""
-
-    return a.dtype
 
 
 def amax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
@@ -582,7 +576,7 @@ def correlate(a, v, mode="valid"):
     rdtype = result_type_for_device([a.dtype, v.dtype], device)
     supported_dtype = to_supported_dtypes(rdtype, supported_types, device)
 
-    if supported_dtype is None:
+    if supported_dtype is None:  # pragma: no cover
         raise ValueError(
             f"function does not support input types "
             f"({a.dtype.name}, {v.dtype.name}), "
@@ -760,11 +754,10 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.max,
-        _get_comparison_res_dt,
-        usm_a,
+        a.dtype,
         axis=axis,
         keepdims=keepdims,
     )
@@ -1026,11 +1019,10 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.min,
-        _get_comparison_res_dt,
-        usm_a,
+        a.dtype,
         axis=axis,
         keepdims=keepdims,
     )

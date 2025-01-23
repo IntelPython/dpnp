@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ __all__ = [
 ]
 
 
-def _get_accumulation_res_dt(a, dtype, _out):
+def _get_accumulation_res_dt(a, dtype):
     """Get a dtype used by dpctl for result array in accumulation function."""
 
     if dtype is None:
@@ -893,11 +893,10 @@ def cumlogsumexp(
         usm_x = dpnp.get_usm_ndarray(x)
 
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.cumulative_logsumexp,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         include_initial=include_initial,
@@ -1705,11 +1704,10 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.logsumexp,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -1952,11 +1950,10 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.reduce_hypot,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -2453,7 +2450,5 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
 
     up = dpnp.astype(p, dtype=dt, copy=True)
     up[slice1] = p[slice1]
-    # TODO: replace, once dpctl-1757 resolved
-    # up[slice1] += ph_correct.cumsum(axis=axis)
-    up[slice1] += ph_correct.cumsum(axis=axis, dtype=dt)
+    up[slice1] += ph_correct.cumsum(axis=axis)
     return up

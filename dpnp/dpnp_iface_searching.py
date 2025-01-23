@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,14 +48,14 @@ from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 __all__ = ["argmax", "argmin", "argwhere", "searchsorted", "where"]
 
 
-def _get_search_res_dt(a, _dtype, out):
+def _get_search_res_dt(a, out):
     """Get a data type used by dpctl for result array in search function."""
 
     # get a data type used by dpctl for result array in search function
     res_dt = dti.default_device_index_type(a.sycl_device)
 
     # numpy raises TypeError if "out" data type mismatch default index type
-    if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
+    if out is not None and not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
         raise TypeError(
             f"Cannot cast from {out.dtype} to {res_dt} "
             "according to the rule safe."
@@ -143,11 +143,10 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.argmax,
-        _get_search_res_dt,
-        usm_a,
+        _get_search_res_dt(a, out),
         axis=axis,
         keepdims=keepdims,
     )
@@ -234,11 +233,10 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.argmin,
-        _get_search_res_dt,
-        usm_a,
+        _get_search_res_dt(a, out),
         axis=axis,
         keepdims=keepdims,
     )
