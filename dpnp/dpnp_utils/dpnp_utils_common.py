@@ -55,12 +55,12 @@ def to_supported_dtypes(dtypes, supported_types, device):
         return _can_cast(dtype, stype, has_fp16, has_fp64)
 
     if not isinstance(supported_types, Iterable):
-        supported_types = (supported_types,)
+        supported_types = (supported_types,)  # pragma: no cover
 
     if isinstance(dtypes, Iterable):
         sdtypes_elem = supported_types[0]
         if not isinstance(sdtypes_elem, Iterable):
-            raise ValueError(
+            raise ValueError(  # pragma: no cover
                 "Input and supported types must have the same length"
             )
 
@@ -72,7 +72,7 @@ def to_supported_dtypes(dtypes, supported_types, device):
 
     for stypes in supported_types:
         if not isinstance(dtypes, Iterable):
-            if isinstance(stypes, Iterable):
+            if isinstance(stypes, Iterable):  # pragma: no cover
                 raise ValueError(
                     "Input and supported types must have the same length"
                 )
@@ -80,7 +80,9 @@ def to_supported_dtypes(dtypes, supported_types, device):
             if is_castable(dtypes, stypes):
                 return stypes
         else:
-            if not isinstance(stypes, Iterable) or len(dtypes) != len(stypes):
+            if not isinstance(stypes, Iterable) or len(dtypes) != len(
+                stypes
+            ):  # pragma: no cover
                 raise ValueError(
                     "Input and supported types must have the same length"
                 )
@@ -91,7 +93,7 @@ def to_supported_dtypes(dtypes, supported_types, device):
             ):
                 return stypes
 
-    if not isinstance(dtypes, Iterable): # pragma: no cover
-        return None # pragma: no cover
+    if not isinstance(dtypes, Iterable):  # pragma: no cover
+        return None  # pragma: no cover
 
-    return (None,) * len(dtypes) # pragma: no cover
+    return (None,) * len(dtypes)  # pragma: no cover
