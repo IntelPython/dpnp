@@ -140,7 +140,7 @@ def beta(a, b, size=None):
     """
 
     if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -191,7 +191,7 @@ def binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -248,7 +248,7 @@ def chisquare(df, size=None):
     """
 
     if not use_origin_backend(df):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -321,7 +321,7 @@ def exponential(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -358,7 +358,7 @@ def f(dfnum, dfden, size=None):
     """
 
     if not use_origin_backend(dfnum):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -401,7 +401,7 @@ def gamma(shape, scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -444,7 +444,7 @@ def geometric(p, size=None):
     """
 
     if not use_origin_backend(p):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -483,7 +483,7 @@ def gumbel(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -526,7 +526,7 @@ def hypergeometric(ngood, nbad, nsample, size=None):
     """
 
     if not use_origin_backend(ngood):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -579,7 +579,7 @@ def laplace(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -618,7 +618,7 @@ def logistic(loc=0.0, scale=1.0, size=None):
     """
 
     if not use_origin_backend(loc):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -664,7 +664,7 @@ def lognormal(mean=0.0, sigma=1.0, size=None):
     """
 
     if not use_origin_backend(mean):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -726,7 +726,7 @@ def multinomial(n, pvals, size=None):
         pvals_sum = sum(pvals)
         pvals_desc = dpnp.get_dpnp_descriptor(dpnp.array(pvals))
         d = len(pvals)
-        if dpnp.is_cuda_backend(pvals_desc.get_array()):
+        if dpnp.is_cuda_backend(pvals_desc.get_array()):  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -780,7 +780,7 @@ def multivariate_normal(mean, cov, size=None, check_valid="warn", tol=1e-8):
         cov_ = dpnp.get_dpnp_descriptor(dpnp.array(cov, dtype=dpnp.float64))
         if dpnp.is_cuda_backend(mean_.get_array()) or dpnp.is_cuda_backend(
             cov_.get_array()
-        ):
+        ):  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -839,7 +839,7 @@ def negative_binomial(n, p, size=None):
     """
 
     if not use_origin_backend(n):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -929,7 +929,7 @@ def noncentral_chisquare(df, nonc, size=None):
     """
 
     if not use_origin_backend(df):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -988,7 +988,7 @@ def pareto(a, size=None):
     """
 
     if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1062,7 +1062,7 @@ def poisson(lam=1.0, size=None):
     """
 
     if not use_origin_backend(lam):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1102,7 +1102,7 @@ def power(a, size=None):
     """
 
     if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1524,7 +1524,7 @@ def rayleigh(scale=1.0, size=None):
     """
 
     if not use_origin_backend(scale):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1606,7 +1606,7 @@ def shuffle(x1):
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
 
-        if dpnp.is_cuda_backend(x1_desc.get_array()):
+        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1655,7 +1655,7 @@ def seed(seed=None, device=None, sycl_queue=None):
     )
 
     if not use_origin_backend(seed):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1700,7 +1700,7 @@ def standard_cauchy(size=None):
     """
 
     if not use_origin_backend(size):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1729,7 +1729,7 @@ def standard_exponential(size=None):
     """
 
     if not use_origin_backend(size):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1761,7 +1761,7 @@ def standard_gamma(shape, size=None):
     """
 
     if not use_origin_backend(shape):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1844,7 +1844,7 @@ def standard_t(df, size=None):
     """
 
     if not use_origin_backend(df):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1885,7 +1885,7 @@ def triangular(left, mode, right, size=None):
     """
 
     if not use_origin_backend(left):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -1998,7 +1998,7 @@ def vonmises(mu, kappa, size=None):
     """
 
     if not use_origin_backend(mu):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -2039,7 +2039,7 @@ def wald(mean, scale, size=None):
     """
 
     if not use_origin_backend(mean):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -2080,7 +2080,7 @@ def weibull(a, size=None):
     """
 
     if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )
@@ -2117,7 +2117,7 @@ def zipf(a, size=None):
     """
 
     if not use_origin_backend(a):
-        if dpnp.is_cuda_backend():
+        if dpnp.is_cuda_backend():  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"
             )

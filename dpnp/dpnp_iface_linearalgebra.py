@@ -548,6 +548,12 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
 
     """
 
+    # explicit casting to numpy array if applicable
+    operands = [
+        dpnp.asnumpy(x) if dpnp.is_supported_array_type(x) else x
+        for x in operands
+    ]
+
     return numpy.einsum_path(
         *operands,
         optimize=optimize,

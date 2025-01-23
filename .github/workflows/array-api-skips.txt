@@ -47,12 +47,6 @@ array_api_tests/test_operators_and_elementwise_functions.py::test_clip
 array_api_tests/test_operators_and_elementwise_functions.py::test_asin
 array_api_tests/test_operators_and_elementwise_functions.py::test_asinh
 
-# missing 'descending' keyword argument
-array_api_tests/test_signatures.py::test_func_signature[argsort]
-array_api_tests/test_signatures.py::test_func_signature[sort]
-array_api_tests/test_sorting_functions.py::test_argsort
-array_api_tests/test_sorting_functions.py::test_sort
-
 # missing 'correction' keyword argument
 array_api_tests/test_signatures.py::test_func_signature[std]
 array_api_tests/test_signatures.py::test_func_signature[var]

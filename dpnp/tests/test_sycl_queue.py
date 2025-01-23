@@ -112,6 +112,7 @@ def vvsort(val, vec, size, xp):
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
+        pytest.param("logspace", [0, 4, 8], {"base": [10]}),
         pytest.param("ones", [(2, 2)], {}),
         pytest.param("tri", [3, 5, 2], {}),
         pytest.param("zeros", [(2, 2)], {}),

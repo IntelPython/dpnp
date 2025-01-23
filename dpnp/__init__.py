@@ -42,7 +42,7 @@ dpctlpath = os.path.dirname(dpctl.__file__)
 # are not installed under any of default paths where Python is searching.
 from platform import system
 
-if system() == "Windows":
+if system() == "Windows":  # pragma: no cover
     if hasattr(os, "add_dll_directory"):
         os.add_dll_directory(mypath)
         os.add_dll_directory(dpctlpath)

@@ -381,7 +381,7 @@ def bincount(x, weights=None, minlength=None):
         x.dtype, x.dtype, ntype, supported_types, device
     )
 
-    if x_casted_dtype is None or ntype_casted is None:
+    if x_casted_dtype is None or ntype_casted is None:  # pragma: no cover
         raise ValueError(
             f"function '{bincount}' does not support input types "
             f"({x.dtype}, {ntype}), "
@@ -600,7 +600,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         a.dtype, bin_edges.dtype, ntype, supported_types, device
     )
 
-    if a_bin_dtype is None or hist_dtype is None:
+    if a_bin_dtype is None or hist_dtype is None:  # pragma: no cover
         raise ValueError(
             f"function '{histogram}' does not support input types "
             f"({a.dtype}, {bin_edges.dtype}, {ntype}), "

@@ -91,7 +91,7 @@ def to_supported_dtypes(dtypes, supported_types, device):
             ):
                 return stypes
 
-    if not isinstance(dtypes, Iterable):
-        return None
+    if not isinstance(dtypes, Iterable): # pragma: no cover
+        return None # pragma: no cover
 
-    return (None,) * len(dtypes)
+    return (None,) * len(dtypes) # pragma: no cover

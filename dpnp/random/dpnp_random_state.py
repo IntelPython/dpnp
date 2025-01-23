@@ -235,7 +235,7 @@ class RandomState:
         """
 
         if not use_origin_backend():
-            if dpnp.is_cuda_backend(self):
+            if dpnp.is_cuda_backend(self):  # pragma: no cover
                 raise NotImplementedError(
                     "Running on CUDA is currently not supported"
                 )
@@ -369,7 +369,7 @@ class RandomState:
         """
 
         if not use_origin_backend(low):
-            if dpnp.is_cuda_backend(self):
+            if dpnp.is_cuda_backend(self):  # pragma: no cover
                 raise NotImplementedError(
                     "Running on CUDA is currently not supported"
                 )
@@ -598,7 +598,7 @@ class RandomState:
         """
 
         if not use_origin_backend():
-            if dpnp.is_cuda_backend(self):
+            if dpnp.is_cuda_backend(self):  # pragma: no cover
                 raise NotImplementedError(
                     "Running on CUDA is currently not supported"
                 )
