@@ -583,6 +583,17 @@ class TestCorrcoef:
 
 
 class TestCorrelate:
+    @staticmethod
+    def _get_kwargs(mode=None, method=None):
+        dpnp_kwargs = {}
+        numpy_kwargs = {}
+        if mode is not None:
+            dpnp_kwargs["mode"] = mode
+            numpy_kwargs["mode"] = mode
+        if method is not None:
+            dpnp_kwargs["method"] = method
+        return dpnp_kwargs, numpy_kwargs
+
     def setup_method(self):
         numpy.random.seed(0)
 
@@ -598,13 +609,7 @@ class TestCorrelate:
         ad = dpnp.array(an)
         vd = dpnp.array(vn)
 
-        dpnp_kwargs = {}
-        numpy_kwargs = {}
-        if mode is not None:
-            dpnp_kwargs["mode"] = mode
-            numpy_kwargs["mode"] = mode
-        if method is not None:
-            dpnp_kwargs["method"] = method
+        dpnp_kwargs, numpy_kwargs = self._get_kwargs(mode, method)
 
         expected = numpy.correlate(an, vn, **numpy_kwargs)
         result = dpnp.correlate(ad, vd, **dpnp_kwargs)
@@ -621,23 +626,17 @@ class TestCorrelate:
             an = numpy.random.rand(a_size) > 0.9
             vn = numpy.random.rand(v_size) > 0.9
         else:
-            an = (100 * numpy.random.rand(a_size)).astype(dtype)
-            vn = (100 * numpy.random.rand(v_size)).astype(dtype)
+            an = 100 * numpy.random.rand(a_size).astype(dtype)
+            vn = 100 * numpy.random.rand(v_size).astype(dtype)
 
             if dpnp.issubdtype(dtype, dpnp.complexfloating):
-                an = an + 1j * (100 * numpy.random.rand(a_size)).astype(dtype)
-                vn = vn + 1j * (100 * numpy.random.rand(v_size)).astype(dtype)
+                an = an + 100j * numpy.random.rand(a_size).astype(dtype)
+                vn = vn + 100j * numpy.random.rand(v_size).astype(dtype)
 
         ad = dpnp.array(an)
         vd = dpnp.array(vn)
 
-        dpnp_kwargs = {}
-        numpy_kwargs = {}
-        if mode is not None:
-            dpnp_kwargs["mode"] = mode
-            numpy_kwargs["mode"] = mode
-        if method is not None:
-            dpnp_kwargs["method"] = method
+        dpnp_kwargs, numpy_kwargs = self._get_kwargs(mode, method)
 
         result = dpnp.correlate(ad, vd, **dpnp_kwargs)
         expected = numpy.correlate(an, vn, **numpy_kwargs)

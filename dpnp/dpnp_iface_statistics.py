@@ -447,7 +447,7 @@ def _get_padding(a_size, v_size, mode):
         r_pad = v_size - l_pad - 1
     elif mode == "full":
         l_pad, r_pad = v_size - 1, v_size - 1
-    else:
+    else:  # pragma: no cover
         raise ValueError(
             f"Unknown mode: {mode}. Only 'valid', 'same', 'full' are supported."
         )
@@ -458,9 +458,11 @@ def _get_padding(a_size, v_size, mode):
 def _choose_conv_method(a, v, rdtype):
     assert a.size >= v.size
     if rdtype == dpnp.bool:
+        # to avoid accuracy issues
         return "direct"
 
     if v.size < 10**4 or a.size < 10**4:
+        # direct method is faster for small arrays
         return "direct"
 
     if dpnp.issubdtype(rdtype, dpnp.integer):
@@ -470,12 +472,13 @@ def _choose_conv_method(a, v, rdtype):
 
         default_float = dpnp.default_float_type(a.sycl_device)
         if max_value > 2 ** numpy.finfo(default_float).nmant - 1:
+            # can't represent the result in the default float type
             return "direct"
 
     if dpnp.issubdtype(rdtype, dpnp.number):
         return "fft"
 
-    raise ValueError(f"Unsupported dtype: {rdtype}")
+    raise ValueError(f"Unsupported dtype: {rdtype}")  # pragma: no cover
 
 
 def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
@@ -485,7 +488,7 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
     supported_types = statistics_ext.sliding_dot_product1d_dtypes()
     supported_dtype = to_supported_dtypes(rdtype, supported_types, device)
 
-    if supported_dtype is None:
+    if supported_dtype is None:  # pragma: no cover
         raise ValueError(
             f"function does not support input types "
             f"({a.dtype.name}, {v.dtype.name}), "
@@ -676,7 +679,7 @@ def correlate(a, v, mode="valid", method="auto"):
         r = _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype)
     elif method == "fft":
         r = _convolve_fft(a, v[::-1], l_pad, r_pad, rdtype)
-    else:
+    else:  # pragma: no cover
         raise ValueError(f"Unknown method: {method}")
 
     if revert:
