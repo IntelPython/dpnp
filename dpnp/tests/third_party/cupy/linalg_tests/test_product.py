@@ -39,7 +39,8 @@ from dpnp.tests.third_party.cupy import testing
     )
 )
 class TestDot(unittest.TestCase):
-
+    # no_int8=True is added to avoid overflow for shape=((2, 3, 4), (3, 4, 2))
+    # and ((2, 3), (3, 4)) cases on cpu
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"], no_int8=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_dot(self, xp, dtype_a, dtype_b):
@@ -320,6 +321,7 @@ class TestProduct:
         b = testing.shaped_reverse_arange((5,), xp, dtype)[::-1]
         return xp.inner(a, b)
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_multidim_inner(self, xp, dtype):
@@ -327,6 +329,7 @@ class TestProduct:
         b = testing.shaped_arange((3, 2, 4), xp, dtype)
         return xp.inner(a, b)
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_transposed_higher_order_inner(self, xp, dtype):
@@ -355,6 +358,7 @@ class TestProduct:
         b = testing.shaped_arange((4, 5), xp, dtype)
         return xp.outer(a, b)
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_tensordot(self, xp, dtype):
@@ -362,6 +366,7 @@ class TestProduct:
         b = testing.shaped_arange((3, 4, 5), xp, dtype)
         return xp.tensordot(a, b)
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_transposed_tensordot(self, xp, dtype):
@@ -516,12 +521,14 @@ class TestMatrixPower(unittest.TestCase):
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 1)
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_matrix_power_2(self, xp, dtype):
         a = testing.shaped_arange((3, 3), xp, dtype)
         return xp.linalg.matrix_power(a, 2)
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose()
     def test_matrix_power_3(self, xp, dtype):

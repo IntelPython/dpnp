@@ -60,6 +60,7 @@ from dpnp.tests.third_party.cupy import testing
 )
 class TestMatmul(unittest.TestCase):
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(name="dtype1", no_int8=True)
     @testing.for_all_dtypes(name="dtype2", no_int8=True)
     @testing.numpy_cupy_allclose(
@@ -70,6 +71,7 @@ class TestMatmul(unittest.TestCase):
         x2 = testing.shaped_arange(self.shape_pair[1], xp, dtype2)
         return operator.matmul(x1, x2)
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(name="dtype1", no_int8=True)
     @testing.for_all_dtypes(name="dtype2", no_int8=True)
     @testing.numpy_cupy_allclose(
@@ -97,6 +99,7 @@ class TestMatmul(unittest.TestCase):
 )
 class TestMatmulOut(unittest.TestCase):
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(name="dtype1", no_int8=True)
     @testing.for_all_dtypes(name="dtype2", no_int8=True)
     @testing.numpy_cupy_allclose(
@@ -140,6 +143,7 @@ class TestMatmulOutOverlap:
 
 class TestMatmulStrides:
 
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_relaxed_c_contiguous_input(self, xp, dtype):

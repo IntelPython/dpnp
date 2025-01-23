@@ -1104,7 +1104,7 @@ def _make_all_dtypes(no_float16, no_bool, no_complex, no_int8):
 
     if no_int8:
         dtypes = tuple(
-            dtype for dtype in dtypes if dtype not in [numpy.int8, numpy.uint8]
+            filter(lambda dt: dt not in [numpy.int8, numpy.uint8], dtypes)
         )
 
     if config.complex_types and not no_complex:

@@ -464,6 +464,7 @@ class TestEinSumUnaryOperationWithScalar:
     )
 )
 class TestEinSumBinaryOperation:
+    # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"], no_int8=True)
     @testing.numpy_cupy_allclose(
         type_check=has_support_aspect64(), contiguous_check=False

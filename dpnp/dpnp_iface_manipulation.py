@@ -1469,9 +1469,9 @@ def copyto(dst, src, casting="same_kind", where=True):
             f"but got {type(dst)}"
         )
     if not dpnp.is_supported_array_type(src):
-        src_orig = src
+        no_dtype_attr = not hasattr(src, "dtype")
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
-        if not hasattr(src_orig, "dtype"):
+        if no_dtype_attr:
             # This case (scalar, list, etc) needs special handling to
             # behave similar to NumPy
             if dpnp.issubdtype(src, dpnp.integer) and dpnp.issubdtype(
