@@ -3,11 +3,6 @@
 # no 'uint8' dtype
 array_api_tests/test_array_object.py::test_getitem_masking
 
-# no 'isdtype' function
-array_api_tests/test_data_type_functions.py::test_isdtype
-array_api_tests/test_has_names.py::test_has_names[data_type-isdtype]
-array_api_tests/test_signatures.py::test_func_signature[isdtype]
-
 # missing unique-like functions
 array_api_tests/test_has_names.py::test_has_names[set-unique_all]
 array_api_tests/test_has_names.py::test_has_names[set-unique_counts]
