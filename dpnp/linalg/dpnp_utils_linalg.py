@@ -848,8 +848,8 @@ def _hermitian_svd(a, compute_uv):
     # but dpnp.linalg.eigh returns s sorted ascending so we re-order
     # the eigenvalues and related arrays to have the correct order
     if compute_uv:
-        s, u = s = dpnp_eigh(a, eigen_mode="V")
-        sgn = dpnp.sign(s, out=s)
+        s, u = dpnp_eigh(a, eigen_mode="V")
+        sgn = dpnp.sign(s)
         s = dpnp.abs(s, out=s)
         sidx = dpnp.argsort(s)[..., ::-1]
         # Rearrange the signs according to sorted indices
