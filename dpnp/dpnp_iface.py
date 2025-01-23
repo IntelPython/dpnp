@@ -712,7 +712,7 @@ def is_cuda_backend(obj=None):
     if (
         sycl_device is not None
         and sycl_device.backend == dpctl.backend_type.cuda
-    ):
+    ):  # pragma: no cover
         return True
     return False
 

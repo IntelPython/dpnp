@@ -112,7 +112,7 @@ def _count_reduce_items(arr, axis, where=True):
         for ax in axis:
             items *= arr.shape[normalize_axis_index(ax, arr.ndim)]
         items = dpnp.intp(items)
-    else:
+    else:  # pragma: no cover
         raise NotImplementedError(
             "where keyword argument is only supported with its default value."
         )

@@ -14,7 +14,6 @@ Data type routines
    dpnp.min_scalar_type
    dpnp.result_type
    dpnp.common_type
-   dpnp.obj2sctype
 
 Creating data types
 -------------------

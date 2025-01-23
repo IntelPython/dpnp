@@ -401,7 +401,7 @@ def _batched_qr(a, mode="reduced"):
     # w/a to avoid raice conditional on CUDA during multiple runs
     # TODO: Remove it ones the OneMath issue is resolved
     # https://github.com/uxlfoundation/oneMath/issues/626
-    if dpnp.is_cuda_backend(a_sycl_queue):
+    if dpnp.is_cuda_backend(a_sycl_queue):  # pragma: no cover
         ht_ev.wait()
     else:
         _manager.add_event_pair(ht_ev, geqrf_ev)
@@ -2479,7 +2479,7 @@ def dpnp_qr(a, mode="reduced"):
     # w/a to avoid raice conditional on CUDA during multiple runs
     # TODO: Remove it ones the OneMath issue is resolved
     # https://github.com/uxlfoundation/oneMath/issues/626
-    if dpnp.is_cuda_backend(a_sycl_queue):
+    if dpnp.is_cuda_backend(a_sycl_queue):  # pragma: no cover
         ht_ev.wait()
     else:
         _manager.add_event_pair(ht_ev, geqrf_ev)

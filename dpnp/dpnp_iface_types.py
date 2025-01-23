@@ -64,6 +64,7 @@ __all__ = [
     "integer",
     "intc",
     "intp",
+    "isdtype",
     "issubdtype",
     "is_type_supported",
     "nan",
@@ -194,9 +195,64 @@ def iinfo(dtype):
             smallest representable number.
 
     """
+
     if isinstance(dtype, dpnp_array):
         dtype = dtype.dtype
     return dpt.iinfo(dtype)
+
+
+def isdtype(dtype, kind):
+    """
+    Returns a boolean indicating whether a provided `dtype` is
+    of a specified data type `kind`.
+
+    Parameters
+    ----------
+    dtype : dtype
+        The input dtype.
+    kind : {dtype, str, tuple of dtypes or strs}
+        The input dtype or dtype kind. Allowed dtype kinds are:
+
+        * ``'bool'`` : boolean kind
+        * ``'signed integer'`` : signed integer data types
+        * ``'unsigned integer'`` : unsigned integer data types
+        * ``'integral'`` : integer data types
+        * ``'real floating'`` : real-valued floating-point data types
+        * ``'complex floating'`` : complex floating-point data types
+        * ``'numeric'`` : numeric data types
+
+    Returns
+    -------
+    out : bool
+        A boolean indicating whether a provided `dtype` is of a specified data
+        type `kind`.
+
+    See Also
+    --------
+    :obj:`dpnp.issubdtype` : Test if the first argument is a type code
+                             lower/equal in type hierarchy.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.isdtype(np.float32, np.float64)
+    False
+    >>> np.isdtype(np.float32, "real floating")
+    True
+    >>> np.isdtype(np.complex128, ("real floating", "complex floating"))
+    True
+
+    """
+
+    if isinstance(dtype, type):
+        dtype = dpt.dtype(dtype)
+
+    if isinstance(kind, type):
+        kind = dpt.dtype(kind)
+    elif isinstance(kind, tuple):
+        kind = tuple(dpt.dtype(k) if isinstance(k, type) else k for k in kind)
+
+    return dpt.isdtype(dtype, kind)
 
 
 def issubdtype(arg1, arg2):
