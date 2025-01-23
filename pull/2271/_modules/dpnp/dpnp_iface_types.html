@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.17.0dev4+26.g6b747c529ea documentation</title>
+  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.17.0dev4+28.g601ed084ece documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3d91e975"></script>
+      <script src="../../_static/documentation_options.js?v=5dbc20a2"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -149,6 +149,7 @@
     <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isdtype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;issubdtype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_type_supported&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nan&quot;</span><span class="p">,</span>
@@ -284,9 +285,67 @@
 <span class="sd">            smallest representable number.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="isdtype">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isdtype.html#dpnp.isdtype">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a boolean indicating whether a provided `dtype` is</span>
+<span class="sd">    of a specified data type `kind`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        The input dtype.</span>
+<span class="sd">    kind : {dtype, str, tuple of dtypes or strs}</span>
+<span class="sd">        The input dtype or dtype kind. Allowed dtype kinds are:</span>
+
+<span class="sd">        * ``&#39;bool&#39;`` : boolean kind</span>
+<span class="sd">        * ``&#39;signed integer&#39;`` : signed integer data types</span>
+<span class="sd">        * ``&#39;unsigned integer&#39;`` : unsigned integer data types</span>
+<span class="sd">        * ``&#39;integral&#39;`` : integer data types</span>
+<span class="sd">        * ``&#39;real floating&#39;`` : real-valued floating-point data types</span>
+<span class="sd">        * ``&#39;complex floating&#39;`` : complex floating-point data types</span>
+<span class="sd">        * ``&#39;numeric&#39;`` : numeric data types</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        A boolean indicating whether a provided `dtype` is of a specified data</span>
+<span class="sd">        type `kind`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.issubdtype` : Test if the first argument is a type code</span>
+<span class="sd">                             lower/equal in type hierarchy.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.isdtype(np.float32, np.float64)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; np.isdtype(np.float32, &quot;real floating&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.isdtype(np.complex128, (&quot;real floating&quot;, &quot;complex floating&quot;))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kind</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span></div>
 
 
 
