@@ -847,7 +847,8 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
     >>> edges_y
     array([-2.6604428 , -0.94615364,  0.76813555,  2.4824247 ], dtype=float32)
 
-    Please note, that resulting values of histogram and edges would be different
+    Please note, that resulting values of histogram and edges may vary.
+
     """
 
     dpnp.check_supported_arrays_type(x, y)
