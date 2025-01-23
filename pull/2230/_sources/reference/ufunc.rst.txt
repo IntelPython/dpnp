@@ -161,7 +161,6 @@ Floating functions
    dpnp.isfinite
    dpnp.isinf
    dpnp.isnan
-   dpnp.isnat
    dpnp.fabs
    dpnp.signbit
    dpnp.copysign

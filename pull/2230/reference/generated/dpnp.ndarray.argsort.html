@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ndarray.argsort &mdash; Data Parallel Extension for NumPy 0.17.0dev3+21.g104bcab5209 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.ndarray.argsort &mdash; Data Parallel Extension for NumPy 0.17.0dev4+19.gd9fdcda130b documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=917ef7e4"></script>
+      <script src="../../_static/documentation_options.js?v=032583b9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -131,9 +131,60 @@
 <p>method</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="dpnp.ndarray.argsort">
-<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.argsort" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ndarray.</span></span><span class="sig-name descname"><span class="pre">argsort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descending</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.ndarray.argsort" title="Link to this definition"></a></dt>
 <dd><p>Return an ndarray of indices that sort the array along the specified axis.</p>
 <p>Refer to <a class="reference internal" href="dpnp.argsort.html#dpnp.argsort" title="dpnp.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argsort</span></code></a> for full documentation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- Axis along which to sort. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the array is flattened
+before sorting. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which sorts along the last
+axis.
+Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p></li>
+<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;stable&quot;</em><em>, </em><em>&quot;mergesort&quot;</em><em>, </em><em>&quot;radixsort&quot;}</em><em>, </em><em>optional</em>) -- Sorting algorithm. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which uses parallel
+merge-sort or parallel radix-sort algorithms depending on the array
+data type.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>descending</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- Sort order. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the array must be sorted in descending
+order (by value). If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the array must be sorted in
+ascending order (by value).
+Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>stable</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- Sort stability. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned array will maintain the
+relative order of <cite>a</cite> values which compare as equal. The same
+behavior applies when set to <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Internally, this option selects <code class="docutils literal notranslate"><span class="pre">kind=&quot;stable&quot;</span></code>.
+Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.sort.html#dpnp.sort" title="dpnp.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.sort</span></code></a></dt><dd><p>Return a sorted copy of an array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.argsort.html#dpnp.argsort" title="dpnp.argsort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.argsort</span></code></a></dt><dd><p>Return the indices that would sort an array.</p>
+</dd>
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.lexsort</span></code></dt><dd><p>Indirect stable sort on multiple keys.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.searchsorted.html#dpnp.searchsorted" title="dpnp.searchsorted"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.searchsorted</span></code></a></dt><dd><p>Find elements in a sorted array.</p>
+</dd>
+<dt><a class="reference internal" href="dpnp.partition.html#dpnp.partition" title="dpnp.partition"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.partition</span></code></a></dt><dd><p>Partial sort.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">()</span>
+<span class="go">array([1, 2, 0])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="go">array([[0, 1],</span>
+<span class="go">       [1, 0]])</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -149,7 +200,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

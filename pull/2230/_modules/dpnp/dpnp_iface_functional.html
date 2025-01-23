@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.17.0dev3+21.g104bcab5209 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface_functional &mdash; Data Parallel Extension for NumPy 0.17.0dev4+19.gd9fdcda130b documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=917ef7e4"></script>
+      <script src="../../_static/documentation_options.js?v=032583b9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -84,7 +84,7 @@
              
   <h1>Source code for dpnp.dpnp_iface_functional</h1><div class="highlight"><pre>
 <span></span><span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2024-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -122,19 +122,19 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 
-<span class="kn">from</span> <span class="nn">dpctl.tensor._numpy_helper</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">normalize_axis_index</span><span class="p">,</span>
     <span class="n">normalize_axis_tuple</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;apply_along_axis&quot;</span><span class="p">,</span> <span class="s2">&quot;apply_over_axes&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="apply_along_axis">
 <a class="viewcode-back" href="../../reference/generated/dpnp.apply_along_axis.html#dpnp.apply_along_axis">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_along_axis</span><span class="p">(</span><span class="n">func1d</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_along_axis</span><span class="p">(</span><span class="n">func1d</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a function to 1-D slices along the given axis.</span>
 
@@ -246,7 +246,7 @@
     <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="s2">&quot;Cannot apply_along_axis when any iteration dimensions are 0&quot;</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="kc">None</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asanyarray</span><span class="p">(</span>
         <span class="n">func1d</span><span class="p">(</span><span class="n">inarr_view</span><span class="p">[</span><span class="n">ind0</span><span class="p">],</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">),</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">exec_q</span><span class="p">,</span>
@@ -278,7 +278,7 @@
 
 <div class="viewcode-block" id="apply_over_axes">
 <a class="viewcode-back" href="../../reference/generated/dpnp.apply_over_axes.html#dpnp.apply_over_axes">[docs]</a>
-<span class="k">def</span> <span class="nf">apply_over_axes</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">apply_over_axes</span><span class="p">(</span><span class="n">func</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">axes</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Apply a function repeatedly over multiple axes.</span>
 
@@ -366,7 +366,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
