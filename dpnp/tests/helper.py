@@ -85,24 +85,19 @@ def assert_dtype_allclose(
                 assert dpnp_arr.dtype == numpy_arr.dtype
 
 
-def get_integer_dtypes():
+def get_integer_dtypes(no_unsigned=False):
     """
     Build a list of integer types supported by DPNP.
     """
 
-    if config.all_int_types:
-        return [
-            dpnp.int8,
-            dpnp.int16,
-            dpnp.int32,
-            dpnp.int64,
-            dpnp.uint8,
-            dpnp.uint16,
-            dpnp.uint32,
-            dpnp.uint64,
-        ]
+    dtypes = [dpnp.int32, dpnp.int64]
 
-    return [dpnp.int32, dpnp.int64]
+    if config.all_int_types:
+        dtypes += [dpnp.int8, dpnp.int16]
+        if not no_unsigned:
+            dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+
+    return dtypes
 
 
 def get_complex_dtypes(device=None):
@@ -147,17 +142,25 @@ def get_float_complex_dtypes(no_float16=True, device=None):
     return dtypes
 
 
+def get_abs_array(data, dtype=None):
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        data = numpy.abs(data)
+    return numpy.array(data, dtype=dtype)
+
+
 def get_all_dtypes(
     no_bool=False,
     no_float16=True,
     no_complex=False,
     no_none=False,
-    device=None,
     xfail_dtypes=None,
     exclude=None,
+    no_unsigned=False,
+    device=None,
 ):
     """
-    Build a list of types supported by DPNP based on input flags and device capabilities.
+    Build a list of types supported by DPNP based on
+    input flags and device capabilities.
     """
 
     dev = dpctl.select_default_device() if device is None else device
@@ -166,7 +169,7 @@ def get_all_dtypes(
     dtypes = [dpnp.bool] if not no_bool else []
 
     # add integer types
-    dtypes.extend(get_integer_dtypes())
+    dtypes.extend(get_integer_dtypes(no_unsigned=no_unsigned))
 
     # add floating types
     dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))
@@ -194,7 +197,13 @@ def get_all_dtypes(
 
 
 def generate_random_numpy_array(
-    shape, dtype=None, hermitian=False, seed_value=None, low=-10, high=10
+    shape,
+    dtype=None,
+    order="C",
+    hermitian=False,
+    seed_value=None,
+    low=-10,
+    high=10,
 ):
     """
     Generate a random numpy array with the specified shape and dtype.
@@ -210,6 +219,9 @@ def generate_random_numpy_array(
         Desired data-type for the output array.
         If not specified, data type will be determined by numpy.
         Default : ``None``
+    order : {"C", "F"}, optional
+        Specify the memory layout of the output array.
+        Default: ``"C"``.
     hermitian : bool, optional
         If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
         Default : ``False``
@@ -226,7 +238,7 @@ def generate_random_numpy_array(
     Returns
     -------
     out : numpy.ndarray
-        A random numpy array of the specified shape and dtype.
+        A random numpy array of the specified shape, dtype and memory layout.
         The array is Hermitian or symmetric if `hermitian` is True.
 
     Note:
@@ -239,10 +251,13 @@ def generate_random_numpy_array(
         seed_value = 42
     numpy.random.seed(seed_value)
 
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        low = 0
+
     # dtype=int is needed for 0d arrays
     size = numpy.prod(shape, dtype=int)
     a = numpy.random.uniform(low, high, size).astype(dtype)
-    if numpy.issubdtype(a.dtype, numpy.complexfloating):
+    if numpy.issubdtype(dtype, numpy.complexfloating):
         a += 1j * numpy.random.uniform(low, high, size)
 
     a = a.reshape(shape)
@@ -256,6 +271,10 @@ def generate_random_numpy_array(
             a = a.reshape(orig_shape)
         else:
             a = numpy.conj(a.T) @ a
+
+    # a.reshape(shape) returns an array in C order by default
+    if order != "C" and a.ndim > 1:
+        a = numpy.array(a, order=order)
     return a
 
 

@@ -251,7 +251,7 @@ def _make_positive_masks(impl, args, kw, name, sp_name, scipy_name):
     assert error is None
     if not isinstance(result, (tuple, list)):
         result = (result,)
-    return [cupy.asnumpy(r) >= 0 for r in result]
+    return [r >= 0 for r in result]
 
 
 def _contains_signed_and_unsigned(kw):
@@ -411,8 +411,8 @@ numpy: {}""".format(
                     if cupy_r.shape == ():
                         skip = (mask == 0).all()
                     else:
-                        cupy_r = cupy_r[mask].get()
-                        numpy_r = numpy_r[mask]
+                        cupy_r = cupy_r[mask]
+                        numpy_r = numpy_r[mask.asnumpy()]
 
                 if not skip:
                     check_func(cupy_r, numpy_r)
@@ -1091,7 +1091,7 @@ _regular_dtypes = _regular_float_dtypes + _int_bool_dtypes
 _dtypes = _float_dtypes + _int_bool_dtypes
 
 
-def _make_all_dtypes(no_float16, no_bool, no_complex):
+def _make_all_dtypes(no_float16, no_bool, no_complex, no_int8):
     if no_float16:
         dtypes = _regular_float_dtypes
     else:
@@ -1102,6 +1102,11 @@ def _make_all_dtypes(no_float16, no_bool, no_complex):
     else:
         dtypes += _int_bool_dtypes
 
+    if no_int8:
+        dtypes = tuple(
+            filter(lambda dt: dt not in [numpy.int8, numpy.uint8], dtypes)
+        )
+
     if config.complex_types and not no_complex:
         dtypes += _complex_dtypes
 
@@ -1109,7 +1114,11 @@ def _make_all_dtypes(no_float16, no_bool, no_complex):
 
 
 def for_all_dtypes(
-    name="dtype", no_float16=False, no_bool=False, no_complex=False
+    name="dtype",
+    no_float16=False,
+    no_bool=False,
+    no_complex=False,
+    no_int8=False,
 ):
     """Decorator that checks the fixture with all dtypes.
 
@@ -1121,6 +1130,9 @@ def for_all_dtypes(
              omitted from candidate dtypes.
          no_complex(bool): If ``True``, ``numpy.complex64`` and
              ``numpy.complex128`` are omitted from candidate dtypes.
+         no_int8(bool): If ``True``, ``numpy.int8`` and
+             ``numpy.uint8`` are omitted from candidate dtypes.
+             This option is generally used to avoid overflow.
 
     dtypes to be tested: ``numpy.complex64`` (optional),
     ``numpy.complex128`` (optional),
@@ -1164,7 +1176,7 @@ def for_all_dtypes(
     .. seealso:: :func:`cupy.testing.for_dtypes`
     """
     return for_dtypes(
-        _make_all_dtypes(no_float16, no_bool, no_complex), name=name
+        _make_all_dtypes(no_float16, no_bool, no_complex, no_int8), name=name
     )
 
 
@@ -1334,6 +1346,7 @@ def for_all_dtypes_combination(
     no_bool=False,
     full=None,
     no_complex=False,
+    no_int8=False,
 ):
     """Decorator that checks the fixture with a product set of all dtypes.
 
@@ -1347,12 +1360,15 @@ def for_all_dtypes_combination(
              will be tested.
              Otherwise, the subset of combinations will be tested
              (see description in :func:`cupy.testing.for_dtypes_combination`).
-         no_complex(bool): If, True, ``numpy.complex64`` and
+         no_complex(bool): If, ``True``, ``numpy.complex64`` and
              ``numpy.complex128`` are omitted from candidate dtypes.
+         no_int8(bool): If, ``True``, ``numpy.int8`` and
+             ``numpy.uint8`` are omitted from candidate dtypes.
+             This option is generally used to avoid overflow.
 
     .. seealso:: :func:`cupy.testing.for_dtypes_combination`
     """
-    types = _make_all_dtypes(no_float16, no_bool, no_complex)
+    types = _make_all_dtypes(no_float16, no_bool, no_complex, no_int8)
     return for_dtypes_combination(types, names, full)
 
 

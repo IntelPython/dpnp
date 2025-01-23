@@ -987,7 +987,7 @@ def nanstd(
     ddof : {int, float}, optional
         Means Delta Degrees of Freedom. The divisor used in calculations
         is ``N - ddof``, where ``N`` the number of non-NaN elements.
-        Default: `0.0`.
+        Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
@@ -1087,7 +1087,7 @@ def nanvar(
     ddof : {int, float}, optional
         Means Delta Degrees of Freedom.  The divisor used in calculations
         is ``N - ddof``, where ``N`` represents the number of non-NaN elements.
-        Default: `0.0`.
+        Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains

@@ -167,7 +167,8 @@ class TestBitwise:
 
 @pytest.mark.parametrize("dtype", get_integer_dtypes())
 def test_invert_out(dtype):
-    np_a = numpy.arange(-5, 5, dtype=dtype)
+    low = 0 if numpy.issubdtype(dtype, numpy.unsignedinteger) else -5
+    np_a = numpy.arange(low, 5, dtype=dtype)
     dp_a = inp.array(np_a)
 
     expected = numpy.invert(np_a)

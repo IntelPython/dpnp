@@ -14,6 +14,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    get_abs_array,
     get_all_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
@@ -44,7 +45,12 @@ class TestDigitize:
         ],
     )
     def test_digitize(self, x, bins, dtype, right):
-        x = x.astype(dtype)
+        x = get_abs_array(x, dtype)
+        if numpy.issubdtype(dtype, numpy.unsignedinteger):
+            min_bin = bins.min()
+            if min_bin < 0:
+                # bins should be monotonically increasing, cannot use get_abs_array
+                bins -= min_bin
         bins = bins.astype(dtype)
         x_dp = dpnp.array(x)
         bins_dp = dpnp.array(bins)
@@ -527,18 +533,27 @@ class TestBincount:
         v = numpy.random.randint(0, upper_bound, size=n, dtype=dtype)
         iv = dpnp.array(v)
 
-        expected_hist = numpy.bincount(v)
-        result_hist = dpnp.bincount(iv)
-        assert_array_equal(result_hist, expected_hist)
+        if numpy.issubdtype(dtype, numpy.uint64):
+            # discussed in numpy issue 17760
+            assert_raises(TypeError, numpy.bincount, v)
+            assert_raises(ValueError, dpnp.bincount, iv)
+        else:
+            expected_hist = numpy.bincount(v)
+            result_hist = dpnp.bincount(iv)
+            assert_array_equal(result_hist, expected_hist)
 
     @pytest.mark.parametrize("dtype", get_integer_dtypes())
     def test_arange_data(self, dtype):
         v = numpy.arange(100).astype(dtype)
         iv = dpnp.array(v)
 
-        expected_hist = numpy.bincount(v)
-        result_hist = dpnp.bincount(iv)
-        assert_array_equal(result_hist, expected_hist)
+        if numpy.issubdtype(dtype, numpy.uint64):
+            assert_raises(TypeError, numpy.bincount, v)
+            assert_raises(ValueError, dpnp.bincount, iv)
+        else:
+            expected_hist = numpy.bincount(v)
+            result_hist = dpnp.bincount(iv)
+            assert_array_equal(result_hist, expected_hist)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_negative_values(self, xp):

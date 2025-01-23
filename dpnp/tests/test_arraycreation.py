@@ -14,10 +14,7 @@ from numpy.testing import (
 
 import dpnp
 
-from .helper import (
-    assert_dtype_allclose,
-    get_all_dtypes,
-)
+from .helper import assert_dtype_allclose, get_all_dtypes
 from .third_party.cupy import testing
 
 
@@ -176,16 +173,18 @@ def test_exception_subok(func, args):
 
 
 @pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
-@pytest.mark.parametrize("stop", [None, 10, -2, 20.5, 1000])
-@pytest.mark.parametrize("step", [None, 1, 2.7, -1.6, 100])
+@pytest.mark.parametrize("stop", [None, 10, -2, 20.5, 100])
+@pytest.mark.parametrize("step", [None, 1, 2.7, -1.6, 80])
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )
 def test_arange(start, stop, step, dtype):
-    rtol_mult = 2
-    if dpnp.issubdtype(dtype, dpnp.float16):
-        # numpy casts to float32 type when computes float16 data
-        rtol_mult = 4
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        start = abs(start)
+        stop = abs(stop) if stop else None
+
+    # numpy casts to float32 type when computes float16 data
+    rtol_mult = 4 if dpnp.issubdtype(dtype, dpnp.float16) else 2
 
     func = lambda xp: xp.arange(start, stop=stop, step=step, dtype=dtype)
 
@@ -701,7 +700,7 @@ def test_dpctl_tensor_input(func, args):
 
 
 @pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
-@pytest.mark.parametrize("stop", [0, 10, -2, 20.5, 1000])
+@pytest.mark.parametrize("stop", [0, 10, -2, 20.5, 120])
 @pytest.mark.parametrize(
     "num",
     [1, 5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
@@ -850,7 +849,7 @@ def test_space_num_error():
 @pytest.mark.parametrize("endpoint", [True, False])
 def test_geomspace(sign, dtype, num, endpoint):
     start = 2 * sign
-    stop = 256 * sign
+    stop = 127 * sign
 
     func = lambda xp: xp.geomspace(
         start, stop, num, endpoint=endpoint, dtype=dtype

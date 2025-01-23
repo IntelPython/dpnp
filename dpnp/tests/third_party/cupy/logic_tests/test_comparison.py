@@ -242,7 +242,8 @@ class TestAllclose(unittest.TestCase):
 
 class TestIsclose(unittest.TestCase):
 
-    @testing.for_all_dtypes(no_complex=True)
+    # no_int8=True is added to avoid overflow
+    @testing.for_all_dtypes(no_complex=True, no_int8=True)
     @testing.numpy_cupy_array_equal()
     def test_is_close_finite(self, xp, dtype):
         # In numpy<1.10 this test fails when dtype is bool
