@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev4+12.gfafbb6cef90 documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev4+30.gc0dcb4f2772 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9f51fc7c"></script>
+      <script src="../../_static/documentation_options.js?v=99be8d5b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -243,16 +243,6 @@
 
         <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">mT</span><span class="p">)</span>
 
-<div class="viewcode-block" id="dpnp_array.to_device">
-<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.to_device.html#dpnp.dpnp_array.dpnp_array.to_device">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target_device</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfer array to target device.&quot;&quot;&quot;</span>
-
-        <span class="k">return</span> <span class="n">dpnp_array</span><span class="p">(</span>
-            <span class="n">shape</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_array</span><span class="p">()</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">target_device</span><span class="p">)</span>
-        <span class="p">)</span></div>
-
-
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">sycl_queue</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">sycl_queue</span>
@@ -285,14 +275,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self&amp;value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
-    <span class="c1"># &#39;__array__&#39;,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__array__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;Implicit conversion to a NumPy array is not allowed. &quot;</span>
+            <span class="s2">&quot;Please use `.asnumpy()` to construct a NumPy array explicitly.&quot;</span>
+        <span class="p">)</span>
+
     <span class="c1"># &#39;__array_finalize__&#39;,</span>
     <span class="c1"># &#39;__array_function__&#39;,</span>
     <span class="c1"># &#39;__array_interface__&#39;,</span>
     <span class="c1"># &#39;__array_prepare__&#39;,</span>
     <span class="c1"># &#39;__array_priority__&#39;,</span>
     <span class="c1"># &#39;__array_struct__&#39;,</span>
-    <span class="c1"># &#39;__array_ufunc__&#39;,</span>
+
+    <span class="n">__array_ufunc__</span> <span class="o">=</span> <span class="kc">None</span>
+
     <span class="c1"># &#39;__array_wrap__&#39;,</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__array_namespace__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -705,6 +702,25 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self/value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">true_divide</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
 
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__usm_ndarray__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Property to support `__usm_ndarray__` protocol.</span>
+
+<span class="sd">        It assumes to return :class:`dpctl.tensor.usm_ndarray` instance</span>
+<span class="sd">        corresponding to the content of the object.</span>
+
+<span class="sd">        This property is intended to speed-up conversion from</span>
+<span class="sd">        :class:`dpnp.ndarray` to :class:`dpctl.tensor.usm_ndarray` passed</span>
+<span class="sd">        into  `dpctl.tensor.asarray` function. The input object that implements</span>
+<span class="sd">        `__usm_ndarray__` protocol is recognized as owner of USM allocation</span>
+<span class="sd">        that is managed by a smart pointer, and asynchronous deallocation</span>
+<span class="sd">        will not involve GIL.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span>
+
     <span class="k">def</span><span class="w"> </span><span class="fm">__xor__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return ``self^value``.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bitwise_xor</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
@@ -788,14 +804,63 @@
 
 <div class="viewcode-block" id="dpnp_array.argsort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.argsort.html#dpnp.dpnp_array.dpnp_array.argsort">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">argsort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return an ndarray of indices that sort the array along the specified axis.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.argsort` for full documentation.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : {None, int}, optional</span>
+<span class="sd">            Axis along which to sort. If ``None``, the array is flattened</span>
+<span class="sd">            before sorting. The default is ``-1``, which sorts along the last</span>
+<span class="sd">            axis.</span>
+<span class="sd">            Default: ``-1``.</span>
+<span class="sd">        kind : {None, &quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;}, optional</span>
+<span class="sd">            Sorting algorithm. The default is ``None``, which uses parallel</span>
+<span class="sd">            merge-sort or parallel radix-sort algorithms depending on the array</span>
+<span class="sd">            data type.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        descending : bool, optional</span>
+<span class="sd">            Sort order. If ``True``, the array must be sorted in descending</span>
+<span class="sd">            order (by value). If ``False``, the array must be sorted in</span>
+<span class="sd">            ascending order (by value).</span>
+<span class="sd">            Default: ``False``.</span>
+<span class="sd">        stable : {None, bool}, optional</span>
+<span class="sd">            Sort stability. If ``True``, the returned array will maintain the</span>
+<span class="sd">            relative order of `a` values which compare as equal. The same</span>
+<span class="sd">            behavior applies when set to ``False`` or ``None``.</span>
+<span class="sd">            Internally, this option selects ``kind=&quot;stable&quot;``.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.sort` : Return a sorted copy of an array.</span>
+<span class="sd">        :obj:`dpnp.argsort` : Return the indices that would sort an array.</span>
+<span class="sd">        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
+<span class="sd">        :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
+<span class="sd">        :obj:`dpnp.partition` : Partial sort.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([3, 1, 2])</span>
+<span class="sd">        &gt;&gt;&gt; a.argsort()</span>
+<span class="sd">        array([1, 2, 0])</span>
+
+<span class="sd">        &gt;&gt;&gt; a = np.array([[0, 3], [2, 2]])</span>
+<span class="sd">        &gt;&gt;&gt; a.argsort(axis=0)</span>
+<span class="sd">        array([[0, 1],</span>
+<span class="sd">               [1, 0]])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span></div>
+
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="n">stable</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dpnp_array.asnumpy">
@@ -1761,11 +1826,44 @@
 
 <div class="viewcode-block" id="dpnp_array.sort">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.sort.html#dpnp.dpnp_array.dpnp_array.sort">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">descending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">stable</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sort an array in-place.</span>
 
 <span class="sd">        Refer to :obj:`dpnp.sort` for full documentation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        axis : int, optional</span>
+<span class="sd">            Axis along which to sort. The default is ``-1``, which sorts along</span>
+<span class="sd">            the last axis.</span>
+<span class="sd">            Default: ``-1``.</span>
+<span class="sd">        kind : {None, &quot;stable&quot;, &quot;mergesort&quot;, &quot;radixsort&quot;}, optional</span>
+<span class="sd">            Sorting algorithm. The default is ``None``, which uses parallel</span>
+<span class="sd">            merge-sort or parallel radix-sort algorithms depending on the array</span>
+<span class="sd">            data type.</span>
+<span class="sd">            Default: ``None``.</span>
+<span class="sd">        descending : bool, optional</span>
+<span class="sd">            Sort order. If ``True``, the array must be sorted in descending</span>
+<span class="sd">            order (by value). If ``False``, the array must be sorted in</span>
+<span class="sd">            ascending order (by value).</span>
+<span class="sd">            Default: ``False``.</span>
+<span class="sd">        stable : {None, bool}, optional</span>
+<span class="sd">            Sort stability. If ``True``, the returned array will maintain the</span>
+<span class="sd">            relative order of `a` values which compare as equal. The same</span>
+<span class="sd">            behavior applies when set to ``False`` or ``None``.</span>
+<span class="sd">            Internally, this option selects ``kind=&quot;stable&quot;``.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        See Also</span>
+<span class="sd">        --------</span>
+<span class="sd">        :obj:`dpnp.sort` : Return a sorted copy of an array.</span>
+<span class="sd">        :obj:`dpnp.argsort` : Return the indices that would sort an array.</span>
+<span class="sd">        :obj:`dpnp.lexsort` : Indirect stable sort on multiple keys.</span>
+<span class="sd">        :obj:`dpnp.searchsorted` : Find elements in a sorted array.</span>
+<span class="sd">        :obj:`dpnp.partition` : Partial sort.</span>
 
 <span class="sd">        Note</span>
 <span class="sd">        ----</span>
@@ -1777,7 +1875,7 @@
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">        &gt;&gt;&gt; a = np.array([[1,4],[3,1]])</span>
+<span class="sd">        &gt;&gt;&gt; a = np.array([[1, 4], [3, 1]])</span>
 <span class="sd">        &gt;&gt;&gt; a.sort(axis=1)</span>
 <span class="sd">        &gt;&gt;&gt; a</span>
 <span class="sd">        array([[1, 4],</span>
@@ -1793,7 +1891,14 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;NoneType&#39; object cannot be interpreted as an integer&quot;</span>
             <span class="p">)</span>
-        <span class="bp">self</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="p">[</span><span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
+            <span class="n">kind</span><span class="o">=</span><span class="n">kind</span><span class="p">,</span>
+            <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span>
+            <span class="n">descending</span><span class="o">=</span><span class="n">descending</span><span class="p">,</span>
+            <span class="n">stable</span><span class="o">=</span><span class="n">stable</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="dpnp_array.squeeze">
@@ -1898,6 +2003,51 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">take</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dpnp_array.to_device">
+<a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.to_device.html#dpnp.dpnp_array.dpnp_array.to_device">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_device</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transfers this array to specified target device.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        device : {string, SyclDevice, SyclQueue}</span>
+<span class="sd">            Array API concept of target device. It can be an OneAPI filter</span>
+<span class="sd">            selector string, an instance of :class:`dpctl.SyclDevice`</span>
+<span class="sd">            corresponding to a non-partitioned SYCL device, an instance of</span>
+<span class="sd">            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object</span>
+<span class="sd">            returned by :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        stream : {SyclQueue, None}, optional</span>
+<span class="sd">            Execution queue to synchronize with. If ``None``, synchronization</span>
+<span class="sd">            is not performed.</span>
+<span class="sd">            Default: ``None``.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        out : dpnp.ndarray</span>
+<span class="sd">            A view if data copy is not required, and a copy otherwise.</span>
+<span class="sd">            If copying is required, it is done by copying from the original</span>
+<span class="sd">            allocation device to the host, followed by copying from host</span>
+<span class="sd">            to the target device.</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        &gt;&gt;&gt; import dpnp as np, dpctl</span>
+<span class="sd">        &gt;&gt;&gt; x = np.full(100, 2, dtype=np.int64)</span>
+<span class="sd">        &gt;&gt;&gt; q_prof = dpctl.SyclQueue(x.sycl_device, property=&quot;enable_profiling&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; # return a view with profile-enabled queue</span>
+<span class="sd">        &gt;&gt;&gt; y = x.to_device(q_prof)</span>
+<span class="sd">        &gt;&gt;&gt; timer = dpctl.SyclTimer()</span>
+<span class="sd">        &gt;&gt;&gt; with timer(q_prof):</span>
+<span class="sd">        ...     z = y * y</span>
+<span class="sd">        &gt;&gt;&gt; print(timer.dt)</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">usm_res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_array_obj</span><span class="o">.</span><span class="n">to_device</span><span class="p">(</span><span class="n">device</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">usm_res</span><span class="p">)</span></div>
 
 
     <span class="c1"># &#39;tobytes&#39;,</span>

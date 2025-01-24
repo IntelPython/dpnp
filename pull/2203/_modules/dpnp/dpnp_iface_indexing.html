@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev4+12.gfafbb6cef90 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev4+30.gc0dcb4f2772 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9f51fc7c"></script>
+      <script src="../../_static/documentation_options.js?v=99be8d5b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -215,6 +215,7 @@
 <span class="sd">    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="n">choices_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -224,6 +225,11 @@
         <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_cuda_backend</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_array</span><span class="p">()):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Running on CUDA is currently not supported&quot;</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">desc</span> <span class="k">for</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">choices_list</span><span class="p">):</span>
             <span class="k">pass</span>
         <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
