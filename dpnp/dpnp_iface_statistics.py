@@ -57,8 +57,6 @@ from .dpnp_utils import call_origin, get_usm_allocations
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
 
-min_ = min  # pylint: disable=used-before-assignment
-
 __all__ = [
     "amax",
     "amin",
@@ -473,7 +471,7 @@ def _choose_conv_method(a, v, rdtype):
         default_float = dpnp.default_float_type(a.sycl_device)
         if max_value > 2 ** numpy.finfo(default_float).nmant - 1:
             # can't represent the result in the default float type
-            return "direct"
+            return "direct"  # pragma: no covers
 
     if dpnp.issubdtype(rdtype, dpnp.number):
         return "fft"
@@ -589,7 +587,7 @@ def correlate(a, v, mode="valid", method="auto"):
 
     Returns
     -------
-    out : {dpnp.ndarray}
+    out : dpnp.ndarray
         Discrete cross-correlation of `a` and `v`.
 
     Notes
