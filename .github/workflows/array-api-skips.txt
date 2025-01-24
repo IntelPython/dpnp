@@ -50,8 +50,5 @@ array_api_tests/test_signatures.py::test_func_signature[var]
 array_api_tests/test_linalg.py::test_vecdot
 array_api_tests/test_linalg.py::test_linalg_vecdot
 
-# tuple index out of range
-array_api_tests/test_linalg.py::test_linalg_matmul
-
 # arrays have different values
 array_api_tests/test_linalg.py::test_linalg_tensordot
