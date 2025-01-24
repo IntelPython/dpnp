@@ -372,6 +372,12 @@ class TestHistogram:
             xp.histogram(vals, range=[0.1, 0.01])
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_size(self, xp):
+        # range shape must be [2]
+        vals = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogram, vals, range=[[0, 1, 2]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
     def test_infinite_edge(self, xp, inf_val):
         v = xp.array([0.5, 1.5, inf_val])
@@ -720,6 +726,18 @@ class TestHistogramDd:
             xp.histogramdd(vals, range=[[0.1, 0.01]])
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_dims(self, xp):
+        # start of range must be < end of range
+        vals = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogramdd, vals, range=[[0, 1]] * 2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_size(self, xp):
+        # range shape must be [2, 2]
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogramdd, x, y, range=[[0, 1, 2]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
     def test_infinite_edge(self, xp, inf_val):
         v = xp.array([0.5, 1.5, inf_val])
@@ -798,3 +816,245 @@ class TestHistogramDd:
         result_hist, result_edges = dpnp.histogramdd(iv, bins=[bins_count])
         assert_array_equal(result_hist, expected_hist)
         assert_allclose(result_edges, expected_edges)
+
+
+class TestHistogram2d:
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_rand_data(self, dtype):
+        n = 100
+        x, y = numpy.random.rand(2, n).astype(dtype=dtype)
+        ix = dpnp.array(x, dtype=dtype)
+        iy = dpnp.array(y, dtype=dtype)
+
+        expected_hist, _, _ = numpy.histogram2d(x, y)
+        result_hist, _, _ = dpnp.histogram2d(ix, iy)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_linspace_data(self, dtype):
+        n = 100
+        x, y = numpy.linspace(0, 10, 2 * n, dtype=dtype).reshape(2, n)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        expected_hist, _, _ = numpy.histogram2d(x, y)
+        result_hist, _, _ = dpnp.histogram2d(ix, iy)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_bin_float(self, xp):
+        x = y = xp.array([[1, 2]])
+        assert_raises(ValueError, xp.histogram2d, x, y, bins=0.1)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_bin_2d_array(self, xp):
+        x = y = xp.array([[1, 2]])
+        assert_raises(ValueError, xp.histogram2d, x, y, bins=[10, 10, 10])
+
+    @pytest.mark.parametrize(
+        "bins",
+        [
+            11,
+            [11] * 2,
+            [[0, 20, 40, 60, 80, 100]] * 2,
+            [[0, 20, 40, 60, 80, 300]] * 2,
+        ],
+    )
+    def test_bins(self, bins):
+        n = 100
+        dims = 2
+        x, y = numpy.arange(n * dims).reshape(dims, n)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        bins_dpnp = bins
+        if isinstance(bins, list):
+            if isinstance(bins[0], list):
+                bins = [numpy.array(b) for b in bins]
+                bins_dpnp = [dpnp.array(b) for b in bins]
+
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            x, y, bins
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            ix, iy, bins_dpnp
+        )
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+    def test_no_side_effects(self):
+        x = dpnp.array([1.3, 2.5, 2.3])
+        y = dpnp.array([2.3, 3.5, 4.3])
+        copy_x = x.copy()
+        copy_y = y.copy()
+
+        # check that ensures that values passed to ``histogram2d`` are unchanged
+        _, _, _ = dpnp.histogram2d(x, y)
+        assert (x == copy_x).all()
+        assert (y == copy_y).all()
+
+    def test_empty(self):
+        x = y = numpy.array([])
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            x, y
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(ix, iy)
+
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+    def test_0d(self):
+        x = dpnp.array(1)
+        y = dpnp.array(2)
+
+        assert_raises(ValueError, dpnp.histogram2d, x, y)
+
+    def test_2d(self):
+        x = dpnp.ones((10, 10))
+        y = dpnp.ones((10, 10))
+
+        assert_raises(ValueError, dpnp.histogram2d, x, y)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_finite_range(self, xp):
+        x = y = xp.linspace(0.0, 1.0, num=100)
+
+        # normal ranges should be finite
+        _, _, _ = xp.histogram2d(x, y, range=[[0.25, 0.75]] * 2)
+        assert_raises(
+            ValueError, xp.histogram2d, x, y, range=[[xp.nan, 0.75]] * 2
+        )
+        assert_raises(
+            ValueError, xp.histogram2d, x, y, range=[[0.25, xp.inf]] * 2
+        )
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range(self, xp):
+        # start of range must be < end of range
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        with assert_raises_regex(ValueError, "max must be larger than"):
+            xp.histogram2d(x, y, range=[[0.1, 0.01]] * 2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_dims(self, xp):
+        # range shape must be [2, 2]
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogram2d, x, y, range=[[0, 1]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_size(self, xp):
+        # range shape must be [2, 2]
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogram2d, x, y, range=[[0, 1, 2]] * 2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
+    def test_infinite_edge(self, xp, inf_val):
+        x = y = xp.array([0.5, 1.5, inf_val])
+        min, max = x.min(), x.max()
+
+        # both first and last ranges must be finite
+        with assert_raises_regex(
+            ValueError,
+            f"autodetected range of \\[{min}, {max}\\] is not finite",
+        ):
+            xp.histogram2d(x, y)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unsigned_monotonicity_check(self, xp):
+        # bins must increase monotonically when bins contain unsigned values
+        x = y = xp.array([2])
+        bins = [xp.array([1, 3, 1], dtype="uint64")] * 2
+        with assert_raises(ValueError):
+            xp.histogram2d(x, y, bins=bins)
+
+    def test_nan_values(self):
+        one_nan = numpy.array([0, 1, numpy.nan])
+        all_nan = numpy.array([numpy.nan, numpy.nan])
+
+        ione_nan = dpnp.array(one_nan)
+        iall_nan = dpnp.array(all_nan)
+
+        # NaN is not counted
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            one_nan, one_nan, bins=[[0, 1]] * 2
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            ione_nan, ione_nan, bins=[[0, 1]] * 2
+        )
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+        # NaN is not counted
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            all_nan, all_nan, bins=[[0, 1]] * 2
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            iall_nan, iall_nan, bins=[[0, 1]] * 2
+        )
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+    def test_bins_another_sycl_queue(self):
+        x = y = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        bins = dpnp.arange(4, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogram2d(x, y, bins=[bins] * 2)
+
+    def test_sample_array_like(self):
+        x = y = [0, 1, 2, 3, 4]
+        with assert_raises(TypeError):
+            dpnp.histogram2d(x, y)
+
+    def test_weights_array_like(self):
+        x = y = dpnp.arange(5)
+        w = [1, 2, 3, 4, 5]
+        with assert_raises(TypeError):
+            dpnp.histogram2d(x, y, weights=w)
+
+    def test_weights_another_sycl_queue(self):
+        x = y = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        w = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogram2d(x, y, weights=w)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_size_mismatch(self, xp):
+        # x and y must have same shape
+        x = xp.linspace(0.0, 1.0, num=10)
+        y = xp.linspace(0.0, 1.0, num=20)
+        assert_raises(ValueError, xp.histogram2d, x, y)
+
+    @pytest.mark.parametrize(
+        "bins_count",
+        [10, 10**2, 10**3],
+    )
+    def test_different_bins_amount(self, bins_count):
+        x, y = numpy.linspace(
+            0, bins_count, 2 * bins_count, dtype=numpy.float32
+        ).reshape(2, bins_count)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            x, y, bins=bins_count
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            ix, iy, bins=bins_count
+        )
+        assert_array_equal(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x, rtol=1e-6)
+        assert_allclose(result_edges_y, expected_edges_y, rtol=1e-6)
