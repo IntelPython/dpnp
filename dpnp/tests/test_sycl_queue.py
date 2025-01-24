@@ -2706,6 +2706,39 @@ def test_histogram(weights, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
+def test_histogram2d(weights, device):
+    x = numpy.arange(5)
+    y = numpy.arange(5)
+    w = weights
+
+    ix = dpnp.array(x, device=device)
+    iy = dpnp.array(y, device=device)
+    iw = None if weights is None else dpnp.array(w, sycl_queue=ix.sycl_queue)
+
+    expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+        x, y, weights=w
+    )
+    result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+        ix, iy, weights=iw
+    )
+    assert_array_equal(result_hist, expected_hist)
+    assert_dtype_allclose(result_edges_x, expected_edges_x)
+    assert_dtype_allclose(result_edges_y, expected_edges_y)
+
+    hist_queue = result_hist.sycl_queue
+    edges_x_queue = result_edges_x.sycl_queue
+    edges_y_queue = result_edges_y.sycl_queue
+    assert_sycl_queue_equal(hist_queue, ix.sycl_queue)
+    assert_sycl_queue_equal(edges_x_queue, ix.sycl_queue)
+    assert_sycl_queue_equal(edges_y_queue, ix.sycl_queue)
+
+
+@pytest.mark.parametrize("weights", [None, numpy.arange(7, 12)])
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
 def test_histogramdd(weights, device):
     v = numpy.arange(5)
     w = weights
