@@ -322,14 +322,25 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     )
 
 
-def check_limitations(subok=False, like=None, initial=None, where=True):
+def check_limitations(
+    subok=False,
+    like=None,
+    initial=None,
+    where=True,
+    subok_linalg=True,
+    signature=None,
+):
     """
     Checking limitation kwargs for their supported values.
 
-    Parameter `subok` is only supported with default value ``False``.
+    Parameter `subok` for array creation functions is only supported with
+    default value ``False``.
     Parameter `like` is only supported with default value ``None``.
     Parameter `initial` is only supported with default value ``None``.
     Parameter `where` is only supported with default value ``True``.
+    Parameter `subok` for linear algebra functions, named as `subok_linalg`
+    here, and is only supported with default value ``True``.
+    Parameter `signature` is only supported with default value ``None``.
 
     Raises
     ------
@@ -341,22 +352,32 @@ def check_limitations(subok=False, like=None, initial=None, where=True):
     if like is not None:
         raise NotImplementedError(
             "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
+            f"default value ``None``, but got {like}."
         )
     if subok is not False:
         raise NotImplementedError(
             "Keyword argument `subok` is supported only with "
-            f"default value ``False``, but got {subok}"
+            f"default value ``False``, but got {subok}."
         )
     if initial is not None:
         raise NotImplementedError(
             "Keyword argument `initial` is only supported with "
-            f"default value ``None``, but got {initial}"
+            f"default value ``None``, but got {initial}."
         )
     if where is not True:
         raise NotImplementedError(
             "Keyword argument `where` is supported only with "
-            f"default value ``True``, but got {where}"
+            f"default value ``True``, but got {where}."
+        )
+    if not subok_linalg:
+        raise NotImplementedError(
+            "keyword argument `subok` is only supported with "
+            f"default value ``True``, but got {subok_linalg}."
+        )
+    if signature is not None:
+        raise NotImplementedError(
+            "keyword argument `signature` is only supported with "
+            f"default value ``None``, but got {signature}."
         )
 
 

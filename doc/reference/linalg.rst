@@ -23,6 +23,8 @@ Matrix and vector products
    dpnp.outer
    dpnp.matmul
    dpnp.linalg.matmul (Array API compatible)
+   dpnp.matvec
+   dpnp.vecmat
    dpnp.tensordot
    dpnp.linalg.tensordot (Array API compatible)
    dpnp.einsum

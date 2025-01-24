@@ -461,7 +461,7 @@ def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
-    "shape_pair",
+    "shape1, shape2",
     [
         ((2, 4), (4,)),
         ((4,), (4, 3)),
@@ -485,13 +485,9 @@ def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
         "((6, 7, 4, 3), (6, 7, 3, 5))",
     ],
 )
-def test_matmul(usm_type_x, usm_type_y, shape_pair):
-    shape1, shape2 = shape_pair
-    x = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-    y = numpy.arange(numpy.prod(shape2)).reshape(shape2)
-
-    x = dp.array(x, usm_type=usm_type_x)
-    y = dp.array(y, usm_type=usm_type_y)
+def test_matmul(usm_type_x, usm_type_y, shape1, shape2):
+    x = dp.arange(numpy.prod(shape1), usm_type=usm_type_x).reshape(shape1)
+    y = dp.arange(numpy.prod(shape2), usm_type=usm_type_y).reshape(shape2)
     z = dp.matmul(x, y)
 
     assert x.usm_type == usm_type_x
@@ -502,7 +498,29 @@ def test_matmul(usm_type_x, usm_type_y, shape_pair):
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize(
-    "shape_pair",
+    "shape1, shape2",
+    [
+        ((3, 4), (4,)),
+        ((2, 3, 4), (4,)),
+        ((3, 4), (2, 4)),
+        ((5, 1, 3, 4), (2, 4)),
+        ((2, 1, 4), (4,)),
+    ],
+)
+def test_matvec(usm_type_x, usm_type_y, shape1, shape2):
+    x = dp.arange(numpy.prod(shape1), usm_type=usm_type_x).reshape(shape1)
+    y = dp.arange(numpy.prod(shape2), usm_type=usm_type_y).reshape(shape2)
+    z = dp.matvec(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape1, shape2",
     [
         ((4,), (4,)),  # call_flag: dot
         ((3, 1), (3, 1)),
@@ -511,14 +529,32 @@ def test_matmul(usm_type_x, usm_type_y, shape_pair):
         ((3, 4), (3, 4)),  # call_flag: vecdot
     ],
 )
-def test_vecdot(usm_type_x, usm_type_y, shape_pair):
-    shape1, shape2 = shape_pair
-    x = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-    y = numpy.arange(numpy.prod(shape2)).reshape(shape2)
-
-    x = dp.array(x, usm_type=usm_type_x)
-    y = dp.array(y, usm_type=usm_type_y)
+def test_vecdot(usm_type_x, usm_type_y, shape1, shape2):
+    x = dp.arange(numpy.prod(shape1), usm_type=usm_type_x).reshape(shape1)
+    y = dp.arange(numpy.prod(shape2), usm_type=usm_type_y).reshape(shape2)
     z = dp.vecdot(x, y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "shape1, shape2",
+    [
+        ((3,), (3, 4)),
+        ((3,), (2, 3, 4)),
+        ((2, 3), (3, 4)),
+        ((2, 3), (5, 1, 3, 4)),
+        ((3,), (2, 3, 1)),
+    ],
+)
+def test_vecmat(usm_type_x, usm_type_y, shape1, shape2):
+    x = dp.arange(numpy.prod(shape1), usm_type=usm_type_x).reshape(shape1)
+    y = dp.arange(numpy.prod(shape2), usm_type=usm_type_y).reshape(shape2)
+    z = dp.vecmat(x, y)
 
     assert x.usm_type == usm_type_x
     assert y.usm_type == usm_type_y
