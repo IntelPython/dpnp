@@ -118,7 +118,7 @@ class TestAdd:
             assert_dtype_allclose(result, expected)
         else:
             assert_raises(TypeError, numpy.add, a, b, out=a)
-            # assert_raises(ValueError, dpnp.add, ia, ib, out=ia)
+            assert_raises(ValueError, dpnp.add, ia, ib, out=ia)
 
     @pytest.mark.parametrize("shape", [(0,), (15,), (2, 2)])
     def test_invalid_shape(self, shape):
