@@ -1,3 +1,4 @@
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 import pytest
@@ -15,7 +16,7 @@ class TestIsSupportedArrayOrScalar:
         ],
     )
     def test_valid_arrays(self, array):
-        assert dpnp.is_supported_array_or_scalar(array)
+        assert dpnp.is_supported_array_or_scalar(array) is True
 
     @pytest.mark.parametrize(
         "value",
@@ -26,7 +27,7 @@ class TestIsSupportedArrayOrScalar:
         ],
     )
     def test_valid_scalars(self, value):
-        assert dpnp.is_supported_array_or_scalar(value)
+        assert dpnp.is_supported_array_or_scalar(value) is True
 
     @pytest.mark.parametrize(
         "array",
@@ -38,7 +39,7 @@ class TestIsSupportedArrayOrScalar:
         ],
     )
     def test_invalid_arrays(self, array):
-        assert not dpnp.is_supported_array_or_scalar(array)
+        assert not dpnp.is_supported_array_or_scalar(array) is True
 
 
 class TestSynchronizeArrayData:
@@ -50,8 +51,9 @@ class TestSynchronizeArrayData:
         ],
     )
     def test_synchronize_array_data(self, array):
+        a_copy = dpnp.copy(array, sycl_queue=array.sycl_queue)
         try:
-            dpnp.synchronize_array_data(array)
+            dpnp.synchronize_array_data(a_copy)
         except Exception as e:
             pytest.fail(f"synchronize_array_data failed: {e}")
 

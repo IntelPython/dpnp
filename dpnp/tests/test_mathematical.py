@@ -3320,30 +3320,6 @@ class TestMatmul:
         expected = a[1] @ b[1]
         assert_dtype_allclose(result, expected)
 
-    def test_rmatmul_dpnp_array(self):
-        a = dpnp.ones(10)
-        b = dpnp.ones(10)
-
-        class A(dpnp.ndarray):
-            def __init__(self, x):
-                self._array_obj = x.get_array()
-
-            def __matmul__(self, other):
-                return NotImplemented
-
-        a1 = A(a)
-
-        result = a1 @ b
-        expected = dpnp.matmul(a, b)
-        assert_dtype_allclose(result, expected)
-
-    def test_rmatmul_numpy_array(self):
-        a = dpnp.ones(10)
-        b = numpy.ones(10)
-
-        with pytest.raises(TypeError):
-            b @ a
-
 
 class TestMatmulInplace:
     ALL_DTYPES = get_all_dtypes(no_none=True)

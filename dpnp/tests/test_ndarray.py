@@ -460,3 +460,29 @@ def test_clip():
     expected = numpy.clip(numpy_array, 3, 7)
 
     assert_array_equal(expected, result)
+
+
+def test_rmatmul_dpnp_array():
+    a = dpnp.ones(10)
+    b = dpnp.ones(10)
+
+    class Dummy(dpnp.ndarray):
+        def __init__(self, x):
+            self._array_obj = x.get_array()
+
+        def __matmul__(self, other):
+            return NotImplemented
+
+    d = Dummy(a)
+
+    result = d @ b
+    expected = dpnp.matmul(a, b)
+    assert_allclose(result, expected)
+
+
+def test_rmatmul_numpy_array():
+    a = dpnp.ones(10)
+    b = numpy.ones(10)
+
+    with pytest.raises(TypeError):
+        b @ a
