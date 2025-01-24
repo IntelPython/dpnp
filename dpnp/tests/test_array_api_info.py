@@ -4,6 +4,11 @@ from dpctl import get_devices, select_default_device
 from dpctl.tensor._tensor_impl import default_device_complex_type
 
 import dpnp
+from dpnp.tests.helper import (
+    has_support_aspect64,
+    is_win_platform,
+    numpy_version,
+)
 
 info = dpnp.__array_namespace_info__()
 default_device = select_default_device()
@@ -33,8 +38,12 @@ def test_default_dtypes():
         == default_device_complex_type(default_device)
         == dpnp.asarray(0.0j).dtype
     )
-    assert dtypes["integral"] == dpnp.intp == dpnp.asarray(0).dtype
-    assert dtypes["indexing"] == dpnp.intp == dpnp.argmax(dpnp.zeros(10)).dtype
+    if not is_win_platform() or numpy_version() >= "2.0.0":
+        # numpy changed default integer on Windows since 2.0
+        assert dtypes["integral"] == dpnp.intp == dpnp.asarray(0).dtype
+        assert (
+            dtypes["indexing"] == dpnp.intp == dpnp.argmax(dpnp.zeros(10)).dtype
+        )
 
     with pytest.raises(TypeError, match="Expected type"):
         info.default_dtypes(device="gpu")
@@ -55,12 +64,12 @@ def test_dtypes_all():
             "uint64": numpy.uint64,  # TODO: replace with dpnp.uint64
             "float32": dpnp.float32,
         }
-        | ({"float64": dpnp.float64} if default_device.has_aspect_fp64 else {})
+        | ({"float64": dpnp.float64} if has_support_aspect64() else {})
         | {"complex64": dpnp.complex64}
         |
         # TODO: update once dpctl-1977 is resolved
         {"complex128": dpnp.complex128}
-        # ({"complex128": dpnp.complex128} if default_device.has_aspect_fp64 else {})
+        # ({"complex128": dpnp.complex128} if has_support_aspect64() else {})
     )
 
 
@@ -80,11 +89,11 @@ dtype_categories = {
     },
     "integral": ("signed integer", "unsigned integer"),
     "real floating": {"float32": dpnp.float32}
-    | ({"float64": dpnp.float64} if default_device.has_aspect_fp64 else {}),
+    | ({"float64": dpnp.float64} if has_support_aspect64() else {}),
     "complex floating": {"complex64": dpnp.complex64} |
     # TODO: update once dpctl-1977 is resolved
     {"complex128": dpnp.complex128},
-    # ({"complex128": dpnp.complex128} if default_device.has_aspect_fp64 else {}),
+    # ({"complex128": dpnp.complex128} if has_support_aspect64() else {}),
     "numeric": ("integral", "real floating", "complex floating"),
 }
 
