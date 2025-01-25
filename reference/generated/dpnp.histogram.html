@@ -15,20 +15,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.histogram &mdash; Data Parallel Extension for NumPy 0.17.0dev4+15.gd52248086f7 documentation</title>
+  <title>dpnp.histogram &mdash; Data Parallel Extension for NumPy 0.17.0dev5+2.g615a6a06b87 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4a9efbff"></script>
+      <script src="../../_static/documentation_options.js?v=7d091956"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.histogramdd" href="dpnp.histogramdd.html" />
+    <link rel="next" title="dpnp.histogram2d" href="dpnp.histogram2d.html" />
     <link rel="prev" title="dpnp.cov" href="dpnp.cov.html" /> 
 </head>
 
@@ -129,34 +129,38 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input data. The histogram is computed over the flattened array.</p></li>
-<li><p><strong>bins</strong> (<em>{int</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>, </em><em>optional</em>) -- If <cite>bins</cite> is an int, it defines the number of equal-width bins in the
+<li><p><strong>bins</strong> (<em>{int</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>sequence</em><em> of </em><em>scalars}</em><em>, </em><em>optional</em>) -- <p>If <cite>bins</cite> is an int, it defines the number of equal-width bins in the
 given range.
 If <cite>bins</cite> is a sequence, it defines a monotonically increasing array
 of bin edges, including the rightmost edge, allowing for non-uniform
-bin widths.
-Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
-<li><p><strong>range</strong> (<em>{None</em><em>, </em><em>2-tuple</em><em> of </em><em>float}</em><em>, </em><em>optional</em>) -- The lower and upper range of the bins. If not provided, range is simply
+bin widths.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
+</p></li>
+<li><p><strong>range</strong> (<em>{None</em><em>, </em><em>2-tuple</em><em> of </em><em>float}</em><em>, </em><em>optional</em>) -- <p>The lower and upper range of the bins. If not provided, range is simply
 <code class="docutils literal notranslate"><span class="pre">(a.min(),</span> <span class="pre">a.max())</span></code>. Values outside the range are ignored. The first
 element of the range must be less than or equal to the second. <cite>range</cite>
 affects the automatic bin computation as well. While bin width is
 computed to be optimal based on the actual data within <cite>range</cite>, the bin
-count will fill the entire range including portions containing no data.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the result will contain the number of samples
+count will fill the entire range including portions containing no data.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the result will contain the number of samples
 in each bin. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is the value of the probability
 <em>density</em> function at the bin, normalized such that the <em>integral</em> over
 the range is <code class="docutils literal notranslate"><span class="pre">1</span></code>. Note that the sum of the histogram values will not
 be equal to <code class="docutils literal notranslate"><span class="pre">1</span></code> unless bins of unity width are chosen; it is not
-a probability <em>mass</em> function.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- An array of weights, of the same shape as <cite>a</cite>. Each value in <cite>a</cite> only
+a probability <em>mass</em> function.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An array of weights, of the same shape as <cite>a</cite>. Each value in <cite>a</cite> only
 contributes its associated weight towards the bin count (instead of 1).
 If <cite>density</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the weights are normalized, so that the
 integral of the density over the range remains <code class="docutils literal notranslate"><span class="pre">1</span></code>.
 Please note that the <code class="docutils literal notranslate"><span class="pre">dtype</span></code> of <cite>weights</cite> will also become the
 <code class="docutils literal notranslate"><span class="pre">dtype</span></code> of the returned accumulator (<cite>hist</cite>), so it must be large
-enough to hold accumulated values as well.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+enough to hold accumulated values as well.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -213,7 +217,7 @@ description of the possible semantics. If <cite>weights</cite> are given,
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dpnp.cov.html" class="btn btn-neutral float-left" title="dpnp.cov" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.histogramdd.html" class="btn btn-neutral float-right" title="dpnp.histogramdd" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.histogram2d.html" class="btn btn-neutral float-right" title="dpnp.histogram2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
