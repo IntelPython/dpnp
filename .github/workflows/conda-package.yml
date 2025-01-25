@@ -57,7 +57,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -68,7 +68,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -147,7 +147,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -158,7 +158,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -279,7 +279,7 @@ jobs:
           dir ${{ env.extracted-pkg-path }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -403,7 +403,7 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -479,7 +479,7 @@ jobs:
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -490,7 +490,7 @@ jobs:
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
@@ -628,7 +628,7 @@ jobs:
         shell: bash -el {0}
 
     steps:
-      - uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+      - uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
