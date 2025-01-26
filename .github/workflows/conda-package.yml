@@ -16,6 +16,7 @@ env:
   CONDA_BUILD_INDEX_ENV_PY_VER: '3.12' # conda does not support python 3.13
   CONDA_BUILD_VERSION: '25.1.1'
   CONDA_INDEX_VERSION: '0.5.0'
+  CONDA_CPH_VERSION: '2.4.0'
   RERUN_TESTS_ON_FAILURE: 'true'
   RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
@@ -101,7 +102,7 @@ jobs:
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.tar.bz2
+          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.conda
 
       - name: Upload wheels artifact
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
@@ -139,11 +140,6 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
 
-      - name: Extract package archive
-        run: |
-          mkdir -p ${{ env.extracted-pkg-path }}
-          tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
-
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
@@ -167,8 +163,14 @@ jobs:
           python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
           activate-environment: ${{ env.TEST_ENV_NAME }}
 
-      - name: Install conda-index
-        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+      - name: Install conda-index and conda-package-handling
+        run: |
+          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }} conda-package-handling=${{ env.CONDA_CPH_VERSION }}
+
+      - name: Extract package archive
+        run: |
+          mkdir -p ${{ env.extracted-pkg-path }}
+          cph extract ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.conda --dest ${{ env.extracted-pkg-path }}
 
       - name: Create conda channel
         run: |
@@ -264,19 +266,17 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
 
-      - name: Extract package archive
+      - name: Store a path to package archive
         run: |
           @echo on
           mkdir -p ${{ env.extracted-pkg-path }}
 
-          set SEARCH_SCRIPT="DIR ${{ env.pkg-path-in-channel }} /s/b | FINDSTR /r "dpnp-.*\.tar\.bz2""
+          set SEARCH_SCRIPT="DIR ${{ env.pkg-path-in-channel }} /s/b | FINDSTR /r "dpnp-.*\.conda""
           FOR /F "tokens=* USEBACKQ" %%F IN (`%SEARCH_SCRIPT%`) DO (
             SET FULL_PACKAGE_PATH=%%F
           )
           echo FULL_PACKAGE_PATH: %FULL_PACKAGE_PATH%
-
-          python -c "import shutil; shutil.unpack_archive(r\"%FULL_PACKAGE_PATH%\", extract_dir=r\"${{ env.extracted-pkg-path }}\")"
-          dir ${{ env.extracted-pkg-path }}
+          (echo FULL_PACKAGE_PATH=%FULL_PACKAGE_PATH%) >> %GITHUB_ENV%
 
       - name: Setup miniconda
         uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
@@ -294,8 +294,14 @@ jobs:
           (echo CONDA_LIB_PATH=%CONDA_PREFIX%\Library\lib\) >> %GITHUB_ENV%
           (echo CONDA_LIB_BIN_PATH=%CONDA_PREFIX%\Library\bin\) >> %GITHUB_ENV%
 
-      - name: Install conda-index
-        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+      - name: Install conda-index and conda-package-handling
+        run: |
+          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }} conda-package-handling=${{ env.CONDA_CPH_VERSION }}
+
+      - name: Extract package archive
+        run: |
+          cph extract %FULL_PACKAGE_PATH% --dest ${{ env.extracted-pkg-path }}
+          dir ${{ env.extracted-pkg-path }}
 
       - name: Create conda channel
         run: |
@@ -418,11 +424,11 @@ jobs:
       - name: Package version
         shell: bash -el {0}
         run: |
-          echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.tar.bz2 | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Upload
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.tar.bz2
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.conda
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
@@ -471,11 +477,6 @@ jobs:
           name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
 
-      - name: Extract package archive
-        run: |
-          mkdir -p ${{ env.extracted-pkg-path }}
-          tar -xvf ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.tar.bz2 -C ${{ env.extracted-pkg-path }}
-
       - name: Setup miniconda
         id: setup_miniconda
         continue-on-error: true
@@ -499,14 +500,21 @@ jobs:
           python-version: ${{ matrix.python }}
           activate-environment: 'array-api-conformity'
 
-      - name: Install conda-index
+      - name: Install conda-index and conda-package-handling
         id: install_conda_index
         continue-on-error: true
-        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+        run: |
+          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }} conda-package-handling=${{ env.CONDA_CPH_VERSION }}
 
-      - name: ReInstall conda-index
+      - name: ReInstall conda-index and conda-package-handling
         if: steps.install_conda_index.outcome == 'failure'
-        run: mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+        run: |
+          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }} conda-package-handling=${{ env.CONDA_CPH_VERSION }}
+
+      - name: Extract package archive
+        run: |
+          mkdir -p ${{ env.extracted-pkg-path }}
+          cph extract ${{ env.pkg-path-in-channel }}/${{ env.PACKAGE_NAME }}-*.conda --dest ${{ env.extracted-pkg-path }}
 
       - name: Create conda channel
         run: |
