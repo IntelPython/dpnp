@@ -1459,7 +1459,7 @@ def var(
             )
 
         # Compute sum of squared deviations from mean.
-        # Note that `x`` may not be inexact.
+        # Note that `x` may not be inexact.
         x = dpnp.subtract(a, arrmean)
         if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
             x = dpnp.multiply(x, x.conj(), out=x).real
