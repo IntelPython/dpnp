@@ -600,9 +600,9 @@ jobs:
         if: ${{ github.event.pull_request && !github.event.pull_request.head.repo.fork }}
         uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
         with:
+          message-id: array_api_results
           message: |
             ${{ env.MESSAGE }}
-          refresh-message-position: true
 
   cleanup_packages:
     name: Clean up anaconda packages

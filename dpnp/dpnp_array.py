@@ -1731,6 +1731,7 @@ class dpnp_array:
         keepdims=False,
         *,
         where=True,
+        mean=None,
     ):
         """
         Returns the standard deviation of the array elements, along given axis.
@@ -1739,7 +1740,9 @@ class dpnp_array:
 
         """
 
-        return dpnp.std(self, axis, dtype, out, ddof, keepdims, where=where)
+        return dpnp.std(
+            self, axis, dtype, out, ddof, keepdims, where=where, mean=mean
+        )
 
     @property
     def strides(self):
@@ -1938,6 +1941,7 @@ class dpnp_array:
         keepdims=False,
         *,
         where=True,
+        mean=None,
     ):
         """
         Returns the variance of the array elements, along given axis.
@@ -1946,7 +1950,9 @@ class dpnp_array:
 
         """
 
-        return dpnp.var(self, axis, dtype, out, ddof, keepdims, where=where)
+        return dpnp.var(
+            self, axis, dtype, out, ddof, keepdims, where=where, mean=mean
+        )
 
 
 # 'view'
