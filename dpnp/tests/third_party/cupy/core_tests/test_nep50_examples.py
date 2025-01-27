@@ -2,6 +2,7 @@ import numpy
 import pytest
 
 import dpnp as cp
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 # TODO: remove once all dtype aliases added
@@ -47,20 +48,23 @@ examples = [
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
 @testing.with_requires("numpy>=2.0")
 @pytest.mark.parametrize("example", examples)
-@testing.numpy_cupy_allclose(atol=1e-15, accept_error=OverflowError)
+@testing.numpy_cupy_allclose(
+    atol=1e-15, accept_error=OverflowError, type_check=has_support_aspect64()
+)
 def test_nep50_examples(xp, example):
     dct = {
         "array": xp.array,
         "uint8": xp.uint8,
         "int64": xp.int64,
         "float32": xp.float32,
-        "float64": xp.float64,
         "int16": xp.int16,
         "bool_": xp.bool_,
         "int32": xp.int32,
         "complex64": xp.complex64,
         "int8": xp.int8,
     }
+    if has_support_aspect64():
+        dct["float64"] = xp.float64
 
     if isinstance(example, tuple):
         example, mesg = example
