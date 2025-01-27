@@ -1,6 +1,6 @@
 import numpy
 import pytest
-from dpctl import get_devices, select_default_device
+from dpctl import SyclDeviceCreationError, get_devices, select_default_device
 from dpctl.tensor._tensor_impl import default_device_complex_type
 
 import dpnp
@@ -45,8 +45,10 @@ def test_default_dtypes():
             dtypes["indexing"] == dpnp.intp == dpnp.argmax(dpnp.zeros(10)).dtype
         )
 
-    with pytest.raises(TypeError, match="Expected type"):
-        info.default_dtypes(device="gpu")
+    with pytest.raises(
+        TypeError, match="Unsupported type for device argument:"
+    ):
+        info.default_dtypes(device=1)
 
 
 def test_dtypes_all():
@@ -66,10 +68,7 @@ def test_dtypes_all():
         }
         | ({"float64": dpnp.float64} if has_support_aspect64() else {})
         | {"complex64": dpnp.complex64}
-        |
-        # TODO: update once dpctl-1977 is resolved
-        {"complex128": dpnp.complex128}
-        # ({"complex128": dpnp.complex128} if has_support_aspect64() else {})
+        | ({"complex128": dpnp.complex128} if has_support_aspect64() else {})
     )
 
 
@@ -90,10 +89,8 @@ dtype_categories = {
     "integral": ("signed integer", "unsigned integer"),
     "real floating": {"float32": dpnp.float32}
     | ({"float64": dpnp.float64} if has_support_aspect64() else {}),
-    "complex floating": {"complex64": dpnp.complex64} |
-    # TODO: update once dpctl-1977 is resolved
-    {"complex128": dpnp.complex128},
-    # ({"complex128": dpnp.complex128} if has_support_aspect64() else {}),
+    "complex floating": {"complex64": dpnp.complex64}
+    | ({"complex128": dpnp.complex128} if has_support_aspect64() else {}),
     "numeric": ("integral", "real floating", "complex floating"),
 }
 
@@ -127,10 +124,9 @@ def test_dtypes_invalid_kind():
         info.dtypes(kind="invalid")
 
 
-@pytest.mark.skip("due to dpctl-1978")
 def test_dtypes_invalid_device():
-    with pytest.raises(ValueError, match="Device not understood"):
-        info.dtypes(device="gpu")
+    with pytest.raises(SyclDeviceCreationError, match="Could not create"):
+        info.dtypes(device="str")
 
 
 def test_devices():
