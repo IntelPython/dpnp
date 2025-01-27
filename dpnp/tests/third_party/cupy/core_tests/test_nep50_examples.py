@@ -16,8 +16,6 @@ examples = [
     "uint8(1) + 2",
     "array([1], uint8) + int64(1)",
     "array([1], uint8) + array(1, int64)",
-    "array([1.], float32) + float64(1.)",
-    "array([1.], float32) + array(1., float64)",
     "array([1], uint8) + 1",
     "array([1], uint8) + 200",
     "array([100], uint8) + 200",
@@ -26,7 +24,6 @@ examples = [
     "uint8(100) + 200",
     "float32(1) + 3e100",
     "array([1.0], float32) + 1e-14 == 1.0",
-    "array([0.1], float32) == float64(0.1)",
     "array(1.0, float32) + 1e-14 == 1.0",
     "array([1.], float32) + 3",
     "array([1.], float32) + int64(3)",
@@ -43,6 +40,12 @@ examples = [
     "1.0 + array([1, 2, 3], int8)",
     "array([1], float32) + 1j",
 ]
+if has_support_aspect64():
+    examples += [
+        "array([1.], float32) + float64(1.)",
+        "array([1.], float32) + array(1., float64)",
+        "array([0.1], float32) == float64(0.1)",
+    ]
 
 
 @pytest.mark.filterwarnings("ignore::RuntimeWarning")
