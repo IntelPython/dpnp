@@ -1623,6 +1623,29 @@ def test_histogram(usm_type_v, usm_type_w):
     assert edges.usm_type == du.get_coerced_usm_type([usm_type_v, usm_type_w])
 
 
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
+def test_histogram2d(usm_type_x, usm_type_y, usm_type_w):
+    x = dp.arange(5, usm_type=usm_type_x)
+    y = dp.arange(5, usm_type=usm_type_y)
+    w = dp.arange(7, 12, usm_type=usm_type_w)
+
+    hist, edges_x, edges_y = dp.histogram2d(x, y, weights=w)
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert w.usm_type == usm_type_w
+    assert hist.usm_type == du.get_coerced_usm_type(
+        [usm_type_x, usm_type_y, usm_type_w]
+    )
+    assert edges_x.usm_type == du.get_coerced_usm_type(
+        [usm_type_x, usm_type_y, usm_type_w]
+    )
+    assert edges_y.usm_type == du.get_coerced_usm_type(
+        [usm_type_x, usm_type_y, usm_type_w]
+    )
+
+
 @pytest.mark.parametrize("usm_type_v", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_w", list_of_usm_types, ids=list_of_usm_types)
 def test_bincount(usm_type_v, usm_type_w):
