@@ -13,10 +13,11 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
-    get_complex_dtypes,
     get_float_complex_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
+from .third_party.cupy import testing
 from .third_party.cupy.testing import with_requires
 
 
@@ -121,6 +122,168 @@ class TestAverage:
         # Execution placement can not be unambiguously inferred
         with pytest.raises(ValueError):
             dpnp.average(a, axis=0, weights=w)
+
+
+class TestCorrcoef:
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("rowvar", [True, False])
+    def test_corrcoef(self, dtype, rowvar):
+        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
+        a = dpnp.asnumpy(ia)
+
+        expected = numpy.corrcoef(a, rowvar=rowvar)
+        result = dpnp.corrcoef(ia, rowvar=rowvar)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+        "suppress_mean_empty_slice_numpy_warnings",
+    )
+    @pytest.mark.parametrize("shape", [(2, 0), (0, 2)])
+    def test_corrcoef_empty(self, shape):
+        ia = dpnp.empty(shape, dtype=dpnp.int64)
+        a = dpnp.asnumpy(ia)
+
+        result = dpnp.corrcoef(ia)
+        expected = numpy.corrcoef(a)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
+    def test_corrcoef_dtype(self, dt_in, dt_out):
+        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dt_in)
+        a = dpnp.asnumpy(ia)
+
+        expected = numpy.corrcoef(a, dtype=dt_out)
+        result = dpnp.corrcoef(ia, dtype=dt_out)
+        assert expected.dtype == result.dtype
+        assert_allclose(result, expected, rtol=1e-6)
+
+    @pytest.mark.usefixtures(
+        "suppress_divide_invalid_numpy_warnings",
+        "suppress_dof_numpy_warnings",
+    )
+    def test_corrcoef_scalar(self):
+        ia = dpnp.array(5)
+        a = dpnp.asnumpy(ia)
+
+        result = dpnp.corrcoef(ia)
+        expected = numpy.corrcoef(a)
+        assert_dtype_allclose(result, expected)
+
+
+class TestCorrelate:
+    @pytest.mark.parametrize(
+        "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
+    )
+    @pytest.mark.parametrize("mode", [None, "full", "valid", "same"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    def test_correlate(self, a, v, mode, dtype):
+        an = numpy.array(a, dtype=dtype)
+        vn = numpy.array(v, dtype=dtype)
+        ad = dpnp.array(an)
+        vd = dpnp.array(vn)
+
+        if mode is None:
+            expected = numpy.correlate(an, vn)
+            result = dpnp.correlate(ad, vd)
+        else:
+            expected = numpy.correlate(an, vn, mode=mode)
+            result = dpnp.correlate(ad, vd, mode=mode)
+
+        assert_dtype_allclose(result, expected)
+
+    def test_correlate_mode_error(self):
+        a = dpnp.arange(5)
+        v = dpnp.arange(3)
+
+        # invalid mode
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v, mode="unknown")
+
+    @pytest.mark.parametrize("a, v", [([], [1]), ([1], []), ([], [])])
+    def test_correlate_empty(self, a, v):
+        a = dpnp.asarray(a)
+        v = dpnp.asarray(v)
+
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v)
+
+    @pytest.mark.parametrize(
+        "a, v",
+        [
+            ([[1, 2], [2, 3]], [1]),
+            ([1], [[1, 2], [2, 3]]),
+            ([[1, 2], [2, 3]], [[1, 2], [2, 3]]),
+        ],
+    )
+    def test_correlate_shape_error(self, a, v):
+        a = dpnp.asarray(a)
+        v = dpnp.asarray(v)
+
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v)
+
+    @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
+    def test_correlate_different_sizes(self, size):
+        a = numpy.random.rand(size).astype(numpy.float32)
+        v = numpy.random.rand(size // 2).astype(numpy.float32)
+
+        ad = dpnp.array(a)
+        vd = dpnp.array(v)
+
+        expected = numpy.correlate(a, v)
+        result = dpnp.correlate(ad, vd)
+
+        assert_dtype_allclose(result, expected, factor=20)
+
+    def test_correlate_another_sycl_queue(self):
+        a = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        v = dpnp.arange(3, sycl_queue=dpctl.SyclQueue())
+
+        with pytest.raises(ValueError):
+            dpnp.correlate(a, v)
+
+
+class TestCov:
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+    )
+    def test_false_rowvar_dtype(self, dtype):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
+        ia = dpnp.array(a)
+
+        assert_allclose(dpnp.cov(ia.T), dpnp.cov(ia, rowvar=False))
+        assert_allclose(dpnp.cov(ia, rowvar=False), numpy.cov(a, rowvar=False))
+
+    # numpy 2.2 properly transposes 2d array when rowvar=False
+    @with_requires("numpy>=2.2")
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    def test_false_rowvar_1x3(self):
+        a = numpy.array([[0, 1, 2]])
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a, rowvar=False)
+        result = dpnp.cov(ia, rowvar=False)
+        assert_allclose(expected, result)
+
+    # numpy 2.2 properly transposes 2d array when rowvar=False
+    @with_requires("numpy>=2.2")
+    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    def test_true_rowvar(self):
+        a = numpy.ones((3, 1))
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a, ddof=0, rowvar=True)
+        result = dpnp.cov(ia, ddof=0, rowvar=True)
+        assert_allclose(expected, result)
 
 
 class TestMaxMin:
@@ -360,91 +523,69 @@ class TestMedian:
         assert_dtype_allclose(result, expected)
 
 
-class TestVar:
-    @pytest.mark.usefixtures(
-        "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
-    )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
-    @pytest.mark.parametrize("keepdims", [True, False])
-    @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2])
-    def test_var(self, dtype, axis, keepdims, ddof):
-        a = generate_random_numpy_array((2, 3), dtype)
-        ia = dpnp.array(a)
-
-        expected = numpy.var(a, axis=axis, keepdims=keepdims, ddof=ddof)
-        result = dpnp.var(ia, axis=axis, keepdims=keepdims, ddof=ddof)
-
-        if axis == 0 and ddof == 2:
-            assert dpnp.all(dpnp.isnan(result))
-        else:
-            assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures(
-        "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
-    )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+class TestPtp:
     @pytest.mark.parametrize("axis", [None, 0, 1])
-    @pytest.mark.parametrize("ddof", [0, 1])
-    def test_var_out(self, dtype, axis, ddof):
-        a = generate_random_numpy_array((2, 3), dtype)
+    @pytest.mark.parametrize(
+        "v",
+        [
+            [[0, 0], [0, 0]],
+            [[1, 2], [1, 2]],
+            [[1, 2], [3, 4]],
+            [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+            [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+        ],
+        ids=[
+            "[[0, 0], [0, 0]]",
+            "[[1, 2], [1, 2]]",
+            "[[1, 2], [3, 4]]",
+            "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+            "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+        ],
+    )
+    def test_basic(self, v, axis):
+        a = numpy.array(v)
         ia = dpnp.array(a)
 
-        expected = numpy.var(a, axis=axis, ddof=ddof)
-        if has_support_aspect64():
-            res_dtype = expected.dtype
-        else:
-            res_dtype = dpnp.default_float_type(ia.device)
-        out = dpnp.empty(expected.shape, dtype=res_dtype)
-        result = dpnp.var(ia, axis=axis, out=out, ddof=ddof)
-        assert result is out
-        assert_dtype_allclose(result, expected)
+        expected = numpy.ptp(a, axis)
+        result = dpnp.ptp(ia, axis)
+        assert_array_equal(result, expected)
 
-    @pytest.mark.usefixtures(
-        "suppress_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
+    @pytest.mark.parametrize("axis", [None, 0, 1])
+    @pytest.mark.parametrize(
+        "v",
+        [
+            [[0, 0], [0, 0]],
+            [[1, 2], [1, 2]],
+            [[1, 2], [3, 4]],
+            [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
+            [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
+        ],
+        ids=[
+            "[[0, 0], [0, 0]]",
+            "[[1, 2], [1, 2]]",
+            "[[1, 2], [3, 4]]",
+            "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
+            "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
+        ],
     )
-    @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
-    @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
-    def test_var_empty(self, axis, shape):
-        ia = dpnp.empty(shape, dtype=dpnp.int64)
-        a = dpnp.asnumpy(ia)
+    def test_out(self, v, axis):
+        a = numpy.array(v)
+        ia = dpnp.array(a)
 
-        result = dpnp.var(ia, axis=axis)
-        expected = numpy.var(a, axis=axis)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
-    def test_var_dtype(self, dt_in, dt_out):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dt_in)
-        a = dpnp.asnumpy(ia)
-
-        expected = numpy.var(a, dtype=dt_out)
-        result = dpnp.var(ia, dtype=dt_out)
-        assert expected.dtype == result.dtype
-        assert_allclose(result, expected, rtol=1e-06)
-
-    def test_var_scalar(self):
-        ia = dpnp.array(5)
-        a = dpnp.asnumpy(ia)
-
-        result = ia.var()
-        expected = a.var()
-        assert_allclose(result, expected)
-
-    def test_var_error(self):
-        ia = dpnp.arange(5)
-        # where keyword is not implemented
-        with pytest.raises(NotImplementedError):
-            dpnp.var(ia, where=False)
-
-        # ddof should be an integer or float
-        with pytest.raises(TypeError):
-            dpnp.var(ia, ddof="1")
+        expected = numpy.ptp(a, axis)
+        result = dpnp.array(numpy.empty_like(expected))
+        dpnp.ptp(ia, axis, out=result)
+        assert_array_equal(result, expected)
 
 
-class TestStd:
+@testing.parameterize(
+    *testing.product(
+        {
+            "func": ("std", "var"),
+        }
+    )
+)
+class TestStdVar:
     @pytest.mark.usefixtures(
         "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
     )
@@ -452,12 +593,16 @@ class TestStd:
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2])
-    def test_std(self, dtype, axis, keepdims, ddof):
+    def test_basic(self, dtype, axis, keepdims, ddof):
         a = generate_random_numpy_array((2, 3), dtype)
         ia = dpnp.array(a)
 
-        expected = numpy.std(a, axis=axis, keepdims=keepdims, ddof=ddof)
-        result = dpnp.std(ia, axis=axis, keepdims=keepdims, ddof=ddof)
+        expected = getattr(numpy, self.func)(
+            a, axis=axis, keepdims=keepdims, ddof=ddof
+        )
+        result = getattr(dpnp, self.func)(
+            ia, axis=axis, keepdims=keepdims, ddof=ddof
+        )
         if axis == 0 and ddof == 2:
             assert dpnp.all(dpnp.isnan(result))
         else:
@@ -469,18 +614,19 @@ class TestStd:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [0, 1])
     @pytest.mark.parametrize("ddof", [0, 1])
-    def test_std_out(self, dtype, axis, ddof):
+    def test_out_keyword(self, dtype, axis, ddof):
         a = generate_random_numpy_array((2, 3), dtype)
         ia = dpnp.array(a)
 
-        expected = numpy.std(a, axis=axis, ddof=ddof)
+        expected = getattr(numpy, self.func)(a, axis=axis, ddof=ddof)
         if has_support_aspect64():
             res_dtype = expected.dtype
         else:
             res_dtype = dpnp.default_float_type(ia.device)
+
         out = dpnp.empty(expected.shape, dtype=res_dtype)
-        result = dpnp.std(ia, axis=axis, out=out, ddof=ddof)
-        assert out is result
+        result = getattr(dpnp, self.func)(ia, axis=axis, out=out, ddof=ddof)
+        assert result is out
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures(
@@ -488,255 +634,59 @@ class TestStd:
     )
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
-    def test_std_empty(self, axis, shape):
+    def test_empty_array(self, axis, shape):
         ia = dpnp.empty(shape, dtype=dpnp.int64)
         a = dpnp.asnumpy(ia)
 
-        result = dpnp.std(ia, axis=axis)
-        expected = numpy.std(a, axis=axis)
+        expected = getattr(numpy, self.func)(a, axis=axis)
+        result = getattr(dpnp, self.func)(ia, axis=axis)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
-    def test_std_dtype(self, dt_in, dt_out):
+    def test_dtype_keyword(self, dt_in, dt_out):
         ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dt_in)
         a = dpnp.asnumpy(ia)
 
-        expected = numpy.std(a, dtype=dt_out)
-        result = dpnp.std(ia, dtype=dt_out)
+        expected = getattr(numpy, self.func)(a, dtype=dt_out)
+        result = getattr(dpnp, self.func)(ia, dtype=dt_out)
         assert expected.dtype == result.dtype
         assert_allclose(result, expected, rtol=1e-6)
 
-    def test_std_scalar(self):
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("axis", [1, (0, 2), None])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_mean_keyword(self, dtype, axis, keepdims):
+        a = generate_random_numpy_array((10, 20, 5), dtype)
+        ia = dpnp.array(a)
+
+        mean = numpy.mean(a, axis=axis, keepdims=True)
+        imean = dpnp.mean(ia, axis=axis, keepdims=True)
+
+        mean_kw = {"mean": mean} if numpy_version() >= "2.0.0" else {}
+        expected = getattr(a, self.func)(
+            axis=axis, keepdims=keepdims, **mean_kw
+        )
+        result = getattr(ia, self.func)(
+            axis=axis, keepdims=keepdims, mean=imean
+        )
+        assert_dtype_allclose(result, expected)
+
+    def test_scalar(self):
         ia = dpnp.array(5)
         a = dpnp.asnumpy(ia)
 
-        result = ia.std()
-        expected = a.std()
+        expected = getattr(a, self.func)()
+        result = getattr(ia, self.func)()
         assert_dtype_allclose(result, expected)
 
-    def test_std_error(self):
+    def test_error(self):
         ia = dpnp.arange(5)
         # where keyword is not implemented
         with pytest.raises(NotImplementedError):
-            dpnp.std(ia, where=False)
+            getattr(dpnp, self.func)(ia, where=False)
 
         # ddof should be an integer or float
         with pytest.raises(TypeError):
-            dpnp.std(ia, ddof="1")
-
-
-class TestCorrcoef:
-    @pytest.mark.usefixtures(
-        "suppress_divide_invalid_numpy_warnings",
-        "suppress_dof_numpy_warnings",
-    )
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    @pytest.mark.parametrize("rowvar", [True, False])
-    def test_corrcoef(self, dtype, rowvar):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dtype)
-        a = dpnp.asnumpy(ia)
-
-        expected = numpy.corrcoef(a, rowvar=rowvar)
-        result = dpnp.corrcoef(ia, rowvar=rowvar)
-
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures(
-        "suppress_divide_invalid_numpy_warnings",
-        "suppress_dof_numpy_warnings",
-        "suppress_mean_empty_slice_numpy_warnings",
-    )
-    @pytest.mark.parametrize("shape", [(2, 0), (0, 2)])
-    def test_corrcoef_empty(self, shape):
-        ia = dpnp.empty(shape, dtype=dpnp.int64)
-        a = dpnp.asnumpy(ia)
-
-        result = dpnp.corrcoef(ia)
-        expected = numpy.corrcoef(a)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
-    def test_corrcoef_dtype(self, dt_in, dt_out):
-        ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dt_in)
-        a = dpnp.asnumpy(ia)
-
-        expected = numpy.corrcoef(a, dtype=dt_out)
-        result = dpnp.corrcoef(ia, dtype=dt_out)
-        assert expected.dtype == result.dtype
-        assert_allclose(result, expected, rtol=1e-6)
-
-    @pytest.mark.usefixtures(
-        "suppress_divide_invalid_numpy_warnings",
-        "suppress_dof_numpy_warnings",
-    )
-    def test_corrcoef_scalar(self):
-        ia = dpnp.array(5)
-        a = dpnp.asnumpy(ia)
-
-        result = dpnp.corrcoef(ia)
-        expected = numpy.corrcoef(a)
-        assert_dtype_allclose(result, expected)
-
-
-class TestCorrelate:
-    @pytest.mark.parametrize(
-        "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
-    )
-    @pytest.mark.parametrize("mode", [None, "full", "valid", "same"])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_correlate(self, a, v, mode, dtype):
-        an = numpy.array(a, dtype=dtype)
-        vn = numpy.array(v, dtype=dtype)
-        ad = dpnp.array(an)
-        vd = dpnp.array(vn)
-
-        if mode is None:
-            expected = numpy.correlate(an, vn)
-            result = dpnp.correlate(ad, vd)
-        else:
-            expected = numpy.correlate(an, vn, mode=mode)
-            result = dpnp.correlate(ad, vd, mode=mode)
-
-        assert_dtype_allclose(result, expected)
-
-    def test_correlate_mode_error(self):
-        a = dpnp.arange(5)
-        v = dpnp.arange(3)
-
-        # invalid mode
-        with pytest.raises(ValueError):
-            dpnp.correlate(a, v, mode="unknown")
-
-    @pytest.mark.parametrize("a, v", [([], [1]), ([1], []), ([], [])])
-    def test_correlate_empty(self, a, v):
-        a = dpnp.asarray(a)
-        v = dpnp.asarray(v)
-
-        with pytest.raises(ValueError):
-            dpnp.correlate(a, v)
-
-    @pytest.mark.parametrize(
-        "a, v",
-        [
-            ([[1, 2], [2, 3]], [1]),
-            ([1], [[1, 2], [2, 3]]),
-            ([[1, 2], [2, 3]], [[1, 2], [2, 3]]),
-        ],
-    )
-    def test_correlate_shape_error(self, a, v):
-        a = dpnp.asarray(a)
-        v = dpnp.asarray(v)
-
-        with pytest.raises(ValueError):
-            dpnp.correlate(a, v)
-
-    @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
-    def test_correlate_different_sizes(self, size):
-        a = numpy.random.rand(size).astype(numpy.float32)
-        v = numpy.random.rand(size // 2).astype(numpy.float32)
-
-        ad = dpnp.array(a)
-        vd = dpnp.array(v)
-
-        expected = numpy.correlate(a, v)
-        result = dpnp.correlate(ad, vd)
-
-        assert_dtype_allclose(result, expected, factor=20)
-
-    def test_correlate_another_sycl_queue(self):
-        a = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
-        v = dpnp.arange(3, sycl_queue=dpctl.SyclQueue())
-
-        with pytest.raises(ValueError):
-            dpnp.correlate(a, v)
-
-
-class TestCov:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-    )
-    def test_false_rowvar_dtype(self, dtype):
-        a = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
-        ia = dpnp.array(a)
-
-        assert_allclose(dpnp.cov(ia.T), dpnp.cov(ia, rowvar=False))
-        assert_allclose(dpnp.cov(ia, rowvar=False), numpy.cov(a, rowvar=False))
-
-    # numpy 2.2 properly transposes 2d array when rowvar=False
-    @with_requires("numpy>=2.2")
-    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
-    def test_false_rowvar_1x3(self):
-        a = numpy.array([[0, 1, 2]])
-        ia = dpnp.array(a)
-
-        expected = numpy.cov(a, rowvar=False)
-        result = dpnp.cov(ia, rowvar=False)
-        assert_allclose(expected, result)
-
-    # numpy 2.2 properly transposes 2d array when rowvar=False
-    @with_requires("numpy>=2.2")
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    def test_true_rowvar(self):
-        a = numpy.ones((3, 1))
-        ia = dpnp.array(a)
-
-        expected = numpy.cov(a, ddof=0, rowvar=True)
-        result = dpnp.cov(ia, ddof=0, rowvar=True)
-        assert_allclose(expected, result)
-
-
-@pytest.mark.parametrize("axis", [None, 0, 1])
-@pytest.mark.parametrize(
-    "v",
-    [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
-    ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
-        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
-    ],
-)
-def test_ptp(v, axis):
-    a = numpy.array(v)
-    ia = dpnp.array(a)
-    expected = numpy.ptp(a, axis)
-    result = dpnp.ptp(ia, axis)
-    assert_array_equal(result, expected)
-
-
-@pytest.mark.parametrize("axis", [None, 0, 1])
-@pytest.mark.parametrize(
-    "v",
-    [
-        [[0, 0], [0, 0]],
-        [[1, 2], [1, 2]],
-        [[1, 2], [3, 4]],
-        [[0, 1, 2], [3, 4, 5], [6, 7, 8]],
-        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]],
-    ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[0, 1, 2], [3, 4, 5], [6, 7, 8]]",
-        "[[0, 1, 2, 3, 4], [5, 6, 7, 8, 9]]",
-    ],
-)
-def test_ptp_out(v, axis):
-    a = numpy.array(v)
-    ia = dpnp.array(a)
-    expected = numpy.ptp(a, axis)
-    result = dpnp.array(numpy.empty_like(expected))
-    dpnp.ptp(ia, axis, out=result)
-    assert_array_equal(result, expected)
+            getattr(dpnp, self.func)(ia, ddof="1")

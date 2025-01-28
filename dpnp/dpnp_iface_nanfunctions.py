@@ -37,6 +37,8 @@ it contains:
 
 """
 
+# pylint: disable=duplicate-code
+
 import warnings
 
 import dpnp
@@ -955,7 +957,15 @@ def nansum(
 
 
 def nanstd(
-    a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+    a,
+    axis=None,
+    dtype=None,
+    out=None,
+    ddof=0,
+    keepdims=False,
+    *,
+    where=True,
+    mean=None,
 ):
     """
     Compute the standard deviation along the specified axis,
@@ -969,40 +979,52 @@ def nanstd(
         Input array.
     axis : {None, int, tuple of ints}, optional
         Axis or axes along which the standard deviations must be computed.
-        If a tuple of unique integers is given, the standard deviations
-        are computed over multiple axes. If ``None``, the standard deviation
-        is computed over the entire array.
+        If a tuple of unique integers is given, the standard deviations are
+        computed over multiple axes. If ``None``, the standard deviation is
+        computed over the entire array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
-        Type to use in computing the standard deviation. By default,
-        if `a` has a floating-point data type, the returned array
-        will have the same data type as `a`.
-        If `a` has a boolean or integral data type, the returned array
-        will have the default floating point data type for the device
+        Type to use in computing the standard deviation. By default, if `a` has
+        a floating-point data type, the returned array will have the same data
+        type as `a`. If `a` has a boolean or integral data type, the returned
+        array will have the default floating point data type for the device
         where input array `a` is allocated.
+
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+
+        Default: ``None``.
     ddof : {int, float}, optional
-        Means Delta Degrees of Freedom. The divisor used in calculations
-        is ``N - ddof``, where ``N`` the number of non-NaN elements.
-        Default: `0.0`.
+        Means Delta Degrees of Freedom. The divisor used in calculations is
+        ``N - ddof``, where ``N`` the number of non-NaN elements.
+
+        Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input array according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        as singleton dimensions, so that the returned array remains compatible
+        with the input array according to Array Broadcasting rules. Otherwise,
+        if ``False``, the reduced axes are not included in the returned array.
+
+        Default: ``False``.
+    mean : {dpnp.ndarray, usm_ndarray}, optional
+        Provide the mean to prevent its recalculation. The mean should have
+        a shape as if it was calculated with ``keepdims=True``.
+        The axis for the calculation of the mean should be the same as used in
+        the call to this `nanstd` function.
+
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the standard deviations. If the standard
-        deviation was computed over the entire array, a zero-dimensional
-        array is returned. If `ddof` is >= the number of non-NaN elements
-        in a slice or the slice contains only NaNs, then the result for
-        that slice is NaN.
+        An array containing the standard deviations. If the standard deviation
+        was computed over the entire array, a zero-dimensional array is
+        returned. If `ddof` is >= the number of non-NaN elements in a slice or
+        the slice contains only NaNs, then the result for that slice is NaN.
 
     Limitations
     -----------
@@ -1011,6 +1033,19 @@ def nanstd(
 
     Notes
     -----
+    The standard deviation is the square root of the average of the squared
+    deviations from the mean: ``std = sqrt(mean(abs(x - x.mean())**2))``.
+
+    The average squared deviation is normally calculated as ``x.sum() / N``,
+    where ``N = len(x)``. If, however, `ddof` is specified, the divisor
+    ``N - ddof`` is used instead. In standard statistical practice, ``ddof=1``
+    provides an unbiased estimator of the variance of the infinite population.
+    ``ddof=0`` provides a maximum likelihood estimate of the variance for
+    normally distributed variables.
+    The standard deviation computed in this function is the square root of
+    the estimated variance, so even with ``ddof=1``, it will not be an unbiased
+    estimate of the standard deviation per se.
+
     Note that, for complex numbers, the absolute value is taken before
     squaring, so that the result is always real and non-negative.
 
@@ -1029,11 +1064,18 @@ def nanstd(
     >>> import dpnp as np
     >>> a = np.array([[1, np.nan], [3, 4]])
     >>> np.nanstd(a)
-    array(1.247219128924647)
+    array(1.24721913)
     >>> np.nanstd(a, axis=0)
-    array([1.,  0.])
+    array([1., 0.])
     >>> np.nanstd(a, axis=1)
-    array([0.,  0.5])  # may vary
+    array([0. , 0.5])  # may vary
+
+    Using the mean keyword to save computation time:
+
+    >>> a = np.array([[14, 8, np.nan, 10], [7, 9, 10, 11], [np.nan, 15, 5, 10]])
+    >>> mean = np.nanmean(a, axis=1, keepdims=True)
+    >>> np.nanstd(a, axis=1, mean=mean)
+    array([2.49443826, 1.47901995, 4.0824829 ])
 
     """
 
@@ -1051,13 +1093,21 @@ def nanstd(
         ddof=ddof,
         keepdims=keepdims,
         where=where,
+        mean=mean,
     )
-    dpnp.sqrt(res, out=res)
-    return res
+    return dpnp.sqrt(res, out=res)
 
 
 def nanvar(
-    a, axis=None, dtype=None, out=None, ddof=0, keepdims=False, *, where=True
+    a,
+    axis=None,
+    dtype=None,
+    out=None,
+    ddof=0,
+    keepdims=False,
+    *,
+    where=True,
+    mean=None,
 ):
     """
     Compute the variance along the specified axis, while ignoring NaNs.
@@ -1069,39 +1119,52 @@ def nanvar(
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : {None, int, tuple of ints}, optional
-        axis or axes along which the variances must be computed. If a tuple
+        Axis or axes along which the variances must be computed. If a tuple
         of unique integers is given, the variances are computed over multiple
         axes. If ``None``, the variance is computed over the entire array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
         Type to use in computing the variance. By default, if `a` has a
         floating-point data type, the returned array will have
-        the same data type as `a`.
-        If `a` has a boolean or integral data type, the returned array
-        will have the default floating point data type for the device
-        where input array `a` is allocated.
+        the same data type as `a`. If `a` has a boolean or integral data type,
+        the returned array will have the default floating point data type for
+        the device where input array `a` is allocated.
+
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+
+        Default: ``None``.
     ddof : {int, float}, optional
-        Means Delta Degrees of Freedom.  The divisor used in calculations
-        is ``N - ddof``, where ``N`` represents the number of non-NaN elements.
-        Default: `0.0`.
+        Means Delta Degrees of Freedom. The divisor used in calculations is
+        ``N - ddof``, where ``N`` represents the number of non-NaN elements.
+
+        Default: ``0.0``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
-        as singleton dimensions, so that the returned array remains
-        compatible with the input array according to Array Broadcasting
-        rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        as singleton dimensions, so that the returned array remains compatible
+        with the input array according to Array Broadcasting rules. Otherwise,
+        if ``False``, the reduced axes are not included in the returned array.
+
+        Default: ``False``.
+    mean : {dpnp.ndarray, usm_ndarray}, optional
+        Provide the mean to prevent its recalculation. The mean should have
+        a shape as if it was calculated with ``keepdims=True``.
+        The axis for the calculation of the mean should be the same as used in
+        the call to this `nanvar` function.
+
+        Default: ``None``.
 
     Returns
     -------
     out : dpnp.ndarray
-        An array containing the variances. If the variance was computed
-        over the entire array, a zero-dimensional array is returned.
-        If `ddof` is >= the number of non-NaN elements in a slice or the
-        slice contains only NaNs, then the result for that slice is NaN.
+        An array containing the variances. If the variance was computed over
+        the entire array, a zero-dimensional array is returned. If `ddof` is >=
+        the number of non-NaN elements in a slice or the slice contains only
+        NaNs, then the result for that slice is NaN.
 
     Limitations
     -----------
@@ -1110,6 +1173,16 @@ def nanvar(
 
     Notes
     -----
+    The variance is the average of the squared deviations from the mean,
+    that is ``var = mean(abs(x - x.mean())**2)``.
+
+    The mean is normally calculated as ``x.sum() / N``, where ``N = len(x)``.
+    If, however, `ddof` is specified, the divisor ``N - ddof`` is used instead.
+    In standard statistical practice, ``ddof=1`` provides an unbiased estimator
+    of the variance of a hypothetical infinite population. ``ddof=0`` provides
+    a maximum likelihood estimate of the variance for normally distributed
+    variables.
+
     Note that, for complex numbers, the absolute value is taken before squaring,
     so that the result is always real and non-negative.
 
@@ -1127,11 +1200,18 @@ def nanvar(
     >>> import dpnp as np
     >>> a = np.array([[1, np.nan], [3, 4]])
     >>> np.nanvar(a)
-    array(1.5555555555555554)
+    array(1.55555556)
     >>> np.nanvar(a, axis=0)
-    array([1.,  0.])
+    array([1., 0.])
     >>> np.nanvar(a, axis=1)
-    array([0.,  0.25])  # may vary
+    array([0.  , 0.25])  # may vary
+
+    Using the mean keyword to save computation time:
+
+    >>> a = np.array([[14, 8, np.nan, 10], [7, 9, 10, 11], [np.nan, 15, 5, 10]])
+    >>> mean = np.nanmean(a, axis=1, keepdims=True)
+    >>> np.nanvar(a, axis=1, mean=mean)
+    array([ 6.22222222,  2.1875    , 16.66666667])
 
     """
 
@@ -1157,35 +1237,40 @@ def nanvar(
         dtype = dpnp.dtype(dtype)
         if not dpnp.issubdtype(dtype, dpnp.inexact):
             raise TypeError("If input is inexact, then dtype must be inexact.")
+
     if out is not None:
         dpnp.check_supported_arrays_type(out)
         if not dpnp.issubdtype(out.dtype, dpnp.inexact):
             raise TypeError("If input is inexact, then out must be inexact.")
 
     # Compute mean
-    var_dtype = a.real.dtype if dtype is None else dtype
     cnt = dpnp.sum(
-        ~mask, axis=axis, dtype=var_dtype, keepdims=True, where=where
+        ~mask, axis=axis, dtype=dpnp.intp, keepdims=True, where=where
     )
-    avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
-    avg = dpnp.divide(avg, cnt, out=avg)
 
-    # Compute squared deviation from mean.
+    if mean is not None:
+        avg = mean
+    else:
+        avg = dpnp.sum(arr, axis=axis, dtype=dtype, keepdims=True, where=where)
+        avg = dpnp.divide(avg, cnt, out=avg)
+
+    # Compute squared deviation from mean
     if arr.dtype == avg.dtype:
         arr = dpnp.subtract(arr, avg, out=arr)
     else:
         arr = dpnp.subtract(arr, avg)
     dpnp.copyto(arr, 0.0, where=mask)
+
     if dpnp.issubdtype(arr.dtype, dpnp.complexfloating):
         sqr = dpnp.multiply(arr, arr.conj(), out=arr).real
     else:
-        sqr = dpnp.multiply(arr, arr, out=arr)
+        sqr = dpnp.square(arr, out=arr)
 
     # Compute variance
     var = dpnp.sum(
         sqr,
         axis=axis,
-        dtype=var_dtype,
+        dtype=dtype,
         out=out,
         keepdims=keepdims,
         where=where,
@@ -1193,10 +1278,10 @@ def nanvar(
 
     if var.ndim < cnt.ndim:
         cnt = cnt.squeeze(axis)
-    cnt -= ddof
-    dpnp.divide(var, cnt, out=var)
+    dof = cnt - ddof
+    dpnp.divide(var, dof, out=var)
 
-    isbad = cnt <= 0
+    isbad = dof <= 0
     if dpnp.any(isbad):
         # NaN, inf, or negative numbers are all possible bad
         # values, so explicitly replace them with NaN.

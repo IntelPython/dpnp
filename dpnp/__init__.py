@@ -63,16 +63,17 @@ if system() == "Windows":  # pragma: no cover
             )
 
 # Borrowed from DPCTL
-from dpctl.tensor import DLDeviceType
+from dpctl.tensor import __array_api_version__, DLDeviceType
 
-from dpnp.dpnp_array import dpnp_array as ndarray
-from dpnp.dpnp_flatiter import flatiter as flatiter
-from dpnp.dpnp_iface_types import *
-from dpnp.dpnp_iface import *
-from dpnp.dpnp_iface import __all__ as _iface__all__
-from dpnp.dpnp_iface_utils import *
-from dpnp.dpnp_iface_utils import __all__ as _ifaceutils__all__
-from dpnp._version import get_versions
+from .dpnp_array import dpnp_array as ndarray
+from .dpnp_array_api_info import __array_namespace_info__
+from .dpnp_flatiter import flatiter as flatiter
+from .dpnp_iface_types import *
+from .dpnp_iface import *
+from .dpnp_iface import __all__ as _iface__all__
+from .dpnp_iface_utils import *
+from .dpnp_iface_utils import __all__ as _ifaceutils__all__
+from ._version import get_versions
 
 __all__ = _iface__all__
 __all__ += _ifaceutils__all__
