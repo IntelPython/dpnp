@@ -476,8 +476,8 @@ def test_rmatmul_dpnp_array():
     d = Dummy(a)
 
     result = d @ b
-    expected = dpnp.matmul(a, b)
-    assert_allclose(result, expected)
+    expected = a @ b
+    assert (result == expected).all()
 
 
 def test_rmatmul_numpy_array():
