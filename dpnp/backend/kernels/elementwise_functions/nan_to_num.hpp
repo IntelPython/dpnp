@@ -31,8 +31,10 @@
 
 #include <sycl/sycl.hpp>
 // dpctl tensor headers
+#include "kernels/alignment.hpp"
 #include "kernels/dpctl_tensor_types.hpp"
 #include "utils/offset_utils.hpp"
+#include "utils/sycl_utils.hpp"
 #include "utils/type_utils.hpp"
 
 namespace dpnp::kernels::nan_to_num
@@ -49,6 +51,14 @@ inline T to_num(const T v, const T nan, const T posinf, const T neginf)
 template <typename T, typename scT, typename InOutIndexerT>
 struct NanToNumFunctor
 {
+private:
+    const T *inp_ = nullptr;
+    T *out_ = nullptr;
+    const InOutIndexerT inp_out_indexer_;
+    const scT nan_;
+    const scT posinf_;
+    const scT neginf_;
+
 public:
     NanToNumFunctor(const T *inp,
                     T *out,
@@ -80,18 +90,104 @@ public:
             out_[out_offset] = to_num(inp_[inp_offset], nan_, posinf_, neginf_);
         }
     }
+};
 
+template <typename T,
+          typename scT,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u,
+          bool enable_sg_loadstore = true>
+struct NanToNumContigFunctor
+{
 private:
-    const T *inp_ = nullptr;
+    const T *in_ = nullptr;
     T *out_ = nullptr;
-    const InOutIndexerT inp_out_indexer_;
+    std::size_t nelems_;
     const scT nan_;
     const scT posinf_;
     const scT neginf_;
-};
 
-template <typename T>
-class NanToNumKernel;
+public:
+    NanToNumContigFunctor(const T *in,
+                          T *out,
+                          const std::size_t n_elems,
+                          const scT nan,
+                          const scT posinf,
+                          const scT neginf)
+        : in_(in), out_(out), nelems_(n_elems), nan_(nan), posinf_(posinf),
+          neginf_(neginf)
+    {
+    }
+
+    void operator()(sycl::nd_item<1> ndit) const
+    {
+        constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+        /* Each work-item processes vec_sz elements, contiguous in memory */
+        /* NOTE: work-group size must be divisible by sub-group size */
+
+        using dpctl::tensor::type_utils::is_complex_v;
+        if constexpr (enable_sg_loadstore && !is_complex_v<T>) {
+            auto sg = ndit.get_sub_group();
+            const std::uint16_t sgSize = sg.get_max_local_range()[0];
+            const std::size_t base =
+                elems_per_wi * (ndit.get_group(0) * ndit.get_local_range(0) +
+                                sg.get_group_id()[0] * sgSize);
+
+            if (base + elems_per_wi * sgSize < nelems_) {
+                using dpctl::tensor::sycl_utils::sub_group_load;
+                using dpctl::tensor::sycl_utils::sub_group_store;
+#pragma unroll
+                for (std::uint8_t it = 0; it < elems_per_wi; it += vec_sz) {
+                    const std::size_t offset = base + it * sgSize;
+                    auto in_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&in_[offset]);
+                    auto out_multi_ptr = sycl::address_space_cast<
+                        sycl::access::address_space::global_space,
+                        sycl::access::decorated::yes>(&out_[offset]);
+
+                    sycl::vec<T, vec_sz> arg_vec =
+                        sub_group_load<vec_sz>(sg, in_multi_ptr);
+#pragma unroll
+                    for (std::uint32_t k = 0; k < vec_sz; ++k) {
+                        arg_vec[k] = to_num(arg_vec[k], nan_, posinf_, neginf_);
+                    }
+                    sub_group_store<vec_sz>(sg, arg_vec, out_multi_ptr);
+                }
+            }
+            else {
+                const std::size_t lane_id = sg.get_local_id()[0];
+                for (std::size_t k = base + lane_id; k < nelems_; k += sgSize) {
+                    out_[k] = to_num(in_[k], nan_, posinf_, neginf_);
+                }
+            }
+        }
+        else {
+            const std::uint16_t sgSize =
+                ndit.get_sub_group().get_local_range()[0];
+            const std::size_t gid = ndit.get_global_linear_id();
+            const std::uint16_t elems_per_sg = sgSize * elems_per_wi;
+
+            const std::size_t start =
+                (gid / sgSize) * (elems_per_sg - sgSize) + gid;
+            const std::size_t end = std::min(nelems_, start + elems_per_sg);
+            for (std::size_t offset = start; offset < end; offset += sgSize) {
+                if constexpr (is_complex_v<T>) {
+                    using realT = typename T::value_type;
+                    static_assert(std::is_same_v<realT, scT>);
+
+                    T z = in_[offset];
+                    realT x = to_num(z.real(), nan_, posinf_, neginf_);
+                    realT y = to_num(z.imag(), nan_, posinf_, neginf_);
+                    out_[offset] = T{x, y};
+                }
+                else {
+                    out_[offset] = to_num(in_[offset], nan_, posinf_, neginf_);
+                }
+            }
+        }
+    }
+};
 
 template <typename T, typename scT>
 sycl::event nan_to_num_impl(sycl::queue &q,
@@ -119,48 +215,69 @@ sycl::event nan_to_num_impl(sycl::queue &q,
     sycl::event comp_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KernelName = NanToNumKernel<T>;
-        cgh.parallel_for<KernelName>(
-            {nelems}, NanToNumFunctor<T, scT, InOutIndexerT>(
-                          in_tp, out_tp, indexer, nan, posinf, neginf));
+        using NanToNumFunc = NanToNumFunctor<T, scT, InOutIndexerT>;
+        cgh.parallel_for<NanToNumFunc>(
+            {nelems},
+            NanToNumFunc(in_tp, out_tp, indexer, nan, posinf, neginf));
     });
     return comp_ev;
 }
 
-template <typename T>
-class NanToNumContigKernel;
-
-template <typename T, typename scT>
-sycl::event nan_to_num_contig_impl(sycl::queue &q,
-                                   const size_t nelems,
+template <typename T,
+          typename scT,
+          std::uint8_t vec_sz = 4u,
+          std::uint8_t n_vecs = 2u>
+sycl::event nan_to_num_contig_impl(sycl::queue &exec_q,
+                                   std::size_t nelems,
                                    const scT nan,
                                    const scT posinf,
                                    const scT neginf,
                                    const char *in_cp,
                                    char *out_cp,
-                                   const std::vector<sycl::event> &depends)
+                                   const std::vector<sycl::event> &depends = {})
 {
-    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+    constexpr std::uint8_t elems_per_wi = n_vecs * vec_sz;
+    const std::size_t n_work_items_needed = nelems / elems_per_wi;
+    const std::size_t empirical_threshold = std::size_t(1) << 21;
+    const std::size_t lws = (n_work_items_needed <= empirical_threshold)
+                                ? std::size_t(128)
+                                : std::size_t(256);
+
+    const std::size_t n_groups =
+        ((nelems + lws * elems_per_wi - 1) / (lws * elems_per_wi));
+    const auto gws_range = sycl::range<1>(n_groups * lws);
+    const auto lws_range = sycl::range<1>(lws);
 
     const T *in_tp = reinterpret_cast<const T *>(in_cp);
     T *out_tp = reinterpret_cast<T *>(out_cp);
 
-    using dpctl::tensor::offset_utils::NoOpIndexer;
-    using InOutIndexerT =
-        dpctl::tensor::offset_utils::TwoOffsets_CombinedIndexer<NoOpIndexer,
-                                                                NoOpIndexer>;
-    constexpr NoOpIndexer in_indexer{};
-    constexpr NoOpIndexer out_indexer{};
-    constexpr InOutIndexerT indexer{in_indexer, out_indexer};
-
-    sycl::event comp_ev = q.submit([&](sycl::handler &cgh) {
+    sycl::event comp_ev = exec_q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        using KernelName = NanToNumContigKernel<T>;
-        cgh.parallel_for<KernelName>(
-            {nelems}, NanToNumFunctor<T, scT, InOutIndexerT>(
-                          in_tp, out_tp, indexer, nan, posinf, neginf));
+        using dpctl::tensor::kernels::alignment_utils::is_aligned;
+        using dpctl::tensor::kernels::alignment_utils::required_alignment;
+        if (is_aligned<required_alignment>(in_tp) &&
+            is_aligned<required_alignment>(out_tp))
+        {
+            constexpr bool enable_sg_loadstore = true;
+            using NanToNumFunc = NanToNumContigFunctor<T, scT, vec_sz, n_vecs,
+                                                       enable_sg_loadstore>;
+
+            cgh.parallel_for<NanToNumFunc>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                NanToNumFunc(in_tp, out_tp, nelems, nan, posinf, neginf));
+        }
+        else {
+            constexpr bool disable_sg_loadstore = false;
+            using NanToNumFunc = NanToNumContigFunctor<T, scT, vec_sz, n_vecs,
+                                                       disable_sg_loadstore>;
+
+            cgh.parallel_for<NanToNumFunc>(
+                sycl::nd_range<1>(gws_range, lws_range),
+                NanToNumFunc(in_tp, out_tp, nelems, nan, posinf, neginf));
+        }
     });
+
     return comp_ev;
 }
 
