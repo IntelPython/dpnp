@@ -329,9 +329,9 @@ jobs:
 
       - name: Run tests for all dtypes
         env:
-            DPNP_TEST_ALL_INT_TYPES: 1
+          DPNP_TEST_ALL_INT_TYPES: 1
         run: |
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
 
   test_windows:
     name: Test
