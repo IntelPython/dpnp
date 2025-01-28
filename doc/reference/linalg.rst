@@ -1,3 +1,7 @@
+.. _routines.linalg:
+
+.. py:module:: dpnp.linalg
+
 Linear algebra
 ==============
 
