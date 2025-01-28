@@ -32,10 +32,10 @@ if not defined PYTHON (
 
 
 "%PYTHON%" -c "import dpnp; print(dpnp.__version__)"
-if errorlevel neq 0 exit 1
+if %errorlevel% neq 0 exit 1
 
 "%PYTHON%" -m dpctl -f
-if errorlevel neq 0 exit 1
+if %errorlevel% neq 0 exit 1
 
 "%PYTHON%" -m pytest -ra --pyargs dpnp
-if errorlevel neq 0 exit 1
+if %errorlevel% neq 0 exit 1
