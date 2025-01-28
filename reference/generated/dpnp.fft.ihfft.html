@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.ihfft &mdash; Data Parallel Extension for NumPy 0.17.0dev5+5.gb72f953b123 documentation</title>
+  <title>dpnp.fft.ihfft &mdash; Data Parallel Extension for NumPy 0.17.0dev5+7.gdf307dd1d85 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=b8853c1d"></script>
+      <script src="../../_static/documentation_options.js?v=11994bd3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -83,6 +83,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -137,7 +138,7 @@ the input along the axis specified by <cite>axis</cite> is used.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- Axis over which to compute the FFT. If not given, the last axis is
 used. Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p></li>
-<li><p><strong>norm</strong> (<em>{None</em><em>, </em><em>&quot;backward&quot;</em><em>, </em><em>&quot;ortho&quot;</em><em>, </em><em>&quot;forward&quot;}</em><em>, </em><em>optional</em>) -- Normalization mode (see <code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code>).
+<li><p><strong>norm</strong> (<em>{None</em><em>, </em><em>&quot;backward&quot;</em><em>, </em><em>&quot;ortho&quot;</em><em>, </em><em>&quot;forward&quot;}</em><em>, </em><em>optional</em>) -- Normalization mode (see <a class="reference internal" href="../fft.html#module-dpnp.fft" title="dpnp.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code></a>).
 Indicates which direction of the forward/backward pair of transforms
 is scaled and with what normalization factor. <code class="docutils literal notranslate"><span class="pre">None</span></code> is an alias of
 the default option <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.
@@ -159,7 +160,7 @@ The length of the transformed axis is <code class="docutils literal notranslate"
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code></dt><dd><p>For definition of the DFT and conventions used.</p>
+<dt><a class="reference internal" href="../fft.html#module-dpnp.fft" title="dpnp.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code></a></dt><dd><p>For definition of the DFT and conventions used.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.fft.hfft.html#dpnp.fft.hfft" title="dpnp.fft.hfft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft.hfft</span></code></a></dt><dd><p>Compute the FFT of a signal that has Hermitian symmetry.</p>
 </dd>
