@@ -15,11 +15,13 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -604,7 +606,14 @@ class TestNanProd:
             dpnp.nanprod(dpnp.asnumpy(ia))
 
 
-class TestNanStd:
+@testing.parameterize(
+    *testing.product(
+        {
+            "func": ("nanstd", "nanvar"),
+        }
+    )
+)
+class TestNanStdVar:
     @pytest.mark.parametrize(
         "array",
         [
@@ -646,27 +655,26 @@ class TestNanStd:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
-    def test_nanstd(self, array, dtype):
+    def test_basic(self, array, dtype):
         try:
             a = numpy.array(array, dtype=dtype)
         except:
             pytest.skip("floating datat type is needed to store NaN")
         ia = dpnp.array(a)
+
         for ddof in range(a.ndim):
-            expected = numpy.nanstd(a, ddof=ddof)
-            result = dpnp.nanstd(ia, ddof=ddof)
+            expected = getattr(numpy, self.func)(a, ddof=ddof)
+            result = getattr(dpnp, self.func)(ia, ddof=ddof)
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_nanstd_complex(self, dtype):
-        x1 = numpy.random.rand(10)
-        x2 = numpy.random.rand(10)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
+    def test_complex_dtype(self, dtype):
+        a = generate_random_numpy_array(10, dtype=dtype)
         a[::3] = numpy.nan
         ia = dpnp.array(a)
 
-        expected = numpy.nanstd(a)
-        result = dpnp.nanstd(ia)
+        expected = getattr(numpy, self.func)(a)
+        result = getattr(dpnp, self.func)(ia)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_dof_numpy_warnings")
@@ -674,61 +682,94 @@ class TestNanStd:
     @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 1), (1, 2)])
     @pytest.mark.parametrize("keepdims", [True, False])
     @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2, 3])
-    def test_nanstd_out(self, dtype, axis, keepdims, ddof):
+    def test_out_keyword(self, dtype, axis, keepdims, ddof):
         a = numpy.arange(4 * 3 * 5, dtype=dtype)
         a[::2] = numpy.nan
         a = a.reshape(4, 3, 5)
         ia = dpnp.array(a)
 
-        expected = numpy.nanstd(a, axis=axis, ddof=ddof, keepdims=keepdims)
+        expected = getattr(numpy, self.func)(
+            a, axis=axis, ddof=ddof, keepdims=keepdims
+        )
         if has_support_aspect64():
             res_dtype = expected.dtype
         else:
             res_dtype = dpnp.default_float_type(ia.device)
         out = dpnp.empty(expected.shape, dtype=res_dtype)
-        result = dpnp.nanstd(
+        result = getattr(dpnp, self.func)(
             ia, out=out, axis=axis, ddof=ddof, keepdims=keepdims
         )
         assert result is out
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    def test_nanstd_strided(self, dtype):
-        dp_array = dpnp.arange(20, dtype=dtype)
-        dp_array[::3] = dpnp.nan
-        np_array = dpnp.asnumpy(dp_array)
+    def test_strided_array(self, dtype):
+        a = numpy.arange(20, dtype=dtype)
+        a[::3] = numpy.nan
+        ia = dpnp.array(a)
 
-        result = dpnp.nanstd(dp_array[::-1])
-        expected = numpy.nanstd(np_array[::-1])
+        result = getattr(dpnp, self.func)(ia[::-1])
+        expected = getattr(numpy, self.func)(a[::-1])
         assert_dtype_allclose(result, expected)
 
-        result = dpnp.nanstd(dp_array[::2])
-        expected = numpy.nanstd(np_array[::2])
+        result = getattr(dpnp, self.func)(ia[::2])
+        expected = getattr(numpy, self.func)(a[::2])
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("dt_in", get_float_complex_dtypes())
     @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
-    def test_nanstd_dtype(self, dt_in, dt_out):
+    def test_dtype_keyword(self, dt_in, dt_out):
         a = numpy.arange(4 * 3 * 5, dtype=dt_in)
         a[::2] = numpy.nan
         a = a.reshape(4, 3, 5)
         ia = dpnp.array(a)
 
-        expected = numpy.nanstd(a, dtype=dt_out)
-        result = dpnp.nanstd(ia, dtype=dt_out)
+        expected = getattr(numpy, self.func)(a, dtype=dt_out)
+        result = getattr(dpnp, self.func)(ia, dtype=dt_out)
         assert_dtype_allclose(result, expected)
 
-    def test_nanstd_error(self):
+    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
+    @pytest.mark.parametrize("axis", [1, (0, 2), None])
+    @pytest.mark.parametrize("keepdims", [True, False])
+    def test_mean_keyword(self, dtype, axis, keepdims):
+        a = generate_random_numpy_array((10, 20, 5), dtype)
+        mask = numpy.random.choice([True, False], size=a.size, p=[0.3, 0.7])
+        numpy.place(a, mask, numpy.nan)
+        ia = dpnp.array(a)
+
+        mean = numpy.nanmean(a, axis=axis, keepdims=True)
+        imean = dpnp.nanmean(ia, axis=axis, keepdims=True)
+
+        mean_kw = {"mean": mean} if numpy_version() >= "2.0.0" else {}
+        expected = getattr(numpy, self.func)(
+            a, axis=axis, keepdims=keepdims, **mean_kw
+        )
+        result = getattr(dpnp, self.func)(
+            ia, axis=axis, keepdims=keepdims, mean=imean
+        )
+        assert_dtype_allclose(result, expected)
+
+    def test_error(self):
         ia = dpnp.arange(5, dtype=dpnp.float32)
         ia[0] = dpnp.nan
+
         # where keyword is not implemented
         with pytest.raises(NotImplementedError):
-            dpnp.nanstd(ia, where=False)
+            getattr(dpnp, self.func)(ia, where=False)
+
+        # dtype should be floating
+        with pytest.raises(TypeError):
+            getattr(dpnp, self.func)(ia, dtype=dpnp.int32)
+
+        # out dtype should be inexact
+        res = dpnp.empty((1,), dtype=dpnp.int32)
+        with pytest.raises(TypeError):
+            getattr(dpnp, self.func)(ia, out=res)
 
         # ddof should be an integer or float
         with pytest.raises(TypeError):
-            dpnp.nanstd(ia, ddof="1")
+            getattr(dpnp, self.func)(ia, ddof="1")
 
 
 class TestNanSum:
@@ -789,139 +830,3 @@ class TestNanSum:
         result = dpnp.nansum(dp_array[::2])
         expected = numpy.nansum(np_array[::2])
         assert_allclose(result, expected)
-
-
-class TestNanVar:
-    @pytest.mark.parametrize(
-        "array",
-        [
-            [2, 0, 6, 2],
-            [2, 0, 6, 2, 5, 6, 7, 8],
-            [],
-            [2, 1, numpy.nan, 5, 3],
-            [-1, numpy.nan, 1, numpy.inf],
-            [3, 6, 0, 1],
-            [3, 6, 0, 1, 8],
-            [3, 2, 9, 6, numpy.nan],
-            [numpy.nan, numpy.nan, numpy.inf, numpy.nan],
-            [[2, 0], [6, 2]],
-            [[2, 0, 6, 2], [5, 6, 7, 8]],
-            [[[2, 0], [6, 2]], [[5, 6], [7, 8]]],
-            [[-1, numpy.nan], [1, numpy.inf]],
-            [[numpy.nan, numpy.nan], [numpy.inf, numpy.nan]],
-        ],
-        ids=[
-            "[2, 0, 6, 2]",
-            "[2, 0, 6, 2, 5, 6, 7, 8]",
-            "[]",
-            "[2, 1, np.nan, 5, 3]",
-            "[-1, np.nan, 1, np.inf]",
-            "[3, 6, 0, 1]",
-            "[3, 6, 0, 1, 8]",
-            "[3, 2, 9, 6, np.nan]",
-            "[np.nan, np.nan, np.inf, np.nan]",
-            "[[2, 0], [6, 2]]",
-            "[[2, 0, 6, 2], [5, 6, 7, 8]]",
-            "[[[2, 0], [6, 2]], [[5, 6], [7, 8]]]",
-            "[[-1, np.nan], [1, np.inf]]",
-            "[[np.nan, np.nan], [np.inf, np.nan]]",
-        ],
-    )
-    @pytest.mark.usefixtures(
-        "suppress_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
-    )
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
-    def test_nanvar(self, array, dtype):
-        try:
-            a = numpy.array(array, dtype=dtype)
-        except:
-            pytest.skip("floating datat type is needed to store NaN")
-        ia = dpnp.array(a)
-        for ddof in range(a.ndim):
-            expected = numpy.nanvar(a, ddof=ddof)
-            result = dpnp.nanvar(ia, ddof=ddof)
-            assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_nanvar_complex(self, dtype):
-        x1 = numpy.random.rand(10)
-        x2 = numpy.random.rand(10)
-        a = numpy.array(x1 + 1j * x2, dtype=dtype)
-        a[::3] = numpy.nan
-        ia = dpnp.array(a)
-
-        expected = numpy.nanvar(a)
-        result = dpnp.nanvar(ia)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures("suppress_dof_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    @pytest.mark.parametrize("axis", [None, 0, 1, 2, (0, 1), (1, 2)])
-    @pytest.mark.parametrize("keepdims", [True, False])
-    @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2, 3])
-    def test_nanvar_out(self, dtype, axis, keepdims, ddof):
-        a = numpy.arange(4 * 3 * 5, dtype=dtype)
-        a[::2] = numpy.nan
-        a = a.reshape(4, 3, 5)
-        ia = dpnp.array(a)
-
-        expected = numpy.nanvar(a, axis=axis, ddof=ddof, keepdims=keepdims)
-        if has_support_aspect64():
-            res_dtype = expected.dtype
-        else:
-            res_dtype = dpnp.default_float_type(ia.device)
-        out = dpnp.empty(expected.shape, dtype=res_dtype)
-        result = dpnp.nanvar(
-            ia, out=out, axis=axis, ddof=ddof, keepdims=keepdims
-        )
-        assert result is out
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-    def test_nanvar_strided(self, dtype):
-        dp_array = dpnp.arange(20, dtype=dtype)
-        dp_array[::3] = dpnp.nan
-        np_array = dpnp.asnumpy(dp_array)
-
-        result = dpnp.nanvar(dp_array[::-1])
-        expected = numpy.nanvar(np_array[::-1])
-        assert_dtype_allclose(result, expected)
-
-        result = dpnp.nanvar(dp_array[::2])
-        expected = numpy.nanvar(np_array[::2])
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("dt_in", get_float_complex_dtypes())
-    @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
-    def test_nanvar_dtype(self, dt_in, dt_out):
-        a = numpy.arange(4 * 3 * 5, dtype=dt_in)
-        a[::2] = numpy.nan
-        a = a.reshape(4, 3, 5)
-        ia = dpnp.array(a)
-
-        expected = numpy.nanvar(a, dtype=dt_out)
-        result = dpnp.nanvar(ia, dtype=dt_out)
-        assert_dtype_allclose(result, expected)
-
-    def test_nanvar_error(self):
-        ia = dpnp.arange(5, dtype=dpnp.float32)
-        ia[0] = dpnp.nan
-        # where keyword is not implemented
-        with pytest.raises(NotImplementedError):
-            dpnp.nanvar(ia, where=False)
-
-        # dtype should be floating
-        with pytest.raises(TypeError):
-            dpnp.nanvar(ia, dtype=dpnp.int32)
-
-        # out dtype should be inexact
-        res = dpnp.empty((1,), dtype=dpnp.int32)
-        with pytest.raises(TypeError):
-            dpnp.nanvar(ia, out=res)
-
-        # ddof should be an integer or float
-        with pytest.raises(TypeError):
-            dpnp.nanvar(ia, ddof="1")
