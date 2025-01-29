@@ -571,13 +571,13 @@ def correlate(a, v, mode="valid", method="auto"):
 
         Default: ``"valid"``.
     method : {"auto", "direct", "fft"}, optional
-        `"direct"`: The correlation is determined directly from sums.
+        Specifies which method to use to calculate the correlation:
 
-        `"fft"`: The Fourier Transform is used to perform the calculations.
-        This method is faster for long sequences but can have accuracy issues.
-
-        `"auto"`: Automatically chooses direct or Fourier method based on
-        an estimate of which is faster.
+        - `"direct"` : The correlation is determined directly from sums.
+        - `"fft"` : The Fourier Transform is used to perform the calculations.
+          This method is faster for long sequences but can have accuracy issues.
+        - `"auto"` : Automatically chooses direct or Fourier method based on
+          an estimate of which is faster.
 
         Note: Use of the FFT convolution on input containing NAN or INF
         will lead to the entire output being NAN or INF.
