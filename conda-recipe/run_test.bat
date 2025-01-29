@@ -8,6 +8,11 @@ if defined ONEAPI_ROOT (
     set "DPLROOT=%ONEAPI_ROOT%\dpl\latest"
 )
 
+echo "DPCPPROOT=%DPCPPROOT%"
+echo "MKLROOT=%MKLROOT%"
+echo "TBBROOT=%TBBROOT%"
+echo "DPLROOT=%DPLROOT%"
+
 REM if DPCPPROOT is specified (work with custom DPCPP)
 if defined DPCPPROOT (
     call "%DPCPPROOT%\env\vars.bat"
