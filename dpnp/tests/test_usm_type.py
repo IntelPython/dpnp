@@ -36,163 +36,163 @@ def test_coerced_usm_types_add(usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_mul(usm_type_x, usm_type_y):
-#     x = dp.arange(10, usm_type=usm_type_x)
-#     y = dp.arange(10, usm_type=usm_type_y)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_mul(usm_type_x, usm_type_y):
+    x = dp.arange(10, usm_type=usm_type_x)
+    y = dp.arange(10, usm_type=usm_type_y)
 
-#     z = 3 * x * y * 1.5
+    z = 3 * x * y * 1.5
 
-#     # inplace multiply
-#     z *= x
-#     z *= 4.8
+    # inplace multiply
+    z *= x
+    z *= 4.8
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
-
-
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_subtract(usm_type_x, usm_type_y):
-#     x = dp.arange(50, usm_type=usm_type_x)
-#     y = dp.arange(50, usm_type=usm_type_y)
-
-#     z = 20 - x - y - 7.4
-
-#     # inplace subtract
-#     z -= x
-#     z -= -3.4
-
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_divide(usm_type_x, usm_type_y):
-#     x = dp.arange(120, usm_type=usm_type_x)
-#     y = dp.arange(120, usm_type=usm_type_y)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_subtract(usm_type_x, usm_type_y):
+    x = dp.arange(50, usm_type=usm_type_x)
+    y = dp.arange(50, usm_type=usm_type_y)
 
-#     z = 2 / x / y / 1.5
+    z = 20 - x - y - 7.4
 
-#     # inplace divide
-#     z /= x
-#     z /= -2.4
+    # inplace subtract
+    z -= x
+    z -= -3.4
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
-
-
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_remainder(usm_type_x, usm_type_y):
-#     x = dp.arange(100, usm_type=usm_type_x).reshape(10, 10)
-#     y = dp.arange(100, usm_type=usm_type_y).reshape(10, 10)
-#     y = y.T + 1
-
-#     z = 100 % y
-#     z = y % 7
-#     z = x % y
-
-#     # inplace remainder
-#     z %= y
-#     z %= 5
-
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_floor_divide(usm_type_x, usm_type_y):
-#     x = dp.arange(100, usm_type=usm_type_x).reshape(10, 10)
-#     y = dp.arange(100, usm_type=usm_type_y).reshape(10, 10)
-#     x = x + 1.5
-#     y = y.T + 0.5
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_divide(usm_type_x, usm_type_y):
+    x = dp.arange(120, usm_type=usm_type_x)
+    y = dp.arange(120, usm_type=usm_type_y)
 
-#     z = 3.4 // y
-#     z = y // 2.7
-#     z = x // y
+    z = 2 / x / y / 1.5
 
-#     # inplace floor_divide
-#     z //= y
-#     z //= 2.5
+    # inplace divide
+    z /= x
+    z /= -2.4
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_power(usm_type_x, usm_type_y):
-#     x = dp.arange(70, usm_type=usm_type_x).reshape((7, 5, 2))
-#     y = dp.arange(70, usm_type=usm_type_y).reshape((7, 5, 2))
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_remainder(usm_type_x, usm_type_y):
+    x = dp.arange(100, usm_type=usm_type_x).reshape(10, 10)
+    y = dp.arange(100, usm_type=usm_type_y).reshape(10, 10)
+    y = y.T + 1
 
-#     z = 2**x**y**1.5
-#     z **= x
-#     z **= 1.7
+    z = 100 % y
+    z = y % 7
+    z = x % y
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    # inplace remainder
+    z %= y
+    z %= 5
 
-
-# @pytest.mark.parametrize(
-#     "func, args",
-#     [
-#         pytest.param("copy", ["x0"]),
-#         pytest.param("diag", ["x0"]),
-#         pytest.param("empty_like", ["x0"]),
-#         pytest.param("full", ["10", "x0[3]"]),
-#         pytest.param("full_like", ["x0", "4"]),
-#         pytest.param("geomspace", ["x0[0:3]", "8", "4"]),
-#         pytest.param("geomspace", ["1", "x0[3:5]", "4"]),
-#         pytest.param("linspace", ["x0[0:2]", "8", "4"]),
-#         pytest.param("linspace", ["0", "x0[3:5]", "4"]),
-#         pytest.param("logspace", ["x0[0:2]", "8", "4"]),
-#         pytest.param("logspace", ["0", "x0[3:5]", "4"]),
-#         pytest.param("ones_like", ["x0"]),
-#         pytest.param("vander", ["x0"]),
-#         pytest.param("zeros_like", ["x0"]),
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_array_creation_from_1d_array(func, args, usm_type_x, usm_type_y):
-#     x0 = dp.full(10, 3, usm_type=usm_type_x)
-#     new_args = [eval(val, {"x0": x0}) for val in args]
-
-#     x = getattr(dp, func)(*new_args)
-#     y = getattr(dp, func)(*new_args, usm_type=usm_type_y)
-
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-# @pytest.mark.parametrize(
-#     "func, args",
-#     [
-#         pytest.param("diag", ["x0"]),
-#         pytest.param("diagflat", ["x0"]),
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
-#     x0 = dp.arange(25, usm_type=usm_type_x).reshape(5, 5)
-#     new_args = [eval(val, {"x0": x0}) for val in args]
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_floor_divide(usm_type_x, usm_type_y):
+    x = dp.arange(100, usm_type=usm_type_x).reshape(10, 10)
+    y = dp.arange(100, usm_type=usm_type_y).reshape(10, 10)
+    x = x + 1.5
+    y = y.T + 0.5
 
-#     x = getattr(dp, func)(*new_args)
-#     y = getattr(dp, func)(*new_args, usm_type=usm_type_y)
+    z = 3.4 // y
+    z = y // 2.7
+    z = x // y
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
+    # inplace floor_divide
+    z //= y
+    z //= 2.5
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_power(usm_type_x, usm_type_y):
+    x = dp.arange(70, usm_type=usm_type_x).reshape((7, 5, 2))
+    y = dp.arange(70, usm_type=usm_type_y).reshape((7, 5, 2))
+
+    z = 2**x**y**1.5
+    z **= x
+    z **= 1.7
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("copy", ["x0"]),
+        pytest.param("diag", ["x0"]),
+        pytest.param("empty_like", ["x0"]),
+        pytest.param("full", ["10", "x0[3]"]),
+        pytest.param("full_like", ["x0", "4"]),
+        pytest.param("geomspace", ["x0[0:3]", "8", "4"]),
+        pytest.param("geomspace", ["1", "x0[3:5]", "4"]),
+        pytest.param("linspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("linspace", ["0", "x0[3:5]", "4"]),
+        pytest.param("logspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("logspace", ["0", "x0[3:5]", "4"]),
+        pytest.param("ones_like", ["x0"]),
+        pytest.param("vander", ["x0"]),
+        pytest.param("zeros_like", ["x0"]),
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_1d_array(func, args, usm_type_x, usm_type_y):
+    x0 = dp.full(10, 3, usm_type=usm_type_x)
+    new_args = [eval(val, {"x0": x0}) for val in args]
+
+    x = getattr(dp, func)(*new_args)
+    y = getattr(dp, func)(*new_args, usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+
+
+@pytest.mark.parametrize(
+    "func, args",
+    [
+        pytest.param("diag", ["x0"]),
+        pytest.param("diagflat", ["x0"]),
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
+    x0 = dp.arange(25, usm_type=usm_type_x).reshape(5, 5)
+    new_args = [eval(val, {"x0": x0}) for val in args]
+
+    x = getattr(dp, func)(*new_args)
+    y = getattr(dp, func)(*new_args, usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
 
 
 # @pytest.mark.parametrize(
