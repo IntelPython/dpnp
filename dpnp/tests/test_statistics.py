@@ -622,16 +622,8 @@ class TestCorrelate:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("method", ["auto", "direct", "fft"])
     def test_correlate_random(self, a_size, v_size, mode, dtype, method):
-        if dtype == dpnp.bool:
-            an = numpy.random.rand(a_size) > 0.9
-            vn = numpy.random.rand(v_size) > 0.9
-        else:
-            an = 100 * numpy.random.rand(a_size).astype(dtype)
-            vn = 100 * numpy.random.rand(v_size).astype(dtype)
-
-            if dpnp.issubdtype(dtype, dpnp.complexfloating):
-                an = an + 100j * numpy.random.rand(a_size).astype(dtype)
-                vn = vn + 100j * numpy.random.rand(v_size).astype(dtype)
+        an = generate_random_numpy_array(a_size, dtype, probability=0.9)
+        vn = generate_random_numpy_array(v_size, dtype, probability=0.9)
 
         ad = dpnp.array(an)
         vd = dpnp.array(vn)
@@ -655,7 +647,13 @@ class TestCorrelate:
             if method == "direct":
                 expected = numpy.correlate(an, vn, **numpy_kwargs)
                 # For 'direct' method we can use standard validation
-                assert_dtype_allclose(result, expected, factor=30)
+                # acceptable error depends on the kernel size
+                # while error grows linearly with the kernel size,
+                # this empirically found formula provides a good balance
+                # the resulting factor is 40 for kernel size = 1,
+                # 400 for kernel size = 100 and 4000 for kernel size = 10000
+                factor = int(40 * (min(a_size, v_size) ** 0.5))
+                assert_dtype_allclose(result, expected, factor=factor)
             else:
                 rtol = 1e-3
                 atol = 1e-10
