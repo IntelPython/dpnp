@@ -25,6 +25,7 @@
 
 #include <algorithm>
 #include <complex>
+#include <cstddef>
 #include <stdexcept>
 #include <string>
 #include <tuple>
@@ -78,7 +79,7 @@ using value_type_of_t = typename value_type_of<T>::type;
 
 typedef sycl::event (*nan_to_num_fn_ptr_t)(sycl::queue &,
                                            int,
-                                           size_t,
+                                           std::size_t,
                                            const py::ssize_t *,
                                            const py::object &,
                                            const py::object &,
@@ -92,7 +93,7 @@ typedef sycl::event (*nan_to_num_fn_ptr_t)(sycl::queue &,
 template <typename T>
 sycl::event nan_to_num_call(sycl::queue &exec_q,
                             int nd,
-                            size_t nelems,
+                            std::size_t nelems,
                             const py::ssize_t *shape_strides,
                             const py::object &py_nan,
                             const py::object &py_posinf,
@@ -120,7 +121,7 @@ sycl::event nan_to_num_call(sycl::queue &exec_q,
 
 typedef sycl::event (*nan_to_num_contig_fn_ptr_t)(
     sycl::queue &,
-    size_t,
+    std::size_t,
     const py::object &,
     const py::object &,
     const py::object &,
@@ -130,7 +131,7 @@ typedef sycl::event (*nan_to_num_contig_fn_ptr_t)(
 
 template <typename T>
 sycl::event nan_to_num_contig_call(sycl::queue &exec_q,
-                                   size_t nelems,
+                                   std::size_t nelems,
                                    const py::object &py_nan,
                                    const py::object &py_posinf,
                                    const py::object &py_neginf,
@@ -191,7 +192,7 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *src_shape = src.get_shape_raw();
     const py::ssize_t *dst_shape = dst.get_shape_raw();
 
-    size_t nelems = src.get_size();
+    std::size_t nelems = src.get_size();
     bool shapes_equal = std::equal(src_shape, src_shape + src_nd, dst_shape);
     if (!shapes_equal) {
         throw py::value_error("Array shapes are not the same.");
