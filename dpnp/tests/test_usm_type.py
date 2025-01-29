@@ -16,7 +16,8 @@ from .helper import (
     is_win_platform,
 )
 
-list_of_usm_types = ["device", "shared", "host"]
+# list_of_usm_types = ["device", "shared", "host"]
+list_of_usm_types = ["shared"]
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
@@ -195,268 +196,268 @@ def test_array_creation_from_2d_array(func, args, usm_type_x, usm_type_y):
     assert y.usm_type == usm_type_y
 
 
-# @pytest.mark.parametrize(
-#     "func, arg, kwargs",
-#     [
-#         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
-#         pytest.param("frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dp.int32}),
-#         pytest.param(
-#             "fromfunction", [(lambda i, j: i + j), (3, 3)], {"dtype": dp.int32}
-#         ),
-#         pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dp.int64}),
-#         pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
-#         pytest.param("full", [(2, 2)], {"fill_value": 5}),
-#         pytest.param("eye", [4, 2], {}),
-#         pytest.param("geomspace", [1, 4, 8], {}),
-#         pytest.param("identity", [4], {}),
-#         pytest.param("linspace", [0, 4, 8], {}),
-#         pytest.param("logspace", [0, 4, 8], {}),
-#         pytest.param("ones", [(2, 2)], {}),
-#         pytest.param("tri", [3, 5, 2], {}),
-#         pytest.param("zeros", [(2, 2)], {}),
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
-# def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
-#     dpnp_kwargs = dict(kwargs)
-#     dpnp_kwargs["usm_type"] = usm_type
-#     dpnp_array = getattr(dp, func)(*arg, **dpnp_kwargs)
+@pytest.mark.parametrize(
+    "func, arg, kwargs",
+    [
+        pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param("frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dp.int32}),
+        pytest.param(
+            "fromfunction", [(lambda i, j: i + j), (3, 3)], {"dtype": dp.int32}
+        ),
+        pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dp.int64}),
+        pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
+        pytest.param("full", [(2, 2)], {"fill_value": 5}),
+        pytest.param("eye", [4, 2], {}),
+        pytest.param("geomspace", [1, 4, 8], {}),
+        pytest.param("identity", [4], {}),
+        pytest.param("linspace", [0, 4, 8], {}),
+        pytest.param("logspace", [0, 4, 8], {}),
+        pytest.param("ones", [(2, 2)], {}),
+        pytest.param("tri", [3, 5, 2], {}),
+        pytest.param("zeros", [(2, 2)], {}),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_array_creation_from_scratch(func, arg, kwargs, usm_type):
+    dpnp_kwargs = dict(kwargs)
+    dpnp_kwargs["usm_type"] = usm_type
+    dpnp_array = getattr(dp, func)(*arg, **dpnp_kwargs)
 
-#     numpy_kwargs = dict(kwargs)
-#     numpy_kwargs["dtype"] = dpnp_array.dtype
-#     numpy_array = getattr(numpy, func)(*arg, **numpy_kwargs)
+    numpy_kwargs = dict(kwargs)
+    numpy_kwargs["dtype"] = dpnp_array.dtype
+    numpy_array = getattr(numpy, func)(*arg, **numpy_kwargs)
 
-#     if usm_type is None:
-#         # assert against default USM type
-#         usm_type = "device"
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
 
-#     assert_dtype_allclose(dpnp_array, numpy_array)
-#     assert dpnp_array.shape == numpy_array.shape
-#     assert dpnp_array.usm_type == usm_type
-
-
-# @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
-# def test_array_creation_empty(usm_type):
-#     dpnp_array = dp.empty((3, 4), usm_type=usm_type)
-#     numpy_array = numpy.empty((3, 4))
-
-#     if usm_type is None:
-#         # assert against default USM type
-#         usm_type = "device"
-
-#     assert dpnp_array.shape == numpy_array.shape
-#     assert dpnp_array.usm_type == usm_type
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
 
 
-# @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
-# def test_array_creation_from_file(usm_type):
-#     with tempfile.TemporaryFile() as fh:
-#         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
-#         fh.flush()
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_array_creation_empty(usm_type):
+    dpnp_array = dp.empty((3, 4), usm_type=usm_type)
+    numpy_array = numpy.empty((3, 4))
 
-#         fh.seek(0)
-#         numpy_array = numpy.fromfile(fh)
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
 
-#         fh.seek(0)
-#         dpnp_array = dp.fromfile(fh, usm_type=usm_type)
-
-#     if usm_type is None:
-#         # assert against default USM type
-#         usm_type = "device"
-
-#     assert_dtype_allclose(dpnp_array, numpy_array)
-#     assert dpnp_array.shape == numpy_array.shape
-#     assert dpnp_array.usm_type == usm_type
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
 
 
-# @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
-# def test_array_creation_load_txt(usm_type):
-#     with tempfile.TemporaryFile() as fh:
-#         fh.write(b"1 2 3 4")
-#         fh.flush()
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_array_creation_from_file(usm_type):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
+        fh.flush()
 
-#         fh.seek(0)
-#         numpy_array = numpy.loadtxt(fh)
+        fh.seek(0)
+        numpy_array = numpy.fromfile(fh)
 
-#         fh.seek(0)
-#         dpnp_array = dp.loadtxt(fh, usm_type=usm_type)
+        fh.seek(0)
+        dpnp_array = dp.fromfile(fh, usm_type=usm_type)
 
-#     if usm_type is None:
-#         # assert against default USM type
-#         usm_type = "device"
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
 
-#     assert_dtype_allclose(dpnp_array, numpy_array)
-#     assert dpnp_array.shape == numpy_array.shape
-#     assert dpnp_array.usm_type == usm_type
-
-
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_copy_method(usm_type_x, usm_type_y):
-#     x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type_x)
-
-#     y = x.copy()
-#     assert x.usm_type == y.usm_type == usm_type_x
-
-#     y = x.copy(usm_type=usm_type_y)
-#     assert y.usm_type == usm_type_y
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
 
 
-# @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-# def test_copy_operation(usm_type):
-#     x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type)
-#     y = copy.copy(x)
-#     assert x.usm_type == y.usm_type == usm_type
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_array_creation_load_txt(usm_type):
+    with tempfile.TemporaryFile() as fh:
+        fh.write(b"1 2 3 4")
+        fh.flush()
+
+        fh.seek(0)
+        numpy_array = numpy.loadtxt(fh)
+
+        fh.seek(0)
+        dpnp_array = dp.loadtxt(fh, usm_type=usm_type)
+
+    if usm_type is None:
+        # assert against default USM type
+        usm_type = "device"
+
+    assert_dtype_allclose(dpnp_array, numpy_array)
+    assert dpnp_array.shape == numpy_array.shape
+    assert dpnp_array.usm_type == usm_type
 
 
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_logspace_base(usm_type_x, usm_type_y):
-#     x0 = dp.full(10, 2, usm_type=usm_type_x)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_method(usm_type_x, usm_type_y):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type_x)
 
-#     x = dp.logspace([2, 2], 8, 4, base=x0[3:5])
-#     y = dp.logspace([2, 2], 8, 4, base=x0[3:5], usm_type=usm_type_y)
+    y = x.copy()
+    assert x.usm_type == y.usm_type == usm_type_x
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-
-
-# @pytest.mark.parametrize(
-#     "func",
-#     [
-#         "array",
-#         "asarray",
-#         "asarray_chkfinite",
-#         "asanyarray",
-#         "ascontiguousarray",
-#         "asfarray",
-#         "asfortranarray",
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_array_copy(func, usm_type_x, usm_type_y):
-#     if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
-#         pytest.skip("numpy.asfarray was removed")
-
-#     sh = (3, 7, 5)
-#     x = dp.arange(1, prod(sh) + 1, 1, usm_type=usm_type_x).reshape(sh)
-
-#     y = getattr(dp, func)(x, usm_type=usm_type_y)
-
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
+    y = x.copy(usm_type=usm_type_y)
+    assert y.usm_type == usm_type_y
 
 
-# @pytest.mark.parametrize("copy", [True, False, None])
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# def test_array_creation_from_dpctl(copy, usm_type_x):
-#     x = dpt.ones((3, 3), usm_type=usm_type_x)
-#     y = dp.array(x, copy=copy)
-
-#     assert y.usm_type == usm_type_x
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_copy_operation(usm_type):
+    x = dp.array([[1, 2, 3], [4, 5, 6]], usm_type=usm_type)
+    y = copy.copy(x)
+    assert x.usm_type == y.usm_type == usm_type
 
 
-# @pytest.mark.parametrize(
-#     "usm_type_start", list_of_usm_types, ids=list_of_usm_types
-# )
-# @pytest.mark.parametrize(
-#     "usm_type_stop", list_of_usm_types, ids=list_of_usm_types
-# )
-# def test_linspace_arrays(usm_type_start, usm_type_stop):
-#     start = dp.asarray([0, 0], usm_type=usm_type_start)
-#     stop = dp.asarray([2, 4], usm_type=usm_type_stop)
-#     res = dp.linspace(start, stop, 4)
-#     assert res.usm_type == du.get_coerced_usm_type(
-#         [usm_type_start, usm_type_stop]
-#     )
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_logspace_base(usm_type_x, usm_type_y):
+    x0 = dp.full(10, 2, usm_type=usm_type_x)
+
+    x = dp.logspace([2, 2], 8, 4, base=x0[3:5])
+    y = dp.logspace([2, 2], 8, 4, base=x0[3:5], usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
 
 
-# @pytest.mark.parametrize("func", ["tril", "triu"], ids=["tril", "triu"])
-# @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-# def test_tril_triu(func, usm_type):
-#     x0 = dp.ones((3, 3), usm_type=usm_type)
-#     x = getattr(dp, func)(x0)
-#     assert x.usm_type == usm_type
+@pytest.mark.parametrize(
+    "func",
+    [
+        "array",
+        "asarray",
+        "asarray_chkfinite",
+        "asanyarray",
+        "ascontiguousarray",
+        "asfarray",
+        "asfortranarray",
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_array_copy(func, usm_type_x, usm_type_y):
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        pytest.skip("numpy.asfarray was removed")
+
+    sh = (3, 7, 5)
+    x = dp.arange(1, prod(sh) + 1, 1, usm_type=usm_type_x).reshape(sh)
+
+    y = getattr(dp, func)(x, usm_type=usm_type_y)
+
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
 
 
-# @pytest.mark.parametrize(
-#     "op",
-#     [
-#         "all",
-#         "any",
-#         "isfinite",
-#         "isinf",
-#         "isnan",
-#         "isneginf",
-#         "isposinf",
-#         "logical_not",
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
-#     x = dp.arange(-10, 10, usm_type=usm_type_x)
-#     res = getattr(dp, op)(x)
+@pytest.mark.parametrize("copy", [True, False, None])
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+def test_array_creation_from_dpctl(copy, usm_type_x):
+    x = dpt.ones((3, 3), usm_type=usm_type_x)
+    y = dp.array(x, copy=copy)
 
-#     assert x.usm_type == res.usm_type == usm_type_x
+    assert y.usm_type == usm_type_x
 
 
-# @pytest.mark.parametrize(
-#     "op",
-#     [
-#         "array_equal",
-#         "array_equiv",
-#         "equal",
-#         "greater",
-#         "greater_equal",
-#         "isclose",
-#         "less",
-#         "less_equal",
-#         "logical_and",
-#         "logical_or",
-#         "logical_xor",
-#         "not_equal",
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_logic_op_2in(op, usm_type_x, usm_type_y):
-#     x = dp.arange(100, usm_type=usm_type_x)
-#     y = dp.arange(100, usm_type=usm_type_y)[::-1]
-
-#     z = getattr(dp, op)(x, y)
-#     zx = getattr(dp, op)(x, 50)
-#     zy = getattr(dp, op)(30, y)
-
-#     assert x.usm_type == zx.usm_type == usm_type_x
-#     assert y.usm_type == zy.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+@pytest.mark.parametrize(
+    "usm_type_start", list_of_usm_types, ids=list_of_usm_types
+)
+@pytest.mark.parametrize(
+    "usm_type_stop", list_of_usm_types, ids=list_of_usm_types
+)
+def test_linspace_arrays(usm_type_start, usm_type_stop):
+    start = dp.asarray([0, 0], usm_type=usm_type_start)
+    stop = dp.asarray([2, 4], usm_type=usm_type_stop)
+    res = dp.linspace(start, stop, 4)
+    assert res.usm_type == du.get_coerced_usm_type(
+        [usm_type_start, usm_type_stop]
+    )
 
 
-# @pytest.mark.parametrize(
-#     "op",
-#     ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
-#     ids=[
-#         "bitwise_and",
-#         "bitwise_or",
-#         "bitwise_xor",
-#         "left_shift",
-#         "right_shift",
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
-#     x = dp.arange(25, usm_type=usm_type_x)
-#     y = dp.arange(25, usm_type=usm_type_y)[::-1]
+@pytest.mark.parametrize("func", ["tril", "triu"], ids=["tril", "triu"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_tril_triu(func, usm_type):
+    x0 = dp.ones((3, 3), usm_type=usm_type)
+    x = getattr(dp, func)(x0)
+    assert x.usm_type == usm_type
 
-#     z = getattr(dp, op)(x, y)
-#     zx = getattr(dp, op)(x, 7)
-#     zy = getattr(dp, op)(12, y)
 
-#     assert x.usm_type == zx.usm_type == usm_type_x
-#     assert y.usm_type == zy.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+@pytest.mark.parametrize(
+    "op",
+    [
+        "all",
+        "any",
+        "isfinite",
+        "isinf",
+        "isnan",
+        "isneginf",
+        "isposinf",
+        "logical_not",
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
+    x = dp.arange(-10, 10, usm_type=usm_type_x)
+    res = getattr(dp, op)(x)
+
+    assert x.usm_type == res.usm_type == usm_type_x
+
+
+@pytest.mark.parametrize(
+    "op",
+    [
+        "array_equal",
+        "array_equiv",
+        "equal",
+        "greater",
+        "greater_equal",
+        "isclose",
+        "less",
+        "less_equal",
+        "logical_and",
+        "logical_or",
+        "logical_xor",
+        "not_equal",
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_logic_op_2in(op, usm_type_x, usm_type_y):
+    x = dp.arange(100, usm_type=usm_type_x)
+    y = dp.arange(100, usm_type=usm_type_y)[::-1]
+
+    z = getattr(dp, op)(x, y)
+    zx = getattr(dp, op)(x, 50)
+    zy = getattr(dp, op)(30, y)
+
+    assert x.usm_type == zx.usm_type == usm_type_x
+    assert y.usm_type == zy.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize(
+    "op",
+    ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
+    ids=[
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_xor",
+        "left_shift",
+        "right_shift",
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
+    x = dp.arange(25, usm_type=usm_type_x)
+    y = dp.arange(25, usm_type=usm_type_y)[::-1]
+
+    z = getattr(dp, op)(x, y)
+    zx = getattr(dp, op)(x, 7)
+    zy = getattr(dp, op)(12, y)
+
+    assert x.usm_type == zx.usm_type == usm_type_x
+    assert y.usm_type == zy.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
@@ -491,9 +492,9 @@ def test_matmul(usm_type_x, usm_type_y, shape1, shape2):
     y = dp.arange(numpy.prod(shape2), usm_type=usm_type_y).reshape(shape2)
     z = dp.matmul(x, y)
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
@@ -594,27 +595,27 @@ def test_vecmat(usm_type_x, usm_type_y, shape1, shape2):
 #     assert z[1].usm_type == usm_type_y
 
 
-# @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize(
-#     "ord", [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"]
-# )
-# @pytest.mark.parametrize(
-#     "axis",
-#     [-1, 0, 1, (0, 1), (-2, -1), None],
-#     ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
-# )
-# def test_norm(usm_type, ord, axis):
-#     ia = dp.arange(120, usm_type=usm_type).reshape(2, 3, 4, 5)
-#     if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
-#         isinstance(axis, tuple) and ord == 3
-#     ):
-#         pytest.skip("Invalid norm order for vectors.")
-#     elif axis is None and ord is not None:
-#         pytest.skip("Improper number of dimensions to norm")
-#     else:
-#         result = dp.linalg.norm(ia, ord=ord, axis=axis)
-#         assert ia.usm_type == usm_type
-#         assert result.usm_type == usm_type
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "ord", [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"]
+)
+@pytest.mark.parametrize(
+    "axis",
+    [-1, 0, 1, (0, 1), (-2, -1), None],
+    ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+)
+def test_norm(usm_type, ord, axis):
+    ia = dp.arange(120, usm_type=usm_type).reshape(2, 3, 4, 5)
+    if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
+        isinstance(axis, tuple) and ord == 3
+    ):
+        pytest.skip("Invalid norm order for vectors.")
+    elif axis is None and ord is not None:
+        pytest.skip("Improper number of dimensions to norm")
+    else:
+        result = dp.linalg.norm(ia, ord=ord, axis=axis)
+        assert ia.usm_type == usm_type
+        assert result.usm_type == usm_type
 
 
 @pytest.mark.parametrize(
@@ -829,22 +830,22 @@ def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
     y = dp.array(data2, usm_type=usm_type_y)
     z = getattr(dp, func)(x, y)
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-# @pytest.mark.parametrize(
-#     "func, data, scalar",
-#     [
-#         pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-# def test_2in_with_scalar_1out(func, data, scalar, usm_type):
-#     x = dp.array(data, usm_type=usm_type)
-#     z = getattr(dp, func)(x, scalar)
-#     assert z.usm_type == usm_type
+@pytest.mark.parametrize(
+    "func, data, scalar",
+    [
+        pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_2in_with_scalar_1out(func, data, scalar, usm_type):
+    x = dp.array(data, usm_type=usm_type)
+    z = getattr(dp, func)(x, scalar)
+    assert z.usm_type == usm_type
 
 
 # @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)

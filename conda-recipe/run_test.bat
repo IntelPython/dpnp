@@ -8,6 +8,11 @@ if defined ONEAPI_ROOT (
     set "DPLROOT=%ONEAPI_ROOT%\dpl\latest"
 )
 
+echo "DPCPPROOT=%DPCPPROOT%"
+echo "MKLROOT=%MKLROOT%"
+echo "TBBROOT=%TBBROOT%"
+echo "DPLROOT=%DPLROOT%"
+
 REM if DPCPPROOT is specified (work with custom DPCPP)
 if defined DPCPPROOT (
     call "%DPCPPROOT%\env\vars.bat"
@@ -38,6 +43,9 @@ if %errorlevel% neq 0 exit 1
 if %errorlevel% neq 0 exit 1
 
 "%PYTHON%" -m pytest -ra --pyargs dpnp.tests.test_ndarray
+if %errorlevel% neq 0 exit 1
+
+"%PYTHON%" -m pytest -ra --pyargs dpnp.tests.test_usm_type
 if %errorlevel% neq 0 exit 1
 
 "%PYTHON%" -m pytest -ra --pyargs dpnp
