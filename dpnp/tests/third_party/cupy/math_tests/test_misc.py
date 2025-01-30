@@ -198,7 +198,7 @@ class TestMisc:
 
     @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_complex=True)
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_fabs_negative(self, xp, dtype):
         if numpy.issubdtype(dtype, numpy.unsignedinteger):
             pytest.skip("trying to set negative value to unsigned integer")
