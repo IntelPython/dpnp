@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev5+15.gcc407d225d2 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev5+16.gd4d750a6609 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=95f62751"></script>
+      <script src="../../_static/documentation_options.js?v=ee62f4cd"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -932,8 +932,7 @@
 <span class="sd">    &gt;&gt;&gt; np.dot(a, c).shape</span>
 <span class="sd">    (9, 5, 7, 9, 5, 3)</span>
 <span class="sd">    &gt;&gt;&gt; np.matmul(a, c).shape</span>
-<span class="sd">    (9, 5, 7, 3)</span>
-<span class="sd">    &gt;&gt;&gt; # n is 7, k is 4, m is 3</span>
+<span class="sd">    (9, 5, 7, 3) # n is 7, k is 4, m is 3</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -974,7 +973,7 @@
 <span class="sd">    &gt;&gt;&gt; np.matmul(x1, x2)</span>
 <span class="sd">    array(-13+0j)</span>
 
-<span class="sd">    The ``@`` operator can be used as a shorthand for ``matmul`` on</span>
+<span class="sd">    The ``@`` operator can be used as a shorthand for :obj:`dpnp.matmul` on</span>
 <span class="sd">    :class:`dpnp.ndarray`.</span>
 
 <span class="sd">    &gt;&gt;&gt; x1 @ x2</span>
@@ -983,6 +982,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok_linalg</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">signature</span><span class="o">=</span><span class="n">signature</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_multiplication</span><span class="p">(</span>
         <span class="s2">&quot;matmul&quot;</span><span class="p">,</span>
@@ -1018,7 +1018,7 @@
 <span class="sd">    Matrix-vector dot product of two arrays.</span>
 
 <span class="sd">    Given a matrix (or stack of matrices) :math:`\mathbf{A}` in `x1` and</span>
-<span class="sd">    a vector (or stack of vectors) :math:`\mathbf{v}` `x2`, the</span>
+<span class="sd">    a vector (or stack of vectors) :math:`\mathbf{v}` in `x2`, the</span>
 <span class="sd">    matrix-vector product is defined as:</span>
 
 <span class="sd">    .. math::</span>
@@ -1057,11 +1057,11 @@
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    axes : {None, list of tuples}, optional</span>
-<span class="sd">        A list of tuples with indices of axes the matrix product should operate</span>
-<span class="sd">        on. For instance, for the signature of ``(i,j),(j)-&gt;(i)``, the base</span>
-<span class="sd">        elements are 2d matrices and 1d vectors, where the matrices are assumed</span>
-<span class="sd">        to be stored in the last two axes of the first argument, and the</span>
-<span class="sd">        vectors in the last axis of the second argument. The corresponding</span>
+<span class="sd">        A list of tuples with indices of axes the matrix-vector product should</span>
+<span class="sd">        operate on. For instance, for the signature of ``(i,j),(j)-&gt;(i)``, the</span>
+<span class="sd">        base elements are 2d matrices and 1d vectors, where the matrices are</span>
+<span class="sd">        assumed to be stored in the last two axes of the first argument, and</span>
+<span class="sd">        the vectors in the last axis of the second argument. The corresponding</span>
 <span class="sd">        axes keyword would be ``[(-2, -1), (-1,), (-1,)]``.</span>
 
 <span class="sd">        Default: ``None``.</span>
@@ -1105,6 +1105,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok_linalg</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">signature</span><span class="o">=</span><span class="n">signature</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_multiplication</span><span class="p">(</span>
         <span class="s2">&quot;matvec&quot;</span><span class="p">,</span>
@@ -1450,7 +1451,7 @@
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, list of tuples}, optional</span>
-<span class="sd">        A list of tuples with indices of axes the matrix product should operate</span>
+<span class="sd">        A list of tuples with indices of axes the dot product should operate</span>
 <span class="sd">        on. For instance, for the signature of ``(i),(i)-&gt;()``, the base</span>
 <span class="sd">        elements are vectors and these are taken to be stored in the last axes</span>
 <span class="sd">        of each argument. The corresponding axes keyword would be</span>
@@ -1534,7 +1535,7 @@
 <span class="sd">    Vector-matrix dot product of two arrays.</span>
 
 <span class="sd">    Given a vector (or stack of vector) :math:`\mathbf{v}` in `x1` and a matrix</span>
-<span class="sd">    (or stack of matrices) :math:`\mathbf{A}` `x2`, the vector-matrix product</span>
+<span class="sd">    (or stack of matrices) :math:`\mathbf{A}` in `x2`, the vector-matrix product</span>
 <span class="sd">    is defined as:</span>
 
 <span class="sd">    .. math::</span>
@@ -1575,12 +1576,12 @@
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    axes : {None, list of tuples}, optional</span>
-<span class="sd">        A list of tuples with indices of axes the matrix product should operate</span>
-<span class="sd">        on. For instance, for the signature of ``(i),(i,j)-&gt;(j)``, the base</span>
-<span class="sd">        elements are 1D vectors and 2D matrices, where the vectors are assumed</span>
-<span class="sd">        to be stored in the last axis of the first argument, and the matrices</span>
-<span class="sd">        in the last two axes of the second argument. The corresponding axes</span>
-<span class="sd">        keyword would be ``[(-1,), (-2, -1), (-1,)]``.</span>
+<span class="sd">        A list of tuples with indices of axes the vector-matrix product should</span>
+<span class="sd">        operate on. For instance, for the signature of ``(i),(i,j)-&gt;(j)``, the</span>
+<span class="sd">        base elements are 1D vectors and 2D matrices, where the vectors are</span>
+<span class="sd">        assumed to be stored in the last axis of the first argument, and the</span>
+<span class="sd">        matrices in the last two axes of the second argument. The corresponding</span>
+<span class="sd">        axes keyword would be ``[(-1,), (-2, -1), (-1,)]``.</span>
 
 <span class="sd">        Default: ``None``.</span>
 
@@ -1610,14 +1611,18 @@
 <span class="sd">    &gt;&gt;&gt; v = np.array([0., 4., 2.])</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([[1., 0., 0.],</span>
 <span class="sd">    ...               [0., 1., 0.],</span>
-<span class="sd">    ...               [0., 0., 1.],</span>
-<span class="sd">    ...               [0., 6., 8.]])</span>
+<span class="sd">    ...               [0., 0., 0.]])</span>
 <span class="sd">    &gt;&gt;&gt; np.vecmat(v, a)</span>
-<span class="sd">    array([ 0.,  4., 0.])</span>
+<span class="sd">    array([0., 4., 0.])</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_limitations</span><span class="p">(</span><span class="n">subok_linalg</span><span class="o">=</span><span class="n">subok</span><span class="p">,</span> <span class="n">signature</span><span class="o">=</span><span class="n">signature</span><span class="p">)</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">)</span>
+
+    <span class="c1"># cannot directly use dpnp.conj(x1) as it returns `int8` for boolean input</span>
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x1</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">complexfloating</span><span class="p">):</span>
+        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_multiplication</span><span class="p">(</span>
         <span class="s2">&quot;vecmat&quot;</span><span class="p">,</span>

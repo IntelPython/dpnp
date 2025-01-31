@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.vecdot &mdash; Data Parallel Extension for NumPy 0.17.0dev5+15.gcc407d225d2 documentation</title>
+  <title>dpnp.vecdot &mdash; Data Parallel Extension for NumPy 0.17.0dev5+16.gd4d750a6609 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=95f62751"></script>
+      <script src="../../_static/documentation_options.js?v=ee62f4cd"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -158,7 +158,7 @@ returned array will have data type that is determined by considering
 Promotion Type Rule and device capabilities.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>axes</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><em>tuples}</em><em>, </em><em>optional</em>) -- <p>A list of tuples with indices of axes the matrix product should operate
+<li><p><strong>axes</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a><em> of </em><em>tuples}</em><em>, </em><em>optional</em>) -- <p>A list of tuples with indices of axes the dot product should operate
 on. For instance, for the signature of <code class="docutils literal notranslate"><span class="pre">(i),(i)-&gt;()</span></code>, the base
 elements are vectors and these are taken to be stored in the last axes
 of each argument. The corresponding axes keyword would be

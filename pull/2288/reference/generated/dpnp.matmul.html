@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.matmul &mdash; Data Parallel Extension for NumPy 0.17.0dev5+15.gcc407d225d2 documentation</title>
+  <title>dpnp.matmul &mdash; Data Parallel Extension for NumPy 0.17.0dev5+16.gd4d750a6609 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=95f62751"></script>
+      <script src="../../_static/documentation_options.js?v=ee62f4cd"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -199,8 +199,7 @@ were elements, respecting the signature <code class="docutils literal notranslat
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
 <span class="go">(9, 5, 7, 9, 5, 3)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">matmul</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span>
-<span class="go">(9, 5, 7, 3)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># n is 7, k is 4, m is 3</span>
+<span class="go">(9, 5, 7, 3) # n is 7, k is 4, m is 3</span>
 </pre></div>
 </div>
 <p class="rubric">Examples</p>
@@ -241,7 +240,7 @@ is complex-conjugated:</p>
 <span class="go">array(-13+0j)</span>
 </pre></div>
 </div>
-<p>The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> operator can be used as a shorthand for <code class="docutils literal notranslate"><span class="pre">matmul</span></code> on
+<p>The <code class="docutils literal notranslate"><span class="pre">&#64;</span></code> operator can be used as a shorthand for <a class="reference internal" href="#dpnp.matmul" title="dpnp.matmul"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matmul</span></code></a> on
 <a class="reference internal" href="dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a>.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">@</span> <span class="n">x2</span>
 <span class="go">array(-13+0j)</span>
