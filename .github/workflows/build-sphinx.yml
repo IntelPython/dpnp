@@ -180,7 +180,7 @@ jobs:
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@cbe72c8e402e8a3faa1f0b247ef90aa6c8e4ce74 # v1.9.8
+        uses: mattnotmitt/doxygen-action@b84fe17600245bb5db3d6c247cc274ea98c15a3b # v1.12
         with:
             working-directory: 'dpnp/backend/doc'
 
