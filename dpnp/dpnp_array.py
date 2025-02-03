@@ -859,7 +859,7 @@ class dpnp_array:
 
     def choose(self, /, choices, out=None, mode="wrap"):
         """
-        Construct an array from an index array and a set of arrays to choose from.
+        Use an array as index array to construct a new array from a set of choices.
 
         Refer to :obj:`dpnp.choose` for full documentation.
 
