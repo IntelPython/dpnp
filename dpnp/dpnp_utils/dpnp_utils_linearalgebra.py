@@ -198,13 +198,14 @@ def _define_dim_flags(x, axis):
     """
     Define useful flags for the calculations in dpnp_matmul and dpnp_vecdot.
     x_is_1D: `x` is 1D array or inherently 1D (all dimensions are equal to one
-    except for one of them), for instance, if x.shape = (1, 1, 1, 2),
-    then x_is_1D = True
+    except for dimension at `axis`), for instance, if x.shape = (1, 1, 1, 2),
+    and axis=-1, then x_is_1D = True.
     x_is_2D: `x` is 2D array or inherently 2D (all dimensions are equal to one
     except for the last two of them), for instance, if x.shape = (1, 1, 3, 2),
-    then x_is_2D = True
+    then x_is_2D = True.
     x_base_is_1D: `x` is 1D considering only its last two dimensions, for instance,
-    if x.shape = (3, 4, 1, 2), then x_base_is_1D = True
+    if x.shape = (3, 4, 1, 2), then x_base_is_1D = True.
+
     """
 
     x_shape = x.shape
@@ -331,9 +332,9 @@ def _get_result_shape_vecdot(x1, x2, x1_ndim, x2_ndim):
 
     if x1_ndim == 1 and x2_ndim == 1:
         result_shape = ()
-    elif x1_is_1D:
+    elif x1_ndim == 1:
         result_shape = x2_shape[:-1]
-    elif x2_is_1D:
+    elif x2_ndim == 1:
         result_shape = x1_shape[:-1]
     else:  # at least 2D
         if x1_ndim != x2_ndim:
