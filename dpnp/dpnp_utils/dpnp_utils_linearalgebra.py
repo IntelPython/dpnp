@@ -835,7 +835,14 @@ def dpnp_matmul(
     elif x1_base_is_1D and x2_base_is_1D:
         # TODO: implement a batch version of dot to use it here
         call_flag = "gemm_batch"
-        res_shape = result_shape
+        if x1_ndim == 1:
+            x1 = dpnp.reshape(x1, (1, 1, x1.size))
+            res_shape = result_shape[:-1] + (1, result_shape[-1])
+        elif x2_ndim == 1:
+            x2 = dpnp.reshape(x2, (1, x2.size, 1))
+            res_shape = result_shape + (1,)
+        else:
+            res_shape = result_shape
     elif x1_is_1D and x2_is_2D:
         transpose = True
         call_flag = "gemv"

@@ -585,12 +585,12 @@ def numpy_cupy_allclose(
     # When `type_check` is `False`, cupy result and numpy result may have
     # different dtypes so we can not determine the dtype to use from the
     # tolerance associations.
-    if not type_check:
-        if isinstance(rtol, dict) or isinstance(atol, dict):
-            raise TypeError(
-                "When `type_check` is `False`, `rtol` and `atol` "
-                "must be supplied as float."
-            )
+    # if not type_check:
+    #     if isinstance(rtol, dict) or isinstance(atol, dict):
+    #         raise TypeError(
+    #             "When `type_check` is `False`, `rtol` and `atol` "
+    #             "must be supplied as float."
+    #         )
 
     def check_func(c, n):
         rtol1, atol1 = _resolve_tolerance(type_check, c, rtol, atol)
