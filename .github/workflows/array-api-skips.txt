@@ -1,8 +1,5 @@
 # array API tests to be skipped
 
-# no 'uint8' dtype
-array_api_tests/test_array_object.py::test_getitem_masking
-
 # missing unique-like functions
 array_api_tests/test_has_names.py::test_has_names[set-unique_all]
 array_api_tests/test_has_names.py::test_has_names[set-unique_counts]
