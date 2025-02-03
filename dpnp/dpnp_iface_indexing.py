@@ -220,7 +220,7 @@ def choose(a, choices, out=None, mode="wrap"):
     See also
     --------
     :obj:`dpnp.ndarray.choose` : Equivalent method.
-    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
+    :obj:`dpnp.take_along_axis` : Preferable if `choices` is an array.
 
     Examples
     --------
@@ -262,7 +262,7 @@ def choose(a, choices, out=None, mode="wrap"):
     inds = dpnp.get_usm_ndarray(a)
     ind_dt = inds.dtype
     if not dpnp.issubdtype(ind_dt, dpnp.integer):
-        # NumPy will cast up to to int64 in general but
+        # NumPy will cast up to int64 in general but
         # int32 is more than safe for bool
         if ind_dt == dpnp.bool:
             inds = dpt.astype(inds, dpt.int32)
