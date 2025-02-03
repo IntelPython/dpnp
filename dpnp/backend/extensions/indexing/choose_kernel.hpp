@@ -24,12 +24,14 @@
 //*****************************************************************************
 
 #pragma once
+
 #include <algorithm>
 #include <complex>
 #include <cstdint>
 #include <limits>
-#include <sycl/sycl.hpp>
 #include <type_traits>
+
+#include <sycl/sycl.hpp>
 
 #include "kernels/dpctl_tensor_types.hpp"
 #include "utils/indexing_utils.hpp"
@@ -70,6 +72,8 @@ private:
     dpctl::tensor::ssize_t const *shape;
     dpctl::tensor::ssize_t const *strides;
 };
+
+static_assert(sycl::is_device_copyable_v<NthStrideOffsetUnpacked>);
 
 } // namespace dpnp::extensions::indexing::strides_detail
 
