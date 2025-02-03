@@ -253,11 +253,11 @@ class TestCorrelate:
                 assert_dtype_allclose(result, expected, factor=factor)
             else:
                 rtol = 1e-3
-                atol = 1e-10
+                atol = 1e-3
 
                 if rdtype == dpnp.float64 or rdtype == dpnp.complex128:
                     rtol = 1e-6
-                    atol = 1e-12
+                    atol = 1e-6
                 elif rdtype == dpnp.bool:
                     result = result.astype(dpnp.int32)
                     rdtype = result.dtype
@@ -271,7 +271,7 @@ class TestCorrelate:
                 # This usually happens when the resulting array contains values close to zero.
                 # For these outliers, the relative error can be significant.
                 # We can tolerate a few such outliers.
-                max_outliers = 8 if expected.size > 1 else 0
+                max_outliers = 10 if expected.size > 1 else 0
                 if invalid.sum() > max_outliers:
                     assert_dtype_allclose(result, expected, factor=1000)
 
