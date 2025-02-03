@@ -271,7 +271,8 @@ class TestDot:
         expected = a.dot(b)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    # Use both integer and float, to test both MKL and dpctl backends
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize("stride", [3, -1, -2, -5])
     def test_strided(self, dtype, stride):
         a = numpy.arange(25, dtype=dtype)
@@ -598,6 +599,8 @@ class TestMatmul:
     def setup_method(self):
         numpy.random.seed(42)
 
+    # Use both integer and float, to test both MKL and dpctl backends
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "order1, order2", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
     )
@@ -674,10 +677,7 @@ class TestMatmul:
             ((7, 4, 3), (0, 7, 3, 5)),
         ],
     )
-    def test_basic(self, order1, order2, shape1, shape2):
-        # input should be float type otherwise they are copied to c-contigous array
-        # so testing order becomes meaningless
-        dtype = dpnp.default_float_type()
+    def test_basic(self, dtype, order1, order2, shape1, shape2):
         a = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
         b = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
         a = numpy.array(a, order=order1)
@@ -691,15 +691,12 @@ class TestMatmul:
     @pytest.mark.parametrize(
         "shape1, shape2",
         [
+            ((4,), (4, 3)),
             ((2, 4), (4, 3)),
             ((4, 2, 3), (4, 3, 5)),
             ((6, 7, 4, 3), (6, 7, 3, 5)),
         ],
-        ids=[
-            "((2, 4), (4, 3))",
-            "((4, 2, 3), (4, 3, 5))",
-            "((6, 7, 4, 3), (6, 7, 3, 5))",
-        ],
+        ids=["gemv", "gemm", "gemm_batch1", "gemm_batch2"],
     )
     def test_bool(self, shape1, shape2):
         x = numpy.arange(2, dtype=numpy.bool_)
@@ -829,15 +826,12 @@ class TestMatmul:
     @pytest.mark.parametrize(
         "shape1, shape2",
         [
+            ((4,), (4, 3)),
             ((2, 4), (4, 3)),
             ((4, 2, 3), (4, 3, 5)),
             ((6, 7, 4, 3), (6, 7, 3, 5)),
         ],
-        ids=[
-            "((2, 4), (4, 3))",
-            "((4, 2, 3), (4, 3, 5))",
-            "((6, 7, 4, 3), (6, 7, 3, 5))",
-        ],
+        ids=["gemv", "gemm", "gemm_batch1", "gemm_batch2"],
     )
     def test_dtype_matrix_inout(self, in_dt, out_dt, shape1, shape2):
         a = generate_random_numpy_array(shape1, in_dt)
@@ -857,15 +851,12 @@ class TestMatmul:
     @pytest.mark.parametrize(
         "shape1, shape2",
         [
+            ((4,), (4, 3)),
             ((2, 4), (4, 3)),
             ((4, 2, 3), (4, 3, 5)),
             ((6, 7, 4, 3), (6, 7, 3, 5)),
         ],
-        ids=[
-            "((2, 4), (4, 3))",
-            "((4, 2, 3), (4, 3, 5))",
-            "((6, 7, 4, 3), (6, 7, 3, 5))",
-        ],
+        ids=["gemv", "gemm", "gemm_batch1", "gemm_batch2"],
     )
     def test_dtype_matrix_inputs(self, dtype1, dtype2, shape1, shape2):
         a = generate_random_numpy_array(shape1, dtype1)
@@ -876,25 +867,25 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize("order1", ["C", "F", "A"])
     @pytest.mark.parametrize("order2", ["C", "F", "A"])
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
     @pytest.mark.parametrize(
         "shape1, shape2",
         [
+            ((4,), (4, 3)),
             ((2, 4), (4, 3)),
             ((4, 2, 3), (4, 3, 5)),
             ((6, 7, 4, 3), (6, 7, 3, 5)),
         ],
-        ids=[
-            "((2, 4), (4, 3))",
-            "((4, 2, 3), (4, 3, 5))",
-            "((6, 7, 4, 3), (6, 7, 3, 5))",
-        ],
+        ids=["gemv", "gemm", "gemm_batch1", "gemm_batch2"],
     )
-    def test_order(self, order1, order2, order, shape1, shape2):
-        a = numpy.arange(numpy.prod(shape1)).reshape(shape1, order=order1)
-        b = numpy.arange(numpy.prod(shape2)).reshape(shape2, order=order2)
+    def test_order(self, dtype, order1, order2, order, shape1, shape2):
+        a = numpy.arange(numpy.prod(shape1), dtype=dtype)
+        b = numpy.arange(numpy.prod(shape2), dtype=dtype)
+        a = a.reshape(shape1, order=order1)
+        b = b.reshape(shape2, order=order2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.matmul(ia, ib, order=order)
@@ -913,16 +904,17 @@ class TestMatmul:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "stride",
         [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
         ids=["-2", "2", "(-2, 2)", "(2, -2)"],
     )
-    def test_strided1(self, stride):
+    def test_strided1(self, dtype, stride):
         for dim in [1, 2, 3, 4]:
             shape = tuple(20 for _ in range(dim))
-            A = numpy.random.rand(*shape)
-            iA = dpnp.asarray(A)
+            A = numpy.random.rand(*shape).astype(dtype)
+            iA = dpnp.array(A)
             slices = tuple(slice(None, None, stride[i]) for i in range(dim))
             a = A[slices]
             ia = iA[slices]
@@ -938,17 +930,18 @@ class TestMatmul:
             assert result is iout
             assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "shape", [(10, 3, 3), (12, 10, 3, 3)], ids=["3D", "4D"]
     )
-    @pytest.mark.parametrize("stride", [-1, -2, 2], ids=["-1", "-2", "2"])
-    @pytest.mark.parametrize("transpose", [False, True], ids=["False", "True"])
-    def test_strided2(self, shape, stride, transpose):
+    @pytest.mark.parametrize("stride", [-1, -2, 2])
+    @pytest.mark.parametrize("transpose", [False, True])
+    def test_strided2(self, dtype, shape, stride, transpose):
         # one dimension (axis=-3) is strided
         # if negative stride, copy is needed and the base becomes c-contiguous
         # otherwise the base remains the same as input in gemm_batch
-        A = numpy.random.rand(*shape)
-        iA = dpnp.asarray(A)
+        A = numpy.random.rand(*shape).astype(dtype)
+        iA = dpnp.array(A)
         if transpose:
             A = numpy.moveaxis(A, (-2, -1), (-1, -2))
             iA = dpnp.moveaxis(iA, (-2, -1), (-1, -2))
@@ -967,20 +960,21 @@ class TestMatmul:
         assert result is iout
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "stride",
         [(-2, -2), (2, 2), (-2, 2), (2, -2)],
         ids=["(-2, -2)", "(2, 2)", "(-2, 2)", "(2, -2)"],
     )
     @pytest.mark.parametrize("transpose", [False, True])
-    def test_strided3(self, stride, transpose):
+    def test_strided3(self, dtype, stride, transpose):
         # 4D case, the 1st and 2nd dimensions are strided
         # For negative stride, copy is needed and the base becomes c-contiguous.
         # For positive stride, no copy but reshape makes the base c-contiguous.
         stride0, stride1 = stride
         shape = (12, 10, 3, 3)  # 4D array
-        A = numpy.random.rand(*shape)
-        iA = dpnp.asarray(A)
+        A = numpy.random.rand(*shape).astype(dtype)
+        iA = dpnp.array(A)
         if transpose:
             A = numpy.moveaxis(A, (-2, -1), (-1, -2))
             iA = dpnp.moveaxis(iA, (-2, -1), (-1, -2))
@@ -997,11 +991,12 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.2")
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize("func", ["matmul", "matvec"])
     @pytest.mark.parametrize("incx", [-2, 2])
     @pytest.mark.parametrize("incy", [-2, 2])
     @pytest.mark.parametrize("transpose", [False, True])
-    def test_strided_mat_vec(self, func, incx, incy, transpose):
+    def test_strided_mat_vec(self, dtype, func, incx, incy, transpose):
         # vector is strided
         shape = (8, 10)  # 2D
         if transpose:
@@ -1010,8 +1005,8 @@ class TestMatmul:
         else:
             s1 = shape[-1]
             s2 = shape[-2]
-        a = numpy.random.rand(*shape)
-        ia = dpnp.asarray(a)
+        a = numpy.random.rand(*shape).astype(dtype)
+        ia = dpnp.array(a)
         if transpose:
             a = numpy.moveaxis(a, (-2, -1), (-1, -2))
             ia = dpnp.moveaxis(ia, (-2, -1), (-1, -2))
@@ -1032,11 +1027,12 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.2")
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize("func", ["matmul", "vecmat"])
     @pytest.mark.parametrize("incx", [-2, 2])
     @pytest.mark.parametrize("incy", [-2, 2])
     @pytest.mark.parametrize("transpose", [False, True])
-    def test_strided_vec_mat(self, func, incx, incy, transpose):
+    def test_strided_vec_mat(self, dtype, func, incx, incy, transpose):
         # vector is strided
         shape = (8, 10)  # 2D
         if transpose:
@@ -1045,8 +1041,8 @@ class TestMatmul:
         else:
             s1 = shape[-1]
             s2 = shape[-2]
-        a = numpy.random.rand(*shape)
-        ia = dpnp.asarray(a)
+        a = numpy.random.rand(*shape).astype(dtype)
+        ia = dpnp.array(a)
         if transpose:
             a = numpy.moveaxis(a, (-2, -1), (-1, -2))
             ia = dpnp.moveaxis(ia, (-2, -1), (-1, -2))
@@ -1187,7 +1183,7 @@ class TestMatmul:
             ((5000, 5000, 2, 2), (2, 2)),
         ],
     )
-    def test_large(self, shape1, shape2):
+    def test_large_arrays(self, shape1, shape2):
         a = generate_random_numpy_array(shape1)
         b = generate_random_numpy_array(shape2)
         ia, ib = dpnp.array(a), dpnp.array(b)
@@ -1195,6 +1191,18 @@ class TestMatmul:
         result = dpnp.matmul(ia, ib)
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected, factor=24)
+
+    @pytest.mark.parametrize("dtype", [numpy.int64, numpy.float32])
+    def test_large_values(self, dtype):
+        a = numpy.array(
+            [[[94906267, 94906267], [94906267, 94906267]]], dtype=dtype
+        )
+        b = numpy.array([94906265, 94906265], dtype=dtype)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.matmul(ia, ib)
+        expected = numpy.matmul(a, b)
+        assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     def test_linalg_matmul(self):
@@ -1206,6 +1214,7 @@ class TestMatmul:
         expected = numpy.linalg.matmul(a, b)
         assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize(
         "sh1, sh2",
         [
@@ -1214,9 +1223,9 @@ class TestMatmul:
         ],
         ids=["gemm", "gemm_batch"],
     )
-    def test_matmul_with_offsets(self, sh1, sh2):
-        a = generate_random_numpy_array(sh1)
-        b = generate_random_numpy_array(sh2)
+    def test_matmul_with_offsets(self, dtype, sh1, sh2):
+        a = generate_random_numpy_array(sh1, dtype)
+        b = generate_random_numpy_array(sh2, dtype)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = ia[1] @ ib[1]
@@ -1978,10 +1987,12 @@ class TestVecdot:
         expected = numpy.vecdot(a, b, axes=axes, out=out)
         assert_dtype_allclose(result, expected)
 
+    # Use both integer and float, to test both MKL and dpctl backends
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize("stride", [2, -1, -2])
-    def test_strided(self, stride):
-        a = numpy.arange(100).reshape(10, 10)
-        b = numpy.arange(100).reshape(10, 10)
+    def test_strided(self, dtype, stride):
+        a = numpy.arange(100, dtype=dtype).reshape(10, 10)
+        b = numpy.arange(100, dtype=dtype).reshape(10, 10)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.vecdot(ia[::stride, ::stride], ib[::stride, ::stride])
@@ -1999,6 +2010,7 @@ class TestVecdot:
         expected = numpy.vecdot(a, b)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
     @pytest.mark.parametrize("order1", ["C", "F", "A"])
     @pytest.mark.parametrize("order2", ["C", "F", "A"])
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
@@ -2007,9 +2019,11 @@ class TestVecdot:
         [(4, 3), (4, 3, 5), (6, 7, 3, 5)],
         ids=["(4, 3)", "(4, 3, 5)", "(6, 7, 3, 5)"],
     )
-    def test_order(self, order1, order2, order, shape):
-        a = numpy.arange(numpy.prod(shape)).reshape(shape, order=order1)
-        b = numpy.arange(numpy.prod(shape)).reshape(shape, order=order2)
+    def test_order(self, dtype, order1, order2, order, shape):
+        a = numpy.arange(numpy.prod(shape), dtype=dtype)
+        b = numpy.arange(numpy.prod(shape), dtype=dtype)
+        a = a.reshape(shape, order=order1)
+        b = b.reshape(shape, order=order2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.vecdot(ia, ib, order=order)
