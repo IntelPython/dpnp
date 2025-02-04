@@ -327,9 +327,6 @@ def _get_result_shape_vecdot(x1, x2, x1_ndim, x2_ndim):
     if x1_shape[-1] != x2_shape[-1]:
         _shape_error(x1_shape[-1], x2_shape[-1], "vecdot", err_msg=0)
 
-    _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
-    _, x2_is_1D, _ = _define_dim_flags(x2, axis=-1)
-
     if x1_ndim == 1 and x2_ndim == 1:
         result_shape = ()
     elif x1_ndim == 1:
