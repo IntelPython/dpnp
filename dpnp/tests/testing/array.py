@@ -39,6 +39,15 @@ def _assert(assert_func, result, expected, *args, **kwargs):
     result = convert_item(result)
     expected = convert_item(expected)
 
+    # original versions of assert_equal, assert_array_equal, and assert_allclose
+    # (since NumPy 2.0) have `strict` parameter. Added here for
+    # assert_almost_equal, assert_array_almost_equal, and assert_allclose
+    # (NumPy < 2.0)
+    if kwargs.get("strict"):
+        assert result.dtype == expected.dtype
+        assert result.shape == expected.shape
+        kwargs.pop("strict")
+
     assert_func(result, expected, *args, **kwargs)
 
 
