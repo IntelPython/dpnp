@@ -59,6 +59,10 @@ var NAVTREEINDEX1 =
 "log1p_8hpp_source.html":[3,0,0,6,26],
 "log2_8hpp_source.html":[3,0,0,6,27],
 "mul_8hpp_source.html":[3,0,0,6,28],
+"namespacedpnp_1_1kernels_1_1i0_1_1impl.html":[1,0,0,0,0,0],
+"namespacedpnp_1_1kernels_1_1i0_1_1impl.html#a4797a054c5eb5eb061445fb926910af3":[1,0,0,0,0,0,1],
+"namespacedpnp_1_1kernels_1_1i0_1_1impl.html#aeee5c0bbacb0edac7266c3953ce0c72e":[1,0,0,0,0,0,2],
+"namespacedpnp_1_1kernels_1_1i0_1_1impl.html#af983672857d109bc8bbe77a8dbcf0358":[1,0,0,0,0,0,0],
 "namespacemembers.html":[1,1,0],
 "namespacemembers_func.html":[1,1,1],
 "namespaces.html":[1,0],
@@ -127,6 +131,7 @@ var NAVTREEINDEX1 =
 "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html":[2,0,0,1,5,0],
 "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html":[2,0,0,1,6,0],
 "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html":[2,0,0,1,7,0],
+"structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html":[1,0,0,0,0,1],
 "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html":[2,0,0,1,8,0],
 "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html":[2,0,0,1,9,0],
 "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html":[2,0,0,1,10,0],
@@ -175,5 +180,8 @@ var NAVTREEINDEX1 =
 "ungqr_8hpp_source.html":[3,0,0,3,20],
 "validation__utils_8hpp_source.html":[3,0,0,4,8],
 "verbose_8hpp_source.html":[3,0,3,7],
-"vm_2common_8hpp_source.html":[3,0,0,6,11]
+"vm_2common_8hpp_source.html":[3,0,0,6,11],
+"":[1,0,0],
+"":[1,0,0,0],
+"":[1,0,0,0,0]
 };
