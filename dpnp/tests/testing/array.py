@@ -24,6 +24,7 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+import dpctl
 import numpy
 
 from dpnp.dpnp_utils import convert_item
@@ -38,6 +39,33 @@ assert_equal_orig = numpy.testing.assert_equal
 def _assert(assert_func, result, expected, *args, **kwargs):
     result = convert_item(result)
     expected = convert_item(expected)
+
+    # original versions of assert_equal, assert_array_equal, and assert_allclose
+    # (since NumPy 2.0) have `strict` parameter. Added here for
+    # assert_almost_equal, assert_array_almost_equal
+    flag = assert_func in [
+        assert_almost_equal_orig,
+        assert_array_almost_equal_orig,
+    ]
+    # For numpy < 2.0, some tests will fail for dtype mismatch
+    dev = dpctl.select_default_device()
+    if numpy.__version__ >= "2.0.0" and dev.has_aspect_fp64:
+        kwargs.setdefault("strict", True)
+        if flag:
+            if kwargs.get("strict"):
+                if hasattr(expected, "dtype"):
+                    assert (
+                        result.dtype == expected.dtype
+                    ), f"{result.dtype} != {expected.dtype}"
+                    assert (
+                        result.shape == expected.shape
+                    ), f"{result.shape} != {expected.shape}"
+                else:
+                    # numpy output is scalar, then dpnp is 0-D array
+                    assert result.shape == (), f"{result.shape} != ()"
+            kwargs.pop("strict")
+    else:
+        kwargs.pop("strict", None)
 
     assert_func(result, expected, *args, **kwargs)
 

@@ -69,16 +69,31 @@ __all__ = [
 
 
 # TODO: implement a specific scalar-array kernel
-def _call_multiply(a, b, out=None):
-    """Call multiply function for special cases of scalar-array dots."""
+def _call_multiply(a, b, out=None, outer_calc=False):
+    """
+    Call multiply function for special cases of scalar-array dots.
+
+    if `sc` is an scalar and `a` is an array of type float32, we have
+    dpnp.multiply(a, sc).dtype == dpnp.float32 and
+    numpy.multiply(a, sc).dtype == dpnp.float32.
+
+    However, for scalar-array dots such as dot function we have
+    dpnp.dot(a, sc).dtype == dpnp.float32 while
+    numpy.dot(a, sc).dtype == dpnp.float64.
+
+    We need to adjust the behavior of the multiply function when it is
+    used for special cases of scalar-array dots.
+
+    """
 
     sc, arr = (a, b) if dpnp.isscalar(a) else (b, a)
     sc_dtype = map_dtype_to_device(type(sc), arr.sycl_device)
     res_dtype = dpnp.result_type(sc_dtype, arr)
+    multiply_func = dpnp.multiply.outer if outer_calc else dpnp.multiply
     if out is not None and out.dtype == arr.dtype:
-        res = dpnp.multiply(a, b, out=out)
+        res = multiply_func(a, b, out=out)
     else:
-        res = dpnp.multiply(a, b, dtype=res_dtype)
+        res = multiply_func(a, b, dtype=res_dtype)
     return dpnp.get_result_array(res, out, casting="no")
 
 
@@ -1109,16 +1124,15 @@ def outer(a, b, out=None):
 
     dpnp.check_supported_arrays_type(a, b, scalar_type=True, all_scalars=False)
     if dpnp.isscalar(a):
-        x1 = a
         x2 = dpnp.ravel(b)[None, :]
+        result = _call_multiply(a, x2, out=out, outer_calc=True)
     elif dpnp.isscalar(b):
         x1 = dpnp.ravel(a)[:, None]
-        x2 = b
+        result = _call_multiply(x1, b, out=out, outer_calc=True)
     else:
-        x1 = dpnp.ravel(a)
-        x2 = dpnp.ravel(b)
+        result = dpnp.multiply.outer(dpnp.ravel(a), dpnp.ravel(b), out=out)
 
-    return dpnp.multiply.outer(x1, x2, out=out)
+    return result
 
 
 def tensordot(a, b, axes=2):
@@ -1288,13 +1302,13 @@ def vdot(a, b):
         if b.size != 1:
             raise ValueError("The second array should be of size one.")
         a_conj = numpy.conj(a)
-        return _call_multiply(a_conj, b)
+        return dpnp.squeeze(_call_multiply(a_conj, b))
 
     if dpnp.isscalar(b):
         if a.size != 1:
             raise ValueError("The first array should be of size one.")
         a_conj = dpnp.conj(a)
-        return _call_multiply(a_conj, b)
+        return dpnp.squeeze(_call_multiply(a_conj, b))
 
     if a.ndim == 1 and b.ndim == 1:
         return dpnp_dot(a, b, out=None, conjugate=True)

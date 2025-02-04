@@ -29,6 +29,7 @@ def assert_allclose(
         atol=atol,
         err_msg=err_msg,
         verbose=verbose,
+        strict=False,
     )
 
 
@@ -51,6 +52,7 @@ def assert_array_almost_equal(x, y, decimal=6, err_msg="", verbose=True):
         decimal=decimal,
         err_msg=err_msg,
         verbose=verbose,
+        strict=False,
     )
 
 
@@ -105,11 +107,14 @@ def assert_array_equal(
 
     .. seealso:: :func:`numpy.testing.assert_array_equal`
     """
+
+    strict = kwargs.get("strict", False)
     numpy.testing.assert_array_equal(
         cupy.asnumpy(x),
         cupy.asnumpy(y),
         err_msg=err_msg,
         verbose=verbose,
+        strict=strict,
         **kwargs,
     )
 
