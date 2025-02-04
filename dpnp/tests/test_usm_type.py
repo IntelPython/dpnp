@@ -379,83 +379,83 @@ def test_tril_triu(func, usm_type):
     assert x.usm_type == usm_type
 
 
-# @pytest.mark.parametrize(
-#     "op",
-#     [
-#         "all",
-#         "any",
-#         "isfinite",
-#         "isinf",
-#         "isnan",
-#         "isneginf",
-#         "isposinf",
-#         "logical_not",
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
-#     x = dp.arange(-10, 10, usm_type=usm_type_x)
-#     res = getattr(dp, op)(x)
+@pytest.mark.parametrize(
+    "op",
+    [
+        "all",
+        "any",
+        "isfinite",
+        "isinf",
+        "isnan",
+        "isneginf",
+        "isposinf",
+        "logical_not",
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_logic_op_1in(op, usm_type_x):
+    x = dp.arange(-10, 10, usm_type=usm_type_x)
+    res = getattr(dp, op)(x)
 
-#     assert x.usm_type == res.usm_type == usm_type_x
-
-
-# @pytest.mark.parametrize(
-#     "op",
-#     [
-#         "array_equal",
-#         "array_equiv",
-#         "equal",
-#         "greater",
-#         "greater_equal",
-#         "isclose",
-#         "less",
-#         "less_equal",
-#         "logical_and",
-#         "logical_or",
-#         "logical_xor",
-#         "not_equal",
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_logic_op_2in(op, usm_type_x, usm_type_y):
-#     x = dp.arange(100, usm_type=usm_type_x)
-#     y = dp.arange(100, usm_type=usm_type_y)[::-1]
-
-#     z = getattr(dp, op)(x, y)
-#     zx = getattr(dp, op)(x, 50)
-#     zy = getattr(dp, op)(30, y)
-
-#     assert x.usm_type == zx.usm_type == usm_type_x
-#     assert y.usm_type == zy.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == res.usm_type == usm_type_x
 
 
-# @pytest.mark.parametrize(
-#     "op",
-#     ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
-#     ids=[
-#         "bitwise_and",
-#         "bitwise_or",
-#         "bitwise_xor",
-#         "left_shift",
-#         "right_shift",
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
-#     x = dp.arange(25, usm_type=usm_type_x)
-#     y = dp.arange(25, usm_type=usm_type_y)[::-1]
+@pytest.mark.parametrize(
+    "op",
+    [
+        "array_equal",
+        "array_equiv",
+        "equal",
+        "greater",
+        "greater_equal",
+        "isclose",
+        "less",
+        "less_equal",
+        "logical_and",
+        "logical_or",
+        "logical_xor",
+        "not_equal",
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_logic_op_2in(op, usm_type_x, usm_type_y):
+    x = dp.arange(100, usm_type=usm_type_x)
+    y = dp.arange(100, usm_type=usm_type_y)[::-1]
 
-#     z = getattr(dp, op)(x, y)
-#     zx = getattr(dp, op)(x, 7)
-#     zy = getattr(dp, op)(12, y)
+    z = getattr(dp, op)(x, y)
+    zx = getattr(dp, op)(x, 50)
+    zy = getattr(dp, op)(30, y)
 
-#     assert x.usm_type == zx.usm_type == usm_type_x
-#     assert y.usm_type == zy.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == zx.usm_type == usm_type_x
+    assert y.usm_type == zy.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+
+
+@pytest.mark.parametrize(
+    "op",
+    ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
+    ids=[
+        "bitwise_and",
+        "bitwise_or",
+        "bitwise_xor",
+        "left_shift",
+        "right_shift",
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_coerced_usm_types_bitwise_op(op, usm_type_x, usm_type_y):
+    x = dp.arange(25, usm_type=usm_type_x)
+    y = dp.arange(25, usm_type=usm_type_y)[::-1]
+
+    z = getattr(dp, op)(x, y)
+    zx = getattr(dp, op)(x, 7)
+    zy = getattr(dp, op)(12, y)
+
+    assert x.usm_type == zx.usm_type == usm_type_x
+    assert y.usm_type == zy.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
 # @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
