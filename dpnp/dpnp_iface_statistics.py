@@ -37,6 +37,8 @@ it contains:
 
 """
 
+import math
+
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.utils as dpu
@@ -481,7 +483,7 @@ def _get_padding(a_size, v_size, mode):
         r_pad = v_size - l_pad - 1
     elif mode == "full":
         l_pad, r_pad = v_size - 1, v_size - 1
-    else:
+    else:  # pragma: no cover
         raise ValueError(
             f"Unknown mode: {mode}. Only 'valid', 'same', 'full' are supported."
         )
@@ -489,16 +491,58 @@ def _get_padding(a_size, v_size, mode):
     return l_pad, r_pad
 
 
-def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad):
+def _choose_conv_method(a, v, rdtype):
+    assert a.size >= v.size
+    if rdtype == dpnp.bool:
+        # to avoid accuracy issues
+        return "direct"
+
+    if v.size < 10**4 or a.size < 10**4:
+        # direct method is faster for small arrays
+        return "direct"
+
+    if dpnp.issubdtype(rdtype, dpnp.integer):
+        max_a = int(dpnp.max(dpnp.abs(a)))
+        sum_v = int(dpnp.sum(dpnp.abs(v)))
+        max_value = int(max_a * sum_v)
+
+        default_float = dpnp.default_float_type(a.sycl_device)
+        if max_value > 2 ** numpy.finfo(default_float).nmant - 1:
+            # can't represent the result in the default float type
+            return "direct"  # pragma: no covers
+
+    if dpnp.issubdtype(rdtype, dpnp.number):
+        return "fft"
+
+    raise ValueError(f"Unsupported dtype: {rdtype}")  # pragma: no cover
+
+
+def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype):
     queue = a.sycl_queue
+    device = a.sycl_device
 
-    usm_type = dpu.get_coerced_usm_type([a.usm_type, v.usm_type])
-    out_size = l_pad + r_pad + a.size - v.size + 1
+    supported_types = statistics_ext.sliding_dot_product1d_dtypes()
+    supported_dtype = to_supported_dtypes(rdtype, supported_types, device)
+
+    if supported_dtype is None:  # pragma: no cover
+        raise ValueError(
+            f"function does not support input types "
+            f"({a.dtype.name}, {v.dtype.name}), "
+            "and the inputs could not be coerced to any "
+            f"supported types. List of supported types: "
+            f"{[st.name for st in supported_types]}"
+        )
+
+    a_casted = dpnp.asarray(a, dtype=supported_dtype, order="C")
+    v_casted = dpnp.asarray(v, dtype=supported_dtype, order="C")
+
+    usm_type = dpu.get_coerced_usm_type([a_casted.usm_type, v_casted.usm_type])
+    out_size = l_pad + r_pad + a_casted.size - v_casted.size + 1
     # out type is the same as input type
-    out = dpnp.empty_like(a, shape=out_size, usm_type=usm_type)
+    out = dpnp.empty_like(a_casted, shape=out_size, usm_type=usm_type)
 
-    a_usm = dpnp.get_usm_ndarray(a)
-    v_usm = dpnp.get_usm_ndarray(v)
+    a_usm = dpnp.get_usm_ndarray(a_casted)
+    v_usm = dpnp.get_usm_ndarray(v_casted)
     out_usm = dpnp.get_usm_ndarray(out)
 
     _manager = dpu.SequentialOrderManager[queue]
@@ -516,7 +560,30 @@ def _run_native_sliding_dot_product1d(a, v, l_pad, r_pad):
     return out
 
 
-def correlate(a, v, mode="valid"):
+def _convolve_fft(a, v, l_pad, r_pad, rtype):
+    assert a.size >= v.size
+    assert l_pad < v.size
+
+    # +1 is needed to avoid circular convolution
+    padded_size = a.size + r_pad + 1
+    fft_size = 2 ** int(math.ceil(math.log2(padded_size)))
+
+    af = dpnp.fft.fft(a, fft_size)  # pylint: disable=no-member
+    vf = dpnp.fft.fft(v, fft_size)  # pylint: disable=no-member
+
+    r = dpnp.fft.ifft(af * vf)  # pylint: disable=no-member
+    if dpnp.issubdtype(rtype, dpnp.floating):
+        r = r.real
+    elif dpnp.issubdtype(rtype, dpnp.integer) or rtype == dpnp.bool:
+        r = r.real.round()
+
+    start = v.size - 1 - l_pad
+    end = padded_size - 1
+
+    return r[start:end]
+
+
+def correlate(a, v, mode="valid", method="auto"):
     r"""
     Cross-correlation of two 1-dimensional sequences.
 
@@ -541,6 +608,20 @@ def correlate(a, v, mode="valid"):
         is ``"valid"``, unlike :obj:`dpnp.convolve`, which uses ``"full"``.
 
         Default: ``"valid"``.
+    method : {"auto", "direct", "fft"}, optional
+        Specifies which method to use to calculate the correlation:
+
+        - `"direct"` : The correlation is determined directly from sums.
+        - `"fft"` : The Fourier Transform is used to perform the calculations.
+          This method is faster for long sequences but can have accuracy issues.
+        - `"auto"` : Automatically chooses direct or Fourier method based on
+          an estimate of which is faster.
+
+        Note: Use of the FFT convolution on input containing NAN or INF
+        will lead to the entire output being NAN or INF.
+        Use method='direct' when your input contains NAN or INF values.
+
+        Default: ``"auto"``.
 
     Returns
     -------
@@ -608,20 +689,14 @@ def correlate(a, v, mode="valid"):
             f"Received shapes: a.shape={a.shape}, v.shape={v.shape}"
         )
 
-    supported_types = statistics_ext.sliding_dot_product1d_dtypes()
+    supported_methods = ["auto", "direct", "fft"]
+    if method not in supported_methods:
+        raise ValueError(
+            f"Unknown method: {method}. Supported methods: {supported_methods}"
+        )
 
     device = a.sycl_device
     rdtype = result_type_for_device([a.dtype, v.dtype], device)
-    supported_dtype = to_supported_dtypes(rdtype, supported_types, device)
-
-    if supported_dtype is None:  # pragma: no cover
-        raise ValueError(
-            f"function does not support input types "
-            f"({a.dtype.name}, {v.dtype.name}), "
-            "and the inputs could not be coerced to any "
-            f"supported types. List of supported types: "
-            f"{[st.name for st in supported_types]}"
-        )
 
     if dpnp.issubdtype(v.dtype, dpnp.complexfloating):
         v = dpnp.conj(v)
@@ -633,10 +708,15 @@ def correlate(a, v, mode="valid"):
 
     l_pad, r_pad = _get_padding(a.size, v.size, mode)
 
-    a_casted = dpnp.asarray(a, dtype=supported_dtype, order="C")
-    v_casted = dpnp.asarray(v, dtype=supported_dtype, order="C")
+    if method == "auto":
+        method = _choose_conv_method(a, v, rdtype)
 
-    r = _run_native_sliding_dot_product1d(a_casted, v_casted, l_pad, r_pad)
+    if method == "direct":
+        r = _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype)
+    elif method == "fft":
+        r = _convolve_fft(a, v[::-1], l_pad, r_pad, rdtype)
+    else:  # pragma: no cover
+        raise ValueError(f"Unknown method: {method}")
 
     if revert:
         r = r[::-1]

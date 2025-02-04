@@ -13,6 +13,7 @@ def assert_dtype_allclose(
     check_type=True,
     check_only_type_kind=False,
     factor=8,
+    relative_factor=None,
 ):
     """
     Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
@@ -183,6 +184,7 @@ def generate_random_numpy_array(
     seed_value=None,
     low=-10,
     high=10,
+    probability=0.5,
 ):
     """
     Generate a random numpy array with the specified shape and dtype.
@@ -197,23 +199,32 @@ def generate_random_numpy_array(
     dtype : str or dtype, optional
         Desired data-type for the output array.
         If not specified, data type will be determined by numpy.
+
         Default : ``None``
     order : {"C", "F"}, optional
         Specify the memory layout of the output array.
+
         Default: ``"C"``.
     hermitian : bool, optional
         If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
+
         Default : ``False``
     seed_value : int, optional
         The seed value to initialize the random number generator.
+
         Default : ``None``
     low : {int, float}, optional
         Lower boundary of the generated samples from a uniform distribution.
+
         Default : ``-10``.
     high : {int, float}, optional
         Upper boundary of the generated samples from a uniform distribution.
-        Default : ``10``.
 
+        Default : ``10``.
+    probability : float, optional
+        If dtype is bool, the probability of True. Ignored for other dtypes.
+
+        Default : ``0.5``.
     Returns
     -------
     out : numpy.ndarray
@@ -232,9 +243,15 @@ def generate_random_numpy_array(
 
     # dtype=int is needed for 0d arrays
     size = numpy.prod(shape, dtype=int)
-    a = numpy.random.uniform(low, high, size).astype(dtype)
-    if numpy.issubdtype(a.dtype, numpy.complexfloating):
-        a += 1j * numpy.random.uniform(low, high, size)
+    if dtype == dpnp.bool:
+        a = numpy.random.choice(
+            [False, True], size, p=[1 - probability, probability]
+        )
+    else:
+        a = numpy.random.uniform(low, high, size).astype(dtype)
+
+        if numpy.issubdtype(a.dtype, numpy.complexfloating):
+            a += 1j * numpy.random.uniform(low, high, size)
 
     a = a.reshape(shape)
     if hermitian and a.size > 0:
