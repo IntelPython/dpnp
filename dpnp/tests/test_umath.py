@@ -264,7 +264,8 @@ class TestFloatPower:
 
         result = dpnp.float_power(ia, 1.5)
         expected = numpy.float_power(a, 1.5)
-        assert_allclose(result, expected)
+        # numpy and dpnp promote the result differently
+        assert_allclose(result, expected, strict=False)
 
     @pytest.mark.parametrize(
         "dt", get_all_dtypes(no_none=True, no_unsigned=True)
@@ -290,7 +291,8 @@ class TestFloatPower:
 
         result = dpnp.float_power(ia, exp_val)
         expected = numpy.float_power(a, exp_val)
-        assert_allclose(result, expected)
+        # numpy and dpnp promote the result differently
+        assert_allclose(result, expected, strict=False)
 
 
 class TestLogAddExp:
