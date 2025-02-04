@@ -97,7 +97,6 @@ static func_map_t func_map_init()
 
     func_map_init_arraycreation(fmap);
     func_map_init_elemwise(fmap);
-    func_map_init_indexing_func(fmap);
     func_map_init_linalg(fmap);
     func_map_init_mathematical(fmap);
     func_map_init_random(fmap);

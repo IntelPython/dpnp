@@ -1791,3 +1791,17 @@ def test_ix(usm_type_0, usm_type_1):
     ixgrid = dp.ix_(x0, x1)
     assert ixgrid[0].usm_type == x0.usm_type
     assert ixgrid[1].usm_type == x1.usm_type
+
+
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize(
+    "usm_type_ind", list_of_usm_types, ids=list_of_usm_types
+)
+def test_choose(usm_type_x, usm_type_ind):
+    chc = dp.arange(5, usm_type=usm_type_x)
+    ind = dp.array([0, 2, 4], usm_type=usm_type_ind)
+    z = dp.choose(ind, chc)
+
+    assert chc.usm_type == usm_type_x
+    assert ind.usm_type == usm_type_ind
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])

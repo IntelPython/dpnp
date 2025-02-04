@@ -2957,3 +2957,24 @@ def test_ix(device_0, device_1):
     ixgrid = dpnp.ix_(x0, x1)
     assert_sycl_queue_equal(ixgrid[0].sycl_queue, x0.sycl_queue)
     assert_sycl_queue_equal(ixgrid[1].sycl_queue, x1.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_choose(device):
+    chc = dpnp.arange(5, dtype="i4", device=device)
+    chc_np = dpnp.asnumpy(chc)
+
+    inds = dpnp.array([0, 1, 3], dtype="i4", device=device)
+    inds_np = dpnp.asnumpy(inds)
+
+    result = dpnp.choose(inds, chc)
+    expected = numpy.choose(inds_np, chc_np)
+    assert_allclose(expected, result)
+
+    expected_queue = chc.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)
