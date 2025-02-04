@@ -1287,13 +1287,13 @@ def vdot(a, b):
         if b.size != 1:
             raise ValueError("The second array should be of size one.")
         a_conj = numpy.conj(a)
-        return _call_multiply(a_conj, b)
+        return dpnp.squeeze(_call_multiply(a_conj, b))
 
     if dpnp.isscalar(b):
         if a.size != 1:
             raise ValueError("The first array should be of size one.")
         a_conj = dpnp.conj(a)
-        return _call_multiply(a_conj, b)
+        return dpnp.squeeze(_call_multiply(a_conj, b))
 
     if a.ndim == 1 and b.ndim == 1:
         return dpnp_dot(a, b, out=None, conjugate=True)
