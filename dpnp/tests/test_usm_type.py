@@ -558,228 +558,228 @@ def test_norm(usm_type, ord, axis):
         assert result.usm_type == usm_type
 
 
-# @pytest.mark.parametrize(
-#     "func,data",
-#     [
-#         pytest.param("all", [-1.0, 0.0, 1.0]),
-#         pytest.param("any", [-1.0, 0.0, 1.0]),
-#         pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("abs", [-1.2, 1.2]),
-#         pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
-#         pytest.param("arccos", [-0.5, 0.0, 0.5]),
-#         pytest.param("arccosh", [1.5, 3.5, 5.0]),
-#         pytest.param("arcsin", [-0.5, 0.0, 0.5]),
-#         pytest.param("arcsinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-#         pytest.param("arctan", [-1.0, 0.0, 1.0]),
-#         pytest.param("arctanh", [-0.5, 0.0, 0.5]),
-#         pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
-#         pytest.param("argwhere", [[0, 3], [1, 4], [2, 5]]),
-#         pytest.param("cbrt", [1, 8, 27]),
-#         pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-#         pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
-#         pytest.param("corrcoef", [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
-#         pytest.param(
-#             "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
-#         ),
-#         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-#         pytest.param("count_nonzero", [0, 1, 7, 0]),
-#         pytest.param("cumlogsumexp", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
-#         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
-#         pytest.param("cumulative_prod", [1, 2, 3, 4, 5, 6]),
-#         pytest.param("cumulative_sum", [1, 2, 3, 4, 5, 6]),
-#         pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
-#         pytest.param("diagonal", [[[1, 2], [3, 4]]]),
-#         pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
-#         pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
-#         pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("exp2", [0.0, 1.0, 2.0]),
-#         pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("fabs", [-1.2, 1.2]),
-#         pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
-#         pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
-#         pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-#         pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
-#         pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
-#         pytest.param("i0", [0, 1, 2, 3]),
-#         pytest.param(
-#             "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
-#         ),
-#         pytest.param("iscomplex", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
-#         pytest.param("isreal", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
-#         pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("logsumexp", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("median", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("nanargmax", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nanargmin", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nancumprod", [3.0, dp.nan]),
-#         pytest.param("nancumsum", [3.0, dp.nan]),
-#         pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nanmean", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nanmedian", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nanmin", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nanprod", [1.0, 2.0, dp.nan]),
-#         pytest.param("nanstd", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nansum", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("nanvar", [1.0, 2.0, 4.0, dp.nan]),
-#         pytest.param("negative", [1.0, 0.0, -1.0]),
-#         pytest.param("positive", [1.0, 0.0, -1.0]),
-#         pytest.param("prod", [1.0, 2.0]),
-#         pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
-#         pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("radians", [180, 90, 45, 0]),
-#         pytest.param(
-#             "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
-#         ),
-#         pytest.param("real_if_close", [2.1 + 4e-15j, 5.2 + 3e-16j]),
-#         pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("rot90", [[1, 2], [3, 4]]),
-#         pytest.param("rsqrt", [1, 8, 27]),
-#         pytest.param("sign", [-5.0, 0.0, 4.5]),
-#         pytest.param("signbit", [-5.0, 0.0, 4.5]),
-#         pytest.param(
-#             "sin", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
-#         ),
-#         pytest.param("sinc", [-5.0, -3.5, 0.0, 2.5, 4.3]),
-#         pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-#         pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
-#         pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
-#         pytest.param("spacing", [1, 2, -3, 0]),
-#         pytest.param("sqrt", [1.0, 3.0, 9.0]),
-#         pytest.param("square", [1.0, 3.0, 9.0]),
-#         pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
-#         pytest.param("sum", [1.0, 2.0]),
-#         pytest.param(
-#             "tan", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
-#         ),
-#         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-#         pytest.param(
-#             "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
-#         ),
-#         pytest.param("trapezoid", [1, 2, 3]),
-#         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
-#         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
-#         pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
-#         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-# def test_1in_1out(func, data, usm_type):
-#     x = dp.array(data, usm_type=usm_type)
-#     res = getattr(dp, func)(x)
-#     assert x.usm_type == usm_type
-#     assert res.usm_type == usm_type
+@pytest.mark.parametrize(
+    "func,data",
+    [
+        pytest.param("all", [-1.0, 0.0, 1.0]),
+        pytest.param("any", [-1.0, 0.0, 1.0]),
+        pytest.param("average", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("abs", [-1.2, 1.2]),
+        pytest.param("angle", [[1.0 + 1.0j, 2.0 + 3.0j]]),
+        pytest.param("arccos", [-0.5, 0.0, 0.5]),
+        pytest.param("arccosh", [1.5, 3.5, 5.0]),
+        pytest.param("arcsin", [-0.5, 0.0, 0.5]),
+        pytest.param("arcsinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("arctan", [-1.0, 0.0, 1.0]),
+        pytest.param("arctanh", [-0.5, 0.0, 0.5]),
+        pytest.param("argmax", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("argmin", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("argsort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("argwhere", [[0, 3], [1, 4], [2, 5]]),
+        pytest.param("cbrt", [1, 8, 27]),
+        pytest.param("ceil", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("conjugate", [[1.0 + 1.0j, 0.0], [0.0, 1.0 + 1.0j]]),
+        pytest.param("corrcoef", [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]]),
+        pytest.param(
+            "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
+        ),
+        pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("count_nonzero", [0, 1, 7, 0]),
+        pytest.param("cumlogsumexp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
+        pytest.param("cumulative_prod", [1, 2, 3, 4, 5, 6]),
+        pytest.param("cumulative_sum", [1, 2, 3, 4, 5, 6]),
+        pytest.param("degrees", [numpy.pi, numpy.pi / 2, 0]),
+        pytest.param("diagonal", [[[1, 2], [3, 4]]]),
+        pytest.param("diff", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("ediff1d", [1.0, 2.0, 4.0, 7.0, 0.0]),
+        pytest.param("exp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("exp2", [0.0, 1.0, 2.0]),
+        pytest.param("expm1", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
+        pytest.param("fabs", [-1.2, 1.2]),
+        pytest.param("fix", [2.1, 2.9, -2.1, -2.9]),
+        pytest.param("flatnonzero", [-2, -1, 0, 1, 2]),
+        pytest.param("floor", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("gradient", [1, 2, 4, 7, 11, 16]),
+        pytest.param("histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5]),
+        pytest.param("i0", [0, 1, 2, 3]),
+        pytest.param(
+            "imag", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
+        pytest.param("iscomplex", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
+        pytest.param("isreal", [1 + 1j, 1 + 0j, 4.5, 3, 2, 2j]),
+        pytest.param("log", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("log10", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("log1p", [1.0e-10, 1.0, 2.0, 4.0, 7.0]),
+        pytest.param("log2", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("logsumexp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("max", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("mean", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("median", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("min", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("nanargmax", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanargmin", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nancumprod", [3.0, dp.nan]),
+        pytest.param("nancumsum", [3.0, dp.nan]),
+        pytest.param("nanmax", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanmean", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanmedian", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanmin", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanprod", [1.0, 2.0, dp.nan]),
+        pytest.param("nanstd", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nansum", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("nanvar", [1.0, 2.0, 4.0, dp.nan]),
+        pytest.param("negative", [1.0, 0.0, -1.0]),
+        pytest.param("positive", [1.0, 0.0, -1.0]),
+        pytest.param("prod", [1.0, 2.0]),
+        pytest.param("proj", [complex(1.0, 2.0), complex(dp.inf, -1.0)]),
+        pytest.param("ptp", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("radians", [180, 90, 45, 0]),
+        pytest.param(
+            "real", [complex(1.0, 2.0), complex(3.0, 4.0), complex(5.0, 6.0)]
+        ),
+        pytest.param("real_if_close", [2.1 + 4e-15j, 5.2 + 3e-16j]),
+        pytest.param("reciprocal", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("reduce_hypot", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("rot90", [[1, 2], [3, 4]]),
+        pytest.param("rsqrt", [1, 8, 27]),
+        pytest.param("sign", [-5.0, 0.0, 4.5]),
+        pytest.param("signbit", [-5.0, 0.0, 4.5]),
+        pytest.param(
+            "sin", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
+        ),
+        pytest.param("sinc", [-5.0, -3.5, 0.0, 2.5, 4.3]),
+        pytest.param("sinh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("sort", [2.0, 1.0, 7.0, 4.0]),
+        pytest.param("sort_complex", [1 + 2j, 2 - 1j, 3 - 2j, 3 - 3j, 3 + 5j]),
+        pytest.param("spacing", [1, 2, -3, 0]),
+        pytest.param("sqrt", [1.0, 3.0, 9.0]),
+        pytest.param("square", [1.0, 3.0, 9.0]),
+        pytest.param("std", [1.0, 2.0, 4.0, 7.0]),
+        pytest.param("sum", [1.0, 2.0]),
+        pytest.param(
+            "tan", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
+        ),
+        pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param(
+            "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
+        ),
+        pytest.param("trapezoid", [1, 2, 3]),
+        pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
+        pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
+        pytest.param("unwrap", [[0, 1, 2, -1, 0]]),
+        pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_1in_1out(func, data, usm_type):
+    x = dp.array(data, usm_type=usm_type)
+    res = getattr(dp, func)(x)
+    assert x.usm_type == usm_type
+    assert res.usm_type == usm_type
 
 
-# @pytest.mark.parametrize(
-#     "func,data1,data2",
-#     [
-#         pytest.param(
-#             "allclose",
-#             [[1.2, -0.0], [-7, 2.34567]],
-#             [[1.2, 0.0], [-7, 2.34567]],
-#         ),
-#         pytest.param("append", [1, 2, 3], [4, 5, 6]),
-#         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
-#         pytest.param("compress", [False, True, True], [0, 1, 2, 3, 4]),
-#         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
-#         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
-#         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
-#         pytest.param(
-#             "corrcoef",
-#             [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
-#             [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
-#         ),
-#         pytest.param("correlate", [1, 2, 3], [0, 1, 0.5]),
-#         # dpnp.dot has 3 different implementations based on input arrays dtype
-#         # checking all of them
-#         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
-#         pytest.param("dot", [3, 4, 5], [1, 2, 3]),
-#         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
-#         pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
-#         pytest.param(
-#             "float_power",
-#             [0, 1, 2, 3, 4, 5],
-#             [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
-#         ),
-#         pytest.param("fmax", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-#         pytest.param("fmin", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-#         pytest.param("fmod", [5, 3], [2, 2.0]),
-#         pytest.param(
-#             "gcd",
-#             [0, 1, 2, 3, 4, 5],
-#             [20, 20, 20, 20, 20, 20],
-#         ),
-#         pytest.param(
-#             "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
-#         ),
-#         pytest.param("heaviside", [-1.5, 0, 2.0], [1]),
-#         pytest.param(
-#             "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
-#         ),
-#         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
-#         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
-#         pytest.param(
-#             "lcm",
-#             [0, 1, 2, 3, 4, 5],
-#             [20, 20, 20, 20, 20, 20],
-#         ),
-#         pytest.param(
-#             "ldexp",
-#             [5, 5, 5, 5, 5],
-#             [0, 1, 2, 3, 4],
-#         ),
-#         pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
-#         pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
-#         pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-#         pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-#         pytest.param("nextafter", [1, 2], [2, 1]),
-#         pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
-#         pytest.param(
-#             "tensordot",
-#             [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
-#             [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
-#         ),
-#         pytest.param("trapezoid", [1, 2, 3], [4, 6, 8]),
-#         # dpnp.vdot has 3 different implementations based on input arrays dtype
-#         # checking all of them
-#         pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
-#         pytest.param("vdot", [3, 4, 5], [1, 2, 3]),
-#         pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
-# @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
-# def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
-#     x = dp.array(data1, usm_type=usm_type_x)
-#     y = dp.array(data2, usm_type=usm_type_y)
-#     z = getattr(dp, func)(x, y)
+@pytest.mark.parametrize(
+    "func,data1,data2",
+    [
+        pytest.param(
+            "allclose",
+            [[1.2, -0.0], [-7, 2.34567]],
+            [[1.2, 0.0], [-7, 2.34567]],
+        ),
+        pytest.param("append", [1, 2, 3], [4, 5, 6]),
+        pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
+        pytest.param("compress", [False, True, True], [0, 1, 2, 3, 4]),
+        pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
+        pytest.param(
+            "corrcoef",
+            [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
+            [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
+        ),
+        pytest.param("correlate", [1, 2, 3], [0, 1, 0.5]),
+        # dpnp.dot has 3 different implementations based on input arrays dtype
+        # checking all of them
+        pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
+        pytest.param("dot", [3, 4, 5], [1, 2, 3]),
+        pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
+        pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
+        pytest.param(
+            "float_power",
+            [0, 1, 2, 3, 4, 5],
+            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        ),
+        pytest.param("fmax", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("fmin", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("fmod", [5, 3], [2, 2.0]),
+        pytest.param(
+            "gcd",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
+        pytest.param(
+            "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
+        ),
+        pytest.param("heaviside", [-1.5, 0, 2.0], [1]),
+        pytest.param(
+            "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
+        ),
+        pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
+        pytest.param(
+            "lcm",
+            [0, 1, 2, 3, 4, 5],
+            [20, 20, 20, 20, 20, 20],
+        ),
+        pytest.param(
+            "ldexp",
+            [5, 5, 5, 5, 5],
+            [0, 1, 2, 3, 4],
+        ),
+        pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        pytest.param("nextafter", [1, 2], [2, 1]),
+        pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
+        pytest.param(
+            "tensordot",
+            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
+            [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
+        ),
+        pytest.param("trapezoid", [1, 2, 3], [4, 6, 8]),
+        # dpnp.vdot has 3 different implementations based on input arrays dtype
+        # checking all of them
+        pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
+        pytest.param("vdot", [3, 4, 5], [1, 2, 3]),
+        pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
+    ],
+)
+@pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
+@pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
+def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
+    x = dp.array(data1, usm_type=usm_type_x)
+    y = dp.array(data2, usm_type=usm_type_y)
+    z = getattr(dp, func)(x, y)
 
-#     assert x.usm_type == usm_type_x
-#     assert y.usm_type == usm_type_y
-#     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
+    assert x.usm_type == usm_type_x
+    assert y.usm_type == usm_type_y
+    assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-# @pytest.mark.parametrize(
-#     "func, data, scalar",
-#     [
-#         pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
-#     ],
-# )
-# @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-# def test_2in_with_scalar_1out(func, data, scalar, usm_type):
-#     x = dp.array(data, usm_type=usm_type)
-#     z = getattr(dp, func)(x, scalar)
-#     assert z.usm_type == usm_type
+@pytest.mark.parametrize(
+    "func, data, scalar",
+    [
+        pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
+    ],
+)
+@pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
+def test_2in_with_scalar_1out(func, data, scalar, usm_type):
+    x = dp.array(data, usm_type=usm_type)
+    z = getattr(dp, func)(x, scalar)
+    assert z.usm_type == usm_type
 
 
 # @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
