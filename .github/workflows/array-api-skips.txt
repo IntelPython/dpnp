@@ -31,9 +31,5 @@ array_api_tests/test_operators_and_elementwise_functions.py::test_asinh
 array_api_tests/test_signatures.py::test_func_signature[std]
 array_api_tests/test_signatures.py::test_func_signature[var]
 
-# wrong shape is returned
-array_api_tests/test_linalg.py::test_vecdot
-array_api_tests/test_linalg.py::test_linalg_vecdot
-
 # arrays have different values
 array_api_tests/test_linalg.py::test_linalg_tensordot
