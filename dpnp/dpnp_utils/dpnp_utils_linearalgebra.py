@@ -853,6 +853,7 @@ def dpnp_multiplication(
         # "matmul," "matvec," and "vecmat" always have multiple distinct cores,
         # and `axis` is not supported for these functions.
         # Therefore, raise an error in all cases where `axis` is provided.
+        assert distinct_core != 1
         raise TypeError(
             f"{func}: axis can only be used with a single shared core "
             f"dimension, not with the {distinct_core} distinct ones implied "
