@@ -327,13 +327,14 @@ def _get_result_shape_multiplication(x1, x2, func):
                     else:
                         _shape_error(x1_shape, x2_shape, func, err_msg=1)
 
+            result_shape = tuple(tmp_shape)
             if func == "matvec":
-                result_shape = tuple(tmp_shape) + (x1.shape[-2],)
+                result_shape += (x1.shape[-2],)
             elif func == "vecmat":
-                result_shape = tuple(tmp_shape) + (x2.shape[-1],)
+                result_shape += (x2.shape[-1],)
             else:
                 assert func == "matmul"
-                result_shape = tuple(tmp_shape) + (x1.shape[-2], x2.shape[-1])
+                result_shape += (x1.shape[-2], x2.shape[-1])
 
     return x1, x2, result_shape
 
@@ -851,6 +852,9 @@ def dpnp_multiplication(
 
     if axis is not None:
         signature, distinct_core = _get_signature(func)
+        # "matmul," "matvec," and "vecmat" always have multiple distinct cores,
+        # and `axis` is not supported for these functions.
+        # Therefore, raise an error in all cases where `axis` is provided.
         raise TypeError(
             f"{func}: axis can only be used with a single shared core "
             f"dimension, not with the {distinct_core} distinct ones implied "
