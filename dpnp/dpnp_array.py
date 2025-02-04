@@ -857,15 +857,15 @@ class dpnp_array:
     # 'base',
     # 'byteswap',
 
-    def choose(input, choices, out=None, mode="raise"):
+    def choose(self, /, choices, out=None, mode="wrap"):
         """
-        Construct an array from an index array and a set of arrays to choose from.
+        Use an array as index array to construct a new array from a set of choices.
 
         Refer to :obj:`dpnp.choose` for full documentation.
 
         """
 
-        return dpnp.choose(input, choices, out, mode)
+        return dpnp.choose(self, choices, out, mode)
 
     def clip(self, min=None, max=None, out=None, **kwargs):
         """

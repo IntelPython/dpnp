@@ -40,6 +40,7 @@ it contains:
 # pylint: disable=protected-access
 
 import operator
+from collections.abc import Iterable
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
@@ -52,8 +53,10 @@ from dpctl.tensor._numpy_helper import normalize_axis_index
 import dpnp
 
 # pylint: disable=no-name-in-module
+import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
+
+# pylint: disable=no-name-in-module
 from .dpnp_algo import (
-    dpnp_choose,
     dpnp_putmask,
 )
 from .dpnp_array import dpnp_array
@@ -117,56 +120,176 @@ def _ravel_multi_index_checks(multi_index, dims, order):
         )
 
 
-def choose(x1, choices, out=None, mode="raise"):
+def _build_choices_list(choices):
+    """
+    Gather queues and USM types for the input, expected to be an array or
+    list of arrays. If a single array of dimension greater than one, the array
+    will be unstacked.
+
+    Returns a list of :class:`dpctl.tensor.usm_ndarray`s.
+    """
+
+    if dpnp.is_supported_array_type(choices):
+        choices = dpnp.unstack(choices)
+    elif not isinstance(choices, Iterable):
+        raise TypeError("`choices` must be an array or sequence of arrays")
+    return [dpnp.get_usm_ndarray(chc) for chc in choices]
+
+
+def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
+    # arg validation, broadcasting, type coercion assumed done by caller
+    if out is not None:
+        out = dpnp.get_usm_ndarray(out)
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != inds.shape:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {inds.shape}, got {out.shape}"
+            )
+
+        if chcs[0].dtype != out.dtype:
+            raise TypeError(
+                f"Output array of type {chcs[0].dtype} is needed, "
+                f"got {out.dtype}"
+            )
+
+        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(inds, out) or any(
+            ti._array_overlap(out, chc) for chc in chcs
+        ):
+            # Allocate a temporary buffer to avoid memory overlapping.
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(
+            inds.shape, dtype=chcs[0].dtype, usm_type=usm_type, sycl_queue=q
+        )
+
+    _manager = dpu.SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
+
+    h_ev, choose_ev = indexing_ext._choose(inds, chcs, out, mode, q, dep_evs)
+    _manager.add_event_pair(h_ev, choose_ev)
+
+    return out
+
+
+def choose(a, choices, out=None, mode="wrap"):
     """
     Construct an array from an index array and a set of arrays to choose from.
 
     For full documentation refer to :obj:`numpy.choose`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        An integer array of indices indicating the position of the array
+        in `choices` to choose from. Behavior of out-of-bounds integers (i.e.,
+        integers outside of `[0, n-1]` where `n` is the number of choices) is
+        determined by the `mode` keyword.
+    choices : {dpnp.ndarray, usm_ndarray, \
+               sequence of dpnp.ndarrays and usm_ndarrays}
+        Choice arrays. `a` and choice arrays must be broadcast-compatible.
+        If `choices` is an array, the array is unstacked into a sequence of
+        arrays.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        If provided, the result will be placed in this array. It should
+        be of the appropriate shape and dtype.
+        Default: ``None``.
+    mode : {"wrap", "clip"}, optional
+        Specifies how out-of-bounds indices will be handled. Possible values
+        are:
+
+        - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+          negative indices.
+        - ``"clip"``: clips indices to (``0 <= i < n``).
+
+        Default: ``"wrap"``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The merged result.
+
     See also
     --------
-    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
+    :obj:`dpnp.ndarray.choose` : Equivalent method.
+    :obj:`dpnp.take_along_axis` : Preferable if `choices` is an array.
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> choices = np.array([[0, 1, 2, 3], [10, 11, 12, 13],
+    ...   [20, 21, 22, 23], [30, 31, 32, 33]])
+    >>> np.choose(np.array([2, 3, 1, 0]), choices
+    ... # the first element of the result will be the first element of the
+    ... # third (2+1) "array" in choices, namely, 20; the second element
+    ... # will be the second element of the fourth (3+1) choice array, i.e.,
+    ... # 31, etc.
+    ... )
+    array([20, 31, 12, 3])
+    >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='clip'
+    ... # 4 goes to 3 (4-1)
+    ... )
+    array([20, 31, 12, 3])
+    >>> # because there are 4 choice arrays
+    >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='wrap'
+    ... # 4 is clipped to 3
+    ... )
+    array([20, 31, 12, 3])
+    >>> np.choose(np.array([2, -1, 1, 0]), choices, mode='wrap'
+    ... # -1 goes to 3 (-1+4)
+    ... )
+    array([20, 31, 12, 3])
+
+    An example using broadcasting:
+
+    >>> a = np.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]])
+    >>> choices = np.array([-10, 10])
+    >>> np.choose(a, choices)
+    array([[ 10, -10,  10],
+           [-10,  10, -10],
+           [ 10, -10,  10]])
     """
+    mode = _get_indexing_mode(mode)
 
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-
-    choices_list = []
-    for choice in choices:
-        choices_list.append(
-            dpnp.get_dpnp_descriptor(choice, copy_when_nondefault_queue=False)
-        )
-
-    if x1_desc:
-        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
-            raise NotImplementedError(
-                "Running on CUDA is currently not supported"
-            )
-
-        if any(not desc for desc in choices_list):
-            pass
-        elif out is not None:
-            pass
-        elif mode != "raise":
-            pass
-        elif any(not choices[0].dtype == choice.dtype for choice in choices):
-            pass
-        elif not choices_list:
-            pass
+    inds = dpnp.get_usm_ndarray(a)
+    ind_dt = inds.dtype
+    if not dpnp.issubdtype(ind_dt, dpnp.integer):
+        # NumPy will cast up to int64 in general but
+        # int32 is more than safe for bool
+        if ind_dt == dpnp.bool:
+            inds = dpt.astype(inds, dpt.int32)
         else:
-            size = x1_desc.size
-            choices_size = choices_list[0].size
-            if any(
-                choice.size != choices_size or choice.size != size
-                for choice in choices
-            ):
-                pass
-            elif any(x >= choices_size for x in dpnp.asnumpy(x1)):
-                pass
-            else:
-                return dpnp_choose(x1_desc, choices_list).get_pyobj()
+            raise TypeError("input index array must be of integer data type")
 
-    return call_origin(numpy.choose, x1, choices, out, mode)
+    choices = _build_choices_list(choices)
+
+    res_usm_type, exec_q = get_usm_allocations(choices + [inds])
+    # apply type promotion to input choices
+    res_dt = dpt.result_type(*choices)
+    if len(choices) > 1:
+        choices = tuple(
+            map(
+                lambda chc: (
+                    chc if chc.dtype == res_dt else dpt.astype(chc, res_dt)
+                ),
+                choices,
+            )
+        )
+    arrs_broadcast = dpt.broadcast_arrays(inds, *choices)
+    inds = arrs_broadcast[0]
+    choices = tuple(arrs_broadcast[1:])
+
+    res = _choose_run(inds, choices, exec_q, res_usm_type, out=out, mode=mode)
+
+    return dpnp.get_result_array(res, out=out)
 
 
 def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):

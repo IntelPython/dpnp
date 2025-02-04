@@ -134,39 +134,6 @@ INP_DLLEXPORT void dpnp_partition_c(void *array,
 
 /**
  * @ingroup BACKEND_API
- * @brief Construct an array from an index array and a list of arrays to choose
- * from.
- *
- * @param [in]  q_ref               Reference to SYCL queue.
- * @param [out] result1             Output array.
- * @param [in]  array1_in           Input array with data.
- * @param [in]  choices             Choice arrays.
- * @param [in]  size                Input array size.
- * @param [in]  choices_size        Choices size.
- * @param [in]  choice_size         Choice size.
- * @param [in]  dep_event_vec_ref   Reference to vector of SYCL events.
- */
-template <typename _DataType1, typename _DataType2>
-INP_DLLEXPORT DPCTLSyclEventRef
-    dpnp_choose_c(DPCTLSyclQueueRef q_ref,
-                  void *result1,
-                  void *array1_in,
-                  void **choices,
-                  size_t size,
-                  size_t choices_size,
-                  size_t choice_size,
-                  const DPCTLEventVectorRef dep_event_vec_ref);
-
-template <typename _DataType1, typename _DataType2>
-INP_DLLEXPORT void dpnp_choose_c(void *result1,
-                                 void *array1_in,
-                                 void **choices,
-                                 size_t size,
-                                 size_t choices_size,
-                                 size_t choice_size);
-
-/**
- * @ingroup BACKEND_API
  * @brief implementation of creating filled with value array function
  *
  * @param [in]  q_ref               Reference to SYCL queue.
