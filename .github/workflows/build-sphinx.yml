@@ -180,7 +180,7 @@ jobs:
 
       # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@cbe72c8e402e8a3faa1f0b247ef90aa6c8e4ce74 # v1.9.8
+        uses: mattnotmitt/doxygen-action@b84fe17600245bb5db3d6c247cc274ea98c15a3b # v1.12
         with:
             working-directory: 'dpnp/backend/doc'
 
@@ -266,6 +266,7 @@ jobs:
       - name: Modify the comment with URL to official documentation
         uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
         with:
+          message-id: url_to_docs
           find: |
             View rendered docs @.+
           replace: |
