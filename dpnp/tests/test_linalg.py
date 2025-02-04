@@ -2114,7 +2114,7 @@ class TestNorm:
                 # TODO: when similar changes in numpy are available, instead
                 # of assert_equal with zero, we should compare with numpy
                 # ord in [None, 1, 2]
-                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0)
+                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0.0)
                 assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         else:
             result = dpnp.linalg.norm(ia, **kwarg)
@@ -2323,7 +2323,8 @@ class TestNorm:
     @pytest.mark.parametrize("ord", [None, "fro", "nuc", 1, 2, dpnp.inf])
     def test_matrix_norm_empty(self, xp, dtype, shape, axis, ord):
         x = xp.zeros(shape, dtype=dtype)
-        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), 0)
+        sc = dtype(0.0) if dtype == dpnp.float32 else 0.0
+        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), sc)
 
     @pytest.mark.parametrize(
         "xp",
@@ -2343,7 +2344,8 @@ class TestNorm:
     @pytest.mark.parametrize("ord", [None, 1, 2, dpnp.inf])
     def test_vector_norm_empty(self, xp, dtype, axis, ord):
         x = xp.zeros(0, dtype=dtype)
-        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), 0)
+        sc = dtype(0.0) if dtype == dpnp.float32 else 0.0
+        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), sc)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(

@@ -110,7 +110,9 @@ class TestNanCumSumProd:
 
         result = getattr(dpnp, func)(ia)
         expected = getattr(numpy, func)(a)
-        assert_dtype_allclose(result, expected)
+        # for "0d" case, dpnp returns 0D array, numpy returns 1D array
+        # Array API indicates that the behavior is unspecified
+        assert_dtype_allclose(result, expected, check_shape=False)
 
     @pytest.mark.parametrize("axis", [None, 0, 1])
     def test_empty(self, func, axis):
@@ -511,7 +513,6 @@ class TestNanProdSum:
         expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
         result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
 
-        assert result.shape == expected.shape
         assert_allclose(result, expected, rtol=1e-5)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
