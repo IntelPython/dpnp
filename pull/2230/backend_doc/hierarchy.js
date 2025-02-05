@@ -12,6 +12,7 @@ var hierarchy =
     [ "backend_sycl", "classbackend__sycl.html", null ],
     [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
+    [ "dpnp::extensions::indexing::kernels::ChooseFunctor< ProjectorT, IndOutIndexerT, ChoicesIndexerT, IndT, T >", "classdpnp_1_1extensions_1_1indexing_1_1kernels_1_1_choose_functor.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
     ] ],
@@ -76,7 +77,10 @@ var hierarchy =
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
     [ "statistics::common::Less< T >", "structstatistics_1_1common_1_1_less.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
+    [ "dpnp::kernels::nan_to_num::NanToNumContigFunctor< T, scT, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
+    [ "dpnp::kernels::nan_to_num::NanToNumFunctor< T, scT, InOutIndexerT >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ],
     [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
+    [ "dpnp::extensions::indexing::strides_detail::NthStrideOffsetUnpacked", "structdpnp_1_1extensions_1_1indexing_1_1strides__detail_1_1_nth_stride_offset_unpacked.html", null ],
     [ "statistics::common::one_of< T, Rest >", "structstatistics_1_1common_1_1one__of.html", null ],
     [ "statistics::common::one_of< T, std::tuple< Top > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
     [ "statistics::common::one_of< T, std::tuple< Top, Rest... > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],

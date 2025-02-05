@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev5+32.gf42fb4ac495 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev5+36.g52084904e7e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e1da5ffc"></script>
+      <script src="../../_static/documentation_options.js?v=8730062a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -125,6 +125,7 @@
 <span class="c1"># pylint: disable=protected-access</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">operator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Iterable</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
@@ -137,8 +138,10 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.indexing._indexing_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">indexing_ext</span>
+
+<span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
-    <span class="n">dpnp_choose</span><span class="p">,</span>
     <span class="n">dpnp_putmask</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
@@ -202,58 +205,178 @@
         <span class="p">)</span>
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_build_choices_list</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gather queues and USM types for the input, expected to be an array or</span>
+<span class="sd">    list of arrays. If a single array of dimension greater than one, the array</span>
+<span class="sd">    will be unstacked.</span>
+
+<span class="sd">    Returns a list of :class:`dpctl.tensor.usm_ndarray`s.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">choices</span><span class="p">):</span>
+        <span class="n">choices</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">choices</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`choices` must be an array or sequence of arrays&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">chc</span><span class="p">)</span> <span class="k">for</span> <span class="n">chc</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">]</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_choose_run</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">chcs</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="c1"># arg validation, broadcasting, type coercion assumed done by caller</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="o">.</span><span class="n">flags</span><span class="o">.</span><span class="n">writable</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;provided `out` array is read-only&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">out</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">inds</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;The shape of input and output arrays are inconsistent. &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Expected output shape is </span><span class="si">{</span><span class="n">inds</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">chcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">!=</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Output array of type </span><span class="si">{</span><span class="n">chcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> is needed, &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;got </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dpu</span><span class="o">.</span><span class="n">get_execution_queue</span><span class="p">((</span><span class="n">q</span><span class="p">,</span> <span class="n">out</span><span class="o">.</span><span class="n">sycl_queue</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">dpu</span><span class="o">.</span><span class="n">ExecutionPlacementError</span><span class="p">(</span>
+                <span class="s2">&quot;Input and output allocation queues are not compatible&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">out</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="n">ti</span><span class="o">.</span><span class="n">_array_overlap</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">chc</span><span class="p">)</span> <span class="k">for</span> <span class="n">chc</span> <span class="ow">in</span> <span class="n">chcs</span>
+        <span class="p">):</span>
+            <span class="c1"># Allocate a temporary buffer to avoid memory overlapping.</span>
+            <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+            <span class="n">inds</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">chcs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">q</span>
+        <span class="p">)</span>
+
+    <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">q</span><span class="p">]</span>
+    <span class="n">dep_evs</span> <span class="o">=</span> <span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span>
+
+    <span class="n">h_ev</span><span class="p">,</span> <span class="n">choose_ev</span> <span class="o">=</span> <span class="n">indexing_ext</span><span class="o">.</span><span class="n">_choose</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">chcs</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">q</span><span class="p">,</span> <span class="n">dep_evs</span><span class="p">)</span>
+    <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">h_ev</span><span class="p">,</span> <span class="n">choose_ev</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">out</span>
+
+
 <div class="viewcode-block" id="choose">
 <a class="viewcode-back" href="../../reference/generated/dpnp.choose.html#dpnp.choose">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">choose</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;raise&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">choose</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;wrap&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Construct an array from an index array and a set of arrays to choose from.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.choose`.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        An integer array of indices indicating the position of the array</span>
+<span class="sd">        in `choices` to choose from. Behavior of out-of-bounds integers (i.e.,</span>
+<span class="sd">        integers outside of `[0, n-1]` where `n` is the number of choices) is</span>
+<span class="sd">        determined by the `mode` keyword.</span>
+<span class="sd">    choices : {dpnp.ndarray, usm_ndarray, \</span>
+<span class="sd">               sequence of dpnp.ndarrays and usm_ndarrays}</span>
+<span class="sd">        Choice arrays. `a` and choice arrays must be broadcast-compatible.</span>
+<span class="sd">        If `choices` is an array, the array is unstacked into a sequence of</span>
+<span class="sd">        arrays.</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        If provided, the result will be placed in this array. It should</span>
+<span class="sd">        be of the appropriate shape and dtype.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
+<span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
+<span class="sd">        are:</span>
+
+<span class="sd">        - ``&quot;wrap&quot;``: clamps indices to (``-n &lt;= i &lt; n``), then wraps</span>
+<span class="sd">          negative indices.</span>
+<span class="sd">        - ``&quot;clip&quot;``: clips indices to (``0 &lt;= i &lt; n``).</span>
+
+<span class="sd">        Default: ``&quot;wrap&quot;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        The merged result.</span>
+
 <span class="sd">    See also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.</span>
+<span class="sd">    :obj:`dpnp.ndarray.choose` : Equivalent method.</span>
+<span class="sd">    :obj:`dpnp.take_along_axis` : Preferable if `choices` is an array.</span>
 
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; choices = np.array([[0, 1, 2, 3], [10, 11, 12, 13],</span>
+<span class="sd">    ...   [20, 21, 22, 23], [30, 31, 32, 33]])</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 3, 1, 0]), choices</span>
+<span class="sd">    ... # the first element of the result will be the first element of the</span>
+<span class="sd">    ... # third (2+1) &quot;array&quot; in choices, namely, 20; the second element</span>
+<span class="sd">    ... # will be the second element of the fourth (3+1) choice array, i.e.,</span>
+<span class="sd">    ... # 31, etc.</span>
+<span class="sd">    ... )</span>
+<span class="sd">    array([20, 31, 12, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 4, 1, 0]), choices, mode=&#39;clip&#39;</span>
+<span class="sd">    ... # 4 goes to 3 (4-1)</span>
+<span class="sd">    ... )</span>
+<span class="sd">    array([20, 31, 12, 3])</span>
+<span class="sd">    &gt;&gt;&gt; # because there are 4 choice arrays</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, 4, 1, 0]), choices, mode=&#39;wrap&#39;</span>
+<span class="sd">    ... # 4 is clipped to 3</span>
+<span class="sd">    ... )</span>
+<span class="sd">    array([20, 31, 12, 3])</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(np.array([2, -1, 1, 0]), choices, mode=&#39;wrap&#39;</span>
+<span class="sd">    ... # -1 goes to 3 (-1+4)</span>
+<span class="sd">    ... )</span>
+<span class="sd">    array([20, 31, 12, 3])</span>
+
+<span class="sd">    An example using broadcasting:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]])</span>
+<span class="sd">    &gt;&gt;&gt; choices = np.array([-10, 10])</span>
+<span class="sd">    &gt;&gt;&gt; np.choose(a, choices)</span>
+<span class="sd">    array([[ 10, -10,  10],</span>
+<span class="sd">           [-10,  10, -10],</span>
+<span class="sd">           [ 10, -10,  10]])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="n">_get_indexing_mode</span><span class="p">(</span><span class="n">mode</span><span class="p">)</span>
 
-    <span class="n">x1_desc</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
-    <span class="n">choices_list</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">:</span>
-        <span class="n">choices_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-            <span class="n">dpnp</span><span class="o">.</span><span class="n">get_dpnp_descriptor</span><span class="p">(</span><span class="n">choice</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_cuda_backend</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_array</span><span class="p">()):</span>  <span class="c1"># pragma: no cover</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
-                <span class="s2">&quot;Running on CUDA is currently not supported&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">desc</span> <span class="k">for</span> <span class="n">desc</span> <span class="ow">in</span> <span class="n">choices_list</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="n">mode</span> <span class="o">!=</span> <span class="s2">&quot;raise&quot;</span><span class="p">:</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="ow">not</span> <span class="n">choices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">choice</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">choices</span><span class="p">):</span>
-            <span class="k">pass</span>
-        <span class="k">elif</span> <span class="ow">not</span> <span class="n">choices_list</span><span class="p">:</span>
-            <span class="k">pass</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">ind_dt</span> <span class="o">=</span> <span class="n">inds</span><span class="o">.</span><span class="n">dtype</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">ind_dt</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">):</span>
+        <span class="c1"># NumPy will cast up to int64 in general but</span>
+        <span class="c1"># int32 is more than safe for bool</span>
+        <span class="k">if</span> <span class="n">ind_dt</span> <span class="o">==</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span><span class="p">:</span>
+            <span class="n">inds</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">dpt</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">size</span> <span class="o">=</span> <span class="n">x1_desc</span><span class="o">.</span><span class="n">size</span>
-            <span class="n">choices_size</span> <span class="o">=</span> <span class="n">choices_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">size</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span>
-                <span class="n">choice</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">choices_size</span> <span class="ow">or</span> <span class="n">choice</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">size</span>
-                <span class="k">for</span> <span class="n">choice</span> <span class="ow">in</span> <span class="n">choices</span>
-            <span class="p">):</span>
-                <span class="k">pass</span>
-            <span class="k">elif</span> <span class="nb">any</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">choices_size</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">x1</span><span class="p">)):</span>
-                <span class="k">pass</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">dpnp_choose</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">,</span> <span class="n">choices_list</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;input index array must be of integer data type&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">call_origin</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">choose</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span></div>
+    <span class="n">choices</span> <span class="o">=</span> <span class="n">_build_choices_list</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span>
+
+    <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">(</span><span class="n">choices</span> <span class="o">+</span> <span class="p">[</span><span class="n">inds</span><span class="p">])</span>
+    <span class="c1"># apply type promotion to input choices</span>
+    <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">choices</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">choices</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">choices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span>
+            <span class="nb">map</span><span class="p">(</span>
+                <span class="k">lambda</span> <span class="n">chc</span><span class="p">:</span> <span class="p">(</span>
+                    <span class="n">chc</span> <span class="k">if</span> <span class="n">chc</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">res_dt</span> <span class="k">else</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">chc</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">)</span>
+                <span class="p">),</span>
+                <span class="n">choices</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">arrs_broadcast</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">broadcast_arrays</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="o">*</span><span class="n">choices</span><span class="p">)</span>
+    <span class="n">inds</span> <span class="o">=</span> <span class="n">arrs_broadcast</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">choices</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">arrs_broadcast</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">_choose_run</span><span class="p">(</span><span class="n">inds</span><span class="p">,</span> <span class="n">choices</span><span class="p">,</span> <span class="n">exec_q</span><span class="p">,</span> <span class="n">res_usm_type</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
 
