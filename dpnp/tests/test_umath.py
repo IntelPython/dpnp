@@ -75,8 +75,6 @@ def get_id(val):
 # implement missing umaths and to remove the list
 new_umaths_numpy_20 = [
     "bitwise_count",  # SAT-7323
-    "matvec",  # SAT-7615
-    "vecmat",  # SAT-7615
 ]
 
 
@@ -88,7 +86,7 @@ def test_umaths(test_cases):
     if umath in new_umaths_numpy_20:
         pytest.skip("new umaths from numpy 2.0 are not supported yet")
 
-    if umath == "matmul":
+    if umath in ["matmul", "matvec", "vecmat"]:
         sh = (4, 4)
     elif umath in ["power", "pow"]:
         sh = (2, 3)
