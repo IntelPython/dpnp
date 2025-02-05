@@ -3128,7 +3128,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     x_type = x.dtype.type
 
     if not issubclass(x_type, dpnp.inexact):
-        return dpnp.copy(x) if copy else x
+        return dpnp.copy(x) if copy else dpnp.get_result_array(x)
 
     max_f, min_f = _get_max_min(x.real.dtype)
     if posinf is not None:
@@ -3165,7 +3165,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
     _manager.add_event_pair(h_ev, comp_ev)
 
-    return dpnp.get_result_array(out) if copy else x
+    return dpnp.get_result_array(out)
 
 
 _NEGATIVE_DOCSTRING = """
