@@ -16,7 +16,7 @@ from .helper import (
 )
 
 # list_of_usm_types = ["device", "shared", "host"]
-list_of_usm_types = ["device", "host"]
+list_of_usm_types = ["shared"]
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
