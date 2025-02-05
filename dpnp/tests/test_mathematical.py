@@ -1558,6 +1558,27 @@ class TestNanToNum:
         with pytest.raises(TypeError):
             dpnp.nan_to_num(ia, **{kwarg: value})
 
+    def test_error_readonly(self):
+        a = dpnp.array([0, 1, dpnp.nan, dpnp.inf, -dpnp.inf])
+        a.flags.writable = False
+        with pytest.raises(ValueError):
+            dpnp.nan_to_num(a, copy=False)
+
+    @pytest.mark.parametrize("copy", [True, False])
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True, no_none=True))
+    def test_nan_to_num_strided(self, copy, dt):
+        n = 10
+        dt = numpy.dtype(dt)
+        np_a = numpy.arange(2 * n, dtype=dt)
+        dp_a = dpnp.arange(2 * n, dtype=dt)
+        if dt.kind in "fc":
+            np_a[::4] = numpy.nan
+            dp_a[::4] = dpnp.nan
+        dp_r = dpnp.nan_to_num(dp_a[::-2], copy=copy, nan=57.0)
+        np_r = numpy.nan_to_num(np_a[::-2], copy=copy, nan=57.0)
+
+        assert_dtype_allclose(dp_r, np_r)
+
 
 class TestProd:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
