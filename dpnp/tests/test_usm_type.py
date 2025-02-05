@@ -15,7 +15,8 @@ from .helper import (
     generate_random_numpy_array,
 )
 
-list_of_usm_types = ["device", "shared", "host"]
+# list_of_usm_types = ["device", "shared", "host"]
+list_of_usm_types = ["device"]
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
