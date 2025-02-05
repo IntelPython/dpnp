@@ -37,4 +37,5 @@ set -e
 
 $PYTHON -c "import dpnp; print(dpnp.__version__)"
 $PYTHON -m dpctl -f
+$PYTHON -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type::test_2in_1out
 $PYTHON -m pytest -ra --pyargs dpnp
