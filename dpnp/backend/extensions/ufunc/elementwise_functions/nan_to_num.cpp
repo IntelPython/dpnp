@@ -111,8 +111,8 @@ sycl::event nan_to_num_strided_call(sycl::queue &exec_q,
     const scT posinf_v = py::cast<const scT>(py_posinf);
     const scT neginf_v = py::cast<const scT>(py_neginf);
 
-    using dpnp::kernels::nan_to_num::nan_to_num_impl;
-    sycl::event to_num_ev = nan_to_num_impl<T, scT>(
+    using dpnp::kernels::nan_to_num::nan_to_num_strided_impl;
+    sycl::event to_num_ev = nan_to_num_strided_impl<T, scT>(
         exec_q, nd, nelems, shape_strides, nan_v, posinf_v, neginf_v, arg_p,
         arg_offset, dst_p, dst_offset, depends);
 
