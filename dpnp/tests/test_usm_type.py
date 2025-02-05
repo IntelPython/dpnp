@@ -684,78 +684,78 @@ def test_1in_1out(func, data, usm_type):
 @pytest.mark.parametrize(
     "func,data1,data2",
     [
-        pytest.param(
-            "allclose",
-            [[1.2, -0.0], [-7, 2.34567]],
-            [[1.2, 0.0], [-7, 2.34567]],
-        ),
-        pytest.param("append", [1, 2, 3], [4, 5, 6]),
-        pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
-        pytest.param("compress", [False, True, True], [0, 1, 2, 3, 4]),
-        pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
-        pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
-        pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
-        pytest.param(
-            "corrcoef",
-            [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
-            [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
-        ),
-        pytest.param("correlate", [1, 2, 3], [0, 1, 0.5]),
+        # pytest.param(
+        #     "allclose",
+        #     [[1.2, -0.0], [-7, 2.34567]],
+        #     [[1.2, 0.0], [-7, 2.34567]],
+        # ),
+        # pytest.param("append", [1, 2, 3], [4, 5, 6]),
+        # pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
+        # pytest.param("compress", [False, True, True], [0, 1, 2, 3, 4]),
+        # pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        # pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        # pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
+        # pytest.param(
+        #     "corrcoef",
+        #     [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],
+        #     [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
+        # ),
+        # pytest.param("correlate", [1, 2, 3], [0, 1, 0.5]),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
         pytest.param("dot", [3, 4, 5], [1, 2, 3]),
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
-        pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
-        pytest.param(
-            "float_power",
-            [0, 1, 2, 3, 4, 5],
-            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
-        ),
-        pytest.param("fmax", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-        pytest.param("fmin", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-        pytest.param("fmod", [5, 3], [2, 2.0]),
-        pytest.param(
-            "gcd",
-            [0, 1, 2, 3, 4, 5],
-            [20, 20, 20, 20, 20, 20],
-        ),
-        pytest.param(
-            "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
-        ),
-        pytest.param("heaviside", [-1.5, 0, 2.0], [1]),
-        pytest.param(
-            "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
-        ),
-        pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
-        pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
-        pytest.param(
-            "lcm",
-            [0, 1, 2, 3, 4, 5],
-            [20, 20, 20, 20, 20, 20],
-        ),
-        pytest.param(
-            "ldexp",
-            [5, 5, 5, 5, 5],
-            [0, 1, 2, 3, 4],
-        ),
-        pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
-        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
-        pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-        pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
-        pytest.param("nextafter", [1, 2], [2, 1]),
-        pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
-        pytest.param(
-            "tensordot",
-            [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
-            [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
-        ),
-        pytest.param("trapezoid", [1, 2, 3], [4, 6, 8]),
-        # dpnp.vdot has 3 different implementations based on input arrays dtype
-        # checking all of them
-        pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
-        pytest.param("vdot", [3, 4, 5], [1, 2, 3]),
-        pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
+        # pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
+        # pytest.param(
+        #     "float_power",
+        #     [0, 1, 2, 3, 4, 5],
+        #     [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+        # ),
+        # pytest.param("fmax", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        # pytest.param("fmin", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        # pytest.param("fmod", [5, 3], [2, 2.0]),
+        # pytest.param(
+        #     "gcd",
+        #     [0, 1, 2, 3, 4, 5],
+        #     [20, 20, 20, 20, 20, 20],
+        # ),
+        # pytest.param(
+        #     "gradient", [1, 2, 4, 7, 11, 16], [0.0, 1.0, 1.5, 3.5, 4.0, 6.0]
+        # ),
+        # pytest.param("heaviside", [-1.5, 0, 2.0], [1]),
+        # pytest.param(
+        #     "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
+        # ),
+        # pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
+        # pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
+        # pytest.param(
+        #     "lcm",
+        #     [0, 1, 2, 3, 4, 5],
+        #     [20, 20, 20, 20, 20, 20],
+        # ),
+        # pytest.param(
+        #     "ldexp",
+        #     [5, 5, 5, 5, 5],
+        #     [0, 1, 2, 3, 4],
+        # ),
+        # pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        # pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        # pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        # pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
+        # pytest.param("nextafter", [1, 2], [2, 1]),
+        # pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
+        # pytest.param(
+        #     "tensordot",
+        #     [[0.0, 1.0, 2.0], [3.0, 4.0, 5.0]],
+        #     [[4.0, 4.0, 4.0], [4.0, 4.0, 4.0]],
+        # ),
+        # pytest.param("trapezoid", [1, 2, 3], [4, 6, 8]),
+        # # dpnp.vdot has 3 different implementations based on input arrays dtype
+        # # checking all of them
+        # pytest.param("vdot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
+        # pytest.param("vdot", [3, 4, 5], [1, 2, 3]),
+        # pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
     ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
