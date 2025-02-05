@@ -91,25 +91,25 @@ typedef sycl::event (*nan_to_num_fn_ptr_t)(sycl::queue &,
                                            const std::vector<sycl::event> &);
 
 template <typename T>
-sycl::event nan_to_num_call(sycl::queue &exec_q,
-                            int nd,
-                            std::size_t nelems,
-                            const py::ssize_t *shape_strides,
-                            const py::object &py_nan,
-                            const py::object &py_posinf,
-                            const py::object &py_neginf,
-                            const char *arg_p,
-                            py::ssize_t arg_offset,
-                            char *dst_p,
-                            py::ssize_t dst_offset,
-                            const std::vector<sycl::event> &depends)
+sycl::event nan_to_num_strided_call(sycl::queue &exec_q,
+                                    int nd,
+                                    std::size_t nelems,
+                                    const py::ssize_t *shape_strides,
+                                    const py::object &py_nan,
+                                    const py::object &py_posinf,
+                                    const py::object &py_neginf,
+                                    const char *arg_p,
+                                    py::ssize_t arg_offset,
+                                    char *dst_p,
+                                    py::ssize_t dst_offset,
+                                    const std::vector<sycl::event> &depends)
 {
     using dpctl::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
-    scT nan_v = py::cast<scT>(py_nan);
-    scT posinf_v = py::cast<scT>(py_posinf);
-    scT neginf_v = py::cast<scT>(py_neginf);
+    const scT nan_v = py::cast<const scT>(py_nan);
+    const scT posinf_v = py::cast<const scT>(py_posinf);
+    const scT neginf_v = py::cast<const scT>(py_neginf);
 
     using dpnp::kernels::nan_to_num::nan_to_num_impl;
     sycl::event to_num_ev = nan_to_num_impl<T, scT>(
@@ -142,9 +142,9 @@ sycl::event nan_to_num_contig_call(sycl::queue &exec_q,
     using dpctl::tensor::type_utils::is_complex_v;
     using scT = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
-    scT nan_v = py::cast<scT>(py_nan);
-    scT posinf_v = py::cast<scT>(py_posinf);
-    scT neginf_v = py::cast<scT>(py_neginf);
+    const scT nan_v = py::cast<const scT>(py_nan);
+    const scT posinf_v = py::cast<const scT>(py_posinf);
+    const scT neginf_v = py::cast<const scT>(py_neginf);
 
     using dpnp::kernels::nan_to_num::nan_to_num_contig_impl;
     sycl::event to_num_contig_ev = nan_to_num_contig_impl<T, scT>(
@@ -331,7 +331,7 @@ std::pair<sycl::event, sycl::event>
 
 /**
  * @brief A factory to define pairs of supported types for which
- * nan_to_num_call<T> function is available.
+ * nan-to-num function is available.
  *
  * @tparam T Type of input vector `a` and of result vector `y`.
  */
@@ -357,7 +357,7 @@ struct NanToNumFactory
             return nullptr;
         }
         else {
-            return nan_to_num_call<T>;
+            return nan_to_num_strided_call<T>;
         }
     }
 };
