@@ -50,6 +50,7 @@ build:
 test:
     requires:
       - pytest
+      - pytest-repeat
       - setuptools
 
 about:
