@@ -115,10 +115,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#gad6b710733eb11c4f51e92cab7e34dcb5">dpnp_partition_c</a> (DPCTLSyclQueueRef q_ref, void *array, void *array2, void *result, const size_t kth, const shape_elem_type *shape, const size_t ndim, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a partitioned copy of an array.  <br /></td></tr>
 <tr class="separator:gad6b710733eb11c4f51e92cab7e34dcb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gade43dedf9297ae8a75c812cf1e59d2c1" id="r_gade43dedf9297ae8a75c812cf1e59d2c1"><td class="memTemplParams" colspan="2">template&lt;typename _DataType1 , typename _DataType2 &gt; </td></tr>
-<tr class="memitem:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#gade43dedf9297ae8a75c812cf1e59d2c1">dpnp_choose_c</a> (DPCTLSyclQueueRef q_ref, void *result1, void *array1_in, void **choices, size_t size, size_t choices_size, size_t choice_size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
-<tr class="memdesc:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an array from an index array and a list of arrays to choose from.  <br /></td></tr>
-<tr class="separator:gade43dedf9297ae8a75c812cf1e59d2c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c1f63f22354673088112c4f248c98a2" id="r_ga2c1f63f22354673088112c4f248c98a2"><td class="memTemplParams" colspan="2">template&lt;typename _DataType &gt; </td></tr>
 <tr class="memitem:ga2c1f63f22354673088112c4f248c98a2"><td class="memTemplItemLeft" align="right" valign="top">DPCTLSyclEventRef&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ga2c1f63f22354673088112c4f248c98a2">dpnp_initval_c</a> (DPCTLSyclQueueRef q_ref, void *result1, void *value, size_t size, const DPCTLEventVectorRef dep_event_vec_ref)</td></tr>
 <tr class="memdesc:ga2c1f63f22354673088112c4f248c98a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">implementation of creating filled with value array function  <br /></td></tr>
@@ -168,74 +164,6 @@ Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>This section describes Backend API. </p>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="gade43dedf9297ae8a75c812cf1e59d2c1" name="gade43dedf9297ae8a75c812cf1e59d2c1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gade43dedf9297ae8a75c812cf1e59d2c1">&#9670;&#160;</a></span>dpnp_choose_c()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<div class="memtemplate">
-template&lt;typename _DataType1 , typename _DataType2 &gt; </div>
-      <table class="memname">
-        <tr>
-          <td class="memname">DPCTLSyclEventRef dpnp_choose_c </td>
-          <td>(</td>
-          <td class="paramtype">DPCTLSyclQueueRef</td>          <td class="paramname"><span class="paramname"><em>q_ref</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>result1</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *</td>          <td class="paramname"><span class="paramname"><em>array1_in</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void **</td>          <td class="paramname"><span class="paramname"><em>choices</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>size</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>choices_size</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>choice_size</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const DPCTLEventVectorRef</td>          <td class="paramname"><span class="paramname"><em>dep_event_vec_ref</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Construct an array from an index array and a list of arrays to choose from. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">q_ref</td><td>Reference to SYCL queue. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">result1</td><td>Output array. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">array1_in</td><td>Input array with data. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">choices</td><td>Choice arrays. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">size</td><td>Input array size. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">choices_size</td><td>Choices size. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">choice_size</td><td>Choice size. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">dep_event_vec_ref</td><td>Reference to vector of SYCL events. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ga2c1f63f22354673088112c4f248c98a2" name="ga2c1f63f22354673088112c4f248c98a2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga2c1f63f22354673088112c4f248c98a2">&#9670;&#160;</a></span>dpnp_initval_c()</h2>
 
