@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2024, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -22,52 +22,17 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
+//
+// This file defines functions of dpnp.backend._lapack_impl extensions
+//
+//*****************************************************************************
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-#include "degrees.hpp"
-#include "fabs.hpp"
-#include "fix.hpp"
-#include "float_power.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "gcd.hpp"
-#include "heaviside.hpp"
-#include "i0.hpp"
-#include "lcm.hpp"
-#include "ldexp.hpp"
-#include "logaddexp2.hpp"
-#include "nan_to_num.hpp"
-#include "radians.hpp"
-#include "sinc.hpp"
-#include "spacing.hpp"
+#include "choose.hpp"
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+PYBIND11_MODULE(_indexing_impl, m)
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
-{
-    init_degrees(m);
-    init_fabs(m);
-    init_fix(m);
-    init_float_power(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_gcd(m);
-    init_heaviside(m);
-    init_i0(m);
-    init_lcm(m);
-    init_ldexp(m);
-    init_logaddexp2(m);
-    init_nan_to_num(m);
-    init_radians(m);
-    init_sinc(m);
-    init_spacing(m);
+    dpnp::extensions::indexing::init_choose(m);
 }
-} // namespace dpnp::extensions::ufunc

@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2024-2025, Intel Corporation
+# Copyright (c) 2016-2024, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,39 +23,29 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
-set(_elementwise_sources
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/common.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/degrees.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fabs.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fix.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/float_power.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmax.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmin.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fmod.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/gcd.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/heaviside.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/i0.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/lcm.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/ldexp.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/logaddexp2.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/nan_to_num.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/radians.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/sinc.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/spacing.cpp
-)
 
-set(python_module_name _ufunc_impl)
-
+set(python_module_name _indexing_impl)
 set(_module_src
-    # TODO: remove sources from `elementwise_functions` folder
-    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/elementwise_functions_type_utils.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/../elementwise_functions/simplify_iteration_space.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/ufunc_py.cpp
-    ${_elementwise_sources}
+    ${CMAKE_CURRENT_SOURCE_DIR}/choose.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/indexing_py.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
 add_sycl_to_target(TARGET ${python_module_name} SOURCES ${_module_src})
+
+if(_dpnp_sycl_targets)
+    # make fat binary
+    target_compile_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+    target_link_options(
+        ${python_module_name}
+        PRIVATE
+        -fsycl-targets=${_dpnp_sycl_targets}
+    )
+endif()
 
 if (WIN32)
     if (${CMAKE_VERSION} VERSION_LESS "3.27")
@@ -67,24 +57,11 @@ endif()
 
 set_target_properties(${python_module_name} PROPERTIES CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../)
+target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../include)
+target_include_directories(${python_module_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../../src)
 
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_INCLUDE_DIR})
 target_include_directories(${python_module_name} PUBLIC ${Dpctl_TENSOR_INCLUDE_DIR})
-
-if(_dpnp_sycl_targets)
-  # make fat binary
-  target_compile_options(
-    ${python_module_name}
-    PRIVATE
-    -fsycl-targets=${_dpnp_sycl_targets}
-  )
-  target_link_options(
-    ${python_module_name}
-    PRIVATE
-    -fsycl-targets=${_dpnp_sycl_targets}
-  )
-endif()
 
 if (WIN32)
   target_compile_options(${python_module_name} PRIVATE
@@ -109,5 +86,5 @@ if (DPNP_WITH_REDIST)
 endif()
 
 install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/ufunc"
+  DESTINATION "dpnp/backend/extensions/indexing"
 )

@@ -158,7 +158,6 @@ public:
  */
 void func_map_init_arraycreation(func_map_t &fmap);
 void func_map_init_elemwise(func_map_t &fmap);
-void func_map_init_indexing_func(func_map_t &fmap);
 void func_map_init_linalg(func_map_t &fmap);
 void func_map_init_mathematical(func_map_t &fmap);
 void func_map_init_random(func_map_t &fmap);

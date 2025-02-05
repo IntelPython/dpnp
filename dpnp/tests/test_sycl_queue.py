@@ -1012,7 +1012,7 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
     ids=[device.filter_string for device in valid_devices],
 )
 @pytest.mark.parametrize(
-    "shape_pair",
+    "shape1, shape2",
     [
         ((2, 4), (4,)),
         ((4,), (4, 3)),
@@ -1036,21 +1036,14 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
         "((6, 7, 4, 3), (6, 7, 3, 5))",
     ],
 )
-def test_matmul(device, shape_pair):
-    shape1, shape2 = shape_pair
-    a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-    a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
-
-    b1 = dpnp.asarray(a1, device=device)
-    b2 = dpnp.asarray(a2, device=device)
-
-    result = dpnp.matmul(b1, b2)
-    expected = numpy.matmul(a1, a2)
-    assert_allclose(expected, result)
+def test_matmul(device, shape1, shape2):
+    a = dpnp.arange(numpy.prod(shape1), device=device).reshape(shape1)
+    b = dpnp.arange(numpy.prod(shape2), device=device).reshape(shape2)
+    result = dpnp.matmul(a, b)
 
     result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, b1.sycl_queue)
-    assert_sycl_queue_equal(result_queue, b2.sycl_queue)
+    assert_sycl_queue_equal(result_queue, a.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b.sycl_queue)
 
 
 @pytest.mark.parametrize(
@@ -1059,7 +1052,32 @@ def test_matmul(device, shape_pair):
     ids=[device.filter_string for device in valid_devices],
 )
 @pytest.mark.parametrize(
-    "shape_pair",
+    "shape1, shape2",
+    [
+        ((3, 4), (4,)),
+        ((2, 3, 4), (4,)),
+        ((3, 4), (2, 4)),
+        ((5, 1, 3, 4), (2, 4)),
+        ((2, 1, 4), (4,)),
+    ],
+)
+def test_matvec(device, shape1, shape2):
+    a = dpnp.arange(numpy.prod(shape1), device=device).reshape(shape1)
+    b = dpnp.arange(numpy.prod(shape2), device=device).reshape(shape2)
+    result = dpnp.matvec(a, b)
+
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, a.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "shape1, shape2",
     [
         ((4,), (4,)),  # call_flag: dot
         ((3, 1), (3, 1)),
@@ -1068,18 +1086,39 @@ def test_matmul(device, shape_pair):
         ((3, 4), (3, 4)),  # call_flag: vecdot
     ],
 )
-def test_vecdot(device, shape_pair):
-    shape1, shape2 = shape_pair
-    a1 = numpy.arange(numpy.prod(shape1)).reshape(shape1)
-    a2 = numpy.arange(numpy.prod(shape2)).reshape(shape2)
+def test_vecdot(device, shape1, shape2):
+    a = dpnp.arange(numpy.prod(shape1), device=device).reshape(shape1)
+    b = dpnp.arange(numpy.prod(shape2), device=device).reshape(shape2)
+    result = dpnp.vecdot(a, b)
 
-    b1 = dpnp.asarray(a1, device=device)
-    b2 = dpnp.asarray(a2, device=device)
-
-    result = dpnp.vecdot(b1, b2)
     result_queue = result.sycl_queue
-    assert_sycl_queue_equal(result_queue, b1.sycl_queue)
-    assert_sycl_queue_equal(result_queue, b2.sycl_queue)
+    assert_sycl_queue_equal(result_queue, a.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+@pytest.mark.parametrize(
+    "shape1, shape2",
+    [
+        ((3,), (3, 4)),
+        ((3,), (2, 3, 4)),
+        ((2, 3), (3, 4)),
+        ((2, 3), (5, 1, 3, 4)),
+        ((3,), (2, 3, 1)),
+    ],
+)
+def test_vecmat(device, shape1, shape2):
+    a = dpnp.arange(numpy.prod(shape1), device=device).reshape(shape1)
+    b = dpnp.arange(numpy.prod(shape2), device=device).reshape(shape2)
+    result = dpnp.vecmat(a, b)
+
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, a.sycl_queue)
+    assert_sycl_queue_equal(result_queue, b.sycl_queue)
 
 
 @pytest.mark.parametrize(
@@ -2958,3 +2997,24 @@ def test_ix(device_0, device_1):
     ixgrid = dpnp.ix_(x0, x1)
     assert_sycl_queue_equal(ixgrid[0].sycl_queue, x0.sycl_queue)
     assert_sycl_queue_equal(ixgrid[1].sycl_queue, x1.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "device",
+    valid_devices,
+    ids=[device.filter_string for device in valid_devices],
+)
+def test_choose(device):
+    chc = dpnp.arange(5, dtype="i4", device=device)
+    chc_np = dpnp.asnumpy(chc)
+
+    inds = dpnp.array([0, 1, 3], dtype="i4", device=device)
+    inds_np = dpnp.asnumpy(inds)
+
+    result = dpnp.choose(inds, chc)
+    expected = numpy.choose(inds_np, chc_np)
+    assert_allclose(expected, result)
+
+    expected_queue = chc.sycl_queue
+    result_queue = result.sycl_queue
+    assert_sycl_queue_equal(result_queue, expected_queue)

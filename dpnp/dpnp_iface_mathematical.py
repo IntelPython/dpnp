@@ -3125,21 +3125,11 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
             "nan must be a scalar of an integer, float, bool, "
             f"but got {type(nan)}"
         )
-
-    out = dpnp.empty_like(x) if copy else x
     x_type = x.dtype.type
 
     if not issubclass(x_type, dpnp.inexact):
-        return x
+        return dpnp.copy(x) if copy else dpnp.get_result_array(x)
 
-    parts = (
-        (x.real, x.imag) if issubclass(x_type, dpnp.complexfloating) else (x,)
-    )
-    parts_out = (
-        (out.real, out.imag)
-        if issubclass(x_type, dpnp.complexfloating)
-        else (out,)
-    )
     max_f, min_f = _get_max_min(x.real.dtype)
     if posinf is not None:
         if not isinstance(posinf, (int, float)):
@@ -3156,16 +3146,26 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
             )
         min_f = neginf
 
-    for part, part_out in zip(parts, parts_out):
-        nan_mask = dpnp.isnan(part)
-        posinf_mask = dpnp.isposinf(part)
-        neginf_mask = dpnp.isneginf(part)
+    if copy:
+        out = dpnp.empty_like(x)
+    else:
+        if not x.flags.writable:
+            raise ValueError("copy is required for read-only array `x`")
+        out = x
 
-        part = dpnp.where(nan_mask, nan, part, out=part_out)
-        part = dpnp.where(posinf_mask, max_f, part, out=part_out)
-        part = dpnp.where(neginf_mask, min_f, part, out=part_out)
+    x_ary = dpnp.get_usm_ndarray(x)
+    out_ary = dpnp.get_usm_ndarray(out)
 
-    return out
+    q = x.sycl_queue
+    _manager = dpu.SequentialOrderManager[q]
+
+    h_ev, comp_ev = ufi._nan_to_num(
+        x_ary, nan, max_f, min_f, out_ary, q, depends=_manager.submitted_events
+    )
+
+    _manager.add_event_pair(h_ev, comp_ev)
+
+    return dpnp.get_result_array(out)
 
 
 _NEGATIVE_DOCSTRING = """
