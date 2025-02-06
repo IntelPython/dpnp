@@ -142,6 +142,9 @@ PYBIND11_MODULE(_blas_impl, m)
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
               py::arg("vectorY"), py::arg("transpose"),
               py::arg("depends") = py::list());
+    }
+
+    {
         m.def(
             "_row_major_is_available",
             [](void) {

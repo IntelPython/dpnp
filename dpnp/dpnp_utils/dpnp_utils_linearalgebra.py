@@ -50,20 +50,23 @@ __all__ = [
 ]
 
 
-def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
+def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
     """
     Determines the output array data type.
-    If dtype is ``None``, the output array data type of the operation is
-    determined based on the Promotion Type Rule and device capabilities.
-    Otherwise, `dtype` is used as output array dtype, if input arrays
-    can cast to it according to the casting rule determined. If casting
-    cannot be done, a ``TypeError`` is raised.
+    If `dtype` and `out` are ``None``, the output array data type of the
+    operation is determined based on the Promotion Type Rule and device
+    capabilities. if `out` is given, its data type is used as the output
+    array dtypes. Otherwise, `dtype` is used as output array dtype.
+    If input arrays cannot be cast to the determined output array dtype,
+    a ``TypeError`` is raised.
 
     Parameters
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays.
     dtype : dtype
+        If not ``None`` and `out` is not defined, data type of the output array.
+    out : {dpnp.ndarray, usm_ndarray}
         If not ``None``, data type of the output array.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
@@ -73,12 +76,22 @@ def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
     Returns
     -------
     res_dtype :
-        `res_dtype` is the output data type. When the result is obtained, it is cast
-        to `res_dtype`.
+        `res_dtype` is the output data type. When the result is obtained,
+        it is cast to `res_dtype`.
 
     """
 
     res_dtype = dpnp.result_type(*arrays)
+
+    # If inputs are boolean and `out` is given and it is not boolean, the
+    # calculation should be performed in boolean and at the end the result
+    # is cast to out dtype. It is different than general case where the inputs
+    # are cast to out dtype and then calculation is performed. Even when inputs
+    # are boolean and `dtype` is given, the casting is done first and then the
+    # calculation is performed.
+    if out is not None and not dpnp.issubdtype(res_dtype, dpnp.bool):
+        # out dtype is prioritized over a given dtype
+        dtype = out.dtype
 
     if dtype is not None:
         if dpnp.can_cast(res_dtype, dtype, casting=casting):
@@ -735,7 +748,9 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
     _validate_out_array(out, exec_q)
 
     # Determine the appropriate data types
-    res_dtype = _compute_res_dtype(a, b, sycl_queue=exec_q)
+    res_dtype = _compute_res_dtype(
+        a, b, out=out, casting=casting, sycl_queue=exec_q
+    )
 
     result = _create_result_array(
         a, b, out, (), res_dtype, res_usm_type, exec_q
@@ -886,7 +901,7 @@ def dpnp_multiplication(
 
     # Determine the appropriate data types
     res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
     )
 
     call_flag = None
@@ -993,7 +1008,22 @@ def dpnp_multiplication(
         elif x1.size == 0 or x2.size == 0:
             result.fill(0)
         else:
-            if dpnp.issubdtype(res_dtype, dpnp.inexact):
+            # TODO: replace with dpnp.int8 when it is added
+            x1_is_int8 = dpnp.issubdtype(x1.dtype, numpy.int8)
+            x2_is_int8 = dpnp.issubdtype(x2.dtype, numpy.int8)
+            res_is_int32 = dpnp.issubdtype(res_dtype, dpnp.int32)
+            special_case = x1_is_int8 and x2_is_int8 and res_is_int32
+            special_case = special_case and call_flag == "gemm"
+            if special_case:
+                # OneMath supports this special case
+                x1 = _copy_array(
+                    x1, copy_flag=not x1_contig_flag, order=res_order
+                )
+                x2 = _copy_array(
+                    x2, copy_flag=not x2_contig_flag, order=res_order
+                )
+                result = _gemm_matmul(exec_q, x1, x2, result)
+            elif dpnp.issubdtype(res_dtype, dpnp.inexact):
                 # copying is needed if dtypes of input arrays are different or
                 # their base (last 2-dimensions) is not c-contiguous or f-contiguous
                 x1 = _copy_array(
@@ -1029,23 +1059,21 @@ def dpnp_multiplication(
                     )
                     _manager.add_event_pair(ht_ev, gemv_ev)
                 elif call_flag == "gemm":
-                    result = _gemm_matmul(
-                        exec_q,
-                        x1,
-                        x2,
-                        result,
-                    )
-                else:  # call_flag == "gemm_batch"
+                    result = _gemm_matmul(exec_q, x1, x2, result)
+                else:
                     assert call_flag == "gemm_batch"
-                    result = _gemm_batch_matmul(
-                        exec_q,
-                        x1,
-                        x2,
-                        result,
-                    )
+                    result = _gemm_batch_matmul(exec_q, x1, x2, result)
             else:
                 # oneapi::mkl::blas::gemm/gemv do not support integer dtypes,
                 # so using dpctl.tensor.matmul instead
+
+                # `dpt.matmul` does not support `casting` kwarg.
+                # We may need to change input dtypes based on given `casting`.
+                # The possibility of casting is already validated in
+                # `_compute_res_dtype`.
+                x1 = _copy_array(x1, dtype=res_dtype, order=res_order)
+                x2 = _copy_array(x2, dtype=res_dtype, order=res_order)
+
                 x1_usm = dpnp.get_usm_ndarray(x1)
                 x2_usm = dpnp.get_usm_ndarray(x2)
                 out_usm = dpnp.get_usm_ndarray(result)
@@ -1199,7 +1227,7 @@ def dpnp_vecdot(
 
     # Determine the appropriate data types
     res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
     )
 
     _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)

@@ -3,7 +3,7 @@ import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
 from dpctl.utils import ExecutionPlacementError
-from numpy.testing import assert_array_equal, assert_raises
+from numpy.testing import assert_allclose, assert_array_equal, assert_raises
 
 import dpnp
 
@@ -14,6 +14,10 @@ from .helper import (
     get_complex_dtypes,
 )
 from .third_party.cupy import testing
+
+# A list of selected dtypes including both integer and float dtypes
+# to test differennt backends: OneMath (for float) and dpctl (for integer)
+_selected_dtypes = [numpy.int64, numpy.float32]
 
 
 def _assert_selective_dtype_allclose(result, expected, dtype):
@@ -271,8 +275,7 @@ class TestDot:
         expected = a.dot(b)
         assert_dtype_allclose(result, expected)
 
-    # Use both integer and float, to test both MKL and dpctl backends
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("stride", [3, -1, -2, -5])
     def test_strided(self, dtype, stride):
         a = numpy.arange(25, dtype=dtype)
@@ -599,8 +602,7 @@ class TestMatmul:
     def setup_method(self):
         numpy.random.seed(42)
 
-    # Use both integer and float, to test both MKL and dpctl backends
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "order1, order2", [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")]
     )
@@ -678,30 +680,10 @@ class TestMatmul:
         ],
     )
     def test_basic(self, dtype, order1, order2, shape1, shape2):
-        a = numpy.arange(numpy.prod(shape1), dtype=dtype).reshape(shape1)
-        b = numpy.arange(numpy.prod(shape2), dtype=dtype).reshape(shape2)
+        a = generate_random_numpy_array(shape1, dtype=dtype).reshape(shape1)
+        b = generate_random_numpy_array(shape2, dtype=dtype).reshape(shape2)
         a = numpy.array(a, order=order1)
         b = numpy.array(b, order=order2)
-        ia, ib = dpnp.array(a), dpnp.array(b)
-
-        result = dpnp.matmul(ia, ib)
-        expected = numpy.matmul(a, b)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize(
-        "shape1, shape2",
-        [
-            ((4,), (4, 3)),
-            ((2, 4), (4, 3)),
-            ((4, 2, 3), (4, 3, 5)),
-            ((6, 7, 4, 3), (6, 7, 3, 5)),
-        ],
-        ids=["gemv", "gemm", "gemm_batch1", "gemm_batch2"],
-    )
-    def test_bool(self, shape1, shape2):
-        x = numpy.arange(2, dtype=numpy.bool_)
-        a = numpy.resize(x, numpy.prod(shape1)).reshape(shape1)
-        b = numpy.resize(x, numpy.prod(shape2)).reshape(shape2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.matmul(ia, ib)
@@ -819,55 +801,48 @@ class TestMatmul:
         expected = numpy.matmul(a, b, axes=axes, out=out)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("in_dt", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize(
-        "out_dt", get_all_dtypes(no_bool=True, no_none=True)
-    )
+    @pytest.mark.parametrize("dt_in1", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dt_in2", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("dt_out", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "shape1, shape2",
         [
-            ((4,), (4, 3)),
+            ((1, 4), (4, 3)),
             ((2, 4), (4, 3)),
             ((4, 2, 3), (4, 3, 5)),
-            ((6, 7, 4, 3), (6, 7, 3, 5)),
         ],
-        ids=["gemv", "gemm", "gemm_batch1", "gemm_batch2"],
+        ids=["gemv", "gemm", "gemm_batch"],
     )
-    def test_dtype_matrix_inout(self, in_dt, out_dt, shape1, shape2):
-        a = generate_random_numpy_array(shape1, in_dt)
-        b = generate_random_numpy_array(shape2, in_dt)
+    def test_dtype_matrix(self, dt_in1, dt_in2, dt_out, shape1, shape2):
+        a = generate_random_numpy_array(shape1, dt_in1)
+        b = generate_random_numpy_array(shape2, dt_in2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        if dpnp.can_cast(dpnp.result_type(ia, ib), out_dt, casting="same_kind"):
-            result = dpnp.matmul(ia, ib, dtype=out_dt)
-            expected = numpy.matmul(a, b, dtype=out_dt)
+        out_shape = shape1[:-2] + (shape1[-2], shape2[-1])
+        out = numpy.empty(out_shape, dtype=dt_out)
+        iout = dpnp.array(out)
+
+        if dpnp.can_cast(dpnp.result_type(ia, ib), dt_out, casting="same_kind"):
+            result = dpnp.matmul(ia, ib, dtype=dt_out)
+            expected = numpy.matmul(a, b, dtype=dt_out)
             assert_dtype_allclose(result, expected)
+
+            result = dpnp.matmul(ia, ib, out=iout)
+            assert result is iout
+            expected = numpy.matmul(a, b, out=out)
+            # dpnp gives the exact same result when `dtype` or `out` is specified
+            # while NumPy give slightly different results. NumPy result obtained
+            # with `dtype` is much closer to dpnp (a smaller `tol`) while the
+            # result obtained with `out` needs a larger `tol` to match dpnp
+            assert_allclose(result, expected, rtol=1e-6, atol=1e-6)
         else:
-            assert_raises(TypeError, dpnp.matmul, ia, ib, dtype=out_dt)
-            assert_raises(TypeError, numpy.matmul, a, b, dtype=out_dt)
+            assert_raises(TypeError, dpnp.matmul, ia, ib, dtype=dt_out)
+            assert_raises(TypeError, numpy.matmul, a, b, dtype=dt_out)
 
-    @pytest.mark.parametrize("dtype1", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("dtype2", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize(
-        "shape1, shape2",
-        [
-            ((4,), (4, 3)),
-            ((2, 4), (4, 3)),
-            ((4, 2, 3), (4, 3, 5)),
-            ((6, 7, 4, 3), (6, 7, 3, 5)),
-        ],
-        ids=["gemv", "gemm", "gemm_batch1", "gemm_batch2"],
-    )
-    def test_dtype_matrix_inputs(self, dtype1, dtype2, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype1)
-        b = generate_random_numpy_array(shape2, dtype2)
-        ia, ib = dpnp.array(a), dpnp.array(b)
+            assert_raises(TypeError, dpnp.matmul, ia, ib, out=iout)
+            assert_raises(TypeError, numpy.matmul, a, b, out=out)
 
-        result = dpnp.matmul(ia, ib)
-        expected = numpy.matmul(a, b)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("order1", ["C", "F", "A"])
     @pytest.mark.parametrize("order2", ["C", "F", "A"])
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
@@ -904,7 +879,7 @@ class TestMatmul:
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "stride",
         [(-2, -2, -2, -2), (2, 2, 2, 2), (-2, 2, -2, 2), (2, -2, 2, -2)],
@@ -930,7 +905,7 @@ class TestMatmul:
             assert result is iout
             assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "shape", [(10, 3, 3), (12, 10, 3, 3)], ids=["3D", "4D"]
     )
@@ -960,7 +935,7 @@ class TestMatmul:
         assert result is iout
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "stride",
         [(-2, -2), (2, 2), (-2, 2), (2, -2)],
@@ -991,7 +966,7 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.2")
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("func", ["matmul", "matvec"])
     @pytest.mark.parametrize("incx", [-2, 2])
     @pytest.mark.parametrize("incy", [-2, 2])
@@ -1027,7 +1002,7 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.2")
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("func", ["matmul", "vecmat"])
     @pytest.mark.parametrize("incx", [-2, 2])
     @pytest.mark.parametrize("incy", [-2, 2])
@@ -1075,75 +1050,52 @@ class TestMatmul:
             ("F", "F", "C"),
         ],
     )
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
-    def test_out1(self, order1, order2, out_order, dtype):
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
+    def test_out_order1(self, order1, order2, out_order, dtype):
         # test gemm with out keyword
-        a1 = numpy.arange(20, dtype=dtype).reshape(5, 4, order=order1)
-        a2 = numpy.arange(28, dtype=dtype).reshape(4, 7, order=order2)
-        b1, b2 = dpnp.array(a1), dpnp.array(a2)
-
-        iout = dpnp.empty((5, 7), dtype=dtype, order=out_order)
-        result = dpnp.matmul(b1, b2, out=iout)
-        assert result is iout
-
-        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
-        expected = numpy.matmul(a1, a2, out=out)
-        assert result.flags.c_contiguous == expected.flags.c_contiguous
-        assert result.flags.f_contiguous == expected.flags.f_contiguous
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("trans", [True, False])
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
-    def test_out2(self, trans, dtype):
-        # test gemm_batch with out keyword
-        # the base of input arrays is c-contiguous
-        # the base of output array is c-contiguous or f-contiguous
-        a = numpy.arange(24, dtype=dtype).reshape(2, 3, 4)
-        b = numpy.arange(40, dtype=dtype).reshape(2, 4, 5)
+        a = generate_random_numpy_array((5, 4), dtype)
+        b = generate_random_numpy_array((4, 7), dtype)
+        a = numpy.array(a, order=order1)
+        b = numpy.array(b, order=order2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        if trans:
-            iout = dpnp.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
-            out = numpy.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
-        else:
-            iout = dpnp.empty((2, 3, 5), dtype=dtype)
-            out = numpy.empty((2, 3, 5), dtype=dtype)
-
+        iout = dpnp.empty((5, 7), dtype=dtype, order=out_order)
         result = dpnp.matmul(ia, ib, out=iout)
         assert result is iout
 
+        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
         expected = numpy.matmul(a, b, out=out)
         assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("trans", [True, False])
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
-    def test_out3(self, trans, dtype):
+    @pytest.mark.parametrize("trans_in", [True, False])
+    @pytest.mark.parametrize("trans_out", [True, False])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
+    def test_out_order2(self, trans_in, trans_out, dtype):
         # test gemm_batch with out keyword
-        # the base of input arrays is f-contiguous
         # the base of output array is c-contiguous or f-contiguous
-        a = numpy.arange(24, dtype=dtype).reshape(2, 4, 3)
-        b = numpy.arange(40, dtype=dtype).reshape(2, 5, 4)
-        ia, ib = dpnp.array(a), dpnp.array(b)
+        if trans_in:
+            # the base of input arrays is f-contiguous
+            a = generate_random_numpy_array((2, 4, 3), dtype)
+            b = generate_random_numpy_array((2, 5, 4), dtype)
+            ia, ib = dpnp.array(a), dpnp.array(b)
+            a, b = a.transpose(0, 2, 1), b.transpose(0, 2, 1)
+            ia, ib = ia.transpose(0, 2, 1), ib.transpose(0, 2, 1)
+        else:
+            # the base of input arrays is c-contiguous
+            a = generate_random_numpy_array((2, 3, 4), dtype)
+            b = generate_random_numpy_array((2, 4, 5), dtype)
+            ia, ib = dpnp.array(a), dpnp.array(b)
 
-        a = numpy.asarray(a).transpose(0, 2, 1)
-        b = numpy.asarray(b).transpose(0, 2, 1)
-        ia = ia.transpose(0, 2, 1)
-        ib = ib.transpose(0, 2, 1)
-
-        if trans:
+        if trans_out:
+            # the base of output array is f-contiguous
             iout = dpnp.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
             out = numpy.empty((2, 5, 3), dtype=dtype).transpose(0, 2, 1)
         else:
-            iout = dpnp.empty((2, 3, 5), dtype=dtype)
+            # the base of output array is c-contiguous
             out = numpy.empty((2, 3, 5), dtype=dtype)
+            iout = dpnp.array(out)
 
         result = dpnp.matmul(ia, ib, out=iout)
         assert result is iout
@@ -1155,11 +1107,7 @@ class TestMatmul:
 
     @pytest.mark.parametrize(
         "out_shape",
-        [
-            ((4, 5)),
-            ((6,)),
-            ((4, 7, 2)),
-        ],
+        [((4, 5)), ((6,)), ((4, 7, 2))],
     )
     def test_out_0D(self, out_shape):
         # for matmul of 1-D arrays, output is 0-D and if out keyword is given
@@ -1192,16 +1140,46 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected, factor=24)
 
-    @pytest.mark.parametrize("dtype", [numpy.int64, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     def test_large_values(self, dtype):
-        a = numpy.array(
-            [[[94906267, 94906267], [94906267, 94906267]]], dtype=dtype
-        )
+        val = 94906267
+        a = numpy.array([[[val, val], [val, val]]], dtype=dtype)
         b = numpy.array([94906265, 94906265], dtype=dtype)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.matmul(ia, ib)
         expected = numpy.matmul(a, b)
+        assert_dtype_allclose(result, expected)
+
+    def test_special_case(self):
+        # Although inputs are int, gemm will be used for calculation
+        a = numpy.ones((3, 4), dtype=numpy.int8)
+        b = numpy.ones((4, 5), dtype=numpy.int8)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        result = dpnp.matmul(ia, ib, dtype=numpy.int32)
+        expected = numpy.matmul(a, b, dtype=numpy.int32)
+        assert_dtype_allclose(result, expected)
+
+        iout = dpnp.empty((3, 5), dtype=numpy.int32)
+        result = dpnp.matmul(ia, ib, out=iout)
+        assert_dtype_allclose(result, expected)
+
+    def test_bool(self):
+        a = numpy.ones((3, 4), dtype=numpy.bool)
+        b = numpy.ones((4, 5), dtype=numpy.bool)
+        ia, ib = dpnp.array(a), dpnp.array(b)
+
+        # the output is (3, 4) array filled with 4
+        result = dpnp.matmul(ia, ib, dtype=numpy.int32)
+        expected = numpy.matmul(a, b, dtype=numpy.int32)
+        assert_dtype_allclose(result, expected)
+
+        out = numpy.empty((3, 5), dtype=numpy.int32)
+        iout = dpnp.array(out)
+        # the output is (3, 4) array filled with 1
+        result = dpnp.matmul(ia, ib, out=iout)
+        expected = numpy.matmul(a, b, out=out)
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
@@ -1214,7 +1192,7 @@ class TestMatmul:
         expected = numpy.linalg.matmul(a, b)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
         "sh1, sh2",
         [
@@ -1987,8 +1965,7 @@ class TestVecdot:
         expected = numpy.vecdot(a, b, axes=axes, out=out)
         assert_dtype_allclose(result, expected)
 
-    # Use both integer and float, to test both MKL and dpctl backends
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("stride", [2, -1, -2])
     def test_strided(self, dtype, stride):
         a = numpy.arange(100, dtype=dtype).reshape(10, 10)
@@ -2010,7 +1987,7 @@ class TestVecdot:
         expected = numpy.vecdot(a, b)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize("order1", ["C", "F", "A"])
     @pytest.mark.parametrize("order2", ["C", "F", "A"])
     @pytest.mark.parametrize("order", ["C", "F", "K", "A"])
