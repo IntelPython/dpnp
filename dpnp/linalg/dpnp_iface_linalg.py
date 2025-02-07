@@ -140,6 +140,7 @@ def cholesky(a, /, *, upper=False):
     upper : {bool}, optional
         If ``True``, the result must be the upper-triangular Cholesky factor.
         If ``False``, the result must be the lower-triangular Cholesky factor.
+
         Default: ``False``.
 
     Returns
@@ -191,6 +192,7 @@ def cond(x, p=None):
         Order of the norm used in the condition number computation.
         ``inf`` means the `dpnp.inf` object, and the Frobenius norm is
         the root-of-sum-of-squares norm.
+
         Default: ``None``.
 
     Returns
@@ -261,6 +263,7 @@ def cross(x1, x2, /, *, axis=-1):
     axis : int, optional
         The axis (dimension) of `x1` and `x2` containing the vectors for
         which to compute the cross-product.
+
         Default: ``-1``.
 
     Returns
@@ -579,6 +582,7 @@ def eigh(a, UPLO="L"):
         considered to preserve the Hermite matrix property.
         It therefore follows that the imaginary part of the diagonal
         will always be treated as zero.
+
         Default: ``"L"``.
 
     Returns
@@ -718,6 +722,7 @@ def eigvalsh(a, UPLO="L"):
         considered to preserve the Hermite matrix property.
         It therefore follows that the imaginary part of the diagonal
         will always be treated as zero.
+
         Default: ``"L"``.
 
     Returns
@@ -829,6 +834,7 @@ def lstsq(a, b, rcond=None):
         of `a`.
         The default uses the machine precision times ``max(M, N)``. Passing
         ``-1`` will use machine precision.
+
         Default: ``None``.
 
     Returns
@@ -969,10 +975,12 @@ def matrix_norm(x, /, *, keepdims=False, ord="fro"):
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
+
         Default: ``False``.
     ord : {None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro', 'nuc'}, optional
         The order of the norm. For details see the table under ``Notes``
         section in :obj:`dpnp.linalg.norm`.
+
         Default: ``"fro"``.
 
     Returns
@@ -1099,16 +1107,19 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
         `rtol` can be set at a time. If none of them are provided, defaults
         to ``S.max() * max(M, N) * eps`` where `S` is an array with singular
         values for `A`, and `eps` is the epsilon value for datatype of `S`.
+
         Default: ``None``.
     hermitian : bool, optional
         If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
+
         Default: ``False``.
     rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Parameter for the relative tolerance component. Only `tol` or `rtol`
         can be set at a time. If none of them are provided, defaults to
         ``max(M, N) * eps`` where `eps` is the epsilon value for datatype
         of `S` (an array with singular values for `A`).
+
         Default: ``None``.
 
     Returns
@@ -1211,6 +1222,7 @@ def multi_dot(arrays, *, out=None):
         C-contiguous, and its dtype must be the dtype that would be returned
         for `dot(a, b)`. If these conditions are not met, an exception is
         raised, instead of attempting to be flexible.
+
         Default: ``None``.
 
     Returns
@@ -1277,6 +1289,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
         of ``x.ravel`` will be returned.
     ord : {int, float, inf, -inf, "fro", "nuc"}, optional
         Norm type. inf means dpnp's `inf` object.
+
         Default: ``None``.
     axis : {None, int, 2-tuple of ints}, optional
         If `axis` is an integer, it specifies the axis of `x` along which to
@@ -1284,11 +1297,13 @@ def norm(x, ord=None, axis=None, keepdims=False):
         axes that hold 2-D matrices, and the matrix norms of these matrices
         are computed. If `axis` is ``None`` then either a vector norm (when
         `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
+
         Default: ``None``.
     keepdims : bool, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
+
         Default: ``False``.
 
     Returns
@@ -1506,15 +1521,18 @@ def pinv(a, rcond=None, hermitian=False, *, rtol=None):
         are set to zero. Broadcasts against the stack of matrices.
         Only `rcond` or `rtol` can be set at a time. If none of them are
         provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.
+
         Default: ``None``.
     hermitian : bool, optional
         If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
+
         Default: ``False``.
     rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Same as `rcond`, but it's an Array API compatible parameter name.
         Only `rcond` or `rtol` can be set at a time. If none of them are
         provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.
+
         Default: ``None``.
 
     Returns
@@ -1577,7 +1595,7 @@ def qr(a, mode="reduced"):
     Returns
     -------
     When mode is "reduced" or "complete", the result will be a namedtuple with
-    the attributes `Q` and `R`.
+    the attributes `Q` and `R`:
 
     Q : dpnp.ndarray of float or complex, optional
         A matrix with orthonormal columns.
@@ -1720,13 +1738,16 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     full_matrices : {bool}, optional
         If ``True``, it returns `u` and `Vh` with full-sized matrices.
         If ``False``, the matrices are reduced in size.
+
         Default: ``True``.
     compute_uv : {bool}, optional
         If ``False``, it only returns singular values.
+
         Default: ``True``.
     hermitian : {bool}, optional
         If True, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
+
         Default: ``False``.
 
     Returns
@@ -1951,6 +1972,8 @@ def tensordot(a, b, /, *, axes=2):
           applying to `a`, second to `b`. Both elements array_like must be of
           the same length.
 
+          Default: ``2``.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -2036,6 +2059,7 @@ def tensorinv(a, ind=2):
     ind : int, optional
         Number of first indices that are involved in the inverse sum.
         Must be a positive integer.
+
         Default: ``2``.
 
     Returns
@@ -2101,6 +2125,7 @@ def tensorsolve(a, b, axes=None):
     axes : {None, tuple of ints}, optional
         Axes in `a` to reorder to the right, before inversion.
         If ``None`` , no reordering is done.
+
         Default: ``None``.
 
     Returns
@@ -2185,6 +2210,7 @@ def trace(x, /, *, offset=0, dtype=None):
         `a` is of integer type of precision less than the default integer
         precision, then the default integer precision is used. Otherwise, the
         precision is the same as that of `a`.
+
         Default: ``None``.
 
     Returns
@@ -2270,6 +2296,7 @@ def vecdot(x1, x2, /, *, axis=-1):
         Second input array.
     axis : int, optional
         Axis over which to compute the dot product.
+
         Default: ``-1``.
 
     Returns
@@ -2316,15 +2343,18 @@ def vector_norm(x, /, *, axis=None, keepdims=False, ord=2):
         (dimensions) along which to compute batched vector norms. If ``None``,
         the vector norm must be computed over all array values (i.e.,
         equivalent to computing the vector norm of a flattened array).
+
         Default: ``None``.
     keepdims : bool, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
+
         Default: ``False``.
     ord : {int, float, inf, -inf, 'fro', 'nuc'}, optional
         The order of the norm. For details see the table under ``Notes``
         section in :obj:`dpnp.linalg.norm`.
+
         Default: ``2``.
 
     Returns
