@@ -242,14 +242,14 @@ def _parse_returns_section_patched(self, section: str) -> list[str]:
     multi = len(fields) > 1
     use_rtype = False if multi else self._config.napoleon_use_rtype
     lines: list[str] = []
+    header: list[str] = []
     is_logged_header = False
 
     for _name, _type, _desc in fields:
-        is_header_block = False
+        # self._consume_returns_section() stores the header block
+        # into `_type` argument, while `_name` has to be empty string and
+        # `_desc` has to be empty list of strings
         if _name == "" and (not _desc or len(_desc) == 1 and _desc[0] == ""):
-            # self._consume_returns_section() stores the header block
-            # into `_type` argument, while `_name` and `_desc` have to be empty
-            is_header_block = True
             if not is_logged_header:
                 docstring.logger.info(
                     "parse a header block of 'Returns' section",
@@ -257,25 +257,24 @@ def _parse_returns_section_patched(self, section: str) -> list[str]:
                 )
                 is_logged_header = True
 
+            # build a list with lines of the header block
+            header.extend([_type])
+            continue
+
         if use_rtype:
             field = self._format_field(_name, "", _desc)
-        elif not is_header_block:
-            field = self._format_field(_name, _type, _desc)
         else:
-            # assign processing field to `_type` value
-            field = _type
+            field = self._format_field(_name, _type, _desc)
 
         if multi:
             if lines:
-                if is_header_block:
-                    # add the next line of header text
-                    lines.append(field)
-                else:
-                    lines.extend(self._format_block("          * ", field))
+                lines.extend(self._format_block("          * ", field))
             else:
-                if is_header_block:
-                    # add a beginning of header text
-                    lines.extend([":returns:", "", field])
+                if header:
+                    # add the header block + the 1st parameter stored in `field`
+                    lines.extend([":returns:", ""])
+                    lines.extend(self._format_block(" " * 4, header))
+                    lines.extend(self._format_block("          * ", field))
                 else:
                     lines.extend(self._format_block(":returns: * ", field))
         else:
