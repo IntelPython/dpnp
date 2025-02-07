@@ -89,7 +89,7 @@ def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
     # are cast to out dtype and then calculation is performed. Even when inputs
     # are boolean and `dtype` is given, the casting is done first and then the
     # calculation is performed.
-    if out is not None and not dpnp.issubdtype(res_dtype, dpnp.bool):
+    if out is not None and res_dtype != dpnp.bool:
         # out dtype is prioritized over a given dtype
         dtype = out.dtype
 
@@ -509,15 +509,10 @@ def _gemm_special_case(x1, x2, res_dtype, call_flag):
     while `gemv` does not.
 
     """
-
     # TODO: replace with dpnp.int8 when it is added
-    x1_is_int8 = dpnp.issubdtype(x1.dtype, numpy.int8)
-    x2_is_int8 = dpnp.issubdtype(x2.dtype, numpy.int8)
-    res_is_int32 = dpnp.issubdtype(res_dtype, dpnp.int32)
-    res_is_float32 = dpnp.issubdtype(res_dtype, dpnp.float32)
-
-    flag = x1_is_int8 and x2_is_int8 and (res_is_int32 or res_is_float32)
-    flag = flag and call_flag in ["gemm", "gemm_batch"]
+    is_int8 = x1.dtype == numpy.int8 and x2.dtype == numpy.int8
+    is_int32_or_f32 = res_dtype in [dpnp.int32, dpnp.float32]
+    flag = is_int8 and is_int32_or_f32 and call_flag in ["gemm", "gemm_batch"]
 
     # onemkl_interfaces does not support these data types
     onemkl_interfaces = bi._using_onemkl_interfaces()
@@ -1084,7 +1079,8 @@ def dpnp_multiplication(
                     result = _gemm_batch_matmul(exec_q, x1, x2, result)
             else:
                 # oneapi::mkl::blas::gemm/gemv do not support integer dtypes,
-                # so using dpctl.tensor.matmul instead
+                # except for special cases determined in `_gemm_special_case`,
+                # use dpctl.tensor.matmul for unsupported cases
 
                 # `dpt.matmul` does not support `casting` kwarg.
                 # We may need to change input dtypes based on given `casting`.
@@ -1096,10 +1092,9 @@ def dpnp_multiplication(
                 x1_usm = dpnp.get_usm_ndarray(x1)
                 x2_usm = dpnp.get_usm_ndarray(x2)
                 out_usm = dpnp.get_usm_ndarray(result)
-                res_usm = dpt.matmul(
+                dpt.matmul(
                     x1_usm, x2_usm, out=out_usm, dtype=dtype, order=order
                 )
-                result = dpnp_array._create_from_usm_ndarray(res_usm)
 
     if NumPy_special_case:
         result = dpnp.tile(result, out.shape)

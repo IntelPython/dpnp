@@ -888,7 +888,7 @@ class TestMatmul:
     def test_strided1(self, dtype, stride):
         for dim in [1, 2, 3, 4]:
             shape = tuple(20 for _ in range(dim))
-            A = numpy.random.rand(*shape).astype(dtype)
+            A = generate_random_numpy_array(shape, dtype)
             iA = dpnp.array(A)
             slices = tuple(slice(None, None, stride[i]) for i in range(dim))
             a = A[slices]
@@ -897,13 +897,13 @@ class TestMatmul:
             # the 2D base is not c-contiguous nor f-contigous
             result = dpnp.matmul(ia, ia)
             expected = numpy.matmul(a, a)
-            assert_dtype_allclose(result, expected)
+            assert_dtype_allclose(result, expected, factor=16)
 
             iOUT = dpnp.empty(shape, dtype=result.dtype)
             iout = iOUT[slices]
             result = dpnp.matmul(ia, ia, out=iout)
             assert result is iout
-            assert_dtype_allclose(result, expected)
+            assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(
@@ -915,7 +915,7 @@ class TestMatmul:
         # one dimension (axis=-3) is strided
         # if negative stride, copy is needed and the base becomes c-contiguous
         # otherwise the base remains the same as input in gemm_batch
-        A = numpy.random.rand(*shape).astype(dtype)
+        A = generate_random_numpy_array(shape, dtype)
         iA = dpnp.array(A)
         if transpose:
             A = numpy.moveaxis(A, (-2, -1), (-1, -2))
@@ -948,7 +948,7 @@ class TestMatmul:
         # For positive stride, no copy but reshape makes the base c-contiguous.
         stride0, stride1 = stride
         shape = (12, 10, 3, 3)  # 4D array
-        A = numpy.random.rand(*shape).astype(dtype)
+        A = generate_random_numpy_array(shape, dtype)
         iA = dpnp.array(A)
         if transpose:
             A = numpy.moveaxis(A, (-2, -1), (-1, -2))
@@ -980,7 +980,7 @@ class TestMatmul:
         else:
             s1 = shape[-1]
             s2 = shape[-2]
-        a = numpy.random.rand(*shape).astype(dtype)
+        a = generate_random_numpy_array(shape, dtype)
         ia = dpnp.array(a)
         if transpose:
             a = numpy.moveaxis(a, (-2, -1), (-1, -2))
@@ -1016,7 +1016,7 @@ class TestMatmul:
         else:
             s1 = shape[-1]
             s2 = shape[-2]
-        a = numpy.random.rand(*shape).astype(dtype)
+        a = generate_random_numpy_array(shape, dtype)
         ia = dpnp.array(a)
         if transpose:
             a = numpy.moveaxis(a, (-2, -1), (-1, -2))
