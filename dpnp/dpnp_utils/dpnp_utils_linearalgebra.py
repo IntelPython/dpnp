@@ -503,6 +503,28 @@ def _gemm_matmul(exec_q, x1, x2, res):
     return res
 
 
+def _gemm_special_case(x1, x2, res_dtype, call_flag):
+    """
+    `gemm` and `gemm_batch` support these special cases of data types
+    while `gemv` does not.
+
+    """
+
+    # TODO: replace with dpnp.int8 when it is added
+    x1_is_int8 = dpnp.issubdtype(x1.dtype, numpy.int8)
+    x2_is_int8 = dpnp.issubdtype(x2.dtype, numpy.int8)
+    res_is_int32 = dpnp.issubdtype(res_dtype, dpnp.int32)
+    res_is_float32 = dpnp.issubdtype(res_dtype, dpnp.float32)
+
+    flag = x1_is_int8 and x2_is_int8 and (res_is_int32 or res_is_float32)
+    flag = flag and call_flag in ["gemm", "gemm_batch"]
+
+    # onemkl_interfaces does not support these data types
+    onemkl_interfaces = bi._using_onemkl_interfaces()
+
+    return flag and not onemkl_interfaces
+
+
 def _shape_error(shape1, shape2, func, err_msg):
     """Validate the shapes of input and output arrays."""
 
@@ -1008,21 +1030,18 @@ def dpnp_multiplication(
         elif x1.size == 0 or x2.size == 0:
             result.fill(0)
         else:
-            # TODO: replace with dpnp.int8 when it is added
-            x1_is_int8 = dpnp.issubdtype(x1.dtype, numpy.int8)
-            x2_is_int8 = dpnp.issubdtype(x2.dtype, numpy.int8)
-            res_is_int32 = dpnp.issubdtype(res_dtype, dpnp.int32)
-            special_case = x1_is_int8 and x2_is_int8 and res_is_int32
-            special_case = special_case and call_flag == "gemm"
-            if special_case:
-                # OneMath supports this special case
+            if _gemm_special_case(x1, x2, res_dtype, call_flag):
                 x1 = _copy_array(
                     x1, copy_flag=not x1_contig_flag, order=res_order
                 )
                 x2 = _copy_array(
                     x2, copy_flag=not x2_contig_flag, order=res_order
                 )
-                result = _gemm_matmul(exec_q, x1, x2, result)
+                if call_flag == "gemm":
+                    result = _gemm_matmul(exec_q, x1, x2, result)
+                else:
+                    assert call_flag == "gemm_batch"
+                    result = _gemm_batch_matmul(exec_q, x1, x2, result)
             elif dpnp.issubdtype(res_dtype, dpnp.inexact):
                 # copying is needed if dtypes of input arrays are different or
                 # their base (last 2-dimensions) is not c-contiguous or f-contiguous

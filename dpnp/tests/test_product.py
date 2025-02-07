@@ -834,7 +834,7 @@ class TestMatmul:
             # while NumPy give slightly different results. NumPy result obtained
             # with `dtype` is much closer to dpnp (a smaller `tol`) while the
             # result obtained with `out` needs a larger `tol` to match dpnp
-            assert_allclose(result, expected, rtol=1e-6, atol=1e-6)
+            assert_allclose(result, expected, rtol=1e-5, atol=1e-5)
         else:
             assert_raises(TypeError, dpnp.matmul, ia, ib, dtype=dt_out)
             assert_raises(TypeError, numpy.matmul, a, b, dtype=dt_out)
@@ -1151,23 +1151,29 @@ class TestMatmul:
         expected = numpy.matmul(a, b)
         assert_dtype_allclose(result, expected)
 
-    def test_special_case(self):
+    @pytest.mark.parametrize("dt_out", [numpy.int32, numpy.float32])
+    @pytest.mark.parametrize(
+        "shape1, shape2",
+        [((2, 4), (4, 3)), ((4, 2, 3), (4, 3, 5))],
+        ids=["gemm", "gemm_batch"],
+    )
+    def test_special_case(self, dt_out, shape1, shape2):
         # Although inputs are int, gemm will be used for calculation
-        a = numpy.ones((3, 4), dtype=numpy.int8)
-        b = numpy.ones((4, 5), dtype=numpy.int8)
+        a = numpy.ones(shape1, dtype=numpy.int8)
+        b = numpy.ones(shape2, dtype=numpy.int8)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        result = dpnp.matmul(ia, ib, dtype=numpy.int32)
-        expected = numpy.matmul(a, b, dtype=numpy.int32)
+        result = dpnp.matmul(ia, ib, dtype=dt_out)
+        expected = numpy.matmul(a, b, dtype=dt_out)
         assert_dtype_allclose(result, expected)
 
-        iout = dpnp.empty((3, 5), dtype=numpy.int32)
+        iout = dpnp.empty(result.shape, dtype=dt_out)
         result = dpnp.matmul(ia, ib, out=iout)
         assert_dtype_allclose(result, expected)
 
     def test_bool(self):
-        a = numpy.ones((3, 4), dtype=numpy.bool)
-        b = numpy.ones((4, 5), dtype=numpy.bool)
+        a = numpy.ones((3, 4), dtype=dpnp.bool)
+        b = numpy.ones((4, 5), dtype=dpnp.bool)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         # the output is (3, 4) array filled with 4
