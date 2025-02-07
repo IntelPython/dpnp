@@ -15,21 +15,21 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.histogramdd &mdash; Data Parallel Extension for NumPy 0.17.0dev4+21.gf4f9e33628 documentation</title>
+  <title>dpnp.histogramdd &mdash; Data Parallel Extension for NumPy 0.17.0dev5+27.g634fd31eaec documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4923bec7"></script>
+      <script src="../../_static/documentation_options.js?v=5d2ffb84"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.bincount" href="dpnp.bincount.html" />
-    <link rel="prev" title="dpnp.histogram" href="dpnp.histogram.html" /> 
+    <link rel="prev" title="dpnp.histogram2d" href="dpnp.histogram2d.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -83,6 +83,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -122,7 +123,7 @@
 <h1>dpnp.histogramdd<a class="headerlink" href="#dpnp-histogramdd" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.histogramdd">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">histogramdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_histograms.html#histogramdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.histogramdd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">histogramdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">density</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weights</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_histograms.html#histogramdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.histogramdd" title="Link to this definition"></a></dt>
 <dd><p>Compute the multidimensional histogram of some data.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.histogramdd.html#numpy.histogramdd" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.histogramdd</span></code></a>.</p>
 <dl class="field-list simple">
@@ -136,27 +137,30 @@ edges along each dimension.</p></li>
 <li><p>The number of bins for each dimension (nx, ny, ... =bins)</p></li>
 <li><p>The number of bins for all dimensions (nx=ny=...=bins).</p></li>
 </ul>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code></p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
 </p></li>
 <li><p><strong>range</strong> (<em>{None</em><em>, </em><em>sequence}</em><em>, </em><em>optional</em>) -- <p>A sequence of length D, each an optional (lower, upper) tuple giving
 the outer bin edges to be used if the edges are not given explicitly in
 <cite>bins</cite>.
-An entry of None in the sequence results in the minimum and maximum
+An entry of <code class="docutils literal notranslate"><span class="pre">None</span></code> in the sequence results in the minimum and maximum
 values being used for the corresponding dimension.
-None is equivalent to passing a tuple of D None values.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
+<code class="docutils literal notranslate"><span class="pre">None</span></code> is equivalent to passing a tuple of D <code class="docutils literal notranslate"><span class="pre">None</span></code> values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>weights</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An (N,)-shaped array of values <cite>w_i</cite> weighing each sample
-<cite>(x_i, y_i, z_i, ...)</cite>.
-Weights are normalized to 1 if density is True. If density is False,
-the values of the returned histogram are equal to the sum of the
-weights belonging to the samples falling into each bin.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-</p></li>
-<li><p><strong>density</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the default, returns the number of samples in each bin.
+<li><p><strong>density</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>, the default, returns the number of
+samples in each bin.
 If <code class="docutils literal notranslate"><span class="pre">True</span></code>, returns the probability <em>density</em> function at the bin,
 <code class="docutils literal notranslate"><span class="pre">bin_count</span> <span class="pre">/</span> <span class="pre">sample_count</span> <span class="pre">/</span> <span class="pre">bin_volume</span></code>.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>weights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An (N,)-shaped array of values <cite>w_i</cite> weighing each sample
+<cite>(x_i, y_i, z_i, ...)</cite>.
+Weights are normalized to <code class="docutils literal notranslate"><span class="pre">1</span></code> if density is <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+If density is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the values of the returned histogram
+are equal to the sum of the weights belonging to the samples
+falling into each bin.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> all samples are assigned a weight of <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>
 </dd>
@@ -174,7 +178,7 @@ for the different possible semantics.</p></li>
 <dl class="simple">
 <dt><a class="reference internal" href="dpnp.histogram.html#dpnp.histogram" title="dpnp.histogram"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram</span></code></a></dt><dd><p>1-D histogram</p>
 </dd>
-<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram2d</span></code></dt><dd><p>2-D histogram</p>
+<dt><a class="reference internal" href="dpnp.histogram2d.html#dpnp.histogram2d" title="dpnp.histogram2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram2d</span></code></a></dt><dd><p>2-D histogram</p>
 </dd>
 </dl>
 </div>
@@ -194,7 +198,7 @@ for the different possible semantics.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.histogram.html" class="btn btn-neutral float-left" title="dpnp.histogram" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.histogram2d.html" class="btn btn-neutral float-left" title="dpnp.histogram2d" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpnp.bincount.html" class="btn btn-neutral float-right" title="dpnp.bincount" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

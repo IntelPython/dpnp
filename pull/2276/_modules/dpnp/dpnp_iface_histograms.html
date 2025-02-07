@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev4+21.gf4f9e33628 documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev5+27.g634fd31eaec documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4923bec7"></script>
+      <script src="../../_static/documentation_options.js?v=5d2ffb84"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -127,21 +127,25 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._type_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">_can_cast</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.statistics._statistics_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">statistics_ext</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_utils.dpnp_utils_common</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">result_type_for_device</span><span class="p">,</span>
+    <span class="n">to_supported_dtypes</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span><span class="p">,</span> <span class="n">map_dtype_to_device</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_usm_allocations</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;bincount&quot;</span><span class="p">,</span>
     <span class="s2">&quot;digitize&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogram_bin_edges&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;histogram2d&quot;</span><span class="p">,</span>
     <span class="s2">&quot;histogramdd&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
@@ -150,33 +154,15 @@
 <span class="n">_range</span> <span class="o">=</span> <span class="nb">range</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_result_type_for_device</span><span class="p">(</span><span class="n">dtypes</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-    <span class="n">rt</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="o">*</span><span class="n">dtypes</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">rt</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
-
-
 <span class="k">def</span><span class="w"> </span><span class="nf">_align_dtypes</span><span class="p">(</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
-    <span class="n">has_fp64</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp64</span>
-    <span class="n">has_fp16</span> <span class="o">=</span> <span class="n">device</span><span class="o">.</span><span class="n">has_aspect_fp16</span>
-
-    <span class="n">a_bin_dtype</span> <span class="o">=</span> <span class="n">_result_type_for_device</span><span class="p">([</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">],</span> <span class="n">device</span><span class="p">)</span>
+    <span class="n">a_bin_dtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">([</span><span class="n">a_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">],</span> <span class="n">device</span><span class="p">)</span>
 
     <span class="c1"># histogram implementation doesn&#39;t support uint64 as histogram type</span>
     <span class="c1"># we can use int64 instead. Result would be correct even in case of overflow</span>
     <span class="k">if</span> <span class="n">ntype</span> <span class="o">==</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span><span class="p">:</span>
         <span class="n">ntype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">int64</span>
 
-    <span class="k">if</span> <span class="p">(</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">)</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">ntype</span>
-
-    <span class="k">for</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">hist_type</span> <span class="ow">in</span> <span class="n">supported_types</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">_can_cast</span><span class="p">(</span>
-            <span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span>
-        <span class="p">)</span> <span class="ow">and</span> <span class="n">_can_cast</span><span class="p">(</span><span class="n">ntype</span><span class="p">,</span> <span class="n">hist_type</span><span class="p">,</span> <span class="n">has_fp16</span><span class="p">,</span> <span class="n">has_fp64</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">sample_type</span><span class="p">,</span> <span class="n">hist_type</span>
-
-    <span class="c1"># should not happen</span>
-    <span class="k">return</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span>  <span class="c1"># pragma: no cover</span>
+    <span class="k">return</span> <span class="n">to_supported_dtypes</span><span class="p">([</span><span class="n">a_bin_dtype</span><span class="p">,</span> <span class="n">ntype</span><span class="p">],</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_ravel_check_a_and_weights</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
@@ -223,6 +209,9 @@
         <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">range</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;range argument must consist of 2 elements.&quot;</span><span class="p">)</span>
+
         <span class="n">first_edge</span><span class="p">,</span> <span class="n">last_edge</span> <span class="o">=</span> <span class="nb">range</span>
         <span class="k">if</span> <span class="n">first_edge</span> <span class="o">&gt;</span> <span class="n">last_edge</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;max must be larger than min in range parameter.&quot;</span><span class="p">)</span>
@@ -613,6 +602,7 @@
 <span class="sd">        If `bins` is a sequence, it defines a monotonically increasing array</span>
 <span class="sd">        of bin edges, including the rightmost edge, allowing for non-uniform</span>
 <span class="sd">        bin widths.</span>
+
 <span class="sd">        Default: ``10``.</span>
 <span class="sd">    range : {None, 2-tuple of float}, optional</span>
 <span class="sd">        The lower and upper range of the bins. If not provided, range is simply</span>
@@ -621,6 +611,7 @@
 <span class="sd">        affects the automatic bin computation as well. While bin width is</span>
 <span class="sd">        computed to be optimal based on the actual data within `range`, the bin</span>
 <span class="sd">        count will fill the entire range including portions containing no data.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    density : {None, bool}, optional</span>
 <span class="sd">        If ``False`` or ``None``, the result will contain the number of samples</span>
@@ -629,6 +620,7 @@
 <span class="sd">        the range is ``1``. Note that the sum of the histogram values will not</span>
 <span class="sd">        be equal to ``1`` unless bins of unity width are chosen; it is not</span>
 <span class="sd">        a probability *mass* function.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    weights : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        An array of weights, of the same shape as `a`. Each value in `a` only</span>
@@ -638,6 +630,7 @@
 <span class="sd">        Please note that the ``dtype`` of `weights` will also become the</span>
 <span class="sd">        ``dtype`` of the returned accumulator (`hist`), so it must be large</span>
 <span class="sd">        enough to hold accumulated values as well.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -848,6 +841,170 @@
 
 
 
+<div class="viewcode-block" id="histogram2d">
+<a class="viewcode-back" href="../../reference/generated/dpnp.histogram2d.html#dpnp.histogram2d">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">histogram2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the bi-dimensional histogram of two data samples.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    x : {dpnp.ndarray, usm_ndarray} of shape (N,)</span>
+<span class="sd">        An array containing the `x` coordinates of the points to be</span>
+<span class="sd">        histogrammed.</span>
+<span class="sd">    y : {dpnp.ndarray, usm_ndarray} of shape (N,)</span>
+<span class="sd">        An array containing the `y` coordinates of the points to be</span>
+<span class="sd">        histogrammed.</span>
+<span class="sd">    bins : {int, dpnp.ndarray, usm_ndarray, [int, int], [array, array], \</span>
+<span class="sd">        [int, array], [array, int]}, optional</span>
+
+<span class="sd">        The bins specification:</span>
+
+<span class="sd">        * If int, the number of bins for the two dimensions (nx=ny=bins).</span>
+<span class="sd">        * If array, the bin edges for the two dimensions</span>
+<span class="sd">          (x_edges=y_edges=bins).</span>
+<span class="sd">        * If [int, int], the number of bins in each dimension</span>
+<span class="sd">          (nx, ny = bins).</span>
+<span class="sd">        * If [array, array], the bin edges in each dimension</span>
+<span class="sd">          (x_edges, y_edges = bins).</span>
+<span class="sd">        * A combination [int, array] or [array, int], where int</span>
+<span class="sd">          is the number of bins and array is the bin edges.</span>
+
+<span class="sd">        Default: ``10``.</span>
+<span class="sd">    range : {None, dpnp.ndarray, usm_ndarray} of shape (2,2), optional</span>
+<span class="sd">        The leftmost and rightmost edges of the bins along each dimension</span>
+<span class="sd">        If ``None`` the ranges are</span>
+<span class="sd">        ``[[x.min(), x.max()], [y.min(), y.max()]]``. All values outside</span>
+<span class="sd">        of this range will be considered outliers and not tallied in the</span>
+<span class="sd">        histogram.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    density : {None, bool}, optional</span>
+<span class="sd">        If ``False`` or ``None``, the default, returns the number of</span>
+<span class="sd">        samples in each bin.</span>
+<span class="sd">        If ``True``, returns the probability *density* function at the bin,</span>
+<span class="sd">        ``bin_count / sample_count / bin_volume``.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    weights : {None, dpnp.ndarray, usm_ndarray} of shape (N,), optional</span>
+<span class="sd">        An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.</span>
+<span class="sd">        Weights are normalized to ``1`` if `density` is ``True``.</span>
+<span class="sd">        If `density` is ``False``, the values of the returned histogram</span>
+<span class="sd">        are equal to the sum of the weights belonging to the samples</span>
+<span class="sd">        falling into each bin.</span>
+<span class="sd">        If ``None`` all samples are assigned a weight of ``1``.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    H : dpnp.ndarray of shape (nx, ny)</span>
+<span class="sd">        The bi-dimensional histogram of samples `x` and `y`. Values in `x`</span>
+<span class="sd">        are histogrammed along the first dimension and values in `y` are</span>
+<span class="sd">        histogrammed along the second dimension.</span>
+<span class="sd">    xedges : dpnp.ndarray of shape (nx+1,)</span>
+<span class="sd">        The bin edges along the first dimension.</span>
+<span class="sd">    yedges : dpnp.ndarray of shape (ny+1,)</span>
+<span class="sd">        The bin edges along the second dimension.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.histogram` : 1D histogram</span>
+<span class="sd">    :obj:`dpnp.histogramdd` : Multidimensional histogram</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    When `density` is ``True``, then the returned histogram is the sample</span>
+<span class="sd">    density, defined such that the sum over bins of the product</span>
+<span class="sd">    ``bin_value * bin_area`` is 1.</span>
+
+<span class="sd">    Please note that the histogram does not follow the Cartesian convention</span>
+<span class="sd">    where `x` values are on the abscissa and `y` values on the ordinate</span>
+<span class="sd">    axis. Rather, `x` is histogrammed along the first dimension of the</span>
+<span class="sd">    array (vertical), and `y` along the second dimension of the array</span>
+<span class="sd">    (horizontal). This ensures compatibility with `histogramdd`.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; x = np.random.randn(20).astype(&quot;float32&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.random.randn(20).astype(&quot;float32&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; hist, edges_x, edges_y = np.histogram2d(x, y, bins=(4, 3))</span>
+<span class="sd">    &gt;&gt;&gt; hist.shape</span>
+<span class="sd">    (4, 3)</span>
+<span class="sd">    &gt;&gt;&gt; hist</span>
+<span class="sd">    array([[1., 2., 0.],</span>
+<span class="sd">           [0., 3., 1.],</span>
+<span class="sd">           [1., 4., 1.],</span>
+<span class="sd">           [1., 3., 3.]], dtype=float32)</span>
+<span class="sd">    &gt;&gt;&gt; edges_x.shape</span>
+<span class="sd">    (5,)</span>
+<span class="sd">    &gt;&gt;&gt; edges_x</span>
+<span class="sd">    array([-1.7516936 , -0.96109843, -0.17050326,  0.62009203,  1.4106871 ],</span>
+<span class="sd">          dtype=float32)</span>
+<span class="sd">    &gt;&gt;&gt; edges_y.shape</span>
+<span class="sd">    (4,)</span>
+<span class="sd">    &gt;&gt;&gt; edges_y</span>
+<span class="sd">    array([-2.6604428 , -0.94615364,  0.76813555,  2.4824247 ], dtype=float32)</span>
+
+<span class="sd">    Please note, that resulting values of histogram and edges may vary.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">y</span><span class="o">.</span><span class="n">ndim</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;x and y must be 1-dimensional arrays.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="n">y</span><span class="o">.</span><span class="n">ndim</span><span class="si">}</span><span class="s2"> respectively&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;x and y must have the same length.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Got </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="si">}</span><span class="s2"> and </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="si">}</span><span class="s2"> respectively&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">usm_type</span><span class="p">,</span> <span class="n">exec_q</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="p">,</span> <span class="n">weights</span><span class="p">])</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">exec_q</span><span class="o">.</span><span class="n">sycl_device</span>
+
+    <span class="n">sample_dtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">y</span><span class="o">.</span><span class="n">dtype</span><span class="p">],</span> <span class="n">device</span><span class="p">)</span>
+
+    <span class="c1"># Unlike histogramdd histogram2d accepts 1d bins and</span>
+    <span class="c1"># apply it to both dimensions</span>
+    <span class="c1"># at the same moment two elements bins should be interpreted as</span>
+    <span class="c1"># number of bins in each dimension and array-like bins with one element</span>
+    <span class="c1"># is not allowed</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="n">bins</span> <span class="o">=</span> <span class="p">[</span><span class="n">bins</span><span class="p">]</span> <span class="o">*</span> <span class="mi">2</span>
+
+    <span class="n">bins</span> <span class="o">=</span> <span class="n">_histdd_normalize_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">bins_dtypes</span> <span class="o">=</span> <span class="p">[</span><span class="n">sample_dtype</span><span class="p">]</span>
+    <span class="n">bins_dtypes</span> <span class="o">+=</span> <span class="p">[</span><span class="n">b</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">bins</span> <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="s2">&quot;dtype&quot;</span><span class="p">)]</span>
+
+    <span class="n">bins_dtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">(</span><span class="n">bins_dtypes</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+    <span class="n">hist_dtype</span> <span class="o">=</span> <span class="n">_histdd_hist_dtype</span><span class="p">(</span><span class="n">exec_q</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+
+    <span class="n">supported_types</span> <span class="o">=</span> <span class="n">statistics_ext</span><span class="o">.</span><span class="n">histogramdd_dtypes</span><span class="p">()</span>
+
+    <span class="n">sample_dtype</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_align_dtypes</span><span class="p">(</span>
+        <span class="n">sample_dtype</span><span class="p">,</span> <span class="n">bins_dtype</span><span class="p">,</span> <span class="n">hist_dtype</span><span class="p">,</span> <span class="n">supported_types</span><span class="p">,</span> <span class="n">device</span>
+    <span class="p">)</span>
+
+    <span class="n">sample</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span>
+        <span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">2</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">sample_dtype</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span>
+    <span class="p">)</span>
+    <span class="n">sample</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">sample</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span>
+
+    <span class="n">hist</span><span class="p">,</span> <span class="n">edges</span> <span class="o">=</span> <span class="n">histogramdd</span><span class="p">(</span>
+        <span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="nb">range</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="n">density</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="n">weights</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">hist</span><span class="p">,</span> <span class="n">edges</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">edges</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span></div>
+
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_histdd_validate_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bins</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
@@ -970,9 +1127,7 @@
         <span class="c1"># hist_dtype is either float or complex, so it is ok</span>
         <span class="c1"># to calculate it as result type between default_float and</span>
         <span class="c1"># weights.dtype</span>
-        <span class="n">hist_dtype</span> <span class="o">=</span> <span class="n">_result_type_for_device</span><span class="p">(</span>
-            <span class="p">[</span><span class="n">hist_dtype</span><span class="p">,</span> <span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">],</span> <span class="n">device</span>
-        <span class="p">)</span>
+        <span class="n">hist_dtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">([</span><span class="n">hist_dtype</span><span class="p">,</span> <span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">],</span> <span class="n">device</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">hist_dtype</span>
 
@@ -983,7 +1138,7 @@
     <span class="n">dtypes_</span> <span class="o">=</span> <span class="p">[</span><span class="n">bin_edges</span><span class="o">.</span><span class="n">dtype</span> <span class="k">for</span> <span class="n">bin_edges</span> <span class="ow">in</span> <span class="n">bin_edges_list</span><span class="p">]</span>
     <span class="n">dtypes_</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">sample</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">_result_type_for_device</span><span class="p">(</span><span class="n">dtypes_</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result_type_for_device</span><span class="p">(</span><span class="n">dtypes_</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_histdd_supported_dtypes</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bin_edges_list</span><span class="p">,</span> <span class="n">weights</span><span class="p">):</span>
@@ -1017,7 +1172,7 @@
 
 <div class="viewcode-block" id="histogramdd">
 <a class="viewcode-back" href="../../reference/generated/dpnp.histogramdd.html#dpnp.histogramdd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">histogramdd</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">histogramdd</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the multidimensional histogram of some data.</span>
 
@@ -1035,30 +1190,33 @@
 <span class="sd">        * The number of bins for each dimension (nx, ny, ... =bins)</span>
 <span class="sd">        * The number of bins for all dimensions (nx=ny=...=bins).</span>
 
-<span class="sd">        Default: ``10``</span>
+<span class="sd">        Default: ``10``.</span>
 <span class="sd">    range : {None, sequence}, optional</span>
 <span class="sd">        A sequence of length D, each an optional (lower, upper) tuple giving</span>
 <span class="sd">        the outer bin edges to be used if the edges are not given explicitly in</span>
 <span class="sd">        `bins`.</span>
-<span class="sd">        An entry of None in the sequence results in the minimum and maximum</span>
+<span class="sd">        An entry of ``None`` in the sequence results in the minimum and maximum</span>
 <span class="sd">        values being used for the corresponding dimension.</span>
-<span class="sd">        None is equivalent to passing a tuple of D None values.</span>
+<span class="sd">        ``None`` is equivalent to passing a tuple of D ``None`` values.</span>
 
-<span class="sd">        Default: ``None``</span>
-<span class="sd">    weights : {dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        An (N,)-shaped array of values `w_i` weighing each sample</span>
-<span class="sd">        `(x_i, y_i, z_i, ...)`.</span>
-<span class="sd">        Weights are normalized to 1 if density is True. If density is False,</span>
-<span class="sd">        the values of the returned histogram are equal to the sum of the</span>
-<span class="sd">        weights belonging to the samples falling into each bin.</span>
-
-<span class="sd">        Default: ``None``</span>
-<span class="sd">    density : bool, optional</span>
-<span class="sd">        If ``False``, the default, returns the number of samples in each bin.</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    density : {None, bool}, optional</span>
+<span class="sd">        If ``False`` or ``None``, the default, returns the number of</span>
+<span class="sd">        samples in each bin.</span>
 <span class="sd">        If ``True``, returns the probability *density* function at the bin,</span>
 <span class="sd">        ``bin_count / sample_count / bin_volume``.</span>
 
-<span class="sd">        Default: ``False``</span>
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    weights : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        An (N,)-shaped array of values `w_i` weighing each sample</span>
+<span class="sd">        `(x_i, y_i, z_i, ...)`.</span>
+<span class="sd">        Weights are normalized to ``1`` if density is ``True``.</span>
+<span class="sd">        If density is ``False``, the values of the returned histogram</span>
+<span class="sd">        are equal to the sum of the weights belonging to the samples</span>
+<span class="sd">        falling into each bin.</span>
+<span class="sd">        If ``None`` all samples are assigned a weight of ``1``.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1092,7 +1250,7 @@
     <span class="k">elif</span> <span class="n">sample</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;sample must have no more than 2 dimensions&quot;</span><span class="p">)</span>
 
-    <span class="n">ndim</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">sample</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">1</span>
+    <span class="n">ndim</span> <span class="o">=</span> <span class="n">sample</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
     <span class="n">_arrays</span> <span class="o">=</span> <span class="n">_histdd_extract_arrays</span><span class="p">(</span><span class="n">sample</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
     <span class="n">usm_type</span><span class="p">,</span> <span class="n">queue</span> <span class="o">=</span> <span class="n">get_usm_allocations</span><span class="p">(</span><span class="n">_arrays</span><span class="p">)</span>
