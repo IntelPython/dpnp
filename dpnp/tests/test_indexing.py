@@ -473,7 +473,7 @@ class TestPut:
             b.put(ind, vals, mode=mode)
             ib.put(iind, ivals, mode=mode)
             assert_array_equal(ib, b)
-        elif numpy.issubdtype(ind_dt, numpy.uint64):
+        elif ind_dt == numpy.uint64:
             # For this special case, NumPy raises an error but dpnp works
             assert_raises(TypeError, numpy.put, a, ind, vals, mode=mode)
             assert_raises(TypeError, b.put, ind, vals, mode=mode)
@@ -508,7 +508,7 @@ class TestPut:
         ind = get_abs_array(indices, ind_dt)
         iind = dpnp.array(ind)
 
-        if numpy.issubdtype(ind_dt, numpy.uint64):
+        if ind_dt == numpy.uint64:
             # For this special case, NumPy raises an error but dpnp works
             assert_raises(TypeError, numpy.put, a, ind, vals, mode=mode)
 
@@ -656,7 +656,7 @@ class TestPutAlongAxis:
         ind = numpy.arange(10, dtype=idx_dt).reshape((1, 2, 5)) % 4
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
-        if numpy.issubdtype(idx_dt, numpy.uint64):
+        if idx_dt == numpy.uint64:
             numpy.put_along_axis(a, ind, 20, axis=1)
             dpnp.put_along_axis(ia, iind, 20, axis=1)
             assert_array_equal(ia, a)
@@ -701,7 +701,7 @@ class TestTake:
             result = dpnp.take(ia, iind, mode=mode)
             expected = numpy.take(a, ind, mode=mode)
             assert_array_equal(result, expected)
-        elif numpy.issubdtype(ind_dt, numpy.uint64):
+        elif ind_dt == numpy.uint64:
             # For this special case, although casting `ind_dt` to numpy.intp
             # is not safe, both NumPy and dpnp work properly
             # NumPy < "2.2.0" raises an error
@@ -726,7 +726,7 @@ class TestTake:
         ind = get_abs_array(indices, ind_dt)
         ia, iind = dpnp.array(a), dpnp.array(ind)
 
-        if numpy.issubdtype(ind_dt, numpy.uint64):
+        if ind_dt == numpy.uint64:
             # For this special case, NumPy raises an error on Windows
             result = ia.take(iind, axis=axis, mode=mode)
             expected = a.take(ind.astype(numpy.int64), axis=axis, mode=mode)
@@ -1461,6 +1461,16 @@ class TestChoose:
             chcs = dpnp.ones(1, dtype=dtype)
             with pytest.raises(TypeError):
                 dpnp.choose(inds, chcs)
+        elif dtype == numpy.uint64:
+            # For this special case, NumPy raises an error but dpnp works
+            inds_np = numpy.array([1, 0, 1], dtype=dtype)
+            inds = dpnp.array(inds_np)
+            chcs_np = numpy.array([1, 2, 3], dtype=dtype)
+            chcs = dpnp.array(chcs_np)
+            assert_raises(TypeError, numpy.choose, inds_np, chcs_np)
+            expected = numpy.choose(inds_np.astype(numpy.int64), chcs_np)
+            result = dpnp.choose(inds, chcs)
+            assert_array_equal(expected, result)
         else:
             inds_np = numpy.array([1, 0, 1], dtype=dtype)
             inds = dpnp.array(inds_np)

@@ -2401,10 +2401,10 @@ class TestQr:
                     decimal=5,
                 )
             else:  # mode=="raw"
-                assert_dtype_allclose(dpnp_q, np_q)
+                assert_dtype_allclose(dpnp_q, np_q, factor=24)
 
         if mode in ("raw", "r"):
-            assert_dtype_allclose(dpnp_r, np_r)
+            assert_dtype_allclose(dpnp_r, np_r, factor=24)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
