@@ -760,12 +760,14 @@ class dpnp_array:
 
     def asnumpy(self):
         """
-        Copy content of the array into :class:`numpy.ndarray` instance of the same shape and data type.
+        Copy content of the array into :class:`numpy.ndarray` instance of
+        the same shape and data type.
 
         Returns
         -------
-        numpy.ndarray
-            An instance of :class:`numpy.ndarray` populated with the array content.
+        out : numpy.ndarray
+            An instance of :class:`numpy.ndarray` populated with the array
+            content.
 
         """
 
