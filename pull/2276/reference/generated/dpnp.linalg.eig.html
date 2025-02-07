@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.17.0dev5+29.gcb497fba3db documentation</title>
+  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.17.0dev5+32.g6763472faa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a7d0152b"></script>
+      <script src="../../_static/documentation_options.js?v=cd748935"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -135,10 +135,7 @@
 be computed.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-<dl class="simple">
+<dd class="field-even"><p><dl class="simple">
 <dt>A namedtuple with the following attributes</dt><dd><ul class="simple">
 <li><p><strong>eigenvalues</strong> (<em>(..., M) dpnp.ndarray</em>) -- The eigenvalues, each repeated according to its multiplicity.
 The eigenvalues are not necessarily ordered. The resulting array will
@@ -149,6 +146,9 @@ will be real (zero imaginary part) or occur in conjugate pairs.</p></li>
 <code class="docutils literal notranslate"><span class="pre">eigenvectors[:,i]</span></code> is the eigenvector corresponding to the
 eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p></li>
 </ul>
+</dd>
+</dl>
+</p>
 </dd>
 </dl>
 <div class="admonition note">

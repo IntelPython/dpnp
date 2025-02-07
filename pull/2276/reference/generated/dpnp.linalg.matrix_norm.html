@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.matrix_norm &mdash; Data Parallel Extension for NumPy 0.17.0dev5+29.gcb497fba3db documentation</title>
+  <title>dpnp.linalg.matrix_norm &mdash; Data Parallel Extension for NumPy 0.17.0dev5+32.g6763472faa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a7d0152b"></script>
+      <script src="../../_static/documentation_options.js?v=cd748935"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -135,13 +135,15 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array having shape (..., M, N) and whose two innermost
 dimensions form <code class="docutils literal notranslate"><span class="pre">MxN</span></code> matrices.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- If this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the axes which are normed over are left in
+<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>If this is set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, the axes which are normed over are left in
 the result as dimensions with size one. With this option the result
-will broadcast correctly against the original <cite>x</cite>.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>ord</strong> (<em>{None</em><em>, </em><em>1</em><em>, </em><em>-1</em><em>, </em><em>2</em><em>, </em><em>-2</em><em>, </em><em>dpnp.inf</em><em>, </em><em>-dpnp.inf</em><em>, </em><em>'fro'</em><em>, </em><em>'nuc'}</em><em>, </em><em>optional</em>) -- The order of the norm. For details see the table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>
-section in <a class="reference internal" href="dpnp.linalg.norm.html#dpnp.linalg.norm" title="dpnp.linalg.norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.norm</span></code></a>.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;fro&quot;</span></code>.</p></li>
+will broadcast correctly against the original <cite>x</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
+<li><p><strong>ord</strong> (<em>{None</em><em>, </em><em>1</em><em>, </em><em>-1</em><em>, </em><em>2</em><em>, </em><em>-2</em><em>, </em><em>dpnp.inf</em><em>, </em><em>-dpnp.inf</em><em>, </em><em>'fro'</em><em>, </em><em>'nuc'}</em><em>, </em><em>optional</em>) -- <p>The order of the norm. For details see the table under <code class="docutils literal notranslate"><span class="pre">Notes</span></code>
+section in <a class="reference internal" href="dpnp.linalg.norm.html#dpnp.linalg.norm" title="dpnp.linalg.norm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.linalg.norm</span></code></a>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;fro&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

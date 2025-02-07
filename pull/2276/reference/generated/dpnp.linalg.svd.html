@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.svd &mdash; Data Parallel Extension for NumPy 0.17.0dev5+29.gcb497fba3db documentation</title>
+  <title>dpnp.linalg.svd &mdash; Data Parallel Extension for NumPy 0.17.0dev5+32.g6763472faa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a7d0152b"></script>
+      <script src="../../_static/documentation_options.js?v=cd748935"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -133,21 +133,21 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array with <code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">&gt;=</span> <span class="pre">2</span></code>.</p></li>
-<li><p><strong>full_matrices</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it returns <cite>u</cite> and <cite>Vh</cite> with full-sized matrices.
-If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the matrices are reduced in size.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>compute_uv</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, it only returns singular values.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>hermitian</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If True, a is assumed to be Hermitian (symmetric if real-valued),
-enabling a more efficient method for finding singular values.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>full_matrices</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it returns <cite>u</cite> and <cite>Vh</cite> with full-sized matrices.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the matrices are reduced in size.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
+<li><p><strong>compute_uv</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, it only returns singular values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
+<li><p><strong>hermitian</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If True, a is assumed to be Hermitian (symmetric if real-valued),
+enabling a more efficient method for finding singular values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p></p>
-</dd>
-</dl>
-<p>When <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is a namedtuple with the
+<dd class="field-even"><p><p>When <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is a namedtuple with the
 following attribute names</p>
 <blockquote>
 <div><ul class="simple">
@@ -166,6 +166,9 @@ If <cite>full_matrices</cite> is <code class="docutils literal notranslate"><spa
 If <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, neither <cite>U</cite> or <cite>Vh</cite> are computed.</p></li>
 </ul>
 </div></blockquote>
+</p>
+</dd>
+</dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
