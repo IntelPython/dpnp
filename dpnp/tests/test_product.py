@@ -1159,8 +1159,8 @@ class TestMatmul:
     )
     def test_special_case(self, dt_out, shape1, shape2):
         # Although inputs are int, gemm will be used for calculation
-        a = numpy.ones(shape1, dtype=numpy.int8)
-        b = numpy.ones(shape2, dtype=numpy.int8)
+        a = generate_random_numpy_array(shape1, dtype=numpy.int8)
+        b = generate_random_numpy_array(shape2, dtype=numpy.int8)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.matmul(ia, ib, dtype=dt_out)
@@ -1172,8 +1172,8 @@ class TestMatmul:
         assert_dtype_allclose(result, expected)
 
     def test_bool(self):
-        a = numpy.ones((3, 4), dtype=dpnp.bool)
-        b = numpy.ones((4, 5), dtype=dpnp.bool)
+        a = generate_random_numpy_array((3, 4), dtype=dpnp.bool)
+        b = generate_random_numpy_array((4, 5), dtype=dpnp.bool)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         # the output is (3, 4) array filled with 4
