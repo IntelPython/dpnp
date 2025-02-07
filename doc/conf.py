@@ -9,6 +9,7 @@
 from datetime import datetime
 
 from sphinx.ext.autodoc import FunctionDocumenter
+from sphinx.ext.napoleon import NumpyDocstring, docstring
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
@@ -231,3 +232,58 @@ todo_include_todos = True
 napoleon_use_ivar = True
 napoleon_include_special_with_doc = True
 napoleon_custom_sections = ["limitations"]
+
+
+# Napoleon extension can't properly render "Returns" section in case of
+# namedtuple as a return type. That patch proposes to extend the parse logic
+# which allows text in a header of "Returns" section.
+def _parse_returns_section_patched(self, section: str) -> list[str]:
+    fields = self._consume_returns_section()
+    multi = len(fields) > 1
+    use_rtype = False if multi else self._config.napoleon_use_rtype
+    lines: list[str] = []
+
+    for _name, _type, _desc in fields:
+        is_header_block = False
+        if _name == "" and (not _desc or len(_desc) == 1 and _desc[0] == ""):
+            # self._consume_returns_section() stores the header block
+            # into `_type` argument, while `_name` and `_desc` have to be empty
+            is_header_block = True
+            if not lines:
+                docstring.logger.info(
+                    "parse a header block of 'Returns' section",
+                    location=self._get_location(),
+                )
+
+        if use_rtype:
+            field = self._format_field(_name, "", _desc)
+        elif not is_header_block:
+            field = self._format_field(_name, _type, _desc)
+        else:
+            # assign processing field to `_type` value
+            field = _type
+
+        if multi:
+            if lines:
+                if is_header_block:
+                    # add the next line of header text
+                    lines.append(field)
+                else:
+                    lines.extend(self._format_block("          * ", field))
+            else:
+                if is_header_block:
+                    # add a beginning of header text
+                    lines.extend([":returns:", "", field])
+                else:
+                    lines.extend(self._format_block(":returns: * ", field))
+        else:
+            if any(field):  # only add :returns: if there's something to say
+                lines.extend(self._format_block(":returns: ", field))
+            if _type and use_rtype:
+                lines.extend([f":rtype: {_type}", ""])
+    if lines and lines[-1]:
+        lines.append("")
+    return lines
+
+
+NumpyDocstring._parse_returns_section = _parse_returns_section_patched
