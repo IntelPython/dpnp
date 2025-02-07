@@ -242,6 +242,7 @@ def _parse_returns_section_patched(self, section: str) -> list[str]:
     multi = len(fields) > 1
     use_rtype = False if multi else self._config.napoleon_use_rtype
     lines: list[str] = []
+    is_logged_header = False
 
     for _name, _type, _desc in fields:
         is_header_block = False
@@ -249,11 +250,12 @@ def _parse_returns_section_patched(self, section: str) -> list[str]:
             # self._consume_returns_section() stores the header block
             # into `_type` argument, while `_name` and `_desc` have to be empty
             is_header_block = True
-            if not lines:
+            if not is_logged_header:
                 docstring.logger.info(
                     "parse a header block of 'Returns' section",
                     location=self._get_location(),
                 )
+                is_logged_header = True
 
         if use_rtype:
             field = self._format_field(_name, "", _desc)
