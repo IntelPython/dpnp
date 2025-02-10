@@ -321,7 +321,7 @@ def searchsorted(a, v, side="left", sorter=None):
     side : {"left", "right"}, optional
         If ``"left"``, the index of the first suitable location found is given.
         If ``"right"``, return the last such index. If there is no suitable
-        index, return either 0 or N (where N is the length of `a`).
+        index, return either ``0`` or ``N`` (where ``N`` is the length of `a`).
 
         Default: ``"left"``.
     sorter : {None, dpnp.ndarray, usm_ndarray}, optional
