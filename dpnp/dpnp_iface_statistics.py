@@ -1306,7 +1306,7 @@ def std(
 
         Default: ``None``.
 
-    correction : {int, float}, optional
+    correction : {None, int, float}, optional
         Array API compatible name for the `ddof` parameter. Only one of them
         can be provided at the same time.
 
@@ -1500,7 +1500,7 @@ def var(
 
         Default: ``None``.
 
-    correction : {int, float}, optional
+    correction : {None, int, float}, optional
         Array API compatible name for the `ddof` parameter. Only one of them
         can be provided at the same time.
 

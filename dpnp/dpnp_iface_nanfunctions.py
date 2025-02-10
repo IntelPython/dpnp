@@ -1063,7 +1063,7 @@ def nanstd(
 
         Default: ``None``.
 
-    correction : {int, float}, optional
+    correction : {None, int, float}, optional
         Array API compatible name for the `ddof` parameter. Only one of them
         can be provided at the same time.
 
@@ -1211,7 +1211,7 @@ def nanvar(
 
         Default: ``None``.
 
-    correction : {int, float}, optional
+    correction : {None, int, float}, optional
         Array API compatible name for the `ddof` parameter. Only one of them
         can be provided at the same time.
 
