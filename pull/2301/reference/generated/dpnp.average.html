@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.average &mdash; Data Parallel Extension for NumPy 0.17.0dev6+4.g7553acb36d3 documentation</title>
+  <title>dpnp.average &mdash; Data Parallel Extension for NumPy 0.17.0dev6+8.g1ba61a3be30 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cc5df919"></script>
+      <script src="../../_static/documentation_options.js?v=04982efc"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -130,32 +130,36 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- Axis or axes along which the averages must be computed. If
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which the averages must be computed. If
 a tuple of unique integers, the averages are computed over multiple
-axes. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the average is computed over the entire array.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+axes. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the average is computed over the entire array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 <li><p><strong>weights</strong> (<em>{array_like}</em><em>, </em><em>optional</em>) -- <p>An array of weights associated with the values in <cite>a</cite>. Each value in
 <cite>a</cite> contributes to the average according to its associated weight.
 The weights array can either be 1-D (in which case its length must be
 the size of <cite>a</cite> along the given axis) or of the same shape as <cite>a</cite>.
 If <cite>weights=None</cite>, then all data in <cite>a</cite> are assumed to have a
-weight equal to one.  The 1-D calculation is:</p>
+weight equal to one. The 1-D calculation is:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">avg</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">weights</span><span class="p">)</span> <span class="o">/</span> <span class="nb">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>The only constraint on <cite>weights</cite> is that <cite>sum(weights)</cite> must not be 0.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
-<li><p><strong>returned</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the tuple (<cite>average</cite>, <cite>sum_of_weights</cite>) is returned,
+<li><p><strong>returned</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the tuple (<cite>average</cite>, <cite>sum_of_weights</cite>) is returned,
 otherwise only the average is returned. If <cite>weights=None</cite>,
 <cite>sum_of_weights</cite> is equivalent to the number of elements over which
-the average is taken.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
+the average is taken.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
+<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
 as singleton dimensions, so that the returned array remains
 compatible with the input array according to Array Broadcasting
 rules. Otherwise, if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced axes are not included in
-the returned array.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+the returned array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

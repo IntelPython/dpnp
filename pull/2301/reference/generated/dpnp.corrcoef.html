@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.corrcoef &mdash; Data Parallel Extension for NumPy 0.17.0dev6+4.g7553acb36d3 documentation</title>
+  <title>dpnp.corrcoef &mdash; Data Parallel Extension for NumPy 0.17.0dev6+8.g1ba61a3be30 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cc5df919"></script>
+      <script src="../../_static/documentation_options.js?v=04982efc"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -132,16 +132,19 @@
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- A 1-D or 2-D array containing multiple variables and observations.
 Each row of <cite>x</cite> represents a variable, and each column a single
 observation of all those variables. Also see <cite>rowvar</cite> below.</p></li>
-<li><p><strong>y</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- An additional set of variables and observations. <cite>y</cite> has the same
-shape as <cite>x</cite>.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>rowvar</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If <cite>rowvar</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each row represents a variable,
+<li><p><strong>y</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>An additional set of variables and observations. <cite>y</cite> has the same
+shape as <cite>x</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>rowvar</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If <cite>rowvar</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, then each row represents a variable,
 with observations in the columns. Otherwise, the relationship
 is transposed: each column represents a variable, while the rows
-contain observations.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>dtype}</em><em>, </em><em>optional</em>) -- Data-type of the result.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+contain observations.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>dtype}</em><em>, </em><em>optional</em>) -- <p>Data-type of the result.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

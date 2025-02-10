@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.searchsorted &mdash; Data Parallel Extension for NumPy 0.17.0dev6+4.g7553acb36d3 documentation</title>
+  <title>dpnp.searchsorted &mdash; Data Parallel Extension for NumPy 0.17.0dev6+8.g1ba61a3be30 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cc5df919"></script>
+      <script src="../../_static/documentation_options.js?v=04982efc"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -134,10 +134,10 @@ sort it.</p></li>
 <li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Values to insert into <cite>a</cite>.</p></li>
 <li><p><strong>side</strong> (<em>{&quot;left&quot;</em><em>, </em><em>&quot;right&quot;}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code>, the index of the first suitable location found is given.
 If <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>, return the last such index. If there is no suitable
-index, return either 0 or N (where N is the length of <cite>a</cite>).</p>
+index, return either <code class="docutils literal notranslate"><span class="pre">0</span></code> or <code class="docutils literal notranslate"><span class="pre">N</span></code> (where <code class="docutils literal notranslate"><span class="pre">N</span></code> is the length of <cite>a</cite>).</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;left&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>sorter</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Optional 1-D array of integer indices that sort array a into ascending
+<li><p><strong>sorter</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Optional 1-D array of integer indices that sort array <cite>a</cite> into ascending
 order. They are typically the result of <a class="reference internal" href="dpnp.argsort.html#dpnp.argsort" title="dpnp.argsort"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.argsort()</span></code></a>.
 Out of bound index values of <cite>sorter</cite> array are treated using
 <code class="docutils literal notranslate"><span class="pre">&quot;wrap&quot;</span></code> mode documented in <a class="reference internal" href="dpnp.take.html#dpnp.take" title="dpnp.take"><code class="xref py py-func docutils literal notranslate"><span class="pre">dpnp.take()</span></code></a>.</p>
