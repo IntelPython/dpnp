@@ -82,10 +82,7 @@ class TestCov(unittest.TestCase):
             fweights = name.asarray(fweights)
         if aweights is not None:
             aweights = name.asarray(aweights)
-        # print(type(fweights))
-        # return xp.cov(a, y, rowvar, bias, ddof,
-        #               fweights, aweights, dtype=dtype)
-        return xp.cov(a, y, rowvar, bias, ddof, fweights, aweights)
+        return xp.cov(a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(accept_error=True)
@@ -103,9 +100,15 @@ class TestCov(unittest.TestCase):
     ):
         with testing.assert_warns(RuntimeWarning):
             a, y = self.generate_input(a_shape, y_shape, xp, dtype)
-            return xp.cov(
-                a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
-            )
+            try:
+                res = xp.cov(
+                    a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
+                )
+            except ValueError as e:
+                if xp is cupy:  # dpnp raises ValueError(...)
+                    raise TypeError(e)
+                raise
+            return res
 
     @testing.for_all_dtypes()
     def check_raises(
@@ -126,15 +129,11 @@ class TestCov(unittest.TestCase):
                     a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
                 )
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
-    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    @testing.with_requires("numpy>=2.2")
     def test_cov(self):
         self.check((2, 3))
         self.check((2,), (2,))
-        if numpy_version() >= "2.2.0":
-            # TODO: enable once numpy 2.2 resolves ValueError
-            # self.check((1, 3), (1, 3), rowvar=False)
-            self.check((1, 3), (1, 1), rowvar=False)  # TODO: remove
+        self.check((1, 3), (1, 3), rowvar=False)
         self.check((2, 3), (2, 3), rowvar=False)
         self.check((2, 3), bias=True)
         self.check((2, 3), ddof=2)
@@ -144,12 +143,10 @@ class TestCov(unittest.TestCase):
         self.check((1, 3), bias=True, aweights=(1.0, 4.0, 1.0))
         self.check((1, 3), fweights=(1, 4, 1), aweights=(1.0, 4.0, 1.0))
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_cov_warns(self):
         self.check_warns((2, 3), ddof=3)
         self.check_warns((2, 3), ddof=4)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_cov_raises(self):
         self.check_raises((2, 3), ddof=1.2)
         self.check_raises((3, 4, 2))
