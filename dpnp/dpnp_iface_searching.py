@@ -76,15 +76,18 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     axis : {None, int}, optional
         By default, the index is into the flattened array, otherwise along
         the specified axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.
+
         Default: ``False``.
 
     Returns
@@ -165,15 +168,18 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     axis : {None, int}, optional
         By default, the index is into the flattened array, otherwise along
         the specified axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.
+
         Default: ``False``.
 
     Returns
@@ -318,7 +324,7 @@ def searchsorted(a, v, side="left", sorter=None):
         index, return either 0 or N (where N is the length of `a`).
 
         Default: ``"left"``.
-    sorter : {dpnp.ndarray, usm_ndarray}, optional
+    sorter : {None, dpnp.ndarray, usm_ndarray}, optional
         Optional 1-D array of integer indices that sort array a into ascending
         order. They are typically the result of :py:func:`dpnp.argsort`.
         Out of bound index values of `sorter` array are treated using
@@ -389,16 +395,20 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
     ----------
     condition : {dpnp.ndarray, usm_ndarray}
         When ``True``, yield `x`, otherwise yield `y`.
-    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional
+    x, y : {None, dpnp.ndarray, usm_ndarray, scalar}, optional
         Values from which to choose. `x`, `y` and `condition` need to be
         broadcastable to some shape.
+
+        Default: ``None``.
     order : {"K", "C", "F", "A"}, optional
         Memory layout of the new output array, if keyword `out` is ``None``.
+
         Default: ``"K"``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The array into which the result is written. The data type of `out` must
         match the expected shape and the expected data type of the result.
         If ``None`` then a new array is returned.
+
         Default: ``None``.
 
     Returns
