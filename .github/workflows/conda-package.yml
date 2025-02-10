@@ -359,7 +359,7 @@ jobs:
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          if (${{ matrix.python }} == ${{ env.LATEST_PYTHON }}) {
+          if (${{ matrix.python }} -eq ${{ env.LATEST_PYTHON }}) {
             set DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
           } else {
@@ -375,7 +375,7 @@ jobs:
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
-            if ( ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ) {
+            if ( ${{ matrix.python }} -eq ${{ env.LATEST_PYTHON }} ) {
               set DPNP_TEST_ALL_INT_TYPES=1
               python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
             } else {
