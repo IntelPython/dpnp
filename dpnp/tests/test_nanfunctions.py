@@ -754,7 +754,7 @@ class TestNanStdVar:
 
     @with_requires("numpy>=2.0")
     def test_correction(self):
-        a = numpy.array([127, 39, 93, 87, 46])
+        a = numpy.array([127, numpy.nan, numpy.nan, 39, 93, 87, numpy.nan, 46])
         ia = dpnp.array(a)
 
         expected = getattr(numpy, self.func)(a, correction=0.5)
@@ -764,7 +764,7 @@ class TestNanStdVar:
     @with_requires("numpy>=2.0")
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_both_ddof_correction_are_set(self, xp):
-        a = xp.array(5)
+        a = xp.array([5, xp.nan, -2])
 
         err_msg = "ddof and correction can't be provided simultaneously."
 
