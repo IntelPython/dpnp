@@ -509,8 +509,8 @@ def _gemm_special_case(x1, x2, res_dtype, call_flag):
     while `gemv` does not.
 
     """
-    # TODO: replace with dpnp.int8 when it is added
-    is_int8 = x1.dtype == numpy.int8 and x2.dtype == numpy.int8
+
+    is_int8 = x1.dtype == dpnp.int8 and x2.dtype == dpnp.int8
     is_int32_or_f32 = res_dtype in [dpnp.int32, dpnp.float32]
     flag = is_int8 and is_int32_or_f32 and call_flag in ["gemm", "gemm_batch"]
 

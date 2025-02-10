@@ -836,7 +836,11 @@ class TestMatmul:
             assert_allclose(result, expected, rtol=1e-5, atol=1e-5)
         else:
             assert_raises(TypeError, dpnp.matmul, ia, ib, dtype=dt_out)
-            assert_raises(TypeError, numpy.matmul, a, b, dtype=dt_out)
+            # If one of the inputs is `uint64`, and dt_out is not unsigned int
+            # NumPy raises TypeError when `out` is provide but not when `dtype`
+            # is provided. dpnp raises TypeError in both cases as expected
+            if a.dtype != numpy.uint64 and b.dtype != numpy.uint64:
+                assert_raises(TypeError, numpy.matmul, a, b, dtype=dt_out)
 
             assert_raises(TypeError, dpnp.matmul, ia, ib, out=iout)
             assert_raises(TypeError, numpy.matmul, a, b, out=out)
@@ -1444,8 +1448,8 @@ class TestMatvec:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype)
-        b = generate_random_numpy_array(shape2, dtype)
+        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.matvec(ia, ib)
@@ -2170,8 +2174,8 @@ class TestVecmat:
         ],
     )
     def test_basic(self, dtype, shape1, shape2):
-        a = generate_random_numpy_array(shape1, dtype)
-        b = generate_random_numpy_array(shape2, dtype)
+        a = generate_random_numpy_array(shape1, dtype, low=-5, high=5)
+        b = generate_random_numpy_array(shape2, dtype, low=-5, high=5)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.vecmat(ia, ib)

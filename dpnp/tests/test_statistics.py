@@ -219,8 +219,14 @@ class TestCorrelate:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("method", ["auto", "direct", "fft"])
     def test_correlate_random(self, a_size, v_size, mode, dtype, method):
-        an = generate_random_numpy_array(a_size, dtype, probability=0.9)
-        vn = generate_random_numpy_array(v_size, dtype, probability=0.9)
+        if dtype in [numpy.int8, numpy.uint8]:
+            pytest.skip("avoid overflow.")
+        an = generate_random_numpy_array(
+            a_size, dtype, low=-3, high=3, probability=0.9
+        )
+        vn = generate_random_numpy_array(
+            v_size, dtype, low=-3, high=3, probability=0.9
+        )
 
         ad = dpnp.array(an)
         vd = dpnp.array(vn)
