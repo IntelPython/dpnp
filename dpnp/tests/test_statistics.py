@@ -769,7 +769,8 @@ class TestStdVar:
         a = numpy.array([1, -1, 1, -1])
         ia = dpnp.array(a)
 
-        expected = getattr(a, self.func)(correction=1)
+        # numpy doesn't support `correction` keyword in std/var methods
+        expected = getattr(numpy, self.func)(a, correction=1)
         result = getattr(ia, self.func)(correction=1)
         assert_dtype_allclose(result, expected)
 
