@@ -966,6 +966,7 @@ def nanstd(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     """
     Compute the standard deviation along the specified axis,
@@ -1015,6 +1016,12 @@ def nanstd(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `nanstd` function.
+
+        Default: ``None``.
+
+    correction : {int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1094,6 +1101,7 @@ def nanstd(
         keepdims=keepdims,
         where=where,
         mean=mean,
+        correction=correction,
     )
     return dpnp.sqrt(res, out=res)
 
@@ -1108,6 +1116,7 @@ def nanvar(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     """
     Compute the variance along the specified axis, while ignoring NaNs.
@@ -1155,6 +1164,12 @@ def nanvar(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `nanvar` function.
+
+        Default: ``None``.
+
+    correction : {int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1231,6 +1246,7 @@ def nanvar(
             ddof=ddof,
             keepdims=keepdims,
             where=where,
+            correction=correction,
         )
 
     if dtype is not None:
@@ -1242,6 +1258,13 @@ def nanvar(
         dpnp.check_supported_arrays_type(out)
         if not dpnp.issubdtype(out.dtype, dpnp.inexact):
             raise TypeError("If input is inexact, then out must be inexact.")
+
+    if correction is not None:
+        if ddof != 0:
+            raise ValueError(
+                "ddof and correction can't be provided simultaneously."
+            )
+        ddof = correction
 
     # Compute mean
     cnt = dpnp.sum(

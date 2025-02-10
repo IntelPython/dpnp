@@ -1201,6 +1201,7 @@ def std(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     r"""
     Compute the standard deviation along the specified axis.
@@ -1250,6 +1251,12 @@ def std(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `std` function.
+
+        Default: ``None``.
+
+    correction : {int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1344,6 +1351,13 @@ def std(
     dpnp.check_supported_arrays_type(a)
     dpnp.check_limitations(where=where)
 
+    if correction is not None:
+        if ddof != 0:
+            raise ValueError(
+                "ddof and correction can't be provided simultaneously."
+            )
+        ddof = correction
+
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
@@ -1382,6 +1396,7 @@ def var(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     r"""
     Compute the variance along the specified axis.
@@ -1430,6 +1445,12 @@ def var(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `var` function.
+
+        Default: ``None``.
+
+    correction : {int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1517,6 +1538,13 @@ def var(
 
     dpnp.check_supported_arrays_type(a)
     dpnp.check_limitations(where=where)
+
+    if correction is not None:
+        if ddof != 0:
+            raise ValueError(
+                "ddof and correction can't be provided simultaneously."
+            )
+        ddof = correction
 
     if not isinstance(ddof, (int, float)):
         raise TypeError(
