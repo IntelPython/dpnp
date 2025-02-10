@@ -54,7 +54,7 @@ from dpnp.dpnp_utils.dpnp_utils_common import (
     to_supported_dtypes,
 )
 
-from .dpnp_utils import call_origin, get_usm_allocations
+from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 from .dpnp_utils.dpnp_utils_statistics import dpnp_cov, dpnp_median
 
@@ -748,61 +748,167 @@ def cov(
 
     For full documentation refer to :obj:`numpy.cov`.
 
+    Parameters
+    ----------
+    m : {dpnp.ndarray, usm_ndarray}
+        A 1-D or 2-D array containing multiple variables and observations.
+        Each row of `m` represents a variable, and each column a single
+        observation of all those variables. Also see `rowvar` below.
+    y : {None, dpnp.ndarray, usm_ndarray}, optional
+        An additional set of variables and observations. `y` has the same form
+        as that of `m`.
+
+        Default: ``None``.
+    rowvar : bool, optional
+        If `rowvar` is ``True``, then each row represents a variable, with
+        observations in the columns. Otherwise, the relationship is transposed:
+        each column represents a variable, while the rows contain observations.
+
+        Default: ``True``.
+    bias : bool, optional
+        Default normalization is by ``(N - 1)``, where ``N`` is the number of
+        observations given (unbiased estimate). If `bias` is ``True``, then
+        normalization is by ``N``. These values can be overridden by using the
+        keyword `ddof`.
+
+        Default: ``False``.
+    ddof : {None, int}, optional
+        If not ``None`` the default value implied by `bias` is overridden. Note
+        that ``ddof=1`` will return the unbiased estimate, even if both
+        `fweights` and `aweights` are specified, and ``ddof=0`` will return the
+        simple average. See the notes for the details.
+
+        Default: ``None``.
+    fweights : {None, dpnp.ndarray, usm_ndarray}, optional
+        1-D array of integer frequency weights; the number of times each
+        observation vector should be repeated.
+
+        Default: ``None``.
+    aweights : {None, dpnp.ndarray, usm_ndarray}, optional
+        1-D array of observation vector weights. These relative weights are
+        typically large for observations considered "important" and smaller for
+        observations considered less "important". If ``ddof=0`` the array of
+        weights can be used to assign probabilities to observation vectors.
+
+        Default: ``None``.
+    dtype : data-type, optional
+        Data-type of the result. By default, the return data-type will have
+        at least floating point type based on the capabilities of the device on
+        which the input arrays reside.
+
+        Default: ``None``.
+
     Returns
     -------
     out : dpnp.ndarray
         The covariance matrix of the variables.
 
-    Limitations
-    -----------
-    Input array ``m`` is supported as :obj:`dpnp.ndarray`.
-    Dimension of input array ``m`` is limited by ``m.ndim <= 2``.
-    Size and shape of input arrays are supported to be equal.
-    Parameter `y` is supported only with default value ``None``.
-    Parameter `bias` is supported only with default value ``False``.
-    Parameter `ddof` is supported only with default value ``None``.
-    Parameter `fweights` is supported only with default value ``None``.
-    Parameter `aweights` is supported only with default value ``None``.
-    Otherwise the function will be executed sequentially on CPU.
-    Input array data types are limited by supported DPNP :ref:`Data types`.
-
     See Also
     --------
-    :obj:`dpnp.corrcoef` : Normalized covariance matrix
+    :obj:`dpnp.corrcoef` : Normalized covariance matrix.
+
+    Notes
+    -----
+    Assume that the observations are in the columns of the observation array `m`
+    and let ``f = fweights`` and ``a = aweights`` for brevity. The steps to
+    compute the weighted covariance are as follows::
+
+        >>> import dpnp as np
+        >>> m = np.arange(10, dtype=np.float32)
+        >>> f = np.arange(10) * 2
+        >>> a = np.arange(10) ** 2.0
+        >>> ddof = 1
+        >>> w = f * a
+        >>> v1 = np.sum(w)
+        >>> v2 = np.sum(w * a)
+        >>> m -= np.sum(m * w, axis=None, keepdims=True) / v1
+        >>> cov = np.dot(m * w, m.T) * v1 / (v1**2 - ddof * v2)
+
+    Note that when ``a == 1``, the normalization factor
+    ``v1 / (v1**2 - ddof * v2)`` goes over to ``1 / (np.sum(f) - ddof)``
+    as it should.
 
     Examples
     --------
     >>> import dpnp as np
     >>> x = np.array([[0, 2], [1, 1], [2, 0]]).T
-    >>> x.shape
-    (2, 3)
-    >>> [i for i in x]
-    [0, 1, 2, 2, 1, 0]
-    >>> out = np.cov(x)
-    >>> out.shape
-    (2, 2)
-    >>> [i for i in out]
-    [1.0, -1.0, -1.0, 1.0]
+    >>> x
+    array([[0, 1, 2],
+           [2, 1, 0]])
+
+    Note how :math:`x_0` increases while :math:`x_1` decreases. The covariance
+    matrix shows this clearly:
+
+    >>> np.cov(x)
+    array([[ 1., -1.],
+           [-1.,  1.]])
+
+    Note that element :math:`C_{0,1}`, which shows the correlation between
+    :math:`x_0` and :math:`x_1`, is negative.
+
+    Further, note how `x` and `y` are combined:
+
+    >>> x = np.array([-2.1, -1,  4.3])
+    >>> y = np.array([3,  1.1,  0.12])
+    >>> X = np.stack((x, y), axis=0)
+    >>> np.cov(X)
+    array([[11.71      , -4.286     ], # may vary
+           [-4.286     ,  2.14413333]])
+    >>> np.cov(x, y)
+    array([[11.71      , -4.286     ], # may vary
+           [-4.286     ,  2.14413333]])
+    >>> np.cov(x)
+    array(11.71)
 
     """
 
-    if not dpnp.is_supported_array_type(m):
-        pass
-    elif m.ndim > 2:
-        pass
-    elif bias:
-        pass
-    elif ddof is not None:
-        pass
-    elif fweights is not None:
-        pass
-    elif aweights is not None:
-        pass
-    else:
-        return dpnp_cov(m, y=y, rowvar=rowvar, dtype=dtype)
+    arrays = [m]
+    if y is not None:
+        arrays.append(y)
+    dpnp.check_supported_arrays_type(*arrays)
 
-    return call_origin(
-        numpy.cov, m, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
+    if m.ndim > 2:
+        raise ValueError("m has more than 2 dimensions")
+
+    if y is not None:
+        if y.ndim > 2:
+            raise ValueError("y has more than 2 dimensions")
+
+    if ddof is not None:
+        if not isinstance(ddof, int):
+            raise ValueError("ddof must be integer")
+    else:
+        ddof = 0 if bias else 1
+
+    def_float = dpnp.default_float_type(m.sycl_queue)
+    if dtype is None:
+        dtype = dpnp.result_type(*arrays, def_float)
+
+    if fweights is not None:
+        dpnp.check_supported_arrays_type(fweights)
+        if not dpnp.issubdtype(fweights.dtype, numpy.integer):
+            raise TypeError("fweights must be integer")
+
+        if fweights.ndim > 1:
+            raise ValueError("cannot handle multidimensional fweights")
+
+        fweights = dpnp.astype(fweights, dtype=def_float)
+
+    if aweights is not None:
+        dpnp.check_supported_arrays_type(fweights)
+        if aweights.ndim > 1:
+            raise ValueError("cannot handle multidimensional aweights")
+
+        aweights = dpnp.astype(aweights, dtype=def_float)
+
+    return dpnp_cov(
+        m,
+        y=y,
+        rowvar=rowvar,
+        ddof=ddof,
+        dtype=dtype,
+        fweights=fweights,
+        aweights=aweights,
     )
 
 
