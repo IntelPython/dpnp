@@ -210,38 +210,19 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE != 'true' && matrix.python != env.LATEST_PYTHON
+        if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
-
-      - name: Run tests for all dtypes
-        if: env.RERUN_TESTS_ON_FAILURE != 'true' && matrix.python == env.LATEST_PYTHON
-        env:
-          DPNP_TEST_ALL_INT_TYPES: 1
-        run: |
-          python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          if [[ ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ]]; then
+            export DPNP_TEST_ALL_INT_TYPES=1
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          else
+            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          fi
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.python != env.LATEST_PYTHON
+        if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
-        with:
-          timeout_minutes: 15
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
-          retry_on: any
-          command: |
-            . $CONDA/etc/profile.d/conda.sh
-            . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.TEST_ENV_NAME }}
-
-            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
-
-      - name: Run tests for all dtypes
-        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.python == env.LATEST_PYTHON
-        id: run_tests_linux_all_dtypes
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
-        env:
-          DPNP_TEST_ALL_INT_TYPES: 1
         with:
           timeout_minutes: 25
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
@@ -251,7 +232,12 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.TEST_ENV_NAME }}
 
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            if [[ ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ]]; then
+              export DPNP_TEST_ALL_INT_TYPES=1
+              python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            else
+              python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            fi
 
   test_windows:
     name: Test
@@ -371,40 +357,30 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE != 'true' && matrix.python != env.LATEST_PYTHON
+        if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
-
-      - name: Run tests for all dtypes
-        if: env.RERUN_TESTS_ON_FAILURE != 'true' && matrix.python == env.LATEST_PYTHON
-        env:
-          DPNP_TEST_ALL_INT_TYPES: 1
-        run: |
-          python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          if (${{ matrix.python }} == ${{ env.LATEST_PYTHON }}) {
+            set DPNP_TEST_ALL_INT_TYPES=1
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          } else {
+            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          }
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.python != env.LATEST_PYTHON
+        if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
-        with:
-          timeout_minutes: 17
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
-          retry_on: any
-          command: |
-            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
-
-      - name: Run tests for all dtypes
-        if: env.RERUN_TESTS_ON_FAILURE == 'true' && matrix.python == env.LATEST_PYTHON
-        id: run_tests_win_all_dtypes
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
-        env:
-          DPNP_TEST_ALL_INT_TYPES: 1
         with:
           timeout_minutes: 35
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            if ( ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ) {
+              set DPNP_TEST_ALL_INT_TYPES=1
+              python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            } else {
+              python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            }
 
   upload:
     name: Upload
