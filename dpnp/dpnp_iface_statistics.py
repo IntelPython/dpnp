@@ -205,6 +205,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
         Axis or axes along which the averages must be computed. If
         a tuple of unique integers, the averages are computed over multiple
         axes. If ``None``, the average is computed over the entire array.
+
         Default: ``None``.
     weights : {array_like}, optional
         An array of weights associated with the values in `a`. Each value in
@@ -212,16 +213,19 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
         The weights array can either be 1-D (in which case its length must be
         the size of `a` along the given axis) or of the same shape as `a`.
         If `weights=None`, then all data in `a` are assumed to have a
-        weight equal to one.  The 1-D calculation is::
+        weight equal to one. The 1-D calculation is::
 
             avg = sum(a * weights) / sum(weights)
 
         The only constraint on `weights` is that `sum(weights)` must not be 0.
+
+        Default: ``None``.
     returned : {bool}, optional
         If ``True``, the tuple (`average`, `sum_of_weights`) is returned,
         otherwise only the average is returned. If `weights=None`,
         `sum_of_weights` is equivalent to the number of elements over which
         the average is taken.
+
         Default: ``False``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
@@ -229,6 +233,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
         the returned array.
+
         Default: ``False``.
 
     Returns
@@ -367,15 +372,18 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
     y : {None, dpnp.ndarray, usm_ndarray}, optional
         An additional set of variables and observations. `y` has the same
         shape as `x`.
+
         Default: ``None``.
     rowvar : {bool}, optional
         If `rowvar` is ``True``, then each row represents a variable,
         with observations in the columns. Otherwise, the relationship
         is transposed: each column represents a variable, while the rows
         contain observations.
+
         Default: ``True``.
     dtype : {None, dtype}, optional
         Data-type of the result.
+
         Default: ``None``.
 
     Returns
@@ -812,15 +820,18 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         Axis or axes along which to operate. By default, flattened input is
         used. If this is a tuple of integers, the minimum is selected over
         multiple axes, instead of a single axis or all the axes as before.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. Must be of the
         same shape and buffer length as the expected output.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the input array.
+
         Default: ``False``.
 
     Returns
@@ -895,6 +906,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         Axis or axes along which the arithmetic means must be computed. If
         a tuple of unique integers, the means are computed over multiple
         axes. If ``None``, the mean is computed over the entire array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
         Type to use in computing the mean. By default, if `a` has a
@@ -903,10 +915,13 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
+
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
@@ -914,6 +929,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
         the returned array.
+
         Default: ``False``.
 
     Returns
@@ -979,11 +995,13 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         the array. If a sequence of axes, the array is first flattened along
         the given axes, then the median is computed along the resulting
         flattened axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+
         Default: ``None``.
     overwrite_input : bool, optional
        If ``True``, then allow use of memory of input array `a` for
@@ -991,6 +1009,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
        :obj:`dpnp.median`. This will save memory when you do not need to
        preserve the contents of the input array. Treat the input as undefined,
        but it will probably be fully or partially sorted.
+
        Default: ``False``.
     keepdims : bool, optional
         If ``True``, the reduced axes (dimensions) are included in the result
@@ -998,6 +1017,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
         the returned array.
+
         Default: ``False``.
 
     Returns
@@ -1077,15 +1097,18 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         Axis or axes along which to operate. By default, flattened input is
         used. If this is a tuple of integers, the minimum is selected over
         multiple axes, instead of a single axis or all the axes as before.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. Must be of the
         same shape and buffer length as the expected output.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the input array.
+
         Default: ``False``.
 
     Returns
@@ -1158,20 +1181,39 @@ def ptp(
 
     For full documentation refer to :obj:`numpy.ptp`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis along which to find the peaks. By default, flatten the array.
+        `axis` may be negative, in which case it counts from the last to the
+        first axis. If this is a tuple of ints, a reduction is performed on
+        multiple axes, instead of a single axis or all the axes as before.
+
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output, but the type of
+        the output values will be cast if necessary.
+
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+
+        Default: ``None``.
+
     Returns
     -------
     ptp : dpnp.ndarray
         The range of a given array.
 
-    Limitations
-    -----------
-    Input array is supported as :class:`dpnp.dpnp.ndarray` or
-    :class:`dpctl.tensor.usm_ndarray`.
-
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])
+    >>> x = np.array([[4, 9, 2, 10], [6, 9, 7, 12]])
     >>> np.ptp(x, axis=1)
     array([8, 6])
 
@@ -1180,6 +1222,16 @@ def ptp(
 
     >>> np.ptp(x)
     array(10)
+
+    This example shows that a negative value can be returned when the input is
+    an array of signed integers:
+
+    >>> y = np.array([[1, 127],
+    ...               [0, 127],
+    ...               [-1, 127],
+    ...               [-2, 127]], dtype="i1")
+    >>> np.ptp(y, axis=1)
+    array([ 126,  127, -128, -127], dtype=int8)
 
     """
 
@@ -1201,6 +1253,7 @@ def std(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     r"""
     Compute the standard deviation along the specified axis.
@@ -1250,6 +1303,12 @@ def std(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `std` function.
+
+        Default: ``None``.
+
+    correction : {None, int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1344,6 +1403,13 @@ def std(
     dpnp.check_supported_arrays_type(a)
     dpnp.check_limitations(where=where)
 
+    if correction is not None:
+        if ddof != 0:
+            raise ValueError(
+                "ddof and correction can't be provided simultaneously."
+            )
+        ddof = correction
+
     if not isinstance(ddof, (int, float)):
         raise TypeError(
             f"An integer or float is required, but got {type(ddof)}"
@@ -1382,6 +1448,7 @@ def var(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     r"""
     Compute the variance along the specified axis.
@@ -1430,6 +1497,12 @@ def var(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `var` function.
+
+        Default: ``None``.
+
+    correction : {None, int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1517,6 +1590,13 @@ def var(
 
     dpnp.check_supported_arrays_type(a)
     dpnp.check_limitations(where=where)
+
+    if correction is not None:
+        if ddof != 0:
+            raise ValueError(
+                "ddof and correction can't be provided simultaneously."
+            )
+        ddof = correction
 
     if not isinstance(ddof, (int, float)):
         raise TypeError(

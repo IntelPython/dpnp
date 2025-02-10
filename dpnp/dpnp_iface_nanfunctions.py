@@ -113,15 +113,18 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
         Input array.
     axis : {None, int}, optional
         Axis along which to operate. By default flattened input is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.
+
         Default: ``False``.
 
     Returns
@@ -184,15 +187,18 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
         Input array.
     axis : {None, int}, optional
         Axis along which to operate. By default flattened input is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.
+
         Default: ``False``.
 
     Returns
@@ -257,18 +263,23 @@ def nancumprod(a, axis=None, dtype=None, out=None):
         Input array.
     axis : {None, int}, optional
         Axis along which the cumulative product is computed. The default
-        (``None``) is to compute the cumulative product over the flattened
-        array.
+        is to compute the cumulative product over the flattened array.
+
+        Default: ``None``.
     dtype : {None, dtype}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
         the default platform integer. In that case, the default platform
         integer is used.
+
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -321,18 +332,24 @@ def nancumsum(a, axis=None, dtype=None, out=None):
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
     axis : {None, int}, optional
-        Axis along which the cumulative sum is computed. The default (``None``)
-        is to compute the cumulative sum over the flattened array.
+        Axis along which the cumulative sum is computed. The default is to
+        compute the cumulative sum over the flattened array.
+
+        Default: ``None``.
     dtype : {None, dtype}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
         the default platform integer. In that case, the default platform
         integer is used.
+
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -386,15 +403,19 @@ def nanmax(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         Axis or axes along which maximum values must be computed. By default,
         the maximum value must be computed over the entire array. If a tuple
         of integers, maximum values must be computed over multiple axes.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
+
+        Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
+
         Default: ``False``.
 
     Returns
@@ -476,6 +497,7 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         Axis or axes along which the arithmetic means must be computed. If
         a tuple of unique integers, the means are computed over multiple
         axes. If ``None``, the mean is computed over the entire array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
         Type to use in computing the mean. By default, if `a` has a
@@ -484,16 +506,22 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         If `a` has a boolean or integral data type, the returned array
         will have the default floating point data type for the device
         where input array `a` is allocated.
+
+        Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
-        values) will be cast if necessary. Default: ``None``.
+        values) will be cast if necessary.
+
+        Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
-        the returned array. Default: ``False``.
+        the returned array.
+
+        Default: ``False``.
 
     Returns
     -------
@@ -588,11 +616,13 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         the array. If a sequence of axes, the array is first flattened along
         the given axes, then the median is computed along the resulting
         flattened axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the calculated
         values) will be cast if necessary.
+
         Default: ``None``.
     overwrite_input : bool, optional
        If ``True``, then allow use of memory of input array `a` for
@@ -600,6 +630,7 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
        :obj:`dpnp.nanmedian`. This will save memory when you do not need to
        preserve the contents of the input array. Treat the input as undefined,
        but it will probably be fully or partially sorted.
+
        Default: ``False``.
     keepdims : bool, optional
         If ``True``, the reduced axes (dimensions) are included in the result
@@ -607,6 +638,7 @@ def nanmedian(a, axis=None, out=None, overwrite_input=False, keepdims=False):
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
         the returned array.
+
         Default: ``False``.
 
     Returns
@@ -687,15 +719,19 @@ def nanmin(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         Axis or axes along which minimum values must be computed. By default,
         the minimum value must be computed over the entire array. If a tuple
         of integers, minimum values must be computed over multiple axes.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should
         be of the appropriate shape and dtype.
+
+        Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) must be included in the
         result as singleton dimensions, and, accordingly, the result must be
         compatible with the input array. Otherwise, if ``False``, the reduced
         axes (dimensions) must not be included in the result.
+
         Default: ``False``.
 
     Returns
@@ -785,6 +821,7 @@ def nanprod(
     axis : {None, int or tuple of ints}, optional
         Axis or axes along which the product is computed. The default is to
         compute the product of the flattened array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
         The type of the returned array and of the accumulator in which the
@@ -793,17 +830,20 @@ def nanprod(
         the platform (u)intp. In that case, the default will be either (u)int32
         or (u)int64 depending on whether the platform is 32 or 64 bits. For
         inexact inputs, dtype must be inexact.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternate output array in which to place the result. If provided, it
         must have the same shape as the expected output, but the type will be
         cast if necessary. The casting of NaN to integer
         can yield unexpected results.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the axes which are reduced are left in the result as
         dimensions with size one. With this option, the result will broadcast
         correctly against the original `a`.
+
         Default: ``False``.
 
     Returns
@@ -878,6 +918,7 @@ def nansum(
     axis : {None, int or tuple of ints}, optional
         Axis or axes along which the sum is computed. The default is to compute
         the sum of the flattened array.
+
         Default: ``None``.
     dtype : {None, dtype}, optional
         The type of the returned array and of the accumulator in which the
@@ -886,17 +927,20 @@ def nansum(
         (u)intp. In that case, the default will be either (u)int32 or (u)int64
         depending on whether the platform is 32 or 64 bits. For inexact inputs,
         dtype must be inexact.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternate output array in which to place the result. If provided, it
         must have the same shape as the expected output, but the type will be
         cast if necessary. The casting of NaN to integer can yield unexpected
         results.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the original `a`.
+
         Default: ``False``.
 
     Returns
@@ -966,6 +1010,7 @@ def nanstd(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     """
     Compute the standard deviation along the specified axis,
@@ -1015,6 +1060,12 @@ def nanstd(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `nanstd` function.
+
+        Default: ``None``.
+
+    correction : {None, int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1094,6 +1145,7 @@ def nanstd(
         keepdims=keepdims,
         where=where,
         mean=mean,
+        correction=correction,
     )
     return dpnp.sqrt(res, out=res)
 
@@ -1108,6 +1160,7 @@ def nanvar(
     *,
     where=True,
     mean=None,
+    correction=None,
 ):
     """
     Compute the variance along the specified axis, while ignoring NaNs.
@@ -1155,6 +1208,12 @@ def nanvar(
         a shape as if it was calculated with ``keepdims=True``.
         The axis for the calculation of the mean should be the same as used in
         the call to this `nanvar` function.
+
+        Default: ``None``.
+
+    correction : {None, int, float}, optional
+        Array API compatible name for the `ddof` parameter. Only one of them
+        can be provided at the same time.
 
         Default: ``None``.
 
@@ -1231,6 +1290,7 @@ def nanvar(
             ddof=ddof,
             keepdims=keepdims,
             where=where,
+            correction=correction,
         )
 
     if dtype is not None:
@@ -1242,6 +1302,13 @@ def nanvar(
         dpnp.check_supported_arrays_type(out)
         if not dpnp.issubdtype(out.dtype, dpnp.inexact):
             raise TypeError("If input is inexact, then out must be inexact.")
+
+    if correction is not None:
+        if ddof != 0:
+            raise ValueError(
+                "ddof and correction can't be provided simultaneously."
+            )
+        ddof = correction
 
     # Compute mean
     cnt = dpnp.sum(
