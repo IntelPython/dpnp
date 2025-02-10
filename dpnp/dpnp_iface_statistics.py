@@ -1181,20 +1181,39 @@ def ptp(
 
     For full documentation refer to :obj:`numpy.ptp`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    axis : {None, int, tuple of ints}, optional
+        Axis along which to find the peaks. By default, flatten the array.
+        `axis` may be negative, in which case it counts from the last to the
+        first axis. If this is a tuple of ints, a reduction is performed on
+        multiple axes, instead of a single axis or all the axes as before.
+
+        Default: ``None``.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        Alternative output array in which to place the result. It must have the
+        same shape and buffer length as the expected output, but the type of
+        the output values will be cast if necessary.
+
+        Default: ``None``.
+    keepdims : {None, bool}, optional
+        If this is set to ``True``, the axes which are reduced are left in the
+        result as dimensions with size one. With this option, the result will
+        broadcast correctly against the input array.
+
+        Default: ``None``.
+
     Returns
     -------
     ptp : dpnp.ndarray
         The range of a given array.
 
-    Limitations
-    -----------
-    Input array is supported as :class:`dpnp.dpnp.ndarray` or
-    :class:`dpctl.tensor.usm_ndarray`.
-
     Examples
     --------
     >>> import dpnp as np
-    >>> x = np.array([[4, 9, 2, 10],[6, 9, 7, 12]])
+    >>> x = np.array([[4, 9, 2, 10], [6, 9, 7, 12]])
     >>> np.ptp(x, axis=1)
     array([8, 6])
 
@@ -1203,6 +1222,16 @@ def ptp(
 
     >>> np.ptp(x)
     array(10)
+
+    This example shows that a negative value can be returned when the input is
+    an array of signed integers:
+
+    >>> y = np.array([[1, 127],
+    ...               [0, 127],
+    ...               [-1, 127],
+    ...               [-2, 127]], dtype="i1")
+    >>> np.ptp(y, axis=1)
+    array([ 126,  127, -128, -127], dtype=int8)
 
     """
 
