@@ -142,15 +142,18 @@ PYBIND11_MODULE(_blas_impl, m)
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
               py::arg("vectorY"), py::arg("transpose"),
               py::arg("depends") = py::list());
+    }
+
+    {
         m.def(
-            "_row_major_is_available",
-            [](void) {
-#if defined(USE_ONEMKL_CUBLAS)
-                return false;
-#else
+            "_using_onemkl_interfaces",
+            []() {
+#ifdef USE_ONEMKL_INTERFACES
                 return true;
-#endif // USE_ONEMKL_CUBLAS
+#else
+                return false;
+#endif
             },
-            "Check if the onemkl::blas::row_major can be used.");
+            "Check if the OneMKL interfaces are being used.");
     }
 }

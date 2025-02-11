@@ -9,6 +9,7 @@ from numpy.testing import (
     assert_array_equal,
     assert_equal,
     assert_raises,
+    assert_raises_regex,
 )
 
 import dpnp
@@ -24,6 +25,7 @@ from .helper import (
     numpy_version,
 )
 from .third_party.cupy import testing
+from .third_party.cupy.testing import with_requires
 
 
 class TestNanArgmaxNanArgmin:
@@ -749,6 +751,28 @@ class TestNanStdVar:
             ia, axis=axis, keepdims=keepdims, mean=imean
         )
         assert_dtype_allclose(result, expected)
+
+    @with_requires("numpy>=2.0")
+    def test_correction(self):
+        a = numpy.array([127, numpy.nan, numpy.nan, 39, 93, 87, numpy.nan, 46])
+        ia = dpnp.array(a)
+
+        expected = getattr(numpy, self.func)(a, correction=0.5)
+        result = getattr(dpnp, self.func)(ia, correction=0.5)
+        assert_dtype_allclose(result, expected)
+
+    @with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_both_ddof_correction_are_set(self, xp):
+        a = xp.array([5, xp.nan, -2])
+
+        err_msg = "ddof and correction can't be provided simultaneously."
+
+        with assert_raises_regex(ValueError, err_msg):
+            getattr(xp, self.func)(a, ddof=0.5, correction=0.5)
+
+        with assert_raises_regex(ValueError, err_msg):
+            getattr(xp, self.func)(a, ddof=1, correction=0)
 
     def test_error(self):
         ia = dpnp.arange(5, dtype=dpnp.float32)

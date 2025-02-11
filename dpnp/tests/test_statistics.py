@@ -5,6 +5,7 @@ import pytest
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
+    assert_raises_regex,
 )
 
 import dpnp
@@ -762,6 +763,29 @@ class TestStdVar:
         expected = getattr(a, self.func)()
         result = getattr(ia, self.func)()
         assert_dtype_allclose(result, expected)
+
+    @with_requires("numpy>=2.0")
+    def test_correction(self):
+        a = numpy.array([1, -1, 1, -1])
+        ia = dpnp.array(a)
+
+        # numpy doesn't support `correction` keyword in std/var methods
+        expected = getattr(numpy, self.func)(a, correction=1)
+        result = getattr(ia, self.func)(correction=1)
+        assert_dtype_allclose(result, expected)
+
+    @with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_both_ddof_correction_are_set(self, xp):
+        a = xp.array([1, -1, 1, -1])
+
+        err_msg = "ddof and correction can't be provided simultaneously."
+
+        with assert_raises_regex(ValueError, err_msg):
+            getattr(xp, self.func)(a, ddof=1, correction=0)
+
+        with assert_raises_regex(ValueError, err_msg):
+            getattr(xp, self.func)(a, ddof=1, correction=1)
 
     def test_error(self):
         ia = dpnp.arange(5)

@@ -1734,6 +1734,7 @@ class dpnp_array:
         *,
         where=True,
         mean=None,
+        correction=None,
     ):
         """
         Returns the standard deviation of the array elements, along given axis.
@@ -1743,7 +1744,15 @@ class dpnp_array:
         """
 
         return dpnp.std(
-            self, axis, dtype, out, ddof, keepdims, where=where, mean=mean
+            self,
+            axis,
+            dtype,
+            out,
+            ddof,
+            keepdims,
+            where=where,
+            mean=mean,
+            correction=correction,
         )
 
     @property
@@ -1944,6 +1953,7 @@ class dpnp_array:
         *,
         where=True,
         mean=None,
+        correction=None,
     ):
         """
         Returns the variance of the array elements, along given axis.
@@ -1953,7 +1963,15 @@ class dpnp_array:
         """
 
         return dpnp.var(
-            self, axis, dtype, out, ddof, keepdims, where=where, mean=mean
+            self,
+            axis,
+            dtype,
+            out,
+            ddof,
+            keepdims,
+            where=where,
+            mean=mean,
+            correction=correction,
         )
 
 

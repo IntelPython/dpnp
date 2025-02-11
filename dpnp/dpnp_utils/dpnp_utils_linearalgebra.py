@@ -50,26 +50,23 @@ __all__ = [
 ]
 
 
-def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
+def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
     """
-    Determines the output array data type and an intermediate data type
-    used in performing calculations related to a specific math function.
-    If dtype is ``None``, the output array data type of the operation is
-    determined based on the Promotion Type Rule and device capabilities.
-    Otherwise, `dtype` is used as output array dtype, if input arrays
-    can cast to it according to the casting rule determined. If casting
-    cannot be done, a ``TypeError`` is raised.
-    The intermediate data type is the data type used for performing the math
-    function calculations. If output array dtype is a floating-point data type,
-    it is also used for the intermediate data type. If output array dtype is an
-    integral data type, the default floating point data type of the device where
-    input arrays are allocated on are used for intermediate data type.
+    Determines the output array data type.
+    If `dtype` and `out` are ``None``, the output array data type of the
+    operation is determined based on the Promotion Type Rule and device
+    capabilities. if `out` is given, its data type is used as the output
+    array dtypes. Otherwise, `dtype` is used as output array dtype.
+    If input arrays cannot be cast to the determined output array dtype,
+    a ``TypeError`` is raised.
 
     Parameters
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays.
     dtype : dtype
+        If not ``None`` and `out` is not defined, data type of the output array.
+    out : {dpnp.ndarray, usm_ndarray}
         If not ``None``, data type of the output array.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
@@ -78,17 +75,23 @@ def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
 
     Returns
     -------
-    compute_dtype, res_dtype :
-        `compute_dtype` is the data type used in performing math function calculations.
-        The input arrays of the math function are cast to `compute_dtype` and then
-        the calculations are performed.
-        `res_dtype` is the output data type. When the result is obtained, it is cast
-        to `res_dtype`.
+    res_dtype :
+        `res_dtype` is the output data type. When the result is obtained,
+        it is cast to `res_dtype`.
 
     """
 
     res_dtype = dpnp.result_type(*arrays)
-    default_dtype = dpnp.default_float_type(sycl_queue=sycl_queue)
+
+    # If inputs are boolean and `out` is given and it is not boolean, the
+    # calculation should be performed in boolean and at the end the result
+    # is cast to out dtype. It is different than general case where the inputs
+    # are cast to out dtype and then calculation is performed. Even when inputs
+    # are boolean and `dtype` is given, the casting is done first and then the
+    # calculation is performed.
+    if out is not None and res_dtype != dpnp.bool:
+        # out dtype is prioritized over a given dtype
+        dtype = out.dtype
 
     if dtype is not None:
         if dpnp.can_cast(res_dtype, dtype, casting=casting):
@@ -98,11 +101,7 @@ def _compute_res_dtype(*arrays, sycl_queue, dtype=None, casting="no"):
                 f"Cannot cast from dtype({res_dtype}) to dtype({dtype}) with casting rule {casting}"
             )
 
-    compute_dtype = (
-        res_dtype if dpnp.issubdtype(res_dtype, dpnp.inexact) else default_dtype
-    )
-
-    return compute_dtype, res_dtype
+    return res_dtype
 
 
 def _copy_array(x, copy_flag=False, dtype=None, order="C"):
@@ -504,6 +503,23 @@ def _gemm_matmul(exec_q, x1, x2, res):
     return res
 
 
+def _gemm_special_case(x1, x2, res_dtype, call_flag):
+    """
+    `gemm` and `gemm_batch` support these special cases of data types
+    while `gemv` does not.
+
+    """
+    # TODO: replace with dpnp.int8 when it is added
+    is_int8 = x1.dtype == numpy.int8 and x2.dtype == numpy.int8
+    is_int32_or_f32 = res_dtype in [dpnp.int32, dpnp.float32]
+    flag = is_int8 and is_int32_or_f32 and call_flag in ["gemm", "gemm_batch"]
+
+    # onemkl_interfaces does not support these data types
+    onemkl_interfaces = bi._using_onemkl_interfaces()
+
+    return flag and not onemkl_interfaces
+
+
 def _shape_error(shape1, shape2, func, err_msg):
     """Validate the shapes of input and output arrays."""
 
@@ -749,17 +765,19 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
     _validate_out_array(out, exec_q)
 
     # Determine the appropriate data types
-    dot_dtype, res_dtype = _compute_res_dtype(a, b, sycl_queue=exec_q)
+    res_dtype = _compute_res_dtype(
+        a, b, out=out, casting=casting, sycl_queue=exec_q
+    )
 
     result = _create_result_array(
-        a, b, out, (), dot_dtype, res_usm_type, exec_q
+        a, b, out, (), res_dtype, res_usm_type, exec_q
     )
 
     # input arrays should have the proper data type
     if dpnp.issubdtype(res_dtype, dpnp.inexact):
         # copying is needed if dtypes of input arrays are different
-        a = _copy_array(a, dtype=dot_dtype)
-        b = _copy_array(b, dtype=dot_dtype)
+        a = _copy_array(a, dtype=res_dtype)
+        b = _copy_array(b, dtype=res_dtype)
 
         _manager = dpu.SequentialOrderManager[exec_q]
 
@@ -777,14 +795,11 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
         )
         _manager.add_event_pair(ht_ev, dot_ev)
     else:
-        # oneapi::mkl::blas::dot is slow for integer data type,
+        # oneapi::mkl::blas::dot does not support integer dtypes,
         # so using dpctl.tensor.vecdot instead
-        dpt_a = dpnp.get_usm_ndarray(a)
-        dpt_b = dpnp.get_usm_ndarray(b)
-        result = dpnp_array._create_from_usm_ndarray(dpt.vecdot(dpt_a, dpt_b))
-
-    if dot_dtype != res_dtype:
-        result = result.astype(res_dtype, copy=False)
+        a_usm = dpnp.get_usm_ndarray(a)
+        b_usm = dpnp.get_usm_ndarray(b)
+        result = dpnp_array._create_from_usm_ndarray(dpt.vecdot(a_usm, b_usm))
 
     return dpnp.get_result_array(result, out, casting=casting)
 
@@ -902,8 +917,8 @@ def dpnp_multiplication(
         axes_res = normalize_axis_tuple(axes_res, len(result_shape), "axes")
 
     # Determine the appropriate data types
-    compute_dtype, res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+    res_dtype = _compute_res_dtype(
+        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
     )
 
     call_flag = None
@@ -998,7 +1013,7 @@ def dpnp_multiplication(
             x2,
             out,
             res_shape,
-            compute_dtype,
+            res_dtype,
             res_usm_type,
             exec_q,
             res_order,
@@ -1010,63 +1025,81 @@ def dpnp_multiplication(
         elif x1.size == 0 or x2.size == 0:
             result.fill(0)
         else:
-            # input arrays should have the proper data type and
-            # their base (last 2-dimensions) to be c-contiguous or f-contiguous
-            x1 = _copy_array(
-                x1,
-                copy_flag=not x1_contig_flag,
-                dtype=compute_dtype,
-                order=res_order,
-            )
-            x2 = _copy_array(
-                x2,
-                copy_flag=not x2_contig_flag,
-                dtype=compute_dtype,
-                order=res_order,
-            )
-
-            if call_flag == "gemv":
-                if transpose:
-                    a_usm = dpnp.get_usm_ndarray(x2)
-                    x_usm = dpnp.get_usm_ndarray(x1)
+            if _gemm_special_case(x1, x2, res_dtype, call_flag):
+                x1 = _copy_array(
+                    x1, copy_flag=not x1_contig_flag, order=res_order
+                )
+                x2 = _copy_array(
+                    x2, copy_flag=not x2_contig_flag, order=res_order
+                )
+                if call_flag == "gemm":
+                    result = _gemm_matmul(exec_q, x1, x2, result)
                 else:
-                    a_usm = dpnp.get_usm_ndarray(x1)
-                    x_usm = dpnp.get_usm_ndarray(x2)
-
-                _manager = dpu.SequentialOrderManager[exec_q]
-
-                ht_ev, gemv_ev = bi._gemv(
-                    exec_q,
-                    a_usm,
-                    x_usm,
-                    dpnp.get_usm_ndarray(result),
-                    transpose,
-                    depends=_manager.submitted_events,
-                )
-                _manager.add_event_pair(ht_ev, gemv_ev)
-            elif call_flag == "gemm":
-                result = _gemm_matmul(
-                    exec_q,
+                    assert call_flag == "gemm_batch"
+                    result = _gemm_batch_matmul(exec_q, x1, x2, result)
+            elif dpnp.issubdtype(res_dtype, dpnp.inexact):
+                # copying is needed if dtypes of input arrays are different or
+                # their base (last 2-dimensions) is not c-contiguous or f-contiguous
+                x1 = _copy_array(
                     x1,
-                    x2,
-                    result,
+                    copy_flag=not x1_contig_flag,
+                    dtype=res_dtype,
+                    order=res_order,
                 )
-            else:  # call_flag == "gemm_batch"
-                assert call_flag == "gemm_batch"
-                result = _gemm_batch_matmul(
-                    exec_q,
-                    x1,
+                x2 = _copy_array(
                     x2,
-                    result,
+                    copy_flag=not x2_contig_flag,
+                    dtype=res_dtype,
+                    order=res_order,
+                )
+
+                if call_flag == "gemv":
+                    if transpose:
+                        a_usm = dpnp.get_usm_ndarray(x2)
+                        x_usm = dpnp.get_usm_ndarray(x1)
+                    else:
+                        a_usm = dpnp.get_usm_ndarray(x1)
+                        x_usm = dpnp.get_usm_ndarray(x2)
+
+                    _manager = dpu.SequentialOrderManager[exec_q]
+
+                    ht_ev, gemv_ev = bi._gemv(
+                        exec_q,
+                        a_usm,
+                        x_usm,
+                        dpnp.get_usm_ndarray(result),
+                        transpose,
+                        depends=_manager.submitted_events,
+                    )
+                    _manager.add_event_pair(ht_ev, gemv_ev)
+                elif call_flag == "gemm":
+                    result = _gemm_matmul(exec_q, x1, x2, result)
+                else:
+                    assert call_flag == "gemm_batch"
+                    result = _gemm_batch_matmul(exec_q, x1, x2, result)
+            else:
+                # oneapi::mkl::blas::gemm/gemv do not support integer dtypes,
+                # except for special cases determined in `_gemm_special_case`,
+                # use dpctl.tensor.matmul for unsupported cases
+
+                # `dpt.matmul` does not support `casting` kwarg.
+                # We may need to change input dtypes based on given `casting`.
+                # The possibility of casting is already validated in
+                # `_compute_res_dtype`.
+                x1 = _copy_array(x1, dtype=res_dtype, order=res_order)
+                x2 = _copy_array(x2, dtype=res_dtype, order=res_order)
+
+                x1_usm = dpnp.get_usm_ndarray(x1)
+                x2_usm = dpnp.get_usm_ndarray(x2)
+                out_usm = dpnp.get_usm_ndarray(result)
+                dpt.matmul(
+                    x1_usm, x2_usm, out=out_usm, dtype=dtype, order=order
                 )
 
     if NumPy_special_case:
         result = dpnp.tile(result, out.shape)
     elif res_shape != result_shape:
         result = dpnp.reshape(result, result_shape)
-
-    if compute_dtype != res_dtype:
-        result = dpnp.astype(result, res_dtype, copy=False)
 
     if out is None:
         if axes is not None:
@@ -1207,8 +1240,8 @@ def dpnp_vecdot(
     )
 
     # Determine the appropriate data types
-    _, res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, casting=casting, sycl_queue=exec_q
+    res_dtype = _compute_res_dtype(
+        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
     )
 
     _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)

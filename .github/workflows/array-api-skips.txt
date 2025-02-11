@@ -20,13 +20,6 @@ array_api_tests/test_signatures.py::test_func_signature[unique_values]
 # hypothesis found failures
 array_api_tests/test_operators_and_elementwise_functions.py::test_clip
 
-# unexpected result is returned
+# unexpected result is returned - unmute when dpctl-1986 is resolved
 array_api_tests/test_operators_and_elementwise_functions.py::test_asin
 array_api_tests/test_operators_and_elementwise_functions.py::test_asinh
-
-# missing 'correction' keyword argument
-array_api_tests/test_signatures.py::test_func_signature[std]
-array_api_tests/test_signatures.py::test_func_signature[var]
-
-# arrays have different values
-array_api_tests/test_linalg.py::test_linalg_tensordot
