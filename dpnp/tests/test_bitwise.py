@@ -4,7 +4,8 @@ from numpy.testing import assert_array_equal
 
 import dpnp
 
-from .helper import assert_dtype_allclose, get_integer_dtypes
+from .helper import assert_dtype_allclose, get_integer_dtypes, numpy_version
+from .third_party.cupy import testing
 
 
 @pytest.mark.parametrize(
@@ -67,12 +68,14 @@ class TestBitwiseBinary:
         assert_array_equal(ia ^ ib, a ^ b)
 
     def test_left_shift(self, lhs, rhs, dtype):
-        _ = self._test_binary("bitwise_left_shift", lhs, rhs, dtype)
+        if numpy_version() >= "2.0.0":
+            _ = self._test_binary("bitwise_left_shift", lhs, rhs, dtype)
         ia, ib, a, b = self._test_binary("left_shift", lhs, rhs, dtype)
         assert_array_equal(ia << ib, a << b)
 
     def test_right_shift(self, lhs, rhs, dtype):
-        _ = self._test_binary("bitwise_right_shift", lhs, rhs, dtype)
+        if numpy_version() >= "2.0.0":
+            _ = self._test_binary("bitwise_right_shift", lhs, rhs, dtype)
         ia, ib, a, b = self._test_binary("right_shift", lhs, rhs, dtype)
         assert_array_equal(ia >> ib, a >> b)
 
@@ -216,11 +219,13 @@ class TestBitwiseUnary:
 
         return (ia, a)
 
+    @testing.with_requires("numpy>=2.0")
     def test_bitwise_count(self, val, dtype):
         _ = self._test_unary("bitwise_count", val, dtype)
 
     def test_invert(self, val, dtype):
-        _ = self._test_unary("invert", val, dtype)
-        _ = self._test_unary("bitwise_invert", val, dtype)
-        ia, a = self._test_unary("bitwise_not", val, dtype)
+        if numpy_version() >= "2.0.0":
+            _ = self._test_unary("bitwise_not", val, dtype)
+            _ = self._test_unary("bitwise_invert", val, dtype)
+        ia, a = self._test_unary("invert", val, dtype)
         assert_array_equal(~ia, ~a)
