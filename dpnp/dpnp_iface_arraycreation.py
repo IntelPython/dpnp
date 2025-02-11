@@ -203,7 +203,7 @@ def arange(
     step : {int, real}, optional
         Spacing between values. The default `step` size is 1. If `step`
         is specified as a position argument, `start` must also be given.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -306,7 +306,7 @@ def array(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -462,7 +462,7 @@ def asanyarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -565,7 +565,7 @@ def asarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -670,7 +670,7 @@ def ascontiguousarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -782,7 +782,7 @@ def asfortranarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -1219,7 +1219,7 @@ def empty(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -1320,7 +1320,7 @@ def empty_like(
     a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -1433,7 +1433,7 @@ def eye(
         Index of the diagonal: 0 (the default) refers to the main diagonal,
         a positive value refers to an upper diagonal, and a negative value to
         a lower diagonal.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -1541,7 +1541,7 @@ def frombuffer(
     ----------
     buffer : buffer_like
         An object that exposes the buffer interface.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the returned array.
         Default is the default floating point data type for the device where
         the returned array is allocated.
@@ -1646,7 +1646,7 @@ def fromfile(
     ----------
     file : file or str or Path
         Open file object or filename.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array.
         For binary files, it is used to determine the size and byte-order
         of the items in the file.
@@ -1779,7 +1779,7 @@ def fromfunction(
     shape : (N,) tuple of ints
         Shape of the output array, which also determines the shape of
         the coordinate arrays passed to `function`.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the coordinate arrays passed to `function`.
         Default is the default floating point data type for the device where
         the returned array is allocated.
@@ -1887,7 +1887,7 @@ def fromiter(
     ----------
     iter : iterable object
         An iterable object providing data for the array.
-    dtype : data-type
+    dtype : {None, str, dtype object}
         The data-type of the returned array.
     count : int, optional
         The number of items to read from *iterable*. The default is -1,
@@ -1981,7 +1981,7 @@ def fromstring(
     ----------
     string : str
         A string containing the data.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         The data type of the array.
         For binary input data, the data must be in exactly this format.
         Default is the default floating point data type for the device where
@@ -2159,7 +2159,7 @@ def full(
         Fill value, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -2263,7 +2263,7 @@ def full_like(
         Fill value, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -2382,7 +2382,7 @@ def geomspace(
     num : int, optional
         Number of samples to generate.
         Default: ``50``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -2492,7 +2492,7 @@ def identity(
     ----------
     n : int
         Number of rows (and columns) in `n` x `n` output.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -2607,7 +2607,7 @@ def linspace(
         of tuples, tuples of lists, and ndarrays. If `endpoint` is set to
         ``False`` the sequence consists of all but the last of ``num + 1``
         evenly spaced samples, so that `stop` is excluded.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -2716,7 +2716,7 @@ def loadtxt(
         is ``.gz`` or ``.bz2``, the file is first decompressed. Note that
         generators must return bytes or strings. The strings in a list or
         produced by a generator are treated as lines.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the resulting array.
         Default is the default floating point data type for the device where
         the returned array is allocated.
@@ -2858,7 +2858,7 @@ def logspace(
         The `step` size between the elements in ``ln(samples) / ln(base)``
         (or log_base(samples)) is uniform.
         Default: ``10.0``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -3196,7 +3196,7 @@ def ones(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3303,7 +3303,7 @@ def ones_like(
     a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3408,7 +3408,7 @@ def trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         Axes to be used as the first and second axis of the 2-D sub-arrays from
         which the diagonals should be taken. Defaults are the first two axes of
         `a`.
-    dtype : dtype, optional
+    dtype : {None, str, dtype object}, optional
         Determines the data-type of the returned array and of the accumulator
         where the elements are summed. If `dtype` has the value ``None`` and
         `a` is of integer type of precision less than the default integer
@@ -3480,7 +3480,7 @@ def tri(
         The sub-diagonal at and below which the array is filled. k = 0 is
         the main diagonal, while k < 0 is below it, and k > 0 is above.
         Default: ``0``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3841,7 +3841,7 @@ def zeros(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., `dpnp.int32`.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3948,7 +3948,7 @@ def zeros_like(
     a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.

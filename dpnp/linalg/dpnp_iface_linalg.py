@@ -2152,7 +2152,7 @@ def trace(x, /, *, offset=0, dtype=None):
             * offset < 0: off-diagonal below the main diagonal.
 
         Default: ``0``.
-    dtype : dtype, optional
+    dtype : {None, str, dtype object}, optional
         Determines the data-type of the returned array and of the accumulator
         where the elements are summed. If `dtype` has the value ``None`` and
         `a` is of integer type of precision less than the default integer

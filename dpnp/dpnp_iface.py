@@ -217,7 +217,7 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
     ----------
     x1 : {dpnp.ndarray, usm_ndarray}
         Array data type casting.
-    dtype : dtype
+    dtype : {None, str, dtype object}
         Target data type.
     order : {'C', 'F', 'A', 'K'}
         Row-major (C-style) or column-major (Fortran-style) order.
@@ -281,7 +281,7 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     ----------
     a : {array_like, scalar}
         Input array or scalar.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the result array if new array is creating. If not
         given, a default dtype will be used that can represent the values (by
         considering Promotion Type Rule and device capabilities when necessary).

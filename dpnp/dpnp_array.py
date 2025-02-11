@@ -789,7 +789,7 @@ class dpnp_array:
         ----------
         x1 : {dpnp.ndarray, usm_ndarray}
             Array data type casting.
-        dtype : dtype
+        dtype : {None, str, dtype object}
             Target data type.
         order : {"C", "F", "A", "K"}, optional
             Row-major (C-style) or column-major (Fortran-style) order.
