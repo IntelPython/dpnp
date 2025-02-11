@@ -81,16 +81,6 @@ option(DPNP_USE_ONEMKL_INTERFACES
 )
 set(HIP_TARGETS "" CACHE STRING "HIP architecture for target")
 
-#Add rocm root dir to CMAKE_PREFIX_PATH, usually "/opt/rocm"
-if(DPNP_TARGET_HIP)
-    if(DEFINED ENV{ROCM_PATH})
-        set(ROCM_PATH $ENV{ROCM_PATH})
-    else()
-        set(ROCM_PATH "/opt/rocm")
-    endif()
-    list(APPEND CMAKE_PREFIX_PATH ${ROCM_PATH})
-endif()
-
 set(_dpnp_sycl_targets)
 set(_dpnp_amd_targets)
 set(_use_onemkl_interfaces OFF)
