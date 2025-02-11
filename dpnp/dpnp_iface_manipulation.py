@@ -1124,7 +1124,7 @@ def broadcast_shapes(*args):
 
     Returns
     -------
-    tuple
+    out : tuple
         Broadcasted shape.
 
     See Also
