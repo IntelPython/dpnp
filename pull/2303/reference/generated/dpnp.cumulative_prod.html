@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.cumulative_prod &mdash; Data Parallel Extension for NumPy 0.17.0dev6+9.g33febd4e9a7 documentation</title>
+  <title>dpnp.cumulative_prod &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.g0425f46e6e4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=edd503c2"></script>
+      <script src="../../_static/documentation_options.js?v=99f2e89b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -139,24 +139,28 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- Axis along which the cumulative product is computed. The default value
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>Axis along which the cumulative product is computed. The default value
 is only allowed for one-dimensional arrays. For arrays with more than
-one dimension <cite>axis</cite> is required.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>dtype}</em><em>, </em><em>optional</em>) -- Type of the returned array and of the accumulator in which the elements
+one dimension <cite>axis</cite> is required.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><em>dtype}</em><em>, </em><em>optional</em>) -- <p>Type of the returned array and of the accumulator in which the elements
 are summed. If <cite>dtype</cite> is not specified, it defaults to the dtype of
 <cite>x</cite>, unless <cite>x</cite> has an integer dtype with a precision less than that of
 the default platform integer. In that case, the default platform
-integer is used.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Alternative output array in which to place the result. It must have the
+integer is used.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternative output array in which to place the result. It must have the
 same shape and buffer length as the expected output but the type will
-be cast if necessary.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>include_initial</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- Boolean indicating whether to include the initial value (ones) as
+be cast if necessary.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>include_initial</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Boolean indicating whether to include the initial value (ones) as
 the first value in the output. With <code class="docutils literal notranslate"><span class="pre">include_initial=True</span></code>
-the shape of the output is different than the shape of the input.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+the shape of the output is different than the shape of the input.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

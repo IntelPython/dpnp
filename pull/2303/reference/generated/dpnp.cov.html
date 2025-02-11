@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.cov &mdash; Data Parallel Extension for NumPy 0.17.0dev6+9.g33febd4e9a7 documentation</title>
+  <title>dpnp.cov &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.g0425f46e6e4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=edd503c2"></script>
+      <script src="../../_static/documentation_options.js?v=99f2e89b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -155,13 +155,17 @@ simple average. See the notes for the details.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>fweights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of integer frequency weights; the number of times each
-observation vector should be repeated.</p>
+observation vector should be repeated.
+It is required that <code class="docutils literal notranslate"><span class="pre">fweights</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>. However, the function will not
+error when <code class="docutils literal notranslate"><span class="pre">fweights</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> for performance reasons.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>aweights</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>1-D array of observation vector weights. These relative weights are
 typically large for observations considered &quot;important&quot; and smaller for
 observations considered less &quot;important&quot;. If <code class="docutils literal notranslate"><span class="pre">ddof=0</span></code> the array of
-weights can be used to assign probabilities to observation vectors.</p>
+weights can be used to assign probabilities to observation vectors.
+It is required that <code class="docutils literal notranslate"><span class="pre">aweights</span> <span class="pre">&gt;=</span> <span class="pre">0</span></code>. However, the function will not
+error when <code class="docutils literal notranslate"><span class="pre">aweights</span> <span class="pre">&lt;</span> <span class="pre">0</span></code> for performance reasons.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>dtype</strong> (<em>data-type</em><em>, </em><em>optional</em>) -- <p>Data-type of the result. By default, the return data-type will have
