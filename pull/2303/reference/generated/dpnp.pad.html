@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.g0425f46e6e4 documentation</title>
+  <title>dpnp.pad &mdash; Data Parallel Extension for NumPy 0.17.0dev6+14.g13e58811caa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=99f2e89b"></script>
+      <script src="../../_static/documentation_options.js?v=3147f52f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -182,41 +182,42 @@ end values are used to pad the beginning.</p>
 </dl>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;constant&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>stat_length</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>sequence</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <dl class="simple">
-<dt>Used in <code class="docutils literal notranslate"><span class="pre">&quot;maximum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;minimum&quot;</span></code>.</dt><dd><p>Number of values at edge of each axis used to calculate the statistic
+<li><p><strong>stat_length</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>sequence</em><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Used in <code class="docutils literal notranslate"><span class="pre">&quot;maximum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;mean&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;median&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;minimum&quot;</span></code>.
+Number of values at edge of each axis used to calculate the statistic
 value. <code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique
 statistic lengths for each axis.
 <code class="docutils literal notranslate"><span class="pre">(before,</span> <span class="pre">after)</span></code> or <code class="docutils literal notranslate"><span class="pre">((before,</span> <span class="pre">after),)</span></code> yields same before
 and after statistic lengths for each axis.
 <code class="docutils literal notranslate"><span class="pre">(stat_length,)</span></code> or <code class="docutils literal notranslate"><span class="pre">int</span></code> is a shortcut for
 <code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">=</span> <span class="pre">after</span> <span class="pre">=</span> <span class="pre">statistic</span></code> length for all axes.</p>
-</dd>
-</dl>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>, to use the entire axis.</p>
 </p></li>
-<li><p><strong>constant_values</strong> (<em>{sequence</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- Used in <code class="docutils literal notranslate"><span class="pre">&quot;constant&quot;</span></code>. The values to set the padded values for each
+<li><p><strong>constant_values</strong> (<em>{sequence</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>Used in <code class="docutils literal notranslate"><span class="pre">&quot;constant&quot;</span></code>. The values to set the padded values for each
 axis.
 <code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique pad constants
 for each axis.
 <code class="docutils literal notranslate"><span class="pre">(before,</span> <span class="pre">after)</span></code> or <code class="docutils literal notranslate"><span class="pre">((before,</span> <span class="pre">after),)</span></code> yields same before
 and after constants for each axis.
 <code class="docutils literal notranslate"><span class="pre">(constant,)</span></code> or <code class="docutils literal notranslate"><span class="pre">constant</span></code> is a shortcut for
-<code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">=</span> <span class="pre">after</span> <span class="pre">=</span> <span class="pre">constant</span></code> for all axes.
-Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
-<li><p><strong>end_values</strong> (<em>{sequence</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- Used in <code class="docutils literal notranslate"><span class="pre">&quot;linear_ramp&quot;</span></code>. The values used for the ending value of the
+<code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">=</span> <span class="pre">after</span> <span class="pre">=</span> <span class="pre">constant</span></code> for all axes.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</p></li>
+<li><p><strong>end_values</strong> (<em>{sequence</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>Used in <code class="docutils literal notranslate"><span class="pre">&quot;linear_ramp&quot;</span></code>. The values used for the ending value of the
 linear_ramp and that will form the edge of the padded array.
 <code class="docutils literal notranslate"><span class="pre">((before_1,</span> <span class="pre">after_1),</span> <span class="pre">...</span> <span class="pre">(before_N,</span> <span class="pre">after_N))</span></code> unique end values
 for each axis.
 <code class="docutils literal notranslate"><span class="pre">(before,</span> <span class="pre">after)</span></code> or <code class="docutils literal notranslate"><span class="pre">((before,</span> <span class="pre">after),)</span></code> yields same before
 and after end values for each axis.
 <code class="docutils literal notranslate"><span class="pre">(constant,)</span></code> or <code class="docutils literal notranslate"><span class="pre">constant</span></code> is a shortcut for
-<code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">=</span> <span class="pre">after</span> <span class="pre">=</span> <span class="pre">constant</span></code> for all axes.
-Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
-<li><p><strong>reflect_type</strong> (<em>{&quot;even&quot;</em><em>, </em><em>&quot;odd&quot;}</em><em>, </em><em>optional</em>) -- Used in <code class="docutils literal notranslate"><span class="pre">&quot;reflect&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;symmetric&quot;</span></code>. The <code class="docutils literal notranslate"><span class="pre">&quot;even&quot;</span></code> style is the
+<code class="docutils literal notranslate"><span class="pre">before</span> <span class="pre">=</span> <span class="pre">after</span> <span class="pre">=</span> <span class="pre">constant</span></code> for all axes.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</p></li>
+<li><p><strong>reflect_type</strong> (<em>{&quot;even&quot;</em><em>, </em><em>&quot;odd&quot;}</em><em>, </em><em>optional</em>) -- <p>Used in <code class="docutils literal notranslate"><span class="pre">&quot;reflect&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;symmetric&quot;</span></code>. The <code class="docutils literal notranslate"><span class="pre">&quot;even&quot;</span></code> style is the
 default with an unaltered reflection around the edge value. For
 the <code class="docutils literal notranslate"><span class="pre">&quot;odd&quot;</span></code> style, the extended part of the array is created by
-subtracting the reflected values from two times the edge value.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;even&quot;</span></code>.</p></li>
+subtracting the reflected values from two times the edge value.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;even&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

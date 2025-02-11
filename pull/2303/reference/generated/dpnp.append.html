@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.append &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.g0425f46e6e4 documentation</title>
+  <title>dpnp.append &mdash; Data Parallel Extension for NumPy 0.17.0dev6+14.g13e58811caa documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=99f2e89b"></script>
+      <script src="../../_static/documentation_options.js?v=3147f52f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,16 +136,16 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arr</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Values are appended to a copy of this array.</p></li>
-<li><p><strong>values</strong> (<em>{scalar</em><em>, </em><em>array_like}</em>) -- These values are appended to a copy of <cite>arr</cite>. It must be of the
-correct shape (the same shape as <cite>arr</cite>, excluding <cite>axis</cite>). If
-<cite>axis</cite> is not specified, <cite>values</cite> can be any shape and will be
-flattened before use.
-These values can be in any form that can be converted to an array.
-This includes scalars, lists, lists of tuples, tuples,
-tuples of tuples, tuples of lists, and ndarrays.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- The axis along which <cite>values</cite> are appended. If <cite>axis</cite> is not
-given, both <cite>arr</cite> and <cite>values</cite> are flattened before use.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>values</strong> (<em>{scalar</em><em>, </em><em>array_like}</em>) -- These values are appended to a copy of <cite>arr</cite>. It must be of the correct
+shape (the same shape as <cite>arr</cite>, excluding <cite>axis</cite>). If <cite>axis</cite> is not
+specified, <cite>values</cite> can be any shape and will be flattened before use.
+These values can be in any form that can be converted to an array. This
+includes scalars, lists, lists of tuples, tuples, tuples of tuples,
+tuples of lists, and ndarrays.</p></li>
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>The axis along which <cite>values</cite> are appended. If <cite>axis</cite> is not given,
+both <cite>arr</cite> and <cite>values</cite> are flattened before use.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
