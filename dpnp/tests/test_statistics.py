@@ -532,6 +532,45 @@ class TestCov:
         assert_allclose(result, expected)
         assert result.dtype == dt
 
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    @pytest.mark.parametrize("bias", [True, False])
+    def test_bias(self, dt, bias):
+        a = generate_random_numpy_array((3, 4), dtype=dt)
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a, bias=bias)
+        result = dpnp.cov(ia, bias=bias)
+        assert_dtype_allclose(result, expected)
+
+        # with rowvar
+        expected = numpy.cov(a, rowvar=False, bias=bias)
+        result = dpnp.cov(ia, rowvar=False, bias=bias)
+        assert_dtype_allclose(result, expected)
+
+        freq = numpy.array([1, 4, 1, 7])
+        ifreq = dpnp.array(freq)
+
+        # with frequency
+        expected = numpy.cov(a, bias=bias, fweights=freq)
+        result = dpnp.cov(ia, bias=bias, fweights=ifreq)
+        assert_dtype_allclose(result, expected)
+
+        weights = numpy.array([1.2, 3.7, 5.0, 1.1])
+        iweights = dpnp.array(weights)
+
+        # with weights
+        expected = numpy.cov(a, bias=bias, aweights=weights)
+        result = dpnp.cov(ia, bias=bias, aweights=iweights)
+        assert_dtype_allclose(result, expected)
+
+    def test_usm_ndarray(self):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]])
+        ia = dpt.asarray(a)
+
+        expected = numpy.cov(a.T)
+        result = dpnp.cov(ia.T)
+        assert_allclose(result, expected)
+
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
     @pytest.mark.filterwarnings("ignore::RuntimeWarning")

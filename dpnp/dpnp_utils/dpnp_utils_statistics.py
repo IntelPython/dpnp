@@ -128,34 +128,18 @@ def dpnp_cov(
 
     """
 
-    def _get_2dmin_array(x):
-        """
-        Transform an input array to a form required for building a covariance matrix.
+    # need to create a copy of input, since it will be modified in-place
+    x = dpnp.array(m, ndmin=2, dtype=dtype)
+    if not rowvar and m.ndim != 1:
+        x = x.T
 
-        If applicable, it reshapes the input array to have 2 dimensions or greater.
-        If applicable, it transposes the input array when 'rowvar' is False.
-        It casts to another dtype, if the input array differs from requested one.
-
-        """
-        if x.ndim == 0:
-            x = dpnp.reshape(x, (1, 1))
-        elif x.ndim == 1:
-            x = x[dpnp.newaxis, :]
-        elif not rowvar:
-            x = x.T
-
-        if x.dtype != dtype:
-            x = dpnp.astype(x, dtype)
-        return x
-
-    x = _get_2dmin_array(m)
     if x.shape[0] == 0:
         return dpnp.empty_like(
             x, shape=(0, 0), dtype=dpnp.default_float_type(m.sycl_queue)
         )
 
     if y is not None:
-        y = _get_2dmin_array(y)
+        y = dpnp.array(y, copy=None, ndmin=2, dtype=dtype)
         x = dpnp.concatenate((x, y), axis=0)
 
     # get the product of frequencies and weights
