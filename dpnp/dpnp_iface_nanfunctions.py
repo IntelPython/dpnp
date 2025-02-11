@@ -266,7 +266,7 @@ def nancumprod(a, axis=None, dtype=None, out=None):
         is to compute the cumulative product over the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
@@ -336,7 +336,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
         compute the cumulative sum over the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
@@ -499,7 +499,7 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         axes. If ``None``, the mean is computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the mean. By default, if `a` has a
         floating-point data type, the returned array will have
         the same data type as `a`.
@@ -823,7 +823,7 @@ def nanprod(
         compute the product of the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array and of the accumulator in which the
         elements are multiplied. By default, the dtype of `a` is used. An
         exception is when `a` has an integer type with less precision than
@@ -920,7 +920,7 @@ def nansum(
         the sum of the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array and of the accumulator in which the
         elements are summed. By default, the dtype of `a` is used. An exception
         is when `a` has an integer type with less precision than the platform
@@ -1029,7 +1029,7 @@ def nanstd(
         computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the standard deviation. By default, if `a` has
         a floating-point data type, the returned array will have the same data
         type as `a`. If `a` has a boolean or integral data type, the returned
@@ -1177,7 +1177,7 @@ def nanvar(
         axes. If ``None``, the variance is computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the variance. By default, if `a` has a
         floating-point data type, the returned array will have
         the same data type as `a`. If `a` has a boolean or integral data type,
