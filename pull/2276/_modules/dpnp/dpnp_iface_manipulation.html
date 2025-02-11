@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev6+18.g3eb986b515e documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.17.0dev6+20.g251e2006302 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=812dd335"></script>
+      <script src="../../_static/documentation_options.js?v=b0e77e5f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -641,16 +641,16 @@
 <span class="sd">    arr : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Values are appended to a copy of this array.</span>
 <span class="sd">    values : {scalar, array_like}</span>
-<span class="sd">        These values are appended to a copy of `arr`. It must be of the</span>
-<span class="sd">        correct shape (the same shape as `arr`, excluding `axis`). If</span>
-<span class="sd">        `axis` is not specified, `values` can be any shape and will be</span>
-<span class="sd">        flattened before use.</span>
-<span class="sd">        These values can be in any form that can be converted to an array.</span>
-<span class="sd">        This includes scalars, lists, lists of tuples, tuples,</span>
-<span class="sd">        tuples of tuples, tuples of lists, and ndarrays.</span>
+<span class="sd">        These values are appended to a copy of `arr`. It must be of the correct</span>
+<span class="sd">        shape (the same shape as `arr`, excluding `axis`). If `axis` is not</span>
+<span class="sd">        specified, `values` can be any shape and will be flattened before use.</span>
+<span class="sd">        These values can be in any form that can be converted to an array. This</span>
+<span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
+<span class="sd">        tuples of lists, and ndarrays.</span>
 <span class="sd">    axis : {None, int}, optional</span>
-<span class="sd">        The axis along which `values` are appended. If `axis` is not</span>
-<span class="sd">        given, both `arr` and `values` are flattened before use.</span>
+<span class="sd">        The axis along which `values` are appended. If `axis` is not given,</span>
+<span class="sd">        both `arr` and `values` are flattened before use.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -727,11 +727,11 @@
 <span class="sd">        If `indices_or_sections` is an integer, N, and array length is l, it</span>
 <span class="sd">        returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size</span>
 <span class="sd">        ``l//n``.</span>
-
 <span class="sd">        If `indices_or_sections` is a sequence of sorted integers, the entries</span>
 <span class="sd">        indicate where along `axis` the array is split.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis along which to split.</span>
+
 <span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
@@ -808,9 +808,11 @@
 <span class="sd">        of lists and ndarrays. Success requires no NaNs or Infs.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        By default, the data-type is inferred from the input data.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
@@ -819,15 +821,18 @@
 <span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
 <span class="sd">        or a `Device` object returned by</span>
 <span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -921,24 +926,31 @@
 <span class="sd">        protocol, an instance of :class:`numpy.ndarray`, an object supporting</span>
 <span class="sd">        Python buffer protocol, a Python scalar, or a (possibly nested)</span>
 <span class="sd">        sequence of Python scalars.</span>
-<span class="sd">    dtype : str or dtype object, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Float type code to coerce input array `a`.  If `dtype` is ``None``,</span>
 <span class="sd">        :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with</span>
 <span class="sd">        the default floating type (:obj:`dpnp.float64` if a device supports it,</span>
 <span class="sd">        or :obj:`dpnp.float32` type otherwise).</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
 <span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
 <span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
 <span class="sd">        or a `Device` object returned by :obj:`dpnp.ndarray.device` property.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1259,7 +1271,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    array : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The array to broadcast.</span>
-<span class="sd">    shape : tuple or int</span>
+<span class="sd">    shape : {int, tuple of ints}</span>
 <span class="sd">        The shape of the desired array. A single integer ``i`` is interpreted</span>
 <span class="sd">        as ``(i,)``.</span>
 
@@ -1316,6 +1328,8 @@
 <span class="sd">        Target data type.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur.</span>
+
+<span class="sd">        Default: ``&quot;safe&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1472,16 +1486,23 @@
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis along which the arrays will be joined. If axis is ``None``,</span>
 <span class="sd">        arrays are flattened before use.</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    out : dpnp.ndarray, optional</span>
 <span class="sd">        If provided, the destination to place the result. The shape must be</span>
 <span class="sd">        correct, matching that of what concatenate would have returned</span>
 <span class="sd">        if no out argument were specified.</span>
-<span class="sd">    dtype : str or dtype</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        If provided, the destination array will have this dtype. Cannot be</span>
 <span class="sd">        provided together with `out`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
-<span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;same_kind&#39;.</span>
+<span class="sd">        Controls what kind of data casting may occur.</span>
+
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1566,10 +1587,14 @@
 <span class="sd">        The array from which values are copied.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur when copying.</span>
+
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 <span class="sd">    where : {dpnp.ndarray, usm_ndarray, scalar} of bool, optional</span>
 <span class="sd">        A boolean array or a scalar which is broadcasted to match</span>
 <span class="sd">        the dimensions of `dst`, and selects elements to copy</span>
 <span class="sd">        from `src` to `dst` wherever it contains the value ``True``.</span>
+
+<span class="sd">        Default: ``True``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1653,6 +1678,7 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        The axis along which to delete the subarray defined by `obj`.</span>
 <span class="sd">        If `axis` is ``None``, `obj` is applied to the flattened array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1888,7 +1914,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : int or tuple of ints</span>
+<span class="sd">    axis : {int, tuple of ints}</span>
 <span class="sd">        Position in the expanded axes where the new axis (or axes) is placed.</span>
 
 <span class="sd">    Returns</span>
@@ -1982,12 +2008,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    m : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
-<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">         Axis or axes along which to flip over. The default,</span>
 <span class="sd">         ``axis=None``, will flip over all of the axes of the input array.</span>
 <span class="sd">         If `axis` is negative it counts from the last to the first axis.</span>
 <span class="sd">         If `axis` is a tuple of integers, flipping is performed on all of</span>
 <span class="sd">         the axes specified in the tuple.</span>
+
+<span class="sd">         Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2260,10 +2288,14 @@
 <span class="sd">    tup : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The arrays must have the same shape along all but the second axis,</span>
 <span class="sd">        except 1-D arrays which can be any length.</span>
-<span class="sd">    dtype : str or dtype</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        If provided, the destination array will have this dtype.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;same_kind&#39;.</span>
+
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2340,6 +2372,7 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        Axis along which to insert `values`. If `axis` is ``None`` then `arr`</span>
 <span class="sd">        is flattened first.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2646,6 +2679,7 @@
 <span class="sd">            Pads with undefined values.</span>
 <span class="sd">        &lt;function&gt;</span>
 <span class="sd">            Padding function, see Notes.</span>
+
 <span class="sd">        Default: ``&quot;constant&quot;``.</span>
 <span class="sd">    stat_length : {None, int, sequence of ints}, optional</span>
 <span class="sd">        Used in ``&quot;maximum&quot;``, ``&quot;mean&quot;``, ``&quot;median&quot;``, and ``&quot;minimum&quot;``.</span>
@@ -2656,7 +2690,8 @@
 <span class="sd">        and after statistic lengths for each axis.</span>
 <span class="sd">        ``(stat_length,)`` or ``int`` is a shortcut for</span>
 <span class="sd">        ``before = after = statistic`` length for all axes.</span>
-<span class="sd">       Default: ``None``, to use the entire axis.</span>
+
+<span class="sd">        Default: ``None``, to use the entire axis.</span>
 <span class="sd">    constant_values : {sequence, scalar}, optional</span>
 <span class="sd">        Used in ``&quot;constant&quot;``. The values to set the padded values for each</span>
 <span class="sd">        axis.</span>
@@ -2666,6 +2701,7 @@
 <span class="sd">        and after constants for each axis.</span>
 <span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for</span>
 <span class="sd">        ``before = after = constant`` for all axes.</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    end_values : {sequence, scalar}, optional</span>
 <span class="sd">        Used in ``&quot;linear_ramp&quot;``. The values used for the ending value of the</span>
@@ -2676,12 +2712,14 @@
 <span class="sd">        and after end values for each axis.</span>
 <span class="sd">        ``(constant,)`` or ``constant`` is a shortcut for</span>
 <span class="sd">        ``before = after = constant`` for all axes.</span>
+
 <span class="sd">        Default: ``0``.</span>
 <span class="sd">    reflect_type : {&quot;even&quot;, &quot;odd&quot;}, optional</span>
 <span class="sd">        Used in ``&quot;reflect&quot;``, and ``&quot;symmetric&quot;``. The ``&quot;even&quot;`` style is the</span>
 <span class="sd">        default with an unaltered reflection around the edge value. For</span>
 <span class="sd">        the ``&quot;odd&quot;`` style, the extended part of the array is created by</span>
 <span class="sd">        subtracting the reflected values from two times the edge value.</span>
+
 <span class="sd">        Default: ``&quot;even&quot;``.</span>
 
 <span class="sd">    Returns</span>
@@ -2818,6 +2856,7 @@
 <span class="sd">        Fortran-like index order if `a` is Fortran *contiguous* in</span>
 <span class="sd">        memory, C-like order otherwise. ``order=None`` is an alias for</span>
 <span class="sd">        ``order=&quot;C&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 
 <span class="sd">    Returns</span>
@@ -2909,6 +2948,7 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        The axis along which to repeat values. By default, use the flattened</span>
 <span class="sd">        input array, and return a flat output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2972,14 +3012,18 @@
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">       The input array to be converted to a type-and-requirement-satisfying</span>
 <span class="sd">       array.</span>
-<span class="sd">    dtype : {None, data-type}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">       The required data-type. If ``None`` preserve the current dtype.</span>
+
+<span class="sd">       Default: ``None``.</span>
 <span class="sd">    requirements : {None, str, sequence of str}, optional</span>
 <span class="sd">       The requirements list can be any of the following:</span>
 
 <span class="sd">       * &#39;F_CONTIGUOUS&#39; (&#39;F&#39;) - ensure a Fortran-contiguous array</span>
 <span class="sd">       * &#39;C_CONTIGUOUS&#39; (&#39;C&#39;) - ensure a C-contiguous array</span>
 <span class="sd">       * &#39;WRITABLE&#39; (&#39;W&#39;) - ensure a writable array</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3077,11 +3121,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Array to be reshaped.</span>
-<span class="sd">    shape : int or tuple of ints</span>
+<span class="sd">    shape : {int, tuple of ints}, optional</span>
 <span class="sd">        The new shape should be compatible with the original shape. If</span>
 <span class="sd">        an integer, then the result will be a 1-D array of that length.</span>
 <span class="sd">        One shape dimension can be -1. In this case, the value is</span>
 <span class="sd">        inferred from the length of the array and remaining dimensions.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;}, optional</span>
 <span class="sd">        Read the elements of `a` using this index order, and place the</span>
 <span class="sd">        elements into the reshaped array using this index order. ``&quot;C&quot;``</span>
@@ -3095,13 +3141,17 @@
 <span class="sd">        ``order=None`` is an alias for ``order=&quot;C&quot;``. ``&quot;A&quot;`` means to</span>
 <span class="sd">        read / write the elements in Fortran-like index order if ``a`` is</span>
 <span class="sd">        Fortran *contiguous* in memory, C-like order otherwise.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 <span class="sd">    newshape : int or tuple of ints</span>
 <span class="sd">        Replaced by `shape` argument. Retained for backward compatibility.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    copy : {None, bool}, optional</span>
 <span class="sd">        If ``True``, then the array data is copied. If ``None``, a copy will</span>
 <span class="sd">        only be made if it&#39;s required by ``order``. For ``False`` it raises</span>
 <span class="sd">        a ``ValueError`` if a copy cannot be avoided.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3364,6 +3414,8 @@
 <span class="sd">        array is flattened before shifting, after which the original</span>
 <span class="sd">        shape is restored.</span>
 
+<span class="sd">        Default: ``None``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
@@ -3430,6 +3482,8 @@
 <span class="sd">        lies before this position. The default, ``0``, results in a &quot;complete&quot;</span>
 <span class="sd">        roll.</span>
 
+<span class="sd">        Default: ``0``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
@@ -3489,10 +3543,12 @@
 <span class="sd">        Array of two or more dimensions.</span>
 <span class="sd">    k : integer, optional</span>
 <span class="sd">        Number of times the array is rotated by 90 degrees.</span>
+
 <span class="sd">        Default: ``1``.</span>
 <span class="sd">    axes : (2,) array_like of ints, optional</span>
 <span class="sd">        The array is rotated in the plane defined by the axes.</span>
 <span class="sd">        Axes must be different.</span>
+
 <span class="sd">        Default: ``(0, 1)``.</span>
 
 <span class="sd">    Returns</span>
@@ -3590,7 +3646,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    shape : tuple of integers</span>
+<span class="sd">    shape : {int, tuple of ints}</span>
 <span class="sd">        The elements of the shape tuple give the lengths of the</span>
 <span class="sd">        corresponding array dimensions.</span>
 
@@ -3635,6 +3691,7 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        Axis along which the elements are counted.</span>
 <span class="sd">        By default, give the total number of elements.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -3705,6 +3762,7 @@
 <span class="sd">        an empty sub-array is returned correspondingly.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis along which to split.</span>
+
 <span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
@@ -3781,10 +3839,12 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input data.</span>
-<span class="sd">    axis : None or int or tuple of ints, optional</span>
+<span class="sd">    axis : {None, int, tuple of ints}, optional</span>
 <span class="sd">        Selects a subset of the entries of length one in the shape.</span>
 <span class="sd">        If an axis is selected with shape entry greater than one,</span>
 <span class="sd">        an error is raised.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -3834,15 +3894,23 @@
 <span class="sd">        Each array must have the same shape.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis in the result array along which the input arrays are stacked.</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    out : dpnp.ndarray, optional</span>
 <span class="sd">        If provided, the destination to place the result. The shape must be</span>
 <span class="sd">        correct, matching that of what stack would have returned if no out</span>
 <span class="sd">        argument were specified.</span>
-<span class="sd">    dtype : str or dtype</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        If provided, the destination array will have this dtype. Cannot be</span>
 <span class="sd">        provided together with `out`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;same_kind&#39;.</span>
+
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -4071,6 +4139,7 @@
 <span class="sd">        numbered ``axes[i]`` of the input. If not specified or ``None``,</span>
 <span class="sd">        defaults to ``range(a.ndim)[::-1]``, which reverses the order of</span>
 <span class="sd">        the axes.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -4142,13 +4211,15 @@
 <span class="sd">        to the edges of a dimension, with &quot;front&quot; referring to the side with</span>
 <span class="sd">        the lowest index 0, and &quot;back&quot; referring to the highest index</span>
 <span class="sd">        (or index -1).</span>
+
 <span class="sd">        Default: ``&quot;fb&quot;``.</span>
 <span class="sd">    axis : {None, int}, optional</span>
-<span class="sd">        If ``None``, `filt` is cropped such, that the smallest bounding box is</span>
+<span class="sd">        If ``None``, `filt` is cropped such that the smallest bounding box is</span>
 <span class="sd">        returned that still contains all values which are not zero.</span>
 <span class="sd">        If an `axis` is specified, `filt` will be sliced in that dimension only</span>
 <span class="sd">        on the sides specified by `trim`. The remaining area will be the</span>
 <span class="sd">        smallest that still contains all values which are not zero.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -4262,23 +4333,28 @@
 <span class="sd">    return_index : bool, optional</span>
 <span class="sd">        If ``True``, also return the indices of `ar` (along the specified axis,</span>
 <span class="sd">        if provided, or in the flattened array) that result in the unique array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    return_inverse : bool, optional</span>
 <span class="sd">        If ``True``, also return the indices of the unique array (for the</span>
 <span class="sd">        specified axis, if provided) that can be used to reconstruct `ar`.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    return_counts : bool, optional</span>
 <span class="sd">        If ``True``, also return the number of times each unique item appears</span>
 <span class="sd">        in `ar`.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    axis : {int, None}, optional</span>
 <span class="sd">        The axis to operate on. If ``None``, `ar` will be flattened. If an</span>
 <span class="sd">        integer, the subarrays indexed by the given axis will be flattened and</span>
 <span class="sd">        treated as the elements of a 1-D array with the dimension of the given</span>
 <span class="sd">        axis, see the notes for more details.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    equal_nan : bool, optional</span>
 <span class="sd">        If ``True``, collapses multiple NaN values in the return array into one.</span>
+
 <span class="sd">        Default: ``True``.</span>
 
 <span class="sd">    Returns</span>
@@ -4433,6 +4509,7 @@
 <span class="sd">        The array to be unstacked.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis along which the array will be split.</span>
+
 <span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
@@ -4587,10 +4664,14 @@
 <span class="sd">    tup : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        The arrays must have the same shape along all but the first axis.</span>
 <span class="sd">        1-D arrays must have the same length.</span>
-<span class="sd">    dtype : str or dtype</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        If provided, the destination array will have this dtype.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Defaults to &#39;same_kind&#39;.</span>
+
+<span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>

@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.concat &mdash; Data Parallel Extension for NumPy 0.17.0dev6+18.g3eb986b515e documentation</title>
+  <title>dpnp.concat &mdash; Data Parallel Extension for NumPy 0.17.0dev6+20.g251e2006302 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=812dd335"></script>
+      <script src="../../_static/documentation_options.js?v=b0e77e5f"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -138,15 +138,22 @@
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arrays</strong> (<em>{Sequence</em><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray}</em>) -- The arrays must have the same shape, except in the dimension
 corresponding to axis (the first, by default).</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- The axis along which the arrays will be joined. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
-arrays are flattened before use.
-Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>dpnp.ndarray</em><em>, </em><em>optional</em>) -- If provided, the destination to place the result. The shape must be
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>The axis along which the arrays will be joined. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+arrays are flattened before use.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</p></li>
+<li><p><strong>out</strong> (<em>dpnp.ndarray</em><em>, </em><em>optional</em>) -- <p>If provided, the destination to place the result. The shape must be
 correct, matching that of what concatenate would have returned
-if no out argument were specified.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) -- If provided, the destination array will have this dtype. Cannot be
-provided together with <cite>out</cite>.</p></li>
-<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- Controls what kind of data casting may occur. Defaults to 'same_kind'.</p></li>
+if no out argument were specified.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>If provided, the destination array will have this dtype. Cannot be
+provided together with <cite>out</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
