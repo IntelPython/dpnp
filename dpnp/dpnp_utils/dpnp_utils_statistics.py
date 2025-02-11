@@ -141,8 +141,7 @@ def dpnp_cov(
             x = dpnp.reshape(x, (1, 1))
         elif x.ndim == 1:
             x = x[dpnp.newaxis, :]
-
-        if not rowvar and x.ndim != 1:
+        elif not rowvar:
             x = x.T
 
         if x.dtype != dtype:

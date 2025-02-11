@@ -782,6 +782,8 @@ def cov(
     fweights : {None, dpnp.ndarray, usm_ndarray}, optional
         1-D array of integer frequency weights; the number of times each
         observation vector should be repeated.
+        It is required that ``fweights >= 0``. However, the function will not
+        error when ``fweights < 0`` for performance reasons.
 
         Default: ``None``.
     aweights : {None, dpnp.ndarray, usm_ndarray}, optional
@@ -789,6 +791,8 @@ def cov(
         typically large for observations considered "important" and smaller for
         observations considered less "important". If ``ddof=0`` the array of
         weights can be used to assign probabilities to observation vectors.
+        It is required that ``aweights >= 0``. However, the function will not
+        error when ``aweights < 0`` for performance reasons.
 
         Default: ``None``.
     dtype : data-type, optional
@@ -895,7 +899,7 @@ def cov(
         fweights = dpnp.astype(fweights, dtype=def_float)
 
     if aweights is not None:
-        dpnp.check_supported_arrays_type(fweights)
+        dpnp.check_supported_arrays_type(aweights)
         if aweights.ndim > 1:
             raise ValueError("cannot handle multidimensional aweights")
 
