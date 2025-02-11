@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eigvals &mdash; Data Parallel Extension for NumPy 0.17.0dev6+5.ge130df0edcb documentation</title>
+  <title>dpnp.linalg.eigvals &mdash; Data Parallel Extension for NumPy 0.17.0dev6+6.g898b6f295a5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=2ac66f9c"></script>
+      <script src="../../_static/documentation_options.js?v=40d54c6a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -162,7 +162,7 @@ through a fallback on NumPy call.</p>
 <p>Illustration, using the fact that the eigenvalues of a diagonal matrix
 are its diagonal elements, that multiplying a matrix on the left
 by an orthogonal matrix, <cite>Q</cite>, and on the right by <cite>Q.T</cite> (the transpose
-of <cite>Q</cite>), preserves the eigenvalues of the &quot;middle&quot; matrix.  In other words,
+of <cite>Q</cite>), preserves the eigenvalues of the &quot;middle&quot; matrix. In other words,
 if <cite>Q</cite> is orthogonal, then <code class="docutils literal notranslate"><span class="pre">Q</span> <span class="pre">*</span> <span class="pre">A</span> <span class="pre">*</span> <span class="pre">Q.T</span></code> has the same eigenvalues as
 <code class="docutils literal notranslate"><span class="pre">A</span></code>:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
