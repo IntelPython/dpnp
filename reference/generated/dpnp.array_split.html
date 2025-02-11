@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.array_split &mdash; Data Parallel Extension for NumPy 0.17.0dev6+4.g1dae22dfd9c documentation</title>
+  <title>dpnp.array_split &mdash; Data Parallel Extension for NumPy 0.17.0dev6+5.ge130df0edcb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f1271c60"></script>
+      <script src="../../_static/documentation_options.js?v=2ac66f9c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -142,14 +142,14 @@ returns <code class="docutils literal notranslate"><span class="pre">l</span> <s
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ary</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be divided into sub-arrays.</p></li>
-<li><p><strong>indices_or_sections</strong> (<em>{int</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em>) -- <p>If <cite>indices_or_sections</cite> is an integer, N, and array length is l, it
+<li><p><strong>indices_or_sections</strong> (<em>{int</em><em>, </em><em>sequence</em><em> of </em><em>ints}</em>) -- If <cite>indices_or_sections</cite> is an integer, N, and array length is l, it
 returns <code class="docutils literal notranslate"><span class="pre">l</span> <span class="pre">%</span> <span class="pre">n</span></code> sub-arrays of size <code class="docutils literal notranslate"><span class="pre">l//n</span> <span class="pre">+</span> <span class="pre">1</span></code> and the rest of size
-<code class="docutils literal notranslate"><span class="pre">l//n</span></code>.</p>
-<p>If <cite>indices_or_sections</cite> is a sequence of sorted integers, the entries
-indicate where along <cite>axis</cite> the array is split.</p>
+<code class="docutils literal notranslate"><span class="pre">l//n</span></code>.
+If <cite>indices_or_sections</cite> is a sequence of sorted integers, the entries
+indicate where along <cite>axis</cite> the array is split.</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>The axis along which to split.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 </p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- The axis along which to split.
-Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
