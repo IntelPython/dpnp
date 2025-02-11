@@ -1,3 +1,4 @@
+import re
 import unittest
 
 import numpy
@@ -6,6 +7,11 @@ import pytest
 import dpnp as cupy
 from dpnp.tests.helper import has_support_aspect64, numpy_version
 from dpnp.tests.third_party.cupy import testing
+
+if numpy_version() >= "2.0.0":
+    from numpy._core._exceptions import _UFuncOutputCastingError
+else:
+    from numpy.core._exceptions import _UFuncOutputCastingError
 
 
 class TestCorrcoef(unittest.TestCase):
@@ -60,6 +66,26 @@ class TestCov(unittest.TestCase):
             y = testing.shaped_arange(y_shape, xp, dtype)
         return a, y
 
+    def call_cov(self, xp, a, y, rowvar, bias, ddof, fweights, aweights, dtype):
+        try:
+            return xp.cov(
+                a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
+            )
+        except ValueError as e:
+            if (
+                xp is cupy
+                and "function 'subtract' does not support input types" in str(e)
+            ):
+                # numpy raises _UFuncOutputCastingError
+                raise _UFuncOutputCastingError(
+                    numpy.subtract,
+                    "same_kind",
+                    numpy.dtype("f8"),
+                    numpy.dtype(dtype),
+                    0,
+                )
+            raise
+
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         type_check=has_support_aspect64(), accept_error=True
@@ -82,7 +108,9 @@ class TestCov(unittest.TestCase):
             fweights = name.asarray(fweights)
         if aweights is not None:
             aweights = name.asarray(aweights)
-        return xp.cov(a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype)
+        return self.call_cov(
+            xp, a, y, rowvar, bias, ddof, fweights, aweights, dtype
+        )
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(accept_error=True)
@@ -100,15 +128,9 @@ class TestCov(unittest.TestCase):
     ):
         with testing.assert_warns(RuntimeWarning):
             a, y = self.generate_input(a_shape, y_shape, xp, dtype)
-            try:
-                res = xp.cov(
-                    a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
-                )
-            except ValueError as e:
-                if xp is cupy:  # dpnp raises ValueError(...)
-                    raise TypeError(e)
-                raise
-            return res
+            return self.call_cov(
+                xp, a, y, rowvar, bias, ddof, fweights, aweights, dtype
+            )
 
     @testing.for_all_dtypes()
     def check_raises(
@@ -129,6 +151,7 @@ class TestCov(unittest.TestCase):
                     a, y, rowvar, bias, ddof, fweights, aweights, dtype=dtype
                 )
 
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @testing.with_requires("numpy>=2.2")
     def test_cov(self):
         self.check((2, 3))
