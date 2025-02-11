@@ -47,10 +47,6 @@ from dpctl.tensor._numpy_helper import normalize_axis_tuple
 import dpnp
 
 from .dpnp_utils_linalg import (
-    EighResult,
-    QRResult,
-    SlogdetResult,
-    SVDResult,
     assert_2d,
     assert_stacked_2d,
     assert_stacked_square,
@@ -72,11 +68,6 @@ from .dpnp_utils_linalg import (
 )
 
 __all__ = [
-    "EigResult",
-    "EighResult",
-    "QRResult",
-    "SlogdetResult",
-    "SVDResult",
     "cholesky",
     "cond",
     "cross",

@@ -52,10 +52,6 @@ from dpnp.dpnp_utils import get_usm_allocations
 from dpnp.linalg import LinAlgError as LinAlgError
 
 __all__ = [
-    "EighResult",
-    "QRResult",
-    "SlogdetResult",
-    "SVDResult",
     "assert_2d",
     "assert_stacked_2d",
     "assert_stacked_square",
