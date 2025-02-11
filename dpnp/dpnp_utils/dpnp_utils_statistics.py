@@ -139,7 +139,10 @@ def dpnp_cov(
         )
 
     if y is not None:
+        y_ndim = y.ndim
         y = dpnp.array(y, copy=None, ndmin=2, dtype=dtype)
+        if not rowvar and y_ndim != 1:
+            y = y.T
         x = dpnp.concatenate((x, y), axis=0)
 
     # get the product of frequencies and weights
