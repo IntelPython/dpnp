@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.diff &mdash; Data Parallel Extension for NumPy 0.17.0dev6+5.g56479f79eba documentation</title>
+  <title>dpnp.diff &mdash; Data Parallel Extension for NumPy 0.17.0dev6+7.gea67e46d190 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=727c800c"></script>
+      <script src="../../_static/documentation_options.js?v=d1193743"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -138,20 +138,27 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array</p></li>
-<li><p><strong>n</strong> (<em>{int}</em><em>, </em><em>optional</em>) -- The number of times the values differ. If <code class="docutils literal notranslate"><span class="pre">zero</span></code>, the input
-is returned as-is.</p></li>
-<li><p><strong>axis</strong> (<em>{int}</em><em>, </em><em>optional</em>) -- The axis along which the difference is taken, default is the
-last axis.</p></li>
-<li><p><strong>prepend</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Values to prepend or append to <cite>a</cite> along axis prior to
-performing the difference. Scalar values are expanded to
-arrays with length 1 in the direction of axis and the shape
-of the input array in along all other axes. Otherwise the
-dimension and shape must match <cite>a</cite> except along axis.</p></li>
-<li><p><strong>append</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Values to prepend or append to <cite>a</cite> along axis prior to
-performing the difference. Scalar values are expanded to
-arrays with length 1 in the direction of axis and the shape
-of the input array in along all other axes. Otherwise the
-dimension and shape must match <cite>a</cite> except along axis.</p></li>
+<li><p><strong>n</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>The number of times the values differ. If <code class="docutils literal notranslate"><span class="pre">0</span></code>, the input is returned
+as-is.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>The axis along which the difference is taken, default is the last axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+<li><p><strong>prepend</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Values to prepend or append to <cite>a</cite> along axis prior to performing the
+difference. Scalar values are expanded to arrays with length <code class="docutils literal notranslate"><span class="pre">1</span></code> in
+the direction of axis and the shape of the input array in along all
+other axes. Otherwise the dimension and shape must match <cite>a</cite> except
+along <cite>axis</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>append</strong> (<em>{None</em><em>, </em><em>scalar</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Values to prepend or append to <cite>a</cite> along axis prior to performing the
+difference. Scalar values are expanded to arrays with length <code class="docutils literal notranslate"><span class="pre">1</span></code> in
+the direction of axis and the shape of the input array in along all
+other axes. Otherwise the dimension and shape must match <cite>a</cite> except
+along <cite>axis</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
