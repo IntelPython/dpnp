@@ -43,7 +43,7 @@ struct BitwiseCountFunctor
 
     resT operator()(const argT &x) const
     {
-        if constexpr (std::is_unsigned<argT>::value) {
+        if constexpr (std::is_unsigned_v<argT>) {
             return sycl::popcount(x);
         }
         else {
