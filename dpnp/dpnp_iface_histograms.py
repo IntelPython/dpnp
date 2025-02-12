@@ -424,6 +424,7 @@ def digitize(x, bins, right=False):
         increasing or decreasing.
     right : bool, optional
         Indicates whether the intervals include the right or the left bin edge.
+
         Default: ``False``.
 
     Returns
@@ -683,6 +684,7 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
         given range.
         If `bins` is a sequence, it defines the bin edges, including the
         rightmost edge, allowing for non-uniform bin widths.
+
         Default: ``10``.
     range : {None, 2-tuple of float}, optional
         The lower and upper range of the bins. If not provided, range is simply
@@ -691,12 +693,14 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
         affects the automatic bin computation as well. While bin width is
         computed to be optimal based on the actual data within `range`, the bin
         count will fill the entire range including portions containing no data.
+
         Default: ``None``.
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         An array of weights, of the same shape as `a`. Each value in `a` only
         contributes its associated weight towards the bin count (instead of 1).
         This is currently not used by any of the bin estimators, but may be in
         the future.
+
         Default: ``None``.
 
     Returns
