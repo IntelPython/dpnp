@@ -25,7 +25,7 @@ jobs:
       coverage-env: 'environments/coverage.yml'
       oneapi-pkgs-env: ''
       # Enable env when it's required to use only conda packages without OneAPI installation
-      # oneapi-pkgs-env: 'environments/oneapi_pkgs.yml'
+      # oneapi-pkgs-env: '${{ github.workspace }}/environments/oneapi_pkgs.yml'
 
     steps:
       - name: Cancel Previous Runs
@@ -81,7 +81,7 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          environment-file: '${{ env.environment-file }}'
+          environment-file: ${{ env.environment-file }}
           activate-environment: 'coverage'
 
       - name: ReSetup miniconda
@@ -91,7 +91,7 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          environment-file: '${{ env.environment-file }}'
+          environment-file: ${{ env.environment-file }}
           activate-environment: 'coverage'
 
       - name: Conda info

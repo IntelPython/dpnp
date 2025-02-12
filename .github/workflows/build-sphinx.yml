@@ -41,7 +41,7 @@ jobs:
       building-docs-env: 'environments/building_docs.yml'
       oneapi-pkgs-env: ''
       # Enable env when it's required to use only conda packages without OneAPI installation
-      # oneapi-pkgs-env: 'environments/oneapi_pkgs.yml'
+      # oneapi-pkgs-env: '${{ github.workspace }}/environments/oneapi_pkgs.yml'
 
     steps:
       - name: Cancel Previous Runs
@@ -122,7 +122,7 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          environment-file: '${{ env.environment-file }}'
+          environment-file: ${{ env.environment-file }}
           activate-environment: 'docs'
 
       - name: ReSetup miniconda
@@ -132,7 +132,7 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          environment-file: '${{ env.environment-file }}'
+          environment-file: ${{ env.environment-file }}
           activate-environment: 'docs'
 
       - name: Conda info
