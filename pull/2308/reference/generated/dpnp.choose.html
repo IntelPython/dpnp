@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.choose &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.g6fd3dbcb06a documentation</title>
+  <title>dpnp.choose &mdash; Data Parallel Extension for NumPy 0.17.0dev6+17.g82dbc2a4672 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5a47c4af"></script>
+      <script src="../../_static/documentation_options.js?v=2220d185"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -136,9 +136,10 @@ determined by the <cite>mode</cite> keyword.</p></li>
 <li><p><strong>choices</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>,                </em><em>sequence</em><em> of </em><em>dpnp.ndarrays and usm_ndarrays}</em>) -- Choice arrays. <cite>a</cite> and choice arrays must be broadcast-compatible.
 If <cite>choices</cite> is an array, the array is unstacked into a sequence of
 arrays.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- If provided, the result will be placed in this array. It should
-be of the appropriate shape and dtype.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>If provided, the result will be placed in this array. It should
+be of the appropriate shape and dtype.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 <li><p><strong>mode</strong> (<em>{&quot;wrap&quot;</em><em>, </em><em>&quot;clip&quot;}</em><em>, </em><em>optional</em>) -- <p>Specifies how out-of-bounds indices will be handled. Possible values
 are:</p>
 <ul>

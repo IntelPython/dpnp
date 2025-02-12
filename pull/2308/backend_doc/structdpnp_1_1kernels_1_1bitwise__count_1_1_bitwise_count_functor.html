@@ -109,8 +109,8 @@ $(function(){initNavTree('structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_co
 Public Types</h2></td></tr>
 <tr class="memitem:a0d87dfe0dbe33769cb8afdc03919f849" id="r_a0d87dfe0dbe33769cb8afdc03919f849"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d87dfe0dbe33769cb8afdc03919f849">is_constant</a> = typename std::false_type</td></tr>
 <tr class="separator:a0d87dfe0dbe33769cb8afdc03919f849"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa088ef306a3801f333b24e8f22a336f4" id="r_aa088ef306a3801f333b24e8f22a336f4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa088ef306a3801f333b24e8f22a336f4">supports_vec</a> = typename std::false_type</td></tr>
-<tr class="separator:aa088ef306a3801f333b24e8f22a336f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4a0db652f01b15b8e2538832f7a3ed7a" id="r_a4a0db652f01b15b8e2538832f7a3ed7a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4a0db652f01b15b8e2538832f7a3ed7a">supports_vec</a> = typename std::true_type</td></tr>
+<tr class="separator:a4a0db652f01b15b8e2538832f7a3ed7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad95f1632cff3ec1ac32aed613ad82126" id="r_ad95f1632cff3ec1ac32aed613ad82126"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad95f1632cff3ec1ac32aed613ad82126">supports_sg_loadstore</a> = typename std::true_type</td></tr>
 <tr class="separator:ad95f1632cff3ec1ac32aed613ad82126"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -118,11 +118,14 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aa17d75cb70706691755b6039dbf7f63a" id="r_aa17d75cb70706691755b6039dbf7f63a"><td class="memItemLeft" align="right" valign="top">resT&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa17d75cb70706691755b6039dbf7f63a">operator()</a> (const argT &amp;x) const</td></tr>
 <tr class="separator:aa17d75cb70706691755b6039dbf7f63a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1696973ff82aafb06b028776ac9789ec" id="r_a1696973ff82aafb06b028776ac9789ec"><td class="memTemplParams" colspan="2">template&lt;int vec_sz&gt; </td></tr>
+<tr class="memitem:a1696973ff82aafb06b028776ac9789ec"><td class="memTemplItemLeft" align="right" valign="top">sycl::vec&lt; resT, vec_sz &gt;&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#a1696973ff82aafb06b028776ac9789ec">operator()</a> (const sycl::vec&lt; argT, vec_sz &gt; &amp;x) const</td></tr>
+<tr class="separator:a1696973ff82aafb06b028776ac9789ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;typename argT, typename resT&gt;<br />
 struct dpnp::kernels::bitwise_count::BitwiseCountFunctor&lt; argT, resT &gt;</div>
-<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00033">33</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00038">38</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="a0d87dfe0dbe33769cb8afdc03919f849" name="a0d87dfe0dbe33769cb8afdc03919f849"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0d87dfe0dbe33769cb8afdc03919f849">&#9670;&#160;</a></span>is_constant</h2>
@@ -138,7 +141,7 @@ template&lt;typename argT , typename resT &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00036">36</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00041">41</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
 
 </div>
 </div>
@@ -156,12 +159,12 @@ template&lt;typename argT , typename resT &gt; </div>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00042">42</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00047">47</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
 
 </div>
 </div>
-<a id="aa088ef306a3801f333b24e8f22a336f4" name="aa088ef306a3801f333b24e8f22a336f4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa088ef306a3801f333b24e8f22a336f4">&#9670;&#160;</a></span>supports_vec</h2>
+<a id="a4a0db652f01b15b8e2538832f7a3ed7a" name="a4a0db652f01b15b8e2538832f7a3ed7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4a0db652f01b15b8e2538832f7a3ed7a">&#9670;&#160;</a></span>supports_vec</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -169,18 +172,18 @@ template&lt;typename argT , typename resT &gt; </div>
 template&lt;typename argT , typename resT &gt; </div>
       <table class="memname">
         <tr>
-          <td class="memname">using <a class="el" href="structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html">dpnp::kernels::bitwise_count::BitwiseCountFunctor</a>&lt; argT, resT &gt;::supports_vec = typename std::false_type</td>
+          <td class="memname">using <a class="el" href="structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html">dpnp::kernels::bitwise_count::BitwiseCountFunctor</a>&lt; argT, resT &gt;::supports_vec = typename std::true_type</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00040">40</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00045">45</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="aa17d75cb70706691755b6039dbf7f63a" name="aa17d75cb70706691755b6039dbf7f63a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa17d75cb70706691755b6039dbf7f63a">&#9670;&#160;</a></span>operator()()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#aa17d75cb70706691755b6039dbf7f63a">&#9670;&#160;</a></span>operator()() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -204,7 +207,38 @@ template&lt;typename argT , typename resT &gt; </div>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00044">44</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00049">49</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a1696973ff82aafb06b028776ac9789ec" name="a1696973ff82aafb06b028776ac9789ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1696973ff82aafb06b028776ac9789ec">&#9670;&#160;</a></span>operator()() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;typename argT , typename resT &gt; </div>
+<div class="memtemplate">
+template&lt;int vec_sz&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">sycl::vec&lt; resT, vec_sz &gt; <a class="el" href="structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html">dpnp::kernels::bitwise_count::BitwiseCountFunctor</a>&lt; argT, resT &gt;::operator() </td>
+          <td>(</td>
+          <td class="paramtype">const sycl::vec&lt; argT, vec_sz &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>x</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html#l00060">60</a> of file <a class="el" href="kernels_2elementwise__functions_2bitwise__count_8hpp_source.html">bitwise_count.hpp</a>.</p>
 
 </div>
 </div>
