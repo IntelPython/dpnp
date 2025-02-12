@@ -27,8 +27,6 @@
 
 #include <sycl/sycl.hpp>
 
-#include "dpctl4pybind11.hpp"
-
 // dpctl tensor headers
 #include "utils/type_utils.hpp"
 
@@ -75,7 +73,7 @@ struct BitwiseCountFunctor
             }
         }
         else {
-            auto const &res_vec = sycl::popcount(x);
+            auto const &res_vec = sycl::popcount(sycl::abs(x));
 
             using deducedT = typename std::remove_cv_t<
                 std::remove_reference_t<decltype(res_vec)>>::element_type;
