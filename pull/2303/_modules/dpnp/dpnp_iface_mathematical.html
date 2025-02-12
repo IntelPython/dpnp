@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev6+15.gb6a11a24845 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.17.0dev6+17.g602d60bd3a5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5093b029"></script>
+      <script src="../../_static/documentation_options.js?v=e464f0cb"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1172,7 +1172,7 @@
 <span class="sd">        compute the cumulative product over the flattened array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
 <span class="sd">        are multiplied. If `dtype` is not specified, it defaults to the dtype</span>
 <span class="sd">        of `a`, unless `a` has an integer dtype with a precision less than that</span>
@@ -1260,7 +1260,7 @@
 <span class="sd">        the cumulative sum over the flattened array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
 <span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
 <span class="sd">        `a`, unless `a` has an integer dtype with a precision less than that of</span>
@@ -1360,7 +1360,7 @@
 <span class="sd">        one dimension `axis` is required.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
 <span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
 <span class="sd">        `x`, unless `x` has an integer dtype with a precision less than that of</span>
@@ -1452,7 +1452,7 @@
 <span class="sd">        one dimension `axis` is required.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
 <span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
 <span class="sd">        `x`, unless `x` has an integer dtype with a precision less than that of</span>
@@ -3690,7 +3690,7 @@
 <span class="sd">        before.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The type of the returned array, as well as of the accumulator in which</span>
 <span class="sd">        the elements are multiplied. The dtype of `a` is used by default unless</span>
 <span class="sd">        `a` has an integer dtype of less precision than the default platform</span>
@@ -4492,7 +4492,7 @@
 <span class="sd">        before.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The type of the returned array and of the accumulator in which the</span>
 <span class="sd">        elements are summed. The dtype of `a` is used by default unless `a` has</span>
 <span class="sd">        an integer dtype of less precision than the default platform integer.</span>
