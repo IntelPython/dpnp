@@ -1860,7 +1860,6 @@ class dpnp_array:
     # 'tobytes',
     # 'tofile',
     # 'tolist',
-    # 'tostring',
 
     def trace(self, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         """
