@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.svd &mdash; Data Parallel Extension for NumPy 0.17.0dev4+11.g729225664a1 documentation</title>
+  <title>dpnp.linalg.svd &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.gade35066e89 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0253f947"></script>
+      <script src="../../_static/documentation_options.js?v=da695d4d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -86,6 +86,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -132,32 +133,39 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>(</em><em>...</em><em>, </em><em>M</em><em>, </em><em>N</em><em>) </em><em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array with <code class="docutils literal notranslate"><span class="pre">a.ndim</span> <span class="pre">&gt;=</span> <span class="pre">2</span></code>.</p></li>
-<li><p><strong>full_matrices</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it returns <cite>u</cite> and <cite>Vh</cite> with full-sized matrices.
-If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the matrices are reduced in size.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>compute_uv</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">False</span></code>, it only returns singular values.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>hermitian</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If True, a is assumed to be Hermitian (symmetric if real-valued),
-enabling a more efficient method for finding singular values.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>full_matrices</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, it returns <cite>u</cite> and <cite>Vh</cite> with full-sized matrices.
+If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the matrices are reduced in size.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
+<li><p><strong>compute_uv</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">False</span></code>, it only returns singular values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
+<li><p><strong>hermitian</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- <p>If True, a is assumed to be Hermitian (symmetric if real-valued),
+enabling a more efficient method for finding singular values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li><p><strong>u</strong> (<em>{ (…, M, M), (…, M, K) } dpnp.ndarray</em>) -- Unitary matrix, where M is the number of rows of the input array <cite>a</cite>.
-The shape of the matrix <cite>u</cite> depends on the value of <cite>full_matrices</cite>.
-If <cite>full_matrices</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>u</cite> has the shape (…, M, M).
-If <cite>full_matrices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, <cite>u</cite> has the shape (…, M, K), where
-K = min(M, N), and N is the number of columns of the input array <cite>a</cite>.
-If <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, neither <cite>u</cite> or <cite>Vh</cite> are computed.</p></li>
-<li><p><strong>s</strong> (<em>(…, K) dpnp.ndarray</em>) -- Vector containing the singular values of <cite>a</cite>, sorted in descending
-order. The length of <cite>s</cite> is min(M, N).</p></li>
+<dd class="field-even"><p><p>When <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, the result is a namedtuple with the
+following attribute names</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>U</strong> (<em>{ (…, M, M), (…, M, K) } dpnp.ndarray</em>) -- Unitary matrix, where M is the number of rows of the input array <cite>a</cite>.
+The shape of the matrix <cite>U</cite> depends on the value of <cite>full_matrices</cite>.
+If <cite>full_matrices</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>U</cite> has the shape (…, M, M). If
+<cite>full_matrices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, <cite>U</cite> has the shape (…, M, K), where
+<code class="docutils literal notranslate"><span class="pre">K</span> <span class="pre">=</span> <span class="pre">min(M,</span> <span class="pre">N)</span></code>, and N is the number of columns of the input array
+<cite>a</cite>. If <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, neither <cite>U</cite> or <cite>Vh</cite> are computed.</p></li>
+<li><p><strong>S</strong> (<em>(…, K) dpnp.ndarray</em>) -- Vector containing the singular values of <cite>a</cite>, sorted in descending
+order. The length of <cite>S</cite> is min(M, N).</p></li>
 <li><p><strong>Vh</strong> (<em>{ (…, N, N), (…, K, N) } dpnp.ndarray</em>) -- Unitary matrix, where N is the number of columns of the input array <cite>a</cite>.
 The shape of the matrix <cite>Vh</cite> depends on the value of <cite>full_matrices</cite>.
 If <cite>full_matrices</cite> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, <cite>Vh</cite> has the shape (…, N, N).
 If <cite>full_matrices</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, <cite>Vh</cite> has the shape (…, K, N).
-If <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, neither <cite>u</cite> or <cite>Vh</cite> are computed.</p></li>
+If <cite>compute_uv</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, neither <cite>U</cite> or <cite>Vh</cite> are computed.</p></li>
 </ul>
+</div></blockquote>
 </p>
 </dd>
 </dl>

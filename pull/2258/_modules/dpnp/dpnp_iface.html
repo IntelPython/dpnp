@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev4+11.g729225664a1 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.gade35066e89 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0253f947"></script>
+      <script src="../../_static/documentation_options.js?v=da695d4d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -307,7 +307,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Array data type casting.</span>
-<span class="sd">    dtype : dtype</span>
+<span class="sd">    dtype : {None, str, dtype object}</span>
 <span class="sd">        Target data type.</span>
 <span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
 <span class="sd">        Row-major (C-style) or column-major (Fortran-style) order.</span>
@@ -372,7 +372,7 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {array_like, scalar}</span>
 <span class="sd">        Input array or scalar.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The desired dtype for the result array if new array is creating. If not</span>
 <span class="sd">        given, a default dtype will be used that can represent the values (by</span>
 <span class="sd">        considering Promotion Type Rule and device capabilities when necessary).</span>
@@ -413,14 +413,25 @@
     <span class="p">)</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">check_limitations</span><span class="p">(</span><span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_limitations</span><span class="p">(</span>
+    <span class="n">subok</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">like</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">initial</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">subok_linalg</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">signature</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checking limitation kwargs for their supported values.</span>
 
-<span class="sd">    Parameter `subok` is only supported with default value ``False``.</span>
+<span class="sd">    Parameter `subok` for array creation functions is only supported with</span>
+<span class="sd">    default value ``False``.</span>
 <span class="sd">    Parameter `like` is only supported with default value ``None``.</span>
 <span class="sd">    Parameter `initial` is only supported with default value ``None``.</span>
 <span class="sd">    Parameter `where` is only supported with default value ``True``.</span>
+<span class="sd">    Parameter `subok` for linear algebra functions, named as `subok_linalg`</span>
+<span class="sd">    here, and is only supported with default value ``True``.</span>
+<span class="sd">    Parameter `signature` is only supported with default value ``None``.</span>
 
 <span class="sd">    Raises</span>
 <span class="sd">    ------</span>
@@ -432,22 +443,32 @@
     <span class="k">if</span> <span class="n">like</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `like` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">like</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">subok</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `subok` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``False``, but got </span><span class="si">{</span><span class="n">subok</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">initial</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `initial` is only supported with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">initial</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">initial</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="n">where</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
             <span class="s2">&quot;Keyword argument `where` is supported only with &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;default value ``True``, but got </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``True``, but got </span><span class="si">{</span><span class="n">where</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">subok_linalg</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;keyword argument `subok` is only supported with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``True``, but got </span><span class="si">{</span><span class="n">subok_linalg</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">signature</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+            <span class="s2">&quot;keyword argument `signature` is only supported with &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;default value ``None``, but got </span><span class="si">{</span><span class="n">signature</span><span class="si">}</span><span class="s2">.&quot;</span>
         <span class="p">)</span>
 
 
@@ -806,7 +827,7 @@
     <span class="k">if</span> <span class="p">(</span>
         <span class="n">sycl_device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="ow">and</span> <span class="n">sycl_device</span><span class="o">.</span><span class="n">backend</span> <span class="o">==</span> <span class="n">dpctl</span><span class="o">.</span><span class="n">backend_type</span><span class="o">.</span><span class="n">cuda</span>
-    <span class="p">):</span>
+    <span class="p">):</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="k">return</span> <span class="kc">False</span>
 

@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparison Table NumPy/ DPNP/ CuPy &mdash; Data Parallel Extension for NumPy 0.17.0dev4+11.g729225664a1 documentation</title>
+  <title>Comparison Table NumPy/ DPNP/ CuPy &mdash; Data Parallel Extension for NumPy 0.17.0dev6+11.gade35066e89 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=0253f947"></script>
+      <script src="../_static/documentation_options.js?v=da695d4d"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -70,6 +70,7 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -107,7 +108,7 @@
 <h1>Comparison Table NumPy/ DPNP/ CuPy<a class="headerlink" href="#comparison-table-numpy-dpnp-cupy" title="Link to this heading"></a></h1>
 <p>Here is a list of NumPy and CuPy APIs and its corresponding DPNP implementations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-</span></code> in DPNP column means that DPNP implementation is not provided yet.</p>
-<p><strong>NumPy(v2.2.2) / DPNP(v0.17.0dev4+11.g729225664a1) / CuPy(v13.3.0) APIs</strong></p>
+<p><strong>NumPy(v2.2.2) / DPNP(v0.17.0dev6+11.gade35066e89) / CuPy(v13.3.0) APIs</strong></p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -119,7 +120,7 @@
 </tr>
 <tr class="row-even"><td><p>Module-Level</p></td>
 <td><p>391</p></td>
-<td><p>305</p></td>
+<td><p>309</p></td>
 <td><p>330</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi-Dimensional Array</p></td>
@@ -144,7 +145,7 @@
 </tr>
 <tr class="row-odd"><td><p>Total</p></td>
 <td><p>547</p></td>
-<td><p>443</p></td>
+<td><p>447</p></td>
 <td><p>460</p></td>
 </tr>
 </tbody>
@@ -833,7 +834,7 @@
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.histogram.html#cupy.histogram" title="(in CuPy v13.3.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.histogram</span></code></a></p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.histogram2d.html#numpy.histogram2d" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.histogram2d</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.histogram2d.html#dpnp.histogram2d" title="dpnp.histogram2d"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.histogram2d</span></code></a></p></td>
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.histogram2d.html#cupy.histogram2d" title="(in CuPy v13.3.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.histogram2d</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.histogram_bin_edges.html#numpy.histogram_bin_edges" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.histogram_bin_edges</span></code></a></p></td>
@@ -917,7 +918,7 @@
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.iscomplexobj.html#cupy.iscomplexobj" title="(in CuPy v13.3.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.iscomplexobj</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.isdtype.html#numpy.isdtype" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.isdtype</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.isdtype.html#dpnp.isdtype" title="dpnp.isdtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.isdtype</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.isfinite.html#numpy.isfinite" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.isfinite</span></code></a></p></td>
@@ -1077,7 +1078,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.matvec.html#numpy.matvec" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.matvec</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.matvec.html#dpnp.matvec" title="dpnp.matvec"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.matvec</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.max.html#numpy.max" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.max</span></code></a></p></td>
@@ -1701,7 +1702,7 @@
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vecmat.html#numpy.vecmat" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.vecmat</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.vecmat.html#dpnp.vecmat" title="dpnp.vecmat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.vecmat</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vsplit.html#numpy.vsplit" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.vsplit</span></code></a></p></td>
@@ -1729,7 +1730,7 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>391</p></td>
-<td><p>305</p></td>
+<td><p>309</p></td>
 <td><p>330</p></td>
 </tr>
 </tbody>
