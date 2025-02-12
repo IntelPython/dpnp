@@ -1073,7 +1073,7 @@ def cumprod(a, axis=None, dtype=None, out=None):
         compute the cumulative product over the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are multiplied. If `dtype` is not specified, it defaults to the dtype
         of `a`, unless `a` has an integer dtype with a precision less than that
@@ -1158,7 +1158,7 @@ def cumsum(a, axis=None, dtype=None, out=None):
         the cumulative sum over the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
@@ -1255,7 +1255,7 @@ def cumulative_prod(
         one dimension `axis` is required.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `x`, unless `x` has an integer dtype with a precision less than that of
@@ -1344,7 +1344,7 @@ def cumulative_sum(
         one dimension `axis` is required.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `x`, unless `x` has an integer dtype with a precision less than that of
@@ -3564,7 +3564,7 @@ def prod(
         before.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array, as well as of the accumulator in which
         the elements are multiplied. The dtype of `a` is used by default unless
         `a` has an integer dtype of less precision than the default platform
@@ -4360,7 +4360,7 @@ def sum(
         before.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array and of the accumulator in which the
         elements are summed. The dtype of `a` is used by default unless `a` has
         an integer dtype of less precision than the default platform integer.
