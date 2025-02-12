@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev6+6.g898b6f295a5 documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.17.0dev6+7.ga7dd8ba35f8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=40d54c6a"></script>
+      <script src="../../_static/documentation_options.js?v=a7f08746"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -359,7 +359,7 @@
 <span class="sd">        is to compute the cumulative product over the flattened array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
 <span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
 <span class="sd">        `a`, unless `a` has an integer dtype with a precision less than that of</span>
@@ -432,7 +432,7 @@
 <span class="sd">        compute the cumulative sum over the flattened array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type of the returned array and of the accumulator in which the elements</span>
 <span class="sd">        are summed. If `dtype` is not specified, it defaults to the dtype of</span>
 <span class="sd">        `a`, unless `a` has an integer dtype with a precision less than that of</span>
@@ -601,7 +601,7 @@
 <span class="sd">        axes. If ``None``, the mean is computed over the entire array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type to use in computing the mean. By default, if `a` has a</span>
 <span class="sd">        floating-point data type, the returned array will have</span>
 <span class="sd">        the same data type as `a`.</span>
@@ -934,7 +934,7 @@
 <span class="sd">        compute the product of the flattened array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The type of the returned array and of the accumulator in which the</span>
 <span class="sd">        elements are multiplied. By default, the dtype of `a` is used. An</span>
 <span class="sd">        exception is when `a` has an integer type with less precision than</span>
@@ -1034,7 +1034,7 @@
 <span class="sd">        the sum of the flattened array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        The type of the returned array and of the accumulator in which the</span>
 <span class="sd">        elements are summed. By default, the dtype of `a` is used. An exception</span>
 <span class="sd">        is when `a` has an integer type with less precision than the platform</span>
@@ -1146,7 +1146,7 @@
 <span class="sd">        computed over the entire array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type to use in computing the standard deviation. By default, if `a` has</span>
 <span class="sd">        a floating-point data type, the returned array will have the same data</span>
 <span class="sd">        type as `a`. If `a` has a boolean or integral data type, the returned</span>
@@ -1297,7 +1297,7 @@
 <span class="sd">        axes. If ``None``, the variance is computed over the entire array.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type to use in computing the variance. By default, if `a` has a</span>
 <span class="sd">        floating-point data type, the returned array will have</span>
 <span class="sd">        the same data type as `a`. If `a` has a boolean or integral data type,</span>
