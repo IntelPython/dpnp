@@ -225,17 +225,23 @@ def _get_bin_edges(a, bins, range, usm_type):
 
 
 def _bincount_validate(x, weights, minlength):
+    dpnp.check_supported_arrays_type(x)
     if x.ndim > 1:
         raise ValueError("object too deep for desired array")
+
     if x.ndim < 1:
         raise ValueError("object of too small depth for desired array")
+
     if not dpnp.issubdtype(x.dtype, dpnp.integer) and not dpnp.issubdtype(
         x.dtype, dpnp.bool
     ):
         raise TypeError("x must be an integer array")
+
     if weights is not None:
+        dpnp.check_supported_arrays_type(weights)
         if x.shape != weights.shape:
             raise ValueError("The weights and x don't have the same length.")
+
         if not (
             dpnp.issubdtype(weights.dtype, dpnp.integer)
             or dpnp.issubdtype(weights.dtype, dpnp.floating)
@@ -245,10 +251,12 @@ def _bincount_validate(x, weights, minlength):
                 f"Weights must be integer or float. Got {weights.dtype}"
             )
 
-    if minlength is not None:
-        minlength = int(minlength)
-        if minlength < 0:
-            raise ValueError("minlength must be non-negative")
+    if minlength is None:
+        raise TypeError("use 0 instead of None for minlength")
+
+    minlength = int(minlength)
+    if minlength < 0:
+        raise ValueError("minlength must be non-negative")
 
 
 def _bincount_run_native(
@@ -262,9 +270,7 @@ def _bincount_run_native(
     if min_v < 0:
         raise ValueError("x argument must have no negative arguments")
 
-    size = int(dpnp.max(max_v)) + 1
-    if minlength is not None:
-        size = max(size, minlength)
+    size = max(int(max_v) + 1, minlength)
 
     # bincount implementation uses atomics, but atomics doesn't work with
     # host usm memory
@@ -299,9 +305,9 @@ def _bincount_run_native(
     return n_casted
 
 
-def bincount(x, weights=None, minlength=None):
+def bincount(x, weights=None, minlength=0):
     """
-    bincount(x, /, weights=None, minlength=None)
+    bincount(x, /, weights=None, minlength=0)
 
     Count number of occurrences of each value in array of non-negative ints.
 
@@ -313,10 +319,12 @@ def bincount(x, weights=None, minlength=None):
         Input 1-dimensional array with non-negative integer values.
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         Weights, array of the same shape as `x`.
+
         Default: ``None``
-    minlength : {None, int}, optional
+    minlength : int, optional
         A minimum number of bins for the output array.
-        Default: ``None``
+
+        Default: ``0``
 
     Returns
     -------

@@ -587,18 +587,30 @@ class TestBincount:
     @pytest.mark.parametrize(
         "array",
         [[1, 2, 3], [1, 2, 2, 1, 2, 4], [2, 2, 2, 2]],
-        ids=["[1, 2, 3]", "[1, 2, 2, 1, 2, 4]", "[2, 2, 2, 2]"],
+        ids=["size=3", "size=6", "size=4"],
     )
-    @pytest.mark.parametrize(
-        "minlength", [0, 1, 3, 5], ids=["0", "1", "3", "5"]
-    )
-    def test_bincount_minlength(self, array, minlength):
+    @pytest.mark.parametrize("minlength", [0, 1, 3, 5])
+    def test_minlength(self, array, minlength):
         np_a = numpy.array(array)
         dpnp_a = dpnp.array(array)
 
         expected = numpy.bincount(np_a, minlength=minlength)
         result = dpnp.bincount(dpnp_a, minlength=minlength)
         assert_allclose(expected, result)
+
+    # TODO: uncomment once numpy 2.3.0 is released
+    # @testing.with_requires("numpy>=2.3")
+    # @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("xp", [dpnp])
+    def test_minlength_none(self, xp):
+        a = xp.array([1, 2, 3])
+        assert_raises_regex(
+            TypeError,
+            "use 0 instead of None for minlength",
+            xp.bincount,
+            a,
+            minlength=None,
+        )
 
     @pytest.mark.parametrize(
         "array", [[1, 2, 2, 1, 2, 4]], ids=["[1, 2, 2, 1, 2, 4]"]
@@ -608,7 +620,7 @@ class TestBincount:
         [None, [0.3, 0.5, 0.2, 0.7, 1.0, -0.6], [2, 2, 2, 2, 2, 2]],
         ids=["None", "[0.3, 0.5, 0.2, 0.7, 1., -0.6]", "[2, 2, 2, 2, 2, 2]"],
     )
-    def test_bincount_weights(self, array, weights):
+    def test_weights(self, array, weights):
         np_a = numpy.array(array)
         np_weights = numpy.array(weights) if weights is not None else weights
         dpnp_a = dpnp.array(array)
@@ -617,6 +629,20 @@ class TestBincount:
         expected = numpy.bincount(np_a, weights=np_weights)
         result = dpnp.bincount(dpnp_a, weights=dpnp_weights)
         assert_allclose(expected, result)
+
+    @pytest.mark.parametrize(
+        "data",
+        [numpy.arange(5), 3, [2, 1]],
+        ids=["numpy.ndarray", "scalar", "list"],
+    )
+    def test_unsupported_data_weights(self, data):
+        # check input array
+        msg = "An array must be any of supported type"
+        assert_raises_regex(TypeError, msg, dpnp.bincount, data)
+
+        # check array of weights
+        a = dpnp.ones(5, dtype=dpnp.int32)
+        assert_raises_regex(TypeError, msg, dpnp.bincount, a, weights=data)
 
 
 class TestHistogramDd:
