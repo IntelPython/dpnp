@@ -580,9 +580,7 @@ def test_1in_1out(func, data, device):
     assert_sycl_queue_equal(result_queue, expected_queue)
 
 
-@pytest.mark.parametrize(
-    "op", ["bitwise_count", "bitwise_not"], ids=["bitwise_count", "bitwise_not"]
-)
+@pytest.mark.parametrize("op", ["bitwise_count", "bitwise_not"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
@@ -598,13 +596,6 @@ def test_bitwise_op_1in(op, device):
 @pytest.mark.parametrize(
     "op",
     ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
-    ids=[
-        "bitwise_and",
-        "bitwise_or",
-        "bitwise_xor",
-        "left_shift",
-        "right_shift",
-    ],
 )
 @pytest.mark.parametrize(
     "device",
@@ -1909,11 +1900,7 @@ def test_norm(device, ord, axis):
         "(1, 0, 3)",
     ],
 )
-@pytest.mark.parametrize(
-    "mode",
-    ["r", "raw", "complete", "reduced"],
-    ids=["r", "raw", "complete", "reduced"],
-)
+@pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
 @pytest.mark.parametrize(
     "device",
     valid_devices,
@@ -1945,8 +1932,8 @@ def test_qr(shape, mode, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-@pytest.mark.parametrize("full_matrices", [True, False], ids=["True", "False"])
-@pytest.mark.parametrize("compute_uv", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("full_matrices", [True, False])
+@pytest.mark.parametrize("compute_uv", [True, False])
 @pytest.mark.parametrize(
     "shape",
     [
@@ -2454,7 +2441,7 @@ def test_take_along_axis(data, ind, axis, device):
     valid_devices,
     ids=[device.filter_string for device in valid_devices],
 )
-@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("sparse", [True, False])
 def test_indices(device, sparse):
     sycl_queue = dpctl.SyclQueue(device)
     grid = dpnp.indices((2, 3), sparse=sparse, sycl_queue=sycl_queue)
@@ -2946,7 +2933,7 @@ def test_unique(axis, device):
         assert_sycl_queue_equal(iv_queue, ia.sycl_queue)
 
 
-@pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("copy", [True, False])
 @pytest.mark.parametrize(
     "device",
     valid_devices,

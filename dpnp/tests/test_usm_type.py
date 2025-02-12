@@ -372,7 +372,7 @@ def test_linspace_arrays(usm_type_start, usm_type_stop):
     )
 
 
-@pytest.mark.parametrize("func", ["tril", "triu"], ids=["tril", "triu"])
+@pytest.mark.parametrize("func", ["tril", "triu"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
 def test_tril_triu(func, usm_type):
     x0 = dp.ones((3, 3), usm_type=usm_type)
@@ -433,9 +433,7 @@ def test_logic_op_2in(op, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
-@pytest.mark.parametrize(
-    "op", ["bitwise_count", "bitwise_not"], ids=["bitwise_count", "bitwise_not"]
-)
+@pytest.mark.parametrize("op", ["bitwise_count", "bitwise_not"])
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 def test_bitwise_op_1in(op, usm_type_x):
     x = dp.arange(-10, 10, usm_type=usm_type_x)
@@ -447,13 +445,6 @@ def test_bitwise_op_1in(op, usm_type_x):
 @pytest.mark.parametrize(
     "op",
     ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
-    ids=[
-        "bitwise_and",
-        "bitwise_or",
-        "bitwise_xor",
-        "left_shift",
-        "right_shift",
-    ],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
@@ -1153,7 +1144,7 @@ def test_grid(usm_type, func):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-@pytest.mark.parametrize("sparse", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("sparse", [True, False])
 def test_indices_sparse(usm_type, sparse):
     x = dp.indices((2, 3), sparse=sparse, usm_type=usm_type)
     for i in x:
@@ -1469,12 +1460,8 @@ def test_inv(shape, is_empty, usm_type):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-@pytest.mark.parametrize(
-    "full_matrices_param", [True, False], ids=["True", "False"]
-)
-@pytest.mark.parametrize(
-    "compute_uv_param", [True, False], ids=["True", "False"]
-)
+@pytest.mark.parametrize("full_matrices_param", [True, False])
+@pytest.mark.parametrize("compute_uv_param", [True, False])
 @pytest.mark.parametrize(
     "shape",
     [
@@ -1595,11 +1582,7 @@ def test_pinv(shape, hermitian, usm_type):
         "(1, 0, 3)",
     ],
 )
-@pytest.mark.parametrize(
-    "mode",
-    ["r", "raw", "complete", "reduced"],
-    ids=["r", "raw", "complete", "reduced"],
-)
+@pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
 def test_qr(shape, mode, usm_type):
     count_elems = numpy.prod(shape)
     a = dp.arange(count_elems, usm_type=usm_type).reshape(shape)
@@ -1782,7 +1765,7 @@ def test_unique(axis, usm_type):
         assert x.usm_type == usm_type
 
 
-@pytest.mark.parametrize("copy", [True, False], ids=["True", "False"])
+@pytest.mark.parametrize("copy", [True, False])
 @pytest.mark.parametrize("usm_type_a", list_of_usm_types, ids=list_of_usm_types)
 def test_nan_to_num(copy, usm_type_a):
     a = dp.array([-dp.nan, -1, 0, 1, dp.nan], usm_type=usm_type_a)
