@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev6+17.g602d60bd3a5 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.17.0dev6+21.ga849a90633e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e464f0cb"></script>
+      <script src="../../_static/documentation_options.js?v=4deb6dc2"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -885,7 +885,7 @@
 <span class="sd">        1-D array of integer frequency weights; the number of times each</span>
 <span class="sd">        observation vector should be repeated.</span>
 <span class="sd">        It is required that ``fweights &gt;= 0``. However, the function will not</span>
-<span class="sd">        error when ``fweights &lt; 0`` for performance reasons.</span>
+<span class="sd">        raise an error when ``fweights &lt; 0`` for performance reasons.</span>
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    aweights : {None, dpnp.ndarray, usm_ndarray}, optional</span>
@@ -897,7 +897,7 @@
 <span class="sd">        error when ``aweights &lt; 0`` for performance reasons.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : data-type, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data-type of the result. By default, the return data-type will have</span>
 <span class="sd">        at least floating point type based on the capabilities of the device on</span>
 <span class="sd">        which the input arrays reside.</span>
@@ -938,6 +938,10 @@
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([[0, 2], [1, 1], [2, 0]]).T</span>
+
+<span class="sd">    Consider two variables, :math:`x_0` and  :math:`x_1`, which correlate</span>
+<span class="sd">    perfectly, but in opposite directions:</span>
+
 <span class="sd">    &gt;&gt;&gt; x</span>
 <span class="sd">    array([[0, 1, 2],</span>
 <span class="sd">           [2, 1, 0]])</span>
