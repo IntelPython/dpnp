@@ -123,10 +123,19 @@ if(_use_onemkl_interfaces)
                 onemkl_interfaces_library
                 GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
                 GIT_TAG 8f4312ef966420b9b8b4b82b9d5c22e2c91a1fe7  # v0.6
+                #GIT_TAG develop
         )
     endif()
 
     FetchContent_MakeAvailable(onemkl_interfaces_library)
+    if(TARGET onemath)
+        set(USED_MATH_LIBRARY "onemath" CACHE INTERNAL "Selected OneAPI math library")
+    elseif(TARGET onemkl)
+        set(USED_MATH_LIBRARY "onemkl" CACHE INTERNAL "Selected OneAPI math library")
+    else()
+        message(STATUS "Neither 'oneMath' nor 'oneMKL' found!")
+    endif()
+    message(STATUS "OneAPI math library used: ${USED_MATH_LIBRARY}")
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 endif()
 
