@@ -836,9 +836,10 @@ def cov(
     --------
     >>> import dpnp as np
     >>> x = np.array([[0, 2], [1, 1], [2, 0]]).T
-    
-    Consider two variables, :math:`x_0` and  :math:`x_1`, which correlate perfectly, but in opposite directions:
-    
+
+    Consider two variables, :math:`x_0` and  :math:`x_1`, which correlate
+    perfectly, but in opposite directions:
+
     >>> x
     array([[0, 1, 2],
            [2, 1, 0]])
