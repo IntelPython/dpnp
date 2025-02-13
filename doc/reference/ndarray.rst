@@ -134,7 +134,6 @@ Array conversion
 
    dpnp.ndarray.item
    dpnp.ndarray.tolist
-   dpnp.ndarray.tostring
    dpnp.ndarray.tobytes
    dpnp.ndarray.tofile
    dpnp.ndarray.dump
