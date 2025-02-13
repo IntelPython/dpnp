@@ -5,6 +5,7 @@ import pytest
 from numpy.testing import (
     assert_allclose,
     assert_array_equal,
+    assert_raises,
     assert_raises_regex,
 )
 
@@ -14,7 +15,9 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
+    get_complex_dtypes,
     get_float_complex_dtypes,
+    get_float_dtypes,
     has_support_aspect64,
     numpy_version,
 )
@@ -343,14 +346,236 @@ class TestCorrelate:
 
 class TestCov:
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_false_rowvar_dtype(self, dtype):
-        a = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dtype)
+    def test_basic(self, dt):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]], dtype=dt)
         ia = dpnp.array(a)
 
-        assert_allclose(dpnp.cov(ia.T), dpnp.cov(ia, rowvar=False))
-        assert_allclose(dpnp.cov(ia, rowvar=False), numpy.cov(a, rowvar=False))
+        expected = numpy.cov(a.T)
+        result = dpnp.cov(ia.T)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex(self, dt):
+        a = numpy.array([[1, 2, 3], [1j, 2j, 3j]], dtype=dt)
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a)
+        result = dpnp.cov(ia)
+        assert_allclose(result, expected)
+
+        expected = numpy.cov(a, aweights=numpy.ones(3))
+        result = dpnp.cov(ia, aweights=dpnp.ones(3))
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    @pytest.mark.parametrize("y_dt", get_complex_dtypes())
+    def test_y(self, dt, y_dt):
+        a = numpy.array([[1, 2, 3]], dtype=dt)
+        y = numpy.array([[1j, 2j, 3j]], dtype=y_dt)
+        ia, iy = dpnp.array(a), dpnp.array(y)
+
+        expected = numpy.cov(a, y)
+        result = dpnp.cov(ia, iy)
+        assert_allclose(result, expected)
+
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    @pytest.mark.parametrize("sh", [None, (0, 2), (2, 0)])
+    def test_empty(self, sh):
+        a = numpy.array([]).reshape(sh)
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a)
+        result = dpnp.cov(ia)
+        assert_allclose(result, expected)
+
+    @pytest.mark.filterwarnings("ignore::RuntimeWarning")
+    def test_wrong_ddof(self):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]])
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a.T, ddof=5)
+        result = dpnp.cov(ia.T, ddof=5)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_dtypes())
+    @pytest.mark.parametrize("rowvar", [True, False])
+    def test_1D_rowvar(self, dt, rowvar):
+        a = numpy.array([0.3942, 0.5969, 0.7730, 0.9918, 0.7964], dtype=dt)
+        y = numpy.array([0.0780, 0.3107, 0.2111, 0.0334, 0.8501])
+        ia, iy = dpnp.array(a), dpnp.array(y)
+
+        expected = numpy.cov(a, rowvar=rowvar)
+        result = dpnp.cov(ia, rowvar=rowvar)
+        assert_allclose(result, expected)
+
+        expected = numpy.cov(a, y, rowvar=rowvar)
+        result = dpnp.cov(ia, iy, rowvar=rowvar)
+        assert_allclose(result, expected)
+
+    def test_1D_variance(self):
+        a = numpy.array([0.3942, 0.5969, 0.7730, 0.9918, 0.7964])
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a, ddof=1)
+        result = dpnp.cov(ia, ddof=1)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("freq_data", [[1, 4, 1], [1, 1, 1]])
+    def test_fweights(self, freq_data):
+        a = numpy.array([0.0, 1.0, 2.0], ndmin=2)
+        freq = numpy.array(freq_data)
+        ia, ifreq = dpnp.array(a), dpnp.array(freq_data)
+
+        expected = numpy.cov(a, fweights=freq)
+        result = dpnp.cov(ia, fweights=ifreq)
+        assert_allclose(result, expected)
+
+        a = numpy.array([[0, 2], [1, 1], [2, 0]])
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a.T, fweights=freq)
+        result = dpnp.cov(ia.T, fweights=ifreq)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_float_fweights(self, xp):
+        a = xp.array([[0, 2], [1, 1], [2, 0]])
+        freq = xp.array([1, 4, 1]) + 0.5
+        assert_raises(TypeError, xp.cov, a, fweights=freq)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("sh", [(2, 3), 2])
+    def test_fweights_wrong_shapes(self, xp, sh):
+        a = xp.array([[0, 2], [1, 1], [2, 0]])
+        freq = xp.ones(sh, dtype=xp.int_)
+        assert_raises((ValueError, RuntimeError), xp.cov, a.T, fweights=freq)
+
+    @pytest.mark.parametrize("freq", [numpy.array([1, 4, 1]), 2])
+    def test_fweights_wrong_type(self, freq):
+        a = dpnp.array([[0, 2], [1, 1], [2, 0]]).T
+        assert_raises(TypeError, dpnp.cov, a, fweights=freq)
+
+    @pytest.mark.parametrize("weights_data", [[1.0, 4.0, 1.0], [1.0, 1.0, 1.0]])
+    def test_aweights(self, weights_data):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]])
+        weights = numpy.array(weights_data)
+        ia, iweights = dpnp.array(a), dpnp.array(weights_data)
+
+        expected = numpy.cov(a.T, aweights=weights)
+        result = dpnp.cov(ia.T, aweights=iweights)
+        assert_allclose(result, expected)
+
+        expected = numpy.cov(a.T, aweights=3.0 * weights)
+        result = dpnp.cov(ia.T, aweights=3.0 * iweights)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize("sh", [(2, 3), 2])
+    def test_aweights_wrong_shapes(self, xp, sh):
+        a = xp.array([[0, 2], [1, 1], [2, 0]])
+        weights = xp.ones(sh)
+        assert_raises((ValueError, RuntimeError), xp.cov, a.T, aweights=weights)
+
+    @pytest.mark.parametrize("weights", [numpy.array([1.0, 4.0, 1.0]), 2.0])
+    def test_aweights_wrong_type(self, weights):
+        a = dpnp.array([[0, 2], [1, 1], [2, 0]]).T
+        assert_raises(TypeError, dpnp.cov, a, aweights=weights)
+
+    def test_unit_fweights_and_aweights(self):
+        a = numpy.array([0.0, 1.0, 2.0], ndmin=2)
+        freq = numpy.array([1, 4, 1])
+        weights = numpy.ones(3)
+        ia, ifreq, iweights = (
+            dpnp.array(a),
+            dpnp.array(freq),
+            dpnp.array(weights),
+        )
+
+        # unit weights
+        expected = numpy.cov(a, fweights=freq, aweights=weights)
+        result = dpnp.cov(ia, fweights=ifreq, aweights=iweights)
+        assert_allclose(result, expected)
+
+        a = numpy.array([[0, 2], [1, 1], [2, 0]])
+        ia = dpnp.array(a)
+
+        # unit weights
+        expected = numpy.cov(a.T, fweights=freq, aweights=weights)
+        result = dpnp.cov(ia.T, fweights=ifreq, aweights=iweights)
+        assert_allclose(result, expected)
+
+        freq = numpy.ones(3, dtype=numpy.int_)
+        ifreq = dpnp.array(freq)
+
+        # unit frequencies and weights
+        expected = numpy.cov(a.T, fweights=freq, aweights=weights)
+        result = dpnp.cov(ia.T, fweights=ifreq, aweights=iweights)
+        assert_allclose(result, expected)
+
+        weights = numpy.array([1.0, 4.0, 1.0])
+        iweights = dpnp.array(weights)
+
+        # unit frequencies
+        expected = numpy.cov(a.T, fweights=freq, aweights=weights)
+        result = dpnp.cov(ia.T, fweights=ifreq, aweights=iweights)
+        assert_allclose(result, expected)
+
+        expected = numpy.cov(a.T, fweights=freq, aweights=3.0 * weights)
+        result = dpnp.cov(ia.T, fweights=ifreq, aweights=3.0 * iweights)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    def test_dtype(self, dt):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]])
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a.T, dtype=dt)
+        result = dpnp.cov(ia.T, dtype=dt)
+        assert_allclose(result, expected)
+        assert result.dtype == dt
+
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    @pytest.mark.parametrize("bias", [True, False])
+    def test_bias(self, dt, bias):
+        a = generate_random_numpy_array((3, 4), dtype=dt)
+        ia = dpnp.array(a)
+
+        expected = numpy.cov(a, bias=bias)
+        result = dpnp.cov(ia, bias=bias)
+        assert_dtype_allclose(result, expected)
+
+        # with rowvar
+        expected = numpy.cov(a, rowvar=False, bias=bias)
+        result = dpnp.cov(ia, rowvar=False, bias=bias)
+        assert_dtype_allclose(result, expected)
+
+        freq = numpy.array([1, 4, 1, 7])
+        ifreq = dpnp.array(freq)
+
+        # with frequency
+        expected = numpy.cov(a, bias=bias, fweights=freq)
+        result = dpnp.cov(ia, bias=bias, fweights=ifreq)
+        assert_dtype_allclose(result, expected)
+
+        weights = numpy.array([1.2, 3.7, 5.0, 1.1])
+        iweights = dpnp.array(weights)
+
+        # with weights
+        expected = numpy.cov(a, bias=bias, aweights=weights)
+        result = dpnp.cov(ia, bias=bias, aweights=iweights)
+        assert_dtype_allclose(result, expected)
+
+    def test_usm_ndarray(self):
+        a = numpy.array([[0, 2], [1, 1], [2, 0]])
+        ia = dpt.asarray(a)
+
+        expected = numpy.cov(a.T)
+        result = dpnp.cov(ia.T)
+        assert_allclose(result, expected)
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
