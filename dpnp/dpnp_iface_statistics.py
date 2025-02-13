@@ -783,7 +783,7 @@ def cov(
         1-D array of integer frequency weights; the number of times each
         observation vector should be repeated.
         It is required that ``fweights >= 0``. However, the function will not
-        error when ``fweights < 0`` for performance reasons.
+        raise an error when ``fweights < 0`` for performance reasons.
 
         Default: ``None``.
     aweights : {None, dpnp.ndarray, usm_ndarray}, optional
@@ -795,7 +795,7 @@ def cov(
         error when ``aweights < 0`` for performance reasons.
 
         Default: ``None``.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the result. By default, the return data-type will have
         at least floating point type based on the capabilities of the device on
         which the input arrays reside.
@@ -836,6 +836,9 @@ def cov(
     --------
     >>> import dpnp as np
     >>> x = np.array([[0, 2], [1, 1], [2, 0]]).T
+    
+    Consider two variables, :math:`x_0` and  :math:`x_1`, which correlate perfectly, but in opposite directions:
+    
     >>> x
     array([[0, 1, 2],
            [2, 1, 0]])
