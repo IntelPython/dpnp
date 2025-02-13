@@ -96,8 +96,6 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
     } catch (mkl_lapack::exception const &e) {
         is_exception_caught = true;
         info = e.info();
-        std::cout << "info: " << info << std::endl;
-        std::cout << e.detail() << std::endl;
 
         if (info < 0) {
             error_msg << "Parameter number " << -info
