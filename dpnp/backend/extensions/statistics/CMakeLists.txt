@@ -80,6 +80,8 @@ else()
     -fno-approx-func
     -fno-finite-math-only
     )
+  target_compile_options(${python_module_name} PUBLIC -fsanitize=address)
+  target_link_options(${python_module_name} PUBLIC -fsanitize=address)
 endif()
 
 target_link_options(${python_module_name} PUBLIC -fsycl-device-code-split=per_kernel)
