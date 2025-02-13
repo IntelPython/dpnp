@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.g86d4b41703f documentation</title>
+  <title>dpnp.dpnp_array &mdash; Data Parallel Extension for NumPy 0.17.0dev6+28.g1630223dfb4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=57d8f008"></script>
+      <script src="../../_static/documentation_options.js?v=4159c3e8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -867,12 +867,14 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.asnumpy.html#dpnp.dpnp_array.dpnp_array.asnumpy">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">asnumpy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Copy content of the array into :class:`numpy.ndarray` instance of the same shape and data type.</span>
+<span class="sd">        Copy content of the array into :class:`numpy.ndarray` instance of</span>
+<span class="sd">        the same shape and data type.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        numpy.ndarray</span>
-<span class="sd">            An instance of :class:`numpy.ndarray` populated with the array content.</span>
+<span class="sd">        out : numpy.ndarray</span>
+<span class="sd">            An instance of :class:`numpy.ndarray` populated with the array</span>
+<span class="sd">            content.</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -899,7 +901,7 @@
 <span class="sd">        ----------</span>
 <span class="sd">        x1 : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">            Array data type casting.</span>
-<span class="sd">        dtype : dtype</span>
+<span class="sd">        dtype : {None, str, dtype object}</span>
 <span class="sd">            Target data type.</span>
 <span class="sd">        order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">            Row-major (C-style) or column-major (Fortran-style) order.</span>
@@ -2065,7 +2067,6 @@
     <span class="c1"># &#39;tobytes&#39;,</span>
     <span class="c1"># &#39;tofile&#39;,</span>
     <span class="c1"># &#39;tolist&#39;,</span>
-    <span class="c1"># &#39;tostring&#39;,</span>
 
 <div class="viewcode-block" id="dpnp_array.trace">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dpnp_array.dpnp_array.trace.html#dpnp.dpnp_array.dpnp_array.trace">[docs]</a>

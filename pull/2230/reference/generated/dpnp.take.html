@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.take &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.g86d4b41703f documentation</title>
+  <title>dpnp.take &mdash; Data Parallel Extension for NumPy 0.17.0dev6+28.g1630223dfb4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=57d8f008"></script>
+      <script src="../../_static/documentation_options.js?v=4159c3e8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -137,12 +137,14 @@ if you need elements along a given axis. A call such as
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>(</em><em>Ni</em><em>...</em><em>, </em><em>M</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) -- The source array.</p></li>
 <li><p><strong>indices</strong> (<em>{array_like</em><em>, </em><em>scalars}</em><em>, </em><em>(</em><em>Nj</em><em>...</em><em>)</em>) -- The indices of the values to extract.
 Also allow scalars for <cite>indices</cite>.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>0-d array</em><em> of </em><em>integer dtype}</em><em>, </em><em>optional</em>) -- The axis over which to select values. By default, the flattened
-input array is used.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em><em> (</em><em>Ni</em><em>...</em><em>, </em><em>Nj</em><em>...</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) -- If provided, the result will be placed in this array. It should
-be of the appropriate shape and dtype.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>0-d array</em><em> of </em><em>integer dtype}</em><em>, </em><em>optional</em>) -- <p>The axis over which to select values. By default, the flattened
+input array is used.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em><em> (</em><em>Ni</em><em>...</em><em>, </em><em>Nj</em><em>...</em><em>, </em><em>Nk</em><em>...</em><em>)</em>) -- <p>If provided, the result will be placed in this array. It should
+be of the appropriate shape and dtype.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 <li><p><strong>mode</strong> (<em>{&quot;wrap&quot;</em><em>, </em><em>&quot;clip&quot;}</em><em>, </em><em>optional</em>) -- <p>Specifies how out-of-bounds indices will be handled. Possible values
 are:</p>
 <ul>

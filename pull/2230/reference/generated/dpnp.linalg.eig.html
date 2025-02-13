@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.g86d4b41703f documentation</title>
+  <title>dpnp.linalg.eig &mdash; Data Parallel Extension for NumPy 0.17.0dev6+28.g1630223dfb4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=57d8f008"></script>
+      <script src="../../_static/documentation_options.js?v=4159c3e8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -135,17 +135,19 @@
 be computed.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
+<dd class="field-even"><p><dl class="simple">
+<dt>A namedtuple with the following attributes</dt><dd><ul class="simple">
 <li><p><strong>eigenvalues</strong> (<em>(..., M) dpnp.ndarray</em>) -- The eigenvalues, each repeated according to its multiplicity.
-The eigenvalues are not necessarily ordered. The resulting
-array will be of complex type, unless the imaginary part is
-zero in which case it will be cast to a real type. When <cite>a</cite>
-is real the resulting eigenvalues will be real (0 imaginary
-part) or occur in conjugate pairs</p></li>
-<li><p><strong>eigenvectors</strong> (<em>(..., M, M) dpnp.ndarray</em>) -- The normalized (unit &quot;length&quot;) eigenvectors, such that the
-column <code class="docutils literal notranslate"><span class="pre">v[:,i]</span></code> is the eigenvector corresponding to the
-eigenvalue <code class="docutils literal notranslate"><span class="pre">w[i]</span></code>.</p></li>
+The eigenvalues are not necessarily ordered. The resulting array will
+be of complex type, unless the imaginary part is zero in which case it
+will be cast to a real type. When <cite>a</cite> is real the resulting eigenvalues
+will be real (zero imaginary part) or occur in conjugate pairs.</p></li>
+<li><p><strong>eigenvectors</strong> (<em>(..., M, M) dpnp.ndarray</em>) -- The normalized (unit &quot;length&quot;) eigenvectors, such that the column
+<code class="docutils literal notranslate"><span class="pre">eigenvectors[:,i]</span></code> is the eigenvector corresponding to the
+eigenvalue <code class="docutils literal notranslate"><span class="pre">eigenvalues[i]</span></code>.</p></li>
 </ul>
+</dd>
+</dl>
 </p>
 </dd>
 </dl>

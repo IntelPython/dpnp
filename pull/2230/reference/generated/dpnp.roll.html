@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.roll &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.g86d4b41703f documentation</title>
+  <title>dpnp.roll &mdash; Data Parallel Extension for NumPy 0.17.0dev6+28.g1630223dfb4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=57d8f008"></script>
+      <script src="../../_static/documentation_options.js?v=4159c3e8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -143,9 +143,11 @@ are re-introduced at the last position.</p>
 <cite>axis</cite> must be a tuple of the same size, and each of the given axes
 is shifted by the corresponding number. If an integer while <cite>axis</cite> is
 a tuple of integers, then the same value is used for all given axes.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- Axis or axes along which elements are shifted. By default, the
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which elements are shifted. By default, the
 array is flattened before shifting, after which the original
-shape is restored.</p></li>
+shape is restored.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
