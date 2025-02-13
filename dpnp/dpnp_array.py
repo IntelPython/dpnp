@@ -760,12 +760,14 @@ class dpnp_array:
 
     def asnumpy(self):
         """
-        Copy content of the array into :class:`numpy.ndarray` instance of the same shape and data type.
+        Copy content of the array into :class:`numpy.ndarray` instance of
+        the same shape and data type.
 
         Returns
         -------
-        numpy.ndarray
-            An instance of :class:`numpy.ndarray` populated with the array content.
+        out : numpy.ndarray
+            An instance of :class:`numpy.ndarray` populated with the array
+            content.
 
         """
 
@@ -789,7 +791,7 @@ class dpnp_array:
         ----------
         x1 : {dpnp.ndarray, usm_ndarray}
             Array data type casting.
-        dtype : dtype
+        dtype : {None, str, dtype object}
             Target data type.
         order : {"C", "F", "A", "K"}, optional
             Row-major (C-style) or column-major (Fortran-style) order.
@@ -1858,7 +1860,6 @@ class dpnp_array:
     # 'tobytes',
     # 'tofile',
     # 'tolist',
-    # 'tostring',
 
     def trace(self, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         """

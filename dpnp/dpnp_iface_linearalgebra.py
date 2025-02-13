@@ -207,7 +207,7 @@ def einsum(
         These are the arrays for the operation.
     out : {dpnp.ndarrays, usm_ndarray, None}, optional
         If provided, the calculation is done into this array.
-    dtype : {dtype, None}, optional
+    dtype : {None, str, dtype object}, optional
         If provided, forces the calculation to use the data type specified.
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
@@ -770,7 +770,7 @@ def matmul(
         (of the calculated values) will be cast if necessary.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
@@ -950,7 +950,7 @@ def matvec(
         If not provided or ``None``, a freshly-allocated array is used.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
@@ -1339,7 +1339,7 @@ def vecdot(
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the vector dot product. By default, the
         returned array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
@@ -1453,7 +1453,7 @@ def vecmat(
         If not provided or ``None``, a freshly-allocated array is used.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.

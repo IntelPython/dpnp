@@ -381,7 +381,7 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
         contain observations.
 
         Default: ``True``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the result.
 
         Default: ``None``.
@@ -843,7 +843,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
         dimension ``a.ndim - len(axis)``.
 
     Limitations
-    -----------.
+    -----------
     Parameters `where`, and `initial` are only supported with their default
     values. Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -908,7 +908,7 @@ def mean(a, /, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         axes. If ``None``, the mean is computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the mean. By default, if `a` has a
         floating-point data type, the returned array will have
         the same data type as `a`.
@@ -1271,7 +1271,7 @@ def std(
         is computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the standard deviation. By default, if `a` has
         a floating-point data type, the returned array will have the same data
         type as `a`. If `a` has a boolean or integral data type, the returned
@@ -1465,7 +1465,7 @@ def var(
         axes. If ``None``, the variance is computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the variance. By default, if `a` has a
         floating-point data type, the returned array will have the same data
         type as `a`. If `a` has a boolean or integral data type, the returned

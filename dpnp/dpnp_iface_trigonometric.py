@@ -832,7 +832,7 @@ def cumlogsumexp(
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1642,7 +1642,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1892,7 +1892,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 

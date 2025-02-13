@@ -521,7 +521,8 @@ class TestEigenvalue:
         # we verify them through the eigen equation A*v=w*v.
         if func in ("eig", "eigh"):
             w, _ = getattr(numpy.linalg, func)(a)
-            w_dp, v_dp = getattr(dpnp.linalg, func)(a_dp)
+            result = getattr(dpnp.linalg, func)(a_dp)
+            w_dp, v_dp = result.eigenvalues, result.eigenvectors
 
             self.assert_eigen_decomposition(a_dp, w_dp, v_dp)
 
@@ -545,7 +546,8 @@ class TestEigenvalue:
 
         if func == "eig":
             w, v = getattr(numpy.linalg, func)(a_np)
-            w_dp, v_dp = getattr(dpnp.linalg, func)(a_dp)
+            result = getattr(dpnp.linalg, func)(a_dp)
+            w_dp, v_dp = result.eigenvalues, result.eigenvectors
 
             assert_dtype_allclose(v_dp, v)
 
@@ -2391,16 +2393,18 @@ class TestQr:
             dpnp_r = dpnp.linalg.qr(ia, mode)
         else:
             np_q, np_r = numpy.linalg.qr(a, mode)
-            dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
 
             # check decomposition
             if mode in ("complete", "reduced"):
+                result = dpnp.linalg.qr(ia, mode)
+                dpnp_q, dpnp_r = result.Q, result.R
                 assert_almost_equal(
                     dpnp.matmul(dpnp_q, dpnp_r),
                     a,
                     decimal=5,
                 )
             else:  # mode=="raw"
+                dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
                 assert_dtype_allclose(dpnp_q, np_q, factor=24)
 
         if mode in ("raw", "r"):
@@ -2424,15 +2428,18 @@ class TestQr:
             dpnp_r = dpnp.linalg.qr(ia, mode)
         else:
             np_q, np_r = numpy.linalg.qr(a, mode)
-            dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
+
             # check decomposition
             if mode in ("complete", "reduced"):
+                result = dpnp.linalg.qr(ia, mode)
+                dpnp_q, dpnp_r = result.Q, result.R
                 assert_almost_equal(
                     dpnp.matmul(dpnp_q, dpnp_r),
                     a,
                     decimal=5,
                 )
             else:  # mode=="raw"
+                dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
                 assert_allclose(np_q, dpnp_q, atol=1e-4)
         if mode in ("raw", "r"):
             assert_allclose(np_r, dpnp_r, atol=1e-4)
@@ -2460,7 +2467,12 @@ class TestQr:
             dpnp_r = dpnp.linalg.qr(ia, mode)
         else:
             np_q, np_r = numpy.linalg.qr(a, mode)
-            dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
+
+            if mode in ("complete", "reduced"):
+                result = dpnp.linalg.qr(ia, mode)
+                dpnp_q, dpnp_r = result.Q, result.R
+            else:
+                dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
 
             assert_dtype_allclose(dpnp_q, np_q)
 
@@ -2477,7 +2489,12 @@ class TestQr:
             dpnp_r = dpnp.linalg.qr(ia[::2, ::2], mode)
         else:
             np_q, np_r = numpy.linalg.qr(a[::2, ::2], mode)
-            dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::2, ::2], mode)
+
+            if mode in ("complete", "reduced"):
+                result = dpnp.linalg.qr(ia[::2, ::2], mode)
+                dpnp_q, dpnp_r = result.Q, result.R
+            else:
+                dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::2, ::2], mode)
 
             assert_dtype_allclose(dpnp_q, np_q)
 
@@ -2489,7 +2506,12 @@ class TestQr:
             dpnp_r = dpnp.linalg.qr(ia[::-2, ::-2], mode)
         else:
             np_q, np_r = numpy.linalg.qr(a[::-2, ::-2], mode)
-            dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::-2, ::-2], mode)
+
+            if mode in ("complete", "reduced"):
+                result = dpnp.linalg.qr(ia[::-2, ::-2], mode)
+                dpnp_q, dpnp_r = result.Q, result.R
+            else:
+                dpnp_q, dpnp_r = dpnp.linalg.qr(ia[::-2, ::-2], mode)
 
             assert_dtype_allclose(dpnp_q, np_q)
 
@@ -2663,7 +2685,8 @@ class TestSlogdet:
         a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
+        result = dpnp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = result.sign, result.logabsdet
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
@@ -2681,7 +2704,8 @@ class TestSlogdet:
         a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
+        result = dpnp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = result.sign, result.logabsdet
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
@@ -2701,13 +2725,15 @@ class TestSlogdet:
 
         # positive strides
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::2, ::2])
-        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp[::2, ::2])
+        result = dpnp.linalg.slogdet(a_dp[::2, ::2])
+        sign_result, logdet_result = result.sign, result.logabsdet
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
         # negative strides
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::-2, ::-2])
-        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp[::-2, ::-2])
+        result = dpnp.linalg.slogdet(a_dp[::-2, ::-2])
+        sign_result, logdet_result = result.sign, result.logabsdet
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
 
@@ -2735,7 +2761,8 @@ class TestSlogdet:
         a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
+        result = dpnp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = result.sign, result.logabsdet
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
@@ -2751,7 +2778,8 @@ class TestSlogdet:
         a_dp = dpnp.array(a_np)
 
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np)
-        sign_result, logdet_result = dpnp.linalg.slogdet(a_dp)
+        result = dpnp.linalg.slogdet(a_dp)
+        sign_result, logdet_result = result.sign, result.logabsdet
 
         assert_allclose(sign_expected, sign_result)
         assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
@@ -2844,13 +2872,14 @@ class TestSvd:
         a = numpy.arange(shape[0] * shape[1], dtype=dtype).reshape(shape)
         dp_a = dpnp.array(a)
 
-        np_u, np_s, np_vt = numpy.linalg.svd(a)
-        dp_u, dp_s, dp_vt = dpnp.linalg.svd(dp_a)
+        np_u, np_s, np_vh = numpy.linalg.svd(a)
+        result = dpnp.linalg.svd(dp_a)
+        dp_u, dp_s, dp_vh = result.U, result.S, result.Vh
 
-        self.check_types_shapes(dp_u, dp_s, dp_vt, np_u, np_s, np_vt)
+        self.check_types_shapes(dp_u, dp_s, dp_vh, np_u, np_s, np_vh)
         self.get_tol(dtype)
         self.check_decomposition(
-            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, True
+            dp_a, dp_u, dp_s, dp_vh, np_u, np_s, np_vh, True
         )
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -2863,25 +2892,26 @@ class TestSvd:
         dp_a = dpnp.array(a)
 
         if compute_vt:
-            np_u, np_s, np_vt = numpy.linalg.svd(
+            np_u, np_s, np_vh = numpy.linalg.svd(
                 a, compute_uv=compute_vt, hermitian=True
             )
-            dp_u, dp_s, dp_vt = dpnp.linalg.svd(
+            result = dpnp.linalg.svd(
                 dp_a, compute_uv=compute_vt, hermitian=True
             )
+            dp_u, dp_s, dp_vh = result.U, result.S, result.Vh
         else:
             np_s = numpy.linalg.svd(a, compute_uv=compute_vt, hermitian=True)
             dp_s = dpnp.linalg.svd(dp_a, compute_uv=compute_vt, hermitian=True)
-            np_u = np_vt = dp_u = dp_vt = None
+            np_u = np_vh = dp_u = dp_vh = None
 
         self.check_types_shapes(
-            dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+            dp_u, dp_s, dp_vh, np_u, np_s, np_vh, compute_vt
         )
 
         self.get_tol(dtype)
 
         self.check_decomposition(
-            dp_a, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt
+            dp_a, dp_u, dp_s, dp_vh, np_u, np_s, np_vh, compute_vt
         )
 
     def test_svd_errors(self):

@@ -231,6 +231,123 @@ def _define_dim_flags(x, axis):
     return x_is_2D, x_is_1D, x_base_is_1D
 
 
+def _gemm_batch_matmul(exec_q, x1, x2, res):
+    # arrays here are already at least 3D, make them 3D
+    x1_shape = x1.shape
+    x2_shape = x2.shape
+    x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
+    x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
+    orig_shape = res.shape
+    res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
+    res_shape = res.shape
+
+    # gemm_batch does not handle negative strides, make a copy if needed
+    x1 = _copy_array(x1, copy_flag=x1.strides[0] < 0)
+    x2 = _copy_array(x2, copy_flag=x2.strides[0] < 0)
+    res = _copy_array(res, copy_flag=res.strides[0] < 0)
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+
+    # onemkl::blas::gemm_bacth throws an exception (Provided range is out
+    # of integer limits) if the batch_size is too large, so we need to
+    # split the batch into smaller chunks, the size depnends on device
+    chunk = 4096 * 4096 - 2
+    batch_size = res_shape[0]
+    for i in range(0, batch_size, chunk):
+        if x1_shape[0] == 1:
+            # x1 is repeatedly multiplied with each matrix in x2
+            x1_usm = dpnp.get_usm_ndarray(x1)
+            x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
+        elif x2_shape[0] == 1:
+            x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
+            x2_usm = dpnp.get_usm_ndarray(x2)
+        else:
+            x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
+            x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
+        res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
+
+        ht_ev, blas_ev, row_major = bi._gemm_batch(
+            exec_q,
+            x1_usm,
+            x2_usm,
+            res_usm,
+            depends=_manager.submitted_events,
+        )
+        _manager.add_event_pair(ht_ev, blas_ev)
+
+    _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
+    if row_major:
+        if res_is_f_contig:
+            # Considering the multiplication for one of the batches,
+            # we have result[0, 1] = a[0, :]*b[1, :]. In row_major mode,
+            # it is assumed result array is c-contiguous, i.e. the value of
+            # result[0, 1] is has the second place memory.
+            # however, the result array is batches of 2D f-contiguous array,
+            # i.e. the second place of memory points out to res[1, 0].
+            # So, we need to read data of each 2D array in the batch in
+            # "F" order and write it in "C" order
+            res = (
+                res.ravel(order="F")
+                .reshape(res_shape[1], res_shape[2], batch_size)
+                .transpose(2, 0, 1)
+            )
+    else:
+        if res_is_c_contig:
+            # read data of each 2D array in the batch in "C" order and
+            # write it in "F" order
+            res = (
+                res.ravel(order="C")
+                .reshape(batch_size, res_shape[2], res_shape[1])
+                .transpose(0, 2, 1)
+            )
+
+    if res_shape != orig_shape:
+        res = res.reshape(orig_shape)
+
+    return res
+
+
+def _gemm_matmul(exec_q, x1, x2, res):
+    _manager = dpu.SequentialOrderManager[exec_q]
+
+    ht_ev, gemm_ev, row_major = bi._gemm(
+        exec_q,
+        dpnp.get_usm_ndarray(x1),
+        dpnp.get_usm_ndarray(x2),
+        dpnp.get_usm_ndarray(res),
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(ht_ev, gemm_ev)
+
+    if row_major:
+        if res.flags.f_contiguous:
+            # read data in "F" order and write it in "C" order
+            res = dpnp.ravel(res, order="F").reshape(res.shape, order="C")
+    else:
+        if res.flags.c_contiguous:
+            # read data in "C" order and write it in "F" order
+            res = dpnp.ravel(res, order="C").reshape(res.shape, order="F")
+
+    return res
+
+
+def _gemm_special_case(x1, x2, res_dtype, call_flag):
+    """
+    `gemm` and `gemm_batch` support these special cases of data types
+    while `gemv` does not.
+
+    """
+
+    is_int8 = x1.dtype == dpnp.int8 and x2.dtype == dpnp.int8
+    is_int32_or_f32 = res_dtype in [dpnp.int32, dpnp.float32]
+    flag = is_int8 and is_int32_or_f32 and call_flag in ["gemm", "gemm_batch"]
+
+    # onemkl_interfaces does not support these data types
+    onemkl_interfaces = bi._using_onemkl_interfaces()
+
+    return flag and not onemkl_interfaces
+
+
 def _get_result_shape(x1, x2, out, func, _get_result_shape_fn, np_flag):
     """
     Three task are completed in this function:
@@ -401,123 +518,6 @@ def _get_signature(func):
         distinct_core = 2
 
     return signature, distinct_core
-
-
-def _gemm_batch_matmul(exec_q, x1, x2, res):
-    # arrays here are already at least 3D, make them 3D
-    x1_shape = x1.shape
-    x2_shape = x2.shape
-    x1 = dpnp.reshape(x1, (-1, x1_shape[-2], x1_shape[-1]))
-    x2 = dpnp.reshape(x2, (-1, x2_shape[-2], x2_shape[-1]))
-    orig_shape = res.shape
-    res = dpnp.reshape(res, (-1, orig_shape[-2], orig_shape[-1]))
-    res_shape = res.shape
-
-    # gemm_batch does not handle negative strides, make a copy if needed
-    x1 = _copy_array(x1, copy_flag=x1.strides[0] < 0)
-    x2 = _copy_array(x2, copy_flag=x2.strides[0] < 0)
-    res = _copy_array(res, copy_flag=res.strides[0] < 0)
-
-    _manager = dpu.SequentialOrderManager[exec_q]
-
-    # onemkl::blas::gemm_bacth throws an exception (Provided range is out
-    # of integer limits) if the batch_size is too large, so we need to
-    # split the batch into smaller chunks, the size depnends on device
-    chunk = 4096 * 4096 - 2
-    batch_size = res_shape[0]
-    for i in range(0, batch_size, chunk):
-        if x1_shape[0] == 1:
-            # x1 is repeatedly multiplied with each matrix in x2
-            x1_usm = dpnp.get_usm_ndarray(x1)
-            x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
-        elif x2_shape[0] == 1:
-            x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
-            x2_usm = dpnp.get_usm_ndarray(x2)
-        else:
-            x1_usm = dpnp.get_usm_ndarray(x1[i : i + chunk, ...])
-            x2_usm = dpnp.get_usm_ndarray(x2[i : i + chunk, ...])
-        res_usm = dpnp.get_usm_ndarray(res[i : i + chunk, ...])
-
-        ht_ev, blas_ev, row_major = bi._gemm_batch(
-            exec_q,
-            x1_usm,
-            x2_usm,
-            res_usm,
-            depends=_manager.submitted_events,
-        )
-        _manager.add_event_pair(ht_ev, blas_ev)
-
-    _, res_is_c_contig, res_is_f_contig = _define_contig_flag(res)
-    if row_major:
-        if res_is_f_contig:
-            # Considering the multiplication for one of the batches,
-            # we have result[0, 1] = a[0, :]*b[1, :]. In row_major mode,
-            # it is assumed result array is c-contiguous, i.e. the value of
-            # result[0, 1] is has the second place memory.
-            # however, the result array is batches of 2D f-contiguous array,
-            # i.e. the second place of memory points out to res[1, 0].
-            # So, we need to read data of each 2D array in the batch in
-            # "F" order and write it in "C" order
-            res = (
-                res.ravel(order="F")
-                .reshape(res_shape[1], res_shape[2], batch_size)
-                .transpose(2, 0, 1)
-            )
-    else:
-        if res_is_c_contig:
-            # read data of each 2D array in the batch in "C" order and
-            # write it in "F" order
-            res = (
-                res.ravel(order="C")
-                .reshape(batch_size, res_shape[2], res_shape[1])
-                .transpose(0, 2, 1)
-            )
-
-    if res_shape != orig_shape:
-        res = res.reshape(orig_shape)
-
-    return res
-
-
-def _gemm_matmul(exec_q, x1, x2, res):
-    _manager = dpu.SequentialOrderManager[exec_q]
-
-    ht_ev, gemm_ev, row_major = bi._gemm(
-        exec_q,
-        dpnp.get_usm_ndarray(x1),
-        dpnp.get_usm_ndarray(x2),
-        dpnp.get_usm_ndarray(res),
-        depends=_manager.submitted_events,
-    )
-    _manager.add_event_pair(ht_ev, gemm_ev)
-
-    if row_major:
-        if res.flags.f_contiguous:
-            # read data in "F" order and write it in "C" order
-            res = dpnp.ravel(res, order="F").reshape(res.shape, order="C")
-    else:
-        if res.flags.c_contiguous:
-            # read data in "C" order and write it in "F" order
-            res = dpnp.ravel(res, order="C").reshape(res.shape, order="F")
-
-    return res
-
-
-def _gemm_special_case(x1, x2, res_dtype, call_flag):
-    """
-    `gemm` and `gemm_batch` support these special cases of data types
-    while `gemv` does not.
-
-    """
-
-    is_int8 = x1.dtype == dpnp.int8 and x2.dtype == dpnp.int8
-    is_int32_or_f32 = res_dtype in [dpnp.int32, dpnp.float32]
-    flag = is_int8 and is_int32_or_f32 and call_flag in ["gemm", "gemm_batch"]
-
-    # onemkl_interfaces does not support these data types
-    onemkl_interfaces = bi._using_onemkl_interfaces()
-
-    return flag and not onemkl_interfaces
 
 
 def _shape_error(shape1, shape2, func, err_msg):

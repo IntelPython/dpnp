@@ -14,13 +14,7 @@ array_api_tests/test_signatures.py::test_func_signature[unique_counts]
 array_api_tests/test_signatures.py::test_func_signature[unique_inverse]
 array_api_tests/test_signatures.py::test_func_signature[unique_values]
 
-# do not return a namedtuple
-array_api_tests/test_linalg.py::test_eigh
-array_api_tests/test_linalg.py::test_slogdet
-array_api_tests/test_linalg.py::test_svd
-
 # hypothesis found failures
-array_api_tests/test_linalg.py::test_qr
 array_api_tests/test_operators_and_elementwise_functions.py::test_clip
 
 # unexpected result is returned - unmute when dpctl-1986 is resolved

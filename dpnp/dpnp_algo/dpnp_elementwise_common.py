@@ -411,7 +411,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
         order : {None, "C", "F", "A", "K"}, optional
             Memory layout of the newly output array, Cannot be provided
             together with `out`. Default: ``"K"``.
-        dtype : {None, dtype}, optional
+        dtype : {None, str, dtype object}, optional
             If provided, the destination array will have this dtype. Cannot be
             provided together with `out`. Default: ``None``.
 
