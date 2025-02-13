@@ -738,9 +738,9 @@ def test_1in_1out(func, data, usm_type):
             [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
         ),
         pytest.param("correlate", [1, 2, 3], [0, 1, 0.5]),
+        pytest.param("cov", [-2.1, -1, 4.3], [3, 1.1, 0.12]),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
-        pytest.param("cov", [-2.1, -1, 4.3], [3, 1.1, 0.12]),
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
         pytest.param("dot", [3, 4, 5], [1, 2, 3]),
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
