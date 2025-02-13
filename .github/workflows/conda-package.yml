@@ -9,22 +9,20 @@ on:
 permissions: read-all
 
 env:
-  PACKAGE_NAME: dpnp
+  package-name: dpnp
   # Follow oneAPI installation instruction for conda, since intel channel is not longer available
-  # CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
-  CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
-  CONDA_BUILD_INDEX_ENV_PY_VER: '3.12' # conda does not support python 3.13
-  CONDA_BUILD_VERSION: '25.1.1'
-  CONDA_INDEX_VERSION: '0.5.0'
+  # channels-list: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
+  channels-list: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
+  ver-script-part1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
+  ver-script-part2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
+  fetch-depth: 1
   # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
   # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
-  LATEST_PYTHON: '3.12'
-  RERUN_TESTS_ON_FAILURE: 'true'
-  RUN_TESTS_MAX_ATTEMPTS: 2
-  TEST_ENV_NAME: 'test'
-  VER_JSON_NAME: 'version.json'
-  VER_SCRIPT1: "import json; f = open('version.json', 'r'); j = json.load(f); f.close(); "
-  VER_SCRIPT2: "d = j['dpnp'][0]; print('='.join((d[s] for s in ('version', 'build'))))"
+  python-ver-test-all-dtypes: '3.13'
+  test-env-name: 'test'
+  rerun-tests-on-failure: 'true'
+  rerun-tests-max-attempts: 2
+  rerun-tests-timeout: 35
 
 jobs:
   build:
@@ -48,6 +46,10 @@ jobs:
       run:
         shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
+    env:
+      build-conda-pkg-env: 'environments/build_conda_pkg.yml'
+      build-env-name: 'build'
+
     steps:
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
@@ -66,10 +68,9 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
-          activate-environment: 'build'
+          environment-file: ${{ env.build-conda-pkg-env }}
+          activate-environment: ${{ env.build-env-name }}
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
@@ -77,10 +78,9 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
-          activate-environment: 'build'
+          environment-file: ${{ env.build-conda-pkg-env }}
+          activate-environment: ${{ env.build-env-name }}
 
       - name: Store conda paths as envs
         shell: bash -el {0}
@@ -88,31 +88,22 @@ jobs:
           echo "CONDA_BLD=$CONDA_PREFIX/conda-bld/${{ runner.os == 'Linux' && 'linux' || 'win' }}-64/" | tr "\\\\" '/' >> $GITHUB_ENV
           echo "WHEELS_OUTPUT_FOLDER=$GITHUB_WORKSPACE${{ runner.os == 'Linux' && '/' || '\\' }}" >> $GITHUB_ENV
 
-      - name: Install conda-build
-        id: install_conda_build
-        continue-on-error: true
-        run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
-
-      - name: ReInstall conda-build
-        if: steps.install_conda_build.outcome == 'failure'
-        run: mamba install conda-build=${{ env.CONDA_BUILD_VERSION}}
-
       - name: Build conda package
-        run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.CHANNELS }} conda-recipe
+        run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
           MAX_BUILD_CMPL_MKL_VERSION: '2025.1a0'
 
       - name: Upload artifact
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
-          path: ${{ env.CONDA_BLD }}${{ env.PACKAGE_NAME }}-*.conda
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
+          path: ${{ env.CONDA_BLD }}${{ env.package-name }}-*.conda
 
       - name: Upload wheels artifact
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
-          path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.PACKAGE_NAME }}-*.whl
+          name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.package-name }}-*.whl
 
   test_linux:
     name: Test
@@ -133,15 +124,23 @@ jobs:
         os: [ubuntu-latest]
 
     env:
+      dpnp-repo-path: '${{ github.workspace }}/source/'
+      create-conda-channel-env: 'source/environments/create_conda_channel.yml'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: ${{ env.fetch-depth }}
+          path: ${{ env.dpnp-repo-path }}
+
       - name: Download artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Setup miniconda
@@ -151,10 +150,9 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.test-env-name }}
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
@@ -162,14 +160,9 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
-
-      - name: Install conda-index
-        run: |
-          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.test-env-name }}
 
       - name: Create conda channel
         run: |
@@ -177,17 +170,17 @@ jobs:
 
       - name: Test conda channel
         run: |
-          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.package-name }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
       - name: Get package version
         run: |
-          export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
+          export PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
 
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
 
-      # conda-index does not support python 3.13
+      # conda-index does not support python 3.13, but we need to test DPNP package with python 3.13
       - name: Remove conda-index
         run: mamba remove conda-index
 
@@ -195,16 +188,16 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
       - name: List installed packages
         run: mamba list
@@ -215,33 +208,33 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        if: env.rerun-tests-on-failure != 'true'
         run: |
-          if [[ ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ]]; then
+          if [[ ${{ matrix.python }} == ${{ env.python-ver-test-all-dtypes }} ]]; then
             export DPNP_TEST_ALL_INT_TYPES=1
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           else
-            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
           fi
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE == 'true'
+        if: env.rerun-tests-on-failure == 'true'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 25
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
             . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.TEST_ENV_NAME }}
+            mamba activate ${{ env.test-env-name }}
 
-            if [[ ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ]]; then
+            if [[ ${{ matrix.python }} == ${{ env.python-ver-test-all-dtypes }} ]]; then
               export DPNP_TEST_ALL_INT_TYPES=1
-              python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+              python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             else
-              python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+              python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             fi
 
   test_windows:
@@ -263,16 +256,23 @@ jobs:
         os: [windows-2019]
 
     env:
+      dpnp-repo-path: '${{ github.workspace }}\source'
+      create-conda-channel-env: 'source\environments\create_conda_channel.yml'
       channel-path: '${{ github.workspace }}\channel\'
       pkg-path-in-channel: '${{ github.workspace }}\channel\win-64\'
       ver-json-path: '${{ github.workspace }}\version.json'
-      workdir: '${{ github.workspace }}'
 
     steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: ${{ env.fetch-depth }}
+          path: ${{ env.dpnp-repo-path }}
+
       - name: Download artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Store a path to package archive
@@ -287,14 +287,25 @@ jobs:
           (echo FULL_PACKAGE_PATH=%FULL_PACKAGE_PATH%) >> %GITHUB_ENV%
 
       - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
         uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.CONDA_BUILD_INDEX_ENV_PY_VER}}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.test-env-name }}
+
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.test-env-name }}
 
       - name: Store conda paths as envs
         run: |
@@ -314,7 +325,7 @@ jobs:
       - name: Test conda channel
         run: |
           @echo on
-          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.package-name }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
 
       - name: Dump version.json
         run: more ${{ env.ver-json-path }}
@@ -322,23 +333,23 @@ jobs:
       - name: Get package version
         run: |
           @echo on
-          set "SCRIPT=${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}"
+          set "SCRIPT=${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}"
           FOR /F "tokens=* USEBACKQ" %%F IN (`python -c "%SCRIPT%"`) DO (
             set PACKAGE_VERSION=%%F
           )
           echo PACKAGE_VERSION: %PACKAGE_VERSION%
           (echo PACKAGE_VERSION=%PACKAGE_VERSION%) >> %GITHUB_ENV%
 
-      # conda-index does not support python 3.13
+      # conda-index does not support python 3.13, but we need to test DPNP package with python 3.13
       - name: Remove conda-index
         run: mamba remove conda-index
 
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
 
       - name: List installed packages
@@ -363,29 +374,29 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        if: env.rerun-tests-on-failure != 'true'
         run: |
-          if (${{ matrix.python }} -eq ${{ env.LATEST_PYTHON }}) {
+          if (${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }}) {
             set DPNP_TEST_ALL_INT_TYPES=1
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           } else {
-            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
           }
 
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE == 'true'
+        if: env.rerun-tests-on-failure == 'true'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 35
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
-            if ( ${{ matrix.python }} -eq ${{ env.LATEST_PYTHON }} ) {
+            if ( ${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }} ) {
               set DPNP_TEST_ALL_INT_TYPES=1
-              python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+              python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             } else {
-              python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+              python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
             }
 
   upload:
@@ -394,6 +405,7 @@ jobs:
     needs: [test_linux, test_windows]
 
     strategy:
+      fail-fast: false
       matrix:
         # python 3.13 is blocked due to MKL issue
         python: ['3.9', '3.10', '3.11', '3.12']
@@ -405,50 +417,65 @@ jobs:
       run:
         shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
-    continue-on-error: true
+    env:
+      upload-conda-pkg-env: 'environments/upload_cleanup_conda_pkg.yml'
+      upload-env-name: 'upload'
 
     if: |
       (github.repository == 'IntelPython/dpnp') &&
       (github.ref == 'refs/heads/master' || (startsWith(github.ref, 'refs/heads/release') == true) || github.event_name == 'push' && contains(github.ref, 'refs/tags/'))
 
     steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: ${{ env.fetch-depth }}
+
       - name: Download artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Download wheels artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
       - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
         uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: 'upload'
+          environment-file: ${{ env.upload-conda-pkg-env }}
+          activate-environment: ${{ env.upload-env-name }}
 
-      - name: Install anaconda-client
-        run: mamba install anaconda-client
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.upload-conda-pkg-env }}
+          activate-environment: ${{ env.upload-env-name }}
 
       - name: Package version
         shell: bash -el {0}
         run: |
-          echo "PACKAGE_VERSION=$(basename ${{ env.PACKAGE_NAME }}-*.conda | sed 's/^${{ env.PACKAGE_NAME }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
+          echo "PACKAGE_VERSION=$(basename ${{ env.package-name }}-*.conda | sed 's/^${{ env.package-name }}-\([^-]*\).*/\1/')" >> $GITHUB_ENV
 
       - name: Upload
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.conda
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.package-name }}-*.conda
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
       - name: Upload wheels
         run: |
-          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.PACKAGE_NAME }}-*.whl --version ${{ env.PACKAGE_VERSION }}
+          anaconda --token ${{ env.ANACONDA_TOKEN }} upload --user dppy --label dev ${{ env.package-name }}-*.whl --version ${{ env.PACKAGE_VERSION }}
         env:
           ANACONDA_TOKEN: ${{ secrets.ANACONDA_TOKEN }}
 
@@ -463,7 +490,6 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.12']
         os: [ubuntu-22.04]
 
     runs-on:  ${{ matrix.os }}
@@ -477,17 +503,26 @@ jobs:
     env:
       array-api-tests-path: '${{ github.workspace }}/array-api-tests/'
       json-report-file: '${{ github.workspace }}/.report.json'
-      dpnp-repo-path: '${{ github.workspace }}/dpnp/'
-      array-api-skips-file: '${{ github.workspace }}/dpnp/.github/workflows/array-api-skips.txt'
+      dpnp-repo-path: '${{ github.workspace }}/source/'
+      array-api-skips-file: '${{ github.workspace }}/source/.github/workflows/array-api-skips.txt'
+      create-conda-channel-env: 'source/environments/create_conda_channel.yml'
+      python-ver: '3.12' # it has to be aligned with python in create_conda_channel.yml
+      conda-env-name: 'array-api-conformity'
       channel-path: '${{ github.workspace }}/channel/'
       pkg-path-in-channel: '${{ github.workspace }}/channel/linux-64/'
       ver-json-path: '${{ github.workspace }}/version.json'
 
     steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: ${{ env.fetch-depth }}
+          path: ${{ env.dpnp-repo-path }}
+
       - name: Download artifact
         uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
         with:
-          name: ${{ env.PACKAGE_NAME }} ${{ runner.os }} Python ${{ matrix.python }}
+          name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-ver }}
           path: ${{ env.pkg-path-in-channel }}
 
       - name: Setup miniconda
@@ -497,10 +532,9 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: 'array-api-conformity'
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.conda-env-name }}
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
@@ -508,21 +542,9 @@ jobs:
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: 'array-api-conformity'
-
-      - name: Install conda-index
-        id: install_conda_index
-        continue-on-error: true
-        run: |
-          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
-
-      - name: ReInstall conda-index
-        if: steps.install_conda_index.outcome == 'failure'
-        run: |
-          mamba install conda-index=${{ env.CONDA_INDEX_VERSION }}
+          environment-file: ${{ env.create-conda-channel-env }}
+          activate-environment: ${{ env.conda-env-name }}
 
       - name: Create conda channel
         run: |
@@ -530,12 +552,12 @@ jobs:
 
       - name: Test conda channel
         run: |
-          conda search ${{ env.PACKAGE_NAME }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
+          conda search ${{ env.package-name }} -c ${{ env.channel-path }} --override-channels --info --json > ${{ env.ver-json-path }}
           cat ${{ env.ver-json-path }}
 
       - name: Get package version
         run: |
-          export PACKAGE_VERSION=$(python -c "${{ env.VER_SCRIPT1 }} ${{ env.VER_SCRIPT2 }}")
+          export PACKAGE_VERSION=$(python -c "${{ env.ver-script-part1 }} ${{ env.ver-script-part2 }}")
 
           echo PACKAGE_VERSION=${PACKAGE_VERSION}
           echo "PACKAGE_VERSION=$PACKAGE_VERSION" >> $GITHUB_ENV
@@ -544,16 +566,16 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest python=${{ env.python-ver }} ${{ env.TEST_CHANNELS }}
         env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ env.PACKAGE_VERSION }} pytest python=${{ env.python-ver }} ${{ env.TEST_CHANNELS }}
         env:
-          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
+          TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.channels-list }}'
 
       - name: List installed packages
         run: mamba list
@@ -568,7 +590,7 @@ jobs:
         with:
           repository: 'data-apis/array-api-tests'
           path: ${{ env.array-api-tests-path }}
-          fetch-depth: 0
+          fetch-depth: ${{ env.fetch-depth }}
           submodules: 'recursive'
 
       - name: Install array API test dependencies
@@ -588,12 +610,6 @@ jobs:
           python -c "import dpctl; dpctl.lsplatform()"
           python -c "import dpnp; print(dpnp.__version__)"
 
-      # need to fetch array-api-skips.txt
-      - name: Checkout DPNP repo
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-        with:
-          path: ${{ env.dpnp-repo-path }}
-
       - name: Run array API conformance tests
         run: |
           python -m pytest --json-report --json-report-file=${{ env.json-report-file }} --disable-deadline --skips-file ${{ env.array-api-skips-file }} array_api_tests || true
@@ -602,7 +618,7 @@ jobs:
           SYCL_CACHE_PERSISTENT: 1
         working-directory: ${{ env.array-api-tests-path }}
 
-      - name: Set Github environment variables
+      - name: Set GitHub environment variables
         run: |
           FILE=${{ env.json-report-file }}
           if test -f "$FILE"; then
@@ -643,28 +659,45 @@ jobs:
       run:
         shell: bash -el {0}
 
+    env:
+      cleanup-conda-pkg-env: 'environments/upload_cleanup_conda_pkg.yml'
+      cleanup-env-name: 'cleanup'
+
     steps:
-      - uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
+      - name: Checkout DPNP repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 1
+
+      - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          run-post: 'false'
-          python-version: '3.13'
-          activate-environment: 'cleanup'
+          environment-file: ${{ env.upload-conda-pkg-env }}
+          activate-environment: ${{ env.upload-env-name }}
 
-      - name: Install anaconda-client
-        run: mamba install anaconda-client
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.cleanup-conda-pkg-env }}
+          activate-environment: ${{ env.cleanup-env-name }}
 
       - name: Checkout repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: IntelPython/devops-tools
-          fetch-depth: 0
+          fetch-depth: ${{ env.fetch-depth }}
 
       - name: Cleanup old packages
         run: |
           python scripts/cleanup-old-packages.py \
           --verbose --force --token ${{ secrets.ANACONDA_TOKEN }} \
-          --package dppy/${{ env.PACKAGE_NAME }} --label dev
+          --package dppy/${{ env.package-name }} --label dev
