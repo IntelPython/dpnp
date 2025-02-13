@@ -121,9 +121,8 @@ if(_use_onemkl_interfaces)
     else()
         FetchContent_Declare(
                 onemkl_interfaces_library
-                GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
+                GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
                 GIT_TAG 8f4312ef966420b9b8b4b82b9d5c22e2c91a1fe7  # v0.6
-                #GIT_TAG develop
         )
     endif()
 
