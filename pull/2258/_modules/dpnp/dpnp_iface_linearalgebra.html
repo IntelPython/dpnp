@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev6+16.g7ff5cf3103b documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev6+15.gf95e5d6c077 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=09e60429"></script>
+      <script src="../../_static/documentation_options.js?v=7055e9d4"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -122,10 +122,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">map_dtype_to_device</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_einsum</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_einsum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_dot</span><span class="p">,</span>
@@ -149,6 +151,20 @@
     <span class="s2">&quot;vecdot&quot;</span><span class="p">,</span>
     <span class="s2">&quot;vecmat&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
+<span class="c1"># TODO: implement a specific scalar-array kernel</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call multiply function for special cases of scalar-array dots.&quot;&quot;&quot;</span>
+
+    <span class="n">sc</span><span class="p">,</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">sc_dtype</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">sc</span><span class="p">),</span> <span class="n">arr</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+    <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">sc_dtype</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="dot">
@@ -226,8 +242,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only C-contiguous array is acceptable.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
@@ -731,8 +746,7 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># TODO: use specific scalar-vector kernel</span>
@@ -813,8 +827,7 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
@@ -1310,8 +1323,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;One of the inputs is scalar, axes should be zero.&quot;</span>
             <span class="p">)</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span></div>
 
@@ -1377,13 +1389,13 @@
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The second array should be of size one.&quot;</span><span class="p">)</span>
         <span class="n">a_conj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The first array should be of size one.&quot;</span><span class="p">)</span>
         <span class="n">a_conj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conjugate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
