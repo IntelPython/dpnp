@@ -7,7 +7,6 @@ from numpy.testing import (
     assert_array_equal,
     assert_raises,
     assert_raises_regex,
-    suppress_warnings,
 )
 
 import dpnp
@@ -18,6 +17,7 @@ from .helper import (
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 
 
@@ -598,10 +598,21 @@ class TestBincount:
         result = dpnp.bincount(dpnp_a, minlength=minlength)
         assert_allclose(expected, result)
 
-    # TODO: uncomment once numpy 2.3.0 is released
-    # @testing.with_requires("numpy>=2.3")
-    # @pytest.mark.parametrize("xp", [dpnp, numpy])
-    @pytest.mark.parametrize("xp", [dpnp])
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
+    @pytest.mark.parametrize(
+        "xp",
+        [
+            dpnp,
+            pytest.param(
+                numpy,
+                marks=pytest.mark.xfail(
+                    numpy_version() < "2.3.0",
+                    reason="numpy deprecates but accepts that",
+                    strict=True,
+                ),
+            ),
+        ],
+    )
     def test_minlength_none(self, xp):
         a = xp.array([1, 2, 3])
         assert_raises_regex(
