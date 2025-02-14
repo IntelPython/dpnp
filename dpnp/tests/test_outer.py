@@ -59,14 +59,14 @@ class TestScalarOuter(unittest.TestCase):
     @testing.numpy_cupy_allclose(type_check=False)
     def test_first_is_scalar(self, xp, dtype):
         scalar = 4
-        a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
+        a = xp.arange(24, dtype=dtype).reshape(2, 3, 4)
         return xp.outer(scalar, a)
 
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=False)
     def test_second_is_scalar(self, xp, dtype):
-        scalar = 7
-        a = xp.arange(5**3, dtype=dtype).reshape(5, 5, 5)
+        scalar = 5
+        a = xp.arange(24, dtype=dtype).reshape(2, 3, 4)
         return xp.outer(a, scalar)
 
 

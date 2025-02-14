@@ -814,6 +814,7 @@ def test_reduce_hypot(device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
         ),
+        pytest.param("round", [1.234, 2.567], 2),
         pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
         pytest.param(
             "subtract",
