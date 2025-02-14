@@ -16,6 +16,7 @@ env:
   CONDA_BUILD_INDEX_ENV_PY_VER: '3.12' # conda does not support python 3.13
   CONDA_BUILD_VERSION: '25.1.1'
   CONDA_INDEX_VERSION: '0.5.0'
+  LATEST_PYTHON: '3.13'
   RERUN_TESTS_ON_FAILURE: 'true'
   RUN_TESTS_MAX_ATTEMPTS: 2
   TEST_ENV_NAME: 'test'
@@ -189,7 +190,7 @@ jobs:
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
 
@@ -211,14 +212,19 @@ jobs:
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          if [[ ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ]]; then
+            export DPNP_TEST_ALL_INT_TYPES=1
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          else
+            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          fi
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 15
+          timeout_minutes: 25
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
@@ -226,7 +232,12 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.TEST_ENV_NAME }}
 
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            if [[ ${{ matrix.python }} == ${{ env.LATEST_PYTHON }} ]]; then
+              export DPNP_TEST_ALL_INT_TYPES=1
+              python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            else
+              python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            fi
 
   test_windows:
     name: Test
@@ -319,7 +330,7 @@ jobs:
       - name: Install dpnp
         run: |
           @echo on
-          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
+          mamba install ${{ env.PACKAGE_NAME }}=${{ env.PACKAGE_VERSION }} pytest pytest-xdist python=${{ matrix.python }} ${{ env.TEST_CHANNELS }}
         env:
           TEST_CHANNELS: '-c ${{ env.channel-path }} ${{ env.CHANNELS }}'
           MAMBA_NO_LOW_SPEED_LIMIT: 1
@@ -348,18 +359,28 @@ jobs:
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE != 'true'
         run: |
-          pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          if (${{ matrix.python }} -eq ${{ env.LATEST_PYTHON }}) {
+            set DPNP_TEST_ALL_INT_TYPES=1
+            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          } else {
+            python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          }
 
       - name: Run tests
         if: env.RERUN_TESTS_ON_FAILURE == 'true'
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 17
+          timeout_minutes: 35
           max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
           retry_on: any
           command: |
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            if ( ${{ matrix.python }} -eq ${{ env.LATEST_PYTHON }} ) {
+              set DPNP_TEST_ALL_INT_TYPES=1
+              python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            } else {
+              python -m pytest -n auto -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            }
 
   upload:
     name: Upload

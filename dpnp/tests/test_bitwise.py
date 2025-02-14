@@ -4,7 +4,12 @@ from numpy.testing import assert_array_equal
 
 import dpnp
 
-from .helper import assert_dtype_allclose, get_integer_dtypes, numpy_version
+from .helper import (
+    assert_dtype_allclose,
+    get_abs_array,
+    get_integer_dtypes,
+    numpy_version,
+)
 from .third_party.cupy import testing
 
 
@@ -27,22 +32,21 @@ from .third_party.cupy import testing
 @pytest.mark.parametrize("dtype", [dpnp.bool] + get_integer_dtypes())
 class TestBitwiseBinary:
     @staticmethod
-    def array_or_scalar(xp, data, dtype=None):
+    def array_or_scalar(data, dtype=None):
         if numpy.isscalar(data):
             if dtype == dpnp.bool:
-                return numpy.dtype(dtype).type(data)
-            return data
+                data = numpy.dtype(dtype).type(data)
+            return data, data
 
-        return xp.array(data, dtype=dtype)
+        data = get_abs_array(data, dtype=dtype)
+        return data, dpnp.array(data)
 
     def _test_binary(self, name, lhs, rhs, dtype):
         if numpy.isscalar(lhs) and numpy.isscalar(rhs):
             pytest.skip("Both inputs can't be scalars")
 
-        ia = self.array_or_scalar(dpnp, lhs, dtype=dtype)
-        ib = self.array_or_scalar(dpnp, rhs, dtype=dtype)
-        a = self.array_or_scalar(numpy, lhs, dtype=dtype)
-        b = self.array_or_scalar(numpy, rhs, dtype=dtype)
+        a, ia = self.array_or_scalar(lhs, dtype=dtype)
+        b, ib = self.array_or_scalar(rhs, dtype=dtype)
 
         result = getattr(dpnp, name)(ia, ib)
         expected = getattr(numpy, name)(a, b)
@@ -84,15 +88,23 @@ class TestBitwiseBinary:
 @pytest.mark.parametrize("dtype2", [dpnp.bool] + get_integer_dtypes())
 class TestBitwiseInplace:
     def test_bitwise_and(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         a &= True
         ia &= True
         assert_array_equal(ia, a)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a &= b
+            ia &= ib
+            assert_array_equal(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             a &= b
             ia &= ib
             assert_array_equal(ia, a)
@@ -104,15 +116,23 @@ class TestBitwiseInplace:
                 ia &= ib
 
     def test_bitwise_or(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         a |= False
         ia |= False
         assert_array_equal(ia, a)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a |= b
+            ia |= ib
+            assert_array_equal(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             a |= b
             ia |= ib
             assert_array_equal(ia, a)
@@ -124,18 +144,26 @@ class TestBitwiseInplace:
                 ia |= ib
 
     def test_bitwise_xor(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         a ^= False
         ia ^= False
         assert_array_equal(ia, a)
 
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if dpnp.issubdtype(dtype1, dpnp.signedinteger) and dpnp.issubdtype(
+            dtype2, dpnp.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a ^= b
+            ia ^= ib
+            assert_array_equal(ia, a)
+        elif dpnp.can_cast(dtype2, dtype1, casting="same_kind"):
             a ^= b
             ia ^= ib
             assert_array_equal(ia, a)
@@ -151,15 +179,23 @@ class TestBitwiseInplace:
 @pytest.mark.parametrize("dtype2", get_integer_dtypes())
 class TestBitwiseShiftInplace:
     def test_bitwise_left_shift(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, 2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, 2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         a <<= True
         ia <<= True
         assert_array_equal(ia, a)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a <<= b
+            ia <<= ib
+            assert_array_equal(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             a <<= b
             ia <<= ib
             assert_array_equal(ia, a)
@@ -171,15 +207,23 @@ class TestBitwiseShiftInplace:
                 ia <<= ib
 
     def test_bitwise_right_shift(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, 2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, 2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         a >>= True
         ia >>= True
         assert_array_equal(ia, a)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a >>= b
+            ia >>= ib
+            assert_array_equal(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             a >>= b
             ia >>= ib
             assert_array_equal(ia, a)
@@ -200,12 +244,8 @@ class TestBitwiseShiftInplace:
 )
 @pytest.mark.parametrize("dtype", [dpnp.bool] + get_integer_dtypes())
 class TestBitwiseUnary:
-    @staticmethod
-    def array_or_scalar(xp, data, dtype=None):
-        return xp.array(data, dtype=dtype)
-
     def _test_unary(self, name, data, dtype):
-        a = numpy.array(data, dtype=dtype)
+        a = get_abs_array(data, dtype=dtype)
         ia = dpnp.array(a)
 
         result = getattr(dpnp, name)(ia)

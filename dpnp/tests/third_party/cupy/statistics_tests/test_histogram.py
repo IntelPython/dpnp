@@ -497,7 +497,6 @@ class TestHistogramdd:
             weights = xp.ones((x.shape[0],), dtype=self.weights_dtype)
         else:
             weights = None
-
         y, bin_edges = xp.histogramdd(
             x,
             bins=bins,
@@ -549,6 +548,13 @@ class TestHistogramddErrors(unittest.TestCase):
             with pytest.raises(ValueError):
                 y, bin_edges = xp.histogramdd(x, range=r)
 
+    @pytest.mark.skip("list of bins is allowed")
+    def test_histogramdd_disallow_arraylike_bins(self):
+        x = testing.shaped_random((16, 2), cupy, scale=100)
+        bins = [[0, 10, 20, 50, 90]] * 2  # too many dimensions
+        with pytest.raises(ValueError):
+            y, bin_edges = cupy.histogramdd(x, bins=bins)
+
 
 @testing.parameterize(
     *testing.product(
@@ -596,9 +602,10 @@ class TestHistogram2d:
 
 class TestHistogram2dErrors(unittest.TestCase):
 
+    @pytest.mark.skip("list of bins is allowed")
     def test_histogram2d_disallow_arraylike_bins(self):
         x = testing.shaped_random((16,), cupy, scale=100)
         y = testing.shaped_random((16,), cupy, scale=100)
         bins = [0, 10, 20, 50, 90]
         with pytest.raises(ValueError):
-            y, bin_edges = cupy.histogram2d(x, y, bins=bins)
+            y, _, _ = cupy.histogram2d(x, y, bins=bins)
