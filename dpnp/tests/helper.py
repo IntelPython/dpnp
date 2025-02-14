@@ -6,7 +6,8 @@ import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
-from dpnp.tests import config
+
+from . import config
 
 
 def assert_dtype_allclose(
@@ -86,14 +87,14 @@ def assert_dtype_allclose(
                 assert dpnp_arr.dtype == numpy_arr.dtype
 
 
-def get_integer_dtypes(no_unsigned=False):
+def get_integer_dtypes(all_int_types=False, no_unsigned=False):
     """
     Build a list of integer types supported by DPNP.
     """
 
     dtypes = [dpnp.int32, dpnp.int64]
 
-    if config.all_int_types:
+    if config.all_int_types or all_int_types:
         dtypes += [dpnp.int8, dpnp.int16]
         if not no_unsigned:
             dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
