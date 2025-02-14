@@ -4,7 +4,6 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -41,8 +40,10 @@ class TestConj(unittest.TestCase):
 
 class TestAngle(unittest.TestCase):
 
+    # For dtype=int8, uint8, NumPy returns float16, but dpnp returns float32
+    # so type_check=False
     @testing.for_all_dtypes()
-    @testing.numpy_cupy_array_almost_equal(type_check=has_support_aspect64())
+    @testing.numpy_cupy_array_almost_equal(type_check=False)
     def test_angle(self, xp, dtype):
         x = testing.shaped_arange((2, 3), xp, dtype)
         return xp.angle(x)

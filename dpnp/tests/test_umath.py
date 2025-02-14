@@ -12,6 +12,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    get_abs_array,
     get_all_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
@@ -178,8 +179,16 @@ def _get_numpy_arrays_2in_1out(func_name, dtype, range):
 
 def _get_output_data_type(dtype):
     """Return a data type specified by input `dtype` and device capabilities."""
-    if dpnp.issubdtype(dtype, dpnp.bool):
+    dtype_float16 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
+    )
+    dtype_float32 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
+    )
+    if dtype_float16:
         out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
+    elif dtype_float32:
+        out_dtype = dpnp.float32
     elif dpnp.issubdtype(dtype, dpnp.complexfloating):
         out_dtype = dpnp.complex64
         if has_support_aspect64() and dtype != dpnp.complex64:
@@ -315,7 +324,7 @@ class TestDegrees:
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dtype):
-        a = numpy.array([numpy.pi, -0.5 * numpy.pi], dtype=dtype)
+        a = get_abs_array([numpy.pi, -0.5 * numpy.pi], dtype)
         ia = dpnp.array(a)
 
         result = dpnp.degrees(ia)
@@ -354,7 +363,9 @@ class TestFloatPower:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
-    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_unsigned=True)
+    )
     def test_negative_base_value(self, dt):
         a = numpy.array([-1, -4], dtype=dt)
         ia = dpnp.array(a)
@@ -363,7 +374,9 @@ class TestFloatPower:
         expected = numpy.float_power(a, 1.5)
         assert_allclose(result, expected)
 
-    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_unsigned=True)
+    )
     def test_negative_base_value_complex_dtype(self, dt):
         a = numpy.array([-1, -4], dtype=dt)
         ia = dpnp.array(a)
@@ -458,7 +471,8 @@ class TestLogAddExp2:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dt", get_all_dtypes(no_none=True, no_complex=True)
+        "dt",
+        [numpy.bool_, numpy.int32, numpy.int64, numpy.float32, numpy.float64],
     )
     def test_range(self, dt):
         a = numpy.array([1000000, -1000000, 1000200, -1000200], dtype=dt)
@@ -506,7 +520,7 @@ class TestRadians:
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dtype):
-        a = numpy.array([180.0, -90.0], dtype=dtype)
+        a = get_abs_array([120.0, -90.0], dtype)
         ia = dpnp.array(a)
 
         result = dpnp.radians(ia)
@@ -710,6 +724,7 @@ class TestUmath:
     def func_params(self, request):
         return request.param
 
+    @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_out(self, func_params, dtype):

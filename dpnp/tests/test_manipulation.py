@@ -31,7 +31,9 @@ testdata += [
 ]
 testdata += [
     ([1, -1, 0], dtype)
-    for dtype in get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    for dtype in get_all_dtypes(
+        no_none=True, no_bool=True, no_complex=True, no_unsigned=True
+    )
 ]
 testdata += [([0.1, 0.0, -0.1], dtype) for dtype in get_float_dtypes()]
 testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in get_complex_dtypes()]
@@ -1744,7 +1746,7 @@ class TestUnique:
         expected = numpy.unique(a, axis=axis)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    @pytest.mark.parametrize("dt", get_integer_dtypes(no_unsigned=True))
     def test_2d_axis_signed_inetger(self, dt):
         a = numpy.array([[-1], [0]], dtype=dt)
         ia = dpnp.array(a)
