@@ -204,6 +204,10 @@ class TestChoose(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose(self, xp, dtype):
+        # TODO: include additional dtype when dpnp#2201 is merged
+        dtype_list = [xp.int8, xp.int16]
+        if dtype in dtype_list or xp.issubdtype(dtype, xp.unsignedinteger):
+            pytest.skip("dpnp.choose() does not support new integer dtypes.")
         a = xp.array([0, 2, 1, 2])
         c = testing.shaped_arange((3, 4), xp, dtype)
         return a.choose(c)

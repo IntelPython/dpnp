@@ -600,12 +600,18 @@ class DPNPRound(DPNPUnaryFunc):
     def __call__(self, x, decimals=0, out=None, dtype=None):
         if decimals != 0:
             x_usm = dpnp.get_usm_ndarray(x)
-            if dpnp.issubdtype(x_usm.dtype, dpnp.integer) and dtype is None:
-                dtype = x_usm.dtype
-
             out_usm = None if out is None else dpnp.get_usm_ndarray(out)
-            x_usm = dpt.round(x_usm * 10**decimals, out=out_usm)
-            res_usm = dpt.divide(x_usm, 10**decimals, out=out_usm)
+
+            if dpnp.issubdtype(x_usm.dtype, dpnp.integer):
+                if decimals < 0:
+                    dtype = x_usm.dtype
+                    x_usm = dpt.round(x_usm * 10**decimals, out=out_usm)
+                    res_usm = dpt.divide(x_usm, 10**decimals, out=out_usm)
+                else:
+                    res_usm = dpt.round(x_usm, out=out_usm)
+            else:
+                x_usm = dpt.round(x_usm * 10**decimals, out=out_usm)
+                res_usm = dpt.divide(x_usm, 10**decimals, out=out_usm)
 
             if dtype is not None:
                 res_usm = dpt.astype(res_usm, dtype, copy=False)

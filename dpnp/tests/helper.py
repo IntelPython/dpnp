@@ -2,9 +2,11 @@ from sys import platform
 
 import dpctl
 import numpy
+import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+from dpnp.tests import config
 
 
 def assert_dtype_allclose(
@@ -84,12 +86,19 @@ def assert_dtype_allclose(
                 assert dpnp_arr.dtype == numpy_arr.dtype
 
 
-def get_integer_dtypes():
+def get_integer_dtypes(no_unsigned=False):
     """
     Build a list of integer types supported by DPNP.
     """
 
-    return [dpnp.int32, dpnp.int64]
+    dtypes = [dpnp.int32, dpnp.int64]
+
+    if config.all_int_types:
+        dtypes += [dpnp.int8, dpnp.int16]
+        if not no_unsigned:
+            dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+
+    return dtypes
 
 
 def get_complex_dtypes(device=None):
@@ -134,11 +143,25 @@ def get_float_complex_dtypes(no_float16=True, device=None):
     return dtypes
 
 
+def get_abs_array(data, dtype=None):
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        data = numpy.abs(data)
+    return numpy.array(data, dtype=dtype)
+
+
 def get_all_dtypes(
-    no_bool=False, no_float16=True, no_complex=False, no_none=False, device=None
+    no_bool=False,
+    no_float16=True,
+    no_complex=False,
+    no_none=False,
+    xfail_dtypes=None,
+    exclude=None,
+    no_unsigned=False,
+    device=None,
 ):
     """
-    Build a list of types supported by DPNP based on input flags and device capabilities.
+    Build a list of types supported by DPNP based on
+    input flags and device capabilities.
     """
 
     dev = dpctl.select_default_device() if device is None else device
@@ -147,7 +170,7 @@ def get_all_dtypes(
     dtypes = [dpnp.bool] if not no_bool else []
 
     # add integer types
-    dtypes.extend(get_integer_dtypes())
+    dtypes.extend(get_integer_dtypes(no_unsigned=no_unsigned))
 
     # add floating types
     dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))
@@ -159,6 +182,18 @@ def get_all_dtypes(
     # add None value to validate a default dtype
     if not no_none:
         dtypes.append(None)
+
+    def mark_xfail(dtype):
+        if xfail_dtypes is not None and dtype in xfail_dtypes:
+            return pytest.param(dtype, marks=pytest.mark.xfail)
+        return dtype
+
+    def not_excluded(dtype):
+        if exclude is None:
+            return True
+        return dtype not in exclude
+
+    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
 
 
@@ -240,6 +275,9 @@ def generate_random_numpy_array(
     if seed_value is None:
         seed_value = 42
     numpy.random.seed(seed_value)
+
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        low = 0
 
     # dtype=int is needed for 0d arrays
     size = numpy.prod(shape, dtype=int)
