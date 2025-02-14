@@ -621,6 +621,7 @@ def test_norm(usm_type, ord, axis):
             "cos", [-dp.pi / 2, -dp.pi / 4, 0.0, dp.pi / 4, dp.pi / 2]
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("cov", [[0, 1, 2], [2, 1, 0]]),
         pytest.param("count_nonzero", [0, 1, 7, 0]),
         pytest.param("cumlogsumexp", [1.0, 2.0, 4.0, 7.0]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
@@ -737,6 +738,7 @@ def test_1in_1out(func, data, usm_type):
             [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
         ),
         pytest.param("correlate", [1, 2, 3], [0, 1, 0.5]),
+        pytest.param("cov", [-2.1, -1, 4.3], [3, 1.1, 0.12]),
         # dpnp.dot has 3 different implementations based on input arrays dtype
         # checking all of them
         pytest.param("dot", [3.0, 4.0, 5.0], [1.0, 2.0, 3.0]),
@@ -780,6 +782,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("maximum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("minimum", [0.0, 1.0, 2.0], [3.0, 4.0, 5.0]),
         pytest.param("nextafter", [1, 2], [2, 1]),
+        pytest.param("round", [1.234, 2.567], 2),
         pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
         pytest.param(
             "tensordot",

@@ -9,15 +9,18 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
     assert_dtype_allclose,
+    get_abs_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect16,
+    numpy_version,
 )
 from .test_umath import (
     _get_numpy_arrays_2in_1out,
@@ -72,11 +75,19 @@ class TestAdd:
     @pytest.mark.parametrize("dtype1", ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", ALL_DTYPES)
     def test_inplace_dtype(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a += b
+            ia += ib
+            assert_dtype_allclose(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             a += b
             ia += ib
             assert_dtype_allclose(ia, a)
@@ -90,11 +101,18 @@ class TestAdd:
     @pytest.mark.parametrize("dtype1", ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", ALL_DTYPES)
     def test_inplace_dtype_explicit(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            result = dpnp.add(ia, ib, out=ia)
+            expected = numpy.add(a, b.astype(numpy.int64), out=a)
+            assert_dtype_allclose(result, expected)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             result = dpnp.add(ia, ib, out=ia)
             expected = numpy.add(a, b, out=a)
             assert_dtype_allclose(result, expected)
@@ -196,7 +214,10 @@ class TestDivide:
         )
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        out_dtype = _get_output_data_type(dtype)
+        if numpy.issubdtype(dtype, numpy.integer):
+            out_dtype = map_dtype_to_device(dpnp.float64, ia.sycl_device)
+        else:
+            out_dtype = _get_output_data_type(dtype)
         iout = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.divide(ia, ib, out=iout)
 
@@ -229,8 +250,8 @@ class TestDivide:
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("dtype2", get_float_complex_dtypes())
     def test_inplace_dtype(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, -10, 1, 10], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, -10, 1, 10], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
@@ -247,8 +268,8 @@ class TestDivide:
     @pytest.mark.parametrize("dtype1", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("dtype2", get_float_complex_dtypes())
     def test_inplace_dtype_explicit(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, -10, 1, 10], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, -10, 1, 10], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
@@ -334,8 +355,8 @@ class TestFloorDivideRemainder:
     @pytest.mark.parametrize("dtype1", [dpnp.bool] + ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", get_float_dtypes())
     def test_inplace_dtype(self, func, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, -10, 1, 10], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, -10, 1, 10], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
@@ -460,8 +481,8 @@ class TestHeavside:
         "b_dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_both_input_as_arrays(self, a_dt, b_dt):
-        a = numpy.array([-1.5, 0, 2.0], dtype=a_dt)
-        b = numpy.array([-0, 0.5, 1.0], dtype=b_dt)
+        a = get_abs_array([-1.5, 0, 2.0], a_dt)
+        b = get_abs_array([-0, 0.5, 1.0], b_dt)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.heaviside(ia, ib)
@@ -480,7 +501,7 @@ class TestLdexp:
     @pytest.mark.parametrize("exp_dt", get_integer_dtypes())
     def test_basic(self, mant_dt, exp_dt):
         if (
-            numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0"
+            numpy_version() < "2.0.0"
             and exp_dt == numpy.int64
             and numpy.dtype("l") != numpy.int64
         ):
@@ -490,9 +511,18 @@ class TestLdexp:
         exp = numpy.array(3, dtype=exp_dt)
         imant, iexp = dpnp.array(mant), dpnp.array(exp)
 
-        result = dpnp.ldexp(imant, iexp)
-        expected = numpy.ldexp(mant, exp)
-        assert_almost_equal(result, expected)
+        if dpnp.issubdtype(exp_dt, dpnp.uint64):
+            assert_raises(ValueError, dpnp.ldexp, imant, iexp)
+            assert_raises(TypeError, numpy.ldexp, mant, exp)
+        elif numpy_version() < "2.0.0" and dpnp.issubdtype(exp_dt, dpnp.uint32):
+            # For this special case, NumPy < "2.0.0" raises an error on Windows
+            result = dpnp.ldexp(imant, iexp)
+            expected = numpy.ldexp(mant, exp.astype(numpy.int32))
+            assert_almost_equal(result, expected)
+        else:
+            result = dpnp.ldexp(imant, iexp)
+            expected = numpy.ldexp(mant, exp)
+            assert_almost_equal(result, expected)
 
     def test_float_scalar(self):
         a = numpy.array(3)
@@ -598,11 +628,19 @@ class TestMultiply:
     @pytest.mark.parametrize("dtype1", ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", ALL_DTYPES)
     def test_inplace_dtype(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a *= b
+            ia *= ib
+            assert_dtype_allclose(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             a *= b
             ia *= ib
             assert_dtype_allclose(ia, a)
@@ -768,7 +806,7 @@ class TestPower:
 
     @pytest.mark.parametrize("val_type", ALL_DTYPES)
     @pytest.mark.parametrize("data_type", ALL_DTYPES)
-    @pytest.mark.parametrize("val", [1.5, 1, 5], ids=["1.5", "1", "5"])
+    @pytest.mark.parametrize("val", [1.5, 1, 3], ids=["1.5", "1", "3"])
     @pytest.mark.parametrize(
         "array",
         [
@@ -840,11 +878,19 @@ class TestPower:
     @pytest.mark.parametrize("dtype1", ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", ALL_DTYPES)
     def test_inplace_dtype(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, 2, 0, 1, 3], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, 2, 0, 1, 3], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind") and not (
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a **= b
+            ia **= ib
+            assert_dtype_allclose(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind") and not (
             dtype1 == dtype2 == dpnp.bool
         ):
             a **= b
@@ -889,7 +935,7 @@ class TestPower:
 
         assert_equal(func(ia), func(a))
 
-    @pytest.mark.parametrize("dtype", get_integer_dtypes())
+    @pytest.mark.parametrize("dtype", get_integer_dtypes(no_unsigned=True))
     def test_integer_to_negative_power(self, dtype):
         a = dpnp.arange(2, 10, dtype=dtype)
         b = dpnp.full(8, -2, dtype=dtype)
@@ -950,8 +996,8 @@ class TestPower:
 
 class TestRationalFunctions:
     @pytest.mark.parametrize("func", ["gcd", "lcm"])
-    @pytest.mark.parametrize("dt1", get_integer_dtypes())
-    @pytest.mark.parametrize("dt2", get_integer_dtypes())
+    @pytest.mark.parametrize("dt1", get_integer_dtypes(no_unsigned=True))
+    @pytest.mark.parametrize("dt2", get_integer_dtypes(no_unsigned=True))
     def test_basic(self, func, dt1, dt2):
         a = numpy.array([12, 120], dtype=dt1)
         b = numpy.array([20, 120], dtype=dt2)
@@ -1047,11 +1093,19 @@ class TestSubtract:
     @pytest.mark.parametrize("dtype1", ALL_DTYPES)
     @pytest.mark.parametrize("dtype2", ALL_DTYPES)
     def test_inplace_dtype(self, dtype1, dtype2):
-        a = numpy.array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
-        b = numpy.array([5, -2, 0, 1, 0], dtype=dtype2)
+        a = get_abs_array([[-7, 6, -3, 2, -1], [0, -3, 4, 5, -6]], dtype=dtype1)
+        b = get_abs_array([5, -2, 0, 1, 0], dtype=dtype2)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        if numpy.can_cast(dtype2, dtype1, casting="same_kind"):
+        if numpy.issubdtype(dtype1, numpy.signedinteger) and numpy.issubdtype(
+            dtype2, numpy.uint64
+        ):
+            # For this special case, NumPy raises an error but dpnp works
+            b = b.astype(numpy.int64)
+            a -= b
+            ia -= ib
+            assert_dtype_allclose(ia, a)
+        elif numpy.can_cast(dtype2, dtype1, casting="same_kind"):
             a -= b
             ia -= ib
             assert_dtype_allclose(ia, a)

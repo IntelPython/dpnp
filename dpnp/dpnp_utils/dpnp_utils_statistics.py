@@ -32,7 +32,6 @@ from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 __all__ = ["dpnp_cov", "dpnp_median"]
 
@@ -119,66 +118,77 @@ def _flatten_array_along_axes(a, axes_to_flatten, overwrite_input):
     return a_flatten, overwrite_input
 
 
-def dpnp_cov(m, y=None, rowvar=True, dtype=None):
+def dpnp_cov(
+    m, y=None, rowvar=True, ddof=1, dtype=None, fweights=None, aweights=None
+):
     """
-    dpnp_cov(m, y=None, rowvar=True, dtype=None)
-
     Estimate a covariance matrix based on passed data.
-    No support for given weights is provided now.
 
-    The implementation is done through existing dpnp and dpctl methods
-    instead of separate function call of dpnp backend.
+    The implementation is done through existing dpnp functions.
 
     """
 
-    def _get_2dmin_array(x, dtype):
-        """
-        Transform an input array to a form required for building a covariance matrix.
+    # need to create a copy of input, since it will be modified in-place
+    x = dpnp.array(m, ndmin=2, dtype=dtype)
+    if not rowvar and m.ndim != 1:
+        x = x.T
 
-        If applicable, it reshapes the input array to have 2 dimensions or greater.
-        If applicable, it transposes the input array when 'rowvar' is False.
-        It casts to another dtype, if the input array differs from requested one.
+    if x.shape[0] == 0:
+        return dpnp.empty_like(
+            x, shape=(0, 0), dtype=dpnp.default_float_type(m.sycl_queue)
+        )
 
-        """
-        if x.ndim == 0:
-            x = x.reshape((1, 1))
-        elif x.ndim == 1:
-            x = x[dpnp.newaxis, :]
-
-        if not rowvar and x.ndim != 1:
-            x = x.T
-
-        if x.dtype != dtype:
-            x = dpnp.astype(x, dtype)
-        return x
-
-    # input arrays must follow CFD paradigm
-    _, queue = get_usm_allocations((m,) if y is None else (m, y))
-
-    # calculate a type of result array if not passed explicitly
-    if dtype is None:
-        dtypes = [m.dtype, dpnp.default_float_type(sycl_queue=queue)]
-        if y is not None:
-            dtypes.append(y.dtype)
-        dtype = dpnp.result_type(*dtypes)
-        # TODO: remove when dpctl.result_type() is returned dtype based on fp64
-        dtype = map_dtype_to_device(dtype, queue.sycl_device)
-
-    X = _get_2dmin_array(m, dtype)
     if y is not None:
-        y = _get_2dmin_array(y, dtype)
+        y_ndim = y.ndim
+        y = dpnp.array(y, copy=None, ndmin=2, dtype=dtype)
+        if not rowvar and y_ndim != 1:
+            y = y.T
+        x = dpnp.concatenate((x, y), axis=0)
 
-        X = dpnp.concatenate((X, y), axis=0)
+    # get the product of frequencies and weights
+    w = None
+    if fweights is not None:
+        if fweights.shape[0] != x.shape[1]:
+            raise ValueError("incompatible numbers of samples and fweights")
 
-    avg = X.mean(axis=1)
+        w = fweights
 
-    fact = X.shape[1] - 1
-    X -= avg[:, None]
+    if aweights is not None:
+        if aweights.shape[0] != x.shape[1]:
+            raise ValueError("incompatible numbers of samples and aweights")
 
-    c = dpnp.dot(X, X.T.conj())
-    c *= 1 / fact if fact != 0 else dpnp.nan
+        if w is None:
+            w = aweights
+        else:
+            w *= aweights
 
-    return dpnp.squeeze(c)
+    avg, w_sum = dpnp.average(x, axis=1, weights=w, returned=True)
+    w_sum = w_sum[0]
+
+    # determine the normalization
+    if w is None:
+        fact = x.shape[1] - ddof
+    elif ddof == 0:
+        fact = w_sum
+    elif aweights is None:
+        fact = w_sum - ddof
+    else:
+        fact = w_sum - ddof * dpnp.sum(w * aweights) / w_sum
+
+    if fact <= 0:
+        warnings.warn(
+            "Degrees of freedom <= 0 for slice", RuntimeWarning, stacklevel=2
+        )
+        fact = 0.0
+
+    x -= avg[:, None]
+    if w is None:
+        x_t = x.T
+    else:
+        x_t = (x * w).T
+
+    c = dpnp.dot(x, x_t.conj()) / fact
+    return c.squeeze()
 
 
 def dpnp_median(

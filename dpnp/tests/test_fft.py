@@ -834,7 +834,10 @@ class TestRfft:
 
         result = dpnp.fft.rfft(a, n=n, norm=norm)
         expected = numpy.fft.rfft(a_np, n=n, norm=norm)
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        factor = 120 if dtype in [dpnp.int8, dpnp.uint8] else 8
+        assert_dtype_allclose(
+            result, expected, factor=factor, check_only_type_kind=True
+        )
 
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])

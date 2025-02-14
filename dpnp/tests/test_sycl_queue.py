@@ -463,6 +463,7 @@ def test_meshgrid(device):
             "cos", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
         pytest.param("cosh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
+        pytest.param("cov", [[0, 1, 2], [2, 1, 0]]),
         pytest.param("count_nonzero", [3, 0, 2, -1.2]),
         pytest.param("cumprod", [[1, 2, 3], [4, 5, 6]]),
         pytest.param("cumsum", [[1, 2, 3], [4, 5, 6]]),
@@ -729,6 +730,7 @@ def test_reduce_hypot(device):
             [[0.7, 0.8, 0.9], [1.0, 1.1, 1.2]],
         ),
         pytest.param("correlate", [1, 2, 3], [4, 5, 6]),
+        pytest.param("cov", [-2.1, -1, 4.3], [3, 1.1, 0.12]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
         pytest.param(
@@ -812,6 +814,7 @@ def test_reduce_hypot(device):
             [0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
             [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0],
         ),
+        pytest.param("round", [1.234, 2.567], 2),
         pytest.param("searchsorted", [11, 12, 13, 14, 15], [-10, 20, 12, 13]),
         pytest.param(
             "subtract",

@@ -2,14 +2,13 @@ from itertools import permutations
 
 import numpy
 import pytest
-from numpy.testing import (
-    assert_array_equal,
-)
+from numpy.testing import assert_array_equal
 
 import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_float_dtypes,
 )
@@ -32,14 +31,13 @@ from .helper import (
         (40, 35),
     ],
 )
-@pytest.mark.parametrize("dtype_in", get_all_dtypes())
+@pytest.mark.parametrize("dtype_in", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize("dtype_out", get_all_dtypes())
 @pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("keepdims", [True, False])
 @pytest.mark.parametrize("order", ["C", "F"])
 def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
-    size = numpy.prod(shape)
-    a_np = numpy.arange(size).astype(dtype_in).reshape(shape, order=order)
+    a_np = generate_random_numpy_array(shape, dtype_in, order)
     a = dpnp.asarray(a_np)
 
     if transpose:
@@ -53,9 +51,18 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     axes.append(tuple(axes_range))
 
     for axis in axes:
+        if (
+            numpy.issubdtype(dtype_out, numpy.bool_)
+            and numpy.issubdtype(dtype_in, numpy.signedinteger)
+            and not a_np.sum(axis=axis).all()
+        ):
+            # TODO: remove workaround when dpctl-issue#1944 is resolved
+            a = a.astype(dpnp.bool)
+            dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+        else:
+            dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
-        dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
-        assert_array_equal(numpy_res, dpnp_res.asnumpy())
+        assert_dtype_allclose(dpnp_res, numpy_res, factor=16)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))

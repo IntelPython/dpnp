@@ -56,14 +56,14 @@ def test_dtypes_all():
     assert dtypes == (
         {
             "bool": dpnp.bool_,
-            "int8": numpy.int8,  # TODO: replace with dpnp.int8
-            "int16": numpy.int16,  # TODO: replace with dpnp.int16
+            "int8": dpnp.int8,
+            "int16": dpnp.int16,
             "int32": dpnp.int32,
             "int64": dpnp.int64,
-            "uint8": numpy.uint8,  # TODO: replace with dpnp.uint8
-            "uint16": numpy.uint16,  # TODO: replace with dpnp.uint16
-            "uint32": numpy.uint32,  # TODO: replace with dpnp.uint32
-            "uint64": numpy.uint64,  # TODO: replace with dpnp.uint64
+            "uint8": dpnp.uint8,
+            "uint16": dpnp.uint16,
+            "uint32": dpnp.uint32,
+            "uint64": dpnp.uint64,
             "float32": dpnp.float32,
         }
         | ({"float64": dpnp.float64} if has_support_aspect64() else {})
@@ -75,16 +75,16 @@ def test_dtypes_all():
 dtype_categories = {
     "bool": {"bool": dpnp.bool_},
     "signed integer": {
-        "int8": numpy.int8,  # TODO: replace with dpnp.int8
-        "int16": numpy.int16,  # TODO: replace with dpnp.int16
+        "int8": dpnp.int8,
+        "int16": dpnp.int16,
         "int32": dpnp.int32,
         "int64": dpnp.int64,
     },
-    "unsigned integer": {  # TODO: replace with dpnp dtypes once available
-        "uint8": numpy.uint8,
-        "uint16": numpy.uint16,
-        "uint32": numpy.uint32,
-        "uint64": numpy.uint64,
+    "unsigned integer": {
+        "uint8": dpnp.uint8,
+        "uint16": dpnp.uint16,
+        "uint32": dpnp.uint32,
+        "uint64": dpnp.uint64,
     },
     "integral": ("signed integer", "unsigned integer"),
     "real floating": {"float32": dpnp.float32}
@@ -108,14 +108,14 @@ def test_dtypes_tuple():
     dtypes = info.dtypes(kind=("bool", "integral"))
     assert dtypes == {
         "bool": dpnp.bool_,
-        "int8": numpy.int8,  # TODO: replace with dpnp.int8
-        "int16": numpy.int16,  # TODO: replace with dpnp.int16
+        "int8": dpnp.int8,
+        "int16": dpnp.int16,
         "int32": dpnp.int32,
         "int64": dpnp.int64,
-        "uint8": numpy.uint8,  # TODO: replace with dpnp.uint8
-        "uint16": numpy.uint16,  # TODO: replace with dpnp.uint16
-        "uint32": numpy.uint32,  # TODO: replace with dpnp.uint32
-        "uint64": numpy.uint64,  # TODO: replace with dpnp.uint64
+        "uint8": dpnp.uint8,
+        "uint16": dpnp.uint16,
+        "uint32": dpnp.uint32,
+        "uint64": dpnp.uint64,
     }
 
 

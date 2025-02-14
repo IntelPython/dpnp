@@ -30,9 +30,8 @@ class TestIsDType:
     @pytest.mark.parametrize(
         "dt, close_dt",
         [
-            # TODO: replace with (dpnp.uint64, dpnp.uint32) once available
             (dpnp.int64, dpnp.int32),
-            (numpy.uint64, numpy.uint32),
+            (dpnp.uint64, dpnp.uint32),
             (dpnp.float64, dpnp.float32),
             (dpnp.complex128, dpnp.complex64),
         ],

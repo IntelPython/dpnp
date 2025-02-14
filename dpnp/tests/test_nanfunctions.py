@@ -17,6 +17,7 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
+    get_abs_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
@@ -590,7 +591,7 @@ class TestNanProd:
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_nanprod_out_dtype(self, arr_dt, out_dt, dtype):
-        a = numpy.arange(10, 20).reshape((2, 5)).astype(dtype=arr_dt)
+        a = numpy.arange(1, 7).reshape((2, 3)).astype(dtype=arr_dt)
         out = numpy.zeros_like(a, shape=(2,), dtype=out_dt)
 
         ia = dpnp.array(a)
@@ -659,9 +660,9 @@ class TestNanStdVar:
     )
     def test_basic(self, array, dtype):
         try:
-            a = numpy.array(array, dtype=dtype)
+            a = get_abs_array(array, dtype=dtype)
         except:
-            pytest.skip("floating datat type is needed to store NaN")
+            pytest.skip("floating data type is needed to store NaN")
         ia = dpnp.array(a)
 
         for ddof in range(a.ndim):
