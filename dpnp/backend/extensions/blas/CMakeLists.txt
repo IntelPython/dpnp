@@ -84,7 +84,7 @@ if (DPNP_GENERATE_COVERAGE)
 endif()
 
 if(_use_onemkl_interfaces)
-    target_link_libraries(${python_module_name} PUBLIC onemkl)
+    target_link_libraries(${python_module_name} PRIVATE ${MKL_INTERFACES_LIB})
     target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMKL_INTERFACES)
     if(_use_onemkl_interfaces_cuda)
         target_compile_options(${python_module_name} PRIVATE -DUSE_ONEMKL_CUBLAS)
