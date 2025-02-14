@@ -282,9 +282,10 @@ class TestHistogram:
         assert_dtype_allclose(result_hist, expected_hist)
         assert_dtype_allclose(result_edges, expected_edges)
 
-    def test_integer_weights(self):
+    @pytest.mark.parametrize("dt", get_integer_dtypes(all_int_types=True))
+    def test_integer_weights(self, dt):
         v = numpy.array([1, 2, 2, 4])
-        w = numpy.array([4, 3, 2, 1])
+        w = numpy.array([4, 3, 2, 1], dtype=dt)
 
         iv = dpnp.array(v)
         iw = dpnp.array(w)
