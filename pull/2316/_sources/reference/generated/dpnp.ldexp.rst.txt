@@ -1,0 +1,10 @@
+﻿
+
+dpnp.ldexp
+==========
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: ldexp
