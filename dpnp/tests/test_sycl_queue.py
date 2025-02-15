@@ -63,6 +63,7 @@ def assert_sycl_queue_equal(result, expected):
         pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("eye", [4, 2], {}),
+        pytest.param("empty", [(2, 2)], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
@@ -84,32 +85,11 @@ def test_array_creation(func, arg, kwargs, device):
 
 
 @pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_empty(device):
-    x = dpnp.empty((2, 2), device=device)
-    assert x.sycl_device == device
-
-
-@pytest.mark.parametrize(
-    "device_x", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "device_y", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_empty_like(device_x, device_y):
-    x = dpnp.array([1, 2, 3], device=device_x)
-    y = dpnp.empty_like(x)
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-    y = dpnp.empty_like(x, device=device_y)
-    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
-
-
-@pytest.mark.parametrize(
     "func, args, kwargs",
     [
         pytest.param("copy", ["x0"], {}),
         pytest.param("diag", ["x0"], {}),
+        pytest.param("empty_like", ["x0"], {}),
         pytest.param("full_like", ["x0"], {"fill_value": 5}),
         pytest.param("geomspace", ["x0[0:3]", "8", "4"], {}),
         pytest.param("geomspace", ["1", "x0[2:4]", "4"], {}),
@@ -136,10 +116,6 @@ def test_array_creation_follow_device(func, args, kwargs, device):
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.skipif(
-    numpy.lib.NumpyVersion(numpy.__version__) < "1.25.0",
-    reason="numpy.logspace supports a non-scalar base argument since 1.25.0",
-)
 @pytest.mark.parametrize(
     "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
 )
@@ -171,6 +147,7 @@ def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
     [
         pytest.param("copy", ["x0"], {}),
         pytest.param("diag", ["x0"], {}),
+        pytest.param("empty_like", ["x0"], {}),
         pytest.param("full", ["10", "x0[3]"], {}),
         pytest.param("full_like", ["x0"], {"fill_value": 5}),
         pytest.param("ones_like", ["x0"], {}),
@@ -199,7 +176,6 @@ def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
 
     dpnp_kwargs["device"] = device_y
     y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
-
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
@@ -231,7 +207,6 @@ def test_array_creation_cross_device_2d_array(
 
     dpnp_kwargs["device"] = device_y
     y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
-
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
