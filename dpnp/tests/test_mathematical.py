@@ -2319,6 +2319,7 @@ def test_sign(dtype):
 
     if dtype == dpnp.bool:
         assert_raises(TypeError, dpnp.sign, ia)
+        assert_raises(TypeError, numpy.sign, a)
     else:
         result = dpnp.sign(ia)
         expected = numpy.sign(a)

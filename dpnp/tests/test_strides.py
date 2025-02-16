@@ -68,8 +68,8 @@ def test_1arg_support_complex(func, dtype, stride):
     x = generate_random_numpy_array(10, dtype=dtype)
     a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    if numpy_version() < "2.0.0" and func in ["sign"]:
-        pytest.skip("numpy definition is different for complex numbers.")
+    if numpy_version() < "2.0.0" and func == "sign":
+        pytest.skip("numpy.sign definition is different for complex numbers.")
     # dpnp default is stable
     kwargs = {"kind": "stable"} if func == "argsort" else {}
     result = getattr(dpnp, func)(ia)
