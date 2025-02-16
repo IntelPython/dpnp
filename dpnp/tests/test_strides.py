@@ -13,6 +13,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_integer_dtypes,
+    numpy_version,
 )
 
 
@@ -67,8 +68,10 @@ def test_1arg_support_complex(func, dtype, stride):
     x = generate_random_numpy_array(10, dtype=dtype)
     a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    # dpnp default is stable=True
-    kwargs = {"stable": True} if func == "argsort" else {}
+    if numpy_version() < "2.0.0" and func in ["sign"]:
+        pytest.skip("numpy definition is different for complex numbers.")
+    # dpnp default is stable
+    kwargs = {"kind": "stable"} if func == "argsort" else {}
     result = getattr(dpnp, func)(ia)
     expected = getattr(numpy, func)(a, **kwargs)
     assert_dtype_allclose(result, expected, factor=24)
