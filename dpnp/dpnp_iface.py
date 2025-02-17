@@ -219,16 +219,15 @@ def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
         Array data type casting.
     dtype : {None, str, dtype object}
         Target data type.
-    order : {'C', 'F', 'A', 'K'}
+    order : {None, 'C', 'F', 'A', 'K'}, optional
         Row-major (C-style) or column-major (Fortran-style) order.
-        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses
-        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely
-        as possible.
-    copy : bool
-        If it is ``False`` and no cast happens, then this method returns
-        the array itself. Otherwise, a copy is returned.
+        When `order` is ``'A'``, it uses ``'F'`` if `a` is column-major and
+        uses ``'C'`` otherwise. And when `order` is ``'K'``, it keeps strides
+        as closely as possible.
+
+        Default: ``'K'``.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-        Controls what kind of data casting may occur. Defaults to ``unsafe``
+        Controls what kind of data casting may occur. Defaults to ``'unsafe'``
         for backwards compatibility.
 
             - 'no' means the data types should not be cast at all.
@@ -238,24 +237,47 @@ def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
               float64 to float32, are allowed.
             - 'unsafe' means any data conversions may be done.
 
-    copy : {bool}, optional
-        By default, ``astype`` always returns a newly allocated array. If this
-        is set to ``False``, and the `dtype`, `order`, and `subok` requirements
-        are satisfied, the input array is returned instead of a copy.
+        Default: ``'unsafe'``.
+    copy : bool, optional
+        Specifies whether to copy an array when the specified dtype matches the
+        data type of the input array ``x``. If ``True``, a newly allocated
+        array must always be returned. If ``False`` and the specified dtype
+        matches the data type of the input array, the input array must be
+        returned; otherwise, a newly allocated array must be returned.
+
+        Default: ``True``.
     device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.
+        An array API specification of device where the output array is created.
+        Device can be specified by a filter selector string, an instance of
+        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
+        an instance of :class:`dpctl.tensor.Device`. If the value is ``None``,
+        returned array is created on the same device as `x`.
+
+        Default: ``None``.
 
     Returns
     -------
-    arr_t : dpnp.ndarray
-        Unless `copy` is ``False`` and the other conditions for returning
-        the input array are satisfied, `arr_t` is a new array of the same shape
-        as the input array, with dtype, order given by dtype, order.
+    out : dpnp.ndarray
+        An array having the specified data type.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.astype` : Equivalent method.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3]); x
+    array([1, 2, 3])
+    >>> np.astype(x, np.float32)
+    array([1., 2., 3.], dtype=float32)
+
+    Non-copy case:
+
+    >>> x = np.array([1, 2, 3])
+    >>> result = np.astype(x, x.dtype, copy=False)
+    >>> result is x
+    True
 
     """
 
