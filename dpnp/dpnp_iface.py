@@ -181,11 +181,13 @@ def asnumpy(a, order="C"):
     ----------
     a : {array_like}
         Arbitrary object that can be converted to :obj:`numpy.ndarray`.
-    order : {'C', 'F', 'A', 'K'}
+    order : {None, 'C', 'F', 'A', 'K'}, optional
         The desired memory layout of the converted array.
-        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses
-        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely
-        as possible.
+        When `order` is ``'A'``, it uses ``'F'`` if `a` is column-major and
+        uses ``'C'`` otherwise. And when `order` is ``'K'``, it keeps strides
+        as closely as possible.
+
+        Default: ``'C'``.
 
     Returns
     -------
@@ -306,22 +308,24 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
         The desired dtype for the result array if new array is creating. If not
         given, a default dtype will be used that can represent the values (by
         considering Promotion Type Rule and device capabilities when necessary).
+
         Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where the result array is created if
-        required.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        An array API specification of device where the output array is created.
+        Device can be specified by a filter selector string, an instance of
+        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
+        an instance of :class:`dpctl.tensor.Device`. If the value is ``None``,
+        returned array is created on the same device as `a`.
+
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the result array if new array
         is created.
+
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for result array allocation if required.
+
         Default: ``None``.
 
     Returns
@@ -412,10 +416,14 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays to check for supported types.
-    scalar_type : {bool}, optional
+    scalar_type : bool, optional
         A scalar type is also considered as supported if flag is ``True``.
-    all_scalars : {bool}, optional
+
+        Default: ``False``.
+    all_scalars : bool, optional
         All the input arrays can be scalar if flag is ``True``.
+
+        Default: ``False``.
 
     Returns
     -------
@@ -459,18 +467,20 @@ def default_float_type(device=None, sycl_queue=None):
     Parameters
     ----------
     device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array of default floating type
-        might be created. The `device` can be ``None`` (the default), an OneAPI
-        filter selector string, an instance of :class:`dpctl.SyclDevice`
-        corresponding to a non-partitioned SYCL device, an instance of
-        :class:`dpctl.SyclQueue`, or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
-        The value ``None`` is interpreted as to use a default device.
+        An array API specification of device where the output array is created.
+        Device can be specified by a filter selector string, an instance of
+        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
+        an instance of :class:`dpctl.tensor.Device`. The value ``None`` is
+        interpreted as to use a default device.
+
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue which might be used to create an array of default floating
         type. The `sycl_queue` can be ``None`` (the default), which is
         interpreted as to get the SYCL queue from `device` keyword if present
         or to use a default queue.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -590,16 +600,22 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
         and implementing `__sycl_usm_array_interface__` protocol, an instance
         of `numpy.ndarray`, an object supporting Python buffer protocol,
         a Python scalar, or a (possibly nested) sequence of Python scalars.
-    sycl_queue : class:`dpctl.SyclQueue`, optional
+    sycl_queue : {None, class:`dpctl.SyclQueue`}, optional
         A queue which explicitly indicates where USM allocation is done
         and the population code (if any) is executed.
         Value ``None`` is interpreted as to get the SYCL queue from either
         `obj` parameter if not ``None`` or from `device` keyword,
         or to use default queue.
-    device : {string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
-              :class:`dpctl.tensor.Device`}, optional
-        An array-API keyword indicating non-partitioned SYCL device
-        where array is allocated.
+
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue}, optional
+        An array API specification of device where the output array is created.
+        Device can be specified by a filter selector string, an instance of
+        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
+        an instance of :class:`dpctl.tensor.Device`. The value ``None`` is
+        interpreted as to use the same device as `obj`.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -637,8 +653,12 @@ def get_result_array(a, out=None, casting="safe"):
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
+
+        Default: ``None``.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur.
+
+        Default: ``'safe'``.
 
     Returns
     -------
@@ -735,6 +755,7 @@ def is_cuda_backend(obj=None):
         An input object with sycl_device property to check device backend.
         If `obj` is ``None``, device backend will be checked for the default
         queue.
+
         Default: ``None``.
 
     Returns
