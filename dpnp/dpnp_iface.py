@@ -74,7 +74,6 @@ __all__ = [
     "synchronize_array_data",
 ]
 
-from dpnp import float64
 from dpnp.dpnp_iface_arraycreation import *
 from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
 from dpnp.dpnp_iface_bitwise import *
@@ -483,7 +482,7 @@ def default_float_type(device=None, sycl_queue=None):
     _sycl_queue = get_normalized_queue_device(
         device=device, sycl_queue=sycl_queue
     )
-    return map_dtype_to_device(float64, _sycl_queue.sycl_device)
+    return map_dtype_to_device(dpnp.float64, _sycl_queue.sycl_device)
 
 
 def get_dpnp_descriptor(
