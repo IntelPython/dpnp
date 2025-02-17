@@ -21,6 +21,7 @@ from .helper import (
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -1822,10 +1823,7 @@ class TestUnique:
         if len(return_kwds) == 0:
             assert_array_equal(result, expected)
         else:
-            if (
-                len(axis_kwd) == 0
-                and numpy.lib.NumpyVersion(numpy.__version__) < "2.0.1"
-            ):
+            if len(axis_kwd) == 0 and numpy_version() < "2.0.1":
                 # gh-26961: numpy.unique(..., return_inverse=True, axis=None)
                 # returned flatten unique_inverse till 2.0.1 version
                 expected = (
@@ -1835,6 +1833,20 @@ class TestUnique:
                 )
             for iv, v in zip(result, expected):
                 assert_array_equal(iv, v)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize(
+        "func",
+        ["unique_all", "unique_counts", "unique_inverse", "unique_values"],
+    )
+    def test_array_api_functions(self, func):
+        a = numpy.array([numpy.nan, 1, 4, 1, 3, 4, 5, 5, 1])
+        ia = dpnp.array(a)
+
+        result = getattr(dpnp, func)(ia)
+        expected = getattr(numpy, func)(a)
+        for iv, v in zip(result, expected):
+            assert_array_equal(iv, v)
 
 
 class TestVsplit:
