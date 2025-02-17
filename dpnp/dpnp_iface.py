@@ -209,13 +209,13 @@ def asnumpy(a, order="C"):
 
 
 # pylint: disable=redefined-outer-name
-def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
+def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
     """
     Copy the array with data type casting.
 
     Parameters
     ----------
-    x1 : {dpnp.ndarray, usm_ndarray}
+    x : {dpnp.ndarray, usm_ndarray}
         Array data type casting.
     dtype : {None, str, dtype object}
         Target data type.
@@ -262,15 +262,15 @@ def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
     if order is None:
         order = "K"
 
-    x1_obj = dpnp.get_usm_ndarray(x1)
-    array_obj = dpt.astype(
-        x1_obj, dtype, order=order, casting=casting, copy=copy, device=device
+    usm_x = dpnp.get_usm_ndarray(x)
+    usm_res = dpt.astype(
+        usm_x, dtype, order=order, casting=casting, copy=copy, device=device
     )
 
-    if array_obj is x1_obj and isinstance(x1, dpnp_array):
-        # return x1 if dpctl returns a zero copy of x1_obj
-        return x1
-    return dpnp_array._create_from_usm_ndarray(array_obj)
+    if usm_res is usm_x and isinstance(x, dpnp_array):
+        # return x if dpctl returns a zero copy of usm_x
+        return x
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
