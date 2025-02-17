@@ -2,53 +2,26 @@ import math
 
 import numpy
 import pytest
-from numpy.testing import assert_allclose
+from numpy.testing import assert_array_equal
 
 import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
+    get_integer_dtypes,
+    numpy_version,
 )
-
-
-def _getattr(ex, str_):
-    attrs = str_.split(".")
-    res = ex
-    for attr in attrs:
-        res = getattr(res, attr)
-    return res
-
-
-@pytest.mark.parametrize(
-    "func_name",
-    [
-        "abs",
-    ],
-)
-@pytest.mark.parametrize("dtype", get_all_dtypes())
-def test_strides(func_name, dtype):
-    shape = (4, 4)
-    a = numpy.ones(shape[0] * shape[1], dtype=dtype).reshape(shape)
-    a_strides = a[0::2, 0::2]
-    dpa = dpnp.array(a)
-    dpa_strides = dpa[0::2, 0::2]
-
-    dpnp_func = _getattr(dpnp, func_name)
-    result = dpnp_func(dpa_strides)
-
-    numpy_func = _getattr(numpy, func_name)
-    expected = numpy_func(a_strides)
-
-    assert_allclose(expected, result)
 
 
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize(
-    "func_name",
+    "func",
     [
+        "abs",
         "arccos",
         "arccosh",
         "arcsin",
@@ -91,23 +64,21 @@ def test_strides(func_name, dtype):
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 @pytest.mark.parametrize("stride", [2, -1, -3])
-def test_strides_1arg_support_complex(func_name, dtype, stride):
-    a = numpy.arange(10, dtype=dtype)
-    dpa = dpnp.array(a)
-    b = a[::stride]
-    dpb = dpa[::stride]
+def test_1arg_support_complex(func, dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    dpnp_func = _getattr(dpnp, func_name)
-    result = dpnp_func(dpb)
-
-    numpy_func = _getattr(numpy, func_name)
-    expected = numpy_func(b)
-
-    assert_dtype_allclose(result, expected)
+    if numpy_version() < "2.0.0" and func == "sign":
+        pytest.skip("numpy.sign definition is different for complex numbers.")
+    # dpnp default is stable
+    kwargs = {"kind": "stable"} if func == "argsort" else {}
+    result = getattr(dpnp, func)(ia)
+    expected = getattr(numpy, func)(a, **kwargs)
+    assert_dtype_allclose(result, expected, factor=24)
 
 
 @pytest.mark.parametrize(
-    "func_name",
+    "func",
     [
         "cbrt",
         "ceil",
@@ -123,17 +94,12 @@ def test_strides_1arg_support_complex(func_name, dtype, stride):
     "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
 )
 @pytest.mark.parametrize("stride", [2, -1, -3])
-def test_strides_1arg(func_name, dtype, stride):
-    a = numpy.arange(10, dtype=dtype)
-    dpa = dpnp.array(a)
-    b = a[::stride]
-    dpb = dpa[::stride]
+def test_1arg(func, dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    dpnp_func = _getattr(dpnp, func_name)
-    result = dpnp_func(dpb)
-
-    numpy_func = _getattr(numpy, func_name)
-    expected = numpy_func(b)
+    result = getattr(dpnp, func)(ia)
+    expected = getattr(numpy, func)(a)
 
     # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for NumPy < 2.0.0
     # while for NumPy >= 2.0.0, output has the dtype of input (dpnp follows this behavior)
@@ -144,22 +110,29 @@ def test_strides_1arg(func_name, dtype, stride):
     assert_dtype_allclose(result, expected, check_type=check_type)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_rsqrt(dtype):
-    a = numpy.arange(1, 11, dtype=dtype)[::2]
-    dpa = dpnp.arange(1, 11, dtype=dtype)[::2]
+@pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_rsqrt(dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    result = dpnp.rsqrt(dpa)
+    result = dpnp.rsqrt(ia)
     expected = 1 / numpy.sqrt(a)
     assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_logsumexp(dtype):
-    a = numpy.arange(10, dtype=dtype)[::2]
-    dpa = dpnp.arange(10, dtype=dtype)[::2]
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_logsumexp(dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    result = dpnp.logsumexp(dpa)
+    result = dpnp.logsumexp(ia)
     expected = numpy.logaddexp.reduce(a)
     # for int8, uint8, NumPy returns float16 but dpnp returns float64
     # for int16, uint16, NumPy returns float32 but dpnp returns float64
@@ -167,12 +140,15 @@ def test_logsumexp(dtype):
     assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_cumlogsumexp(dtype):
-    a = numpy.arange(10, dtype=dtype)[::2]
-    dpa = dpnp.arange(10, dtype=dtype)[::2]
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_cumlogsumexp(dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    result = dpnp.cumlogsumexp(dpa)
+    result = dpnp.cumlogsumexp(ia)
     expected = numpy.logaddexp.accumulate(a)
     # for int8, uint8, NumPy returns float16 but dpnp returns float64
     # for int16, uint16, NumPy returns float32 but dpnp returns float64
@@ -180,12 +156,15 @@ def test_cumlogsumexp(dtype):
     assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_reduce_hypot(dtype):
-    a = numpy.arange(10, dtype=dtype)[::2]
-    dpa = dpnp.arange(10, dtype=dtype)[::2]
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_reduce_hypot(dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    result = dpnp.reduce_hypot(dpa)
+    result = dpnp.reduce_hypot(ia)
     expected = numpy.hypot.reduce(a)
     # for int8, uint8, NumPy returns float16 but dpnp returns float64
     # for int16, uint16, NumPy returns float32 but dpnp returns float64
@@ -203,44 +182,42 @@ def test_reduce_hypot(dtype):
         xfail_dtypes=[dpnp.int8, dpnp.int16],
     ),
 )
-def test_strides_erf(dtype):
+def test_erf(dtype):
     a = dpnp.linspace(-1, 1, num=10, dtype=dtype)
     b = a[::2]
-
     result = dpnp.erf(b)
 
     expected = numpy.empty_like(b.asnumpy())
     for idx, val in enumerate(b):
         expected[idx] = math.erf(val)
 
-    assert_allclose(result, expected, rtol=1e-06)
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
-def test_reciprocal(dtype):
-    dpa = dpnp.arange(1, 11, dtype=dtype)[::2]
-    a = numpy.arange(1, 11, dtype=dtype)[::2]
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_reciprocal(dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    result = dpnp.reciprocal(dpa)
+    result = dpnp.reciprocal(ia)
     expected = numpy.reciprocal(a)
-
     assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_complex_dtypes())
-def test_angle(dtype):
-    a = numpy.random.rand(10)
-    b = numpy.random.rand(10)
-    z = numpy.array(a + 1j * b, dtype=dtype)[::2]
-    dpz = dpnp.array(z)
+@pytest.mark.parametrize("stride", [2, -1, -3])
+def test_angle(dtype, stride):
+    x = generate_random_numpy_array(10, dtype=dtype)
+    a, ia = x[::stride], dpnp.array(x)[::stride]
 
-    result = dpnp.angle(dpz)
-    expected = numpy.angle(z)
+    result = dpnp.angle(ia)
+    expected = numpy.angle(a)
     assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
-    "func_name",
+    "func",
     [
         "add",
         "arctan2",
@@ -257,209 +234,167 @@ def test_angle(dtype):
         "subtract",
     ],
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
-@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
-def test_strides_2args(func_name, dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a.T
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+@pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
+def test_2args(func, dtype):
+    # Integers to negative integer powers are not allowed
+    dt_list = [dpnp.int8, dpnp.int16, dpnp.int32, dpnp.int64]
+    low = 0 if func == "power" and dtype in dt_list else -10
+    a = generate_random_numpy_array((3, 3), dtype=dtype, low=low)
+    ia = dpnp.array(a)
+    b, ib = a.T, ia.T
 
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa.T
-
-    dpnp_func = _getattr(dpnp, func_name)
-    result = dpnp_func(dpa, dpb)
-
-    numpy_func = _getattr(numpy, func_name)
-    expected = numpy_func(a, b)
-
+    result = getattr(dpnp, func)(ia, ib)
+    expected = getattr(numpy, func)(a, b)
     assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
-    "func_name",
+    "func",
     ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
 )
+@pytest.mark.parametrize("dtype", get_integer_dtypes())
+def test_bitwise(func, dtype):
+    # negative values for shift is not supported
+    low = 0 if func in ["left_shift", "right_shift"] else -10
+    a = generate_random_numpy_array((3, 3), dtype=dtype, low=low)
+    ia = dpnp.array(a)
+    b, ib = a.T, ia.T
+
+    result = getattr(dpnp, func)(ia, ib)
+    expected = getattr(numpy, func)(a, b)
+    assert_array_equal(result, expected, strict=True)
+
+
 @pytest.mark.parametrize(
-    "dtype", [numpy.int64, numpy.int32], ids=["int64", "int32"]
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
 )
-@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
-def test_strides_bitwise(func_name, dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a.T
+def test_copysign(dtype):
+    a = generate_random_numpy_array((3, 3), dtype=dtype)
+    ia = dpnp.array(a)
+    b, ib = -a.T, dpnp.negative(ia.T)
 
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa.T
-
-    dpnp_func = _getattr(dpnp, func_name)
-    result = dpnp_func(dpa, dpb)
-
-    numpy_func = _getattr(numpy, func_name)
-    expected = numpy_func(a, b)
-
-    assert_allclose(result, expected)
-
-
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
-def test_strides_copysign(dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = -a.T
-
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpnp.negative(dpa.T)
-
-    result = dpnp.copysign(dpa, dpb)
+    result = dpnp.copysign(ia, ib)
     expected = numpy.copysign(a, b)
-
-    assert_allclose(result, expected)
-
-
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
-def test_strides_fmod(dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a.T + 1
-
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa.T + 1
-
-    result = dpnp.fmod(dpa, dpb)
-    expected = numpy.fmod(a, b)
-
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
-def test_strides_true_divide(dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a.T + 1
+@pytest.mark.parametrize("func", ["fmod", "true_divide", "remainder"])
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+def test_division(func, dtype):
+    a = generate_random_numpy_array((3, 3), dtype=dtype)
+    ia = dpnp.array(a)
+    b, ib = a.T + 1, ia.T + 1
 
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa.T + 1
-
-    result = dpnp.true_divide(dpa, dpb)
-    expected = numpy.true_divide(a, b)
-
-    assert_allclose(result, expected, atol=1e-08)
-
-
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-@pytest.mark.parametrize("shape", [(3, 3)], ids=["(3, 3)"])
-def test_strides_remainder(dtype, shape):
-    a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
-    b = a.T + 1
-
-    dpa = dpnp.reshape(dpnp.arange(numpy.prod(shape), dtype=dtype), shape)
-    dpb = dpa.T + 1
-
-    result = dpnp.remainder(dpa, dpb)
-    expected = numpy.remainder(a, b)
-
-    assert_allclose(result, expected)
+    result = getattr(dpnp, func)(ia, ib)
+    expected = getattr(numpy, func)(a, b)
+    assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("func_name", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_strided_out_2args(func_name, dtype):
-    np_out = numpy.ones((5, 3, 2), dtype=dtype)[::3]
-    np_a = numpy.arange(numpy.prod(np_out.shape), dtype=dtype).reshape(
-        np_out.shape
-    )
-    np_b = numpy.full(np_out.shape, fill_value=0.7, dtype=dtype)
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+@pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+def test_2args_out(func, dtype):
+    shape = (5, 3, 2)
+    out = numpy.empty(shape, dtype=dtype)[::3]
+    iout = dpnp.empty(shape, dtype=dtype)[::3]
 
-    dp_out = dpnp.ones((5, 3, 2), dtype=dtype)[::3]
-    dp_a = dpnp.array(np_a)
-    dp_b = dpnp.array(np_b)
+    a = generate_random_numpy_array(out.shape, dtype=dtype)
+    b = numpy.full(out.shape, fill_value=0.7, dtype=dtype)
+    ia, ib = dpnp.array(a), dpnp.array(b)
 
-    np_res = _getattr(numpy, func_name)(np_a, np_b, out=np_out)
-    dp_res = _getattr(dpnp, func_name)(dp_a, dp_b, out=dp_out)
+    expected = getattr(numpy, func)(a, b, out=out)
+    result = getattr(dpnp, func)(ia, ib, out=iout)
 
-    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
-    assert_allclose(dp_out.asnumpy(), np_out, rtol=1e-06)
+    assert result is iout
+    assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("func_name", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
-def test_strided_in_out_2args(func_name, dtype):
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+@pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
+def test_2args_in_out(func, dtype):
     sh = (3, 4, 2)
-    prod = numpy.prod(sh)
+    out = numpy.empty(sh, dtype=dtype)[::2]
+    iout = dpnp.empty(sh, dtype=dtype)[::2]
 
-    np_out = numpy.ones(sh, dtype=dtype)[::2]
-    np_a = numpy.arange(prod, dtype=dtype).reshape(sh)[::2]
-    np_b = numpy.full(sh, fill_value=0.7, dtype=dtype)[::2].T
+    a = generate_random_numpy_array(sh, dtype=dtype)
+    b = numpy.full(sh, fill_value=0.7, dtype=dtype)
+    ia, ib = dpnp.array(a), dpnp.array(b)
 
-    dp_out = dpnp.ones(sh, dtype=dtype)[::2]
-    dp_a = dpnp.arange(prod, dtype=dtype).reshape(sh)[::2]
-    dp_b = dpnp.full(sh, fill_value=0.7, dtype=dtype)[::2].T
+    a, b = a[::2], b[::2].T
+    ia, ib = ia[::2], ib[::2].T
 
-    np_res = _getattr(numpy, func_name)(np_a, np_b, out=np_out)
-    dp_res = _getattr(dpnp, func_name)(dp_a, dp_b, out=dp_out)
-
-    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
-    assert_allclose(dp_out.asnumpy(), np_out, rtol=1e-06)
+    expected = getattr(numpy, func)(a, b, out=out)
+    result = getattr(dpnp, func)(ia, ib, out=iout)
+    assert result is iout
+    assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("func_name", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
 @pytest.mark.skip("dpctl doesn't support type mismatch of out array")
-def test_strided_in_out_2args_diff_out_dtype(func_name, dtype):
+def test_2args_in_out_diff_out_dtype(func, dtype):
     sh = (3, 3, 2)
-    prod = numpy.prod(sh)
+    out = numpy.ones(sh, dtype=numpy.complex64)[::2]
+    iout = dpnp.ones(sh, dtype=dpnp.complex64)[::2]
 
-    np_out = numpy.ones(sh, dtype=numpy.complex64)[::2]
-    np_a = numpy.arange(prod, dtype=dtype).reshape(sh)[::2].T
-    np_b = numpy.full(sh, fill_value=0.7, dtype=dtype)[::2]
+    a = generate_random_numpy_array(sh, dtype=dtype)
+    b = numpy.full(sh, fill_value=0.7, dtype=dtype)
+    ia, ib = dpnp.array(a), dpnp.array(b)
 
-    dp_out = dpnp.ones(sh, dtype=dpnp.complex64)[::2]
-    dp_a = dpnp.arange(prod, dtype=dtype).reshape(sh)[::2].T
-    dp_b = dpnp.full(sh, fill_value=0.7, dtype=dtype)[::2]
+    a, b = a[::2].T, b[::2]
+    ia, ib = ia[::2].T, ib[::2]
 
-    np_res = _getattr(numpy, func_name)(np_a, np_b, out=np_out)
-    dp_res = _getattr(dpnp, func_name)(dp_a, dp_b, out=dp_out)
+    expected = getattr(numpy, func)(a, b, out=out)
+    result = getattr(dpnp, func)(ia, ib, out=iout)
 
-    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
-    assert_allclose(dp_out.asnumpy(), np_out, rtol=1e-06)
+    assert result is iout
+    assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("func_name", ["add", "multiply", "power", "subtract"])
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+@pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
 )
-def test_strided_in_2args_overlap(func_name, dtype):
+def test_2args_in_overlap(func, dtype):
     size = 5
+    # Integers to negative integer powers are not allowed
+    dt_list = [dpnp.int8, dpnp.int16, dpnp.int32, dpnp.int64]
+    low = 0 if func == "power" and dtype in dt_list else -10
+    a = generate_random_numpy_array(2 * size, dtype=dtype, low=low)
+    ia = dpnp.array(a)
 
-    np_a = numpy.arange(2 * size, dtype=dtype)
-    dp_a = dpnp.arange(2 * size, dtype=dtype)
+    expected = getattr(numpy, func)(a[size::], a[::2], out=a[:size:])
+    result = getattr(dpnp, func)(ia[size::], ia[::2], out=ia[:size:])
 
-    np_res = _getattr(numpy, func_name)(
-        np_a[size::], np_a[::2], out=np_a[:size:]
-    )
-    dp_res = _getattr(dpnp, func_name)(
-        dp_a[size::], dp_a[::2], out=dp_a[:size:]
-    )
-
-    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
-    assert_allclose(dp_a.asnumpy(), np_a, rtol=1e-06)
+    assert_dtype_allclose(result, expected)
+    assert_dtype_allclose(ia, a)
 
 
-@pytest.mark.parametrize("func_name", ["add", "multiply", "power", "subtract"])
+@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
+@pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
 )
-def test_strided_in_out_2args_overlap(func_name, dtype):
-    sh = (4, 3, 2)
-    prod = numpy.prod(sh)
+def test_2args_in_out_overlap(func, dtype):
+    a = generate_random_numpy_array((4, 3, 2), dtype=dtype)
+    b = numpy.full(a[::2].shape, fill_value=0.7, dtype=dtype)
+    ia, ib = dpnp.array(a), dpnp.array(b)
 
-    np_a = numpy.arange(prod, dtype=dtype).reshape(sh)
-    np_b = numpy.full(np_a[::2].shape, fill_value=0.7, dtype=dtype)
+    expected = getattr(numpy, func)(a[::2], b, out=a[1::2])
+    result = getattr(dpnp, func)(ia[::2], ib, out=ia[1::2])
 
-    dp_a = dpnp.arange(prod, dtype=dtype).reshape(sh)
-    dp_b = dpnp.full(dp_a[::2].shape, fill_value=0.7, dtype=dtype)
-
-    np_res = _getattr(numpy, func_name)(np_a[::2], np_b, out=np_a[1::2])
-    dp_res = _getattr(dpnp, func_name)(dp_a[::2], dp_b, out=dp_a[1::2])
-
-    assert_allclose(dp_res.asnumpy(), np_res, rtol=1e-06)
-    assert_allclose(dp_a.asnumpy(), np_a, rtol=1e-06)
+    assert_dtype_allclose(result, expected)
+    assert_dtype_allclose(ia, a)
