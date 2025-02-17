@@ -69,8 +69,8 @@ about:
 
 extra:
     recipe-maintainers:
-        - oleksandr-pavlyk
         - antonwolfy
         - AlexanderKalistratov
         - vtavana
         - vlad-perevezentsev
+        - ndgrigorian
