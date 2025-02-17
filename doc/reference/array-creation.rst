@@ -1,4 +1,4 @@
-.. _routines.creation:
+.. _routines.array-creation:
 
 Array creation routines
 =======================
