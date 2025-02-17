@@ -38,7 +38,7 @@ class TestAsType:
         assert_allclose(expected, result)
 
     def test_subok_error(self):
-        x = dpnp.ones((4))
+        x = dpnp.ones(4)
         with pytest.raises(NotImplementedError):
             x.astype("i4", subok=False)
 
