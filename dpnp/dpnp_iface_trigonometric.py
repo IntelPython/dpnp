@@ -2448,7 +2448,7 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
     abs_p_diff = dpnp.abs(p_diff, out=p_diff)
     ph_correct = dpnp.where(abs_p_diff < discont, 0, ph_correct, out=ph_correct)
 
-    up = dpnp.astype(p, dtype=dt, copy=True)
+    up = dpnp.astype(p, dt, copy=True)
     up[slice1] = p[slice1]
     up[slice1] += ph_correct.cumsum(axis=axis)
     return up
