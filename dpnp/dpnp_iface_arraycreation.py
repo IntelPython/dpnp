@@ -64,6 +64,7 @@ __all__ = [
     "asarray",
     "ascontiguousarray",
     "asfortranarray",
+    "astype",
     "copy",
     "diag",
     "diagflat",
@@ -894,6 +895,95 @@ def asfortranarray(
         usm_type=usm_type,
         sycl_queue=sycl_queue,
     )
+
+
+def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
+    """
+    Copy the array with data type casting.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Array data type casting.
+    dtype : {None, str, dtype object}
+        Target data type.
+    order : {None, "C", "F", "A", "K"}, optional
+        Row-major (C-style) or column-major (Fortran-style) order.
+        When `order` is ``"A"``, it uses ``"F"`` if `a` is column-major and
+        uses ``"C"`` otherwise. And when `order` is ``"K"``, it keeps strides
+        as closely as possible.
+
+        Default: ``"K"``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur. Defaults to ``"unsafe"``
+        for backwards compatibility.
+
+            - "no" means the data types should not be cast at all.
+            - "equiv" means only byte-order changes are allowed.
+            - "safe" means only casts which can preserve values are allowed.
+            - "same_kind" means only safe casts or casts within a kind, like
+              float64 to float32, are allowed.
+            - "unsafe" means any data conversions may be done.
+
+        Default: ``"unsafe"``.
+    copy : bool, optional
+        Specifies whether to copy an array when the specified dtype matches the
+        data type of the input array ``x``. If ``True``, a newly allocated
+        array must always be returned. If ``False`` and the specified dtype
+        matches the data type of the input array, the input array must be
+        returned; otherwise, a newly allocated array must be returned.
+
+        Default: ``True``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        If the value is ``None``, returned array is created on the same device
+        as `x`.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array having the specified data type.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.astype` : Equivalent method.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3]); x
+    array([1, 2, 3])
+    >>> np.astype(x, np.float32)
+    array([1., 2., 3.], dtype=float32)
+
+    Non-copy case:
+
+    >>> x = np.array([1, 2, 3])
+    >>> result = np.astype(x, x.dtype, copy=False)
+    >>> result is x
+    True
+
+    """
+
+    if order is None:
+        order = "K"
+
+    usm_x = dpnp.get_usm_ndarray(x)
+    usm_res = dpt.astype(
+        usm_x, dtype, order=order, casting=casting, copy=copy, device=device
+    )
+
+    if usm_res is usm_x and isinstance(x, dpnp_array):
+        # return x if dpctl returns a zero copy of usm_x
+        return x
+    return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
 def copy(
