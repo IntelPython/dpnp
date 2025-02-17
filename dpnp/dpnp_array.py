@@ -789,33 +789,35 @@ class dpnp_array:
 
         Parameters
         ----------
-        x1 : {dpnp.ndarray, usm_ndarray}
-            Array data type casting.
         dtype : {None, str, dtype object}
             Target data type.
-        order : {"C", "F", "A", "K"}, optional
+        order : {None, "C", "F", "A", "K"}, optional
             Row-major (C-style) or column-major (Fortran-style) order.
-            When ``order`` is 'A', it uses 'F' if ``a`` is column-major and uses 'C' otherwise.
-            And when ``order`` is 'K', it keeps strides as closely as possible.
-        copy : bool
-            If it is False and no cast happens, then this method returns the array itself.
-            Otherwise, a copy is returned.
-        casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-            Controls what kind of data casting may occur.
-            Defaults to ``'unsafe'`` for backwards compatibility.
+            When `order` is ``"A"``, it uses ``"F"`` if `a` is column-major and
+            uses ``"C"`` otherwise. And when `order` is ``"K"``, it keeps
+            strides as closely as possible.
 
-            - 'no' means the data types should not be cast at all.
-            - 'equiv' means only byte-order changes are allowed.
-            - 'safe' means only casts which can preserve values are allowed.
-            - 'same_kind' means only safe casts or casts within a kind, like
-              float64 to float32, are allowed.
-            - 'unsafe' means any data conversions may be done.
+            Default: ``"K"``.
+        casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+            Controls what kind of data casting may occur. Defaults to
+            ``"unsafe"`` for backwards compatibility.
 
-        copy : {bool}, optional
-            By default, ``astype`` always returns a newly allocated array. If
-            this is set to ``False``, and the `dtype`, `order`, and `subok`
-            requirements are satisfied, the input array is returned instead of
-            a copy.
+                - "no" means the data types should not be cast at all.
+                - "equiv" means only byte-order changes are allowed.
+                - "safe" means only casts which can preserve values are allowed.
+                - "same_kind" means only safe casts or casts within a kind,
+                  like float64 to float32, are allowed.
+                - "unsafe" means any data conversions may be done.
+
+            Default: ``"unsafe"``.
+        copy : bool, optional
+            Specifies whether to copy an array when the specified dtype matches
+            the data type of that array. If ``True``, a newly allocated array
+            must always be returned. If ``False`` and the specified dtype
+            matches the data type of that array, the self array must be returned;
+            otherwise, a newly allocated array must be returned.
+
+            Default: ``True``.
         device : {None, string, SyclDevice, SyclQueue, Device}, optional
             An array API concept of device where the output array is created.
             `device` can be ``None``, a oneAPI filter selector string,
@@ -830,10 +832,8 @@ class dpnp_array:
 
         Returns
         -------
-        arr_t : dpnp.ndarray
-            Unless `copy` is ``False`` and the other conditions for returning the input array
-            are satisfied, `arr_t` is a new array of the same shape as the input array,
-            with dtype, order given by dtype, order.
+        out : dpnp.ndarray
+            An array having the specified data type.
 
         Limitations
         -----------
@@ -843,9 +843,9 @@ class dpnp_array:
         Examples
         --------
         >>> import dpnp as np
-        >>> x = np.array([1, 2, 2.5])
-        >>> x
+        >>> x = np.array([1, 2, 2.5]); x
         array([1. , 2. , 2.5])
+
         >>> x.astype(int)
         array([1, 2, 2])
 

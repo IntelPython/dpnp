@@ -220,25 +220,25 @@ def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
         Array data type casting.
     dtype : {None, str, dtype object}
         Target data type.
-    order : {None, 'C', 'F', 'A', 'K'}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Row-major (C-style) or column-major (Fortran-style) order.
-        When `order` is ``'A'``, it uses ``'F'`` if `a` is column-major and
-        uses ``'C'`` otherwise. And when `order` is ``'K'``, it keeps strides
+        When `order` is ``"A"``, it uses ``"F"`` if `a` is column-major and
+        uses ``"C"`` otherwise. And when `order` is ``"K"``, it keeps strides
         as closely as possible.
 
-        Default: ``'K'``.
-    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-        Controls what kind of data casting may occur. Defaults to ``'unsafe'``
+        Default: ``"K"``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur. Defaults to ``"unsafe"``
         for backwards compatibility.
 
-            - 'no' means the data types should not be cast at all.
-            - 'equiv' means only byte-order changes are allowed.
-            - 'safe' means only casts which can preserve values are allowed.
-            - 'same_kind' means only safe casts or casts within a kind, like
+            - "no" means the data types should not be cast at all.
+            - "equiv" means only byte-order changes are allowed.
+            - "safe" means only casts which can preserve values are allowed.
+            - "same_kind" means only safe casts or casts within a kind, like
               float64 to float32, are allowed.
-            - 'unsafe' means any data conversions may be done.
+            - "unsafe" means any data conversions may be done.
 
-        Default: ``'unsafe'``.
+        Default: ``"unsafe"``.
     copy : bool, optional
         Specifies whether to copy an array when the specified dtype matches the
         data type of the input array ``x``. If ``True``, a newly allocated
