@@ -816,13 +816,17 @@ class dpnp_array:
             this is set to ``False``, and the `dtype`, `order`, and `subok`
             requirements are satisfied, the input array is returned instead of
             a copy.
-        device : {None, string, SyclDevice, SyclQueue}, optional
+        device : {None, string, SyclDevice, SyclQueue, Device}, optional
             An array API concept of device where the output array is created.
-            The `device` can be ``None`` (the default), an OneAPI filter selector
-            string, an instance of :class:`dpctl.SyclDevice` corresponding to
-            a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-            or a `Device` object returned by
-            :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.
+            `device` can be ``None``, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpnp.ndarray.device`.
+            If the value is ``None``, returned array is created on the same
+            device as that array.
+
+            Default: ``None``.
 
         Returns
         -------
@@ -925,13 +929,14 @@ class dpnp_array:
         order : {"C", "F", "A", "K"}, optional
             Memory layout of the newly output array.
             Default: ``"C"``.
-        device : {None, string, SyclDevice, SyclQueue}, optional
+        device : {None, string, SyclDevice, SyclQueue, Device}, optional
             An array API concept of device where the output array is created.
-            The `device` can be ``None`` (the default), an OneAPI filter
-            selector string, an instance of :class:`dpctl.SyclDevice`
-            corresponding to a non-partitioned SYCL device, an instance of
-            :class:`dpctl.SyclQueue`, or a `Device` object returned by
-            :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+            `device` can be ``None``, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
+            :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
+            returned by :attr:`dpnp.ndarray.device`.
+
             Default: ``None``.
         usm_type : {None, "device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
@@ -1821,12 +1826,13 @@ class dpnp_array:
 
         Parameters
         ----------
-        device : {string, SyclDevice, SyclQueue}
-            Array API concept of target device. It can be an OneAPI filter
-            selector string, an instance of :class:`dpctl.SyclDevice`
-            corresponding to a non-partitioned SYCL device, an instance of
+        device : {None, string, SyclDevice, SyclQueue, Device}, optional
+            An array API concept of device where the output array is created.
+            `device` can be ``None``, a oneAPI filter selector string,
+            an instance of :class:`dpctl.SyclDevice` corresponding to
+            a non-partitioned SYCL device, an instance of
             :class:`dpctl.SyclQueue`, or a :class:`dpctl.tensor.Device` object
-            returned by :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+            returned by :attr:`dpnp.ndarray.device`.
         stream : {SyclQueue, None}, optional
             Execution queue to synchronize with. If ``None``, synchronization
             is not performed.

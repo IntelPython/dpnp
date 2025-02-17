@@ -247,12 +247,15 @@ def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
         returned; otherwise, a newly allocated array must be returned.
 
         Default: ``True``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API specification of device where the output array is created.
-        Device can be specified by a filter selector string, an instance of
-        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
-        an instance of :class:`dpctl.tensor.Device`. If the value is ``None``,
-        returned array is created on the same device as `x`.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        If the value is ``None``, returned array is created on the same device
+        as `x`.
 
         Default: ``None``.
 
@@ -310,12 +313,15 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
         considering Promotion Type Rule and device capabilities when necessary).
 
         Default: ``None``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API specification of device where the output array is created.
-        Device can be specified by a filter selector string, an instance of
-        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
-        an instance of :class:`dpctl.tensor.Device`. If the value is ``None``,
-        returned array is created on the same device as `a`.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        If the value is ``None``, returned array is created on the same device
+        as `a`.
 
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
@@ -466,12 +472,14 @@ def default_float_type(device=None, sycl_queue=None):
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API specification of device where the output array is created.
-        Device can be specified by a filter selector string, an instance of
-        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
-        an instance of :class:`dpctl.tensor.Device`. The value ``None`` is
-        interpreted as to use a default device.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        The value ``None`` is interpreted as to use a default device.
 
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
@@ -608,12 +616,14 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
         or to use default queue.
 
         Default: ``None``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API specification of device where the output array is created.
-        Device can be specified by a filter selector string, an instance of
-        :class:`dpctl.SyclDevice`, an instance of :class:`dpctl.SyclQueue`, or
-        an instance of :class:`dpctl.tensor.Device`. The value ``None`` is
-        interpreted as to use the same device as `obj`.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        The value ``None`` is interpreted as to use the same device as `obj`.
 
         Default: ``None``.
 

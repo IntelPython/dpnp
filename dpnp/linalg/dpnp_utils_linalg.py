@@ -1294,9 +1294,15 @@ def _real_type(dtype, device=None):
     ----------
     dtype : dpnp.dtype
         The dtype for which to find the corresponding real data type.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array of default floating type
-        might be created.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where an array of default floating data
+        type is created. `device` can be ``None``, a oneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -2357,7 +2363,7 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
     """Compute matrix or vector norm."""
 
     if not dpnp.issubdtype(x.dtype, dpnp.inexact):
-        x = dpnp.astype(x, dtype=dpnp.default_float_type(x.device))
+        x = dpnp.astype(x, dpnp.default_float_type(x.device))
 
     ndim = x.ndim
     # Immediately handle some default, simple, fast, and common cases.
