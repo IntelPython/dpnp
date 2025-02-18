@@ -8,6 +8,7 @@ from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
     assert_array_equal,
+    assert_equal,
     assert_raises,
     assert_raises_regex,
     suppress_warnings,
@@ -2087,29 +2088,29 @@ class TestNorm:
     def test_empty(self, shape, ord, axis, keepdims):
         a = numpy.empty(shape)
         ia = dpnp.array(a)
+        kwarg = {"ord": ord, "axis": axis, "keepdims": keepdims}
+
         if axis is None and a.ndim > 1 and ord in [0, 3]:
             # Invalid norm order for matrices (a.ndim == 2) or
             # Improper number of dimensions to norm (a.ndim>2)
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         elif axis is None and a.ndim > 2 and ord is not None:
             # Improper number of dimensions to norm
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         elif (
             axis is None
-            and ord is not None
+            and ord in [-2, -1, 0, 3]
             and a.ndim != 1
             and a.shape[-1] == 0
         ):
             # reduction cannot be performed over zero-size axes
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         else:
-            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-            expected = numpy.linalg.norm(
-                a, ord=ord, axis=axis, keepdims=keepdims
-            )
+            result = dpnp.linalg.norm(ia, **kwarg)
+            expected = numpy.linalg.norm(a, **kwarg)
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
@@ -2121,11 +2122,11 @@ class TestNorm:
         ia = dpnp.array(a)
         if axis is None and ord is not None:
             # Improper number of dimensions to norm
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, ord=ord, axis=axis)
+            assert_raises(ValueError, numpy.linalg.norm, a, ord=ord, axis=axis)
         elif axis is not None:
-            with pytest.raises(AxisError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis)
+            assert_raises(IndexError, dpnp.linalg.norm, ia, ord=ord, axis=axis)
+            assert_raises(AxisError, numpy.linalg.norm, a, ord=ord, axis=axis)
         else:
             result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
             expected = numpy.linalg.norm(a, ord=ord, axis=axis)
@@ -2158,24 +2159,21 @@ class TestNorm:
     def test_2D(self, dtype, ord, axis, keepdims):
         a = generate_random_numpy_array((3, 5), dtype)
         ia = dpnp.array(a)
+        kwarg = {"ord": ord, "axis": axis, "keepdims": keepdims}
+
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             (isinstance(axis, tuple) or axis is None) and ord == 3
         ):
             # Invalid norm order for vectors
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         else:
-            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-            expected = numpy.linalg.norm(
-                a, ord=ord, axis=axis, keepdims=keepdims
-            )
+            result = dpnp.linalg.norm(ia, **kwarg)
+            expected = numpy.linalg.norm(a, **kwarg)
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype",
-        get_all_dtypes(no_none=True),
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
@@ -2188,21 +2186,21 @@ class TestNorm:
     def test_ND(self, dtype, ord, axis, keepdims):
         a = generate_random_numpy_array((2, 3, 4, 5), dtype)
         ia = dpnp.array(a)
+        kwarg = {"ord": ord, "axis": axis, "keepdims": keepdims}
+
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             isinstance(axis, tuple) and ord == 3
         ):
             # Invalid norm order for vectors
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         elif axis is None and ord is not None:
             # Improper number of dimensions to norm
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         else:
-            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-            expected = numpy.linalg.norm(
-                a, ord=ord, axis=axis, keepdims=keepdims
-            )
+            result = dpnp.linalg.norm(ia, **kwarg)
+            expected = numpy.linalg.norm(a, **kwarg)
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
@@ -2219,21 +2217,21 @@ class TestNorm:
     def test_usm_ndarray(self, dtype, ord, axis, keepdims):
         a = generate_random_numpy_array((2, 3, 4, 5), dtype)
         ia = dpt.asarray(a)
+        kwarg = {"ord": ord, "axis": axis, "keepdims": keepdims}
+
         if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
             isinstance(axis, tuple) and ord == 3
         ):
             # Invalid norm order for vectors
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         elif axis is None and ord is not None:
             # Improper number of dimensions to norm
-            with pytest.raises(ValueError):
-                dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
+            assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
+            assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         else:
-            result = dpnp.linalg.norm(ia, ord=ord, axis=axis, keepdims=keepdims)
-            expected = numpy.linalg.norm(
-                a, ord=ord, axis=axis, keepdims=keepdims
-            )
+            result = dpnp.linalg.norm(ia, **kwarg)
+            expected = numpy.linalg.norm(a, **kwarg)
             assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("stride", [3, -1, -5])
@@ -2257,8 +2255,7 @@ class TestNorm:
         A = numpy.random.rand(20, 30)
         B = dpnp.asarray(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
-        a = A[slices]
-        b = B[slices]
+        a, b = A[slices], B[slices]
 
         result = dpnp.linalg.norm(b, axis=axis)
         expected = numpy.linalg.norm(a, axis=axis)
@@ -2278,8 +2275,7 @@ class TestNorm:
         A = numpy.random.rand(12, 16, 20, 24)
         B = dpnp.asarray(A)
         slices = tuple(slice(None, None, stride[i]) for i in range(A.ndim))
-        a = A[slices]
-        b = B[slices]
+        a, b = A[slices], B[slices]
 
         result = dpnp.linalg.norm(b, axis=axis)
         expected = numpy.linalg.norm(a, axis=axis)
@@ -2298,6 +2294,28 @@ class TestNorm:
         result = dpnp.linalg.matrix_norm(ia, ord=ord, keepdims=keepdims)
         expected = numpy.linalg.matrix_norm(a, ord=ord, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
+    @pytest.mark.parametrize(
+        "shape_axis", [[(2, 0), None], [(2, 0, 3), (0, 1)]]
+    )
+    def test_matrix_norm_empty(self, dtype, shape_axis):
+        shape, axis = shape_axis[0], shape_axis[1]
+        x = dpnp.zeros(shape, dtype=dtype)
+
+        assert_equal(dpnp.linalg.norm(x, axis=axis, ord="fro"), 0)
+        assert_equal(dpnp.linalg.norm(x, axis=axis, ord="nuc"), 0)
+        assert_equal(dpnp.linalg.norm(x, axis=axis, ord=2), 0)
+        assert_equal(dpnp.linalg.norm(x, axis=axis, ord=1), 0)
+        assert_equal(dpnp.linalg.norm(x, axis=axis, ord=dpnp.inf), 0)
+
+    @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
+    @pytest.mark.parametrize("axis", [None, 0])
+    def test_vector_norm_empty(self, dtype, axis):
+        x = dpnp.zeros(0, dtype=dtype)
+        assert_equal(dpnp.linalg.vector_norm(x, axis=axis, ord=1), 0)
+        assert_equal(dpnp.linalg.vector_norm(x, axis=axis, ord=2), 0)
+        assert_equal(dpnp.linalg.vector_norm(x, axis=axis, ord=dpnp.inf), 0)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
@@ -2320,13 +2338,10 @@ class TestNorm:
     def test_vector_norm_1D(self, ord, axis, keepdims):
         a = generate_random_numpy_array(10)
         ia = dpnp.array(a)
+        kwarg = {"ord": ord, "axis": axis, "keepdims": keepdims}
 
-        result = dpnp.linalg.vector_norm(
-            ia, ord=ord, axis=axis, keepdims=keepdims
-        )
-        expected = numpy.linalg.vector_norm(
-            a, ord=ord, axis=axis, keepdims=keepdims
-        )
+        result = dpnp.linalg.vector_norm(ia, **kwarg)
+        expected = numpy.linalg.vector_norm(a, **kwarg)
         assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
@@ -2343,29 +2358,26 @@ class TestNorm:
     def test_vector_norm_ND(self, ord, axis, keepdims):
         a = numpy.arange(120).reshape(2, 3, 4, 5)
         ia = dpnp.array(a)
+        kwarg = {"ord": ord, "axis": axis, "keepdims": keepdims}
 
-        result = dpnp.linalg.vector_norm(
-            ia, ord=ord, axis=axis, keepdims=keepdims
-        )
-        expected = numpy.linalg.vector_norm(
-            a, ord=ord, axis=axis, keepdims=keepdims
-        )
+        result = dpnp.linalg.vector_norm(ia, **kwarg)
+        expected = numpy.linalg.vector_norm(a, **kwarg)
         assert_dtype_allclose(result, expected)
 
     def test_error(self):
-        ia = dpnp.arange(120).reshape(2, 3, 4, 5)
+        a = numpy.arange(120).reshape(2, 3, 4, 5)
+        ia = dpnp.array(a)
 
         # Duplicate axes given
-        with pytest.raises(ValueError):
-            dpnp.linalg.norm(ia, axis=(2, 2))
+        assert_raises(ValueError, dpnp.linalg.norm, ia, axis=(2, 2))
+        assert_raises(ValueError, numpy.linalg.norm, a, axis=(2, 2))
 
         #'axis' must be None, an integer or a tuple of integers
-        with pytest.raises(TypeError):
-            dpnp.linalg.norm(ia, axis=[2])
+        assert_raises(TypeError, dpnp.linalg.norm, ia, axis=[2])
+        assert_raises(TypeError, numpy.linalg.norm, a, axis=[2])
 
         # Invalid norm order for vectors
-        with pytest.raises(ValueError):
-            dpnp.linalg.norm(ia, axis=1, ord=[3])
+        assert_raises(ValueError, dpnp.linalg.norm, ia, axis=1, ord=[3])
 
 
 class TestQr:

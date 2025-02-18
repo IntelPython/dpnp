@@ -2401,10 +2401,17 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
         axis = (axis,)
 
     if len(axis) == 1:
+        if x.shape[axis[0]] == 0 and ord in [1, 2, dpnp.inf]:
+            x = dpnp.moveaxis(x, axis, -1)
+            return dpnp.zeros_like(x, shape=x.shape[:-1])
         axis = normalize_axis_index(axis[0], ndim)
         return _norm_int_axis(x, ord, axis, keepdims)
 
     if len(axis) == 2:
+        flag = x.shape[axis[0]] == 0 or x.shape[axis[1]] == 0
+        if flag and ord in ["fro", "nuc", 1, 2, dpnp.inf]:
+            x = dpnp.moveaxis(x, axis, (-2, -1))
+            return dpnp.zeros_like(x, shape=x.shape[:-2])
         row_axis, col_axis = axis
         row_axis = normalize_axis_index(row_axis, ndim)
         col_axis = normalize_axis_index(col_axis, ndim)
