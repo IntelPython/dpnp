@@ -20,7 +20,7 @@ env:
       onedpl-devel
       setuptools
       python
-      numpy">=2.0"
+      numpy
       cython
       cmake
       ninja
