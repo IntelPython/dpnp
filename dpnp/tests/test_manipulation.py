@@ -21,22 +21,9 @@ from .helper import (
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 from .third_party.cupy import testing
-
-testdata = []
-testdata += [
-    ([True, False, True], dtype)
-    for dtype in get_all_dtypes(no_none=True, no_complex=True)
-]
-testdata += [
-    ([1, -1, 0], dtype)
-    for dtype in get_all_dtypes(
-        no_none=True, no_bool=True, no_complex=True, no_unsigned=True
-    )
-]
-testdata += [([0.1, 0.0, -0.1], dtype) for dtype in get_float_dtypes()]
-testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in get_complex_dtypes()]
 
 
 def _compare_results(result, expected):
@@ -46,40 +33,6 @@ def _compare_results(result, expected):
 
     for x, y in zip(result, expected):
         assert_array_equal(x, y)
-
-
-@pytest.mark.parametrize("in_obj, out_dtype", testdata)
-def test_copyto_dtype(in_obj, out_dtype):
-    ndarr = numpy.array(in_obj)
-    expected = numpy.empty(ndarr.size, dtype=out_dtype)
-    numpy.copyto(expected, ndarr)
-
-    dparr = dpnp.array(in_obj)
-    result = dpnp.empty(dparr.size, dtype=out_dtype)
-    dpnp.copyto(result, dparr)
-
-    assert_array_equal(result, expected)
-
-
-@pytest.mark.parametrize("dst", [7, numpy.ones(10), (2, 7), [5], range(3)])
-def test_copyto_dst_raises(dst):
-    a = dpnp.array(4)
-    with pytest.raises(
-        TypeError,
-        match="Destination array must be any of supported type, but got",
-    ):
-        dpnp.copyto(dst, a)
-
-
-@pytest.mark.parametrize("where", [numpy.ones(10), (2, 7), [5], range(3)])
-def test_copyto_where_raises(where):
-    a = dpnp.empty((2, 3))
-    b = dpnp.arange(6).reshape((2, 3))
-
-    with pytest.raises(
-        TypeError, match="`where` array must be any of supported type, but got"
-    ):
-        dpnp.copyto(a, b, where=where)
 
 
 def test_result_type():
@@ -362,6 +315,102 @@ class TestBroadcast:
         expected = numpy.broadcast_shapes(*shape)
         result = dpnp.broadcast_shapes(*shape)
         assert_equal(result, expected)
+
+
+class TestCopyTo:
+    testdata = []
+    testdata += [
+        ([True, False, True], dtype)
+        for dtype in get_all_dtypes(no_none=True, no_complex=True)
+    ]
+    testdata += [
+        ([1, -1, 0], dtype)
+        for dtype in get_all_dtypes(
+            no_none=True, no_bool=True, no_complex=True, no_unsigned=True
+        )
+    ]
+    testdata += [([0.1, 0.0, -0.1], dtype) for dtype in get_float_dtypes()]
+    testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in get_complex_dtypes()]
+
+    @pytest.mark.parametrize("data, dt_out", testdata)
+    def test_dtype(self, data, dt_out):
+        a = numpy.array(data)
+        ia = dpnp.array(a)
+
+        expected = numpy.empty(a.size, dtype=dt_out)
+        result = dpnp.empty(ia.size, dtype=dt_out)
+        numpy.copyto(expected, a)
+        dpnp.copyto(result, ia)
+
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("data, dt_out", testdata)
+    def test_dtype_input_list(self, data, dt_out):
+        expected = numpy.empty(3, dtype=dt_out)
+        result = dpnp.empty(3, dtype=dt_out)
+        assert isinstance(data, list)
+        numpy.copyto(expected, data)
+        dpnp.copyto(result, data)
+
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "data", [(1, 2, -3), [1, 2, -3]], ids=["tuple", "list"]
+    )
+    @pytest.mark.parametrize(
+        "dst_dt", [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+    )
+    def test_casting_error(self, xp, data, dst_dt):
+        # cannot cast to unsigned integer
+        dst = xp.empty(3, dtype=dst_dt)
+        assert_raises(TypeError, xp.copyto, dst, data)
+
+    @pytest.mark.parametrize(
+        "dt_out", [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+    )
+    def test_positive_python_scalar(self, dt_out):
+        # src is python scalar and positive
+        expected = numpy.empty(1, dtype=dt_out)
+        result = dpnp.array(expected)
+        numpy.copyto(expected, 5)
+        dpnp.copyto(result, 5)
+
+        assert_array_equal(result, expected)
+
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "dst_dt", [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+    )
+    def test_numpy_scalar(self, xp, dst_dt):
+        dst = xp.empty(1, dtype=dst_dt)
+        # cannot cast from signed int to unsigned int, src is numpy scalar
+        assert_raises(TypeError, xp.copyto, dst, numpy.int32(5))
+        assert_raises(TypeError, xp.copyto, dst, numpy.int32(-5))
+
+        # Python integer -5 out of bounds, src is python scalar and negative
+        assert_raises(OverflowError, xp.copyto, dst, -5)
+
+    @pytest.mark.parametrize("dst", [7, numpy.ones(10), (2, 7), [5], range(3)])
+    def test_dst_raises(self, dst):
+        a = dpnp.array(4)
+        with pytest.raises(
+            TypeError,
+            match="Destination array must be any of supported type, but got",
+        ):
+            dpnp.copyto(dst, a)
+
+    @pytest.mark.parametrize("where", [numpy.ones(10), (2, 7), [5], range(3)])
+    def test_where_raises(self, where):
+        a = dpnp.empty((2, 3))
+        b = dpnp.arange(6).reshape((2, 3))
+
+        with pytest.raises(
+            TypeError,
+            match="`where` array must be any of supported type, but got",
+        ):
+            dpnp.copyto(a, b, where=where)
 
 
 class TestDelete:
