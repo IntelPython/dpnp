@@ -8,6 +8,7 @@ from numpy.testing import (
     assert_allclose,
     assert_almost_equal,
     assert_array_equal,
+    assert_equal,
     assert_raises,
     assert_raises_regex,
     suppress_warnings,
@@ -2298,6 +2299,32 @@ class TestNorm:
         result = dpnp.linalg.matrix_norm(ia, ord=ord, keepdims=keepdims)
         expected = numpy.linalg.matrix_norm(a, ord=ord, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
+
+    def test_matrix_norm_empty(self):
+        for shape in [(0, 2), (2, 0), (0, 0)]:
+            for dtype in [dpnp.float64, dpnp.float32, dpnp.int32]:
+                x = dpnp.zeros(shape, dtype=dtype)
+
+                assert_equal(dpnp.linalg.matrix_norm(x, ord="fro"), 0)
+                assert_equal(dpnp.linalg.matrix_norm(x, ord="nuc"), 0)
+
+                assert_equal(dpnp.linalg.matrix_norm(x, ord=2), 0)
+                assert_equal(dpnp.linalg.matrix_norm(x, ord=-2), 0)
+
+                assert_equal(dpnp.linalg.matrix_norm(x, ord=1), 0)
+                assert_equal(dpnp.linalg.matrix_norm(x, ord=-1), 0)
+
+                assert_equal(dpnp.linalg.matrix_norm(x, ord=dpnp.inf), 0)
+                assert_equal(dpnp.linalg.matrix_norm(x, ord=-dpnp.inf), 0)
+
+    def test_vector_norm_empty(self):
+        for dtype in [dpnp.float64, dpnp.float32, dpnp.int32]:
+            x = dpnp.zeros(0, dtype=dtype)
+            assert_equal(dpnp.linalg.vector_norm(x, ord=0), 0)
+            assert_equal(dpnp.linalg.vector_norm(x, ord=1), 0)
+            assert_equal(dpnp.linalg.vector_norm(x, ord=2), 0)
+            assert_equal(dpnp.linalg.vector_norm(x, ord=dpnp.inf), 0)
+            assert_equal(dpnp.linalg.vector_norm(x, ord=-dpnp.inf), 0)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(

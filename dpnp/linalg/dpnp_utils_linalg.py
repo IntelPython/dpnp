@@ -2363,6 +2363,8 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
 
     ndim = x.ndim
     # Immediately handle some default, simple, fast, and common cases.
+    if x.size == 0:
+        return dpnp.zeros_like(x, shape=())
     if axis is None:
         if (
             (ord is None)
