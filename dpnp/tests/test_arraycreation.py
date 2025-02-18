@@ -216,7 +216,7 @@ def test_arange(start, stop, step, dtype):
     func = lambda xp: xp.arange(start, stop=stop, step=step, dtype=dtype)
 
     exp_array = func(numpy)
-    res_array = func(dpnp).asnumpy()
+    res_array = func(dpnp)
 
     if dtype is None:
         _device = dpctl.SyclQueue().sycl_device
@@ -234,7 +234,7 @@ def test_arange(start, stop, step, dtype):
         _dtype, dpnp.complexfloating
     ):
         assert_allclose(
-            exp_array, res_array, rtol=rtol_mult * numpy.finfo(_dtype).eps
+            res_array, exp_array, rtol=rtol_mult * numpy.finfo(_dtype).eps
         )
     else:
         assert_array_equal(exp_array, res_array)
@@ -540,7 +540,7 @@ def test_vander(array, dtype, n, increase):
     a_np = numpy.array(array, dtype=dtype)
     a_dpnp = dpnp.array(array, dtype=dtype)
 
-    assert_allclose(vander_func(numpy, a_np), vander_func(dpnp, a_dpnp))
+    assert_allclose(vander_func(dpnp, a_dpnp), vander_func(numpy, a_np))
 
 
 def test_vander_raise_error():
@@ -560,7 +560,7 @@ def test_vander_raise_error():
 )
 def test_vander_seq(sequence):
     vander_func = lambda xp, x: xp.vander(x)
-    assert_allclose(vander_func(numpy, sequence), vander_func(dpnp, sequence))
+    assert_allclose(vander_func(dpnp, sequence), vander_func(numpy, sequence))
 
 
 @pytest.mark.usefixtures("suppress_complex_warning")
@@ -607,19 +607,19 @@ def test_full_order(order1, order2):
 
     assert ia.flags.c_contiguous == a.flags.c_contiguous
     assert ia.flags.f_contiguous == a.flags.f_contiguous
-    assert numpy.array_equal(dpnp.asnumpy(ia), a)
+    assert_equal(ia, a)
 
 
 def test_full_strides():
     a = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
     ia = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
     assert ia.strides == tuple(el // a.itemsize for el in a.strides)
-    assert_array_equal(dpnp.asnumpy(ia), a)
+    assert_array_equal(ia, a)
 
     a = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
     ia = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
     assert ia.strides == tuple(el // a.itemsize for el in a.strides)
-    assert_array_equal(dpnp.asnumpy(ia), a)
+    assert_array_equal(ia, a)
 
 
 @pytest.mark.parametrize(
@@ -891,9 +891,9 @@ def test_geomspace(sign, dtype, num, endpoint):
     dpnp_res = func(dpnp)
 
     if dtype in [numpy.int64, numpy.int32]:
-        assert_allclose(dpnp_res, np_res, rtol=1)
+        assert_allclose(dpnp_res, np_res)
     else:
-        assert_allclose(dpnp_res, np_res, rtol=1e-04)
+        assert_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("start", [1j, 1 + 1j])
@@ -902,7 +902,7 @@ def test_geomspace_complex(start, stop):
     func = lambda xp: xp.geomspace(start, stop, num=10)
     np_res = func(numpy)
     dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("axis", [0, 1])
@@ -910,14 +910,14 @@ def test_geomspace_axis(axis):
     func = lambda xp: xp.geomspace([2, 3], [20, 15], num=10, axis=axis)
     np_res = func(numpy)
     dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res)
 
 
 def test_geomspace_num0():
     func = lambda xp: xp.geomspace(1, 10, num=0, endpoint=False)
     np_res = func(numpy)
     dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -936,9 +936,9 @@ def test_logspace(dtype, num, endpoint):
     dpnp_res = func(dpnp)
 
     if dtype in [numpy.int64, numpy.int32]:
-        assert_allclose(dpnp_res, np_res, rtol=1)
+        assert_allclose(dpnp_res, np_res)
     else:
-        assert_allclose(dpnp_res, np_res, rtol=1e-04)
+        assert_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("axis", [0, 1])

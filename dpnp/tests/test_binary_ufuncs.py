@@ -806,7 +806,7 @@ class TestPower:
 
     @pytest.mark.parametrize("val_type", ALL_DTYPES)
     @pytest.mark.parametrize("data_type", ALL_DTYPES)
-    @pytest.mark.parametrize("val", [1.5, 1, 3], ids=["1.5", "1", "3"])
+    @pytest.mark.parametrize("val", [1.5, 1, 3])
     @pytest.mark.parametrize(
         "array",
         [

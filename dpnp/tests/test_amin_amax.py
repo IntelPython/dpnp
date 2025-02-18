@@ -22,7 +22,7 @@ def test_amax_amin(func, keepdims, dtype):
     for axis in range(len(a)):
         result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
 
 def _get_min_max_input(type, shape):
