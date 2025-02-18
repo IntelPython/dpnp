@@ -10,6 +10,9 @@ permissions: read-all
 
 env:
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
+  # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
+  # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
+  TEST_PYTHON_VERSION: '3.12'
   TEST_ENV_NAME: 'test_onemkl_interfaces'
   RERUN_TESTS_ON_FAILURE: 'true'
   RUN_TESTS_MAX_ATTEMPTS: 2
@@ -32,7 +35,9 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.13']
+        # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
+        # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
+        python: [${{ env.TEST_PYTHON_VERSION }}]
         os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
 
     permissions:
@@ -125,7 +130,7 @@ jobs:
 
     strategy:
       matrix:
-        python: ['3.13']
+        python: [${{ env.TEST_PYTHON_VERSION }}]
         os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
 
     permissions:
