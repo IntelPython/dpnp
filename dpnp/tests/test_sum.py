@@ -65,13 +65,13 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
         assert_dtype_allclose(dpnp_res, numpy_res, factor=16)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_sum_empty_out(dtype):
     a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
     out = dpnp.ones((), dtype=dtype)
     res = a.sum(out=out)
-    assert_array_equal(out.asnumpy(), res.asnumpy())
-    assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
+    assert out is res
+    assert_array_equal(out, numpy.array(0, dtype=dtype))
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
@@ -80,7 +80,7 @@ def test_sum_empty(dtype, axis):
     a = numpy.empty((1, 2, 0, 4), dtype=dtype)
     numpy_res = a.sum(axis=axis)
     dpnp_res = dpnp.array(a).sum(axis=axis)
-    assert_array_equal(numpy_res, dpnp_res.asnumpy())
+    assert_array_equal(numpy_res, dpnp_res)
 
 
 @pytest.mark.parametrize("dtype", get_float_dtypes())

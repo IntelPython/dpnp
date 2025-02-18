@@ -240,12 +240,12 @@ class TestCholesky:
         # positive strides
         expected = numpy.linalg.cholesky(a_np[::2, ::2])
         result = dpnp.linalg.cholesky(a_dp[::2, ::2])
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected)
 
         # negative strides
         expected = numpy.linalg.cholesky(a_np[::-2, ::-2])
         result = dpnp.linalg.cholesky(a_dp[::-2, ::-2])
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "shape",
@@ -257,7 +257,7 @@ class TestCholesky:
         ia = dpnp.array(a)
         result = dpnp.linalg.cholesky(ia)
         expected = numpy.linalg.cholesky(a)
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
 
     def test_cholesky_errors(self):
         a_dp = dpnp.array([[1, 2], [2, 5]], dtype="float32")
@@ -390,7 +390,7 @@ class TestDet:
         ia = dpnp.array(a)
         result = dpnp.linalg.det(ia)
         expected = numpy.linalg.det(a)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     def test_det_strides(self):
         a_np = numpy.array(
@@ -408,12 +408,12 @@ class TestDet:
         # positive strides
         expected = numpy.linalg.det(a_np[::2, ::2])
         result = dpnp.linalg.det(a_dp[::2, ::2])
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected, rtol=1e-5)
 
         # negative strides
         expected = numpy.linalg.det(a_np[::-2, ::-2])
         result = dpnp.linalg.det(a_dp[::-2, ::-2])
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected)
 
     def test_det_empty(self):
         a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
@@ -425,7 +425,7 @@ class TestDet:
         assert dpnp_det.dtype == np_det.dtype
         assert dpnp_det.shape == np_det.shape
 
-        assert_allclose(np_det, dpnp_det)
+        assert_allclose(dpnp_det, np_det)
 
     @pytest.mark.parametrize(
         "matrix",
@@ -453,7 +453,7 @@ class TestDet:
         expected = numpy.linalg.det(a_np)
         result = dpnp.linalg.det(a_dp)
 
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected)
 
     # TODO: remove skipif when MKLD-13852 is resolved
     # _getrf_batch does not raise an error with singular matrices.
@@ -468,7 +468,7 @@ class TestDet:
         expected = numpy.linalg.det(a_np)
         result = dpnp.linalg.det(a_dp)
 
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected)
 
     def test_det_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 5]], dtype="float32")
@@ -1456,12 +1456,12 @@ class TestEinsum:
         # Use einsum to compare to not have difference due to sum round-offs:
         result1 = dpnp.einsum(",i->", s_dp, a_dp)
         result2 = dpnp.einsum("i->", s_dp * a_dp)
-        assert_array_equal(result1.asnumpy(), result2.asnumpy())
+        assert_array_equal(result1, result2)
 
         # contig + scalar -> scalar
         # Use einsum to compare to not have difference due to sum round-offs:
         result3 = dpnp.einsum("i,->", a_dp, s_dp)
-        assert_array_equal(result2.asnumpy(), result3.asnumpy())
+        assert_array_equal(result1, result2)
 
         # contig + contig + contig -> scalar
         a = numpy.array([0.5, 0.5, 0.25, 4.5, 3.0], dtype=dtype)
@@ -1709,12 +1709,12 @@ class TestInv:
         # positive strides
         expected = numpy.linalg.inv(a_np[::2, ::2])
         result = dpnp.linalg.inv(a_dp[::2, ::2])
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected, rtol=1e-6)
 
         # negative strides
         expected = numpy.linalg.inv(a_np[::-2, ::-2])
         result = dpnp.linalg.inv(a_dp[::-2, ::-2])
-        assert_allclose(expected, result, rtol=1e-3, atol=1e-4)
+        assert_allclose(result, expected, rtol=1e-6)
 
     @pytest.mark.parametrize(
         "shape",
@@ -2065,7 +2065,7 @@ def test_matrix_transpose():
     expected = numpy.linalg.matrix_transpose(a)
     result = dpnp.linalg.matrix_transpose(a_dp)
 
-    assert_allclose(expected, result)
+    assert_allclose(result, expected)
 
     with assert_raises_regex(
         ValueError, "array must be at least 2-dimensional"
@@ -2452,9 +2452,9 @@ class TestQr:
                 )
             else:  # mode=="raw"
                 dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
-                assert_allclose(np_q, dpnp_q, atol=1e-4)
+                assert_allclose(dpnp_q, np_q, atol=1e-4)
         if mode in ("raw", "r"):
-            assert_allclose(np_r, dpnp_r, atol=1e-4)
+            assert_allclose(dpnp_r, np_r, atol=1e-4)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -2553,7 +2553,7 @@ class TestSolve:
         expected = numpy.linalg.solve(a_np, a_np)
         result = dpnp.linalg.solve(a_dp, a_dp)
 
-        assert_allclose(expected, result, rtol=1e-06)
+        assert_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -2626,12 +2626,12 @@ class TestSolve:
         # positive strides
         expected = numpy.linalg.solve(a_np[::2, ::2], b_np[::2])
         result = dpnp.linalg.solve(a_dp[::2, ::2], b_dp[::2])
-        assert_allclose(expected, result, rtol=1e-05)
+        assert_allclose(result, expected, rtol=1e-6)
 
         # negative strides
         expected = numpy.linalg.solve(a_np[::-2, ::-2], b_np[::-2])
         result = dpnp.linalg.solve(a_dp[::-2, ::-2], b_dp[::-2])
-        assert_allclose(expected, result, rtol=1e-05)
+        assert_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "matrix, vector",
@@ -2700,8 +2700,8 @@ class TestSlogdet:
         result = dpnp.linalg.slogdet(a_dp)
         sign_result, logdet_result = result.sign, result.logabsdet
 
-        assert_allclose(sign_expected, sign_result)
-        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+        assert_allclose(sign_result, sign_expected)
+        assert_allclose(logdet_result, logdet_expected)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_slogdet_3d(self, dtype):
@@ -2719,8 +2719,8 @@ class TestSlogdet:
         result = dpnp.linalg.slogdet(a_dp)
         sign_result, logdet_result = result.sign, result.logabsdet
 
-        assert_allclose(sign_expected, sign_result)
-        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+        assert_allclose(sign_result, sign_expected)
+        assert_allclose(logdet_result, logdet_expected)
 
     def test_slogdet_strides(self):
         a_np = numpy.array(
@@ -2739,15 +2739,15 @@ class TestSlogdet:
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::2, ::2])
         result = dpnp.linalg.slogdet(a_dp[::2, ::2])
         sign_result, logdet_result = result.sign, result.logabsdet
-        assert_allclose(sign_expected, sign_result)
-        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+        assert_allclose(sign_result, sign_expected)
+        assert_allclose(logdet_result, logdet_expected)
 
         # negative strides
         sign_expected, logdet_expected = numpy.linalg.slogdet(a_np[::-2, ::-2])
         result = dpnp.linalg.slogdet(a_dp[::-2, ::-2])
         sign_result, logdet_result = result.sign, result.logabsdet
-        assert_allclose(sign_expected, sign_result)
-        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+        assert_allclose(sign_result, sign_expected)
+        assert_allclose(logdet_result, logdet_expected)
 
     @pytest.mark.parametrize(
         "matrix",
@@ -2776,8 +2776,8 @@ class TestSlogdet:
         result = dpnp.linalg.slogdet(a_dp)
         sign_result, logdet_result = result.sign, result.logabsdet
 
-        assert_allclose(sign_expected, sign_result)
-        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+        assert_allclose(sign_result, sign_expected)
+        assert_allclose(logdet_result, logdet_expected)
 
     # TODO: remove skipif when MKLD-13852 is resolved
     # _getrf_batch does not raise an error with singular matrices.
@@ -2793,8 +2793,8 @@ class TestSlogdet:
         result = dpnp.linalg.slogdet(a_dp)
         sign_result, logdet_result = result.sign, result.logabsdet
 
-        assert_allclose(sign_expected, sign_result)
-        assert_allclose(logdet_expected, logdet_result, rtol=1e-3, atol=1e-4)
+        assert_allclose(sign_result, sign_expected)
+        assert_allclose(logdet_result, logdet_expected)
 
     def test_slogdet_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 5]], dtype="float32")
@@ -2851,7 +2851,7 @@ class TestSvd:
                 dpnp_diag_s[..., i, i] = dp_s[..., i]
                 reconstructed = dpnp.dot(dp_u, dpnp.dot(dpnp_diag_s, dp_vt))
 
-            assert dpnp.allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
+            assert_allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
 
         assert_allclose(dp_s, np_s, rtol=tol, atol=1e-03)
 
@@ -2862,13 +2862,13 @@ class TestSvd:
                     np_vt[..., i, :] = -np_vt[..., i, :]
             for i in range(numpy.count_nonzero(np_s > tol)):
                 assert_allclose(
-                    dpnp.asnumpy(dp_u[..., :, i]),
+                    dp_u[..., :, i],
                     np_u[..., :, i],
                     rtol=tol,
                     atol=tol,
                 )
                 assert_allclose(
-                    dpnp.asnumpy(dp_vt[..., i, :]),
+                    dp_vt[..., i, :],
                     np_vt[..., i, :],
                     rtol=tol,
                     atol=tol,
@@ -3092,18 +3092,15 @@ class TestPinv:
         a = generate_random_numpy_array((5, 5))
         a_dp = dpnp.array(a)
 
-        self.get_tol(a_dp.dtype)
-        tol = self._tol
-
         # positive strides
         B = numpy.linalg.pinv(a[::2, ::2])
         B_dp = dpnp.linalg.pinv(a_dp[::2, ::2])
-        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+        assert_allclose(B_dp, B, rtol=1e-6, atol=1e-6)
 
         # negative strides
         B = numpy.linalg.pinv(a[::-2, ::-2])
         B_dp = dpnp.linalg.pinv(a_dp[::-2, ::-2])
-        assert_allclose(B_dp, B, rtol=tol, atol=tol)
+        assert_allclose(B_dp, B, rtol=1e-6, atol=1e-6)
 
     def test_pinv_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")

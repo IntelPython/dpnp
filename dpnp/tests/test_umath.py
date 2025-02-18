@@ -110,10 +110,7 @@ def test_umaths(test_cases):
         ):
             pytest.skip("numpy.ldexp doesn't have a loop for the input types")
 
-    # original
     expected = getattr(numpy, umath)(*args)
-
-    # DPNP
     result = getattr(dpnp, umath)(*iargs)
 
     assert_allclose(result, expected, rtol=1e-6)
@@ -129,7 +126,7 @@ def _get_numpy_arrays_1in_1out(func_name, dtype, range):
     low = range[0]
     high = range[1]
     size = range[2]
-    if dtype == numpy.bool_:
+    if dtype == dpnp.bool:
         np_array = numpy.arange(2, dtype=dtype)
         result = getattr(numpy, func_name)(np_array)
     elif dpnp.issubdtype(dtype, dpnp.complexfloating):
@@ -155,7 +152,7 @@ def _get_numpy_arrays_2in_1out(func_name, dtype, range):
     low = range[0]
     high = range[1]
     size = range[2]
-    if dtype == numpy.bool_:
+    if dtype == dpnp.bool:
         np_array1 = numpy.arange(2, dtype=dtype)
         np_array2 = numpy.arange(2, dtype=dtype)
         result = getattr(numpy, func_name)(np_array1, np_array2)
@@ -472,7 +469,7 @@ class TestLogAddExp2:
 
     @pytest.mark.parametrize(
         "dt",
-        [numpy.bool_, numpy.int32, numpy.int64, numpy.float32, numpy.float64],
+        [dpnp.bool, dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64],
     )
     def test_range(self, dt):
         a = numpy.array([1000000, -1000000, 1000200, -1000200], dtype=dt)
@@ -637,7 +634,7 @@ class TestSquare:
         )
 
         dp_array = dpnp.array(np_array)
-        out_dtype = numpy.int8 if dtype == numpy.bool_ else dtype
+        out_dtype = numpy.int8 if dtype == dpnp.bool else dtype
         dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.square(dp_array, out=dp_out)
 

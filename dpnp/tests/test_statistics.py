@@ -586,7 +586,7 @@ class TestCov:
 
         expected = numpy.cov(a, rowvar=False)
         result = dpnp.cov(ia, rowvar=False)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
@@ -597,7 +597,7 @@ class TestCov:
 
         expected = numpy.cov(a, ddof=0, rowvar=True)
         result = dpnp.cov(ia, ddof=0, rowvar=True)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
 
 class TestMaxMin:
@@ -658,15 +658,14 @@ class TestMaxMin:
     @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     def test_out_dtype(self, func, arr_dt, out_dt):
-        a = numpy.arange(12).reshape(2, 2, 3).astype(arr_dt)
+        low = 0 if dpnp.issubdtype(out_dt, dpnp.unsignedinteger) else -10
+        a = generate_random_numpy_array((2, 2, 3), dtype=arr_dt, low=low)
         out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
-
-        ia = dpnp.array(a)
-        iout = dpnp.array(out)
+        ia, iout = dpnp.array(a), dpnp.array(out)
 
         result = getattr(dpnp, func)(ia, out=iout, axis=1)
         expected = getattr(numpy, func)(a, out=out, axis=1)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
         assert result is iout
 
     @pytest.mark.parametrize("func", ["max", "min"])

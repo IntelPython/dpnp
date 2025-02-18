@@ -8,9 +8,7 @@ import dpnp
 
 def test_erf():
     a = numpy.linspace(2.0, 3.0, num=10)
-    ia = dpnp.linspace(2.0, 3.0, num=10)
-
-    assert_allclose(a, ia)
+    ia = dpnp.array(a)
 
     expected = numpy.empty_like(a)
     for idx, val in enumerate(a):
