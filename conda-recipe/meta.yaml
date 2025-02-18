@@ -1,5 +1,8 @@
 {% set max_compiler_and_mkl_version = environ.get("MAX_BUILD_CMPL_MKL_VERSION", "2026.0a0") %}
 {% set required_compiler_and_mkl_version = "2025.0" %}
+# BLAS requires "mkl<2025.0" (work on adding 2025.0 through https://github.com/conda-forge/blas-feedstock/pull/128
+# is blocked due to MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
+{% set required_mkl_host_version = "2024.2" %}
 {% set required_dpctl_version = "0.19.0*" %}
 
 package:
@@ -18,7 +21,7 @@ requirements:
       - ninja
       - git
       - dpctl >={{ required_dpctl_version }}
-      - mkl-devel-dpcpp >={{ required_compiler_and_mkl_version }},<{{ max_compiler_and_mkl_version }}
+      - mkl-devel-dpcpp >={{ required_mkl_host_version }},<{{ max_compiler_and_mkl_version }}
       - onedpl-devel
       - tbb-devel
       - wheel
