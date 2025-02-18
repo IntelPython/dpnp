@@ -78,8 +78,6 @@ def get_id(val):
 @pytest.mark.parametrize("test_cases", test_cases, ids=get_id)
 def test_umaths(test_cases):
     umath, args_str = test_cases
-    if umath in new_umaths_numpy_20:
-        pytest.skip("new umaths from numpy 2.0 are not supported yet")
 
     if umath in ["matmul", "matvec", "vecmat"]:
         sh = (4, 4)
