@@ -73,12 +73,6 @@ def get_id(val):
     return val.__str__()
 
 
-# implement missing umaths and to remove the list
-new_umaths_numpy_20 = [
-    "bitwise_count",  # SAT-7323
-]
-
-
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("test_cases", test_cases, ids=get_id)
