@@ -199,6 +199,7 @@ class TestBasic:
         testing.assert_array_equal(expected, dst.get())
 
 
+@testing.with_requires("numpy>=2.1")
 @testing.parameterize(
     *testing.product(
         {

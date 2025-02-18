@@ -449,6 +449,7 @@ def _batched_qr(a, mode="reduced"):
             a_t,
             shape=(batch_size, m, m),
             dtype=res_type,
+            order="C",
         )
     else:
         mc = k
@@ -456,6 +457,7 @@ def _batched_qr(a, mode="reduced"):
             a_t,
             shape=(batch_size, n, m),
             dtype=res_type,
+            order="C",
         )
 
     # use DPCTL tensor function to fill the matrix array `q[..., :n, :]`
@@ -2532,6 +2534,7 @@ def dpnp_qr(a, mode="reduced"):
             a_t,
             shape=(m, m),
             dtype=res_type,
+            order="C",
         )
     else:
         mc = k
@@ -2539,6 +2542,7 @@ def dpnp_qr(a, mode="reduced"):
             a_t,
             shape=(n, m),
             dtype=res_type,
+            order="C",
         )
 
     # use DPCTL tensor function to fill the matrix array `q[:n]`
