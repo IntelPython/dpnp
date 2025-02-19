@@ -2309,35 +2309,27 @@ def test_float_remainder_fmod_nans_inf(func, dtype, lhs, rhs):
     assert_equal(result, expected)
 
 
+@testing.with_requires("numpy>=2.0.0")
 @pytest.mark.parametrize(
-    "data",
-    [[2, 0, -2], [1.1, -1.1]],
-    ids=["[2, 0, -2]", "[1.1, -1.1]"],
+    "dtype", get_all_dtypes(no_none=True, no_unsigned=True)
 )
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_unsigned=True)
-)
-def test_sign(data, dtype):
-    np_a = numpy.array(data, dtype=dtype)
-    dpnp_a = dpnp.array(data, dtype=dtype)
+def test_sign(dtype):
+    a = generate_random_numpy_array((2, 3), dtype=dtype)
+    ia = dpnp.array(a, dtype=dtype)
 
-    result = dpnp.sign(dpnp_a)
-    expected = numpy.sign(np_a)
-    assert_dtype_allclose(result, expected)
-
-    # out keyword
-    if dtype is not None:
-        dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
-        result = dpnp.sign(dpnp_a, out=dp_out)
-        assert dp_out is result
+    if dtype == dpnp.bool:
+        assert_raises(TypeError, dpnp.sign, ia)
+        assert_raises(TypeError, numpy.sign, a)
+    else:
+        result = dpnp.sign(ia)
+        expected = numpy.sign(a)
         assert_dtype_allclose(result, expected)
 
-
-def test_sign_boolean():
-    dpnp_a = dpnp.array([True, False])
-
-    with pytest.raises(TypeError):
-        dpnp.sign(dpnp_a)
+        # out keyword
+        iout = dpnp.empty(expected.shape, dtype=expected.dtype)
+        result = dpnp.sign(ia, out=iout)
+        assert iout is result
+        assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -2453,10 +2445,10 @@ class TestRoundingFuncs:
 
         assert result is dp_out
         # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
-        # NumPy < 2.0.0 while output has the dtype of input for NumPy >= 2.0.0
+        # NumPy < 2.1.0 while output has the dtype of input for NumPy >= 2.1.0
         # (dpnp follows the latter behavior except for boolean dtype where it
         # returns int8)
-        if numpy_version() < "2.0.0" or dtype == numpy.bool:
+        if numpy_version() < "2.1.0" or dtype == numpy.bool:
             check_type = False
         else:
             check_type = True
