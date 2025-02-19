@@ -477,7 +477,6 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
 
         Default: ``None``.
 
-        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -1086,7 +1085,6 @@ def indices(
 
         Default: ``None``.
 
-        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -1352,7 +1350,6 @@ def mask_indices(
 
         Default: ``None``.
 
-        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -2364,7 +2361,6 @@ def tril_indices(
 
         Default: ``None``.
 
-        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -2575,7 +2571,6 @@ def triu_indices(
 
         Default: ``None``.
 
-        Default: ``"device"``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
