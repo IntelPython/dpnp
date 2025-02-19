@@ -14,7 +14,7 @@ env:
   # CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
   CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
   CONDA_BUILD_INDEX_ENV_PY_VER: '3.12' # conda does not support python 3.13
-  CONDA_BUILD_VERSION: '25.1.1'
+  CONDA_BUILD_VERSION: '25.1.2'
   CONDA_INDEX_VERSION: '0.5.0'
   # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
   # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
