@@ -288,7 +288,6 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -1552,7 +1551,6 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         :class:`dpctl.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
-        Default: ``None``.
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.

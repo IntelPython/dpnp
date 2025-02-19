@@ -1145,7 +1145,6 @@ def rand(*args, device=None, usm_type="device", sycl_queue=None):
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.

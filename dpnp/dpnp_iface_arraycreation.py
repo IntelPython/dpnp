@@ -337,7 +337,6 @@ def array(
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -588,7 +587,6 @@ def asarray(
         :class:`dpctl.tensor.Device` object returned by
         :attr:`dpnp.ndarray.device`.
 
-        Default: ``None``.
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
