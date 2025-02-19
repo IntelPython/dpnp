@@ -377,7 +377,7 @@ class TestCopyTo:
 
         assert_array_equal(result, expected)
 
-    @testing.with_requires("numpy>=2.0")
+    @testing.with_requires("numpy>=2.1")
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "dst_dt", [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
