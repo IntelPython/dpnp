@@ -101,9 +101,10 @@ def test_1arg(func, dtype, stride):
     result = getattr(dpnp, func)(ia)
     expected = getattr(numpy, func)(a)
 
-    # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for NumPy < 2.0.0
-    # while for NumPy >= 2.0.0, output has the dtype of input (dpnp follows this behavior)
-    if numpy.lib.NumpyVersion(numpy.__version__) < "2.0.0":
+    # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
+    # NumPy < 2.1.0 while for NumPy >= 2.1.0, output has the dtype of input
+    # (dpnp follows this behavior)
+    if numpy_version() < "2.1.0":
         check_type = False
     else:
         check_type = True

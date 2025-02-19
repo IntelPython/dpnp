@@ -1105,7 +1105,7 @@ class TestReshape:
         result = ia.reshape((2, 5))
         assert_array_equal(result, expected)
 
-    @testing.with_requires("numpy>=2.0")
+    @testing.with_requires("numpy>=2.1")
     def test_copy(self):
         a = numpy.arange(10).reshape(2, 5)
         ia = dpnp.array(a)

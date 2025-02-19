@@ -2445,10 +2445,10 @@ class TestRoundingFuncs:
 
         assert result is dp_out
         # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
-        # NumPy < 2.0.0 while output has the dtype of input for NumPy >= 2.0.0
+        # NumPy < 2.1.0 while output has the dtype of input for NumPy >= 2.1.0
         # (dpnp follows the latter behavior except for boolean dtype where it
         # returns int8)
-        if numpy_version() < "2.0.0" or dtype == numpy.bool:
+        if numpy_version() < "2.1.0" or dtype == numpy.bool:
             check_type = False
         else:
             check_type = True
