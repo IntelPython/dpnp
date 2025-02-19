@@ -10,8 +10,8 @@ Utility
    :toctree: generated/
    :nosignatures:
 
-   dpnp.broadcast_shapes
    dpnp.byte_bounds
    dpnp.get_include
    dpnp.show_config
    dpnp.show_runtime
+   dpnp.broadcast_shapes
