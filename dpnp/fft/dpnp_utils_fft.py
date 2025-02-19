@@ -395,6 +395,11 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
         a = dpnp.reshape(a, local_shape)
         index = 1
 
+        # cuFFT requires input arrays to be C-contiguous (row-major)
+        # for correct execution
+        if dpnp.is_cuda_backend(a) and not a.flags.c_contiguous:
+            a = dpnp.ascontiguousarray(a)
+
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
     dsc, out_strides = _commit_descriptor(
         a, forward, in_place, c2c, a_strides, index, batch_fft
