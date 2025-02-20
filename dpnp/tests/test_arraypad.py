@@ -287,10 +287,10 @@ class TestPad:
         """Ensure that end values are exact."""
         a_dp = dpnp.ones(10).reshape(2, 5)
         a = dpnp.pad(a_dp, (223, 123), mode="linear_ramp")
-        assert_equal(a[:, 0], 0.0)
-        assert_equal(a[:, -1], 0.0)
-        assert_equal(a[0, :], 0.0)
-        assert_equal(a[-1, :], 0.0)
+        assert_equal(a[:, 0], 0.0, strict=False)
+        assert_equal(a[:, -1], 0.0, strict=False)
+        assert_equal(a[0, :], 0.0, strict=False)
+        assert_equal(a[-1, :], 0.0, strict=False)
 
     @pytest.mark.parametrize(
         "dtype", [numpy.uint32, numpy.uint64] + get_all_dtypes(no_none=True)
