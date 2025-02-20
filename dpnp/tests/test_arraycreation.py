@@ -754,7 +754,7 @@ def test_linspace(start, stop, num, dtype, retstep):
     if retstep:
         [res_np, step_np] = res_np
         [res_dp, step_dp] = res_dp
-        assert_allclose(step_np, step_dp)
+        assert_equal(step_np, step_dp)
 
     if numpy.issubdtype(dtype, dpnp.integer):
         assert_allclose(res_np, res_dp, rtol=1)

@@ -2410,9 +2410,7 @@ class TestQr:
             if mode in ("complete", "reduced"):
                 result = dpnp.linalg.qr(ia, mode)
                 dpnp_q, dpnp_r = result.Q, result.R
-                assert dpnp.allclose(
-                    dpnp.matmul(dpnp_q, dpnp_r), ia, atol=1e-05
-                )
+                assert dpnp.allclose(dpnp.matmul(dpnp_q, dpnp_r), ia)
             else:  # mode=="raw"
                 dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
                 assert_dtype_allclose(dpnp_q, np_q, factor=24)

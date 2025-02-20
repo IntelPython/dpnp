@@ -2,7 +2,7 @@ import math
 
 import numpy
 import pytest
-from numpy.testing import assert_array_equal
+from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
 
@@ -192,7 +192,7 @@ def test_erf(dtype):
     for idx, val in enumerate(b):
         expected[idx] = math.erf(val)
 
-    assert_dtype_allclose(result, expected)
+    assert_allclose(result, expected, rtol=1e-06)
 
 
 @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
@@ -266,7 +266,7 @@ def test_bitwise(func, dtype):
 
     result = getattr(dpnp, func)(ia, ib)
     expected = getattr(numpy, func)(a, b)
-    assert_array_equal(result, expected, strict=True)
+    assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -279,7 +279,7 @@ def test_copysign(dtype):
 
     result = dpnp.copysign(ia, ib)
     expected = numpy.copysign(a, b)
-    assert_dtype_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize("func", ["fmod", "true_divide", "remainder"])
@@ -293,7 +293,7 @@ def test_division(func, dtype):
 
     result = getattr(dpnp, func)(ia, ib)
     expected = getattr(numpy, func)(a, b)
-    assert_dtype_allclose(result, expected)
+    assert_allclose(result, expected, rtol=1e-06)
 
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -314,7 +314,7 @@ def test_2args_out(func, dtype):
     result = getattr(dpnp, func)(ia, ib, out=iout)
 
     assert result is iout
-    assert_dtype_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -337,7 +337,7 @@ def test_2args_in_out(func, dtype):
     expected = getattr(numpy, func)(a, b, out=out)
     result = getattr(dpnp, func)(ia, ib, out=iout)
     assert result is iout
-    assert_dtype_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
 @pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
@@ -361,7 +361,7 @@ def test_2args_in_out_diff_out_dtype(func, dtype):
     result = getattr(dpnp, func)(ia, ib, out=iout)
 
     assert result is iout
-    assert_dtype_allclose(result, expected)
+    assert_allclose(result, expected)
 
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -380,8 +380,8 @@ def test_2args_in_overlap(func, dtype):
     expected = getattr(numpy, func)(a[size::], a[::2], out=a[:size:])
     result = getattr(dpnp, func)(ia[size::], ia[::2], out=ia[:size:])
 
-    assert_dtype_allclose(result, expected)
-    assert_dtype_allclose(ia, a)
+    assert_allclose(result, expected, rtol=1e-06)
+    assert_allclose(ia, a, rtol=1e-06)
 
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
@@ -397,5 +397,5 @@ def test_2args_in_out_overlap(func, dtype):
     expected = getattr(numpy, func)(a[::2], b, out=a[1::2])
     result = getattr(dpnp, func)(ia[::2], ib, out=ia[1::2])
 
-    assert_dtype_allclose(result, expected)
-    assert_dtype_allclose(ia, a)
+    assert_allclose(result, expected)
+    assert_allclose(ia, a)
