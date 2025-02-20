@@ -23,7 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 //
-// This file defines functions of dpnp.backend._lapack_impl extensions
+// This file defines functions of dpnp.backend._indexing_impl extensions
 //
 //*****************************************************************************
 

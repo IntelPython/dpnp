@@ -476,7 +476,6 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -1084,7 +1083,6 @@ def indices(
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -1349,7 +1347,6 @@ def mask_indices(
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -2360,7 +2357,6 @@ def tril_indices(
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -2570,7 +2566,6 @@ def triu_indices(
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
