@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev5+25.g0f4fd881005 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=0881b8c0"></script>
+      <script src="../../../_static/documentation_options.js?v=902c1fd5"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -124,6 +124,8 @@
 <span class="c1"># pylint: disable=invalid-name</span>
 <span class="c1"># pylint: disable=no-member</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">NamedTuple</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpctl.tensor._numpy_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_axis_tuple</span>
 
@@ -185,6 +187,12 @@
 <span class="p">]</span>
 
 
+<span class="c1"># pylint:disable=missing-class-docstring</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">EigResult</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="n">eigenvalues</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
+    <span class="n">eigenvectors</span><span class="p">:</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ndarray</span>
+
+
 <div class="viewcode-block" id="cholesky">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.linalg.cholesky.html#dpnp.linalg.cholesky">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">cholesky</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">upper</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -210,6 +218,7 @@
 <span class="sd">    upper : {bool}, optional</span>
 <span class="sd">        If ``True``, the result must be the upper-triangular Cholesky factor.</span>
 <span class="sd">        If ``False``, the result must be the lower-triangular Cholesky factor.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -264,6 +273,7 @@
 <span class="sd">        Order of the norm used in the condition number computation.</span>
 <span class="sd">        ``inf`` means the `dpnp.inf` object, and the Frobenius norm is</span>
 <span class="sd">        the root-of-sum-of-squares norm.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -337,6 +347,7 @@
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        The axis (dimension) of `x1` and `x2` containing the vectors for</span>
 <span class="sd">        which to compute the cross-product.</span>
+
 <span class="sd">        Default: ``-1``.</span>
 
 <span class="sd">    Returns</span>
@@ -553,17 +564,18 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    A namedtuple with the following attributes:</span>
+
 <span class="sd">    eigenvalues : (..., M) dpnp.ndarray</span>
 <span class="sd">        The eigenvalues, each repeated according to its multiplicity.</span>
-<span class="sd">        The eigenvalues are not necessarily ordered. The resulting</span>
-<span class="sd">        array will be of complex type, unless the imaginary part is</span>
-<span class="sd">        zero in which case it will be cast to a real type. When `a`</span>
-<span class="sd">        is real the resulting eigenvalues will be real (0 imaginary</span>
-<span class="sd">        part) or occur in conjugate pairs</span>
+<span class="sd">        The eigenvalues are not necessarily ordered. The resulting array will</span>
+<span class="sd">        be of complex type, unless the imaginary part is zero in which case it</span>
+<span class="sd">        will be cast to a real type. When `a` is real the resulting eigenvalues</span>
+<span class="sd">        will be real (zero imaginary part) or occur in conjugate pairs.</span>
 <span class="sd">    eigenvectors : (..., M, M) dpnp.ndarray</span>
-<span class="sd">        The normalized (unit &quot;length&quot;) eigenvectors, such that the</span>
-<span class="sd">        column ``v[:,i]`` is the eigenvector corresponding to the</span>
-<span class="sd">        eigenvalue ``w[i]``.</span>
+<span class="sd">        The normalized (unit &quot;length&quot;) eigenvectors, such that the column</span>
+<span class="sd">        ``eigenvectors[:,i]`` is the eigenvector corresponding to the</span>
+<span class="sd">        eigenvalue ``eigenvalues[i]``.</span>
 
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
@@ -634,7 +646,7 @@
     <span class="c1"># Since geev function from OneMKL LAPACK is not implemented yet,</span>
     <span class="c1"># use NumPy for this calculation.</span>
     <span class="n">w_np</span><span class="p">,</span> <span class="n">v_np</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">eig</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">asnumpy</span><span class="p">(</span><span class="n">a</span><span class="p">))</span>
-    <span class="k">return</span> <span class="p">(</span>
+    <span class="k">return</span> <span class="n">EigResult</span><span class="p">(</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">w_np</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a_usm_type</span><span class="p">),</span>
         <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">v_np</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">a_sycl_queue</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">a_usm_type</span><span class="p">),</span>
     <span class="p">)</span></div>
@@ -666,16 +678,19 @@
 <span class="sd">        considered to preserve the Hermite matrix property.</span>
 <span class="sd">        It therefore follows that the imaginary part of the diagonal</span>
 <span class="sd">        will always be treated as zero.</span>
+
 <span class="sd">        Default: ``&quot;L&quot;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    w : (..., M) dpnp.ndarray</span>
-<span class="sd">        The eigenvalues in ascending order, each repeated according to</span>
-<span class="sd">        its multiplicity.</span>
-<span class="sd">    v : (..., M, M) dpnp.ndarray</span>
-<span class="sd">        The column ``v[:, i]`` is the normalized eigenvector corresponding</span>
-<span class="sd">        to the eigenvalue ``w[i]``.</span>
+<span class="sd">    A namedtuple with the following attributes:</span>
+
+<span class="sd">    eigenvalues : (..., M) dpnp.ndarray</span>
+<span class="sd">        The eigenvalues in ascending order, each repeated according to its</span>
+<span class="sd">        multiplicity.</span>
+<span class="sd">    eigenvectors : (..., M, M) dpnp.ndarray</span>
+<span class="sd">        The column ``eigenvectors[:, i]`` is the normalized eigenvector</span>
+<span class="sd">        corresponding to the eigenvalue ``eigenvalues[i]``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -752,7 +767,7 @@
 <span class="sd">    Illustration, using the fact that the eigenvalues of a diagonal matrix</span>
 <span class="sd">    are its diagonal elements, that multiplying a matrix on the left</span>
 <span class="sd">    by an orthogonal matrix, `Q`, and on the right by `Q.T` (the transpose</span>
-<span class="sd">    of `Q`), preserves the eigenvalues of the &quot;middle&quot; matrix.  In other words,</span>
+<span class="sd">    of `Q`), preserves the eigenvalues of the &quot;middle&quot; matrix. In other words,</span>
 <span class="sd">    if `Q` is orthogonal, then ``Q * A * Q.T`` has the same eigenvalues as</span>
 <span class="sd">    ``A``:</span>
 
@@ -809,6 +824,7 @@
 <span class="sd">        considered to preserve the Hermite matrix property.</span>
 <span class="sd">        It therefore follows that the imaginary part of the diagonal</span>
 <span class="sd">        will always be treated as zero.</span>
+
 <span class="sd">        Default: ``&quot;L&quot;``.</span>
 
 <span class="sd">    Returns</span>
@@ -926,6 +942,7 @@
 <span class="sd">        of `a`.</span>
 <span class="sd">        The default uses the machine precision times ``max(M, N)``. Passing</span>
 <span class="sd">        ``-1`` will use machine precision.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -956,7 +973,7 @@
 <span class="sd">    gradient of roughly 1 and cut the y-axis at, more or less, -1.</span>
 
 <span class="sd">    We can rewrite the line equation as ``y = Ap``, where ``A = [[x 1]]``</span>
-<span class="sd">    and ``p = [[m], [c]]``.  Now use `lstsq` to solve for `p`:</span>
+<span class="sd">    and ``p = [[m], [c]]``. Now use `lstsq` to solve for `p`:</span>
 
 <span class="sd">    &gt;&gt;&gt; A = np.vstack([x, np.ones(len(x))]).T</span>
 <span class="sd">    &gt;&gt;&gt; A</span>
@@ -1072,10 +1089,12 @@
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    ord : {None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, &#39;fro&#39;, &#39;nuc&#39;}, optional</span>
 <span class="sd">        The order of the norm. For details see the table under ``Notes``</span>
 <span class="sd">        section in :obj:`dpnp.linalg.norm`.</span>
+
 <span class="sd">        Default: ``&quot;fro&quot;``.</span>
 
 <span class="sd">    Returns</span>
@@ -1208,16 +1227,19 @@
 <span class="sd">        `rtol` can be set at a time. If none of them are provided, defaults</span>
 <span class="sd">        to ``S.max() * max(M, N) * eps`` where `S` is an array with singular</span>
 <span class="sd">        values for `A`, and `eps` is the epsilon value for datatype of `S`.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    hermitian : bool, optional</span>
 <span class="sd">        If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Parameter for the relative tolerance component. Only `tol` or `rtol`</span>
 <span class="sd">        can be set at a time. If none of them are provided, defaults to</span>
 <span class="sd">        ``max(M, N) * eps`` where `eps` is the epsilon value for datatype</span>
 <span class="sd">        of `S` (an array with singular values for `A`).</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1323,6 +1345,7 @@
 <span class="sd">        C-contiguous, and its dtype must be the dtype that would be returned</span>
 <span class="sd">        for `dot(a, b)`. If these conditions are not met, an exception is</span>
 <span class="sd">        raised, instead of attempting to be flexible.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1387,11 +1410,12 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless</span>
+<span class="sd">        Input array. If `axis` is ``None``, `x` must be 1-D or 2-D, unless</span>
 <span class="sd">        `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm</span>
 <span class="sd">        of ``x.ravel`` will be returned.</span>
 <span class="sd">    ord : {int, float, inf, -inf, &quot;fro&quot;, &quot;nuc&quot;}, optional</span>
 <span class="sd">        Norm type. inf means dpnp&#39;s `inf` object.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : {None, int, 2-tuple of ints}, optional</span>
 <span class="sd">        If `axis` is an integer, it specifies the axis of `x` along which to</span>
@@ -1399,11 +1423,13 @@
 <span class="sd">        axes that hold 2-D matrices, and the matrix norms of these matrices</span>
 <span class="sd">        are computed. If `axis` is ``None`` then either a vector norm (when</span>
 <span class="sd">        `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -1627,15 +1653,18 @@
 <span class="sd">        are set to zero. Broadcasts against the stack of matrices.</span>
 <span class="sd">        Only `rcond` or `rtol` can be set at a time. If none of them are</span>
 <span class="sd">        provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    hermitian : bool, optional</span>
 <span class="sd">        If ``True``, a is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Same as `rcond`, but it&#39;s an Array API compatible parameter name.</span>
 <span class="sd">        Only `rcond` or `rtol` can be set at a time. If none of them are</span>
 <span class="sd">        provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1701,20 +1730,22 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    When mode is &quot;reduced&quot; or &quot;complete&quot;, the result will be a namedtuple with</span>
-<span class="sd">    the attributes Q and R.</span>
-<span class="sd">    Q : dpnp.ndarray</span>
+<span class="sd">    the attributes `Q` and `R`:</span>
+
+<span class="sd">    Q : dpnp.ndarray of float or complex, optional</span>
 <span class="sd">        A matrix with orthonormal columns.</span>
-<span class="sd">        When mode = &quot;complete&quot; the result is an orthogonal/unitary matrix</span>
-<span class="sd">        depending on whether or not a is real/complex.</span>
-<span class="sd">        The determinant may be either +/- 1 in that case.</span>
-<span class="sd">        In case the number of dimensions in the input array is greater</span>
-<span class="sd">        than 2 then a stack of the matrices with above properties is returned.</span>
-<span class="sd">    R : dpnp.ndarray</span>
-<span class="sd">        The upper-triangular matrix or a stack of upper-triangular matrices</span>
-<span class="sd">        if the number of dimensions in the input array is greater than 2.</span>
-<span class="sd">    (h, tau) : tuple of dpnp.ndarray</span>
-<span class="sd">        The `h` array contains the Householder reflectors that generate Q along</span>
-<span class="sd">        with R. The `tau` array contains scaling factors for the reflectors.</span>
+<span class="sd">        When mode is ``&quot;complete&quot;`` the result is an orthogonal/unitary matrix</span>
+<span class="sd">        depending on whether or not `a` is real/complex. The determinant may be</span>
+<span class="sd">        either ``+/- 1`` in that case. In case the number of dimensions in the</span>
+<span class="sd">        input array is greater than 2 then a stack of the matrices with above</span>
+<span class="sd">        properties is returned.</span>
+<span class="sd">    R : dpnp.ndarray of float or complex, optional</span>
+<span class="sd">        The upper-triangular matrix or a stack of upper-triangular matrices if</span>
+<span class="sd">        the number of dimensions in the input array is greater than 2.</span>
+<span class="sd">    (h, tau) : tuple of dpnp.ndarray of float or complex, optional</span>
+<span class="sd">        The array `h` contains the Householder reflectors that generate `Q`</span>
+<span class="sd">        along with `R`. The `tau` array contains scaling factors for the</span>
+<span class="sd">        reflectors.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1848,33 +1879,39 @@
 <span class="sd">    full_matrices : {bool}, optional</span>
 <span class="sd">        If ``True``, it returns `u` and `Vh` with full-sized matrices.</span>
 <span class="sd">        If ``False``, the matrices are reduced in size.</span>
+
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    compute_uv : {bool}, optional</span>
 <span class="sd">        If ``False``, it only returns singular values.</span>
+
 <span class="sd">        Default: ``True``.</span>
 <span class="sd">    hermitian : {bool}, optional</span>
 <span class="sd">        If True, a is assumed to be Hermitian (symmetric if real-valued),</span>
 <span class="sd">        enabling a more efficient method for finding singular values.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    u : { (…, M, M), (…, M, K) } dpnp.ndarray</span>
+<span class="sd">    When `compute_uv` is ``True``, the result is a namedtuple with the</span>
+<span class="sd">    following attribute names:</span>
+
+<span class="sd">    U : { (…, M, M), (…, M, K) } dpnp.ndarray</span>
 <span class="sd">        Unitary matrix, where M is the number of rows of the input array `a`.</span>
-<span class="sd">        The shape of the matrix `u` depends on the value of `full_matrices`.</span>
-<span class="sd">        If `full_matrices` is ``True``, `u` has the shape (…, M, M).</span>
-<span class="sd">        If `full_matrices` is ``False``, `u` has the shape (…, M, K), where</span>
-<span class="sd">        K = min(M, N), and N is the number of columns of the input array `a`.</span>
-<span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
-<span class="sd">    s : (…, K) dpnp.ndarray</span>
+<span class="sd">        The shape of the matrix `U` depends on the value of `full_matrices`.</span>
+<span class="sd">        If `full_matrices` is ``True``, `U` has the shape (…, M, M). If</span>
+<span class="sd">        `full_matrices` is ``False``, `U` has the shape (…, M, K), where</span>
+<span class="sd">        ``K = min(M, N)``, and N is the number of columns of the input array</span>
+<span class="sd">        `a`. If `compute_uv` is ``False``, neither `U` or `Vh` are computed.</span>
+<span class="sd">    S : (…, K) dpnp.ndarray</span>
 <span class="sd">        Vector containing the singular values of `a`, sorted in descending</span>
-<span class="sd">        order. The length of `s` is min(M, N).</span>
+<span class="sd">        order. The length of `S` is min(M, N).</span>
 <span class="sd">    Vh : { (…, N, N), (…, K, N) } dpnp.ndarray</span>
 <span class="sd">        Unitary matrix, where N is the number of columns of the input array `a`.</span>
 <span class="sd">        The shape of the matrix `Vh` depends on the value of `full_matrices`.</span>
 <span class="sd">        If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).</span>
 <span class="sd">        If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).</span>
-<span class="sd">        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.</span>
+<span class="sd">        If `compute_uv` is ``False``, neither `U` or `Vh` are computed.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -2008,6 +2045,8 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
+<span class="sd">    A namedtuple with the following attributes:</span>
+
 <span class="sd">    sign : (...) dpnp.ndarray</span>
 <span class="sd">        A number representing the sign of the determinant. For a real matrix,</span>
 <span class="sd">        this is 1, 0, or -1. For a complex matrix, this is a complex number</span>
@@ -2082,6 +2121,8 @@
 <span class="sd">        * (2,) array_like: A list of axes to be summed over, first sequence</span>
 <span class="sd">          applying to `a`, second to `b`. Both elements array_like must be of</span>
 <span class="sd">          the same length.</span>
+
+<span class="sd">          Default: ``2``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2171,6 +2212,7 @@
 <span class="sd">    ind : int, optional</span>
 <span class="sd">        Number of first indices that are involved in the inverse sum.</span>
 <span class="sd">        Must be a positive integer.</span>
+
 <span class="sd">        Default: ``2``.</span>
 
 <span class="sd">    Returns</span>
@@ -2239,6 +2281,7 @@
 <span class="sd">    axes : {None, tuple of ints}, optional</span>
 <span class="sd">        Axes in `a` to reorder to the right, before inversion.</span>
 <span class="sd">        If ``None`` , no reordering is done.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2320,12 +2363,13 @@
 <span class="sd">            * offset &lt; 0: off-diagonal below the main diagonal.</span>
 
 <span class="sd">        Default: ``0``.</span>
-<span class="sd">    dtype : dtype, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Determines the data-type of the returned array and of the accumulator</span>
 <span class="sd">        where the elements are summed. If `dtype` has the value ``None`` and</span>
 <span class="sd">        `a` is of integer type of precision less than the default integer</span>
 <span class="sd">        precision, then the default integer precision is used. Otherwise, the</span>
 <span class="sd">        precision is the same as that of `a`.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2414,6 +2458,7 @@
 <span class="sd">        Second input array.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the dot product.</span>
+
 <span class="sd">        Default: ``-1``.</span>
 
 <span class="sd">    Returns</span>
@@ -2463,15 +2508,18 @@
 <span class="sd">        (dimensions) along which to compute batched vector norms. If ``None``,</span>
 <span class="sd">        the vector norm must be computed over all array values (i.e.,</span>
 <span class="sd">        equivalent to computing the vector norm of a flattened array).</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : bool, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    ord : {int, float, inf, -inf, &#39;fro&#39;, &#39;nuc&#39;}, optional</span>
 <span class="sd">        The order of the norm. For details see the table under ``Notes``</span>
 <span class="sd">        section in :obj:`dpnp.linalg.norm`.</span>
+
 <span class="sd">        Default: ``2``.</span>
 
 <span class="sd">    Returns</span>
