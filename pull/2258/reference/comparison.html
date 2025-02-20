@@ -15,20 +15,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Comparison Table NumPy/ DPNP/ CuPy &mdash; Data Parallel Extension for NumPy 0.17.0dev6+23.gfc690baf404 documentation</title>
+  <title>Comparison Table NumPy/ DPNP/ CuPy &mdash; Data Parallel Extension for NumPy 0.17.0dev7+11.g751efa4ed77 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=d06d750b"></script>
+      <script src="../_static/documentation_options.js?v=03699938"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Miscellaneous routines" href="misc.html" />
+    <link rel="next" title="Array API standard compatibility" href="array_api.html" />
     <link rel="prev" title="Available array data types" href="dtypes_table.html" /> 
 </head>
 
@@ -69,7 +69,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#random-sampling">Random Sampling</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
@@ -108,7 +107,7 @@
 <h1>Comparison Table NumPy/ DPNP/ CuPy<a class="headerlink" href="#comparison-table-numpy-dpnp-cupy" title="Link to this heading"></a></h1>
 <p>Here is a list of NumPy and CuPy APIs and its corresponding DPNP implementations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">-</span></code> in DPNP column means that DPNP implementation is not provided yet.</p>
-<p><strong>NumPy(v2.2.3) / DPNP(v0.17.0dev6+23.gfc690baf404) / CuPy(v13.3.0) APIs</strong></p>
+<p><strong>NumPy(v2.2.3) / DPNP(v0.17.0dev7+11.g751efa4ed77) / CuPy(v13.3.0) APIs</strong></p>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
 <table class="docutils align-default">
@@ -120,7 +119,7 @@
 </tr>
 <tr class="row-even"><td><p>Module-Level</p></td>
 <td><p>391</p></td>
-<td><p>309</p></td>
+<td><p>313</p></td>
 <td><p>330</p></td>
 </tr>
 <tr class="row-odd"><td><p>Multi-Dimensional Array</p></td>
@@ -145,7 +144,7 @@
 </tr>
 <tr class="row-odd"><td><p>Total</p></td>
 <td><p>547</p></td>
-<td><p>447</p></td>
+<td><p>451</p></td>
 <td><p>460</p></td>
 </tr>
 </tbody>
@@ -1654,19 +1653,19 @@
 <td><p><a class="reference external" href="https://docs.cupy.dev/en/stable/reference/generated/cupy.unique.html#cupy.unique" title="(in CuPy v13.3.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cupy.unique</span></code></a></p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unique_all.html#numpy.unique_all" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unique_all</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.unique_all.html#dpnp.unique_all" title="dpnp.unique_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unique_all</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unique_counts.html#numpy.unique_counts" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unique_counts</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.unique_counts.html#dpnp.unique_counts" title="dpnp.unique_counts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unique_counts</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unique_inverse.html#numpy.unique_inverse" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unique_inverse</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.unique_inverse.html#dpnp.unique_inverse" title="dpnp.unique_inverse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unique_inverse</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unique_values.html#numpy.unique_values" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unique_values</span></code></a></p></td>
-<td><p>-</p></td>
+<td><p><a class="reference internal" href="generated/dpnp.unique_values.html#dpnp.unique_values" title="dpnp.unique_values"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.unique_values</span></code></a></p></td>
 <td><p>-</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.unpackbits.html#numpy.unpackbits" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.unpackbits</span></code></a></p></td>
@@ -1730,7 +1729,7 @@
 <td><p><strong>CuPy Total</strong></p></td>
 </tr>
 <tr class="row-even"><td><p>391</p></td>
-<td><p>309</p></td>
+<td><p>313</p></td>
 <td><p>330</p></td>
 </tr>
 </tbody>
@@ -2451,7 +2450,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dtypes_table.html" class="btn btn-neutral float-left" title="Available array data types" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="misc.html" class="btn btn-neutral float-right" title="Miscellaneous routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="array_api.html" class="btn btn-neutral float-right" title="Array API standard compatibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
