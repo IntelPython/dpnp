@@ -135,7 +135,7 @@ class TestNormal:
     )
     def test_inf_loc(self, loc):
         a = RandomState(6531).normal(loc=loc, scale=1, size=1000)
-        assert_equal(a, get_default_floating()(loc))
+        assert_equal(a, get_default_floating()(loc), strict=False)
 
     def test_inf_scale(self):
         a = RandomState().normal(0, numpy.inf, size=1000)
@@ -427,8 +427,8 @@ class TestRandInt:
         assert -5 <= rs.randint(-5, -1) < -1
 
         x = rs.randint(-7, -1, 5)
-        assert_equal(-7 <= x, True)
-        assert_equal(x < -1, True)
+        assert_equal(-7 <= x, True, strict=False)
+        assert_equal(x < -1, True, strict=False)
 
     def test_bounds_checking(self):
         dtype = dpnp.int32
@@ -466,13 +466,13 @@ class TestRandInt:
             )
 
         tgt = high - 1
-        assert_equal(func(tgt, tgt + 1, size=1000), tgt)
+        assert_equal(func(tgt, tgt + 1, size=1000), tgt, strict=False)
 
         tgt = low
-        assert_equal(func(tgt, tgt + 1, size=1000), tgt)
+        assert_equal(func(tgt, tgt + 1, size=1000), tgt, strict=False)
 
         tgt = (low + high) // 2
-        assert_equal(func(tgt, tgt + 1, size=1000), tgt)
+        assert_equal(func(tgt, tgt + 1, size=1000), tgt, strict=False)
 
     def test_full_range(self):
         dtype = dpnp.int32
@@ -986,18 +986,17 @@ class TestUniform:
                 assert_array_equal(actual, expected)
         else:
             if dtype != dpnp.int32:
-                expected = numpy.array(
-                    [
-                        [1.230000000452886, 4.889115418092382],
-                        [6.084098950993071, 1.682066500463302],
-                        [3.316473517549554, 8.428297791221597],
-                    ]
-                )
+                data = [
+                    [1.230000000452886, 4.889115418092382],
+                    [6.084098950993071, 1.682066500463302],
+                    [3.316473517549554, 8.428297791221597],
+                ]
+                expected = numpy.array(data, dtype=dtype)
                 precision = dpnp.finfo(dtype).precision
                 assert_array_almost_equal(actual, expected, decimal=precision)
             else:
                 expected = numpy.array([[1, 4], [5, 1], [3, 7]])
-                assert_array_equal(actual, expected)
+                assert_array_equal(actual, expected, strict=False)
 
         # check if compute follows data isn't broken
         assert_cfd(actual, sycl_queue, usm_type)

@@ -45,15 +45,18 @@ def assert_dtype_allclose(
     for all data types supported by DPNP when set to True.
     It is effective only when 'check_type' is also set to True.
     The parameter `factor` scales the resolution used for comparing the arrays.
+    The parameter `check_shape`, when True (default), asserts the shape of input arrays is the same.
 
     """
 
     if check_shape:
         if hasattr(numpy_arr, "shape"):
-            assert dpnp_arr.shape == numpy_arr.shape
+            assert (
+                dpnp_arr.shape == numpy_arr.shape
+            ), f"{dpnp_arr.shape} != {numpy_arr.shape}"
         else:
             # numpy output is scalar, then dpnp is 0-D array
-            assert dpnp_arr.shape == ()
+            assert dpnp_arr.shape == (), f"{dpnp_arr.shape} != ()"
 
     is_inexact = lambda x: hasattr(x, "dtype") and dpnp.issubdtype(
         x.dtype, dpnp.inexact
@@ -71,7 +74,7 @@ def assert_dtype_allclose(
             else -dpnp.inf
         )
         tol = factor * max(tol_dpnp, tol_numpy)
-        assert_allclose(dpnp_arr, numpy_arr, atol=tol, rtol=tol)
+        assert_allclose(dpnp_arr, numpy_arr, atol=tol, rtol=tol, strict=False)
         if check_type:
             list_64bit_types = [numpy.float64, numpy.complex128]
             numpy_arr_dtype = numpy_arr.dtype
@@ -94,7 +97,7 @@ def assert_dtype_allclose(
                 else:
                     _assert_dtype(dpnp_arr_dtype, numpy_arr_dtype, True)
     else:
-        assert_array_equal(dpnp_arr, numpy_arr)
+        assert_array_equal(dpnp_arr, numpy_arr, strict=False)
         if check_type and hasattr(numpy_arr, "dtype"):
             _assert_dtype(dpnp_arr.dtype, numpy_arr.dtype, check_only_type_kind)
 

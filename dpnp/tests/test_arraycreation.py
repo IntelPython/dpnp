@@ -754,7 +754,7 @@ def test_linspace(start, stop, num, dtype, retstep):
     if retstep:
         [res_np, step_np] = res_np
         [res_dp, step_dp] = res_dp
-        assert_allclose(step_np, step_dp)
+        assert_equal(step_np, step_dp)
 
     if numpy.issubdtype(dtype, dpnp.integer):
         assert_allclose(res_np, res_dp, rtol=1)
@@ -952,7 +952,6 @@ def test_ascontiguousarray1(data):
     result = dpnp.ascontiguousarray(data)
     expected = numpy.ascontiguousarray(data)
     assert_dtype_allclose(result, expected)
-    assert result.shape == expected.shape
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
@@ -960,7 +959,6 @@ def test_ascontiguousarray2(data):
     result = dpnp.ascontiguousarray(dpnp.array(data))
     expected = numpy.ascontiguousarray(numpy.array(data))
     assert_dtype_allclose(result, expected)
-    assert result.shape == expected.shape
 
 
 @pytest.mark.parametrize(
@@ -970,7 +968,6 @@ def test_asfortranarray1(data):
     result = dpnp.asfortranarray(data)
     expected = numpy.asfortranarray(data)
     assert_dtype_allclose(result, expected)
-    assert result.shape == expected.shape
 
 
 @pytest.mark.parametrize("data", [(), 1, (2, 3), [4]])
@@ -978,7 +975,6 @@ def test_asfortranarray2(data):
     result = dpnp.asfortranarray(dpnp.array(data))
     expected = numpy.asfortranarray(numpy.array(data))
     assert_dtype_allclose(result, expected)
-    assert result.shape == expected.shape
 
 
 def test_meshgrid_raise_error():

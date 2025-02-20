@@ -2110,7 +2110,7 @@ class TestNorm:
                 # TODO: when similar changes in numpy are available, instead
                 # of assert_equal with zero, we should compare with numpy
                 # ord in [None, 1, 2]
-                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0)
+                assert_equal(dpnp.linalg.norm(ia, **kwarg), 0.0)
                 assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         else:
             result = dpnp.linalg.norm(ia, **kwarg)
@@ -2319,7 +2319,7 @@ class TestNorm:
     @pytest.mark.parametrize("ord", [None, "fro", "nuc", 1, 2, dpnp.inf])
     def test_matrix_norm_empty(self, xp, dtype, shape, axis, ord):
         x = xp.zeros(shape, dtype=dtype)
-        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), 0)
+        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), 0.0)
 
     @pytest.mark.parametrize(
         "xp",
@@ -2339,7 +2339,7 @@ class TestNorm:
     @pytest.mark.parametrize("ord", [None, 1, 2, dpnp.inf])
     def test_vector_norm_empty(self, xp, dtype, axis, ord):
         x = xp.zeros(0, dtype=dtype)
-        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), 0)
+        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), 0.0)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
@@ -2446,9 +2446,7 @@ class TestQr:
             if mode in ("complete", "reduced"):
                 result = dpnp.linalg.qr(ia, mode)
                 dpnp_q, dpnp_r = result.Q, result.R
-                assert dpnp.allclose(
-                    dpnp.matmul(dpnp_q, dpnp_r), ia, atol=1e-05
-                )
+                assert dpnp.allclose(dpnp.matmul(dpnp_q, dpnp_r), ia)
             else:  # mode=="raw"
                 dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
                 assert_dtype_allclose(dpnp_q, np_q, factor=24)

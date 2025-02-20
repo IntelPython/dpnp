@@ -1370,9 +1370,7 @@ class TestProd:
 
         expected = numpy.prod(a, axis=axis, keepdims=keepdims)
         result = dpnp.prod(ia, axis=axis, keepdims=keepdims)
-
-        assert result.shape == expected.shape
-        assert_dtype_allclose(result, expected)
+        assert_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     def test_zero_size(self, axis):

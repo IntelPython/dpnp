@@ -43,29 +43,48 @@ def _assert(assert_func, result, expected, *args, **kwargs):
     # (since NumPy 2.0) have `strict` parameter. Added here for
     # assert_almost_equal, assert_array_almost_equal, and assert_allclose
     # (NumPy < 2.0)
-    if kwargs.get("strict"):
-        assert result.dtype == expected.dtype
-        assert result.shape == expected.shape
+    flag = assert_func in [
+        assert_almost_equal_orig,
+        assert_array_almost_equal_orig,
+        assert_allclose_orig,
+    ]
+    if flag:
+        if kwargs.get("strict"):
+            if hasattr(expected, "dtype"):
+                assert (
+                    result.dtype == expected.dtype
+                ), f"{result.dtype} != {expected.dtype}"
+                assert (
+                    result.shape == expected.shape
+                ), f"{result.shape} != {expected.shape}"
+            else:
+                # numpy output is scalar, then dpnp is 0-D array
+                assert result.shape == (), f"{result.shape} != ()"
         kwargs.pop("strict")
 
     assert_func(result, expected, *args, **kwargs)
 
 
 def assert_allclose(result, expected, *args, **kwargs):
+    kwargs.setdefault("strict", True)
     _assert(assert_allclose_orig, result, expected, *args, **kwargs)
 
 
 def assert_almost_equal(result, expected, *args, **kwargs):
+    kwargs.setdefault("strict", True)
     _assert(assert_almost_equal_orig, result, expected, *args, **kwargs)
 
 
 def assert_array_almost_equal(result, expected, *args, **kwargs):
+    kwargs.setdefault("strict", True)
     _assert(assert_array_almost_equal_orig, result, expected, *args, **kwargs)
 
 
 def assert_array_equal(result, expected, *args, **kwargs):
+    kwargs.setdefault("strict", True)
     _assert(assert_array_equal_orig, result, expected, *args, **kwargs)
 
 
 def assert_equal(result, expected, *args, **kwargs):
+    kwargs.setdefault("strict", True)
     _assert(assert_equal_orig, result, expected, *args, **kwargs)
