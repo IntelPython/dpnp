@@ -22,7 +22,7 @@ def test_amax_amin(func, keepdims, dtype):
     for axis in range(len(a)):
         result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        assert_allclose(expected, result, strict=True)
+        assert_allclose(expected, result)
 
 
 def _get_min_max_input(dtype, shape):
@@ -47,11 +47,11 @@ def test_amax_diff_shape(dtype, shape):
 
     expected = numpy.amax(a)
     result = dpnp.amax(ia)
-    assert_array_equal(result, expected, strict=True)
+    assert_array_equal(result, expected)
 
     expected = a.max()
     result = ia.max()
-    assert_array_equal(result, expected, strict=True)
+    assert_array_equal(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
@@ -64,8 +64,8 @@ def test_amin_diff_shape(dtype, shape):
 
     expected = numpy.amin(a)
     result = dpnp.amin(ia)
-    assert_array_equal(result, expected, strict=True)
+    assert_array_equal(result, expected)
 
     expected = a.min()
     result = ia.min()
-    assert_array_equal(result, expected, strict=True)
+    assert_array_equal(result, expected)

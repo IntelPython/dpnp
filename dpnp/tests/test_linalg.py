@@ -2410,10 +2410,12 @@ class TestQr:
             if mode in ("complete", "reduced"):
                 result = dpnp.linalg.qr(ia, mode)
                 dpnp_q, dpnp_r = result.Q, result.R
+                # dtype of `reconstructed` is not the same as `a`
                 assert_almost_equal(
                     dpnp.matmul(dpnp_q, dpnp_r),
                     a,
                     decimal=5,
+                    strict=False,
                 )
             else:  # mode=="raw"
                 dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
@@ -2445,10 +2447,12 @@ class TestQr:
             if mode in ("complete", "reduced"):
                 result = dpnp.linalg.qr(ia, mode)
                 dpnp_q, dpnp_r = result.Q, result.R
+                # dtype of `reconstructed` is not the same as `a`
                 assert_almost_equal(
                     dpnp.matmul(dpnp_q, dpnp_r),
                     a,
                     decimal=5,
+                    strict=False,
                 )
             else:  # mode=="raw"
                 dpnp_q, dpnp_r = dpnp.linalg.qr(ia, mode)
@@ -2851,7 +2855,10 @@ class TestSvd:
                 dpnp_diag_s[..., i, i] = dp_s[..., i]
                 reconstructed = dpnp.dot(dp_u, dpnp.dot(dpnp_diag_s, dp_vt))
 
-            assert dpnp.allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
+            # dtype of `reconstructed` is not the same as `a_dp`
+            assert_allclose(
+                dp_a, reconstructed, rtol=tol, atol=1e-4, strict=False
+            )
 
         assert_allclose(dp_s, np_s, rtol=tol, atol=1e-03)
 
@@ -3034,7 +3041,8 @@ class TestPinv:
         else:  # a.ndim > 2
             reconstructed = dpnp.matmul(a_dp, dpnp.matmul(B_dp, a_dp))
 
-        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
+        # dtype of `reconstructed` is not the same as `a_dp`
+        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol, strict=False)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(

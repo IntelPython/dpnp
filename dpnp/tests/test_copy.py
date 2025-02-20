@@ -71,4 +71,4 @@ class TestCopyOrder:
 )
 def test_copy_not_dpnp_array(val):
     a = dpnp.copy(val)
-    assert_allclose(a, val)
+    assert_equal(a, val)

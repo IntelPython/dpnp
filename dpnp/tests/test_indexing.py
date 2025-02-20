@@ -292,7 +292,7 @@ class TestIndexing:
 
         slices = (slice(None), dpnp.array([0, 1, 2, 3]))
         arr[slices] = 10
-        assert_array_equal(arr, 10.0)
+        assert_equal(arr, 10.0, strict=False)
 
 
 class TestIx:
@@ -1200,15 +1200,17 @@ class TestRavelIndex:
         )
 
     def test_empty_indices(self):
-        assert_equal(
-            dpnp.ravel_multi_index(
-                (dpnp.array([], dtype=int), dpnp.array([], dtype=int)), (5, 3)
-            ),
-            [],
-        )
-        assert_equal(
-            dpnp.ravel_multi_index(dpnp.array([[], []], dtype=int), (5, 3)), []
-        )
+        a = numpy.array([], dtype=int)
+        ia = dpnp.array(a)
+        result = dpnp.ravel_multi_index((ia, ia), (5, 3))
+        expected = numpy.ravel_multi_index((a, a), (5, 3))
+        assert_equal(result, expected)
+
+        a = numpy.array([[], []], dtype=int)
+        ia = dpnp.array(a)
+        result = dpnp.ravel_multi_index(ia, (5, 3))
+        expected = numpy.ravel_multi_index(a, (5, 3))
+        assert_equal(result, expected)
 
 
 class TestUnravelIndex:

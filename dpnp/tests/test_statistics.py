@@ -167,7 +167,6 @@ class TestCorrcoef:
 
         expected = numpy.corrcoef(a, dtype=dt_out)
         result = dpnp.corrcoef(ia, dtype=dt_out)
-        assert expected.dtype == result.dtype
         assert_allclose(result, expected, rtol=1e-6)
 
     @pytest.mark.usefixtures(
@@ -965,7 +964,6 @@ class TestStdVar:
 
         expected = getattr(numpy, self.func)(a, dtype=dt_out)
         result = getattr(dpnp, self.func)(ia, dtype=dt_out)
-        assert expected.dtype == result.dtype
         assert_allclose(result, expected, rtol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
