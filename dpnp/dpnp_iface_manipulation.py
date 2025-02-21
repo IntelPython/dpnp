@@ -743,15 +743,16 @@ def asarray_chkfinite(
         Memory layout of the newly output array.
 
         Default: ``"K"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
+
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 
@@ -859,12 +860,13 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
         or :obj:`dpnp.float32` type otherwise).
 
         Default: ``None``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by :obj:`dpnp.ndarray.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
@@ -1516,11 +1518,10 @@ def copyto(dst, src, casting="same_kind", where=True):
             f"but got {type(dst)}"
         )
     if not dpnp.is_supported_array_type(src):
-        no_dtype_attr = not hasattr(src, "dtype")
+        python_sc = dpnp.isscalar(src) and not isinstance(src, numpy.generic)
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
-        if no_dtype_attr:
-            # This case (scalar, list, etc) needs special handling to
-            # behave similar to NumPy
+        if python_sc:
+            # Python scalar needs special handling to behave similar to NumPy
             if dpnp.issubdtype(src, dpnp.integer) and dpnp.issubdtype(
                 dst, dpnp.unsignedinteger
             ):

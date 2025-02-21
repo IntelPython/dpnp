@@ -1,0 +1,10 @@
+name: Building docs specific packages
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - cupy
+  - sphinx
+  - sphinx_rtd_theme
+  - pip:
+    - -r base_build_docs.txt

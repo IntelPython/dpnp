@@ -10,6 +10,7 @@ from numpy.testing import (
     assert_array_equal,
     assert_equal,
     assert_raises,
+    assert_raises_regex,
 )
 
 import dpnp
@@ -55,6 +56,28 @@ class TestArray:
     def test_error(self):
         x = numpy.ones((3, 4))
         assert_raises(TypeError, dpnp.array, x, ndmin=3.0)
+
+
+class TestAsType:
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_validate_positional_args(self, xp):
+        x = xp.ones(4)
+        assert_raises_regex(
+            TypeError,
+            "got some positional-only arguments passed as keyword arguments",
+            xp.astype,
+            x,
+            dtype="f4",
+        )
+        assert_raises_regex(
+            TypeError,
+            "takes 2 positional arguments but 3 were given",
+            xp.astype,
+            x,
+            "f4",
+            None,
+        )
 
 
 class TestTrace:

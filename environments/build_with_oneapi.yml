@@ -1,0 +1,12 @@
+name: Packages to build DPNP with OneAPI env activated
+channels:
+  - dppy/label/dev
+  - conda-forge
+dependencies:
+  - cmake
+  - cython
+  - dpctl>=0.19.0dev0
+  - ninja
+  - numpy
+  - pytest
+  - scikit-build
