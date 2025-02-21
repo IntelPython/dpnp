@@ -659,16 +659,15 @@ class TestSquare:
         with pytest.raises(ValueError):
             dpnp.square(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
         [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
     )
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.square, a, out)
-        assert_raises(TypeError, numpy.square, a.asnumpy(), out)
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.square, a, out)
 
 
 class TestUmath:
@@ -759,16 +758,16 @@ class TestUmath:
         with pytest.raises(ValueError):
             getattr(dpnp, func_name)(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
         [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
     )
-    def test_invalid_out(self, func_params, out):
+    def test_invalid_out(self, func_params, xp, out):
         func_name = func_params["func_name"]
-        a = dpnp.arange(10)
-        assert_raises(TypeError, getattr(dpnp, func_name), a, out)
-        assert_raises(TypeError, getattr(numpy, func_name), a.asnumpy(), out)
+        a = xp.arange(10)
+        assert_raises(TypeError, getattr(xp, func_name), a, out)
 
 
 def test_trigonometric_hyperbolic_aliases():
