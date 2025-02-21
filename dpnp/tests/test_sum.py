@@ -74,7 +74,7 @@ def test_sum_empty_out(dtype):
     assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("axis", [None, 0, 1, 2, 3])
 def test_sum_empty(dtype, axis):
     a = numpy.empty((1, 2, 0, 4), dtype=dtype)
