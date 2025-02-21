@@ -813,8 +813,7 @@ tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{extern
 # erf
 tests/test_special.py::test_erf
 tests/test_special.py::test_erf_fallback
-tests/test_strides.py::test_strides_erf[(10,)-int32]
-tests/test_strides.py::test_strides_erf[(10,)-int64]
-tests/test_strides.py::test_strides_erf[(10,)-float32]
-tests/test_strides.py::test_strides_erf[(10,)-float64]
-tests/test_strides.py::test_strides_erf[(10,)-None]
+tests/test_strides.py::test_erf[int32]
+tests/test_strides.py::test_erf[int64]
+tests/test_strides.py::test_erf[float32]
+tests/test_strides.py::test_erf[float64]
