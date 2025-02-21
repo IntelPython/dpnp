@@ -577,14 +577,14 @@ void submit_sliding_window1d(const PaddedSpan<const T, SizeT> &a,
             // auto *const out_end = out.end();
 
             auto y_start = glid;
-            auto y_stop = std::min(y_start + WorkPI*results.size_x(), out.size());
+            auto y_stop =
+                std::min(y_start + WorkPI * results.size_x(), out.size());
             int32_t i = 0;
-            for (uint32_t y = y_start; y < y_stop; y+=results.size_x())
-            {
+            for (uint32_t y = y_start; y < y_stop; y += results.size_x()) {
                 out_ptr[y] = results[i++];
             }
-            // due to excessive optimizations this code results in memory corruption
-            // results.store(&out_ptr[glid],
+            // due to excessive optimizations this code results in memory
+            // corruption results.store(&out_ptr[glid],
             //               [out_end](auto &&ptr) { return ptr < out_end; });
         });
 }
@@ -647,14 +647,14 @@ void submit_sliding_window1d_small_kernel(const PaddedSpan<const T, SizeT> &a,
             // auto *const out_end = out.end();
 
             auto y_start = glid;
-            auto y_stop = std::min(y_start + WorkPI*results.size_x(), out.size());
+            auto y_stop =
+                std::min(y_start + WorkPI * results.size_x(), out.size());
             int32_t i = 0;
-            for (uint32_t y = y_start; y < y_stop; y+=results.size_x())
-            {
+            for (uint32_t y = y_start; y < y_stop; y += results.size_x()) {
                 out_ptr[y] = results[i++];
             }
-            // due to excessive optimizations this code results in memory corruption
-            // results.store(&out_ptr[glid],
+            // due to excessive optimizations this code results in memory
+            // corruption results.store(&out_ptr[glid],
             //               [out_end](auto &&ptr) { return ptr < out_end; });
         });
 }
