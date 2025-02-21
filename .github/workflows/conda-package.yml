@@ -675,7 +675,7 @@ jobs:
       - name: Checkout DPNP repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          fetch-depth: 1
+          fetch-depth: ${{ env.fetch-depth }}
 
       - name: Setup miniconda
         id: setup_miniconda
@@ -685,8 +685,8 @@ jobs:
           miniforge-version: latest
           use-mamba: 'true'
           conda-remove-defaults: 'true'
-          environment-file: ${{ env.upload-conda-pkg-env }}
-          activate-environment: ${{ env.upload-env-name }}
+          environment-file: ${{ env.cleanup-conda-pkg-env }}
+          activate-environment: ${{ env.cleanup-env-name }}
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
