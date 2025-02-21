@@ -29,6 +29,7 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
+    get_integer_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
     numpy_version,
@@ -55,9 +56,7 @@ class TestAngle:
         # data type should not be compared
         assert_allclose(result.asnumpy(), expected)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_angle(self, dtype, deg):
         dp_a = dpnp.arange(10, dtype=dtype)
         np_a = dp_a.asnumpy()
@@ -304,9 +303,7 @@ class TestCumLogSumExp:
         a = dpnp.ones((3, 4))
         assert_raises(TypeError, dpnp.cumlogsumexp, a, axis=(0, 1))
 
-    @pytest.mark.parametrize(
-        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("in_dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
     def test_dtype(self, in_dtype, out_dtype):
         a = dpnp.ones(100, dtype=in_dtype)
@@ -888,9 +885,7 @@ class TestFix:
         with pytest.raises((ValueError, TypeError)):
             xp.fix(a)
 
-    @pytest.mark.parametrize(
-        "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("a_dt", get_integer_float_dtypes())
     def test_out(self, a_dt):
         a = get_abs_array(
             [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], a_dt
@@ -1407,9 +1402,7 @@ class TestMathematical:
     def test_arctan2(self, dtype, lhs, rhs):
         self._test_mathematical("arctan2", dtype, lhs, rhs)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_copysign(self, dtype, lhs, rhs):
         self._test_mathematical("copysign", dtype, lhs, rhs)
 
@@ -1417,21 +1410,15 @@ class TestMathematical:
     def test_divide(self, dtype, lhs, rhs):
         self._test_mathematical("divide", dtype, lhs, rhs)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_fmax(self, dtype, lhs, rhs):
         self._test_mathematical("fmax", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_fmin(self, dtype, lhs, rhs):
         self._test_mathematical("fmin", dtype, lhs, rhs, check_type=False)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_fmod(self, dtype, lhs, rhs):
         if rhs == 0.3 and not has_support_aspect64():
             """
@@ -1456,9 +1443,7 @@ class TestMathematical:
             "floor_divide", dtype, lhs, rhs, check_type=False
         )
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_hypot(self, dtype, lhs, rhs):
         self._test_mathematical("hypot", dtype, lhs, rhs)
 
@@ -2031,12 +2016,7 @@ class TestUnwrap:
         expected = numpy.unwrap(a)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dt",
-        get_all_dtypes(
-            no_none=True, no_bool=True, no_complex=True, no_unsigned=True
-        ),
-    )
+    @pytest.mark.parametrize("dt", get_integer_float_dtypes(no_unsigned=True))
     def test_period(self, dt):
         a = numpy.array([1, 1 + 108], dtype=dt)
         ia = dpnp.array(a)
@@ -2046,12 +2026,7 @@ class TestUnwrap:
         expected = numpy.unwrap(a, period=107)
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize(
-        "dt",
-        get_all_dtypes(
-            no_none=True, no_bool=True, no_complex=True, no_unsigned=True
-        ),
-    )
+    @pytest.mark.parametrize("dt", get_integer_float_dtypes(no_unsigned=True))
     def test_rand_period(self, dt):
         a = generate_random_numpy_array(10, dt, low=-100, high=100)
         ia = dpnp.array(a)
@@ -2479,9 +2454,7 @@ class TestRoundingFuncs:
 
 
 class TestHypot:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_hypot(self, dtype):
         np_array1, np_array2, expected = _get_numpy_arrays_2in_1out(
             "hypot", dtype, [0, 10, 10]
@@ -2571,9 +2544,7 @@ class TestLogSumExp:
         assert res is dpnp_out
         assert_dtype_allclose(res, exp)
 
-    @pytest.mark.parametrize(
-        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("in_dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
     def test_logsumexp_dtype(self, in_dtype, out_dtype):
         a = dpnp.ones(100, dtype=in_dtype)
@@ -2656,9 +2627,7 @@ class TestReduceHypot:
         assert res is dpnp_out
         assert_dtype_allclose(res, exp)
 
-    @pytest.mark.parametrize(
-        "in_dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("in_dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_bool=True))
     def test_reduce_hypot_dtype(self, in_dtype, out_dtype):
         a = dpnp.ones(99, dtype=in_dtype)
