@@ -27,3 +27,4 @@ These functions cover a subset of
    set
    sort
    statistics
+   window

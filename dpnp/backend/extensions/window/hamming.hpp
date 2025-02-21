@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._lapack_impl extensions
-//
-//*****************************************************************************
+
+#pragma once
 
 #include <pybind11/pybind11.h>
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "histogramdd.hpp"
-#include "sliding_dot_product1d.hpp"
+namespace py = pybind11;
 
-PYBIND11_MODULE(_statistics_impl, m)
+namespace dpnp::extensions::window
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-    statistics::histogram::populate_histogramdd(m);
-}
+void init_hamming(py::module_ m);
+} // namespace dpnp::extensions::window

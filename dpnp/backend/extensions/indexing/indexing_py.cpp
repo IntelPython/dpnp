@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,6 @@
 //*****************************************************************************
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "choose.hpp"
 
