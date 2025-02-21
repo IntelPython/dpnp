@@ -19,6 +19,7 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
+    get_integer_float_dtypes,
     has_support_aspect16,
     numpy_version,
 )
@@ -157,9 +158,7 @@ class TestBoundFuncs:
     def func_params(self, request):
         return request.param
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_out(self, func_params, dtype):
         func_name = func_params["func_name"]
         input_values = func_params["input_values"]
@@ -174,9 +173,7 @@ class TestBoundFuncs:
         assert result is iout
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_out_overlap(self, func_params, dtype):
         func_name = func_params["func_name"]
         size = 15
@@ -307,7 +304,7 @@ class TestDivide:
 
 @pytest.mark.parametrize("func", ["floor_divide", "remainder"])
 class TestFloorDivideRemainder:
-    ALL_DTYPES = get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    ALL_DTYPES = get_integer_float_dtypes()
 
     def do_inplace_op(self, base, other, func):
         if func == "floor_divide":
