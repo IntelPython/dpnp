@@ -12,10 +12,11 @@ on:
 permissions: read-all
 
 env:
-  PACKAGE_NAME: dpnp
-  CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
-  TEST_ENV_NAME: test
-  RUN_TESTS_MAX_ATTEMPTS: 2
+  package-name: dpnp
+  channels-list: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
+  test-env-name: test
+  rerun-tests-max-attempts: 2
+  rerun-tests-timeout: 20
 
 jobs:
   test:
@@ -69,7 +70,7 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          activate-environment: ${{ env.test-env-name }}
 
       - name: ReSetup miniconda
         if: steps.setup_miniconda.outcome == 'failure'
@@ -80,18 +81,18 @@ jobs:
           channels: conda-forge
           conda-remove-defaults: 'true'
           python-version: ${{ matrix.python }}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          activate-environment: ${{ env.test-env-name }}
 
       - name: Install dpnp
         id: install_dpnp
         continue-on-error: true
         run: |
-          mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.channels-list }}
 
       - name: ReInstall dpnp
         if: steps.install_dpnp.outcome == 'failure'
         run: |
-          mamba install ${{ env.PACKAGE_NAME }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.CHANNELS }}
+          mamba install ${{ env.package-name }}=${{ steps.find_latest_tag.outputs.tag }} pytest ${{ env.channels-list }}
 
       - name: List installed packages
         run: mamba list
@@ -119,7 +120,7 @@ jobs:
         id: run_tests
         continue-on-error: true
         run: |
-          python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+          python -m pytest -ra --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
@@ -128,15 +129,15 @@ jobs:
         id: run_tests_linux
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 15
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
             . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.TEST_ENV_NAME }}
+            mamba activate ${{ env.test-env-name }}
 
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
@@ -145,10 +146,10 @@ jobs:
         id: run_tests_win
         uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
         with:
-          timeout_minutes: 17
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
-            python -m pytest -ra --pyargs ${{ env.PACKAGE_NAME }}.tests
+            python -m pytest -ra --pyargs ${{ env.package-name }}.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
