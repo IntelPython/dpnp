@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,61 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._lapack_impl extensions
-//
-//*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "histogramdd.hpp"
-#include "sliding_dot_product1d.hpp"
+#include <sycl/sycl.hpp>
 
-PYBIND11_MODULE(_statistics_impl, m)
+#include "kernels/dpctl_tensor_types.hpp"
+
+#include "utils/type_utils.hpp"
+
+namespace dpnp::extensions::window::kernels
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-    statistics::histogram::populate_histogramdd(m);
+
+template <typename T>
+class HammingFunctor
+{
+private:
+    T *data;
+    size_t N;
+
+public:
+    HammingFunctor(T *data, size_t N) : data(data), N(N) {}
+
+    void operator()(sycl::id<1> id) const
+    {
+        dpctl::tensor::ssize_t i = id[0];
+
+        data[i] = static_cast<T>(0.54) -
+                  static_cast<T>(0.46) *
+                      sycl::cospi((static_cast<T>(2.0) * i) / (N - 1));
+    }
+};
+
+typedef sycl::event (*hamming_fn_ptr_t)(sycl::queue &,
+                                        char *,
+                                        size_t,
+                                        const std::vector<sycl::event> &);
+
+template <typename T>
+sycl::event hamming_impl(sycl::queue &q,
+                         char *result,
+                         size_t nelems,
+                         const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+
+    T *res = reinterpret_cast<T *>(result);
+
+    sycl::event hamming_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        cgh.parallel_for(sycl::range<1>(nelems),
+                         HammingFunctor<T>(res, nelems));
+    });
+
+    return hamming_ev;
 }
+
+} // namespace dpnp::extensions::window::kernels

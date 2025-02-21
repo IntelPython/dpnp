@@ -106,6 +106,8 @@ from dpnp.dpnp_iface_statistics import *
 from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import *
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
+from dpnp.dpnp_iface_window import *
+from dpnp.dpnp_iface_window import __all__ as __all__window
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import (
@@ -129,6 +131,7 @@ __all__ += __all__nanfunctions
 __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
+__all__ += __all__window
 __all__ += __all__trigonometric
 
 

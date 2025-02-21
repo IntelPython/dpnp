@@ -1845,3 +1845,14 @@ def test_choose(usm_type_x, usm_type_ind):
     assert chc.usm_type == usm_type_x
     assert ind.usm_type == usm_type_ind
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
+
+
+@pytest.mark.parametrize("func", ["hamming"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
+def test_window(func, usm_type):
+    result = getattr(dp, func)(10, usm_type=usm_type)
+    if usm_type is None:
+        # assert against default USM type
+        assert result.usm_type == "device"
+    else:
+        assert result.usm_type == usm_type
