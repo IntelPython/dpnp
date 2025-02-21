@@ -689,14 +689,14 @@ $(function(){initNavTree('sliding__window1d_8hpp_source.html',''); initResizable
 <div class="line"><a id="l00577" name="l00577"></a><span class="lineno">  577</span>            <span class="comment">// auto *const out_end = out.end();</span></div>
 <div class="line"><a id="l00578" name="l00578"></a><span class="lineno">  578</span> </div>
 <div class="line"><a id="l00579" name="l00579"></a><span class="lineno">  579</span>            <span class="keyword">auto</span> y_start = glid;</div>
-<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>            <span class="keyword">auto</span> y_stop = std::min(y_start + WorkPI*results.size_x(), out.size());</div>
-<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>            int32_t i = 0;</div>
-<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>            <span class="keywordflow">for</span> (uint32_t y = y_start; y &lt; y_stop; y+=results.size_x())</div>
-<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>            {</div>
+<div class="line"><a id="l00580" name="l00580"></a><span class="lineno">  580</span>            <span class="keyword">auto</span> y_stop =</div>
+<div class="line"><a id="l00581" name="l00581"></a><span class="lineno">  581</span>                std::min(y_start + WorkPI * results.size_x(), out.size());</div>
+<div class="line"><a id="l00582" name="l00582"></a><span class="lineno">  582</span>            int32_t i = 0;</div>
+<div class="line"><a id="l00583" name="l00583"></a><span class="lineno">  583</span>            <span class="keywordflow">for</span> (uint32_t y = y_start; y &lt; y_stop; y += results.size_x()) {</div>
 <div class="line"><a id="l00584" name="l00584"></a><span class="lineno">  584</span>                out_ptr[y] = results[i++];</div>
 <div class="line"><a id="l00585" name="l00585"></a><span class="lineno">  585</span>            }</div>
-<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>            <span class="comment">// due to excessive optimizations this code results in memory corruption</span></div>
-<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>            <span class="comment">// results.store(&amp;out_ptr[glid],</span></div>
+<div class="line"><a id="l00586" name="l00586"></a><span class="lineno">  586</span>            <span class="comment">// due to excessive optimizations this code results in memory</span></div>
+<div class="line"><a id="l00587" name="l00587"></a><span class="lineno">  587</span>            <span class="comment">// corruption results.store(&amp;out_ptr[glid],</span></div>
 <div class="line"><a id="l00588" name="l00588"></a><span class="lineno">  588</span>            <span class="comment">//               [out_end](auto &amp;&amp;ptr) { return ptr &lt; out_end; });</span></div>
 <div class="line"><a id="l00589" name="l00589"></a><span class="lineno">  589</span>        });</div>
 <div class="line"><a id="l00590" name="l00590"></a><span class="lineno">  590</span>}</div>
@@ -759,14 +759,14 @@ $(function(){initNavTree('sliding__window1d_8hpp_source.html',''); initResizable
 <div class="line"><a id="l00647" name="l00647"></a><span class="lineno">  647</span>            <span class="comment">// auto *const out_end = out.end();</span></div>
 <div class="line"><a id="l00648" name="l00648"></a><span class="lineno">  648</span> </div>
 <div class="line"><a id="l00649" name="l00649"></a><span class="lineno">  649</span>            <span class="keyword">auto</span> y_start = glid;</div>
-<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>            <span class="keyword">auto</span> y_stop = std::min(y_start + WorkPI*results.size_x(), out.size());</div>
-<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>            int32_t i = 0;</div>
-<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>            <span class="keywordflow">for</span> (uint32_t y = y_start; y &lt; y_stop; y+=results.size_x())</div>
-<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            {</div>
+<div class="line"><a id="l00650" name="l00650"></a><span class="lineno">  650</span>            <span class="keyword">auto</span> y_stop =</div>
+<div class="line"><a id="l00651" name="l00651"></a><span class="lineno">  651</span>                std::min(y_start + WorkPI * results.size_x(), out.size());</div>
+<div class="line"><a id="l00652" name="l00652"></a><span class="lineno">  652</span>            int32_t i = 0;</div>
+<div class="line"><a id="l00653" name="l00653"></a><span class="lineno">  653</span>            <span class="keywordflow">for</span> (uint32_t y = y_start; y &lt; y_stop; y += results.size_x()) {</div>
 <div class="line"><a id="l00654" name="l00654"></a><span class="lineno">  654</span>                out_ptr[y] = results[i++];</div>
 <div class="line"><a id="l00655" name="l00655"></a><span class="lineno">  655</span>            }</div>
-<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>            <span class="comment">// due to excessive optimizations this code results in memory corruption</span></div>
-<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>            <span class="comment">// results.store(&amp;out_ptr[glid],</span></div>
+<div class="line"><a id="l00656" name="l00656"></a><span class="lineno">  656</span>            <span class="comment">// due to excessive optimizations this code results in memory</span></div>
+<div class="line"><a id="l00657" name="l00657"></a><span class="lineno">  657</span>            <span class="comment">// corruption results.store(&amp;out_ptr[glid],</span></div>
 <div class="line"><a id="l00658" name="l00658"></a><span class="lineno">  658</span>            <span class="comment">//               [out_end](auto &amp;&amp;ptr) { return ptr &lt; out_end; });</span></div>
 <div class="line"><a id="l00659" name="l00659"></a><span class="lineno">  659</span>        });</div>
 <div class="line"><a id="l00660" name="l00660"></a><span class="lineno">  660</span>}</div>
