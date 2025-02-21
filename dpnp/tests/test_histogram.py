@@ -25,9 +25,7 @@ from .helper import (
 
 
 class TestDigitize:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize("right", [True, False])
     @pytest.mark.parametrize(
         "x, bins",
@@ -73,12 +71,8 @@ class TestDigitize:
         expected = numpy.digitize(x, bins, right=right)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype_x", get_all_dtypes(no_bool=True, no_complex=True)
-    )
-    @pytest.mark.parametrize(
-        "dtype_bins", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype_x", get_integer_float_dtypes())
+    @pytest.mark.parametrize("dtype_bins", get_integer_float_dtypes())
     @pytest.mark.parametrize("right", [True, False])
     def test_digitize_diff_types(self, dtype_x, dtype_bins, right):
         x = numpy.array([1, 2, 3, 4, 5], dtype=dtype_x)
@@ -90,9 +84,7 @@ class TestDigitize:
         expected = numpy.digitize(x, bins, right=right)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize(
         "x, bins",
         [

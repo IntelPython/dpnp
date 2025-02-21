@@ -1409,9 +1409,7 @@ class TestEinsum:
         result = dpnp.einsum("ijij->", tensor_dp)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_different_paths(self, dtype):
         # Simple test, designed to exercise most specialized code paths,
         # note the +0.5 for floats.  This makes sure we use a float value
