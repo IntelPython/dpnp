@@ -151,7 +151,7 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=["2D_array", "3D_array", "4D_array"],
+        ids=["2D", "3D", "4D"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky(self, array, dtype):
@@ -171,7 +171,7 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=["2D_array", "3D_array", "4D_array"],
+        ids=["2D", "3D", "4D"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky_upper(self, array, dtype):
@@ -191,16 +191,14 @@ class TestCholesky:
                     )
                 else:
                     reconstructed = res_reshaped[idx].T @ res_reshaped[idx]
-                assert_dtype_allclose(
-                    reconstructed, ia_reshaped[idx], check_type=False
-                )
+                assert dpnp.allclose(reconstructed, ia_reshaped[idx])
         else:
             # Reconstruct the matrix using the Cholesky decomposition result
             if dpnp.issubdtype(dtype, dpnp.complexfloating):
                 reconstructed = result.T.conj() @ result
             else:
                 reconstructed = result.T @ result
-            assert_dtype_allclose(reconstructed, ia, check_type=False)
+            assert dpnp.allclose(reconstructed, ia)
 
     # upper parameter support will be added in numpy 2.0 version
     @testing.with_requires("numpy>=2.0")
@@ -214,7 +212,7 @@ class TestCholesky:
                 [[[7, 2], [2, 7]], [[8, 3], [3, 8]]],
             ],
         ],
-        ids=["2D_array", "3D_array", "4D_array"],
+        ids=["2D", "3D", "4D"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_cholesky_upper_numpy(self, array, dtype):
@@ -382,7 +380,7 @@ class TestDet:
                 [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
             ],
         ],
-        ids=["2D_array", "3D_array", "4D_array"],
+        ids=["2D", "3D", "4D"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_det(self, array, dtype):
@@ -1683,7 +1681,7 @@ class TestInv:
                 [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
             ],
         ],
-        ids=["2D_array", "3D_array", "4D_array"],
+        ids=["2D", "3D", "4D"],
     )
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_inv(self, array, dtype):
@@ -2851,7 +2849,7 @@ class TestSvd:
                 dpnp_diag_s[..., i, i] = dp_s[..., i]
                 reconstructed = dpnp.dot(dp_u, dpnp.dot(dpnp_diag_s, dp_vt))
 
-            assert_allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
+            assert dpnp.allclose(dp_a, reconstructed, rtol=tol, atol=1e-4)
 
         assert_allclose(dp_s, np_s, rtol=tol, atol=1e-03)
 
@@ -3034,7 +3032,7 @@ class TestPinv:
         else:  # a.ndim > 2
             reconstructed = dpnp.matmul(a_dp, dpnp.matmul(B_dp, a_dp))
 
-        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
+        assert dpnp.allclose(reconstructed, a_dp, rtol=tol, atol=tol)
 
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
@@ -3054,7 +3052,7 @@ class TestPinv:
         tol = self._tol
 
         reconstructed = dpnp.dot(dpnp.dot(a_dp, B_dp), a_dp)
-        assert_allclose(reconstructed, a_dp, rtol=tol, atol=tol)
+        assert dpnp.allclose(reconstructed, a_dp, rtol=tol, atol=tol)
 
     # rtol kwarg was added in numpy 2.0
     @testing.with_requires("numpy>=2.0")

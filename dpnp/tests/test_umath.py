@@ -468,12 +468,11 @@ class TestLogAddExp2:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dt",
-        [dpnp.bool, dpnp.int32, dpnp.int64, dpnp.float32, dpnp.float64],
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_range(self, dt):
-        a = numpy.array([1000000, -1000000, 1000200, -1000200], dtype=dt)
-        b = numpy.array([1000200, -1000200, 1000000, -1000000], dtype=dt)
+        a = get_abs_array([1000000, -1000000, 1000200, -1000200], dtype=dt)
+        b = get_abs_array([1000200, -1000200, 1000000, -1000000], dtype=dt)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.logaddexp2(ia, ib)
