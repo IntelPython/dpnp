@@ -1518,11 +1518,10 @@ def copyto(dst, src, casting="same_kind", where=True):
             f"but got {type(dst)}"
         )
     if not dpnp.is_supported_array_type(src):
-        no_dtype_attr = not hasattr(src, "dtype")
+        python_sc = dpnp.isscalar(src) and not isinstance(src, numpy.generic)
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
-        if no_dtype_attr:
-            # This case (scalar, list, etc) needs special handling to
-            # behave similar to NumPy
+        if python_sc:
+            # Python scalar needs special handling to behave similar to NumPy
             if dpnp.issubdtype(src, dpnp.integer) and dpnp.issubdtype(
                 dst, dpnp.unsignedinteger
             ):
