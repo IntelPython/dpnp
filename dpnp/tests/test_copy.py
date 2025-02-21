@@ -2,10 +2,7 @@ import copy
 
 import numpy
 import pytest
-from numpy.testing import (
-    assert_allclose,
-    assert_equal,
-)
+from numpy.testing import assert_allclose, assert_equal
 
 import dpnp
 
