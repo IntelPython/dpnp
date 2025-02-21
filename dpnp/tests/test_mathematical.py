@@ -2091,14 +2091,12 @@ class TestUnwrap:
 
 
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
-@pytest.mark.parametrize(
-    "val_type", [bool, int, float], ids=["bool", "int", "float"]
-)
+@pytest.mark.parametrize("val_type", [bool, int, float])
 @pytest.mark.parametrize("data_type", get_all_dtypes())
 @pytest.mark.parametrize(
     "func", ["add", "divide", "multiply", "power", "subtract"]
 )
-@pytest.mark.parametrize("val", [0, 1, 5], ids=["0", "1", "5"])
+@pytest.mark.parametrize("val", [0, 1, 5])
 @pytest.mark.parametrize(
     "array",
     [
@@ -2151,7 +2149,7 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
         assert_allclose(result, expected, rtol=1e-6)
 
 
-@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
+@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_multiply_scalar(shape, dtype):
     np_a = numpy.ones(shape, dtype=dtype)
@@ -2162,7 +2160,7 @@ def test_multiply_scalar(shape, dtype):
     assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
+@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_add_scalar(shape, dtype):
     np_a = numpy.ones(shape, dtype=dtype)
@@ -2173,7 +2171,7 @@ def test_add_scalar(shape, dtype):
     assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
+@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_subtract_scalar(shape, dtype):
     np_a = numpy.ones(shape, dtype=dtype)
@@ -2184,7 +2182,7 @@ def test_subtract_scalar(shape, dtype):
     assert_allclose(result, expected)
 
 
-@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["()", "(3, 2)"])
+@pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
 @pytest.mark.parametrize("dtype", get_all_dtypes())
 def test_divide_scalar(shape, dtype):
     np_a = numpy.ones(shape, dtype=dtype)
@@ -2196,9 +2194,7 @@ def test_divide_scalar(shape, dtype):
 
 
 @pytest.mark.parametrize(
-    "data",
-    [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
-    ids=["[[1., -1.], [0.1, -0.1]]", "[-2, -1, 0, 1, 2]"],
+    "data", [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]], ids=["2D", "1D"]
 )
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_unsigned=True)
@@ -2231,9 +2227,7 @@ def test_negative_boolean():
 
 
 @pytest.mark.parametrize(
-    "data",
-    [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]],
-    ids=["[[1., -1.], [0.1, -0.1]]", "[-2, -1, 0, 1, 2]"],
+    "data", [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]], ids=["2D", "1D"]
 )
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
 def test_positive(data, dtype):
@@ -2399,13 +2393,13 @@ class TestProjection:
         a = dpnp.array(X, dtype=dtype)
         result = dpnp.proj(a)
         expected = dpnp.array(Y, dtype=dtype)
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected, strict=True)
 
         # out keyword
         dp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
         result = dpnp.proj(a, out=dp_out)
         assert dp_out is result
-        assert_dtype_allclose(result, expected)
+        assert_array_equal(result, expected, strict=True)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_projection(self, dtype):
@@ -2793,21 +2787,11 @@ def test_bitwise_1array_input():
 
 @pytest.mark.parametrize(
     "x_shape",
-    [
-        (),
-        (2),
-        (3, 4),
-        (3, 4, 5),
-    ],
+    [(), (2), (3, 4), (3, 4, 5)],
 )
 @pytest.mark.parametrize(
     "y_shape",
-    [
-        (),
-        (2),
-        (3, 4),
-        (3, 4, 5),
-    ],
+    [(), (2), (3, 4), (3, 4, 5)],
 )
 def test_elemenwise_outer(x_shape, y_shape):
     x_np = numpy.random.random(x_shape)
@@ -2830,4 +2814,4 @@ def test_elemenwise_outer_scalar():
     y = dpnp.asarray(s)
     expected = dpnp.add.outer(x, y)
     result = dpnp.add.outer(x, s)
-    assert_dtype_allclose(result, expected)
+    assert_array_equal(result, expected, strict=True)
