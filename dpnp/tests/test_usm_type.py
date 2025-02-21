@@ -1848,7 +1848,7 @@ def test_choose(usm_type_x, usm_type_ind):
 
 
 # TODO: add it as part of `test_array_creation_from_scratch` function
-@pytest.mark.parametrize("func", ["hamming"])
+@pytest.mark.parametrize("func", ["hamming", "hanning"])
 @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 def test_window(func, usm_type):
     result = getattr(dp, func)(10, usm_type=usm_type)

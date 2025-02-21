@@ -18,7 +18,7 @@ Constructing arrays
 -------------------
 
 New arrays can be constructed using the routines detailed in
-:ref:`Array Creation Routines <routines.creation>`, and also by using the low-level
+:ref:`Array Creation Routines <routines.array-creation>`, and also by using the low-level
 :class:`dpnp.ndarray` constructor:
 
 .. autosummary::

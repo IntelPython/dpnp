@@ -22,18 +22,58 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._window_impl extensions
-//
-//*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "hamming.hpp"
-#include "hanning.hpp"
+#include <sycl/sycl.hpp>
 
-PYBIND11_MODULE(_window_impl, m)
+#include "utils/type_utils.hpp"
+
+namespace dpnp::extensions::window::kernels
 {
-    dpnp::extensions::window::init_hamming(m);
-    dpnp::extensions::window::init_hanning(m);
+
+template <typename T>
+class HanningFunctor
+{
+private:
+    T *data = nullptr;
+    const std::size_t N;
+
+public:
+    HanningFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+
+    void operator()(sycl::id<1> id) const
+    {
+        const auto i = id.get(0);
+
+        data[i] = T(0.5) - T(0.5) * sycl::cospi(T(2) * i / (N - 1));
+    }
+};
+
+typedef sycl::event (*hanning_fn_ptr_t)(sycl::queue &,
+                                        char *,
+                                        const std::size_t,
+                                        const std::vector<sycl::event> &);
+
+template <typename T>
+sycl::event hanning_impl(sycl::queue &q,
+                         char *result,
+                         const std::size_t nelems,
+                         const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+
+    T *res = reinterpret_cast<T *>(result);
+
+    sycl::event hanning_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using HanningKernel = HanningFunctor<T>;
+        cgh.parallel_for<HanningKernel>(sycl::range<1>(nelems),
+                                        HanningKernel(res, nelems));
+    });
+
+    return hanning_ev;
 }
+
+} // namespace dpnp::extensions::window::kernels

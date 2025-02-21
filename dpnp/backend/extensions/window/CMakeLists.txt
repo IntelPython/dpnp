@@ -27,6 +27,7 @@
 set(python_module_name _window_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/hamming.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hanning.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/window_py.cpp
 )
 

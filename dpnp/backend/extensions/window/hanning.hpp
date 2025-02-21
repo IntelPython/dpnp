@@ -22,18 +22,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._window_impl extensions
-//
-//*****************************************************************************
+
+#pragma once
 
 #include <pybind11/pybind11.h>
 
-#include "hamming.hpp"
-#include "hanning.hpp"
+namespace py = pybind11;
 
-PYBIND11_MODULE(_window_impl, m)
+namespace dpnp::extensions::window
 {
-    dpnp::extensions::window::init_hamming(m);
-    dpnp::extensions::window::init_hanning(m);
+void init_hanning(py::module_ m);
 }

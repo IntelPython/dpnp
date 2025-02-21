@@ -44,7 +44,7 @@ Array type testing
 
 
 Logical operations
-----------------
+------------------
 
 .. autosummary::
    :toctree: generated/
