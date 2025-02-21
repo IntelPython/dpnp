@@ -198,8 +198,6 @@ def get_all_dtypes(
     no_float16=True,
     no_complex=False,
     no_none=False,
-    xfail_dtypes=None,
-    exclude=None,
     no_unsigned=False,
     device=None,
 ):
@@ -227,17 +225,6 @@ def get_all_dtypes(
     if not no_none:
         dtypes.append(None)
 
-    def mark_xfail(dtype):
-        if xfail_dtypes is not None and dtype in xfail_dtypes:
-            return pytest.param(dtype, marks=pytest.mark.xfail)
-        return dtype
-
-    def not_excluded(dtype):
-        if exclude is None:
-            return True
-        return dtype not in exclude
-
-    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
 
 
@@ -309,6 +296,36 @@ def get_integer_dtypes(all_int_types=False, no_unsigned=False):
         if not no_unsigned:
             dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
 
+    return dtypes
+
+
+def get_integer_float_dtypes(
+    all_int_types=False,
+    no_unsigned=False,
+    no_float16=True,
+    device=None,
+    xfail_dtypes=None,
+    exclude=None,
+):
+    """
+    Build a list of integer and float types supported by DPNP.
+    """
+    dtypes = get_integer_dtypes(
+        all_int_types=all_int_types, no_unsigned=no_unsigned
+    )
+    dtypes += get_float_dtypes(no_float16=no_float16, device=device)
+
+    def mark_xfail(dtype):
+        if xfail_dtypes is not None and dtype in xfail_dtypes:
+            return pytest.param(dtype, marks=pytest.mark.xfail)
+        return dtype
+
+    def not_excluded(dtype):
+        if exclude is None:
+            return True
+        return dtype not in exclude
+
+    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
 
 

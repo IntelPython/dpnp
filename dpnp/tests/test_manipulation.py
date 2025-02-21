@@ -20,6 +20,7 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
+    get_integer_float_dtypes,
     has_support_aspect64,
     numpy_version,
 )
@@ -325,9 +326,7 @@ class TestCopyTo:
     ]
     testdata += [
         ([1, -1, 0], dtype)
-        for dtype in get_all_dtypes(
-            no_none=True, no_bool=True, no_complex=True, no_unsigned=True
-        )
+        for dtype in get_integer_float_dtypes(no_unsigned=True)
     ]
     testdata += [([0.1, 0.0, -0.1], dtype) for dtype in get_float_dtypes()]
     testdata += [([1j, -1j, 1 - 2j], dtype) for dtype in get_complex_dtypes()]

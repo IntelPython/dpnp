@@ -14,6 +14,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    get_integer_float_dtypes,
 )
 
 
@@ -632,9 +633,7 @@ class TestHfft:
         # but dpnp return float32 if input is float32
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_ihfft_1D(self, dtype, n, norm):
@@ -793,9 +792,7 @@ class TestRfft:
     def setup_method(self):
         numpy.random.seed(42)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize(
         "shape", [(64,), (8, 8), (4, 16), (4, 4, 4), (2, 4, 4, 2)]
     )
@@ -808,9 +805,7 @@ class TestRfft:
 
         assert_dtype_allclose(dpnp_res, np_res, check_only_type_kind=True)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_rfft_1D(self, dtype, n, norm):

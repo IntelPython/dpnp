@@ -11,6 +11,7 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
     get_float_dtypes,
+    get_integer_float_dtypes,
 )
 
 
@@ -65,9 +66,7 @@ def test_sum_empty_out(dtype):
     assert_array_equal(out, numpy.array(0, dtype=dtype))
 
 
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("axis", [None, 0, 1, 2, 3])
 def test_sum_empty(dtype, axis):
     a = numpy.empty((1, 2, 0, 4), dtype=dtype)
