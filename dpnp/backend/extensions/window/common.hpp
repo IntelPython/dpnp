@@ -23,28 +23,56 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#pragma once
+
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <sycl/sycl.hpp>
 
 #include "dpctl4pybind11.hpp"
-#include "hamming_kernel.hpp"
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
 
 namespace dpnp::extensions::window
 {
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-static kernels::hamming_fn_ptr_t hamming_dispatch_table[dpctl_td_ns::num_types];
-
 namespace py = pybind11;
 
+typedef sycl::event (*window_fn_ptr_t)(sycl::queue &,
+                                       char *,
+                                       const std::size_t,
+                                       const std::vector<sycl::event> &);
+
+template <typename T, template <typename> class Functor>
+sycl::event window_impl(sycl::queue &q,
+                        char *result,
+                        const std::size_t nelems,
+                        const std::vector<sycl::event> &depends)
+{
+    dpctl::tensor::type_utils::validate_type_for_device<T>(q);
+
+    T *res = reinterpret_cast<T *>(result);
+
+    sycl::event window_ev = q.submit([&](sycl::handler &cgh) {
+        cgh.depends_on(depends);
+
+        using WindowKernel = Functor<T>;
+        cgh.parallel_for<WindowKernel>(sycl::range<1>(nelems),
+                                       WindowKernel(res, nelems));
+    });
+
+    return window_ev;
+}
+
+template <typename dispatchT>
 std::pair<sycl::event, sycl::event>
-    py_hamming(sycl::queue &exec_q,
-               const dpctl::tensor::usm_ndarray &result,
-               const std::vector<sycl::event> &depends)
+    py_window(sycl::queue &exec_q,
+              const dpctl::tensor::usm_ndarray &result,
+              const std::vector<sycl::event> &depends,
+              const dispatchT &window_dispatch_vector)
 {
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
 
@@ -71,52 +99,27 @@ std::pair<sycl::event, sycl::event>
     int result_typenum = result.get_typenum();
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
-    auto fn = hamming_dispatch_table[result_type_id];
+    auto fn = window_dispatch_vector[result_type_id];
 
     if (fn == nullptr) {
         throw std::runtime_error("Type of given array is not supported");
     }
 
     char *result_typeless_ptr = result.get_data();
-    sycl::event hamming_ev = fn(exec_q, result_typeless_ptr, nelems, depends);
+    sycl::event window_ev = fn(exec_q, result_typeless_ptr, nelems, depends);
     sycl::event args_ev =
-        dpctl::utils::keep_args_alive(exec_q, {result}, {hamming_ev});
+        dpctl::utils::keep_args_alive(exec_q, {result}, {window_ev});
 
-    return std::make_pair(args_ev, hamming_ev);
+    return std::make_pair(args_ev, window_ev);
 }
 
-template <typename fnT, typename T>
-struct HammingFactory
+template <template <typename fnT, typename T> typename factoryT>
+void init_window_dispatch_vectors(window_fn_ptr_t window_dispatch_vector[])
 {
-    fnT get()
-    {
-        if constexpr (std::is_floating_point_v<T>) {
-            return kernels::hamming_impl<T>;
-        }
-        else {
-            return nullptr;
-        }
-    }
-};
-
-void init_hamming_dispatch_tables(void)
-{
-    using kernels::hamming_fn_ptr_t;
-
-    dpctl_td_ns::DispatchVectorBuilder<hamming_fn_ptr_t, HammingFactory,
+    dpctl_td_ns::DispatchVectorBuilder<window_fn_ptr_t, factoryT,
                                        dpctl_td_ns::num_types>
         contig;
-    contig.populate_dispatch_vector(hamming_dispatch_table);
-
-    return;
-}
-
-void init_hamming(py::module_ m)
-{
-    dpnp::extensions::window::init_hamming_dispatch_tables();
-
-    m.def("_hamming", &py_hamming, "Call hamming kernel", py::arg("sycl_queue"),
-          py::arg("result"), py::arg("depends") = py::list());
+    contig.populate_dispatch_vector(window_dispatch_vector);
 
     return;
 }
