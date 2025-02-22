@@ -127,7 +127,7 @@ jobs:
       - name: ReRun tests on Linux
         if: steps.run_tests.outcome == 'failure' && matrix.runner != 'windows-2019'
         id: run_tests_linux
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
@@ -144,7 +144,7 @@ jobs:
       - name: ReRun tests on Windows
         if: steps.run_tests.outcome == 'failure' && matrix.runner == 'windows-2019'
         id: run_tests_win
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
