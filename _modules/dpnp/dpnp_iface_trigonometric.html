@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.17.0dev6+19.g37e91760aa9 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.17.0dev7+7.gc3333126eac documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e99bc728"></script>
+      <script src="../../_static/documentation_options.js?v=00ed67c8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2544,7 +2544,7 @@
     <span class="n">abs_p_diff</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">p_diff</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">p_diff</span><span class="p">)</span>
     <span class="n">ph_correct</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">abs_p_diff</span> <span class="o">&lt;</span> <span class="n">discont</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ph_correct</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">ph_correct</span><span class="p">)</span>
 
-    <span class="n">up</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">up</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">dt</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="n">up</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span>
     <span class="n">up</span><span class="p">[</span><span class="n">slice1</span><span class="p">]</span> <span class="o">+=</span> <span class="n">ph_correct</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">up</span></div>
