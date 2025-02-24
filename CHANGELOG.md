@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This release achieves 100% compliance with Python Array API specification (revision [2023.12](https://data-apis.org/array-api/2023.12/)).
 The release provides enhanced compatibility with NumPy 2.2.3. Array manipulation, mathematical, logic, and statistics routines are complemented by a set of new functions.
-Furthermore, in this release, the full scope of DPNP tests pass on NVIDIA GPUs.
+Furthermore, a number of issues relating to running on NVIDIA GPUs have been resolved.
 
 ### Added
 
@@ -103,6 +103,7 @@ Furthermore, in this release, the full scope of DPNP tests pass on NVIDIA GPUs.
 * Resolved an issue with wrong result returned by `dpnp.tensordot` for integer data types [#2296](https://github.com/IntelPython/dpnp/pull/2296)
 * Resolved `ValueError` exception raised by `dpnp.linalg.qr` with non-contiguous input array [#2314](https://github.com/IntelPython/dpnp/pull/2314)
 * Resolved an issue with wrong result returned by `dpnp.fft.fftn` and `dpnp.fft.rfftn` when running on NVIDIA GPU [#2332](https://github.com/IntelPython/dpnp/pull/2332)
+
 
 ## [0.16.1] - 12/06/2024
 
