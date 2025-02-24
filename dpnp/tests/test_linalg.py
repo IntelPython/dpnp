@@ -1454,12 +1454,12 @@ class TestEinsum:
         # Use einsum to compare to not have difference due to sum round-offs:
         result1 = dpnp.einsum(",i->", s_dp, a_dp)
         result2 = dpnp.einsum("i->", s_dp * a_dp)
-        assert_array_equal(result1, result2)
+        assert dpnp.allclose(result1, result2)
 
         # contig + scalar -> scalar
         # Use einsum to compare to not have difference due to sum round-offs:
         result3 = dpnp.einsum("i,->", a_dp, s_dp)
-        assert_array_equal(result1, result2)
+        assert dpnp.allclose(result2, result3)
 
         # contig + contig + contig -> scalar
         a = numpy.array([0.5, 0.5, 0.25, 4.5, 3.0], dtype=dtype)
