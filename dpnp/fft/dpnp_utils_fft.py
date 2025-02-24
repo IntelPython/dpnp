@@ -397,7 +397,9 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
 
         # cuFFT requires input arrays to be C-contiguous (row-major)
         # for correct execution
-        if dpnp.is_cuda_backend(a) and not a.flags.c_contiguous:
+        if (
+            dpnp.is_cuda_backend(a) and not a.flags.c_contiguous
+        ):  # pragma: no cover
             a = dpnp.ascontiguousarray(a)
 
     # w/a for cuFFT to avoid "Invalid strides" error when
@@ -406,7 +408,7 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     # TODO: Remove this ones the OneMath issue is resolved
     # https://github.com/uxlfoundation/oneMath/issues/631
     cufft_wa = dpnp.is_cuda_backend(a) and a.shape[-1] == 1 and len(axes) > 1
-    if cufft_wa:
+    if cufft_wa:  # pragma: no cover
         a = dpnp.moveaxis(a, -1, -2)
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
@@ -417,7 +419,7 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     res = _scale_result(res, a.shape, norm, forward, index)
 
     # Revert swapped axes
-    if cufft_wa:
+    if cufft_wa:  # pragma: no cover
         res = dpnp.moveaxis(res, -1, -2)
 
     if batch_fft:
