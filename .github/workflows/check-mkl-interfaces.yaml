@@ -50,7 +50,7 @@ jobs:
           conda-merge ${{ env.build-with-oneapi-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
 
       - name: Upload artifact
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: ${{ env.environment-file-name }}
           path: ${{ env.environment-file }}
@@ -131,7 +131,7 @@ jobs:
       - name: ReRun tests on Linux
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
@@ -236,7 +236,7 @@ jobs:
       - name: ReRun tests on Linux
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
