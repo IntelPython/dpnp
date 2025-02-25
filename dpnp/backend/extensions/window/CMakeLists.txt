@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2024-2025, Intel Corporation
+# Copyright (c) 2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,17 +24,10 @@
 # *****************************************************************************
 
 
-set(python_module_name _statistics_impl)
+set(python_module_name _window_impl)
 set(_module_src
-    ${CMAKE_CURRENT_SOURCE_DIR}/bincount.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/histogram.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/histogramdd.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/histogram_common.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sliding_dot_product1d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/sliding_window1d.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/statistics_py.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/validation_utils.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/hamming.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/window_py.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
@@ -93,5 +86,5 @@ if (DPNP_WITH_REDIST)
 endif()
 
 install(TARGETS ${python_module_name}
-  DESTINATION "dpnp/backend/extensions/statistics"
+  DESTINATION "dpnp/backend/extensions/window"
 )
