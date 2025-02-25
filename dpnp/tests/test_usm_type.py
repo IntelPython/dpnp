@@ -800,9 +800,6 @@ def test_1in_1out(func, data, usm_type):
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types, ids=list_of_usm_types)
 def test_2in_1out(func, data1, data2, usm_type_x, usm_type_y):
-    if func == "correlate" and is_win_platform():
-        pytest.skip("due to SAT-7693")
-
     x = dp.array(data1, usm_type=usm_type_x)
     y = dp.array(data2, usm_type=usm_type_y)
     z = getattr(dp, func)(x, y)
