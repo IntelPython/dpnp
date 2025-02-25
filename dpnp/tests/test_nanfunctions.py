@@ -89,7 +89,7 @@ class TestNanArgmaxNanArgmin:
         if numpy.can_cast(out.dtype, numpy.intp, casting="safe"):
             result = getattr(dpnp, func)(ia, out=iout, axis=1)
             expected = getattr(numpy, func)(a, out=out, axis=1)
-            assert_array_equal(expected, result)
+            assert_array_equal(result, expected)
             assert result is iout
         else:
             assert_raises(TypeError, getattr(numpy, func), a, out=out, axis=1)
@@ -283,7 +283,7 @@ class TestNanMaxNanMin:
 
         result = getattr(dpnp, func)(ia, out=iout, axis=1)
         expected = getattr(numpy, func)(a, out=out, axis=1)
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
         assert result is iout
 
     @pytest.mark.parametrize("func", ["nanmax", "nanmin"])
@@ -390,7 +390,7 @@ class TestNanMean:
 
         result = dpnp.nanmean(dp_array)
         expected = numpy.nanmean(np_array)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     def test_nanmean_error(self):
         ia = dpnp.arange(5, dtype=dpnp.float32)
@@ -599,7 +599,7 @@ class TestNanProd:
 
         result = dpnp.nanprod(ia, out=iout, dtype=dtype, axis=1)
         expected = numpy.nanprod(a, out=out, dtype=dtype, axis=1)
-        assert_array_equal(expected, result)
+        assert_array_equal(result, expected)
         assert result is iout
 
     def test_nanprod_Error(self):

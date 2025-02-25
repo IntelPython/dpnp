@@ -2518,16 +2518,15 @@ class TestHypot:
         with pytest.raises(ValueError):
             dpnp.hypot(dp_array1, dp_array2, out=dp_out)
 
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
         [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
     )
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.hypot, a, 2, out)
-        assert_raises(TypeError, numpy.hypot, a.asnumpy(), 2, out)
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.hypot, a, 2, out)
 
 
 class TestLogSumExp:

@@ -147,7 +147,9 @@ def get_float_complex_dtypes(no_float16=True, device=None):
 def get_abs_array(data, dtype=None):
     if numpy.issubdtype(dtype, numpy.unsignedinteger):
         data = numpy.abs(data)
-    return numpy.array(data, dtype=dtype)
+    # it is better to use astype with the default casting=unsafe
+    # otherwise, we need to skip test for cases where overflow occurs
+    return numpy.array(data).astype(dtype)
 
 
 def get_all_dtypes(
