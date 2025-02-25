@@ -103,6 +103,7 @@ Furthermore, a number of issues relating to running on NVIDIA GPUs have been res
 * Resolved an issue with wrong result returned by `dpnp.tensordot` for integer data types [#2296](https://github.com/IntelPython/dpnp/pull/2296)
 * Resolved `ValueError` exception raised by `dpnp.linalg.qr` with non-contiguous input array [#2314](https://github.com/IntelPython/dpnp/pull/2314)
 * Resolved an issue with wrong result returned by `dpnp.fft.fftn` and `dpnp.fft.rfftn` when running on NVIDIA GPU [#2332](https://github.com/IntelPython/dpnp/pull/2332)
+* Added a workaround to prevent a memory corruption in `dpnp.correlate` [#2333](https://github.com/IntelPython/dpnp/pull/2333)
 
 
 ## [0.16.1] - 12/06/2024
