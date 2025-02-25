@@ -884,7 +884,7 @@ def nanprod(
 
     """
 
-    a, _ = _replace_nan(a, 1)
+    a = dpnp.nan_to_num(a, nan=1.0, posinf=dpnp.inf, neginf=-dpnp.inf)
     return dpnp.prod(
         a,
         axis=axis,
@@ -988,7 +988,7 @@ def nansum(
 
     """
 
-    a, _ = _replace_nan(a, 0)
+    a = dpnp.nan_to_num(a, nan=0.0, posinf=dpnp.inf, neginf=-dpnp.inf)
     return dpnp.sum(
         a,
         axis=axis,
