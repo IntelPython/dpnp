@@ -61,6 +61,12 @@ echo "Test only dpnp.tests.test_usm_type"
 "%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type
 if %errorlevel% neq 0 exit 1
 
+echo "Test only dpnp.tests.test_indexing"
+
+REM https://cje-fm-owrp-prod04.devtools.intel.com/satg-dap-intelpython/job/intel-packages/job/dpnp/job/dev-windows-py3.11/job/test-wheel-conda/1733/
+"%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_indexing
+if %errorlevel% neq 0 exit 1
+
 echo "Test everything"
 
 "%PYTHON%" -m pytest -ra --pyargs dpnp
