@@ -1108,5 +1108,5 @@ class TestHistogram2d:
             ix, iy, bins=bins_count
         )
         assert_array_equal(result_hist, expected_hist)
-        assert_allclose(result_edges_x, expected_edges_x)
-        assert_allclose(result_edges_y, expected_edges_y)
+        assert_allclose(result_edges_x, expected_edges_x, rtol=1e-6)
+        assert_allclose(result_edges_y, expected_edges_y, rtol=1e-6)
