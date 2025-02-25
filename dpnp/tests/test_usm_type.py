@@ -577,7 +577,7 @@ def test_meshgrid(usm_type_x, usm_type_y):
 # @pytest.mark.parametrize(
 #     "ord", [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"]
 # )
-@pytest.mark.parametrize("ord", [-dp.inf])
+@pytest.mark.parametrize("ord", [None])
 @pytest.mark.parametrize(
     "axis",
     [-1, 0, 1, (0, 1), (-2, -1), None],
