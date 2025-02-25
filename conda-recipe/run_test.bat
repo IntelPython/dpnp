@@ -42,6 +42,15 @@ if %errorlevel% neq 0 exit 1
 "%PYTHON%" -m dpctl -f
 if %errorlevel% neq 0 exit 1
 
+echo "Test only dpnp.tests.test_usm_type::TestFft::test_rfftn"
+
+REM https://cje-fm-owrp-prod04.devtools.intel.com/satg-dap-intelpython/job/intel-packages/job/dpnp/job/dev-windows-py3.11/job/test-wheel-conda-stable/236
+"%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type::TestFft::test_rfftn
+if %errorlevel% neq 0 exit 1
+
+"%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type::TestFft::test_fft
+if %errorlevel% neq 0 exit 1
+
 echo "Test only dpnp.tests.test_usm_type::test_norm"
 
 REM https://cje-fm-owrp-prod04.devtools.intel.com/satg-dap-intelpython/job/intel-packages/job/dpnp/job/dev-windows-py3.12/job/test-stable/137/
