@@ -123,17 +123,13 @@ sycl::event choose_impl(sycl::queue &q,
     const indTy *ind_tp = reinterpret_cast<const indTy *>(ind_cp);
     Ty *dst_tp = reinterpret_cast<Ty *>(dst_cp);
 
-    sycl::event choose_ev = q.submit([&](sycl::handler &cgh) {
+    sycl::event hamming_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         using InOutIndexerT =
             dpctl::tensor::offset_utils::TwoOffsets_StridedIndexer;
         const InOutIndexerT ind_out_indexer{nd, ind_offset, dst_offset,
                                             shape_and_strides};
-
-        using NthChoiceIndexerT = strides_detail::NthStrideOffsetUnpacked;
-        const NthChoiceIndexerT choices_indexer{
-            nd, chc_offsets, shape_and_strides, shape_and_strides + 3 * nd};
 
         using ChooseFunc = ChooseFunctor<ProjectorT, InOutIndexerT,
                                          NthChoiceIndexerT, indTy, Ty>;
@@ -144,7 +140,7 @@ sycl::event choose_impl(sycl::queue &q,
                                                 choices_indexer));
     });
 
-    return choose_ev;
+    return hamming_ev;
 }
 
 } // namespace dpnp::extensions::window::kernels

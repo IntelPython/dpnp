@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,10 +23,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#pragma once
+
 #include <pybind11/pybind11.h>
 
-#include "elementwise_functions/common.hpp"
+namespace py = pybind11;
 
-namespace ufunc_ns = dpnp::extensions::ufunc;
-
-PYBIND11_MODULE(_ufunc_impl, m) { ufunc_ns::init_elementwise_functions(m); }
+namespace dpnp::extensions::window
+{
+void init_window_functions(py::module_);
+} // namespace dpnp::extensions::window

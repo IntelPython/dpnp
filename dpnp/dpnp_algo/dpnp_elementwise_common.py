@@ -41,6 +41,7 @@ __all__ = [
     "DPNPI0",
     "DPNPAngle",
     "DPNPBinaryFunc",
+    "DPNPHamming",
     "DPNPImag",
     "DPNPReal",
     "DPNPRound",
@@ -534,6 +535,27 @@ class DPNPI0(DPNPUnaryFunc):
 
 class DPNPImag(DPNPUnaryFunc):
     """Class that implements dpnp.imag unary element-wise functions."""
+
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        unary_dp_impl_fn,
+        docs,
+    ):
+        super().__init__(
+            name,
+            result_type_resolver_fn,
+            unary_dp_impl_fn,
+            docs,
+        )
+
+    def __call__(self, x, out=None, order="K"):
+        return super().__call__(x, out=out, order=order)
+
+
+class DPNPHamming(DPNPUnaryFunc):
+    """Class that implements dpnp.hamming functions."""
 
     def __init__(
         self,

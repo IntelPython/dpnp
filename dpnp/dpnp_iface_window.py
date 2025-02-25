@@ -38,9 +38,11 @@ it contains:
 
 import dpnp
 
+from .dpnp_algo.dpnp_elementwise_common import DPNPAngleHamming
+
 # pylint: disable=invalid-name
 
-__all__ = ["hamming"]
+__all__ = ["hamming", "hamming_ufunc"]
 
 
 def hamming(M, device=None, usm_type=None, sycl_queue=None):
@@ -144,3 +146,93 @@ def hamming(M, device=None, usm_type=None, sycl_queue=None):
     dpnp.multiply(out, 0.46, out=out)
     dpnp.add(out, 0.54, out=out)
     return out
+
+
+def hamming_ufunc(M, device=None, usm_type=None, sycl_queue=None):
+
+    if not isinstance(M, (int, float, dpnp.integer, dpnp.floating)):
+        raise TypeError("M must be an integer")
+
+    cfd_kwarg = {
+        "device": device,
+        "usm_type": usm_type,
+        "sycl_queue": sycl_queue,
+    }
+    if M < 1:
+        return dpnp.empty(0, **cfd_kwarg)
+    if M == 1:
+        return dpnp.ones(1, **cfd_kwarg)
+
+    n = dpnp.arange(1 - M, M, 2, **cfd_kwarg)
+    out = dpnp.empty_like(n, dtype=dpnp.default_float_type(n.device))
+
+    alpha = dpnp.pi / (M - 1)
+    dpnp.multiply(alpha, n, out=out)
+    dpnp.cos(out, out=out)
+    dpnp.multiply(out, 0.46, out=out)
+    dpnp.add(out, 0.54, out=out)
+    return out
+
+
+_ANGLE_DOCSTRING = """
+Computes the phase angle (also called the argument) of each element `x_i` for
+input array `x`.
+
+For full documentation refer to :obj:`numpy.angle`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have a complex-valued floating-point data type.
+deg : bool, optional
+    Return angle in degrees if ``True``, radians if ``False``.
+
+    Default: ``False``.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    An array containing the element-wise phase angles.
+    The returned array has a floating-point data type determined
+    by the Type Promotion Rules.
+
+Notes
+-----
+Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
+
+See Also
+--------
+:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
+:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+:obj:`dpnp.real` : Return the real part of the complex argument.
+:obj:`dpnp.imag` : Return the imaginary part of the complex argument.
+:obj:`dpnp.real_if_close` : Return the real part of the input is complex
+                            with all imaginary parts close to zero.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array([1.0, 1.0j, 1+1j])
+>>> np.angle(a) # in radians
+array([0.        , 1.57079633, 0.78539816]) # may vary
+
+>>> np.angle(a, deg=True) # in degrees
+array([ 0., 90., 45.])
+"""
+
+hamming_ufunc = DPNPHamming(
+    "hamming",
+    ti._hamming_result_type,
+    ti._hamming,
+    _HAMMING_DOCSTRING,
+)

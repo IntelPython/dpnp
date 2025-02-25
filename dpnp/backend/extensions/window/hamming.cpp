@@ -34,8 +34,8 @@
 #include <utility>
 #include <vector>
 
-#include "hamming_kernel.hpp"
 #include "dpctl4pybind11.hpp"
+#include "hamming_kernel.hpp"
 #include "utils/indexing_utils.hpp"
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
@@ -56,11 +56,11 @@ namespace py = pybind11;
 
 std::pair<sycl::event, sycl::event>
     py_hamming(const dpctl::tensor::usm_ndarray &src,
-              const py::object &py_chcs,
-              const dpctl::tensor::usm_ndarray &dst,
-              uint8_t mode,
-              sycl::queue &exec_q,
-              const std::vector<sycl::event> &depends)
+               const py::object &py_chcs,
+               const dpctl::tensor::usm_ndarray &dst,
+               uint8_t mode,
+               sycl::queue &exec_q,
+               const std::vector<sycl::event> &depends)
 {
     std::vector<dpctl::tensor::usm_ndarray> chcs =
         detail::parse_py_chcs(exec_q, py_chcs);
@@ -318,7 +318,8 @@ void init_hamming(py::module_ m)
 {
     dpnp::extensions::window::init_hamming_dispatch_tables();
 
-    m.def("_hamming", &py_hamming, "", py::arg("src"), py::arg("depends") = py::list());
+    m.def("_hamming", &py_hamming, "", py::arg("src"),
+          py::arg("depends") = py::list());
 
     return;
 }

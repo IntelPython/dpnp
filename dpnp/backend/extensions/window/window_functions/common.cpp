@@ -25,8 +25,14 @@
 
 #include <pybind11/pybind11.h>
 
-#include "elementwise_functions/common.hpp"
+#include "hamming.hpp"
 
-namespace ufunc_ns = dpnp::extensions::ufunc;
+namespace py = pybind11;
 
-PYBIND11_MODULE(_ufunc_impl, m) { ufunc_ns::init_elementwise_functions(m); }
+namespace dpnp::extensions::window
+{
+/**
+ * @brief Add window functions to Python module
+ */
+void init_window_functions(py::module_ m) { init_hamming(m); }
+} // namespace dpnp::extensions::window
