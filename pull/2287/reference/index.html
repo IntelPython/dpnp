@@ -15,17 +15,16 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>API Reference &mdash; Data Parallel Extension for NumPy 0.17.0dev5+35.g38ae39152c4 documentation</title>
+  <title>API Reference &mdash; Data Parallel Extension for NumPy 0.17.0rc1+8.g45e89266b40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=921c25b4"></script>
+      <script src="../_static/documentation_options.js?v=77d536e3"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -62,7 +61,6 @@
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
@@ -125,9 +123,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="routines.html">Routines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="creation.html">Array creation routines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manipulation.html">Array manipulation routines</a></li>
-<li class="toctree-l2"><a class="reference internal" href="binary.html">Bit-wise operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtype.html">Data type routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="fft.html">Discrete Fourier Transform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="functional.html">Functional programming</a></li>
@@ -135,8 +133,10 @@
 <li class="toctree-l2"><a class="reference internal" href="linalg.html">Linear algebra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="logic.html">Logic functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="set.html">Set routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l2"><a class="reference internal" href="statistics.html">Statistics</a></li>
 </ul>
 </li>
@@ -152,10 +152,6 @@
 <li class="toctree-l2"><a class="reference internal" href="comparison.html#linear-algebra">Linear Algebra</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html#discrete-fourier-transform">Discrete Fourier Transform</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html#random-sampling">Random Sampling</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="misc.html">Miscellaneous routines</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="misc.html#utility">Utility</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="array_api.html">Array API standard compatibility</a><ul>

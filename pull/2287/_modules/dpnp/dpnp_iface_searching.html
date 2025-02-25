@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.17.0dev5+35.g38ae39152c4 documentation</title>
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.17.0rc1+8.g45e89266b40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=921c25b4"></script>
+      <script src="../../_static/documentation_options.js?v=77d536e3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -163,15 +163,18 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        By default, the index is into the flattened array, otherwise along</span>
 <span class="sd">        the specified axis.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
 <span class="sd">        result as dimensions with size one. With this option, the result will</span>
 <span class="sd">        broadcast correctly against the array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -255,15 +258,18 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        By default, the index is into the flattened array, otherwise along</span>
 <span class="sd">        the specified axis.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
 <span class="sd">        result as dimensions with size one. With this option, the result will</span>
 <span class="sd">        broadcast correctly against the array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -411,13 +417,15 @@
 <span class="sd">    side : {&quot;left&quot;, &quot;right&quot;}, optional</span>
 <span class="sd">        If ``&quot;left&quot;``, the index of the first suitable location found is given.</span>
 <span class="sd">        If ``&quot;right&quot;``, return the last such index. If there is no suitable</span>
-<span class="sd">        index, return either 0 or N (where N is the length of `a`).</span>
+<span class="sd">        index, return either ``0`` or ``N`` (where ``N`` is the length of `a`).</span>
+
 <span class="sd">        Default: ``&quot;left&quot;``.</span>
-<span class="sd">    sorter : {dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Optional 1-D array of integer indices that sort array a into ascending</span>
-<span class="sd">        order. They are typically the result of :obj:`dpnp.argsort`.</span>
+<span class="sd">    sorter : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Optional 1-D array of integer indices that sort array `a` into ascending</span>
+<span class="sd">        order. They are typically the result of :py:func:`dpnp.argsort`.</span>
 <span class="sd">        Out of bound index values of `sorter` array are treated using</span>
 <span class="sd">        ``&quot;wrap&quot;`` mode documented in :py:func:`dpnp.take`.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -434,7 +442,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([11,12,13,14,15])</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([11, 12, 13, 14, 15])</span>
 <span class="sd">    &gt;&gt;&gt; np.searchsorted(a, 13)</span>
 <span class="sd">    array(2)</span>
 <span class="sd">    &gt;&gt;&gt; np.searchsorted(a, 13, side=&#39;right&#39;)</span>
@@ -442,6 +450,19 @@
 <span class="sd">    &gt;&gt;&gt; v = np.array([-10, 20, 12, 13])</span>
 <span class="sd">    &gt;&gt;&gt; np.searchsorted(a, v)</span>
 <span class="sd">    array([0, 5, 1, 2])</span>
+
+<span class="sd">    When `sorter` is used, the returned indices refer to the sorted</span>
+<span class="sd">    array of `a` and not `a` itself:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([40, 10, 20, 30])</span>
+<span class="sd">    &gt;&gt;&gt; sorter = np.argsort(a)</span>
+<span class="sd">    &gt;&gt;&gt; sorter</span>
+<span class="sd">    array([1, 2, 3, 0])  # Indices that would sort the array &#39;a&#39;</span>
+<span class="sd">    &gt;&gt;&gt; result = np.searchsorted(a, 25, sorter=sorter)</span>
+<span class="sd">    &gt;&gt;&gt; result</span>
+<span class="sd">    array(2)</span>
+<span class="sd">    &gt;&gt;&gt; a[sorter[result]]</span>
+<span class="sd">    array(30)  # The element at index 2 of the sorted array is 30</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -473,16 +494,20 @@
 <span class="sd">    ----------</span>
 <span class="sd">    condition : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        When ``True``, yield `x`, otherwise yield `y`.</span>
-<span class="sd">    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
+<span class="sd">    x, y : {None, dpnp.ndarray, usm_ndarray, scalar}, optional</span>
 <span class="sd">        Values from which to choose. `x`, `y` and `condition` need to be</span>
 <span class="sd">        broadcastable to some shape.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {&quot;K&quot;, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;}, optional</span>
 <span class="sd">        Memory layout of the new output array, if keyword `out` is ``None``.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        The array into which the result is written. The data type of `out` must</span>
 <span class="sd">        match the expected shape and the expected data type of the result.</span>
 <span class="sd">        If ``None`` then a new array is returned.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>

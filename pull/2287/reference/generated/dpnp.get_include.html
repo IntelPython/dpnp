@@ -15,20 +15,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.get_include &mdash; Data Parallel Extension for NumPy 0.17.0dev5+35.g38ae39152c4 documentation</title>
+  <title>dpnp.get_include &mdash; Data Parallel Extension for NumPy 0.17.0rc1+8.g45e89266b40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=921c25b4"></script>
+      <script src="../../_static/documentation_options.js?v=77d536e3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Array API standard compatibility" href="../array_api.html" />
+    <link rel="next" title="dpnp.broadcast_shapes" href="dpnp.broadcast_shapes.html" />
     <link rel="prev" title="dpnp.byte_bounds" href="dpnp.byte_bounds.html" /> 
 </head>
 
@@ -57,19 +57,30 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../other.html">Miscellaneous routines</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../other.html#utility">Utility</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../misc.html">Miscellaneous routines</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../misc.html#utility">Utility</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="dpnp.broadcast_shapes.html">dpnp.broadcast_shapes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.byte_bounds.html">dpnp.byte_bounds</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.get_include</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
@@ -94,7 +105,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../misc.html">Miscellaneous routines</a></li>
+          <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
+          <li class="breadcrumb-item"><a href="../other.html">Miscellaneous routines</a></li>
       <li class="breadcrumb-item active">dpnp.get_include</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.get_include.rst.txt" rel="nofollow"> View page source</a>
@@ -122,7 +134,7 @@ should use this function to locate the appropriate include directory.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dpnp.byte_bounds.html" class="btn btn-neutral float-left" title="dpnp.byte_bounds" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../array_api.html" class="btn btn-neutral float-right" title="Array API standard compatibility" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.broadcast_shapes.html" class="btn btn-neutral float-right" title="dpnp.broadcast_shapes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Data type routines &mdash; Data Parallel Extension for NumPy 0.17.0dev5+35.g38ae39152c4 documentation</title>
+  <title>Data type routines &mdash; Data Parallel Extension for NumPy 0.17.0rc1+8.g45e89266b40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=921c25b4"></script>
+      <script src="../_static/documentation_options.js?v=77d536e3"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -58,9 +58,9 @@
 <li class="toctree-l2"><a class="reference internal" href="ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="manipulation.html">Array manipulation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="binary.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Data type routines</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.can_cast.html">dpnp.can_cast</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.result_type.html">dpnp.result_type</a></li>
@@ -76,15 +76,16 @@
 <li class="toctree-l3"><a class="reference internal" href="linalg.html">Linear algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="other.html">Miscellaneous routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="statistics.html">Statistics</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
@@ -128,7 +129,7 @@
 <td><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if cast between data types can occur according to the casting rule.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.result_type.html#dpnp.result_type" title="dpnp.result_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.result_type</span></code></a></p></td>
-<td><p>Returns the type that results from applying the NumPy type promotion rules to the arguments.</p></td>
+<td><p>result_type(<a href="#id1"><span class="problematic" id="id2">*</span></a>arrays_and_dtypes)</p></td>
 </tr>
 </tbody>
 </table>
@@ -137,7 +138,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dtype</span></code></a></p></td>
-<td><p>Create a data type object.</p></td>
+<td><p>dtype(dtype, align=False, copy=False, [metadata])</p></td>
 </tr>
 </tbody>
 </table>
