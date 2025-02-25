@@ -42,13 +42,7 @@ if %errorlevel% neq 0 exit 1
 "%PYTHON%" -m dpctl -f
 if %errorlevel% neq 0 exit 1
 
-"%PYTHON%" -m pytest -ra --pyargs dpnp.tests.test_ndarray
-if %errorlevel% neq 0 exit 1
-
-"%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type::test_2in_1out
-if %errorlevel% neq 0 exit 1
-
-"%PYTHON%" -m pytest -ra -v --pyargs dpnp.tests.test_usm_type
+"%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type
 if %errorlevel% neq 0 exit 1
 
 "%PYTHON%" -m pytest -ra --pyargs dpnp
