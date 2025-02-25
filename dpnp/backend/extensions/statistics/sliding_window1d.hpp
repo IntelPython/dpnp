@@ -436,7 +436,7 @@ public:
     using size_type = SizeT;
 
     PaddedSpan(T *const data, const SizeT size, const SizeT pad)
-        : Span<T>(data, size), pad_(pad)
+        : Span<T, SizeT>(data, size), pad_(pad)
     {
     }
 
@@ -579,11 +579,13 @@ void submit_sliding_window1d(const PaddedSpan<const T, SizeT> &a,
             auto y_start = glid;
             auto y_stop =
                 std::min(y_start + WorkPI * results.size_x(), out.size());
-            int32_t i = 0;
+            uint32_t i = 0;
             for (uint32_t y = y_start; y < y_stop; y += results.size_x()) {
                 out_ptr[y] = results[i++];
             }
-            // due to excessive optimizations this code results in memory
+            // while the code itself seems to be valid, inside correlate
+            // kernel it results in memory corruption. Further investigation
+            // is needed. SAT-7693
             // corruption results.store(&out_ptr[glid],
             //               [out_end](auto &&ptr) { return ptr < out_end; });
         });
