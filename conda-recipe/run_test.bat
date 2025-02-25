@@ -48,6 +48,12 @@ REM https://cje-fm-owrp-prod04.devtools.intel.com/satg-dap-intelpython/job/intel
 "%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type::test_norm
 if %errorlevel% neq 0 exit 1
 
+echo "Test only dpnp.tests.test_usm_type::TestFft::test_fftfreq"
+
+REM https://cje-fm-owrp-prod04.devtools.intel.com/satg-dap-intelpython/job/intel-packages/job/dpnp/job/dev-windows-py3.11/job/test-stable/120/
+"%PYTHON%" -m pytest --count 100 -ra -v --pyargs dpnp.tests.test_usm_type::TestFft::test_fftfreq
+if %errorlevel% neq 0 exit 1
+
 echo "Test only dpnp.tests.test_usm_type::TestFft"
 
 REM https://cje-fm-owrp-prod04.devtools.intel.com/satg-dap-intelpython/job/intel-packages/job/dpnp/job/dev-windows-py3.11/job/test/1713/
