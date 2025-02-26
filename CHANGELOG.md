@@ -84,7 +84,7 @@ Furthermore, a number of issues relating to running on NVIDIA GPUs have been res
 * Enabled Intel MKL backends when building from the source with `--onemkl-interfaces` option [#2229](https://github.com/IntelPython/dpnp/pull/2229)
 * Extended `intersphinx_mapping` with a link to CuPy documentation to make cupy functions clickable from the rendered pages [#2232](https://github.com/IntelPython/dpnp/pull/2232)
 * Improved performance of `dpnp.nanmedian` function when `axis` is not `None` passed [#2240](https://github.com/IntelPython/dpnp/pull/2240)
-* Aligned `dpnp.trim_zeros` with NumPy 2.2 and added support of a multi-dimenaional input array [#2241](https://github.com/IntelPython/dpnp/pull/2241)
+* Aligned `dpnp.trim_zeros` with NumPy 2.2 and added support of a multi-dimensional input array [#2241](https://github.com/IntelPython/dpnp/pull/2241)
 * Disallowed implicit conversion of `dpnp.ndarray` to `numpy.ndarray` [#2260](https://github.com/IntelPython/dpnp/pull/2260)
 * Extended `dpnp.ndarray.to_device` method to support `stream` keyword [#2263](https://github.com/IntelPython/dpnp/pull/2263)
 * Extended `dpnp.sort` and `dpnp.argsort` functions and `dpnp.ndarray.sort` and `dpnp.ndarray.argsort` methods to support `descending` keyword [#2269](https://github.com/IntelPython/dpnp/pull/2269)
@@ -99,7 +99,7 @@ Furthermore, a number of issues relating to running on NVIDIA GPUs have been res
 ### Fixed
 
 * Migrated to experimental extension of DPC++ compiler with `group_load/group_store` per deprecation build warning [#2123](https://github.com/IntelPython/dpnp/pull/2123)
-* Fixed `DeprecationWarning` warning appearing during running the tests [#2156](https://github.com/IntelPython/dpnp/pull/2156)
+* Fixed `DeprecationWarning` appearing during running the tests [#2156](https://github.com/IntelPython/dpnp/pull/2156)
 * Modified installation path for the tests to enable tests run by `pytest --pyargs dpnp.tests` command [#2116](https://github.com/IntelPython/dpnp/pull/2116)
 * Resolved issues with `dpnp.linalg.svd` implementation invoked on NVIDIA GPU [#2212](https://github.com/IntelPython/dpnp/pull/2212)
 * Fixed compilation warnings when building from the source with `--target=cuda` option [#2225](https://github.com/IntelPython/dpnp/pull/2225)
