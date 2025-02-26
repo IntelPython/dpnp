@@ -2,12 +2,7 @@ import dpctl.tensor as dpt
 import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
-from numpy.testing import (
-    assert_allclose,
-    assert_array_equal,
-    assert_equal,
-    assert_raises,
-)
+from numpy.testing import assert_array_equal, assert_equal, assert_raises
 
 import dpnp
 
@@ -171,9 +166,7 @@ class TestBroadcastArray:
         dpnp_arrays = [dpnp.asarray(Xnp) for Xnp in np_arrays]
         out_dpnp_arrays = dpnp.broadcast_arrays(*dpnp_arrays)
         for Xnp, X in zip(out_np_arrays, out_dpnp_arrays):
-            assert_array_equal(
-                Xnp, dpnp.asnumpy(X), err_msg=f"Failed for {input_shapes})"
-            )
+            assert_array_equal(Xnp, X, err_msg=f"Failed for {input_shapes})")
 
     def assert_broadcast_arrays_raise(self, input_shapes):
         dpnp_arrays = [dpnp.asarray(numpy.zeros(s)) for s in input_shapes]
@@ -186,8 +179,8 @@ class TestBroadcastArray:
         X = dpnp.asarray(Xnp)
         Y = dpnp.asarray(Ynp)
         res_X, res_Y = dpnp.broadcast_arrays(X, Y)
-        assert_array_equal(res_Xnp, dpnp.asnumpy(res_X))
-        assert_array_equal(res_Ynp, dpnp.asnumpy(res_Y))
+        assert_array_equal(res_Xnp, res_X)
+        assert_array_equal(res_Ynp, res_Y)
 
     def test_broadcast_arrays_one_off(self):
         Xnp = numpy.array([[1, 2, 3]])
@@ -196,8 +189,8 @@ class TestBroadcastArray:
         X = dpnp.asarray(Xnp)
         Y = dpnp.asarray(Ynp)
         res_X, res_Y = dpnp.broadcast_arrays(X, Y)
-        assert_array_equal(res_Xnp, dpnp.asnumpy(res_X))
-        assert_array_equal(res_Ynp, dpnp.asnumpy(res_Y))
+        assert_array_equal(res_Xnp, res_X)
+        assert_array_equal(res_Ynp, res_Y)
 
     @pytest.mark.parametrize(
         "shapes",
@@ -327,7 +320,7 @@ class TestColumnStack:
 
         np_res = numpy.column_stack((np_a, np_b))
         dp_res = dpnp.column_stack((dp_a, dp_b))
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     def test_generator(self):
         with pytest.raises(TypeError, match="arrays to stack must be"):
@@ -350,7 +343,7 @@ class TestConcatenate:
 
         dp_res = dpnp.concatenate((dp_a, dp_a), axis=0)
         np_res = numpy.concatenate((np_a, np_a), axis=0)
-        assert_equal(dp_res.asnumpy(), np_res)
+        assert_equal(dp_res, np_res)
 
         for axis in [ndim, -(ndim + 1)]:
             assert_raises(AxisError, dpnp.concatenate, (dp_a, dp_a), axis=axis)
@@ -381,7 +374,7 @@ class TestConcatenate:
             # shapes must match except for concatenation axis
             np_res = numpy.concatenate((np_a, np_b), axis=axis[0])
             dp_res = dpnp.concatenate((dp_a, dp_b), axis=axis[0])
-            assert_equal(dp_res.asnumpy(), np_res)
+            assert_equal(dp_res, np_res)
 
             for i in range(1, 3):
                 assert_raises(
@@ -410,7 +403,7 @@ class TestConcatenate:
 
         np_res = numpy.concatenate((np_a, np_a), axis=None)
         dp_res = dpnp.concatenate((dp_a, dp_a), axis=None)
-        assert_equal(dp_res.asnumpy(), np_res)
+        assert_equal(dp_res, np_res)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
@@ -422,7 +415,7 @@ class TestConcatenate:
 
         np_res = numpy.concatenate(np_a, axis=None)
         dp_res = dpnp.concatenate(dp_a, axis=None)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         # numpy doesn't raise an exception here but probably should
         with pytest.raises(AxisError):
@@ -438,7 +431,7 @@ class TestConcatenate:
 
         np_res = numpy.concatenate((np_r4,))
         dp_res = dpnp.concatenate((dp_r4,))
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         # 1D default concatenation
         r3 = list(range(3))
@@ -447,17 +440,17 @@ class TestConcatenate:
 
         np_res = numpy.concatenate((np_r4, np_r3))
         dp_res = dpnp.concatenate((dp_r4, dp_r3))
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         # Explicit axis specification
         np_res = numpy.concatenate((np_r4, np_r3), axis=0)
         dp_res = dpnp.concatenate((dp_r4, dp_r3), axis=0)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         # Including negative
         np_res = numpy.concatenate((np_r4, np_r3), axis=-1)
         dp_res = dpnp.concatenate((dp_r4, dp_r3), axis=-1)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_concatenate_2d(self, dtype):
@@ -469,16 +462,16 @@ class TestConcatenate:
 
         np_res = numpy.concatenate((np_a23, np_a13))
         dp_res = dpnp.concatenate((dp_a23, dp_a13))
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         np_res = numpy.concatenate((np_a23, np_a13), axis=0)
         dp_res = dpnp.concatenate((dp_a23, dp_a13), axis=0)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         for axis in [1, -1]:
             np_res = numpy.concatenate((np_a23.T, np_a13.T), axis=axis)
             dp_res = dpnp.concatenate((dp_a23.T, dp_a13.T), axis=axis)
-            assert_array_equal(dp_res.asnumpy(), np_res)
+            assert_array_equal(dp_res, np_res)
 
         # Arrays much match shape
         assert_raises(
@@ -505,11 +498,11 @@ class TestConcatenate:
         for axis in [2, -1]:
             np_res = numpy.concatenate((np_a0, np_a1, np_a2), axis=axis)
             dp_res = dpnp.concatenate((dp_a0, dp_a1, dp_a2), axis=axis)
-            assert_array_equal(dp_res.asnumpy(), np_res)
+            assert_array_equal(dp_res, np_res)
 
         np_res = numpy.concatenate((np_a0.T, np_a1.T, np_a2.T), axis=0)
         dp_res = dpnp.concatenate((dp_a0.T, dp_a1.T, dp_a2.T), axis=0)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
@@ -531,8 +524,7 @@ class TestConcatenate:
         dp_res = dpnp.concatenate((dp_a0, dp_a1, dp_a2), axis=2, out=dp_out)
 
         assert dp_out is dp_res
-        assert_array_equal(dp_out.asnumpy(), np_out)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True)
@@ -548,7 +540,7 @@ class TestConcatenate:
         np_res = numpy.concatenate((np_a, np_a), axis=2, casting=casting)
         dp_res = dpnp.concatenate((dp_a, dp_a), axis=2, casting=casting)
 
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     def test_concatenate_out_dtype(self):
         x = dpnp.ones((5, 5))
@@ -576,7 +568,7 @@ class TestDims:
         dp_a = dpnp.array(0, dtype=dt)
         func = lambda xp, a: xp.broadcast_to(a, sh)
 
-        assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
+        assert_array_equal(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize("dt", get_all_dtypes())
     @pytest.mark.parametrize(
@@ -587,7 +579,7 @@ class TestDims:
         dp_a = dpnp.ones(1, dtype=dt)
         func = lambda xp, a: xp.broadcast_to(a, sh)
 
-        assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
+        assert_array_equal(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
@@ -598,7 +590,7 @@ class TestDims:
         dp_a = dpnp.arange(3, dtype=dt)
         func = lambda xp, a: xp.broadcast_to(a, sh)
 
-        assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
+        assert_array_equal(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize("dt", get_all_dtypes())
     @pytest.mark.parametrize(
@@ -614,7 +606,7 @@ class TestDims:
         dp_a = dpnp.ones(sh1, dtype=dt)
         func = lambda xp, a: xp.broadcast_to(a, sh2)
 
-        assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
+        assert_array_equal(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize("dt", get_all_dtypes())
     @pytest.mark.parametrize(
@@ -630,7 +622,7 @@ class TestDims:
         dp_a = dpnp.ones(sh1, dtype=dt)
         func = lambda xp, a: xp.broadcast_to(a, sh2)
 
-        assert_allclose(func(numpy, np_a), func(dpnp, dp_a))
+        assert_array_equal(func(numpy, np_a), func(dpnp, dp_a))
 
     @pytest.mark.parametrize(
         "sh1, sh2",
@@ -681,7 +673,7 @@ class TestDstack:
 
         np_res = numpy.dstack([np_a, np_b])
         dp_res = dpnp.dstack([dp_a, dp_b])
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     def test_generator(self):
         with pytest.raises(TypeError, match="arrays to stack must be"):
@@ -737,7 +729,7 @@ class TestMatrixtranspose:
     @pytest.mark.parametrize(
         "shape",
         [(3, 5), (4, 2), (2, 5, 2), (2, 3, 3, 6)],
-        ids=["(3,5)", "(4,2)", "(2,5,2)", "(2,3,3,6)"],
+        ids=["(3, 5)", "(4, 2)", "(2, 5, 2)", "(2, 3, 3, 6)"],
     )
     def test_matrix_transpose(self, dtype, shape):
         a = numpy.arange(numpy.prod(shape), dtype=dtype).reshape(shape)
@@ -746,7 +738,7 @@ class TestMatrixtranspose:
         expected = numpy.matrix_transpose(a)
         result = dpnp.matrix_transpose(dp_a)
 
-        assert_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     @pytest.mark.parametrize(
         "shape",
@@ -760,7 +752,7 @@ class TestMatrixtranspose:
         expected = numpy.matrix_transpose(a)
         result = dpnp.matrix_transpose(dp_a)
 
-        assert_allclose(result, expected)
+        assert_array_equal(result, expected)
 
     def test_matrix_transpose_errors(self):
         a_dp = dpnp.array([[1, 2], [3, 4]], dtype="float32")
@@ -862,7 +854,7 @@ class TestStack:
 
         np_res = numpy.stack(np_arrays)
         dp_res = dpnp.stack(dp_arrays)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_1d_array_input(self, dtype):
@@ -873,19 +865,19 @@ class TestStack:
 
         np_res = numpy.stack((np_a, np_b))
         dp_res = dpnp.stack((dp_a, dp_b))
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         np_res = numpy.stack((np_a, np_b), axis=1)
         dp_res = dpnp.stack((dp_a, dp_b), axis=1)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         np_res = numpy.stack(list([np_a, np_b]))
         dp_res = dpnp.stack(list([dp_a, dp_b]))
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         np_res = numpy.stack(numpy.array([np_a, np_b]))
         dp_res = dpnp.stack(dpnp.array([dp_a, dp_b]))
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize("axis", [0, 1, -1, -2])
     @pytest.mark.parametrize(
@@ -898,7 +890,7 @@ class TestStack:
 
         np_res = numpy.stack(np_arrays, axis=axis)
         dp_res = dpnp.stack(dp_arrays, axis=axis)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize("axis", [2, -3])
     @pytest.mark.parametrize(
@@ -923,7 +915,7 @@ class TestStack:
 
         np_res = numpy.stack(np_arrays, axis=axis)
         dp_res = dpnp.stack(dp_arrays, axis=axis)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_empty_arrays_input(self, dtype):
@@ -933,11 +925,11 @@ class TestStack:
 
         np_res = numpy.stack(np_arrays)
         dp_res = dpnp.stack(dp_arrays)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
         np_res = numpy.stack(np_arrays, axis=1)
         dp_res = dpnp.stack(dp_arrays, axis=1)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_out(self, dtype):
@@ -953,8 +945,7 @@ class TestStack:
         dp_res = dpnp.stack((dp_a, dp_b), out=dp_out)
 
         assert dp_out is dp_res
-        assert_array_equal(dp_out.asnumpy(), np_out)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     def test_empty_list_input(self):
         with pytest.raises(TypeError):
@@ -1000,7 +991,7 @@ class TestStack:
             (np_a, np_b), axis=1, casting="unsafe", dtype=dtype
         )
         dp_res = dpnp.stack((dp_a, dp_b), axis=1, casting="unsafe", dtype=dtype)
-        assert_array_equal(dp_res.asnumpy(), np_res)
+        assert_array_equal(dp_res, np_res)
 
     @pytest.mark.parametrize("arr_dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize("dtype", [dpnp.bool, dpnp.int32, dpnp.int64])
@@ -1073,7 +1064,7 @@ class TestUnstack:
         dp_res = dpnp.unstack(dp_a)
         assert len(dp_res) == len(np_res)
         for dp_arr, np_arr in zip(dp_res, np_res):
-            assert_array_equal(dp_arr.asnumpy(), np_arr)
+            assert_array_equal(dp_arr, np_arr)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_2d_array(self, dtype):
@@ -1084,7 +1075,7 @@ class TestUnstack:
         dp_res = dpnp.unstack(dp_a, axis=0)
         assert len(dp_res) == len(np_res)
         for dp_arr, np_arr in zip(dp_res, np_res):
-            assert_array_equal(dp_arr.asnumpy(), np_arr)
+            assert_array_equal(dp_arr, np_arr)
 
     @pytest.mark.parametrize("axis", [0, 1, -1])
     @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -1096,7 +1087,7 @@ class TestUnstack:
         dp_res = dpnp.unstack(dp_a, axis=axis)
         assert len(dp_res) == len(np_res)
         for dp_arr, np_arr in zip(dp_res, np_res):
-            assert_array_equal(dp_arr.asnumpy(), np_arr)
+            assert_array_equal(dp_arr, np_arr)
 
     @pytest.mark.parametrize("axis", [2, -3])
     @pytest.mark.parametrize("dtype", get_all_dtypes())
