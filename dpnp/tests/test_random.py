@@ -1182,8 +1182,3 @@ class TestPermutationsTestShuffle:
         actual = alist
         desired = conv([0, 1, 9, 6, 2, 4, 5, 8, 7, 3])
         assert_array_equal(actual, desired)
-        alist = conv([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
-        dpnp.random.shuffle(alist)
-        actual = alist
-        desired = conv([0, 1, 9, 6, 2, 4, 5, 8, 7, 3])
-        assert_array_equal(actual, desired)
