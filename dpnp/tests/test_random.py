@@ -1,9 +1,8 @@
-import math
 import unittest
 
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_array_equal
+from numpy.testing import assert_allclose, assert_array_equal, assert_equal
 
 import dpnp.random
 
@@ -24,11 +23,11 @@ class TestDistribution(unittest.TestCase):
     ):
         seed = 28041995
         dpnp.random.seed(seed)
-        res = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
-        var = numpy.var(res)
-        mean = numpy.mean(res)
-        assert math.isclose(var, expected_var, abs_tol=0.1)
-        assert math.isclose(mean, expected_mean, abs_tol=0.1)
+        res = getattr(dpnp.random, dist_name)(size=size, **params)
+        var = dpnp.var(res)
+        mean = dpnp.mean(res)
+        assert_allclose(var, expected_var, atol=0.1)
+        assert_allclose(mean, expected_mean, atol=0.1)
 
     def check_invalid_args(self, dist_name, params):
         size = 10
@@ -39,10 +38,10 @@ class TestDistribution(unittest.TestCase):
         seed = 28041990
         size = 10
         dpnp.random.seed(seed)
-        a1 = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
+        a1 = getattr(dpnp.random, dist_name)(size=size, **params)
         dpnp.random.seed(seed)
-        a2 = dpnp.asnumpy(getattr(dpnp.random, dist_name)(size=size, **params))
-        assert_allclose(a1, a2, rtol=1e-07, atol=0)
+        a2 = getattr(dpnp.random, dist_name)(size=size, **params)
+        assert_allclose(a1, a2)
 
 
 @pytest.mark.parametrize(
@@ -127,7 +126,7 @@ def test_seed(func):
     a1 = func(args)
     dpnp.random.seed(seed)
     a2 = func(args)
-    assert_allclose(a1, a2, rtol=1e-07, atol=0)
+    assert dpnp.allclose(a1, a2)
 
 
 def test_randn_normal_distribution():
@@ -144,11 +143,11 @@ def test_randn_normal_distribution():
     expected_var = 1.0
 
     dpnp.random.seed(seed)
-    res = dpnp.asnumpy(dpnp.random.randn(pts))
-    var = numpy.var(res)
-    mean = numpy.mean(res)
-    assert math.isclose(var, expected_var, abs_tol=0.03)
-    assert math.isclose(mean, expected_mean, abs_tol=0.03)
+    res = dpnp.random.randn(pts)
+    var = dpnp.var(res)
+    mean = dpnp.mean(res)
+    assert_allclose(var, expected_var, atol=1e-02)
+    assert_allclose(mean, expected_mean, atol=1e-02)
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
@@ -562,7 +561,7 @@ class TestDistributionsMultinomial(TestDistribution):
         pvals = [1 / 6.0] * 6
         dpnp.random.seed(seed)
         res = dpnp.random.multinomial(n, pvals, size)
-        assert_allclose(n, dpnp.asnumpy(res).sum(), rtol=1e-07, atol=0)
+        assert_equal(n, res.sum())
 
     def test_invalid_args(self):
         n = -10  # parameter `n`, non-negative expected
@@ -595,11 +594,9 @@ class TestDistributionsMultivariateNormal(TestDistribution):
         mean = [2.56, 3.23]
         cov = [[1, 0], [0, 1]]
         size = 10**5
-        res = dpnp.asnumpy(
-            dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
-        )
-        res_mean = [numpy.mean(res.T[0]), numpy.mean(res.T[1])]
-        assert_allclose(res_mean, mean, rtol=1e-02, atol=0)
+        res = dpnp.random.multivariate_normal(mean=mean, cov=cov, size=size)
+        res_mean = [dpnp.mean(res.T[0]), dpnp.mean(res.T[1])]
+        assert dpnp.allclose(res_mean, mean)
 
     def test_invalid_args(self):
         mean = [2.56, 3.23]  # OK
@@ -709,13 +706,11 @@ class TestDistributionsNoncentralChisquare:
         size = 10**6
         seed = 28041995
         dpnp.random.seed(seed)
-        res = dpnp.asnumpy(
-            dpnp.random.noncentral_chisquare(df, nonc, size=size)
-        )
-        var = numpy.var(res)
-        mean = numpy.mean(res)
-        assert math.isclose(var, expected_var, abs_tol=0.6)
-        assert math.isclose(mean, expected_mean, abs_tol=0.6)
+        res = dpnp.random.noncentral_chisquare(df, nonc, size=size)
+        var = dpnp.var(res)
+        mean = dpnp.mean(res)
+        assert_allclose(var, expected_var, atol=0.6)
+        assert_allclose(mean, expected_mean, atol=0.6)
 
     def test_invalid_args(self):
         size = 10
@@ -739,7 +734,7 @@ class TestDistributionsNoncentralChisquare:
         a1 = dpnp.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
         dpnp.random.seed(seed)
         a2 = dpnp.asarray(dpnp.random.noncentral_chisquare(df, nonc, size=size))
-        assert_allclose(a1, a2, rtol=1e-07, atol=0)
+        assert dpnp.allclose(a1, a2)
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
@@ -982,11 +977,11 @@ class TestDistributionsVonmises:
         expected_mean = numpy.mean(numpy_res)
         expected_var = numpy.var(numpy_res)
 
-        res = dpnp.asnumpy(dpnp.random.vonmises(mu, kappa, size=size))
-        var = numpy.var(res)
-        mean = numpy.mean(res)
-        assert math.isclose(var, expected_var, abs_tol=0.6)
-        assert math.isclose(mean, expected_mean, abs_tol=0.6)
+        res = dpnp.random.vonmises(mu, kappa, size=size)
+        var = dpnp.var(res)
+        mean = dpnp.mean(res)
+        assert_allclose(var, expected_var, atol=0.6)
+        assert_allclose(mean, expected_mean, atol=0.6)
 
     def test_invalid_args(self):
         size = 10
@@ -1006,7 +1001,7 @@ class TestDistributionsVonmises:
         a1 = dpnp.asarray(dpnp.random.vonmises(mu, kappa, size=size))
         dpnp.random.seed(seed)
         a2 = dpnp.asarray(dpnp.random.vonmises(mu, kappa, size=size))
-        assert_allclose(a1, a2, rtol=1e-07, atol=0)
+        assert dpnp.allclose(a1, a2)
 
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="Failed on Iris Xe")
@@ -1182,6 +1177,11 @@ class TestPermutationsTestShuffle:
         seed = 1234567890
 
         dpnp.random.seed(seed)
+        alist = conv([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
+        dpnp.random.shuffle(alist)
+        actual = alist
+        desired = conv([0, 1, 9, 6, 2, 4, 5, 8, 7, 3])
+        assert_array_equal(actual, desired)
         alist = conv([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
         dpnp.random.shuffle(alist)
         actual = alist

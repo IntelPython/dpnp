@@ -15,7 +15,7 @@ import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.random import RandomState
 
-from .helper import get_array, is_cpu_device
+from .helper import assert_dtype_allclose, get_array, is_cpu_device
 
 # aspects of default device:
 _def_device = dpctl.SyclQueue().sycl_device
@@ -89,15 +89,11 @@ class TestNormal:
                     ],
                     dtype=dtype,
                 )
-        # TODO: discuss with opneMKL: there is a difference between CPU and GPU
+        # TODO: discuss with oneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
-        # precision = dpnp.finfo(dtype=dtype).precision
-        precision = (
-            8 if dtype == dpnp.float64 else dpnp.finfo(dtype=dtype).precision
-        )
-        assert_array_almost_equal(
-            dpnp_data.asnumpy(), expected, decimal=precision
-        )
+        # precision = dpnp.finfo(dtype).precision
+        precision = 8 if dtype == dpnp.float64 else dpnp.finfo(dtype).precision
+        assert_array_almost_equal(dpnp_data, expected, decimal=precision)
 
         # check if compute follows data isn't broken
         assert_cfd(dpnp_data, sycl_queue, usm_type)
@@ -153,9 +149,9 @@ class TestNormal:
         )
 
     def test_inf_scale(self):
-        a = RandomState().normal(0, numpy.inf, size=1000).asnumpy()
-        assert_equal(numpy.isnan(a).any(), False)
-        assert_equal(numpy.isinf(a).all(), True)
+        a = RandomState().normal(0, numpy.inf, size=1000)
+        assert_equal(dpnp.isnan(a).any(), False)
+        assert_equal(dpnp.isinf(a).all(), True)
         assert_equal(a.max(), numpy.inf)
         assert_equal(a.min(), -numpy.inf)
 
@@ -163,10 +159,10 @@ class TestNormal:
         "loc", [numpy.inf, -numpy.inf], ids=["numpy.inf", "-numpy.inf"]
     )
     def test_inf_loc_scale(self, loc):
-        a = RandomState().normal(loc=loc, scale=numpy.inf, size=1000).asnumpy()
-        assert_equal(numpy.isnan(a).all(), False)
-        assert_equal(numpy.nanmin(a), loc)
-        assert_equal(numpy.nanmax(a), loc)
+        a = RandomState().normal(loc=loc, scale=numpy.inf, size=1000)
+        assert_equal(dpnp.isnan(a).all(), False)
+        assert_equal(dpnp.nanmin(a), loc)
+        assert_equal(dpnp.nanmax(a), loc)
 
     def test_extreme_bounds(self):
         dtype = get_default_floating()
@@ -222,14 +218,12 @@ class TestNormal:
         )
 
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
-        actual = data.asnumpy()
         expected = numpy.random.RandomState(seed).normal(
             loc=get_array(numpy, loc), scale=get_array(numpy, scale), size=size
         )
 
-        dtype = get_default_floating()
-        precision = dpnp.finfo(dtype=dtype).precision
-        assert_array_almost_equal(actual, expected, decimal=precision)
+        precision = dpnp.finfo(get_default_floating()).precision
+        assert_array_almost_equal(data, expected, decimal=precision)
 
         # check if compute follows data isn't broken
         assert_cfd(data, sycl_queue)
@@ -308,22 +302,20 @@ class TestRand:
                 dtype=dtype,
             )
 
-        precision = dpnp.finfo(dtype=dtype).precision
-        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
+        precision = dpnp.finfo(dtype).precision
+        assert_array_almost_equal(data, expected, decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).rand(
             3, 2, usm_type=usm_type
         )
-        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
+        assert_array_almost_equal(data, expected, decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
         # call with omitted dimensions has to draw the first element from expected
         data = RandomState(seed, sycl_queue=sycl_queue).rand(usm_type=usm_type)
-        assert_array_almost_equal(
-            data.asnumpy(), expected[0, 0], decimal=precision
-        )
+        assert_array_almost_equal(data, expected[0, 0], decimal=precision)
         assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
@@ -390,21 +382,21 @@ class TestRandInt:
             expected = numpy.array([[4, 1], [5, 3], [5, 7]], dtype=numpy.int32)
         else:
             expected = numpy.array([[1, 2], [1, 5], [3, 7]], dtype=numpy.int32)
-        assert_array_equal(data.asnumpy(), expected)
+        assert_array_equal(data, expected)
         assert_cfd(data, sycl_queue, usm_type)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).randint(
             low=low, high=high, size=(3, 2), dtype=dtype, usm_type=usm_type
         )
-        assert_array_equal(data.asnumpy(), expected)
+        assert_array_equal(data, expected)
         assert_cfd(data, sycl_queue, usm_type)
 
         # call with omitted dimensions has to draw the first element from expected
         data = RandomState(seed, sycl_queue=sycl_queue).randint(
             low=low, high=high, dtype=dtype, usm_type=usm_type
         )
-        assert_array_equal(data.asnumpy(), expected[0, 0])
+        assert_array_equal(data, expected[0, 0])
         assert_cfd(data, sycl_queue, usm_type)
 
         # rand() is an alias on random_sample(), map arguments
@@ -428,7 +420,7 @@ class TestRandInt:
             expected = numpy.array([4, 4, 3, 3, 1, 0, 3], dtype=numpy.int32)
         else:
             expected = numpy.array([0, 1, 4, 0, 3, 3, 3], dtype=numpy.int32)
-        assert_array_equal(actual.asnumpy(), expected)
+        assert_array_equal(actual, expected)
 
     def test_negative_bounds(self):
         actual = RandomState(5143).randint(low=-15.74, high=-3, size=(2, 7))
@@ -448,7 +440,7 @@ class TestRandInt:
                 ],
                 dtype=numpy.int32,
             )
-        assert_array_equal(actual.asnumpy(), expected)
+        assert_array_equal(actual, expected)
 
     def test_negative_interval(self):
         rs = RandomState(3567)
@@ -553,9 +545,7 @@ class TestRandInt:
         size = (3, 2, 5)
 
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
-        actual = (
-            RandomState(seed).randint(low=low, high=high, size=size).asnumpy()
-        )
+        actual = RandomState(seed).randint(low=low, high=high, size=size)
         expected = numpy.random.RandomState(seed).randint(
             low=get_array(numpy, low), high=get_array(numpy, high), size=size
         )
@@ -585,15 +575,13 @@ class TestRandInt:
             )
 
         # dtype must be int or dpnp.int32, in other cases it will be a fallback to numpy
-        actual = (
-            RandomState(seed)
-            .randint(low=low, high=high, size=size, dtype=dtype)
-            .asnumpy()
+        actual = RandomState(seed).randint(
+            low=low, high=high, size=size, dtype=dtype
         )
         expected = numpy.random.RandomState(seed).randint(
             low=low, high=high, size=size, dtype=dtype
         )
-        assert_equal(actual, expected)
+        assert_array_equal(actual, expected)
         assert_raises(TypeError, RandomState().randint, dtype=dtype)
 
     @pytest.mark.parametrize(
@@ -637,20 +625,19 @@ class TestRandN:
                 dtype=dtype,
             )
 
-        # TODO: discuss with opneMKL: there is a difference between CPU and GPU
+        # TODO: discuss with oneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
-        # precision = dpnp.finfo(dtype=numpy.float64).precision
-        precision = dpnp.finfo(dtype=numpy.float32).precision
-        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
+        precision = dpnp.finfo(numpy.float32).precision
+        assert_array_almost_equal(data, expected, decimal=precision)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).randn(
             3, 2, usm_type=usm_type
         )
-        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
+        assert_array_almost_equal(data, expected, decimal=precision)
 
         # call with omitted dimensions has to draw the first element from expected
-        actual = dpnp.asnumpy(RandomState(seed).randn(usm_type=usm_type))
+        actual = RandomState(seed).randn(usm_type=usm_type)
         assert_array_almost_equal(actual, expected[0, 0], decimal=precision)
 
         # randn() is an alias on standard_normal(), map arguments
@@ -699,12 +686,12 @@ class TestSeed:
         size = (3, 2, 4)
 
         rs = RandomState(seed)
-        a1 = getattr(rs, func)(size=size).asnumpy()
+        a1 = getattr(rs, func)(size=size)
 
         rs = RandomState(seed)
-        a2 = getattr(rs, func)(size=size).asnumpy()
+        a2 = getattr(rs, func)(size=size)
 
-        precision = dpnp.finfo(dtype=numpy.float64).precision
+        precision = dpnp.finfo(numpy.float64).precision
         assert_array_almost_equal(a1, a2, decimal=precision)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
@@ -736,9 +723,9 @@ class TestSeed:
             pytest.skip("seed as a scalar is only supported on GPU")
 
         size = 15
-        a1 = RandomState(seed).uniform(size=size).asnumpy()
-        a2 = RandomState(seed).uniform(size=size).asnumpy()
-        assert_allclose(a1, a2, rtol=1e-07, atol=0)
+        a1 = RandomState(seed).uniform(size=size)
+        a2 = RandomState(seed).uniform(size=size)
+        assert dpnp.allclose(a1, a2)
 
     @pytest.mark.parametrize(
         "seed",
@@ -874,22 +861,20 @@ class TestStandardNormal:
                 dtype=dtype,
             )
 
-        # TODO: discuss with opneMKL: there is a difference between CPU and GPU
+        # TODO: discuss with oneMKL: there is a difference between CPU and GPU
         # generated samples since 9 digit while precision=15 for float64
-        # precision = dpnp.finfo(dtype=numpy.float64).precision
-        precision = dpnp.finfo(dtype=numpy.float32).precision
-        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
+        # precision = dpnp.finfo(numpy.float64).precision
+        precision = dpnp.finfo(numpy.float32).precision
+        assert_array_almost_equal(data, expected, decimal=precision)
 
         # call with the same seed has to draw the same values
         data = RandomState(seed, sycl_queue=sycl_queue).standard_normal(
             size=(4, 2), usm_type=usm_type
         )
-        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
+        assert_array_almost_equal(data, expected, decimal=precision)
 
         # call with omitted dimensions has to draw the first element from expected
-        actual = dpnp.asnumpy(
-            RandomState(seed).standard_normal(usm_type=usm_type)
-        )
+        actual = RandomState(seed).standard_normal(usm_type=usm_type)
         assert_array_almost_equal(actual, expected[0, 0], decimal=precision)
 
         # random_sample() is an alias on uniform(), map arguments
@@ -954,17 +939,14 @@ class TestRandSample:
                 dtype=dtype,
             )
 
-        precision = dpnp.finfo(dtype=dtype).precision
-        assert_array_almost_equal(data.asnumpy(), expected, decimal=precision)
+        precision = dpnp.finfo(dtype).precision
+        assert_array_almost_equal(data, expected, decimal=precision)
 
         # call with omitted dimensions has to draw the first element from expected
         data = RandomState(seed, sycl_queue=sycl_queue).random_sample(
             usm_type=usm_type
         )
-        assert_array_almost_equal(
-            data.asnumpy(), expected[0, 0], decimal=precision
-        )
-
+        assert_array_almost_equal(data, expected[0, 0], decimal=precision)
         # random_sample() is an alias on uniform(), map arguments
         with mock.patch("dpnp.random.RandomState.uniform") as m:
             RandomState(seed).random_sample((4, 2), usm_type=usm_type)
@@ -1024,8 +1006,7 @@ class TestUniform:
             return
 
         # get drawn samples by dpnp
-        dpnp_data = func()
-        actual = dpnp_data.asnumpy()
+        actual = func()
 
         # default dtype depends on fp64 support by the device
         dtype = get_default_floating() if dtype is None else dtype
@@ -1038,9 +1019,8 @@ class TestUniform:
                         [2.030351535445079, 4.533497077834326],
                     ]
                 )
-                assert_array_almost_equal(
-                    actual, expected, decimal=dpnp.finfo(dtype=dtype).precision
-                )
+                precision = dpnp.finfo(dtype).precision
+                assert_array_almost_equal(actual, expected, decimal=precision)
             else:
                 expected = numpy.array([[3, 8], [2, 4], [1, 4]])
                 assert_array_equal(actual, expected)
@@ -1053,15 +1033,14 @@ class TestUniform:
                         [3.316473517549554, 8.428297791221597],
                     ]
                 )
-                assert_array_almost_equal(
-                    actual, expected, decimal=dpnp.finfo(dtype=dtype).precision
-                )
+                precision = dpnp.finfo(dtype).precision
+                assert_array_almost_equal(actual, expected, decimal=precision)
             else:
                 expected = numpy.array([[1, 4], [5, 1], [3, 7]])
                 assert_array_equal(actual, expected)
 
         # check if compute follows data isn't broken
-        assert_cfd(dpnp_data, sycl_queue, usm_type)
+        assert_cfd(actual, sycl_queue, usm_type)
 
     @pytest.mark.parametrize(
         "dtype",
@@ -1088,18 +1067,13 @@ class TestUniform:
             return
 
         # get drawn samples by dpnp
-        actual = func().asnumpy()
+        actual = func()
 
         # default dtype depends on fp64 support by the device
         dtype = get_default_floating() if dtype is None else dtype
         expected = numpy.full(shape=shape, fill_value=low, dtype=dtype)
 
-        if dtype == dpnp.int32:
-            assert_array_equal(actual, expected)
-        else:
-            assert_array_almost_equal(
-                actual, expected, decimal=dpnp.finfo(dtype=dtype).precision
-            )
+        assert_dtype_allclose(actual, expected)
 
     @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_range_bounds(self):
@@ -1137,14 +1111,12 @@ class TestUniform:
         )
 
         # dpnp accepts only scalar as low and/or high, in other cases it will be a fallback to numpy
-        actual = data.asnumpy()
         expected = numpy.random.RandomState(seed).uniform(
             low=get_array(numpy, low), high=get_array(numpy, high), size=size
         )
 
-        dtype = get_default_floating()
-        precision = dpnp.finfo(dtype=dtype).precision
-        assert_array_almost_equal(actual, expected, decimal=precision)
+        precision = dpnp.finfo(get_default_floating()).precision
+        assert_array_almost_equal(data, expected, decimal=precision)
 
         # check if compute follows data isn't broken
         assert_cfd(data, sycl_queue)
