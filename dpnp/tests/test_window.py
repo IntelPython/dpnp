@@ -7,7 +7,6 @@ import dpnp
 from .helper import assert_dtype_allclose
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize("func", ["hamming"])
 @pytest.mark.parametrize(
     "M",
@@ -20,7 +19,7 @@ from .helper import assert_dtype_allclose
         5.0,
         dpnp.float32(6),
         dpnp.array(7),
-        numpy.array(8),
+        numpy.array(8.0),
     ],
 )
 def test_window(func, M):
@@ -33,7 +32,6 @@ def test_window(func, M):
     assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize("func", ["hamming"])
 @pytest.mark.parametrize(
     "M",

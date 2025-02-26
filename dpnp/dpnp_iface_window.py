@@ -55,8 +55,9 @@ def _validate_input(val):
     is_array = dpnp.is_supported_array_type(val) or is_numpy_array
     if is_array:
         is_0d_arr = val.ndim == 0
-        is_int_float = dpnp.issubdtype(val.dtype, (dpnp.integer, dpnp.floating))
-        raise_error = not (is_0d_arr and is_int_float)
+        is_int = dpnp.issubdtype(val.dtype, dpnp.integer)
+        is_float = dpnp.issubdtype(val.dtype, dpnp.floating)
+        raise_error = not (is_0d_arr and is_int or is_float)
         if not raise_error:
             is_nan = numpy.isnan(val) if is_numpy_array else dpnp.isnan(val)
             is_inf = numpy.isinf(val) if is_numpy_array else dpnp.isinf(val)
