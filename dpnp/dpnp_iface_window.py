@@ -109,7 +109,7 @@ def hamming(M, device=None, usm_type=None, sycl_queue=None):
 
     Returns
     -------
-    out : dpnp.ndarray
+    out : dpnp.ndarray of shape (M,)
         The window, with the maximum value normalized to one (the value one
         appears only if the number of samples is odd).
 
@@ -153,12 +153,12 @@ def hamming(M, device=None, usm_type=None, sycl_queue=None):
     """
 
     _validate_input(M)
-
     cfd_kwarg = {
         "device": device,
         "usm_type": usm_type,
         "sycl_queue": sycl_queue,
     }
+
     if M < 1:
         return dpnp.empty(0, **cfd_kwarg)
     if M == 1:

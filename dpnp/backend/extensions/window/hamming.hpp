@@ -32,4 +32,4 @@ namespace py = pybind11;
 namespace dpnp::extensions::window
 {
 void init_hamming(py::module_ m);
-} // namespace dpnp::extensions::window
+}
