@@ -5,4 +5,3 @@
 - [ ] Have you checked performance impact of proposed changes?
 - [ ] Have you added documentation for your changes, if necessary?
 - [ ] Have you added your changes to the changelog?
-- [ ] If this PR is a work in progress, are you opening the PR as a draft?
