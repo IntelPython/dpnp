@@ -75,7 +75,7 @@ Furthermore, a number of issues relating to running on NVIDIA GPUs have been res
 * Enabled Intel MKL backends when building from the source with `--onemkl-interfaces` option [#2229](https://github.com/IntelPython/dpnp/pull/2229)
 * Extended `intersphinx_mapping` with a link to CuPy documentation to make cupy functions clickable from the rendered pages [#2232](https://github.com/IntelPython/dpnp/pull/2232)
 * Improved performance of `dpnp.nanmedian` function when `axis` is not `None` passed [#2240](https://github.com/IntelPython/dpnp/pull/2240)
-* Aligned `dpnp.trim_zeros` with NumPy 2.2 and added support of a multi-dimenaional input array [#2241](https://github.com/IntelPython/dpnp/pull/2241)
+* Aligned `dpnp.trim_zeros` with NumPy 2.2 and added support of a multi-dimensional input array [#2241](https://github.com/IntelPython/dpnp/pull/2241)
 * Disallowed implicit conversion of `dpnp.ndarray` to `numpy.ndarray` [#2260](https://github.com/IntelPython/dpnp/pull/2260)
 * Extended `dpnp.ndarray.to_device` method to support `stream` keyword [#2263](https://github.com/IntelPython/dpnp/pull/2263)
 * Extended `dpnp.sort` and `dpnp.argsort` functions and `dpnp.ndarray.sort` and `dpnp.ndarray.argsort` methods to support `descending` keyword [#2269](https://github.com/IntelPython/dpnp/pull/2269)
@@ -90,12 +90,11 @@ Furthermore, a number of issues relating to running on NVIDIA GPUs have been res
 ### Fixed
 
 * Migrated to experimental extension of DPC++ compiler with `group_load/group_store` per deprecation build warning [#2123](https://github.com/IntelPython/dpnp/pull/2123)
-* Fixed `DeprecationWarning` warning appearing during running the tests [#2156](https://github.com/IntelPython/dpnp/pull/2156)
+* Fixed `DeprecationWarning` appearing during running the tests [#2156](https://github.com/IntelPython/dpnp/pull/2156)
 * Modified installation path for the tests to enable tests run by `pytest --pyargs dpnp.tests` command [#2116](https://github.com/IntelPython/dpnp/pull/2116)
 * Resolved issues with `dpnp.linalg.svd` implementation invoked on NVIDIA GPU [#2212](https://github.com/IntelPython/dpnp/pull/2212)
 * Fixed compilation warnings when building from the source with `--target=cuda` option [#2225](https://github.com/IntelPython/dpnp/pull/2225)
 * Passed `striped` property to `group_load/group_store` functions replicating legacy behavior [#2238](https://github.com/IntelPython/dpnp/pull/2238)
-* Extended `"PATH"` environment variable on Windows to support dpnp in virtual environment out of the box [#2242](https://github.com/IntelPython/dpnp/pull/2242)
 * Added a workaround to prevent a race condition in `dpnp.linalg.qr` when running on NVIDIA GPU [#2265](https://github.com/IntelPython/dpnp/pull/2265)
 * Resolved `IndexError` exception raised by `dpnp.matmul` [#2278](https://github.com/IntelPython/dpnp/pull/2278)
 * Declared missing required dependencies on numpy and dpctl packages from dpnp wheel package [#2283](https://github.com/IntelPython/dpnp/pull/2283)
@@ -104,6 +103,20 @@ Furthermore, a number of issues relating to running on NVIDIA GPUs have been res
 * Resolved `ValueError` exception raised by `dpnp.linalg.qr` with non-contiguous input array [#2314](https://github.com/IntelPython/dpnp/pull/2314)
 * Resolved an issue with wrong result returned by `dpnp.fft.fftn` and `dpnp.fft.rfftn` when running on NVIDIA GPU [#2332](https://github.com/IntelPython/dpnp/pull/2332)
 * Added a workaround to prevent a memory corruption in `dpnp.correlate` [#2333](https://github.com/IntelPython/dpnp/pull/2333)
+
+
+## [0.16.3] - 12/20/2024
+
+### Fixed
+
+* Bumped min version of DPC++ compiler required to support experimental SYCL properties [#2231](https://github.com/IntelPython/dpnp/pull/2231)
+
+
+## [0.16.2] - 12/20/2024
+
+### Fixed
+
+* Enabled `dpnp` in virtual environment on Windows platform [#2242](https://github.com/IntelPython/dpnp/pull/2242)
 
 
 ## [0.16.1] - 12/06/2024
