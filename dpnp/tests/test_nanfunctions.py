@@ -29,89 +29,78 @@ from .third_party.cupy import testing
 from .third_party.cupy.testing import with_requires
 
 
+@testing.parameterize(*testing.product({"func": ("nanargmax", "nanargmin")}))
 class TestNanArgmaxNanArgmin:
-    @pytest.mark.parametrize("func", ["nanargmin", "nanargmax"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2])
     @pytest.mark.parametrize("keepdims", [False, True])
     @pytest.mark.parametrize("dtype", get_float_dtypes())
-    def test_func(self, func, axis, keepdims, dtype):
+    def test_basic(self, axis, keepdims, dtype):
         a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
         a[2:3, 2, 3:4, 4] = numpy.nan
         ia = dpnp.array(a)
 
-        np_res = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        dpnp_res = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
+        np_res = getattr(numpy, self.func)(a, axis=axis, keepdims=keepdims)
+        dpnp_res = getattr(dpnp, self.func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(dpnp_res, np_res)
 
-    @pytest.mark.parametrize("func", ["nanargmin", "nanargmax"])
-    def test_out(self, func):
+    def test_out(self):
         a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
         a[1, 0, 2] = numpy.nan
         ia = dpnp.array(a)
 
         # out is dpnp_array
-        np_res = getattr(numpy, func)(a, axis=0)
+        np_res = getattr(numpy, self.func)(a, axis=0)
         dpnp_out = dpnp.empty(np_res.shape, dtype=np_res.dtype)
-        dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
+        dpnp_res = getattr(dpnp, self.func)(ia, axis=0, out=dpnp_out)
         assert dpnp_out is dpnp_res
         assert_allclose(dpnp_res, np_res)
 
         # out is usm_ndarray
         dpt_out = dpt.empty(np_res.shape, dtype=np_res.dtype)
-        dpnp_res = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
+        dpnp_res = getattr(dpnp, self.func)(ia, axis=0, out=dpt_out)
         assert dpt_out is dpnp_res.get_array()
         assert_allclose(dpnp_res, np_res)
 
         # out is a numpy array -> TypeError
         dpnp_res = numpy.empty_like(np_res)
         with pytest.raises(TypeError):
-            getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+            getattr(dpnp, self.func)(ia, axis=0, out=dpnp_res)
 
         # out shape is incorrect -> ValueError
         dpnp_res = dpnp.array(numpy.zeros((2, 2)), dtype=dpnp.intp)
         with pytest.raises(ValueError):
-            getattr(dpnp, func)(ia, axis=0, out=dpnp_res)
+            getattr(dpnp, self.func)(ia, axis=0, out=dpnp_res)
 
-    @pytest.mark.parametrize("func", ["nanargmin", "nanargmax"])
-    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("in_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
-    def test_out_dtype(self, func, arr_dt, out_dt):
-        a = (
-            numpy.arange(12, dtype=numpy.float32)
-            .reshape((2, 2, 3))
-            .astype(dtype=arr_dt)
-        )
+    def test_out_dtype(self, arr_dt, out_dt):
+        a = generate_random_numpy_array((2, 2, 3), dtype=in_dt)
         out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
-
-        ia = dpnp.array(a)
-        iout = dpnp.array(out)
+        ia, iout = dpnp.array(a), dpnp.array(out)
 
         if numpy.can_cast(out.dtype, numpy.intp, casting="safe"):
-            result = getattr(dpnp, func)(ia, out=iout, axis=1)
-            expected = getattr(numpy, func)(a, out=out, axis=1)
+            result = getattr(dpnp, self.func)(ia, out=iout, axis=1)
+            expected = getattr(numpy, self.func)(a, out=out, axis=1)
             assert_array_equal(result, expected)
             assert result is iout
         else:
-            assert_raises(TypeError, getattr(numpy, func), a, out=out, axis=1)
-            assert_raises(TypeError, getattr(dpnp, func), ia, out=iout, axis=1)
+            assert_raises(
+                TypeError, getattr(numpy, self.func), a, out=out, axis=1
+            )
+            assert_raises(
+                TypeError, getattr(dpnp, self.func), ia, out=iout, axis=1
+            )
 
-    @pytest.mark.parametrize("func", ["nanargmin", "nanargmax"])
     def test_error(self, func):
         ia = dpnp.arange(12, dtype=dpnp.float32).reshape((2, 2, 3))
         ia[:, :, 2] = dpnp.nan
 
         # All-NaN slice encountered -> ValueError
         with pytest.raises(ValueError):
-            getattr(dpnp, func)(ia, axis=0)
+            getattr(dpnp, self.func)(ia, axis=0)
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "func": ("nancumsum", "nancumprod"),
-        }
-    )
-)
+@testing.parameterize(*testing.product({"func": ("nancumsum", "nancumprod")}))
 class TestNanCumSumProd:
     @pytest.mark.parametrize("dtype", get_float_complex_dtypes())
     @pytest.mark.parametrize(
@@ -609,13 +598,7 @@ class TestNanProd:
             dpnp.nanprod(dpnp.asnumpy(ia))
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "func": ("nanstd", "nanvar"),
-        }
-    )
-)
+@testing.parameterize(*testing.product({"func": ("nanstd", "nanvar")}))
 class TestNanStdVar:
     @pytest.mark.parametrize(
         "array",

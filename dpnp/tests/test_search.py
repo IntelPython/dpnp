@@ -12,13 +12,7 @@ from .helper import (
 from .third_party.cupy import testing
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "func": ("argmax", "argmin"),
-        }
-    )
-)
+@testing.parameterize(*testing.product({"func": ("argmax", "argmin")}))
 class TestArgmaxArgmin:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2])
     @pytest.mark.parametrize("keepdims", [False, True])

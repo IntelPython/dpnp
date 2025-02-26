@@ -600,13 +600,7 @@ class TestCov:
         assert_allclose(result, expected)
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "func": ("max", "min"),
-        }
-    )
-)
+@testing.parameterize(*testing.product({"func": ("max", "min")}))
 class TestMaxMin:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
@@ -894,13 +888,7 @@ class TestPtp:
         assert_array_equal(result, expected)
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "func": ("std", "var"),
-        }
-    )
-)
+@testing.parameterize(*testing.product({"func": ("std", "var")}))
 class TestStdVar:
     @pytest.mark.usefixtures(
         "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
