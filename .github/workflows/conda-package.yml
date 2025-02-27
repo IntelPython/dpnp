@@ -623,6 +623,7 @@ jobs:
           python -m pytest --json-report --json-report-file=${{ env.json-report-file }} --disable-deadline --skips-file ${{ env.array-api-skips-file }} array_api_tests || true
         env:
           ARRAY_API_TESTS_MODULE: 'dpnp'
+          ARRAY_API_TESTS_VERSION: '2024.12'
           SYCL_CACHE_PERSISTENT: 1
         working-directory: ${{ env.array-api-tests-path }}
 
