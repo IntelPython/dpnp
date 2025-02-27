@@ -46,4 +46,3 @@ def test_window(func, M):
 )
 def test_window_error(func, M):
     assert_raises(TypeError, getattr(dpnp, func), M)
-    # assert_raises(TypeError, getattr(numpy, func), M)
