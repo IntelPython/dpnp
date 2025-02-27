@@ -2,7 +2,6 @@ import dpctl
 import numpy
 import pytest
 from numpy.testing import (
-    assert_,
     assert_allclose,
     assert_array_equal,
     assert_raises,
@@ -407,8 +406,8 @@ class TestHistogram:
 
         # floating-point computations correctly place edge cases
         for x, left, right in zip(v, left_edges, right_edges):
-            assert_(x >= left)
-            assert_(x < right)
+            assert x >= left
+            assert x < right
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 required")
     def test_last_bin_inclusive_range(self):
@@ -612,7 +611,7 @@ class TestBincount:
 
         expected = numpy.bincount(np_a, minlength=minlength)
         result = dpnp.bincount(dpnp_a, minlength=minlength)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize(
@@ -655,7 +654,7 @@ class TestBincount:
 
         expected = numpy.bincount(np_a, weights=np_weights)
         result = dpnp.bincount(dpnp_a, weights=dpnp_weights)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "data",
