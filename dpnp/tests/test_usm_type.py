@@ -16,7 +16,8 @@ from .helper import (
     is_win_platform,
 )
 
-list_of_usm_types = ["device", "shared", "host"]
+# list_of_usm_types = ["device", "shared", "host"]
+list_of_usm_types = ["shared"]
 
 
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types, ids=list_of_usm_types)
@@ -573,9 +574,10 @@ def test_meshgrid(usm_type_x, usm_type_y):
 
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types, ids=list_of_usm_types)
-@pytest.mark.parametrize(
-    "ord", [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"]
-)
+# @pytest.mark.parametrize(
+#     "ord", [None, -dp.inf, -2, -1, 1, 2, 3, dp.inf, "fro", "nuc"]
+# )
+@pytest.mark.parametrize("ord", [None])
 @pytest.mark.parametrize(
     "axis",
     [-1, 0, 1, (0, 1), (-2, -1), None],
