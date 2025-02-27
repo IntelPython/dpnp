@@ -131,8 +131,8 @@ __all__ += __all__nanfunctions
 __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
-__all__ += __all__window
 __all__ += __all__trigonometric
+__all__ += __all__window
 
 
 def are_same_logical_tensors(ar1, ar2):

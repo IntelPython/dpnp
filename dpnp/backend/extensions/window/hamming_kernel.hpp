@@ -27,8 +27,6 @@
 
 #include <sycl/sycl.hpp>
 
-#include "kernels/dpctl_tensor_types.hpp"
-
 #include "utils/type_utils.hpp"
 
 namespace dpnp::extensions::window::kernels
@@ -38,31 +36,29 @@ template <typename T>
 class HammingFunctor
 {
 private:
-    T *data;
-    size_t N;
+    T *data = nullptr;
+    const std::size_t N;
 
 public:
-    HammingFunctor(T *data, size_t N) : data(data), N(N) {}
+    HammingFunctor(T *data, const std::size_t N) : data(data), N(N) {}
 
     void operator()(sycl::id<1> id) const
     {
-        dpctl::tensor::ssize_t i = id[0];
+        const auto i = id.get(0);
 
-        data[i] = static_cast<T>(0.54) -
-                  static_cast<T>(0.46) *
-                      sycl::cospi((static_cast<T>(2.0) * i) / (N - 1));
+        data[i] = T(0.54) - T(0.46) * sycl::cospi(T(2) * i / (N - 1));
     }
 };
 
 typedef sycl::event (*hamming_fn_ptr_t)(sycl::queue &,
                                         char *,
-                                        size_t,
+                                        const std::size_t,
                                         const std::vector<sycl::event> &);
 
 template <typename T>
 sycl::event hamming_impl(sycl::queue &q,
                          char *result,
-                         size_t nelems,
+                         const std::size_t nelems,
                          const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
@@ -72,8 +68,9 @@ sycl::event hamming_impl(sycl::queue &q,
     sycl::event hamming_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
-        cgh.parallel_for(sycl::range<1>(nelems),
-                         HammingFunctor<T>(res, nelems));
+        using HammingKernel = HammingFunctor<T>;
+        cgh.parallel_for<HammingKernel>(sycl::range<1>(nelems),
+                                        HammingKernel(res, nelems));
     });
 
     return hamming_ev;

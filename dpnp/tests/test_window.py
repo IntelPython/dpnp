@@ -38,7 +38,7 @@ def test_window(func, M):
     [
         5 + 4j,
         numpy.array(5 + 4j),
-        dpnp.array([5]),
+        dpnp.array([5, 3]),
         numpy.inf,
         numpy.array(-numpy.inf),
         dpnp.array(dpnp.nan),
@@ -46,3 +46,4 @@ def test_window(func, M):
 )
 def test_window_error(func, M):
     assert_raises(TypeError, getattr(dpnp, func), M)
+    # assert_raises(TypeError, getattr(numpy, func), M)

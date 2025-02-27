@@ -53,8 +53,17 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("Array should be 1d");
     }
 
+    if (!dpctl::utils::queues_are_compatible(exec_q, {result.get_queue()})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queue.");
+    }
+
+    const bool is_result_c_contig = result.is_c_contiguous();
+    if (!is_result_c_contig) {
+        throw py::value_error("The result input array is not c-contiguous.");
+    }
+
     size_t nelems = result.get_size();
-    dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(result, nelems);
     if (nelems == 0) {
         return std::make_pair(sycl::event{}, sycl::event{});
     }
@@ -81,8 +90,7 @@ struct HammingFactory
 {
     fnT get()
     {
-        if constexpr (std::is_same<T, float>::value ||
-                      std::is_same<T, double>::value) {
+        if constexpr (std::is_floating_point_v<T>) {
             return kernels::hamming_impl<T>;
         }
         else {

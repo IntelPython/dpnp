@@ -41,36 +41,11 @@ it contains:
 # pylint: disable=protected-access
 
 import dpctl.utils as dpu
-import numpy
 
 import dpnp
 import dpnp.backend.extensions.window._window_impl as wi
 
 __all__ = ["hamming"]
-
-
-def _validate_input(val):
-
-    is_numpy_array = isinstance(val, numpy.ndarray)
-    is_array = dpnp.is_supported_array_type(val) or is_numpy_array
-    if is_array:
-        is_0d_arr = val.ndim == 0
-        is_int = dpnp.issubdtype(val.dtype, dpnp.integer)
-        is_float = dpnp.issubdtype(val.dtype, dpnp.floating)
-        raise_error = not (is_0d_arr and is_int or is_float)
-        if not raise_error:
-            is_nan = numpy.isnan(val) if is_numpy_array else dpnp.isnan(val)
-            is_inf = numpy.isinf(val) if is_numpy_array else dpnp.isinf(val)
-            raise_error = is_nan or is_inf
-    else:
-        is_int = isinstance(val, (int, numpy.integer, dpnp.integer))
-        is_float = isinstance(val, (float, numpy.floating, dpnp.floating))
-        raise_error = not (is_int or is_float)
-        if not raise_error:
-            raise_error = val in [numpy.inf, -numpy.inf, numpy.nan]
-
-    if raise_error:
-        raise TypeError("M must be an integer")
 
 
 def hamming(M, device=None, usm_type=None, sycl_queue=None):
@@ -152,7 +127,11 @@ def hamming(M, device=None, usm_type=None, sycl_queue=None):
 
     """
 
-    _validate_input(M)
+    try:
+        M = int(M)
+    except Exception as e:
+        raise TypeError("M must be an integer") from e
+
     cfd_kwarg = {
         "device": device,
         "usm_type": usm_type,
@@ -164,7 +143,7 @@ def hamming(M, device=None, usm_type=None, sycl_queue=None):
     if M == 1:
         return dpnp.ones(1, **cfd_kwarg)
 
-    result = dpnp.empty(int(M), **cfd_kwarg)
+    result = dpnp.empty(M, **cfd_kwarg)
     exec_q = result.sycl_queue
     _manager = dpu.SequentialOrderManager[exec_q]
 
