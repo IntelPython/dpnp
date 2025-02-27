@@ -21,6 +21,8 @@ from .helper import assert_dtype_allclose, get_array, is_cpu_device
 _def_device = dpctl.SyclQueue().sycl_device
 _def_dev_has_fp64 = _def_device.has_aspect_fp64
 
+list_of_usm_types = ["host", "device", "shared"]
+
 
 def assert_cfd(data, exp_sycl_queue, exp_usm_type=None):
     assert exp_sycl_queue == data.sycl_queue
@@ -36,7 +38,7 @@ def get_default_floating():
 
 class TestNormal:
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64, None])
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_distr(self, dtype, usm_type):
         seed = 1234567
         sycl_queue = dpctl.SyclQueue()
@@ -91,9 +93,9 @@ class TestNormal:
         assert_cfd(dpnp_data, sycl_queue, usm_type)
 
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.float64, None])
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_scale(self, dtype, usm_type):
-        mean = 7
+        mean = 7.0
         rs = RandomState(39567)
         func = lambda scale: rs.normal(
             loc=mean, scale=scale, dtype=dtype, usm_type=usm_type
@@ -127,10 +129,8 @@ class TestNormal:
         ],
     )
     def test_inf_loc(self, loc):
-        assert_equal(
-            RandomState(6531).normal(loc=loc, scale=1, size=1000),
-            get_default_floating()(loc),
-        )
+        a = RandomState(6531).normal(loc=loc, scale=1, size=1000)
+        assert_equal(a, get_default_floating()(loc))
 
     def test_inf_scale(self):
         a = RandomState().normal(0, numpy.inf, size=1000)
@@ -142,7 +142,7 @@ class TestNormal:
     @pytest.mark.parametrize("loc", [numpy.inf, -numpy.inf])
     def test_inf_loc_scale(self, loc):
         a = RandomState().normal(loc=loc, scale=numpy.inf, size=1000)
-        assert_equal(dpnp.isnan(a).all(), False)
+        assert not dpnp.isnan(a).all()
         assert_equal(dpnp.nanmin(a), loc)
         assert_equal(dpnp.nanmax(a), loc)
 
@@ -252,7 +252,7 @@ class TestNormal:
 
 
 class TestRand:
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_distr(self, usm_type):
         seed = 28042
         sycl_queue = dpctl.SyclQueue()
@@ -337,7 +337,7 @@ class TestRandInt:
         [int, dpnp.int32, dpnp.int_],
         ids=["int", "dpnp.int32", "dpnp.int_"],
     )
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_distr(self, dtype, usm_type):
         seed = 9864
         low = 1
@@ -419,7 +419,7 @@ class TestRandInt:
     def test_negative_interval(self):
         rs = RandomState(3567)
 
-        assert_equal(-5 <= rs.randint(-5, -1) < -1, True)
+        assert -5 <= rs.randint(-5, -1) < -1
 
         x = rs.randint(-7, -1, 5)
         assert_equal(-7 <= x, True)
@@ -486,8 +486,8 @@ class TestRandInt:
     def test_in_bounds_fuzz(self):
         for high in [4, 8, 16]:
             vals = RandomState().randint(2, high, size=2**16)
-            assert_equal(vals.max() < high, True)
-            assert_equal(vals.min() >= 2, True)
+            assert vals.max() < high
+            assert vals.min() >= 2
 
     @pytest.mark.parametrize(
         "zero_size",
@@ -567,7 +567,7 @@ class TestRandInt:
 
 
 class TestRandN:
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_distr(self, usm_type):
         seed = 3649
         sycl_queue = dpctl.SyclQueue()
@@ -796,7 +796,7 @@ class TestSeed:
 
 
 class TestStandardNormal:
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_distr(self, usm_type):
         seed = 1234567
         sycl_queue = dpctl.SyclQueue()
@@ -870,7 +870,7 @@ class TestStandardNormal:
 
 
 class TestRandSample:
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_distr(self, usm_type):
         seed = 12657
         sycl_queue = dpctl.SyclQueue()
@@ -944,7 +944,7 @@ class TestUniform:
     @pytest.mark.parametrize(
         "dtype", [dpnp.float32, dpnp.float64, dpnp.int32, None]
     )
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_distr(self, bounds, dtype, usm_type):
         seed = 28041997
         low = bounds[0]
@@ -1000,7 +1000,7 @@ class TestUniform:
     @pytest.mark.parametrize(
         "dtype", [dpnp.float32, dpnp.float64, dpnp.int32, None]
     )
-    @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
+    @pytest.mark.parametrize("usm_type", list_of_usm_types)
     def test_low_high_equal(self, dtype, usm_type):
         seed = 28045
         low = high = 3.75
