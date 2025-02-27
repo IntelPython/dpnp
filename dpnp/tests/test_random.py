@@ -1067,9 +1067,7 @@ class TestDistributionsZipf(TestDistribution):
 
 class TestPermutationsTestShuffle:
     @pytest.mark.parametrize(
-        "dtype",
-        [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64],
-        ids=["float32", "float64", "int32", "int64"],
+        "dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64]
     )
     def test_shuffle(self, dtype):
         seed = 28041990
@@ -1086,9 +1084,7 @@ class TestPermutationsTestShuffle:
         assert_array_equal(actual_x, desired_x)
 
     @pytest.mark.parametrize(
-        "dtype",
-        [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64],
-        ids=["float32", "float64", "int32", "int64"],
+        "dtype", [dpnp.float32, dpnp.float64, dpnp.int32, dpnp.int64]
     )
     def test_no_miss_numbers(self, dtype):
         seed = 28041990
