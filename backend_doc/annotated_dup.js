@@ -57,6 +57,11 @@ var annotated_dup =
             [ "UngqrTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ]
           ] ],
           [ "LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
+        ] ],
+        [ "window", null, [
+          [ "kernels", null, [
+            [ "HammingFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ]
+          ] ]
         ] ]
       ] ],
       [ "kernels", null, [

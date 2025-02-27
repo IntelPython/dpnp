@@ -1,5 +1,7 @@
 var NAVTREEINDEX1 =
 {
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga51221588325d576caf0f235739ef0718":[0,2,1],
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga78ffe853157e336c03a2773b0713eaa7":[0,2,8],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga80937d0842dd407149ff8a21e5754c2c":[0,2,13],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga841854c7f53246b62719074088bd0b5b":[0,2,4],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga8d3046514e4bccb6d869f1052c4f4406":[0,2,33],
@@ -30,6 +32,8 @@ var NAVTREEINDEX1 =
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gad37eb9ce0ad29590cc931a9b6cd538e2":[0,3,7],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae4294907d97ba7d7a630d5097b435d0a":[0,3,11],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76":[0,3,5],
+"hamming_8hpp_source.html":[3,0,0,8,0],
+"hamming__kernel_8hpp_source.html":[3,0,0,8,1],
 "heevd_8hpp_source.html":[3,0,0,4,12],
 "heevd__batch_8hpp_source.html":[3,0,0,4,13],
 "hierarchy.html":[2,2],
