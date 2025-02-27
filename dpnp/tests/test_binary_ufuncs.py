@@ -128,12 +128,15 @@ class TestAdd:
         with pytest.raises(ValueError):
             dpnp.add(a, b, out=out)
 
-    @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.add, a, 2, out)
-        assert_raises(TypeError, numpy.add, a.asnumpy(), 2, out)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+    )
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.add, a, 2, out)
 
 
 class TestBoundFuncs:
@@ -194,13 +197,16 @@ class TestBoundFuncs:
         with pytest.raises(ValueError):
             getattr(dpnp, func_name)(a, b, out=out)
 
-    @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, func_params, out):
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+    )
+    def test_invalid_out(self, func_params, xp, out):
         func_name = func_params["func_name"]
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, getattr(dpnp, func_name), a, 2, out)
-        assert_raises(TypeError, getattr(numpy, func_name), a.asnumpy(), 2, out)
+        a = xp.arange(10)
+        assert_raises(TypeError, getattr(xp, func_name), a, 2, out)
 
 
 class TestDivide:
@@ -288,12 +294,15 @@ class TestDivide:
         with pytest.raises(ValueError):
             dpnp.divide(a, b, out=out)
 
-    @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.divide, a, 2, out)
-        assert_raises(TypeError, numpy.divide, a.asnumpy(), 2, out)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+    )
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.divide, a, 2, out)
 
 
 @pytest.mark.parametrize("func", ["floor_divide", "remainder"])
@@ -378,12 +387,15 @@ class TestFloorDivideRemainder:
         with pytest.raises(ValueError):
             getattr(dpnp, func)(a, b, out=out)
 
-    @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, func, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, getattr(dpnp, func), a, 2, out)
-        assert_raises(TypeError, getattr(numpy, func), a.asnumpy(), 2, out)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+    )
+    def test_invalid_out(self, func, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, getattr(xp, func), a, 2, out)
 
 
 class TestFmaxFmin:
@@ -659,12 +671,15 @@ class TestMultiply:
         with pytest.raises(ValueError):
             dpnp.multiply(a, b, out=out)
 
-    @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.multiply, a, 2, out)
-        assert_raises(TypeError, numpy.multiply, a.asnumpy(), 2, out)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+    )
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.multiply, a, 2, out)
 
 
 class TestNextafter:
@@ -806,7 +821,7 @@ class TestPower:
 
     @pytest.mark.parametrize("val_type", ALL_DTYPES)
     @pytest.mark.parametrize("data_type", ALL_DTYPES)
-    @pytest.mark.parametrize("val", [1.5, 1, 3], ids=["1.5", "1", "3"])
+    @pytest.mark.parametrize("val", [1.5, 1, 3])
     @pytest.mark.parametrize(
         "array",
         [
@@ -911,12 +926,15 @@ class TestPower:
         with pytest.raises(ValueError):
             dpnp.power(a, b, out=out)
 
-    @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.power, a, 2, out)
-        assert_raises(TypeError, numpy.power, a.asnumpy(), 2, out)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+    )
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.power, a, 2, out)
 
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
     def test_complex_values(self):
@@ -1124,9 +1142,12 @@ class TestSubtract:
         with pytest.raises(ValueError):
             dpnp.subtract(a, b, out=out)
 
-    @pytest.mark.parametrize("out", [4, (), [], (3, 7), [2, 4]])
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.subtract, a, 2, out)
-        assert_raises(TypeError, numpy.subtract, a.asnumpy(), 2, out)
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    @pytest.mark.parametrize(
+        "out",
+        [4, (), [], (3, 7), [2, 4]],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
+    )
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.subtract, a, 2, out)

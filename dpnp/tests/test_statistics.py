@@ -586,7 +586,7 @@ class TestCov:
 
         expected = numpy.cov(a, rowvar=False)
         result = dpnp.cov(ia, rowvar=False)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
@@ -597,88 +597,90 @@ class TestCov:
 
         expected = numpy.cov(a, ddof=0, rowvar=True)
         result = dpnp.cov(ia, ddof=0, rowvar=True)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
 
+@testing.parameterize(
+    *testing.product(
+        {
+            "func": ("max", "min"),
+        }
+    )
+)
 class TestMaxMin:
-    @pytest.mark.parametrize("func", ["max", "min"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
-    def test_func(self, func, axis, keepdims, dtype):
+    def test_func(self, axis, keepdims, dtype):
         a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
         ia = dpnp.array(a)
 
-        expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
+        expected = getattr(numpy, self.func)(a, axis=axis, keepdims=keepdims)
+        result = getattr(dpnp, self.func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["max", "min"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1])
     @pytest.mark.parametrize("keepdims", [False, True])
-    def test_bool(self, func, axis, keepdims):
+    def test_bool(self, axis, keepdims):
         a = numpy.arange(2, dtype=numpy.bool_)
         a = numpy.tile(a, (2, 2))
         ia = dpnp.array(a)
 
-        expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
+        expected = getattr(numpy, self.func)(a, axis=axis, keepdims=keepdims)
+        result = getattr(dpnp, self.func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["max", "min"])
-    def test_out(self, func):
+    def test_out(self):
         a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
         ia = dpnp.array(a)
 
         # out is dpnp_array
-        expected = getattr(numpy, func)(a, axis=0)
+        expected = getattr(numpy, self.func)(a, axis=0)
         dpnp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
-        result = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
+        result = getattr(dpnp, self.func)(ia, axis=0, out=dpnp_out)
         assert dpnp_out is result
         assert_allclose(result, expected)
 
         # out is usm_ndarray
         dpt_out = dpt.empty(expected.shape, dtype=expected.dtype)
-        result = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
+        result = getattr(dpnp, self.func)(ia, axis=0, out=dpt_out)
         assert dpt_out is result.get_array()
         assert_allclose(result, expected)
 
         # output is numpy array -> Error
         result = numpy.empty_like(expected)
         with pytest.raises(TypeError):
-            getattr(dpnp, func)(ia, axis=0, out=result)
+            getattr(dpnp, self.func)(ia, axis=0, out=result)
 
         # output has incorrect shape -> Error
         result = dpnp.array(numpy.zeros((4, 2)))
         with pytest.raises(ValueError):
-            getattr(dpnp, func)(ia, axis=0, out=result)
+            getattr(dpnp, self.func)(ia, axis=0, out=result)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("func", ["max", "min"])
     @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
-    def test_out_dtype(self, func, arr_dt, out_dt):
-        a = numpy.arange(12).reshape(2, 2, 3).astype(arr_dt)
+    def test_out_dtype(self, arr_dt, out_dt):
+        # if out_dt is unsigned, input cannot be signed otherwise overflow occurs
+        low = 0 if dpnp.issubdtype(out_dt, dpnp.unsignedinteger) else -10
+        a = generate_random_numpy_array((2, 2, 3), dtype=arr_dt, low=low)
         out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
+        ia, iout = dpnp.array(a), dpnp.array(out)
 
-        ia = dpnp.array(a)
-        iout = dpnp.array(out)
-
-        result = getattr(dpnp, func)(ia, out=iout, axis=1)
-        expected = getattr(numpy, func)(a, out=out, axis=1)
-        assert_array_equal(result, expected)
+        result = getattr(dpnp, self.func)(ia, out=iout, axis=1)
+        expected = getattr(numpy, self.func)(a, out=out, axis=1)
+        assert_dtype_allclose(result, expected)
         assert result is iout
 
-    @pytest.mark.parametrize("func", ["max", "min"])
-    def test_error(self, func):
+    def test_error(self):
         ia = dpnp.arange(5)
         # where is not supported
         with pytest.raises(NotImplementedError):
-            getattr(dpnp, func)(ia, where=False)
+            getattr(dpnp, self.func)(ia, where=False)
 
         # initial is not supported
         with pytest.raises(NotImplementedError):
-            getattr(dpnp, func)(ia, initial=6)
+            getattr(dpnp, self.func)(ia, initial=6)
 
 
 class TestMean:

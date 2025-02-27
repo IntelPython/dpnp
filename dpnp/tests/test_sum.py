@@ -51,36 +51,29 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     axes.append(tuple(axes_range))
 
     for axis in axes:
-        if (
-            numpy.issubdtype(dtype_out, numpy.bool_)
-            and numpy.issubdtype(dtype_in, numpy.signedinteger)
-            and not a_np.sum(axis=axis).all()
-        ):
-            # TODO: remove workaround when dpctl-issue#1944 is resolved
-            a = a.astype(dpnp.bool)
-            dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
-        else:
-            dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+        dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         assert_dtype_allclose(dpnp_res, numpy_res, factor=16)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_sum_empty_out(dtype):
     a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
     out = dpnp.ones((), dtype=dtype)
     res = a.sum(out=out)
-    assert_array_equal(out.asnumpy(), res.asnumpy())
-    assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
+    assert out is res
+    assert_array_equal(out, numpy.array(0, dtype=dtype))
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
 @pytest.mark.parametrize("axis", [None, 0, 1, 2, 3])
 def test_sum_empty(dtype, axis):
     a = numpy.empty((1, 2, 0, 4), dtype=dtype)
     numpy_res = a.sum(axis=axis)
     dpnp_res = dpnp.array(a).sum(axis=axis)
-    assert_array_equal(numpy_res, dpnp_res.asnumpy())
+    assert_array_equal(numpy_res, dpnp_res)
 
 
 @pytest.mark.parametrize("dtype", get_float_dtypes())
