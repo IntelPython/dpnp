@@ -752,7 +752,6 @@ def asarray_chkfinite(
         :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
-
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
 

@@ -51,6 +51,8 @@ def assert_sycl_queue_equal(result, expected):
     "func, arg, kwargs",
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param("eye", [4, 2], {}),
+        pytest.param("empty", [(2, 2)], {}),
         pytest.param(
             "frombuffer", [b"\x01\x02\x03\x04"], {"dtype": dpnp.int32}
         ),
@@ -62,9 +64,8 @@ def assert_sycl_queue_equal(result, expected):
         pytest.param("fromiter", [[1, 2, 3, 4]], {"dtype": dpnp.int64}),
         pytest.param("fromstring", ["1 2"], {"dtype": int, "sep": " "}),
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
-        pytest.param("eye", [4, 2], {}),
-        pytest.param("empty", [(2, 2)], {}),
         pytest.param("geomspace", [1, 4, 8], {}),
+        pytest.param("hamming", [10], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
@@ -75,12 +76,18 @@ def assert_sycl_queue_equal(result, expected):
     ],
 )
 @pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
+    "device",
+    valid_dev + [None],
+    ids=[dev.filter_string for dev in valid_dev] + [None],
 )
 def test_array_creation(func, arg, kwargs, device):
-    dpnp_kwargs = dict(kwargs)
-    dpnp_kwargs["device"] = device
-    x = getattr(dpnp, func)(*arg, **dpnp_kwargs)
+    kwargs = dict(kwargs)
+    kwargs["device"] = device
+    x = getattr(dpnp, func)(*arg, **kwargs)
+
+    if device is None:
+        # assert against default device
+        device = dpctl.select_default_device()
     assert x.sycl_device == device
 
 
@@ -211,7 +218,9 @@ def test_array_creation_cross_device_2d_array(
 
 
 @pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
+    "device",
+    valid_dev + [None],
+    ids=[dev.filter_string for dev in valid_dev] + [None],
 )
 def test_array_creation_from_file(device):
     with tempfile.TemporaryFile() as fh:
@@ -221,11 +230,16 @@ def test_array_creation_from_file(device):
         fh.seek(0)
         x = dpnp.fromfile(fh, device=device)
 
+    if device is None:
+        # assert against default device
+        device = dpctl.select_default_device()
     assert x.sycl_device == device
 
 
 @pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
+    "device",
+    valid_dev + [None],
+    ids=[dev.filter_string for dev in valid_dev] + [None],
 )
 def test_array_creation_load_txt(device):
     with tempfile.TemporaryFile() as fh:
@@ -235,6 +249,9 @@ def test_array_creation_load_txt(device):
         fh.seek(0)
         x = dpnp.loadtxt(fh, device=device)
 
+    if device is None:
+        # assert against default device
+        device = dpctl.select_default_device()
     assert x.sycl_device == device
 
 
@@ -1056,10 +1073,16 @@ class TestFft:
 
     @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
     @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
+        "device",
+        valid_dev + [None],
+        ids=[dev.filter_string for dev in valid_dev] + [None],
     )
     def test_fftfreq(self, func, device):
         result = getattr(dpnp.fft, func)(10, 0.5, device=device)
+
+        if device is None:
+            # assert against default device
+            device = dpctl.select_default_device()
         assert result.sycl_device == device
 
     @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
