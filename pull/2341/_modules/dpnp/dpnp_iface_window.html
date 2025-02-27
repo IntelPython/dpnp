@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+6.gddc5ea2cede documentation</title>
+  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+13.gf5e1730bf10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e22122fe"></script>
+      <script src="../../_static/documentation_options.js?v=f125492b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -126,36 +126,11 @@
 <span class="c1"># pylint: disable=protected-access</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.utils</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpu</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.window._window_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">wi</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hamming&quot;</span><span class="p">]</span>
-
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_validate_input</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
-
-    <span class="n">is_numpy_array</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span>
-    <span class="n">is_array</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_supported_array_type</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="ow">or</span> <span class="n">is_numpy_array</span>
-    <span class="k">if</span> <span class="n">is_array</span><span class="p">:</span>
-        <span class="n">is_0d_arr</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span>
-        <span class="n">is_int</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
-        <span class="n">is_float</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span>
-        <span class="n">raise_error</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_0d_arr</span> <span class="ow">and</span> <span class="n">is_int</span> <span class="ow">or</span> <span class="n">is_float</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">raise_error</span><span class="p">:</span>
-            <span class="n">is_nan</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_numpy_array</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-            <span class="n">is_inf</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_numpy_array</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
-            <span class="n">raise_error</span> <span class="o">=</span> <span class="n">is_nan</span> <span class="ow">or</span> <span class="n">is_inf</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">is_int</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">integer</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">))</span>
-        <span class="n">is_float</span> <span class="o">=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">val</span><span class="p">,</span> <span class="p">(</span><span class="nb">float</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floating</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">))</span>
-        <span class="n">raise_error</span> <span class="o">=</span> <span class="ow">not</span> <span class="p">(</span><span class="n">is_int</span> <span class="ow">or</span> <span class="n">is_float</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">raise_error</span><span class="p">:</span>
-            <span class="n">raise_error</span> <span class="o">=</span> <span class="n">val</span> <span class="ow">in</span> <span class="p">[</span><span class="n">numpy</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="o">-</span><span class="n">numpy</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">nan</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">raise_error</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;M must be an integer&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="hamming">
@@ -239,7 +214,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_validate_input</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">M</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;M must be an integer&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
     <span class="n">cfd_kwarg</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
         <span class="s2">&quot;usm_type&quot;</span><span class="p">:</span> <span class="n">usm_type</span><span class="p">,</span>
@@ -251,7 +230,7 @@
     <span class="k">if</span> <span class="n">M</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
 
-    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">M</span><span class="p">),</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
     <span class="n">exec_q</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">sycl_queue</span>
     <span class="n">_manager</span> <span class="o">=</span> <span class="n">dpu</span><span class="o">.</span><span class="n">SequentialOrderManager</span><span class="p">[</span><span class="n">exec_q</span><span class="p">]</span>
 
