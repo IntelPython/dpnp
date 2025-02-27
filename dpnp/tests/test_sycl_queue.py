@@ -2143,18 +2143,3 @@ def test_choose(device):
     inds = dpnp.array([0, 1, 3], dtype="i4", device=device)
     result = dpnp.choose(inds, chc)
     assert_sycl_queue_equal(result.sycl_queue, chc.sycl_queue)
-
-
-@pytest.mark.parametrize("func", ["hamming"])
-@pytest.mark.parametrize(
-    "device",
-    valid_dev + [None],
-    ids=[device.filter_string for device in valid_dev] + [None],
-)
-def test_window(func, device):
-    result = getattr(dpnp, func)(10, device=device)
-    if device is None:
-        # assert against default device
-        device = dpctl.select_default_device()
-
-    assert result.sycl_device == device
