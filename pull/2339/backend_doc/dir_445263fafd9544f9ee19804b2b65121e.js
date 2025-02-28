@@ -7,5 +7,6 @@ var dir_445263fafd9544f9ee19804b2b65121e =
     [ "lapack", "dir_778e4a311d05ac011b91752da00d45a4.html", "dir_778e4a311d05ac011b91752da00d45a4" ],
     [ "statistics", "dir_cb9cf803b49420ddb907a86afa75e721.html", "dir_cb9cf803b49420ddb907a86afa75e721" ],
     [ "ufunc", "dir_06d9876029225c96c08c71d920e648bd.html", "dir_06d9876029225c96c08c71d920e648bd" ],
-    [ "vm", "dir_8ecf9f741f71669d18a115ce11ef5e52.html", "dir_8ecf9f741f71669d18a115ce11ef5e52" ]
+    [ "vm", "dir_8ecf9f741f71669d18a115ce11ef5e52.html", "dir_8ecf9f741f71669d18a115ce11ef5e52" ],
+    [ "window", "dir_b63756d6474ba2397604dd5d3f160d7a.html", "dir_b63756d6474ba2397604dd5d3f160d7a" ]
 ];
