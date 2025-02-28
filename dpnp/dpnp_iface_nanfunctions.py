@@ -77,9 +77,10 @@ def _replace_nan_no_mask(a, val):
 
     Returns
     -------
-    out : {dpnp.ndarray}
+    out : dpnp.ndarray
         If `a` is of inexact type, return a copy of `a` with the NaNs
         replaced by the fill value, otherwise return `a`.
+
     """
 
     return dpnp.nan_to_num(a, nan=val, posinf=dpnp.inf, neginf=-dpnp.inf)
