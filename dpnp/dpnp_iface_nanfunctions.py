@@ -65,8 +65,8 @@ def _replace_nan_no_mask(a, val):
     Replace NaNs in array `a` with `val`.
 
     If `a` is of inexact type, make a copy of `a`, replace NaNs with
-    the `val` value, and return the copy together. If `a` is not of
-    inexact type, do nothing and return `a`.
+    the `val` value, and return the copy. If `a` is not of inexact type,
+    do nothing and return `a`.
 
     Parameters
     ----------
@@ -83,7 +83,11 @@ def _replace_nan_no_mask(a, val):
 
     """
 
-    return dpnp.nan_to_num(a, nan=val, posinf=dpnp.inf, neginf=-dpnp.inf)
+    dpnp.check_supported_arrays_type(a)
+    if dpnp.issubdtype(a.dtype, dpnp.inexact):
+        return dpnp.nan_to_num(a, nan=val, posinf=dpnp.inf, neginf=-dpnp.inf)
+
+    return a
 
 
 def _replace_nan(a, val):
