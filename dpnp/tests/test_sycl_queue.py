@@ -78,7 +78,7 @@ def assert_sycl_queue_equal(result, expected):
     ],
 )
 @pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
-def test_array_creation(func, arg, kwargs, device):
+def test_array_creation_from_scratch(func, arg, kwargs, device):
     kwargs = dict(kwargs)
     kwargs["device"] = device
     x = getattr(dpnp, func)(*arg, **kwargs)
@@ -90,115 +90,59 @@ def test_array_creation(func, arg, kwargs, device):
 
 
 @pytest.mark.parametrize(
-    "func, args, kwargs",
+    "func, args",
     [
-        pytest.param("copy", ["x0"], {}),
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("empty_like", ["x0"], {}),
-        pytest.param("full_like", ["x0"], {"fill_value": 5}),
-        pytest.param("geomspace", ["x0[0:3]", "8", "4"], {}),
-        pytest.param("geomspace", ["1", "x0[2:4]", "4"], {}),
-        pytest.param("linspace", ["x0[0:2]", "8", "4"], {}),
-        pytest.param("linspace", ["0", "x0[2:4]", "4"], {}),
-        pytest.param("logspace", ["x0[0:2]", "8", "4"], {}),
-        pytest.param("logspace", ["0", "x0[2:4]", "4"], {}),
-        pytest.param("ones_like", ["x0"], {}),
-        pytest.param("tril", ["x0.reshape((2,2))"], {}),
-        pytest.param("triu", ["x0.reshape((2,2))"], {}),
-        pytest.param("linspace", ["x0", "4", "4"], {}),
-        pytest.param("linspace", ["1", "x0", "4"], {}),
-        pytest.param("vander", ["x0"], {}),
-        pytest.param("zeros_like", ["x0"], {}),
-    ],
-)
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_array_creation_follow_device(func, args, kwargs, device):
-    x = dpnp.array([1, 2, 3, 4], device=device)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
-    y = getattr(dpnp, func)(*dpnp_args, **kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_array_creation_follow_device_logspace_base(device):
-    x = dpnp.array([1, 2, 3, 4], device=device)
-    y = dpnp.logspace(0, 8, 4, base=x[1:3])
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "func, args, kwargs",
-    [
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("diagflat", ["x0"], {}),
-    ],
-)
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
-    x = dpnp.arange(9, device=device).reshape(3, 3)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
-    y = getattr(dpnp, func)(*dpnp_args, **kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "func, args, kwargs",
-    [
-        pytest.param("copy", ["x0"], {}),
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("empty_like", ["x0"], {}),
-        pytest.param("full", ["10", "x0[3]"], {}),
-        pytest.param("full_like", ["x0"], {"fill_value": 5}),
-        pytest.param("ones_like", ["x0"], {}),
-        pytest.param("zeros_like", ["x0"], {}),
-        pytest.param("linspace", ["x0", "4", "4"], {}),
-        pytest.param("linspace", ["1", "x0", "4"], {}),
-        pytest.param("vander", ["x0"], {}),
+        pytest.param("copy", ["x0"]),
+        pytest.param("diag", ["x0"]),
+        pytest.param("diag", ["x0.reshape((2,2))"]),
+        pytest.param("diagflat", ["x0.reshape((2,2))"]),
+        pytest.param("empty_like", ["x0"]),
+        pytest.param("full", ["10", "x0[3]"]),
+        pytest.param("full_like", ["x0", "5"]),
+        pytest.param("geomspace", ["x0[0:3]", "8", "4"]),
+        pytest.param("geomspace", ["1", "x0[2:4]", "4"]),
+        pytest.param("linspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("linspace", ["0", "x0[2:4]", "4"]),
+        pytest.param("logspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("logspace", ["0", "x0[2:4]", "4"]),
+        pytest.param("ones_like", ["x0"]),
+        pytest.param("vander", ["x0"]),
+        pytest.param("zeros_like", ["x0"]),
     ],
 )
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
-def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
+def test_array_creation_from_array(func, args, device_x, device_y):
     if func == "linspace" and is_win_platform():
         pytest.skip("CPU driver experiences an instability on Windows.")
 
     x = dpnp.array([1, 2, 3, 4], device=device_x)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
+    args = [eval(val, {"x0": x}) for val in args]
 
-    dpnp_kwargs = dict(kwargs)
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    # follow device
+    y = getattr(dpnp, func)(*args)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
-    dpnp_kwargs["device"] = device_y
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    # cross device
+    # TODO: include geomspace when issue dpnp#2352 is resolved
+    if func != "geomspace":
+        y = getattr(dpnp, func)(*args, device=device_y)
+        assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "func, args, kwargs",
-    [
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("diagflat", ["x0"], {}),
-    ],
-)
 @pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
-def test_array_creation_cross_device_2d_array(
-    func, args, kwargs, device_x, device_y
-):
-    if func == "linspace" and is_win_platform():
-        pytest.skip("CPU driver experiences an instability on Windows.")
+def test_array_creation_logspace_base(device_x, device_y):
+    x = dpnp.array([1, 2, 3, 4], device=device_x)
 
-    x = dpnp.arange(9, device=device_x).reshape(3, 3)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
-
-    dpnp_kwargs = dict(kwargs)
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    # follow device
+    y = dpnp.logspace(0, 8, 4, base=x[1:3])
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
-    dpnp_kwargs["device"] = device_y
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    # TODO: include geomspace when issue dpnp#2353 is resolved
+    # cross device
+    # y = dpnp.logspace(0, 8, 4, base=x[1:3], device=device_y)
+    # assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
 @pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
@@ -378,9 +322,9 @@ def test_meshgrid(device):
             "tan", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-        pytest.param(
-            "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
-        ),
+        pytest.param("trace", numpy.eye(3)),
+        pytest.param("tril", numpy.ones((3, 3))),
+        pytest.param("triu", numpy.ones((3, 3))),
         pytest.param("trapezoid", [1, 2, 3]),
         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
@@ -437,9 +381,7 @@ def test_1in_1out(func, data, device):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
         pytest.param(
-            "float_power",
-            [0, 1, 2, 3, 4, 5],
-            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+            "float_power", [0, 1, 2, 3, 4, 5], [1.0, 2.0, 3.0, 3.0, 2.0, 1.0]
         ),
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
@@ -451,11 +393,7 @@ def test_1in_1out(func, data, device):
             [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
-        pytest.param(
-            "gcd",
-            [0, 1, 2, 3, 4, 5],
-            [20, 20, 20, 20, 20, 20],
-        ),
+        pytest.param("gcd", [0, 1, 2, 3, 4, 5], [20, 20, 20, 20, 20, 20]),
         pytest.param(
             "gradient",
             [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
@@ -463,27 +401,15 @@ def test_1in_1out(func, data, device):
         ),
         pytest.param("heaviside", [-1.5, 0, 2.0], [0.5]),
         pytest.param(
-            "histogram_bin_edges",
-            [0, 0, 0, 1, 2, 3, 3, 4, 5],
-            [1, 2],
+            "histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5], [1, 2]
         ),
-        pytest.param(
-            "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
-        ),
+        pytest.param("hypot", [1.0, 2.0, 3.0, 4.0], [-1.0, -2.0, -4.0, -5.0]),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
-        pytest.param(
-            "lcm",
-            [0, 1, 2, 3, 4, 5],
-            [20, 20, 20, 20, 20, 20],
-        ),
-        pytest.param(
-            "ldexp",
-            [5, 5, 5, 5, 5],
-            [0, 1, 2, 3, 4],
-        ),
-        pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
-        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("lcm", [0, 1, 2, 3, 4, 5], [20, 20, 20, 20, 20, 20]),
+        pytest.param("ldexp", [5, 5, 5, 5, 5], [0, 1, 2, 3, 4]),
+        pytest.param("logaddexp", [-1, 2, 5, 9], [4, -3, 2, -8]),
+        pytest.param("logaddexp2", [-1, 2, 5, 9], [4, -3, 2, -8]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
         ),
@@ -613,6 +539,7 @@ def test_logic_op_2in(op, device):
     "func, data, scalar",
     [
         pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
+        pytest.param("broadcast_to", numpy.ones(7), (2, 7)),
     ],
 )
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
@@ -1351,7 +1278,6 @@ def test_array_copy(device, func, device_param, queue_param):
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_array_creation_from_dpctl(copy, device):
     dpt_data = dpt.ones((3, 3), device=device)
-
     result = dpnp.array(dpt_data, copy=copy)
 
     assert_sycl_queue_equal(result.sycl_queue, dpt_data.sycl_queue)
@@ -1385,13 +1311,6 @@ def test_from_dlpack_with_dpt(arr_dtype, device):
     assert X.__dlpack_device__() == Y.__dlpack_device__()
     assert X.usm_type == Y.usm_type
     assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
-
-
-@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-def test_broadcast_to(device):
-    x = dpnp.arange(5, device=device)
-    y = dpnp.broadcast_to(x, (3, 5))
-    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
 
 
 @pytest.mark.parametrize(
