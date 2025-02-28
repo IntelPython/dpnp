@@ -520,17 +520,8 @@ def test_logic_op_2in(op, device):
     x2 = dpnp.array(
         [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan], device=device
     )
-    # Remove NaN value from input arrays because numpy raises RuntimeWarning
-    if op in [
-        "greater",
-        "greater_equal",
-        "less",
-        "less_equal",
-    ]:
-        x1 = x1[:-1]
-        x2 = x2[:-1]
-    result = getattr(dpnp, op)(x1, x2)
 
+    result = getattr(dpnp, op)(x1, x2)
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
@@ -1020,7 +1011,6 @@ def test_from_dlpack(arr_dtype, shape, device):
         assert V.strides == W.strides
 
 
-@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 def test_from_dlpack_with_dpt(arr_dtype, device):
@@ -1583,7 +1573,6 @@ class TestLinAlgebra:
             _, exec_q = get_usm_allocations(array_list)
             assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
-    @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
