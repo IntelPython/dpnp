@@ -996,12 +996,6 @@ def test_cholesky(data, is_empty, usm_type):
     assert x.usm_type == result.usm_type
 
 
-@pytest.mark.parametrize("usm_type", list_of_usm_types)
-def test_indices(usm_type):
-    x = dpnp.indices((2,), usm_type=usm_type)
-    assert x.usm_type == usm_type
-
-
 @pytest.mark.parametrize("usm_type", list_of_usm_types + [None])
 @pytest.mark.parametrize("func", ["mgrid", "ogrid"])
 def test_grid(usm_type, func):
@@ -1015,7 +1009,7 @@ def test_grid(usm_type, func):
 
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 @pytest.mark.parametrize("sparse", [True, False])
-def test_indices_sparse(usm_type, sparse):
+def test_indices(usm_type, sparse):
     x = dpnp.indices((2, 3), sparse=sparse, usm_type=usm_type)
     for i in x:
         assert i.usm_type == usm_type
@@ -1045,29 +1039,12 @@ def test_where(usm_type):
 
 @pytest.mark.parametrize(
     "func",
-    [
-        "eig",
-        "eigvals",
-        "eigh",
-        "eigvalsh",
-    ],
+    ["eig", "eigvals", "eigh", "eigvalsh"],
 )
 @pytest.mark.parametrize(
     "shape",
-    [
-        (4, 4),
-        (0, 0),
-        (2, 3, 3),
-        (0, 2, 2),
-        (1, 0, 0),
-    ],
-    ids=[
-        "(4, 4)",
-        "(0, 0)",
-        "(2, 3, 3)",
-        "(0, 2, 2)",
-        "(1, 0, 0)",
-    ],
+    [(4, 4), (0, 0), (2, 3, 3), (0, 2, 2), (1, 0, 0)],
+    ids=["(4, 4)", "(0, 0)", "(2, 3, 3)", "(0, 2, 2)", "(1, 0, 0)"],
 )
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 def test_eigenvalue(func, shape, usm_type):

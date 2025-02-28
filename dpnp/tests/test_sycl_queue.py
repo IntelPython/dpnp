@@ -977,29 +977,12 @@ def test_det(device):
 
 @pytest.mark.parametrize(
     "func",
-    [
-        "eig",
-        "eigvals",
-        "eigh",
-        "eigvalsh",
-    ],
+    ["eig", "eigvals", "eigh", "eigvalsh"],
 )
 @pytest.mark.parametrize(
     "shape",
-    [
-        (4, 4),
-        (0, 0),
-        (2, 3, 3),
-        (0, 2, 2),
-        (1, 0, 0),
-    ],
-    ids=[
-        "(4, 4)",
-        "(0, 0)",
-        "(2, 3, 3)",
-        "(0, 2, 2)",
-        "(1, 0, 0)",
-    ],
+    [(4, 4), (0, 0), (2, 3, 3), (0, 2, 2), (1, 0, 0)],
+    ids=["(4, 4)", "(0, 0)", "(2, 3, 3)", "(0, 2, 2)", "(1, 0, 0)"],
 )
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_eigenvalue(func, shape, device):
@@ -1023,18 +1006,8 @@ def test_eigenvalue(func, shape, device):
 
 @pytest.mark.parametrize(
     "shape, is_empty",
-    [
-        ((2, 2), False),
-        ((3, 2, 2), False),
-        ((0, 0), True),
-        ((0, 2, 2), True),
-    ],
-    ids=[
-        "(2, 2)",
-        "(3, 2, 2)",
-        "(0, 0)",
-        "(0, 2, 2)",
-    ],
+    [((2, 2), False), ((3, 2, 2), False), ((0, 0), True), ((0, 2, 2), True)],
+    ids=["(2, 2)", "(3, 2, 2)", "(0, 0)", "(0, 2, 2)"],
 )
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_inv(shape, is_empty, device):
