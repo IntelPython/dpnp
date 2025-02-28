@@ -137,6 +137,13 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
 
     For full documentation refer to :obj:`numpy.nanargmax`.
 
+    Warning
+    -------
+    This function synchronizes in order to test for all-NaN slices in the array.
+    This may harm performance in some applications. To avoid synchronization,
+    the user is recommended to filter NaNs themselves and use `dpnp.argmax`
+    on the filtered array.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -210,6 +217,13 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     Returns the indices of the minimum values along an axis ignoring NaNs.
 
     For full documentation refer to :obj:`numpy.nanargmin`.
+
+    Warning
+    -------
+    This function synchronizes in order to test for all-NaN slices in the array.
+    This may harm performance in some applications. To avoid synchronization,
+    the user is recommended to filter NaNs themselves and use `dpnp.argmax`
+    on the filtered array.
 
     Parameters
     ----------
