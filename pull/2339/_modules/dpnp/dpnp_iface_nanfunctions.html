@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.18.0dev0+14.g2de63c1fcd6 documentation</title>
+  <title>dpnp.dpnp_iface_nanfunctions &mdash; Data Parallel Extension for NumPy 0.18.0dev0+13.gd974e7aed47 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=1e6d912d"></script>
+      <script src="../../_static/documentation_options.js?v=69e52682"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -145,7 +145,7 @@
 <span class="p">]</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_nan_no_mask</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Replace NaNs in array `a` with `val`.</span>
 
@@ -175,14 +175,14 @@
     <span class="k">return</span> <span class="n">a</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_replace_nan_test_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">axis</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Replace NaNs in array `a` with `val` and test for all-NaN slices.</span>
+<span class="sd">    Replace NaNs in array `a` with `val`.</span>
 
-<span class="sd">    If `a` is of inexact type, test along an axis for an all-NaN slice.</span>
-<span class="sd">    If none are found, make a copy of `a`, replace NaNs with the `val`</span>
-<span class="sd">    value, and return the copy. If `a` is not of inexact type, do</span>
-<span class="sd">    nothing and return `a`.</span>
+<span class="sd">    If `a` is of inexact type, make a copy of `a`, replace NaNs with</span>
+<span class="sd">    the `val` value, and return the copy together with a boolean mask</span>
+<span class="sd">    marking the locations where NaNs were present. If `a` is not of</span>
+<span class="sd">    inexact type, do nothing and return `a` together with a mask of None.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -190,26 +190,30 @@
 <span class="sd">        Input array.</span>
 <span class="sd">    val : float</span>
 <span class="sd">        NaN values are set to `val` before doing the operation.</span>
-<span class="sd">    axis : int</span>
-<span class="sd">        Axis along which to test for all-NaN slices.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">    out : {dpnp.ndarray}</span>
 <span class="sd">        If `a` is of inexact type, return a copy of `a` with the NaNs</span>
 <span class="sd">        replaced by the fill value, otherwise return `a`.</span>
+<span class="sd">    mask: {bool, None}</span>
+<span class="sd">        If `a` is of inexact type, return a boolean mask marking locations of</span>
+<span class="sd">        NaNs, otherwise return ``None``.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inexact</span><span class="p">):</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All-NaN slice encountered&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">nan</span><span class="o">=</span><span class="n">val</span><span class="p">,</span> <span class="n">posinf</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">neginf</span><span class="o">=-</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="n">mask</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">dpnp</span><span class="o">.</span><span class="n">copyto</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="kc">None</span>
 
-    <span class="k">return</span> <span class="n">a</span>
+    <span class="k">return</span> <span class="n">a</span><span class="p">,</span> <span class="n">mask</span>
 
 
 <div class="viewcode-block" id="nanargmax">
@@ -219,6 +223,13 @@
 <span class="sd">    Returns the indices of the maximum values along an axis ignoring NaNs.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nanargmax`.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function synchronizes in order to test for all-NaN slices in the array.</span>
+<span class="sd">    This may harm performance in some applications. To avoid synchronization,</span>
+<span class="sd">    the user is recommended to filter NaNs themselves and use `dpnp.argmax`</span>
+<span class="sd">    on the filtered array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -280,7 +291,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan_test_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">-</span><span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All-NaN slice encountered&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
@@ -292,6 +307,13 @@
 <span class="sd">    Returns the indices of the minimum values along an axis ignoring NaNs.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.nanargmin`.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function synchronizes in order to test for all-NaN slices in the array.</span>
+<span class="sd">    This may harm performance in some applications. To avoid synchronization,</span>
+<span class="sd">    the user is recommended to filter NaNs themselves and use `dpnp.argmax`</span>
+<span class="sd">    on the filtered array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -353,7 +375,11 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan_test_axis</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span> <span class="n">axis</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">inf</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">mask</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">mask</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="n">mask</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;All-NaN slice encountered&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">)</span></div>
 
 
@@ -426,7 +452,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan_no_mask</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">cumprod</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
@@ -499,7 +525,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan_no_mask</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
 
 
@@ -1013,7 +1039,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan_no_mask</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
@@ -1120,7 +1146,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">_replace_nan_no_mask</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
         <span class="n">a</span><span class="p">,</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
