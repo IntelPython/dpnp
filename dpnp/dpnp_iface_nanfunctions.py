@@ -60,6 +60,31 @@ __all__ = [
 ]
 
 
+def _replace_nan_no_mask(a, val):
+    """
+    Replace NaNs in array `a` with `val`.
+
+    If `a` is of inexact type, make a copy of `a`, replace NaNs with
+    the `val` value, and return the copy together. If `a` is not of
+    inexact type, do nothing and return `a`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    val : float
+        NaN values are set to `val` before doing the operation.
+
+    Returns
+    -------
+    out : {dpnp.ndarray}
+        If `a` is of inexact type, return a copy of `a` with the NaNs
+        replaced by the fill value, otherwise return `a`.
+    """
+
+    return dpnp.nan_to_num(a, nan=val, posinf=dpnp.inf, neginf=-dpnp.inf)
+
+
 def _replace_nan(a, val):
     """
     Replace NaNs in array `a` with `val`.
@@ -315,7 +340,7 @@ def nancumprod(a, axis=None, dtype=None, out=None):
 
     """
 
-    a, _ = _replace_nan(a, 1)
+    a = _replace_nan_no_mask(a, 1.0)
     return dpnp.cumprod(a, axis=axis, dtype=dtype, out=out)
 
 
@@ -385,7 +410,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
 
     """
 
-    a, _ = _replace_nan(a, 0)
+    a = _replace_nan_no_mask(a, 0.0)
     return dpnp.cumsum(a, axis=axis, dtype=dtype, out=out)
 
 
@@ -884,7 +909,7 @@ def nanprod(
 
     """
 
-    a = dpnp.nan_to_num(a, nan=1.0, posinf=dpnp.inf, neginf=-dpnp.inf)
+    a = _replace_nan_no_mask(a, 1.0)
     return dpnp.prod(
         a,
         axis=axis,
@@ -988,7 +1013,7 @@ def nansum(
 
     """
 
-    a = dpnp.nan_to_num(a, nan=0.0, posinf=dpnp.inf, neginf=-dpnp.inf)
+    a = _replace_nan_no_mask(a, 0.0)
     return dpnp.sum(
         a,
         axis=axis,
