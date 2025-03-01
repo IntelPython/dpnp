@@ -228,7 +228,7 @@ jobs:
       - name: Run tests
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests_linux
-        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
@@ -394,7 +394,7 @@ jobs:
       - name: Run tests
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests_win
-        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
