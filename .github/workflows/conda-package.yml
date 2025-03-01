@@ -146,7 +146,7 @@ jobs:
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -278,7 +278,7 @@ jobs:
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -440,12 +440,12 @@ jobs:
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Download artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Download wheels artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
@@ -528,7 +528,7 @@ jobs:
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-ver }}
           path: ${{ env.pkg-path-in-channel }}
