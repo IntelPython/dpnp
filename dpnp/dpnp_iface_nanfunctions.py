@@ -144,6 +144,11 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     the user is recommended to filter NaNs themselves and use `dpnp.argmax`
     on the filtered array.
 
+    Warning
+    -------
+    The results cannot be trusted if a slice contains only NaNs
+    and -Infs.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -173,8 +178,6 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
         values ignoring NaNs. The returned array must have the default array
         index data type.
         For all-NaN slices ``ValueError`` is raised.
-        Warning: the results cannot be trusted if a slice contains only NaNs
-        and -Infs.
 
     Limitations
     -----------
@@ -225,6 +228,11 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
     the user is recommended to filter NaNs themselves and use `dpnp.argmax`
     on the filtered array.
 
+    Warning
+    -------
+    The results cannot be trusted if a slice contains only NaNs
+    and -Infs.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -254,8 +262,6 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
         values ignoring NaNs. The returned array must have the default array
         index data type.
         For all-NaN slices ``ValueError`` is raised.
-        Warning: the results cannot be trusted if a slice contains only NaNs
-        and Infs.
 
     Limitations
     -----------
