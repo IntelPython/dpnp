@@ -81,7 +81,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ env.environment-file-name }}
           path: ${{ env.environment-file-loc }}
@@ -131,7 +131,7 @@ jobs:
       - name: ReRun tests on Linux
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests
-        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
@@ -174,7 +174,7 @@ jobs:
           fetch-depth: 0
 
       - name: Download artifact
-        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
         with:
           name: ${{ env.environment-file-name }}
           path: ${{ env.environment-file-loc }}
@@ -236,7 +236,7 @@ jobs:
       - name: ReRun tests on Linux
         if: env.rerun-tests-on-failure == 'true'
         id: run_tests
-        uses: nick-fields/retry@c97818ca39074beaea45180dba704f92496a0082 # v3.0.1
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
