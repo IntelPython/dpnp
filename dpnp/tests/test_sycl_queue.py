@@ -1424,6 +1424,7 @@ def test_choose(device):
     assert_sycl_queue_equal(result.sycl_queue, chc.sycl_queue)
 
 
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 class TestLinAlgebra:
     @pytest.mark.parametrize(
         "data, is_empty",
@@ -1435,7 +1436,6 @@ class TestLinAlgebra:
         ],
         ids=["2D", "3D", "Empty_2D", "Empty_3D"],
     )
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_cholesky(self, data, is_empty, device):
         if is_empty:
             x = dpnp.empty(data, device=device)
@@ -1446,7 +1446,6 @@ class TestLinAlgebra:
         result = dpnp.linalg.cholesky(x)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     @pytest.mark.parametrize(
         "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
     )
@@ -1456,7 +1455,6 @@ class TestLinAlgebra:
         result = dpnp.linalg.cond(ia, p=p)
         assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_det(self, device):
         data = [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]
         x = dpnp.array(data, device=device)
@@ -1469,7 +1467,6 @@ class TestLinAlgebra:
         [(4, 4), (0, 0), (2, 3, 3), (0, 2, 2), (1, 0, 0)],
         ids=["(4, 4)", "(0, 0)", "(2, 3, 3)", "(0, 2, 2)", "(1, 0, 0)"],
     )
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_eigenvalue(self, func, shape, device):
         dtype = dpnp.default_float_type(device)
         # Set a `hermitian` flag for generate_random_numpy_array() to
@@ -1498,7 +1495,6 @@ class TestLinAlgebra:
         ],
         ids=["(2, 2)", "(3, 2, 2)", "(0, 0)", "(0, 2, 2)"],
     )
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_inv(self, shape, is_empty, device):
         if is_empty:
             x = dpnp.empty(shape, device=device)
@@ -1512,7 +1508,6 @@ class TestLinAlgebra:
         result = dpnp.linalg.inv(x)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     @pytest.mark.parametrize(
         ["m", "n", "nrhs"],
         [(4, 2, 2), (4, 0, 1), (4, 2, 0), (0, 0, 0)],
@@ -1530,7 +1525,6 @@ class TestLinAlgebra:
             assert_sycl_queue_equal(param_queue, b.sycl_queue)
 
     @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_matrix_power(self, n, device):
         x = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
         result = dpnp.linalg.matrix_power(x, n)
@@ -1541,13 +1535,11 @@ class TestLinAlgebra:
         [([1, 2], None), ([[1, 2], [3, 4]], None), ([[1, 2], [3, 4]], 1e-06)],
         ids=["1-D array", "2-D array no tol", "2_d array with tol"],
     )
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_matrix_rank(self, data, tol, device):
         x = dpnp.array(data, device=device)
         result = dpnp.linalg.matrix_rank(x, tol=tol)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_multi_dot(self, device):
         array_list = []
         for num_array in [3, 5]:  # number of arrays in multi_dot
@@ -1559,7 +1551,6 @@ class TestLinAlgebra:
             _, exec_q = get_usm_allocations(array_list)
             assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_multi_dot_out(self, device):
         array_list = []
         for num_array in [3, 5]:  # number of arrays in multi_dot
@@ -1573,7 +1564,6 @@ class TestLinAlgebra:
             _, exec_q = get_usm_allocations(array_list)
             assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     @pytest.mark.parametrize(
         "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
     )
@@ -1619,7 +1609,6 @@ class TestLinAlgebra:
             "(1, 0, 3)",
         ],
     )
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_pinv(self, shape, hermitian, rcond_as_array, device):
         dtype = dpnp.default_float_type(device)
         a = generate_random_numpy_array(shape, dtype, hermitian=hermitian)
@@ -1640,7 +1629,6 @@ class TestLinAlgebra:
         ids=["(4, 4)", "(2, 0)", "(2, 2, 3)", "(0, 2, 3)", "(1, 0, 3)"],
     )
     @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_qr(self, shape, mode, device):
         dtype = dpnp.default_float_type(device)
         count_elems = numpy.prod(shape)
@@ -1667,7 +1655,6 @@ class TestLinAlgebra:
         ],
         ids=["(2, 2)", "(3, 2, 2)", "(0, 0)", "(0, 2, 2)"],
     )
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_slogdet(self, shape, is_empty, device):
         if is_empty:
             x = dpnp.empty(shape, device=device)
@@ -1683,7 +1670,6 @@ class TestLinAlgebra:
         assert_sycl_queue_equal(sign_result.sycl_queue, x.sycl_queue)
         assert_sycl_queue_equal(logdet_result.sycl_queue, x.sycl_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     @pytest.mark.parametrize(
         "matrix, rhs",
         [
@@ -1710,7 +1696,6 @@ class TestLinAlgebra:
         assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     @pytest.mark.parametrize("full_matrices", [True, False])
     @pytest.mark.parametrize("compute_uv", [True, False])
     @pytest.mark.parametrize(
@@ -1759,13 +1744,11 @@ class TestLinAlgebra:
             )
             assert_sycl_queue_equal(dpnp_s.sycl_queue, expected_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_tensorinv(self, device):
         a = dpnp.eye(12, device=device).reshape(12, 4, 3)
         result = dpnp.linalg.tensorinv(a, ind=1)
         assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
 
-    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_tensorsolve(self, device):
         a = dpnp.random.randn(3, 2, 6, device=device)
         b = dpnp.ones(a.shape[:2], device=device)
