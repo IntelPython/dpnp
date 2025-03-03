@@ -252,7 +252,12 @@ class TestNanMaxNanMin:
     @pytest.mark.parametrize("in_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     def test_out_dtype(self, func, in_dt, out_dt):
-        a = generate_random_numpy_array((2, 2, 3), dtype=in_dt)
+        # TODO: update to use generate_random_numpy_array
+        a = (
+            numpy.arange(12, dtype=numpy.float32)
+            .reshape((2, 2, 3))
+            .astype(dtype=in_dt)
+        )
         out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
         ia, iout = dpnp.array(a), dpnp.array(out)
 
