@@ -30,6 +30,7 @@ var NAVTREEINDEX0 =
 "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html":[2,0,0,0,1,0],
 "classdpnp_1_1extensions_1_1indexing_1_1kernels_1_1_choose_functor.html":[2,0,0,0,2,0,0],
 "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html":[2,0,0,0,3,2],
+"classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html":[2,0,0,0,4,0,1],
 "classdpnp__less__comp.html":[2,0,4],
 "classes.html":[2,1],
 "classstatistics_1_1common_1_1_dispatch_table.html":[2,0,1,0,1],
@@ -56,6 +57,7 @@ var NAVTREEINDEX0 =
 "dir_7db72d04786399a7e16076c21d91dbc7.html":[3,0,0,1],
 "dir_8ecf9f741f71669d18a115ce11ef5e52.html":[3,0,0,7],
 "dir_ab8fc0f562afa26f27f3f50b0e2757bb.html":[3,0,0,3],
+"dir_b63756d6474ba2397604dd5d3f160d7a.html":[3,0,0,8],
 "dir_cb9cf803b49420ddb907a86afa75e721.html":[3,0,0,5],
 "dir_d3fd84b2e4114076d2551689812cf799.html":[3,0,2],
 "dir_d44c64559bbebec7f509842c48db8b23.html":[3,0,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX0 =
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga35b32eec8a073d2d96551a8256bbcde7":[0,2,29],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga37e231ebdeec9fef8a56743a28770183":[0,2,30],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga41dd03c85f901c2dee88e709170ee1a1":[0,2,23],
-"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga430f99caa9b1ce1497c0f6b26ebb4e85":[0,2,7],
-"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga51221588325d576caf0f235739ef0718":[0,2,1],
-"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga78ffe853157e336c03a2773b0713eaa7":[0,2,8]
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga430f99caa9b1ce1497c0f6b26ebb4e85":[0,2,7]
 };
