@@ -600,6 +600,34 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
         getattr(dpnp, func)(x1, x2)
 
 
+@pytest.mark.parametrize("op", ["bitwise_count", "bitwise_not"])
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_bitwise_op_1in(op, device):
+    x = dpnp.arange(-10, 10, device=device)
+    z = getattr(dpnp, op)(x)
+
+    assert_sycl_queue_equal(x.sycl_queue, z.sycl_queue)
+
+
+@pytest.mark.parametrize(
+    "op",
+    ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
+)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+def test_bitwise_op_2in(op, device):
+    x = dpnp.arange(25, device=device)
+    y = dpnp.arange(25, device=device)[::-1]
+
+    z = getattr(dpnp, op)(x, y)
+    zx = getattr(dpnp, op)(x, 7)
+    zy = getattr(dpnp, op)(12, y)
+
+    assert_sycl_queue_equal(z.sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(z.sycl_queue, y.sycl_queue)
+    assert_sycl_queue_equal(zx.sycl_queue, x.sycl_queue)
+    assert_sycl_queue_equal(zy.sycl_queue, y.sycl_queue)
+
+
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     "shape1, shape2",
