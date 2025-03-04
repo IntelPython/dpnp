@@ -25,11 +25,42 @@
 
 #pragma once
 
-#include <pybind11/pybind11.h>
+#include "common.hpp"
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::window
+namespace dpnp::extensions::window::kernels
 {
-void init_hamming(py::module_ m);
-}
+
+template <typename T>
+class HammingFunctor
+{
+private:
+    T *data = nullptr;
+    const std::size_t N;
+
+public:
+    HammingFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+
+    void operator()(sycl::id<1> id) const
+    {
+        const auto i = id.get(0);
+
+        data[i] = T(0.54) - T(0.46) * sycl::cospi(T(2) * i / (N - 1));
+    }
+};
+
+template <typename fnT, typename T>
+struct HammingFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_floating_point_v<T>) {
+            return window_impl<T, HammingFunctor>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+} // namespace dpnp::extensions::window::kernels
