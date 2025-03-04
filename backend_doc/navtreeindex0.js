@@ -30,7 +30,7 @@ var NAVTREEINDEX0 =
 "classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html":[2,0,0,0,1,0],
 "classdpnp_1_1extensions_1_1indexing_1_1kernels_1_1_choose_functor.html":[2,0,0,0,2,0,0],
 "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html":[2,0,0,0,3,2],
-"classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html":[2,0,0,0,4,0,0],
+"classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html":[2,0,0,0,4,0,1],
 "classdpnp__less__comp.html":[2,0,4],
 "classes.html":[2,1],
 "classstatistics_1_1common_1_1_dispatch_table.html":[2,0,1,0,1],
