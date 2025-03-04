@@ -192,6 +192,7 @@ def test_array_creation_from_array(func, args, usm_type_x, usm_type_y):
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("geomspace", [1, 4, 8], {}),
         pytest.param("hamming", [10], {}),
+        pytest.param("hanning", [10], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
