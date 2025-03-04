@@ -97,7 +97,7 @@ Other matrix operations
 
    dpnp.diagonal
    dpnp.linalg.diagonal (Array API compatible)
-   dpnp.linalg.matrix_tranpose (Array API compatible)
+   dpnp.linalg.matrix_transpose (Array API compatible)
 
 Exceptions
 ----------

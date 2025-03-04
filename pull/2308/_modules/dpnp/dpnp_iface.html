@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.17.0dev6+29.g62ae40bcc36 documentation</title>
+  <title>dpnp.dpnp_iface &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.g2c6c6973651 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a964444e"></script>
+      <script src="../../_static/documentation_options.js?v=5356ff8b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -122,6 +122,7 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="c1"># pylint: disable=protected-access</span>
+<span class="c1"># pylint: disable=redefined-outer-name</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
@@ -142,7 +143,6 @@
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;are_same_logical_tensors&quot;</span><span class="p">,</span>
     <span class="s2">&quot;asnumpy&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;astype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;as_usm_ndarray&quot;</span><span class="p">,</span>
     <span class="s2">&quot;check_limitations&quot;</span><span class="p">,</span>
     <span class="s2">&quot;check_supported_arrays_type&quot;</span><span class="p">,</span>
@@ -159,7 +159,6 @@
     <span class="s2">&quot;synchronize_array_data&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="kn">import</span> <span class="n">float64</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_arraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_arraycreation</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__arraycreation</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_bitwise</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
@@ -192,6 +191,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_statistics</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__statistics</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_trigonometric</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_trigonometric</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__trigonometric</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_window</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_iface_window</span><span class="w"> </span><span class="kn">import</span> <span class="n">__all__</span> <span class="k">as</span> <span class="n">__all__window</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
@@ -216,6 +217,7 @@
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__sorting</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__statistics</span>
 <span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__trigonometric</span>
+<span class="n">__all__</span> <span class="o">+=</span> <span class="n">__all__window</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">are_same_logical_tensors</span><span class="p">(</span><span class="n">ar1</span><span class="p">,</span> <span class="n">ar2</span><span class="p">):</span>
@@ -269,11 +271,13 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a : {array_like}</span>
 <span class="sd">        Arbitrary object that can be converted to :obj:`numpy.ndarray`.</span>
-<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
+<span class="sd">    order : {None, &#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}, optional</span>
 <span class="sd">        The desired memory layout of the converted array.</span>
-<span class="sd">        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses</span>
-<span class="sd">        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely</span>
-<span class="sd">        as possible.</span>
+<span class="sd">        When `order` is ``&#39;A&#39;``, it uses ``&#39;F&#39;`` if `a` is column-major and</span>
+<span class="sd">        uses ``&#39;C&#39;`` otherwise. And when `order` is ``&#39;K&#39;``, it keeps strides</span>
+<span class="sd">        as closely as possible.</span>
+
+<span class="sd">        Default: ``&#39;C&#39;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -296,74 +300,6 @@
 
 
 
-<span class="c1"># pylint: disable=redefined-outer-name</span>
-<div class="viewcode-block" id="astype">
-<a class="viewcode-back" href="../../reference/generated/dpnp.astype.html#dpnp.astype">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">astype</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;unsafe&quot;</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Copy the array with data type casting.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    x1 : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Array data type casting.</span>
-<span class="sd">    dtype : {None, str, dtype object}</span>
-<span class="sd">        Target data type.</span>
-<span class="sd">    order : {&#39;C&#39;, &#39;F&#39;, &#39;A&#39;, &#39;K&#39;}</span>
-<span class="sd">        Row-major (C-style) or column-major (Fortran-style) order.</span>
-<span class="sd">        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses</span>
-<span class="sd">        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely</span>
-<span class="sd">        as possible.</span>
-<span class="sd">    copy : bool</span>
-<span class="sd">        If it is ``False`` and no cast happens, then this method returns</span>
-<span class="sd">        the array itself. Otherwise, a copy is returned.</span>
-<span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
-<span class="sd">        Controls what kind of data casting may occur. Defaults to ``unsafe``</span>
-<span class="sd">        for backwards compatibility.</span>
-
-<span class="sd">            - &#39;no&#39; means the data types should not be cast at all.</span>
-<span class="sd">            - &#39;equiv&#39; means only byte-order changes are allowed.</span>
-<span class="sd">            - &#39;safe&#39; means only casts which can preserve values are allowed.</span>
-<span class="sd">            - &#39;same_kind&#39; means only safe casts or casts within a kind, like</span>
-<span class="sd">              float64 to float32, are allowed.</span>
-<span class="sd">            - &#39;unsafe&#39; means any data conversions may be done.</span>
-
-<span class="sd">    copy : {bool}, optional</span>
-<span class="sd">        By default, ``astype`` always returns a newly allocated array. If this</span>
-<span class="sd">        is set to ``False``, and the `dtype`, `order`, and `subok` requirements</span>
-<span class="sd">        are satisfied, the input array is returned instead of a copy.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    arr_t : dpnp.ndarray</span>
-<span class="sd">        Unless `copy` is ``False`` and the other conditions for returning</span>
-<span class="sd">        the input array are satisfied, `arr_t` is a new array of the same shape</span>
-<span class="sd">        as the input array, with dtype, order given by dtype, order.</span>
-
-<span class="sd">    &quot;&quot;&quot;</span>
-
-    <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">order</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
-
-    <span class="n">x1_obj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">x1</span><span class="p">)</span>
-    <span class="n">array_obj</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span>
-        <span class="n">x1_obj</span><span class="p">,</span> <span class="n">dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="n">casting</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="n">copy</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">array_obj</span> <span class="ow">is</span> <span class="n">x1_obj</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
-        <span class="c1"># return x1 if dpctl returns a zero copy of x1_obj</span>
-        <span class="k">return</span> <span class="n">x1</span>
-    <span class="k">return</span> <span class="n">dpnp_array</span><span class="o">.</span><span class="n">_create_from_usm_ndarray</span><span class="p">(</span><span class="n">array_obj</span><span class="p">)</span></div>
-
-
-
 <span class="k">def</span><span class="w"> </span><span class="nf">as_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.</span>
@@ -376,22 +312,27 @@
 <span class="sd">        The desired dtype for the result array if new array is creating. If not</span>
 <span class="sd">        given, a default dtype will be used that can represent the values (by</span>
 <span class="sd">        considering Promotion Type Rule and device capabilities when necessary).</span>
+
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where the result array is created if</span>
-<span class="sd">        required.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+<span class="sd">        If the value is ``None``, returned array is created on the same device</span>
+<span class="sd">        as `a`.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the result array if new array</span>
 <span class="sd">        is created.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for result array allocation if required.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -482,10 +423,14 @@
 <span class="sd">    ----------</span>
 <span class="sd">    arrays : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input arrays to check for supported types.</span>
-<span class="sd">    scalar_type : {bool}, optional</span>
+<span class="sd">    scalar_type : bool, optional</span>
 <span class="sd">        A scalar type is also considered as supported if flag is ``True``.</span>
-<span class="sd">    all_scalars : {bool}, optional</span>
+
+<span class="sd">        Default: ``False``.</span>
+<span class="sd">    all_scalars : bool, optional</span>
 <span class="sd">        All the input arrays can be scalar if flag is ``True``.</span>
+
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -528,19 +473,23 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
-<span class="sd">        An array API concept of device where an array of default floating type</span>
-<span class="sd">        might be created. The `device` can be ``None`` (the default), an OneAPI</span>
-<span class="sd">        filter selector string, an instance of :class:`dpctl.SyclDevice`</span>
-<span class="sd">        corresponding to a non-partitioned SYCL device, an instance of</span>
-<span class="sd">        :class:`dpctl.SyclQueue`, or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
 <span class="sd">        The value ``None`` is interpreted as to use a default device.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue which might be used to create an array of default floating</span>
 <span class="sd">        type. The `sycl_queue` can be ``None`` (the default), which is</span>
 <span class="sd">        interpreted as to get the SYCL queue from `device` keyword if present</span>
 <span class="sd">        or to use a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -552,7 +501,7 @@
     <span class="n">_sycl_queue</span> <span class="o">=</span> <span class="n">get_normalized_queue_device</span><span class="p">(</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="n">_sycl_queue</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_dpnp_descriptor</span><span class="p">(</span>
@@ -663,16 +612,24 @@
 <span class="sd">        and implementing `__sycl_usm_array_interface__` protocol, an instance</span>
 <span class="sd">        of `numpy.ndarray`, an object supporting Python buffer protocol,</span>
 <span class="sd">        a Python scalar, or a (possibly nested) sequence of Python scalars.</span>
-<span class="sd">    sycl_queue : class:`dpctl.SyclQueue`, optional</span>
+<span class="sd">    sycl_queue : {None, class:`dpctl.SyclQueue`}, optional</span>
 <span class="sd">        A queue which explicitly indicates where USM allocation is done</span>
 <span class="sd">        and the population code (if any) is executed.</span>
 <span class="sd">        Value ``None`` is interpreted as to get the SYCL queue from either</span>
 <span class="sd">        `obj` parameter if not ``None`` or from `device` keyword,</span>
 <span class="sd">        or to use default queue.</span>
-<span class="sd">    device : {string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,</span>
-<span class="sd">              :class:`dpctl.tensor.Device`}, optional</span>
-<span class="sd">        An array-API keyword indicating non-partitioned SYCL device</span>
-<span class="sd">        where array is allocated.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+<span class="sd">        The value ``None`` is interpreted as to use the same device as `obj`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -710,8 +667,12 @@
 <span class="sd">        If provided, value of `a` array will be copied into it</span>
 <span class="sd">        according to ``safe`` casting rule.</span>
 <span class="sd">        It should be of the appropriate shape.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    casting : {&#39;no&#39;, &#39;equiv&#39;, &#39;safe&#39;, &#39;same_kind&#39;, &#39;unsafe&#39;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur.</span>
+
+<span class="sd">        Default: ``&#39;safe&#39;``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -808,6 +769,7 @@
 <span class="sd">        An input object with sycl_device property to check device backend.</span>
 <span class="sd">        If `obj` is ``None``, device backend will be checked for the default</span>
 <span class="sd">        queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>

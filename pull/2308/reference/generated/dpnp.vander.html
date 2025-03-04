@@ -15,20 +15,20 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.vander &mdash; Data Parallel Extension for NumPy 0.17.0dev6+29.g62ae40bcc36 documentation</title>
+  <title>dpnp.vander &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.g2c6c6973651 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a964444e"></script>
+      <script src="../../_static/documentation_options.js?v=5356ff8b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Array manipulation routines" href="../manipulation.html" />
+    <link rel="next" title="Array manipulation routines" href="../array-manipulation.html" />
     <link rel="prev" title="dpnp.triu" href="dpnp.triu.html" /> 
 </head>
 
@@ -58,16 +58,16 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../creation.html">Array creation routines</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#from-shape-or-value">From shape or value</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#from-existing-data">From existing data</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#numerical-ranges">Numerical ranges</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../creation.html#building-matrices">Building matrices</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../creation.html#the-matrix-class">The Matrix class</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../array-creation.html">Array creation routines</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../array-creation.html#from-shape-or-value">From shape or value</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-creation.html#from-existing-data">From existing data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-creation.html#numerical-ranges">Numerical ranges</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../array-creation.html#building-matrices">Building matrices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-creation.html#the-matrix-class">The Matrix class</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array manipulation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
@@ -75,15 +75,17 @@
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
@@ -109,7 +111,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../creation.html">Array creation routines</a></li>
+          <li class="breadcrumb-item"><a href="../array-creation.html">Array creation routines</a></li>
       <li class="breadcrumb-item active">dpnp.vander</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.vander.rst.txt" rel="nofollow"> View page source</a>
@@ -124,7 +126,7 @@
 <h1>dpnp.vander<a class="headerlink" href="#dpnp-vander" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.vander">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">vander</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increasing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#vander"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.vander" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">vander</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">N</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increasing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">usm_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sycl_queue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#vander"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.vander" title="Link to this definition"></a></dt>
 <dd><p>Generate a Vandermonde matrix.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.vander.html#numpy.vander" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.vander</span></code></a>.</p>
 <dl class="field-list simple">
@@ -137,12 +139,14 @@ tuples of lists, and ndarrays.</p></li>
 array is returned <code class="docutils literal notranslate"><span class="pre">(N</span> <span class="pre">=</span> <span class="pre">len(x))</span></code>.</p></li>
 <li><p><strong>increasing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- Order of the powers of the columns. If <code class="docutils literal notranslate"><span class="pre">True,</span></code> the powers increase
 from left to right, if <code class="docutils literal notranslate"><span class="pre">False</span></code> (the default) they are reversed.</p></li>
-<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- An array API concept of device where the output array is created.
-The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector
-string, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.19.0dev0+518.ged02bea9a8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
-a non-partitioned SYCL device, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.19.0dev0+518.ged02bea9a8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>,
-or a <cite>Device</cite> object returned by
-<a class="reference internal" href="dpnp.dpnp_array.dpnp_array.device.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property.</p></li>
+<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue</em><em>, </em><em>Device}</em><em>, </em><em>optional</em>) -- <p>An array API concept of device where the output array is created.
+<cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string, an instance
+of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.20.0dev0+12.g3fb408b30f)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a non-partitioned SYCL
+device, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.20.0dev0+12.g3fb408b30f)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.20.0dev0+12.g3fb408b30f)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object returned by
+<a class="reference internal" href="dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 <li><p><strong>usm_type</strong> (<em>{None</em><em>, </em><em>&quot;device&quot;</em><em>, </em><em>&quot;shared&quot;</em><em>, </em><em>&quot;host&quot;}</em><em>, </em><em>optional</em>) -- The type of SYCL USM allocation for the output array.
 Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>sycl_queue</strong> (<em>{None</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- A SYCL queue to use for output array allocation and copying. The
@@ -218,7 +222,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">None</span
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="dpnp.triu.html" class="btn btn-neutral float-left" title="dpnp.triu" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../manipulation.html" class="btn btn-neutral float-right" title="Array manipulation routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../array-manipulation.html" class="btn btn-neutral float-right" title="Array manipulation routines" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
