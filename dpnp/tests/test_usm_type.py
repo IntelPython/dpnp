@@ -386,7 +386,7 @@ def test_bitwise_op_1in(op, usm_type):
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types)
-def test_bitwise_op(op, usm_type_x, usm_type_y):
+def test_bitwise_op_2in(op, usm_type_x, usm_type_y):
     x = dpnp.arange(25, usm_type=usm_type_x)
     y = dpnp.arange(25, usm_type=usm_type_y)[::-1]
 
