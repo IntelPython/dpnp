@@ -38,16 +38,18 @@ it contains:
 """
 
 # pylint: disable=protected-access
-
+# pylint: disable=no-name-in-module
 
 import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
 
+import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
 __all__ = [
     "binary_repr",
     "bitwise_and",
+    "bitwise_count",
     "bitwise_invert",
     "bitwise_left_shift",
     "bitwise_not",
@@ -212,6 +214,59 @@ bitwise_and = DPNPBinaryFunc(
     ti._bitwise_and,
     _BITWISE_AND_DOCSTRING,
     binary_inplace_fn=ti._bitwise_and_inplace,
+)
+
+
+_BITWISE_COUNT_DOCSTRING = """
+Computes the number of 1-bits in the absolute value of `x`.
+
+For full documentation refer to :obj:`numpy.bitwise_count`.
+
+Parameters
+----------
+x : {dpnp.ndarray, usm_ndarray}
+    Input array, expected to have integer or boolean data type.
+out : {None, dpnp.ndarray, usm_ndarray}, optional
+    Output array to populate.
+    Array must have the correct shape and the expected data type.
+
+    Default: ``None``.
+order : {"C", "F", "A", "K"}, optional
+    Memory layout of the newly output array, if parameter `out` is ``None``.
+
+    Default: ``"K"``.
+
+Returns
+-------
+out : dpnp.ndarray
+    The corresponding number of 1-bits in the input. Returns ``uint8`` for all
+    integer types.
+
+Limitations
+-----------
+Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
+Otherwise ``NotImplementedError`` exception will be raised.
+
+Examples
+--------
+>>> import dpnp as np
+>>> a = np.array(1023)
+>>> np.bitwise_count(a)
+array(10, dtype=uint8)
+
+>>> a = np.array([2**i - 1 for i in range(16)])
+>>> np.bitwise_count(a)
+array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15],
+      dtype=uint8)
+
+"""
+
+bitwise_count = DPNPUnaryFunc(
+    "bitwise_count",
+    ufi._bitwise_count_result_type,
+    ufi._bitwise_count,
+    _BITWISE_COUNT_DOCSTRING,
 )
 
 
