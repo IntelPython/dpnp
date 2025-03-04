@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.18.0dev0+18.g2700d9241ba documentation</title>
+  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.18.0dev0+19.g9d212b37a92 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a6f1396c"></script>
+      <script src="../../_static/documentation_options.js?v=673fb405"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -110,7 +110,7 @@
 <span class="c1"># *****************************************************************************</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Interface of the Binary operations of the DPNP</span>
+<span class="sd">Interface of the Bitwise part of the DPNP</span>
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
@@ -171,6 +171,7 @@
 <span class="sd">        at least a sufficient number of bits for `num` to be represented in the</span>
 <span class="sd">        designated form. If the `width` value is insufficient, an error is</span>
 <span class="sd">        raised.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -233,9 +234,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -320,9 +323,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -398,9 +403,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -474,9 +481,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -560,9 +569,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -637,9 +648,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
 <span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
