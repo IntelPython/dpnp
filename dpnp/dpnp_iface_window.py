@@ -48,6 +48,39 @@ import dpnp.backend.extensions.window._window_impl as wi
 __all__ = ["hamming", "hanning"]
 
 
+def _call_window_kernel(
+    M, _window_kernel, device=None, usm_type=None, sycl_queue=None
+):
+
+    try:
+        M = int(M)
+    except Exception as e:
+        raise TypeError("M must be an integer") from e
+
+    cfd_kwarg = {
+        "device": device,
+        "usm_type": usm_type,
+        "sycl_queue": sycl_queue,
+    }
+
+    if M < 1:
+        return dpnp.empty(0, **cfd_kwarg)
+    if M == 1:
+        return dpnp.ones(1, **cfd_kwarg)
+
+    result = dpnp.empty(M, **cfd_kwarg)
+    exec_q = result.sycl_queue
+    _manager = dpu.SequentialOrderManager[exec_q]
+
+    ht_ev, win_ev = _window_kernel(
+        exec_q, dpnp.get_usm_ndarray(result), depends=_manager.submitted_events
+    )
+
+    _manager.add_event_pair(ht_ev, win_ev)
+
+    return result
+
+
 def hamming(M, device=None, usm_type=None, sycl_queue=None):
     r"""
     Return the Hamming window.
@@ -127,33 +160,9 @@ def hamming(M, device=None, usm_type=None, sycl_queue=None):
 
     """
 
-    try:
-        M = int(M)
-    except Exception as e:
-        raise TypeError("M must be an integer") from e
-
-    cfd_kwarg = {
-        "device": device,
-        "usm_type": usm_type,
-        "sycl_queue": sycl_queue,
-    }
-
-    if M < 1:
-        return dpnp.empty(0, **cfd_kwarg)
-    if M == 1:
-        return dpnp.ones(1, **cfd_kwarg)
-
-    result = dpnp.empty(M, **cfd_kwarg)
-    exec_q = result.sycl_queue
-    _manager = dpu.SequentialOrderManager[exec_q]
-
-    ht_ev, win_ev = wi._hamming(
-        exec_q, dpnp.get_usm_ndarray(result), depends=_manager.submitted_events
+    return _call_window_kernel(
+        M, wi._hamming, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
-
-    _manager.add_event_pair(ht_ev, win_ev)
-
-    return result
 
 
 def hanning(M, device=None, usm_type=None, sycl_queue=None):
@@ -235,30 +244,6 @@ def hanning(M, device=None, usm_type=None, sycl_queue=None):
 
     """
 
-    try:
-        M = int(M)
-    except Exception as e:
-        raise TypeError("M must be an integer") from e
-
-    cfd_kwarg = {
-        "device": device,
-        "usm_type": usm_type,
-        "sycl_queue": sycl_queue,
-    }
-
-    if M < 1:
-        return dpnp.empty(0, **cfd_kwarg)
-    if M == 1:
-        return dpnp.ones(1, **cfd_kwarg)
-
-    result = dpnp.empty(int(M), **cfd_kwarg)
-    exec_q = result.sycl_queue
-    _manager = dpu.SequentialOrderManager[exec_q]
-
-    ht_ev, win_ev = wi._hanning(
-        exec_q, dpnp.get_usm_ndarray(result), depends=_manager.submitted_events
+    return _call_window_kernel(
+        M, wi._hanning, device=device, usm_type=usm_type, sycl_queue=sycl_queue
     )
-
-    _manager.add_event_pair(ht_ev, win_ev)
-
-    return result
