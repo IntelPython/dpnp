@@ -40,7 +40,7 @@ def dpnp_wrap_reduction_call(usm_a, out, _reduction_fn, res_dt, **kwargs):
 
         # dpctl requires strict data type matching of out array with the result
         if out.dtype != res_dt:
-            out = dpnp.astype(out, dtype=res_dt, copy=False)
+            out = dpnp.astype(out, res_dt, copy=False)
 
         usm_out = dpnp.get_usm_ndarray(out)
 

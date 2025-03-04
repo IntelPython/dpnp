@@ -900,14 +900,14 @@ def cov(
         if fweights.ndim > 1:
             raise ValueError("cannot handle multidimensional fweights")
 
-        fweights = dpnp.astype(fweights, dtype=def_float)
+        fweights = dpnp.astype(fweights, def_float)
 
     if aweights is not None:
         dpnp.check_supported_arrays_type(aweights)
         if aweights.ndim > 1:
             raise ValueError("cannot handle multidimensional aweights")
 
-        aweights = dpnp.astype(aweights, dtype=def_float)
+        aweights = dpnp.astype(aweights, def_float)
 
     return dpnp_cov(
         m,

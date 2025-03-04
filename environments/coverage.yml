@@ -1,0 +1,10 @@
+name: Coverage specific packages
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - coverage[toml]
+  - llvm
+  - pytest-cov
+  - pip:
+    - -r coverage.txt

@@ -21,7 +21,6 @@ from .helper import (
     has_support_aspect64,
     numpy_version,
 )
-from .third_party.cupy import testing
 from .third_party.cupy.testing import with_requires
 
 
@@ -586,22 +585,21 @@ class TestCov:
 
         expected = numpy.cov(a, rowvar=False)
         result = dpnp.cov(ia, rowvar=False)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     def test_true_rowvar(self):
         a = numpy.ones((3, 1))
         ia = dpnp.array(a)
 
         expected = numpy.cov(a, ddof=0, rowvar=True)
         result = dpnp.cov(ia, ddof=0, rowvar=True)
-        assert_allclose(expected, result)
+        assert_allclose(result, expected)
 
 
+@pytest.mark.parametrize("func", ["max", "min"])
 class TestMaxMin:
-    @pytest.mark.parametrize("func", ["max", "min"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
@@ -613,7 +611,6 @@ class TestMaxMin:
         result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["max", "min"])
     @pytest.mark.parametrize("axis", [None, 0, 1, -1])
     @pytest.mark.parametrize("keepdims", [False, True])
     def test_bool(self, func, axis, keepdims):
@@ -625,7 +622,6 @@ class TestMaxMin:
         result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["max", "min"])
     def test_out(self, func):
         a = numpy.arange(12, dtype=numpy.float32).reshape((2, 2, 3))
         ia = dpnp.array(a)
@@ -654,22 +650,20 @@ class TestMaxMin:
             getattr(dpnp, func)(ia, axis=0, out=result)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("func", ["max", "min"])
     @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
     def test_out_dtype(self, func, arr_dt, out_dt):
-        a = numpy.arange(12).reshape(2, 2, 3).astype(arr_dt)
+        # if out_dt is unsigned, input cannot be signed otherwise overflow occurs
+        low = 0 if dpnp.issubdtype(out_dt, dpnp.unsignedinteger) else -10
+        a = generate_random_numpy_array((2, 2, 3), dtype=arr_dt, low=low)
         out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
-
-        ia = dpnp.array(a)
-        iout = dpnp.array(out)
+        ia, iout = dpnp.array(a), dpnp.array(out)
 
         result = getattr(dpnp, func)(ia, out=iout, axis=1)
         expected = getattr(numpy, func)(a, out=out, axis=1)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
         assert result is iout
 
-    @pytest.mark.parametrize("func", ["max", "min"])
     def test_error(self, func):
         ia = dpnp.arange(5)
         # where is not supported
@@ -892,13 +886,7 @@ class TestPtp:
         assert_array_equal(result, expected)
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "func": ("std", "var"),
-        }
-    )
-)
+@pytest.mark.parametrize("func", ["std", "var"])
 class TestStdVar:
     @pytest.mark.usefixtures(
         "suppress_divide_invalid_numpy_warnings", "suppress_dof_numpy_warnings"
@@ -907,14 +895,14 @@ class TestStdVar:
     @pytest.mark.parametrize("axis", [0, 1, (0, 1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     @pytest.mark.parametrize("ddof", [0, 0.5, 1, 1.5, 2])
-    def test_basic(self, dtype, axis, keepdims, ddof):
+    def test_basic(self, func, dtype, axis, keepdims, ddof):
         a = generate_random_numpy_array((2, 3), dtype)
         ia = dpnp.array(a)
 
-        expected = getattr(numpy, self.func)(
+        expected = getattr(numpy, func)(
             a, axis=axis, keepdims=keepdims, ddof=ddof
         )
-        result = getattr(dpnp, self.func)(
+        result = getattr(dpnp, func)(
             ia, axis=axis, keepdims=keepdims, ddof=ddof
         )
         if axis == 0 and ddof == 2:
@@ -928,18 +916,18 @@ class TestStdVar:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [0, 1])
     @pytest.mark.parametrize("ddof", [0, 1])
-    def test_out_keyword(self, dtype, axis, ddof):
+    def test_out(self, func, dtype, axis, ddof):
         a = generate_random_numpy_array((2, 3), dtype)
         ia = dpnp.array(a)
 
-        expected = getattr(numpy, self.func)(a, axis=axis, ddof=ddof)
+        expected = getattr(numpy, func)(a, axis=axis, ddof=ddof)
         if has_support_aspect64():
             res_dtype = expected.dtype
         else:
             res_dtype = dpnp.default_float_type(ia.device)
 
         out = dpnp.empty(expected.shape, dtype=res_dtype)
-        result = getattr(dpnp, self.func)(ia, axis=axis, out=out, ddof=ddof)
+        result = getattr(dpnp, func)(ia, axis=axis, out=out, ddof=ddof)
         assert result is out
         assert_dtype_allclose(result, expected)
 
@@ -948,30 +936,30 @@ class TestStdVar:
     )
     @pytest.mark.parametrize("axis", [None, 0, 1, (0, 1)])
     @pytest.mark.parametrize("shape", [(2, 3), (2, 0), (0, 3)])
-    def test_empty_array(self, axis, shape):
+    def test_empty(self, func, axis, shape):
         ia = dpnp.empty(shape, dtype=dpnp.int64)
         a = dpnp.asnumpy(ia)
 
-        expected = getattr(numpy, self.func)(a, axis=axis)
-        result = getattr(dpnp, self.func)(ia, axis=axis)
+        expected = getattr(numpy, func)(a, axis=axis)
+        result = getattr(dpnp, func)(ia, axis=axis)
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.parametrize("dt_in", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize("dt_out", get_float_complex_dtypes())
-    def test_dtype_keyword(self, dt_in, dt_out):
+    def test_dtype(self, func, dt_in, dt_out):
         ia = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=dt_in)
         a = dpnp.asnumpy(ia)
 
-        expected = getattr(numpy, self.func)(a, dtype=dt_out)
-        result = getattr(dpnp, self.func)(ia, dtype=dt_out)
+        expected = getattr(numpy, func)(a, dtype=dt_out)
+        result = getattr(dpnp, func)(ia, dtype=dt_out)
         assert expected.dtype == result.dtype
         assert_allclose(result, expected, rtol=1e-6)
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axis", [1, (0, 2), None])
     @pytest.mark.parametrize("keepdims", [True, False])
-    def test_mean_keyword(self, dtype, axis, keepdims):
+    def test_mean_keyword(self, func, dtype, axis, keepdims):
         a = generate_random_numpy_array((10, 20, 5), dtype)
         ia = dpnp.array(a)
 
@@ -979,51 +967,47 @@ class TestStdVar:
         imean = dpnp.mean(ia, axis=axis, keepdims=True)
 
         mean_kw = {"mean": mean} if numpy_version() >= "2.0.0" else {}
-        expected = getattr(a, self.func)(
-            axis=axis, keepdims=keepdims, **mean_kw
-        )
-        result = getattr(ia, self.func)(
-            axis=axis, keepdims=keepdims, mean=imean
-        )
+        expected = getattr(a, func)(axis=axis, keepdims=keepdims, **mean_kw)
+        result = getattr(ia, func)(axis=axis, keepdims=keepdims, mean=imean)
         assert_dtype_allclose(result, expected)
 
-    def test_scalar(self):
+    def test_scalar(self, func):
         ia = dpnp.array(5)
         a = dpnp.asnumpy(ia)
 
-        expected = getattr(a, self.func)()
-        result = getattr(ia, self.func)()
+        expected = getattr(a, func)()
+        result = getattr(ia, func)()
         assert_dtype_allclose(result, expected)
 
     @with_requires("numpy>=2.0")
-    def test_correction(self):
+    def test_correction(self, func):
         a = numpy.array([1, -1, 1, -1])
         ia = dpnp.array(a)
 
         # numpy doesn't support `correction` keyword in std/var methods
-        expected = getattr(numpy, self.func)(a, correction=1)
-        result = getattr(ia, self.func)(correction=1)
+        expected = getattr(numpy, func)(a, correction=1)
+        result = getattr(ia, func)(correction=1)
         assert_dtype_allclose(result, expected)
 
     @with_requires("numpy>=2.0")
     @pytest.mark.parametrize("xp", [dpnp, numpy])
-    def test_both_ddof_correction_are_set(self, xp):
+    def test_both_ddof_correction_are_set(self, func, xp):
         a = xp.array([1, -1, 1, -1])
 
         err_msg = "ddof and correction can't be provided simultaneously."
 
         with assert_raises_regex(ValueError, err_msg):
-            getattr(xp, self.func)(a, ddof=1, correction=0)
+            getattr(xp, func)(a, ddof=1, correction=0)
 
         with assert_raises_regex(ValueError, err_msg):
-            getattr(xp, self.func)(a, ddof=1, correction=1)
+            getattr(xp, func)(a, ddof=1, correction=1)
 
-    def test_error(self):
+    def test_error(self, func):
         ia = dpnp.arange(5)
         # where keyword is not implemented
         with pytest.raises(NotImplementedError):
-            getattr(dpnp, self.func)(ia, where=False)
+            getattr(dpnp, func)(ia, where=False)
 
         # ddof should be an integer or float
         with pytest.raises(TypeError):
-            getattr(dpnp, self.func)(ia, ddof="1")
+            getattr(dpnp, func)(ia, ddof="1")

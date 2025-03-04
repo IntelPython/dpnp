@@ -1,19 +1,5 @@
 # array API tests to be skipped
 
-# missing unique-like functions
-array_api_tests/test_has_names.py::test_has_names[set-unique_all]
-array_api_tests/test_has_names.py::test_has_names[set-unique_counts]
-array_api_tests/test_has_names.py::test_has_names[set-unique_inverse]
-array_api_tests/test_has_names.py::test_has_names[set-unique_values]
-array_api_tests/test_set_functions.py::test_unique_all
-array_api_tests/test_set_functions.py::test_unique_counts
-array_api_tests/test_set_functions.py::test_unique_inverse
-array_api_tests/test_set_functions.py::test_unique_values
-array_api_tests/test_signatures.py::test_func_signature[unique_all]
-array_api_tests/test_signatures.py::test_func_signature[unique_counts]
-array_api_tests/test_signatures.py::test_func_signature[unique_inverse]
-array_api_tests/test_signatures.py::test_func_signature[unique_values]
-
 # hypothesis found failures
 array_api_tests/test_operators_and_elementwise_functions.py::test_clip
 

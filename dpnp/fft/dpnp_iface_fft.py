@@ -279,13 +279,14 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
         Default: ``1.0``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
@@ -340,32 +341,22 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         raise ValueError("`n` should be an integer")
     if not dpnp.isscalar(d):
         raise ValueError("`d` should be an scalar")
+
+    cfd_kwarg = {
+        "device": device,
+        "usm_type": usm_type,
+        "sycl_queue": sycl_queue,
+    }
+
     val = 1.0 / (n * d)
-    results = dpnp.empty(
-        n,
-        dtype=dpnp.intp,
-        device=device,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
-    )
+    results = dpnp.empty(n, dtype=dpnp.intp, **cfd_kwarg)
+
     m = (n - 1) // 2 + 1
-    p1 = dpnp.arange(
-        0,
-        m,
-        dtype=dpnp.intp,
-        device=device,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
-    )
+    p1 = dpnp.arange(0, m, dtype=dpnp.intp, **cfd_kwarg)
+
     results[:m] = p1
-    p2 = dpnp.arange(
-        m - n,
-        0,
-        dtype=dpnp.intp,
-        device=device,
-        usm_type=usm_type,
-        sycl_queue=sycl_queue,
-    )
+    p2 = dpnp.arange(m - n, 0, dtype=dpnp.intp, **cfd_kwarg)
+
     results[m:] = p2
     return results * val
 
@@ -1542,13 +1533,14 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
         Default: ``1.0``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.

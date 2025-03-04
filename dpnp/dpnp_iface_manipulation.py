@@ -71,6 +71,24 @@ class InsertDeleteParams(NamedTuple):
     usm_type: str
 
 
+# pylint:disable=missing-class-docstring
+class UniqueAllResult(NamedTuple):
+    values: dpnp.ndarray
+    indices: dpnp.ndarray
+    inverse_indices: dpnp.ndarray
+    counts: dpnp.ndarray
+
+
+class UniqueCountsResult(NamedTuple):
+    values: dpnp.ndarray
+    counts: dpnp.ndarray
+
+
+class UniqueInverseResult(NamedTuple):
+    values: dpnp.ndarray
+    inverse_indices: dpnp.ndarray
+
+
 __all__ = [
     "append",
     "array_split",
@@ -122,6 +140,10 @@ __all__ = [
     "transpose",
     "trim_zeros",
     "unique",
+    "unique_all",
+    "unique_counts",
+    "unique_inverse",
+    "unique_values",
     "unstack",
     "vsplit",
     "vstack",
@@ -721,13 +743,13 @@ def asarray_chkfinite(
         Memory layout of the newly output array.
 
         Default: ``"K"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
@@ -837,12 +859,13 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
         or :obj:`dpnp.float32` type otherwise).
 
         Default: ``None``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by :obj:`dpnp.ndarray.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
 
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
@@ -1494,11 +1517,10 @@ def copyto(dst, src, casting="same_kind", where=True):
             f"but got {type(dst)}"
         )
     if not dpnp.is_supported_array_type(src):
-        no_dtype_attr = not hasattr(src, "dtype")
+        python_sc = dpnp.isscalar(src) and not isinstance(src, numpy.generic)
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
-        if no_dtype_attr:
-            # This case (scalar, list, etc) needs special handling to
-            # behave similar to NumPy
+        if python_sc:
+            # Python scalar needs special handling to behave similar to NumPy
             if dpnp.issubdtype(src, dpnp.integer) and dpnp.issubdtype(
                 dst, dpnp.unsignedinteger
             ):
@@ -4274,6 +4296,189 @@ def unique(
         result += (idx[1:] - idx[:-1],)
 
     return _unpack_tuple(result)
+
+
+def unique_all(x, /):
+    """
+    Find the unique elements of an array, and counts, inverse, and indices.
+
+    For full documentation refer to :obj:`numpy.unique_all`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    A namedtuple with the following attributes:
+
+    values : dpnp.ndarray
+        The unique elements of an input array.
+    indices : dpnp.ndarray
+        The first occurring indices for each unique element.
+    inverse_indices : dpnp.ndarray
+        The indices from the set of unique elements that reconstruct `x`.
+    counts : dpnp.ndarray
+        The corresponding counts for each unique element.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2])
+    >>> uniq = np.unique_all(x)
+    >>> uniq.values
+    array([1, 2])
+    >>> uniq.indices
+    array([0, 2])
+    >>> uniq.inverse_indices
+    array([0, 0, 1])
+    >>> uniq.counts
+    array([2, 1])
+
+    """
+
+    result = dpnp.unique(
+        x,
+        return_index=True,
+        return_inverse=True,
+        return_counts=True,
+        equal_nan=False,
+    )
+    return UniqueAllResult(*result)
+
+
+def unique_counts(x, /):
+    """
+    Find the unique elements and counts of an input array `x`.
+
+    For full documentation refer to :obj:`numpy.unique_counts`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    A namedtuple with the following attributes:
+
+    values : dpnp.ndarray
+        The unique elements of an input array.
+    counts : dpnp.ndarray
+        The corresponding counts for each unique element.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2])
+    >>> uniq = np.unique_counts(x)
+    >>> uniq.values
+    array([1, 2])
+    >>> uniq.counts
+    array([2, 1])
+
+    """
+
+    result = dpnp.unique(
+        x,
+        return_index=False,
+        return_inverse=False,
+        return_counts=True,
+        equal_nan=False,
+    )
+    return UniqueCountsResult(*result)
+
+
+def unique_inverse(x, /):
+    """
+    Find the unique elements of `x` and indices to reconstruct `x`.
+
+    For full documentation refer to :obj:`numpy.unique_inverse`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    A namedtuple with the following attributes:
+
+    values : dpnp.ndarray
+        The unique elements of an input array.
+    inverse_indices : dpnp.ndarray
+        The indices from the set of unique elements that reconstruct `x`.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2])
+    >>> uniq = np.unique_inverse(x)
+    >>> uniq.values
+    array([1, 2])
+    >>> uniq.inverse_indices
+    array([0, 0, 1])
+
+    """
+
+    result = dpnp.unique(
+        x,
+        return_index=False,
+        return_inverse=True,
+        return_counts=False,
+        equal_nan=False,
+    )
+    return UniqueInverseResult(*result)
+
+
+def unique_values(x, /):
+    """
+    Returns the unique elements of an input array `x`.
+
+    For full documentation refer to :obj:`numpy.unique_values`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The unique elements of an input array.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.unique_values(np.array([1, 1, 2]))
+    array([1, 2])
+
+    """
+
+    return dpnp.unique(
+        x,
+        return_index=False,
+        return_inverse=False,
+        return_counts=False,
+        equal_nan=False,
+    )
 
 
 def unstack(x, /, *, axis=0):

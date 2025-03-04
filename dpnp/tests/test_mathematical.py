@@ -2445,10 +2445,10 @@ class TestRoundingFuncs:
 
         assert result is dp_out
         # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
-        # NumPy < 2.0.0 while output has the dtype of input for NumPy >= 2.0.0
+        # NumPy < 2.1.0 while output has the dtype of input for NumPy >= 2.1.0
         # (dpnp follows the latter behavior except for boolean dtype where it
         # returns int8)
-        if numpy_version() < "2.0.0" or dtype == numpy.bool:
+        if numpy_version() < "2.1.0" or dtype == numpy.bool:
             check_type = False
         else:
             check_type = True
@@ -2518,16 +2518,15 @@ class TestHypot:
         with pytest.raises(ValueError):
             dpnp.hypot(dp_array1, dp_array2, out=dp_out)
 
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
         [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
     )
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.hypot, a, 2, out)
-        assert_raises(TypeError, numpy.hypot, a.asnumpy(), 2, out)
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.hypot, a, 2, out)
 
 
 class TestLogSumExp:
