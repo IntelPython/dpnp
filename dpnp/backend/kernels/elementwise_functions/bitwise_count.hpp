@@ -42,7 +42,7 @@ struct BitwiseCountFunctor
     // constant value, if constant
     // constexpr resT constant_value = resT{};
     // is function defined for sycl::vec
-    using supports_vec = typename std::true_type;
+    using supports_vec = typename std::false_type;
     // do both argT and resT support subgroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
@@ -53,37 +53,6 @@ struct BitwiseCountFunctor
         }
         else {
             return sycl::popcount(sycl::abs(x));
-        }
-    }
-
-    template <int vec_sz>
-    sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &x) const
-    {
-        if constexpr (std::is_unsigned_v<argT>) {
-            auto const &res_vec = sycl::popcount(x);
-
-            using deducedT = typename std::remove_cv_t<
-                std::remove_reference_t<decltype(res_vec)>>::element_type;
-
-            if constexpr (std::is_same_v<resT, deducedT>) {
-                return res_vec;
-            }
-            else {
-                return tu_ns::vec_cast<std::uint8_t, deducedT, vec_sz>(res_vec);
-            }
-        }
-        else {
-            auto const &res_vec = sycl::popcount(sycl::abs(x));
-
-            using deducedT = typename std::remove_cv_t<
-                std::remove_reference_t<decltype(res_vec)>>::element_type;
-
-            if constexpr (std::is_same_v<resT, deducedT>) {
-                return res_vec;
-            }
-            else {
-                return tu_ns::vec_cast<std::uint8_t, deducedT, vec_sz>(res_vec);
-            }
         }
     }
 };
