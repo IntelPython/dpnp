@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -22,22 +22,45 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._statistics_impl extensions
-//
-//*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "histogramdd.hpp"
-#include "sliding_dot_product1d.hpp"
+#include "common.hpp"
+#include <sycl/sycl.hpp>
 
-PYBIND11_MODULE(_statistics_impl, m)
+namespace dpnp::extensions::window::kernels
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-    statistics::histogram::populate_histogramdd(m);
-}
+
+template <typename T>
+class HammingFunctor
+{
+private:
+    T *data = nullptr;
+    const std::size_t N;
+
+public:
+    HammingFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+
+    void operator()(sycl::id<1> id) const
+    {
+        const auto i = id.get(0);
+
+        data[i] = T(0.54) - T(0.46) * sycl::cospi(T(2) * i / (N - 1));
+    }
+};
+
+template <typename fnT, typename T>
+struct HammingFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_floating_point_v<T>) {
+            return window_impl<T, HammingFunctor>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+} // namespace dpnp::extensions::window::kernels

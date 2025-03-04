@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,21 +23,41 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 //
-// This file defines functions of dpnp.backend._statistics_impl extensions
+// This file defines functions of dpnp.backend._window_impl extensions
 //
 //*****************************************************************************
 
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
-#include "bincount.hpp"
-#include "histogram.hpp"
-#include "histogramdd.hpp"
-#include "sliding_dot_product1d.hpp"
+#include "common.hpp"
+#include "hamming.hpp"
 
-PYBIND11_MODULE(_statistics_impl, m)
+namespace window_ns = dpnp::extensions::window;
+namespace py = pybind11;
+using window_ns::window_fn_ptr_t;
+
+namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
+
+static window_fn_ptr_t hamming_dispatch_vector[dpctl_td_ns::num_types];
+
+PYBIND11_MODULE(_window_impl, m)
 {
-    statistics::histogram::populate_bincount(m);
-    statistics::histogram::populate_histogram(m);
-    statistics::sliding_window1d::populate_sliding_dot_product1d(m);
-    statistics::histogram::populate_histogramdd(m);
+    using arrayT = dpctl::tensor::usm_ndarray;
+    using event_vecT = std::vector<sycl::event>;
+
+    {
+        window_ns::init_window_dispatch_vectors<
+            window_ns::kernels::HammingFactory>(hamming_dispatch_vector);
+
+        auto hamming_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
+                                 const event_vecT &depends = {}) {
+            return window_ns::py_window(exec_q, result, depends,
+                                        hamming_dispatch_vector);
+        };
+
+        m.def("_hamming", hamming_pyapi, "Call hamming kernel",
+              py::arg("sycl_queue"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
 }
