@@ -36,6 +36,8 @@ for device in available_devices:
     else:
         valid_dev.append(device)
 
+dev_ids = [device.filter_string for device in valid_dev]
+
 
 def assert_sycl_queue_equal(result, expected):
     assert result.backend == expected.backend
@@ -75,12 +77,8 @@ def assert_sycl_queue_equal(result, expected):
         pytest.param("zeros", [(2, 2)], {}),
     ],
 )
-@pytest.mark.parametrize(
-    "device",
-    valid_dev + [None],
-    ids=[dev.filter_string for dev in valid_dev] + [None],
-)
-def test_array_creation(func, arg, kwargs, device):
+@pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
+def test_array_creation_from_scratch(func, arg, kwargs, device):
     kwargs = dict(kwargs)
     kwargs["device"] = device
     x = getattr(dpnp, func)(*arg, **kwargs)
@@ -92,136 +90,62 @@ def test_array_creation(func, arg, kwargs, device):
 
 
 @pytest.mark.parametrize(
-    "func, args, kwargs",
+    "func, args",
     [
-        pytest.param("copy", ["x0"], {}),
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("empty_like", ["x0"], {}),
-        pytest.param("full_like", ["x0"], {"fill_value": 5}),
-        pytest.param("geomspace", ["x0[0:3]", "8", "4"], {}),
-        pytest.param("geomspace", ["1", "x0[2:4]", "4"], {}),
-        pytest.param("linspace", ["x0[0:2]", "8", "4"], {}),
-        pytest.param("linspace", ["0", "x0[2:4]", "4"], {}),
-        pytest.param("logspace", ["x0[0:2]", "8", "4"], {}),
-        pytest.param("logspace", ["0", "x0[2:4]", "4"], {}),
-        pytest.param("ones_like", ["x0"], {}),
-        pytest.param("tril", ["x0.reshape((2,2))"], {}),
-        pytest.param("triu", ["x0.reshape((2,2))"], {}),
-        pytest.param("linspace", ["x0", "4", "4"], {}),
-        pytest.param("linspace", ["1", "x0", "4"], {}),
-        pytest.param("vander", ["x0"], {}),
-        pytest.param("zeros_like", ["x0"], {}),
+        pytest.param("copy", ["x0"]),
+        pytest.param("diag", ["x0"]),
+        pytest.param("diag", ["x0.reshape((2,2))"]),
+        pytest.param("diagflat", ["x0.reshape((2,2))"]),
+        pytest.param("empty_like", ["x0"]),
+        pytest.param("full", ["10", "x0[3]"]),
+        pytest.param("full_like", ["x0", "5"]),
+        pytest.param("geomspace", ["x0[0:3]", "8", "4"]),
+        pytest.param("geomspace", ["1", "x0[2:4]", "4"]),
+        pytest.param("linspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("linspace", ["0", "x0[2:4]", "4"]),
+        pytest.param("logspace", ["x0[0:2]", "8", "4"]),
+        pytest.param("logspace", ["0", "x0[2:4]", "4"]),
+        pytest.param("ones_like", ["x0"]),
+        pytest.param("vander", ["x0"]),
+        pytest.param("zeros_like", ["x0"]),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_array_creation_follow_device(func, args, kwargs, device):
-    x = dpnp.array([1, 2, 3, 4], device=device)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
-    y = getattr(dpnp, func)(*dpnp_args, **kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_array_creation_follow_device_logspace_base(device):
-    x = dpnp.array([1, 2, 3, 4], device=device)
-    y = dpnp.logspace(0, 8, 4, base=x[1:3])
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "func, args, kwargs",
-    [
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("diagflat", ["x0"], {}),
-    ],
-)
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_array_creation_follow_device_2d_array(func, args, kwargs, device):
-    x = dpnp.arange(9, device=device).reshape(3, 3)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
-    y = getattr(dpnp, func)(*dpnp_args, **kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "func, args, kwargs",
-    [
-        pytest.param("copy", ["x0"], {}),
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("empty_like", ["x0"], {}),
-        pytest.param("full", ["10", "x0[3]"], {}),
-        pytest.param("full_like", ["x0"], {"fill_value": 5}),
-        pytest.param("ones_like", ["x0"], {}),
-        pytest.param("zeros_like", ["x0"], {}),
-        pytest.param("linspace", ["x0", "4", "4"], {}),
-        pytest.param("linspace", ["1", "x0", "4"], {}),
-        pytest.param("vander", ["x0"], {}),
-    ],
-)
-@pytest.mark.parametrize(
-    "device_x", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "device_y", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_array_creation_cross_device(func, args, kwargs, device_x, device_y):
+@pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
+@pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
+def test_array_creation_from_array(func, args, device_x, device_y):
     if func == "linspace" and is_win_platform():
         pytest.skip("CPU driver experiences an instability on Windows.")
 
     x = dpnp.array([1, 2, 3, 4], device=device_x)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
+    args = [eval(val, {"x0": x}) for val in args]
 
-    dpnp_kwargs = dict(kwargs)
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    # follow device
+    y = getattr(dpnp, func)(*args)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
-    dpnp_kwargs["device"] = device_y
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    # cross device
+    # TODO: include geomspace when issue dpnp#2352 is resolved
+    if func != "geomspace":
+        y = getattr(dpnp, func)(*args, device=device_y)
+        assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "func, args, kwargs",
-    [
-        pytest.param("diag", ["x0"], {}),
-        pytest.param("diagflat", ["x0"], {}),
-    ],
-)
-@pytest.mark.parametrize(
-    "device_x", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "device_y", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_array_creation_cross_device_2d_array(
-    func, args, kwargs, device_x, device_y
-):
-    if func == "linspace" and is_win_platform():
-        pytest.skip("CPU driver experiences an instability on Windows.")
+@pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
+@pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
+def test_array_creation_logspace_base(device_x, device_y):
+    x = dpnp.array([1, 2, 3, 4], device=device_x)
 
-    x = dpnp.arange(9, device=device_x).reshape(3, 3)
-    dpnp_args = [eval(val, {"x0": x}) for val in args]
-
-    dpnp_kwargs = dict(kwargs)
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
+    # follow device
+    y = dpnp.logspace(0, 8, 4, base=x[1:3])
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
-    dpnp_kwargs["device"] = device_y
-    y = getattr(dpnp, func)(*dpnp_args, **dpnp_kwargs)
-    assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
+    # TODO: include geomspace when issue dpnp#2353 is resolved
+    # cross device
+    # y = dpnp.logspace(0, 8, 4, base=x[1:3], device=device_y)
+    # assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device",
-    valid_dev + [None],
-    ids=[dev.filter_string for dev in valid_dev] + [None],
-)
+@pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
 def test_array_creation_from_file(device):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"\x00\x01\x02\x03\x04\x05\x06\x07\x08")
@@ -236,11 +160,7 @@ def test_array_creation_from_file(device):
     assert x.sycl_device == device
 
 
-@pytest.mark.parametrize(
-    "device",
-    valid_dev + [None],
-    ids=[dev.filter_string for dev in valid_dev] + [None],
-)
+@pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
 def test_array_creation_load_txt(device):
     with tempfile.TemporaryFile() as fh:
         fh.write(b"1 2 3 4")
@@ -255,12 +175,8 @@ def test_array_creation_load_txt(device):
     assert x.sycl_device == device
 
 
-@pytest.mark.parametrize(
-    "device_x", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "device_y", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
+@pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_copy_method(device_x, device_y):
     x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device_x)
     y = x.copy()
@@ -271,18 +187,14 @@ def test_copy_method(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, q)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_copy_operation(device):
     x = dpnp.array([[1, 2, 3], [4, 5, 6]], device=device)
     y = copy.copy(x)
     assert_sycl_queue_equal(y.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_extract(device):
     x = dpnp.arange(3, device=device)
     y = dpnp.array([True, False, True], device=device)
@@ -292,9 +204,7 @@ def test_extract(device):
     assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_meshgrid(device):
     x = dpnp.arange(100, device=device)
     y = dpnp.arange(100, device=device)
@@ -412,9 +322,9 @@ def test_meshgrid(device):
             "tan", [-dpnp.pi / 2, -dpnp.pi / 4, 0.0, dpnp.pi / 4, dpnp.pi / 2]
         ),
         pytest.param("tanh", [-5.0, -3.5, 0.0, 3.5, 5.0]),
-        pytest.param(
-            "trace", [[1.0, 0.0, 0.0], [0.0, 1.0, 0.0], [0.0, 0.0, 1.0]]
-        ),
+        pytest.param("trace", numpy.eye(3)),
+        pytest.param("tril", numpy.ones((3, 3))),
+        pytest.param("triu", numpy.ones((3, 3))),
         pytest.param("trapezoid", [1, 2, 3]),
         pytest.param("trim_zeros", [0, 0, 0, 1, 2, 3, 0, 2, 1, 0]),
         pytest.param("trunc", [-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0]),
@@ -422,9 +332,7 @@ def test_meshgrid(device):
         pytest.param("var", [1.0, 2.0, 4.0, 7.0]),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_1in_1out(func, data, device):
     x = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x)
@@ -473,9 +381,7 @@ def test_1in_1out(func, data, device):
         pytest.param("dot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
         pytest.param("extract", [False, True, True, False], [0, 1, 2, 3]),
         pytest.param(
-            "float_power",
-            [0, 1, 2, 3, 4, 5],
-            [1.0, 2.0, 3.0, 3.0, 2.0, 1.0],
+            "float_power", [0, 1, 2, 3, 4, 5], [1.0, 2.0, 3.0, 3.0, 2.0, 1.0]
         ),
         pytest.param(
             "floor_divide", [1.0, 2.0, 3.0, 4.0], [2.5, 2.5, 2.5, 2.5]
@@ -487,11 +393,7 @@ def test_1in_1out(func, data, device):
             [-3.0, -2.0, -1.0, 1.0, 2.0, 3.0],
             [2.0, 2.0, 2.0, 2.0, 2.0, 2.0],
         ),
-        pytest.param(
-            "gcd",
-            [0, 1, 2, 3, 4, 5],
-            [20, 20, 20, 20, 20, 20],
-        ),
+        pytest.param("gcd", [0, 1, 2, 3, 4, 5], [20, 20, 20, 20, 20, 20]),
         pytest.param(
             "gradient",
             [1.0, 2.0, 4.0, 7.0, 11.0, 16.0],
@@ -499,27 +401,15 @@ def test_1in_1out(func, data, device):
         ),
         pytest.param("heaviside", [-1.5, 0, 2.0], [0.5]),
         pytest.param(
-            "histogram_bin_edges",
-            [0, 0, 0, 1, 2, 3, 3, 4, 5],
-            [1, 2],
+            "histogram_bin_edges", [0, 0, 0, 1, 2, 3, 3, 4, 5], [1, 2]
         ),
-        pytest.param(
-            "hypot", [[1.0, 2.0, 3.0, 4.0]], [[-1.0, -2.0, -4.0, -5.0]]
-        ),
+        pytest.param("hypot", [1.0, 2.0, 3.0, 4.0], [-1.0, -2.0, -4.0, -5.0]),
         pytest.param("inner", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("kron", [3.0, 4.0, 5.0], [1.0, 2.0]),
-        pytest.param(
-            "lcm",
-            [0, 1, 2, 3, 4, 5],
-            [20, 20, 20, 20, 20, 20],
-        ),
-        pytest.param(
-            "ldexp",
-            [5, 5, 5, 5, 5],
-            [0, 1, 2, 3, 4],
-        ),
-        pytest.param("logaddexp", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
-        pytest.param("logaddexp2", [[-1, 2, 5, 9]], [[4, -3, 2, -8]]),
+        pytest.param("lcm", [0, 1, 2, 3, 4, 5], [20, 20, 20, 20, 20, 20]),
+        pytest.param("ldexp", [5, 5, 5, 5, 5], [0, 1, 2, 3, 4]),
+        pytest.param("logaddexp", [-1, 2, 5, 9], [4, -3, 2, -8]),
+        pytest.param("logaddexp2", [-1, 2, 5, 9], [4, -3, 2, -8]),
         pytest.param(
             "matmul", [[1.0, 0.0], [0.0, 1.0]], [[4.0, 1.0], [1.0, 2.0]]
         ),
@@ -564,9 +454,7 @@ def test_1in_1out(func, data, device):
         pytest.param("vdot", [3 + 2j, 4 + 1j, 5], [1, 2 + 3j, 3]),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_2in_1out(func, data1, data2, device):
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
@@ -598,9 +486,7 @@ def test_2in_1out(func, data1, data2, device):
         "logical_not",
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_logic_op_1in(op, device):
     x = dpnp.array(
         [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
@@ -626,9 +512,7 @@ def test_logic_op_1in(op, device):
         "not_equal",
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_logic_op_2in(op, device):
     x1 = dpnp.array(
         [-dpnp.inf, -1.0, 0.0, 1.0, dpnp.inf, dpnp.nan], device=device
@@ -636,17 +520,8 @@ def test_logic_op_2in(op, device):
     x2 = dpnp.array(
         [dpnp.inf, 1.0, 0.0, -1.0, -dpnp.inf, dpnp.nan], device=device
     )
-    # Remove NaN value from input arrays because numpy raises RuntimeWarning
-    if op in [
-        "greater",
-        "greater_equal",
-        "less",
-        "less_equal",
-    ]:
-        x1 = x1[:-1]
-        x2 = x2[:-1]
-    result = getattr(dpnp, op)(x1, x2)
 
+    result = getattr(dpnp, op)(x1, x2)
     assert_sycl_queue_equal(result.sycl_queue, x1.sycl_queue)
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
@@ -655,11 +530,10 @@ def test_logic_op_2in(op, device):
     "func, data, scalar",
     [
         pytest.param("searchsorted", [11, 12, 13, 14, 15], 13),
+        pytest.param("broadcast_to", numpy.ones(7), (2, 7)),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_2in_with_scalar_1out(func, data, scalar, device):
     x1 = dpnp.array(data, device=device)
     result = getattr(dpnp, func)(x1, scalar)
@@ -691,9 +565,7 @@ def test_2in_with_scalar_1out(func, data, scalar, device):
         ),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_2in_broadcasting(func, data1, data2, device):
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
@@ -719,9 +591,7 @@ def test_2in_broadcasting(func, data1, data2, device):
         "subtract",
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_2in_1out_diff_queue_but_equal_context(func, device):
     x1 = dpnp.arange(10)
     x2 = dpnp.arange(10, sycl_queue=dpctl.SyclQueue(device))[::-1]
@@ -729,9 +599,7 @@ def test_2in_1out_diff_queue_but_equal_context(func, device):
         getattr(dpnp, func)(x1, x2)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     "shape1, shape2",
     [
@@ -767,9 +635,7 @@ def test_matmul(device, shape1, shape2):
     assert_sycl_queue_equal(result_queue, b.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     "shape1, shape2",
     [
@@ -790,9 +656,7 @@ def test_matvec(device, shape1, shape2):
     assert_sycl_queue_equal(result_queue, b.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     "shape1, shape2",
     [
@@ -813,9 +677,7 @@ def test_vecdot(device, shape1, shape2):
     assert_sycl_queue_equal(result_queue, b.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     "shape1, shape2",
     [
@@ -860,9 +722,7 @@ def test_vecmat(device, shape1, shape2):
         ),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
 def test_random(func, args, kwargs, device, usm_type):
     kwargs = {**kwargs, "device": device, "usm_type": usm_type}
@@ -903,9 +763,7 @@ def test_random(func, args, kwargs, device, usm_type):
         ),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("usm_type", ["host", "device", "shared"])
 def test_random_state(func, args, kwargs, device, usm_type):
     kwargs = {**kwargs, "usm_type": usm_type}
@@ -929,9 +787,7 @@ def test_random_state(func, args, kwargs, device, usm_type):
     assert_sycl_queue_equal(res_array.sycl_queue, sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_modf(device):
     x = dpnp.array([0, 3.5], device=device)
     result1, result2 = dpnp.modf(x)
@@ -941,24 +797,7 @@ def test_modf(device):
     assert_sycl_queue_equal(result2.sycl_queue, expected_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_multi_dot(device):
-    array_list = []
-    for num_array in [3, 5]:  # number of arrays in multi_dot
-        for _ in range(num_array):  # create arrays one by one
-            a = dpnp.random.rand(10, 10, device=device)
-            array_list.append(a)
-
-        result = dpnp.linalg.multi_dot(array_list)
-        _, exec_q = get_usm_allocations(array_list)
-        assert_sycl_queue_equal(result.sycl_queue, exec_q)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_einsum(device):
     array_list = []
     for _ in range(3):  # create arrays one by one
@@ -970,26 +809,7 @@ def test_einsum(device):
     assert_sycl_queue_equal(result.sycl_queue, exec_q)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_out_multi_dot(device):
-    array_list = []
-    for num_array in [3, 5]:  # number of arrays in multi_dot
-        for _ in range(num_array):  # create arrays one by one
-            a = dpnp.random.rand(10, 10, device=device)
-            array_list.append(a)
-
-        dp_out = dpnp.empty((10, 10), device=device)
-        result = dpnp.linalg.multi_dot(array_list, out=dp_out)
-        assert result is dp_out
-        _, exec_q = get_usm_allocations(array_list)
-        assert_sycl_queue_equal(result.sycl_queue, exec_q)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_pad(device):
     all_modes = [
         "constant",
@@ -1010,9 +830,7 @@ def test_pad(device):
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_require(device):
     x = dpnp.arange(10, device=device).reshape(2, 5)
     result = dpnp.require(x, dtype="f4", requirements=["F"])
@@ -1023,9 +841,7 @@ def test_require(device):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_resize(device):
     x = dpnp.arange(10, device=device)
     result = dpnp.resize(x, (2, 5))
@@ -1036,18 +852,14 @@ class TestFft:
     @pytest.mark.parametrize(
         "func", ["fft", "ifft", "rfft", "irfft", "hfft", "ihfft"]
     )
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
+    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_fft(self, func, device):
         dtype = dpnp.float32 if func in ["rfft", "ihfft"] else dpnp.complex64
         x = dpnp.arange(20, dtype=dtype, device=device)
         result = getattr(dpnp.fft, func)(x)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
+    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_fftn(self, device):
         x = dpnp.arange(24, dtype=dpnp.complex64, device=device)
         x = x.reshape(2, 3, 4)
@@ -1058,9 +870,7 @@ class TestFft:
         result = dpnp.fft.ifftn(result)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
+    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_rfftn(self, device):
         x = dpnp.arange(24, dtype=dpnp.float32, device=device)
         x = x.reshape(2, 3, 4)
@@ -1072,11 +882,7 @@ class TestFft:
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
     @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
-    @pytest.mark.parametrize(
-        "device",
-        valid_dev + [None],
-        ids=[dev.filter_string for dev in valid_dev] + [None],
-    )
+    @pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
     def test_fftfreq(self, func, device):
         result = getattr(dpnp.fft, func)(10, 0.5, device=device)
 
@@ -1086,294 +892,16 @@ class TestFft:
         assert result.sycl_device == device
 
     @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
+    @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
     def test_fftshift(self, func, device):
         x = dpnp.fft.fftfreq(10, 0.5, device=device)
         result = getattr(dpnp.fft, func)(x)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "data, is_empty",
-    [
-        ([[1, -2], [2, 5]], False),
-        ([[[1, -2], [2, 5]], [[1, -2], [2, 5]]], False),
-        ((0, 0), True),
-        ((3, 0, 0), True),
-    ],
-    ids=["2D", "3D", "Empty_2D", "Empty_3D"],
-)
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_cholesky(data, is_empty, device):
-    if is_empty:
-        x = dpnp.empty(data, device=device)
-    else:
-        dtype = dpnp.default_float_type(device)
-        x = dpnp.array(data, dtype=dtype, device=device)
-
-    result = dpnp.linalg.cholesky(x)
-    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize("p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"])
-def test_cond(device, p):
-    a = generate_random_numpy_array((2, 4, 4))
-    ia = dpnp.array(a, device=device)
-    result = dpnp.linalg.cond(ia, p=p)
-    assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_det(device):
-    data = [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]
-    x = dpnp.array(data, device=device)
-    result = dpnp.linalg.det(x)
-    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "func",
-    [
-        "eig",
-        "eigvals",
-        "eigh",
-        "eigvalsh",
-    ],
-)
-@pytest.mark.parametrize(
-    "shape",
-    [
-        (4, 4),
-        (0, 0),
-        (2, 3, 3),
-        (0, 2, 2),
-        (1, 0, 0),
-    ],
-    ids=[
-        "(4, 4)",
-        "(0, 0)",
-        "(2, 3, 3)",
-        "(0, 2, 2)",
-        "(1, 0, 0)",
-    ],
-)
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_eigenvalue(func, shape, device):
-    dtype = dpnp.default_float_type(device)
-    # Set a `hermitian` flag for generate_random_numpy_array() to
-    # get a symmetric array for eigh() and eigvalsh() or
-    # non-symmetric for eig() and eigvals()
-    is_hermitian = func in ("eigh, eigvalsh")
-    a = generate_random_numpy_array(shape, dtype, hermitian=is_hermitian)
-    ia = dpnp.array(a, device=device)
-    expected_queue = ia.sycl_queue
-
-    if func in ("eig", "eigh"):
-        dp_val, dp_vec = getattr(dpnp.linalg, func)(ia)
-        assert_sycl_queue_equal(dp_vec.sycl_queue, expected_queue)
-    else:  # eighvals or eigvalsh
-        dp_val = getattr(dpnp.linalg, func)(ia)
-
-    assert_sycl_queue_equal(dp_val.sycl_queue, expected_queue)
-
-
-@pytest.mark.parametrize(
-    "shape, is_empty",
-    [
-        ((2, 2), False),
-        ((3, 2, 2), False),
-        ((0, 0), True),
-        ((0, 2, 2), True),
-    ],
-    ids=[
-        "(2, 2)",
-        "(3, 2, 2)",
-        "(0, 0)",
-        "(0, 2, 2)",
-    ],
-)
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_inv(shape, is_empty, device):
-    if is_empty:
-        x = dpnp.empty(shape, device=device)
-    else:
-        dtype = dpnp.default_float_type(device)
-        count_elem = numpy.prod(shape)
-        x = dpnp.arange(1, count_elem + 1, dtype=dtype, device=device).reshape(
-            shape
-        )
-
-    result = dpnp.linalg.inv(x)
-    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_matrix_power(n, device):
-    x = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
-    result = dpnp.linalg.matrix_power(x, n)
-    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "data, tol",
-    [
-        ([1, 2], None),
-        ([[1, 2], [3, 4]], None),
-        ([[1, 2], [3, 4]], 1e-06),
-    ],
-    ids=[
-        "1-D array",
-        "2-D array no tol",
-        "2_d array with tol",
-    ],
-)
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_matrix_rank(data, tol, device):
-    x = dpnp.array(data, device=device)
-    result = dpnp.linalg.matrix_rank(x, tol=tol)
-    assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
-)
-@pytest.mark.parametrize(
-    "axis",
-    [-1, 0, 1, (0, 1), (-2, -1), None],
-    ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
-)
-def test_norm(device, ord, axis):
-    ia = dpnp.arange(120, device=device).reshape(2, 3, 4, 5)
-    if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
-        isinstance(axis, tuple) and ord == 3
-    ):
-        pytest.skip("Invalid norm order for vectors.")
-    elif axis is None and ord is not None:
-        pytest.skip("Improper number of dimensions to norm")
-    else:
-        result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
-        assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "shape",
-    [
-        (4, 4),
-        (2, 0),
-        (2, 2, 3),
-        (0, 2, 3),
-        (1, 0, 3),
-    ],
-    ids=[
-        "(4, 4)",
-        "(2, 0)",
-        "(2, 2, 3)",
-        "(0, 2, 3)",
-        "(1, 0, 3)",
-    ],
-)
-@pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_qr(shape, mode, device):
-    dtype = dpnp.default_float_type(device)
-    count_elems = numpy.prod(shape)
-    a = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(shape)
-
-    expected_queue = a.sycl_queue
-
-    if mode == "r":
-        dp_r = dpnp.linalg.qr(a, mode=mode)
-        dp_r_queue = dp_r.sycl_queue
-        assert_sycl_queue_equal(dp_r_queue, expected_queue)
-    else:
-        dp_q, dp_r = dpnp.linalg.qr(a, mode=mode)
-        assert_sycl_queue_equal(dp_q.sycl_queue, expected_queue)
-        assert_sycl_queue_equal(dp_r.sycl_queue, expected_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize("full_matrices", [True, False])
-@pytest.mark.parametrize("compute_uv", [True, False])
-@pytest.mark.parametrize(
-    "shape",
-    [
-        (1, 4),
-        (3, 2),
-        (4, 4),
-        (2, 0),
-        (0, 2),
-        (2, 2, 3),
-        (3, 3, 0),
-        (0, 2, 3),
-        (1, 0, 3),
-    ],
-    ids=[
-        "(1, 4)",
-        "(3, 2)",
-        "(4, 4)",
-        "(2, 0)",
-        "(0, 2)",
-        "(2, 2, 3)",
-        "(3, 3, 0)",
-        "(0, 2, 3)",
-        "(1, 0, 3)",
-    ],
-)
-def test_svd(shape, full_matrices, compute_uv, device):
-    dtype = dpnp.default_float_type(device)
-    count_elems = numpy.prod(shape)
-    x = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(shape)
-
-    expected_queue = x.sycl_queue
-    if compute_uv:
-        dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(
-            x, full_matrices=full_matrices, compute_uv=compute_uv
-        )
-
-        assert_sycl_queue_equal(dpnp_u.sycl_queue, expected_queue)
-        assert_sycl_queue_equal(dpnp_vt.sycl_queue, expected_queue)
-        assert_sycl_queue_equal(dpnp_s.sycl_queue, expected_queue)
-
-    else:
-        dpnp_s = dpnp.linalg.svd(
-            x, full_matrices=full_matrices, compute_uv=compute_uv
-        )
-        assert_sycl_queue_equal(dpnp_s.sycl_queue, expected_queue)
-
-
 class TestToDevice:
-    @pytest.mark.parametrize(
-        "device_from", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
-    @pytest.mark.parametrize(
-        "device_to", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
+    @pytest.mark.parametrize("device_from", valid_dev, ids=dev_ids)
+    @pytest.mark.parametrize("device_to", valid_dev, ids=dev_ids)
     def test_basic(self, device_from, device_to):
         data = [1.0, 1.0, 1.0, 1.0, 1.0]
         x = dpnp.array(data, dtype=dpnp.float32, device=device_from)
@@ -1425,9 +953,7 @@ class TestToDevice:
         assert_raises(TypeError, x.to_device, q_prof, stream=stream)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     "func",
     [
@@ -1460,21 +986,16 @@ def test_array_copy(device, func, device_param, queue_param):
 
 
 @pytest.mark.parametrize("copy", [True, False, None])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_array_creation_from_dpctl(copy, device):
     dpt_data = dpt.ones((3, 3), device=device)
-
     result = dpnp.array(dpt_data, copy=copy)
 
     assert_sycl_queue_equal(result.sycl_queue, dpt_data.sycl_queue)
     assert isinstance(result, dpnp_array)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 @pytest.mark.parametrize("shape", [tuple(), (2,), (3, 0, 1), (2, 2, 2)])
 def test_from_dlpack(arr_dtype, shape, device):
@@ -1490,10 +1011,7 @@ def test_from_dlpack(arr_dtype, shape, device):
         assert V.strides == W.strides
 
 
-@pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_float16=True))
 def test_from_dlpack_with_dpt(arr_dtype, device):
     X = dpctl.tensor.empty((64,), dtype=arr_dtype, device=device)
@@ -1503,15 +1021,6 @@ def test_from_dlpack_with_dpt(arr_dtype, device):
     assert X.__dlpack_device__() == Y.__dlpack_device__()
     assert X.usm_type == Y.usm_type
     assert_sycl_queue_equal(X.sycl_queue, Y.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_broadcast_to(device):
-    x = dpnp.arange(5, device=device)
-    y = dpnp.broadcast_to(x, (3, 5))
-    assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
 
 
 @pytest.mark.parametrize(
@@ -1525,9 +1034,7 @@ def test_broadcast_to(device):
         pytest.param("vstack", [0, 1, 2, 3], [4, 5, 6, 7]),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_concat_stack(func, data1, data2, device):
     x1 = dpnp.array(data1, device=device)
     x2 = dpnp.array(data2, device=device)
@@ -1537,23 +1044,18 @@ def test_concat_stack(func, data1, data2, device):
     assert_sycl_queue_equal(result.sycl_queue, x2.sycl_queue)
 
 
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 class TestDelete:
     @pytest.mark.parametrize(
         "obj",
         [slice(None, None, 2), 3, [2, 3]],
         ids=["slice", "scalar", "list"],
     )
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
     def test_delete(self, obj, device):
         x = dpnp.arange(5, device=device)
         result = dpnp.delete(x, obj)
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
     def test_obj_ndarray(self, device):
         x = dpnp.arange(5, device=device)
         y = dpnp.array([1, 4], device=device)
@@ -1563,14 +1065,12 @@ class TestDelete:
         assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
 
 
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 class TestInsert:
     @pytest.mark.parametrize(
         "obj",
         [slice(None, None, 2), 3, [2, 3]],
         ids=["slice", "scalar", "list"],
-    )
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
     )
     def test_basic(self, obj, device):
         x = dpnp.arange(5, device=device)
@@ -1582,9 +1082,6 @@ class TestInsert:
         [slice(None, None, 3), 3, [2, 3]],
         ids=["slice", "scalar", "list"],
     )
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
     def test_values_ndarray(self, obj, device):
         x = dpnp.arange(5, device=device)
         y = dpnp.array([1, 4], device=device)
@@ -1594,9 +1091,6 @@ class TestInsert:
         assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
 
     @pytest.mark.parametrize("values", [-2, [-1, -2]], ids=["scalar", "list"])
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
     def test_obj_ndarray(self, values, device):
         x = dpnp.arange(5, device=device)
         y = dpnp.array([1, 4], device=device)
@@ -1605,9 +1099,6 @@ class TestInsert:
         assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
         assert_sycl_queue_equal(result.sycl_queue, y.sycl_queue)
 
-    @pytest.mark.parametrize(
-        "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-    )
     def test_obj_values_ndarray(self, device):
         x = dpnp.arange(5, device=device)
         y = dpnp.array([1, 4], device=device)
@@ -1632,9 +1123,7 @@ class TestInsert:
         pytest.param("vsplit", [[1, 2, 3, 4], [1, 2, 3, 4]]),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_split(func, data1, device):
     x1 = dpnp.array(data1, device=device)
     result = getattr(dpnp, func)(x1, 2)
@@ -1642,39 +1131,29 @@ def test_split(func, data1, device):
     assert_sycl_queue_equal(result[1].sycl_queue, x1.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_apply_along_axis(device):
     x = dpnp.arange(9, device=device).reshape(3, 3)
     result = dpnp.apply_along_axis(dpnp.sum, 0, x)
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_apply_over_axes(device):
     x = dpnp.arange(18, device=device).reshape(2, 3, 3)
     result = dpnp.apply_over_axes(dpnp.sum, x, [0, 1])
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device_x", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "device_y", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
+@pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_asarray(device_x, device_y):
     x = dpnp.array([1, 2, 3], device=device_x)
     y = dpnp.asarray([x, x, x], device=device_y)
     assert_sycl_queue_equal(y.sycl_queue, x.to_device(device_y).sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     "kwargs",
     [
@@ -1690,18 +1169,14 @@ def test_diff_scalar_append(device, kwargs):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_clip(device):
     x = dpnp.arange(10, device=device)
     y = dpnp.clip(x, 3, 7)
     assert_sycl_queue_equal(x.sycl_queue, y.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_take(device):
     x = dpnp.arange(5, device=device)
     ind = dpnp.array([0, 2, 4], device=device)
@@ -1720,9 +1195,7 @@ def test_take(device):
         ),
     ],
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_take_along_axis(data, ind, axis, device):
     x = dpnp.array(data, device=device)
     ind = dpnp.array(ind, device=device)
@@ -1731,9 +1204,7 @@ def test_take_along_axis(data, ind, axis, device):
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize("sparse", [True, False])
 def test_indices(device, sparse):
     sycl_queue = dpctl.SyclQueue(device)
@@ -1742,9 +1213,7 @@ def test_indices(device, sparse):
         assert_sycl_queue_equal(dpnp_array.sycl_queue, sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_nonzero(device):
     a = dpnp.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]], device=device)
     x = dpnp.nonzero(a)
@@ -1752,19 +1221,18 @@ def test_nonzero(device):
         assert_sycl_queue_equal(x_el.sycl_queue, a.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev + [None], ids=dev_ids + [None])
 @pytest.mark.parametrize("func", ["mgrid", "ogrid"])
 def test_grid(device, func):
-    sycl_queue = dpctl.SyclQueue(device)
-    x = getattr(dpnp, func)(sycl_queue=sycl_queue)[0:4]
-    assert_sycl_queue_equal(x.sycl_queue, sycl_queue)
+    result = getattr(dpnp, func)(device=device)[0:4]
+
+    if device is None:
+        # assert against default device
+        device = dpctl.select_default_device()
+    assert result.sycl_device == device
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_where(device):
     ia = dpnp.array([[0, 1, 2], [0, 2, 4], [0, 3, 6]], device=device)
     result = dpnp.where(ia < 4, ia, -1)
@@ -1772,165 +1240,8 @@ def test_where(device):
     assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "matrix, rhs",
-    [
-        ([[1, 2], [3, 5]], numpy.empty((2, 0))),
-        ([[1, 2], [3, 5]], [1, 2]),
-        (
-            [
-                [[1, 1], [0, 2]],
-                [[3, -1], [1, 2]],
-            ],
-            [
-                [[6, -4], [9, -6]],
-                [[15, 1], [15, 1]],
-            ],
-        ),
-    ],
-    ids=[
-        "2D_Matrix_Empty_RHS",
-        "2D_Matrix_1D_RHS",
-        "3D_Matrix_and_3D_RHS",
-    ],
-)
-def test_solve(matrix, rhs, device):
-    a = dpnp.array(matrix, device=device)
-    b = dpnp.array(rhs, device=device)
-    result = dpnp.linalg.solve(a, b)
-
-    assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
-    assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "shape, is_empty",
-    [
-        ((2, 2), False),
-        ((3, 2, 2), False),
-        ((0, 0), True),
-        ((0, 2, 2), True),
-    ],
-    ids=[
-        "(2, 2)",
-        "(3, 2, 2)",
-        "(0, 0)",
-        "(0, 2, 2)",
-    ],
-)
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_slogdet(shape, is_empty, device):
-    if is_empty:
-        x = dpnp.empty(shape, device=device)
-    else:
-        dtype = dpnp.default_float_type(device)
-        count_elem = numpy.prod(shape)
-        x = dpnp.arange(1, count_elem + 1, dtype=dtype, device=device).reshape(
-            shape
-        )
-
-    sign_result, logdet_result = dpnp.linalg.slogdet(x)
-
-    assert_sycl_queue_equal(sign_result.sycl_queue, x.sycl_queue)
-    assert_sycl_queue_equal(logdet_result.sycl_queue, x.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "shape, hermitian, rcond_as_array",
-    [
-        ((4, 4), False, False),
-        ((4, 4), False, True),
-        ((2, 0), False, False),
-        ((4, 4), True, False),
-        ((4, 4), True, True),
-        ((2, 2, 3), False, False),
-        ((2, 2, 3), False, True),
-        ((0, 2, 3), False, False),
-        ((1, 0, 3), False, False),
-    ],
-    ids=[
-        "(4, 4)",
-        "(4, 4), rcond_as_array",
-        "(2, 0)",
-        "(2, 2), hermitian)",
-        "(2, 2), hermitian, rcond_as_array)",
-        "(2, 2, 3)",
-        "(2, 2, 3), rcond_as_array",
-        "(0, 2, 3)",
-        "(1, 0, 3)",
-    ],
-)
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_pinv(shape, hermitian, rcond_as_array, device):
-    dtype = dpnp.default_float_type(device)
-    a = generate_random_numpy_array(shape, dtype, hermitian=hermitian)
-    ia = dpnp.array(a, device=device)
-
-    if rcond_as_array:
-        rcond_dp = dpnp.array(1e-15, device=device)
-        result = dpnp.linalg.pinv(ia, rcond=rcond_dp, hermitian=hermitian)
-    else:
-        # rcond == 1e-15 by default
-        result = dpnp.linalg.pinv(ia, hermitian=hermitian)
-
-    assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_tensorinv(device):
-    a = dpnp.eye(12, device=device).reshape(12, 4, 3)
-    result = dpnp.linalg.tensorinv(a, ind=1)
-    assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-def test_tensorsolve(device):
-    a = dpnp.random.randn(3, 2, 6, device=device)
-    b = dpnp.ones(a.shape[:2], device=device)
-    result = dpnp.linalg.tensorsolve(a, b)
-    assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
-
-
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    ["m", "n", "nrhs"],
-    [
-        (4, 2, 2),
-        (4, 0, 1),
-        (4, 2, 0),
-        (0, 0, 0),
-    ],
-)
-def test_lstsq(m, n, nrhs, device):
-    dtype = dpnp.default_float_type(device)
-    a = dpnp.arange(m * n, dtype=dtype, device=device)
-    a = a.reshape(m, n)
-    b = dpnp.ones((m, nrhs), device=device)
-    result = dpnp.linalg.lstsq(a, b)
-
-    for param in result:
-        param_queue = param.sycl_queue
-        assert_sycl_queue_equal(param_queue, a.sycl_queue)
-        assert_sycl_queue_equal(param_queue, b.sycl_queue)
-
-
 @pytest.mark.parametrize("wgt", [None, numpy.arange(7, 12)])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_bincount(wgt, device):
     iv = dpnp.arange(5, device=device)
     iw = None if wgt is None else dpnp.array(wgt, sycl_queue=iv.sycl_queue)
@@ -1939,9 +1250,7 @@ def test_bincount(wgt, device):
 
 
 @pytest.mark.parametrize("wgt", [None, numpy.arange(7, 12)])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_histogram(wgt, device):
     iv = dpnp.arange(5, device=device)
     iw = None if wgt is None else dpnp.array(wgt, sycl_queue=iv.sycl_queue)
@@ -1952,9 +1261,7 @@ def test_histogram(wgt, device):
 
 
 @pytest.mark.parametrize("wgt", [None, numpy.arange(7, 12)])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_histogram2d(wgt, device):
     ix = dpnp.arange(5, device=device)
     iy = dpnp.arange(5, device=device)
@@ -1969,9 +1276,7 @@ def test_histogram2d(wgt, device):
 
 
 @pytest.mark.parametrize("wgt", [None, numpy.arange(7, 12)])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_histogramdd(wgt, device):
     iv = dpnp.arange(5, device=device)
     iw = None if wgt is None else dpnp.array(wgt, sycl_queue=iv.sycl_queue)
@@ -1985,9 +1290,7 @@ def test_histogramdd(wgt, device):
 @pytest.mark.parametrize(
     "func", ["tril_indices_from", "triu_indices_from", "diag_indices_from"]
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_tri_diag_indices_from(func, device):
     a = dpnp.ones((3, 3), device=device)
     res = getattr(dpnp, func)(a)
@@ -1998,9 +1301,7 @@ def test_tri_diag_indices_from(func, device):
 @pytest.mark.parametrize(
     "func", ["tril_indices", "triu_indices", "diag_indices"]
 )
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_tri_diag_indices(func, device):
     sycl_queue = dpctl.SyclQueue(device)
     res = getattr(dpnp, func)(4, sycl_queue=sycl_queue)
@@ -2009,9 +1310,7 @@ def test_tri_diag_indices(func, device):
 
 
 @pytest.mark.parametrize("mask_func", ["tril", "triu"])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_mask_indices(mask_func, device):
     sycl_queue = dpctl.SyclQueue(device)
     res = dpnp.mask_indices(4, getattr(dpnp, mask_func), sycl_queue=sycl_queue)
@@ -2020,9 +1319,7 @@ def test_mask_indices(mask_func, device):
 
 
 @pytest.mark.parametrize("wgt", [None, numpy.arange(7, 12)])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_histogram_bin_edges(wgt, device):
     iv = dpnp.arange(5, device=device)
     iw = None if wgt is None else dpnp.array(wgt, sycl_queue=iv.sycl_queue)
@@ -2030,12 +1327,8 @@ def test_histogram_bin_edges(wgt, device):
     assert_sycl_queue_equal(result_edges.sycl_queue, iv.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device_x", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "device_y", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device_x", valid_dev, ids=dev_ids)
+@pytest.mark.parametrize("device_y", valid_dev, ids=dev_ids)
 def test_astype(device_x, device_y):
     x = dpnp.array([1, 2, 3], dtype="i4", device=device_x)
     y = dpnp.astype(x, "f4")
@@ -2046,9 +1339,7 @@ def test_astype(device_x, device_y):
     assert_sycl_queue_equal(y.sycl_queue, sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_select(device):
     condlist = [dpnp.array([True, False], device=device)]
     choicelist = [dpnp.array([1, 2], device=device)]
@@ -2057,9 +1348,7 @@ def test_select(device):
 
 
 @pytest.mark.parametrize("axis", [None, 0, -1])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_unique(axis, device):
     ia = dpnp.array([[1, 1], [2, 3]], device=device)
     result = dpnp.unique(ia, True, True, True, axis=axis)
@@ -2068,9 +1357,7 @@ def test_unique(axis, device):
 
 
 @pytest.mark.parametrize("copy", [True, False])
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_nan_to_num(copy, device):
     a = dpnp.array([-dpnp.nan, -1, 0, 1, dpnp.nan], device=device)
     result = dpnp.nan_to_num(a, copy=copy)
@@ -2079,9 +1366,7 @@ def test_nan_to_num(copy, device):
     assert copy == (result is not a)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 @pytest.mark.parametrize(
     ["to_end", "to_begin"],
     [
@@ -2102,9 +1387,7 @@ def test_ediff1d(device, to_end, to_begin):
     assert_sycl_queue_equal(res.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_unravel_index(device):
     x = dpnp.array(2, device=device)
     result = dpnp.unravel_index(x, shape=(2, 2))
@@ -2112,21 +1395,15 @@ def test_unravel_index(device):
         assert_sycl_queue_equal(res.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_ravel_index(device):
     x = dpnp.array([1, 0], device=device)
     result = dpnp.ravel_multi_index(x, (2, 2))
     assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device_0", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
-@pytest.mark.parametrize(
-    "device_1", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device_0", valid_dev, ids=dev_ids)
+@pytest.mark.parametrize("device_1", valid_dev, ids=dev_ids)
 def test_ix(device_0, device_1):
     x0 = dpnp.array([0, 1], device=device_0)
     x1 = dpnp.array([2, 4], device=device_1)
@@ -2135,11 +1412,341 @@ def test_ix(device_0, device_1):
     assert_sycl_queue_equal(ixgrid[1].sycl_queue, x1.sycl_queue)
 
 
-@pytest.mark.parametrize(
-    "device", valid_dev, ids=[dev.filter_string for dev in valid_dev]
-)
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
 def test_choose(device):
     chc = dpnp.arange(5, dtype="i4", device=device)
     inds = dpnp.array([0, 1, 3], dtype="i4", device=device)
     result = dpnp.choose(inds, chc)
     assert_sycl_queue_equal(result.sycl_queue, chc.sycl_queue)
+
+
+@pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
+class TestLinAlgebra:
+    @pytest.mark.parametrize(
+        "data, is_empty",
+        [
+            ([[1, -2], [2, 5]], False),
+            ([[[1, -2], [2, 5]], [[1, -2], [2, 5]]], False),
+            ((0, 0), True),
+            ((3, 0, 0), True),
+        ],
+        ids=["2D", "3D", "Empty_2D", "Empty_3D"],
+    )
+    def test_cholesky(self, data, is_empty, device):
+        if is_empty:
+            x = dpnp.empty(data, device=device)
+        else:
+            dtype = dpnp.default_float_type(device)
+            x = dpnp.array(data, dtype=dtype, device=device)
+
+        result = dpnp.linalg.cholesky(x)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "p", [None, -dpnp.inf, -2, -1, 1, 2, dpnp.inf, "fro"]
+    )
+    def test_cond(self, device, p):
+        a = generate_random_numpy_array((2, 4, 4))
+        ia = dpnp.array(a, device=device)
+        result = dpnp.linalg.cond(ia, p=p)
+        assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
+
+    def test_det(self, device):
+        data = [[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]
+        x = dpnp.array(data, device=device)
+        result = dpnp.linalg.det(x)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize("func", ["eig", "eigvals", "eigh", "eigvalsh"])
+    @pytest.mark.parametrize(
+        "shape",
+        [(4, 4), (0, 0), (2, 3, 3), (0, 2, 2), (1, 0, 0)],
+        ids=["(4, 4)", "(0, 0)", "(2, 3, 3)", "(0, 2, 2)", "(1, 0, 0)"],
+    )
+    def test_eigenvalue(self, func, shape, device):
+        dtype = dpnp.default_float_type(device)
+        # Set a `hermitian` flag for generate_random_numpy_array() to
+        # get a symmetric array for eigh() and eigvalsh() or
+        # non-symmetric for eig() and eigvals()
+        is_hermitian = func in ("eigh, eigvalsh")
+        a = generate_random_numpy_array(shape, dtype, hermitian=is_hermitian)
+        ia = dpnp.array(a, device=device)
+        expected_queue = ia.sycl_queue
+
+        if func in ("eig", "eigh"):
+            dp_val, dp_vec = getattr(dpnp.linalg, func)(ia)
+            assert_sycl_queue_equal(dp_vec.sycl_queue, expected_queue)
+        else:  # eighvals or eigvalsh
+            dp_val = getattr(dpnp.linalg, func)(ia)
+
+        assert_sycl_queue_equal(dp_val.sycl_queue, expected_queue)
+
+    @pytest.mark.parametrize(
+        "shape, is_empty",
+        [
+            ((2, 2), False),
+            ((3, 2, 2), False),
+            ((0, 0), True),
+            ((0, 2, 2), True),
+        ],
+        ids=["(2, 2)", "(3, 2, 2)", "(0, 0)", "(0, 2, 2)"],
+    )
+    def test_inv(self, shape, is_empty, device):
+        if is_empty:
+            x = dpnp.empty(shape, device=device)
+        else:
+            dtype = dpnp.default_float_type(device)
+            count_elem = numpy.prod(shape)
+            x = dpnp.arange(
+                1, count_elem + 1, dtype=dtype, device=device
+            ).reshape(shape)
+
+        result = dpnp.linalg.inv(x)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        ["m", "n", "nrhs"],
+        [(4, 2, 2), (4, 0, 1), (4, 2, 0), (0, 0, 0)],
+    )
+    def test_lstsq(self, m, n, nrhs, device):
+        dtype = dpnp.default_float_type(device)
+        a = dpnp.arange(m * n, dtype=dtype, device=device)
+        a = a.reshape(m, n)
+        b = dpnp.ones((m, nrhs), device=device)
+        result = dpnp.linalg.lstsq(a, b)
+
+        for param in result:
+            param_queue = param.sycl_queue
+            assert_sycl_queue_equal(param_queue, a.sycl_queue)
+            assert_sycl_queue_equal(param_queue, b.sycl_queue)
+
+    @pytest.mark.parametrize("n", [-1, 0, 1, 2, 3])
+    def test_matrix_power(self, n, device):
+        x = dpnp.array([[1.0, 2.0], [3.0, 5.0]], device=device)
+        result = dpnp.linalg.matrix_power(x, n)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "data, tol",
+        [([1, 2], None), ([[1, 2], [3, 4]], None), ([[1, 2], [3, 4]], 1e-06)],
+        ids=["1-D array", "2-D array no tol", "2_d array with tol"],
+    )
+    def test_matrix_rank(self, data, tol, device):
+        x = dpnp.array(data, device=device)
+        result = dpnp.linalg.matrix_rank(x, tol=tol)
+        assert_sycl_queue_equal(result.sycl_queue, x.sycl_queue)
+
+    def test_multi_dot(self, device):
+        array_list = []
+        for num_array in [3, 5]:  # number of arrays in multi_dot
+            for _ in range(num_array):  # create arrays one by one
+                a = dpnp.random.rand(10, 10, device=device)
+                array_list.append(a)
+
+            result = dpnp.linalg.multi_dot(array_list)
+            _, exec_q = get_usm_allocations(array_list)
+            assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+    def test_multi_dot_out(self, device):
+        array_list = []
+        for num_array in [3, 5]:  # number of arrays in multi_dot
+            for _ in range(num_array):  # create arrays one by one
+                a = dpnp.random.rand(10, 10, device=device)
+                array_list.append(a)
+
+            dp_out = dpnp.empty((10, 10), device=device)
+            result = dpnp.linalg.multi_dot(array_list, out=dp_out)
+            assert result is dp_out
+            _, exec_q = get_usm_allocations(array_list)
+            assert_sycl_queue_equal(result.sycl_queue, exec_q)
+
+    @pytest.mark.parametrize(
+        "ord", [None, -dpnp.inf, -2, -1, 1, 2, 3, dpnp.inf, "fro", "nuc"]
+    )
+    @pytest.mark.parametrize(
+        "axis",
+        [-1, 0, 1, (0, 1), (-2, -1), None],
+        ids=["-1", "0", "1", "(0, 1)", "(-2, -1)", "None"],
+    )
+    def test_norm(self, device, ord, axis):
+        ia = dpnp.arange(120, device=device).reshape(2, 3, 4, 5)
+        if (axis in [-1, 0, 1] and ord in ["nuc", "fro"]) or (
+            isinstance(axis, tuple) and ord == 3
+        ):
+            pytest.skip("Invalid norm order for vectors.")
+        elif axis is None and ord is not None:
+            pytest.skip("Improper number of dimensions to norm")
+        else:
+            result = dpnp.linalg.norm(ia, ord=ord, axis=axis)
+            assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "shape, hermitian, rcond_as_array",
+        [
+            ((4, 4), False, False),
+            ((4, 4), False, True),
+            ((2, 0), False, False),
+            ((4, 4), True, False),
+            ((4, 4), True, True),
+            ((2, 2, 3), False, False),
+            ((2, 2, 3), False, True),
+            ((0, 2, 3), False, False),
+            ((1, 0, 3), False, False),
+        ],
+        ids=[
+            "(4, 4)",
+            "(4, 4), rcond_as_array",
+            "(2, 0)",
+            "(2, 2), hermitian)",
+            "(2, 2), hermitian, rcond_as_array)",
+            "(2, 2, 3)",
+            "(2, 2, 3), rcond_as_array",
+            "(0, 2, 3)",
+            "(1, 0, 3)",
+        ],
+    )
+    def test_pinv(self, shape, hermitian, rcond_as_array, device):
+        dtype = dpnp.default_float_type(device)
+        a = generate_random_numpy_array(shape, dtype, hermitian=hermitian)
+        ia = dpnp.array(a, device=device)
+
+        if rcond_as_array:
+            rcond_dp = dpnp.array(1e-15, device=device)
+            result = dpnp.linalg.pinv(ia, rcond=rcond_dp, hermitian=hermitian)
+        else:
+            # rcond == 1e-15 by default
+            result = dpnp.linalg.pinv(ia, hermitian=hermitian)
+
+        assert_sycl_queue_equal(result.sycl_queue, ia.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "shape",
+        [(4, 4), (2, 0), (2, 2, 3), (0, 2, 3), (1, 0, 3)],
+        ids=["(4, 4)", "(2, 0)", "(2, 2, 3)", "(0, 2, 3)", "(1, 0, 3)"],
+    )
+    @pytest.mark.parametrize("mode", ["r", "raw", "complete", "reduced"])
+    def test_qr(self, shape, mode, device):
+        dtype = dpnp.default_float_type(device)
+        count_elems = numpy.prod(shape)
+        a = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(shape)
+
+        expected_queue = a.sycl_queue
+
+        if mode == "r":
+            dp_r = dpnp.linalg.qr(a, mode=mode)
+            dp_r_queue = dp_r.sycl_queue
+            assert_sycl_queue_equal(dp_r_queue, expected_queue)
+        else:
+            dp_q, dp_r = dpnp.linalg.qr(a, mode=mode)
+            assert_sycl_queue_equal(dp_q.sycl_queue, expected_queue)
+            assert_sycl_queue_equal(dp_r.sycl_queue, expected_queue)
+
+    @pytest.mark.parametrize(
+        "shape, is_empty",
+        [
+            ((2, 2), False),
+            ((3, 2, 2), False),
+            ((0, 0), True),
+            ((0, 2, 2), True),
+        ],
+        ids=["(2, 2)", "(3, 2, 2)", "(0, 0)", "(0, 2, 2)"],
+    )
+    def test_slogdet(self, shape, is_empty, device):
+        if is_empty:
+            x = dpnp.empty(shape, device=device)
+        else:
+            dtype = dpnp.default_float_type(device)
+            count_elem = numpy.prod(shape)
+            x = dpnp.arange(
+                1, count_elem + 1, dtype=dtype, device=device
+            ).reshape(shape)
+
+        sign_result, logdet_result = dpnp.linalg.slogdet(x)
+
+        assert_sycl_queue_equal(sign_result.sycl_queue, x.sycl_queue)
+        assert_sycl_queue_equal(logdet_result.sycl_queue, x.sycl_queue)
+
+    @pytest.mark.parametrize(
+        "matrix, rhs",
+        [
+            ([[1, 2], [3, 5]], numpy.empty((2, 0))),
+            ([[1, 2], [3, 5]], [1, 2]),
+            (
+                [
+                    [[1, 1], [0, 2]],
+                    [[3, -1], [1, 2]],
+                ],
+                [
+                    [[6, -4], [9, -6]],
+                    [[15, 1], [15, 1]],
+                ],
+            ),
+        ],
+        ids=["2D_Matrix_Empty_RHS", "2D_Matrix_1D_RHS", "3D_Matrix_and_3D_RHS"],
+    )
+    def test_solve(self, matrix, rhs, device):
+        a = dpnp.array(matrix, device=device)
+        b = dpnp.array(rhs, device=device)
+        result = dpnp.linalg.solve(a, b)
+
+        assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
+        assert_sycl_queue_equal(result.sycl_queue, b.sycl_queue)
+
+    @pytest.mark.parametrize("full_matrices", [True, False])
+    @pytest.mark.parametrize("compute_uv", [True, False])
+    @pytest.mark.parametrize(
+        "shape",
+        [
+            (1, 4),
+            (3, 2),
+            (4, 4),
+            (2, 0),
+            (0, 2),
+            (2, 2, 3),
+            (3, 3, 0),
+            (0, 2, 3),
+            (1, 0, 3),
+        ],
+        ids=[
+            "(1, 4)",
+            "(3, 2)",
+            "(4, 4)",
+            "(2, 0)",
+            "(0, 2)",
+            "(2, 2, 3)",
+            "(3, 3, 0)",
+            "(0, 2, 3)",
+            "(1, 0, 3)",
+        ],
+    )
+    def test_svd(self, shape, full_matrices, compute_uv, device):
+        dtype = dpnp.default_float_type(device)
+        count_elems = numpy.prod(shape)
+        x = dpnp.arange(count_elems, dtype=dtype, device=device).reshape(shape)
+
+        expected_queue = x.sycl_queue
+        if compute_uv:
+            dpnp_u, dpnp_s, dpnp_vt = dpnp.linalg.svd(
+                x, full_matrices=full_matrices, compute_uv=compute_uv
+            )
+
+            assert_sycl_queue_equal(dpnp_u.sycl_queue, expected_queue)
+            assert_sycl_queue_equal(dpnp_vt.sycl_queue, expected_queue)
+            assert_sycl_queue_equal(dpnp_s.sycl_queue, expected_queue)
+
+        else:
+            dpnp_s = dpnp.linalg.svd(
+                x, full_matrices=full_matrices, compute_uv=compute_uv
+            )
+            assert_sycl_queue_equal(dpnp_s.sycl_queue, expected_queue)
+
+    def test_tensorinv(self, device):
+        a = dpnp.eye(12, device=device).reshape(12, 4, 3)
+        result = dpnp.linalg.tensorinv(a, ind=1)
+        assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)
+
+    def test_tensorsolve(self, device):
+        a = dpnp.random.randn(3, 2, 6, device=device)
+        b = dpnp.ones(a.shape[:2], device=device)
+        result = dpnp.linalg.tensorsolve(a, b)
+        assert_sycl_queue_equal(result.sycl_queue, a.sycl_queue)

@@ -9,83 +9,72 @@ from .helper import (
     generate_random_numpy_array,
     get_all_dtypes,
 )
-from .third_party.cupy import testing
 
 
-@testing.parameterize(
-    *testing.product(
-        {
-            "func": ("argmax", "argmin"),
-        }
-    )
-)
+@pytest.mark.parametrize("func", ["argmax", "argmin"])
 class TestArgmaxArgmin:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2])
     @pytest.mark.parametrize("keepdims", [False, True])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    def test_func(self, axis, keepdims, dtype):
+    def test_func(self, func, axis, keepdims, dtype):
         a = generate_random_numpy_array((4, 4, 6, 8), dtype=dtype)
         ia = dpnp.array(a)
 
-        expected = getattr(numpy, self.func)(a, axis=axis, keepdims=keepdims)
-        result = getattr(dpnp, self.func)(ia, axis=axis, keepdims=keepdims)
+        expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
+        result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
         assert_array_equal(result, expected)
 
-    def test_out(self):
+    def test_out(self, func):
         a = generate_random_numpy_array((2, 2, 3), dtype=numpy.float32)
         ia = dpnp.array(a)
 
         # out is dpnp_array
-        expected = getattr(numpy, self.func)(a, axis=0)
+        expected = getattr(numpy, func)(a, axis=0)
         dpnp_out = dpnp.empty(expected.shape, dtype=expected.dtype)
-        result = getattr(dpnp, self.func)(ia, axis=0, out=dpnp_out)
+        result = getattr(dpnp, func)(ia, axis=0, out=dpnp_out)
         assert dpnp_out is result
         assert_array_equal(result, expected)
 
         # out is usm_ndarray
         dpt_out = dpt.empty(expected.shape, dtype=expected.dtype)
-        result = getattr(dpnp, self.func)(ia, axis=0, out=dpt_out)
+        result = getattr(dpnp, func)(ia, axis=0, out=dpt_out)
         assert dpt_out is result.get_array()
         assert_array_equal(result, expected)
 
         # out is a numpy array -> TypeError
         result = numpy.empty_like(expected)
         with pytest.raises(TypeError):
-            getattr(dpnp, self.func)(ia, axis=0, out=result)
+            getattr(dpnp, func)(ia, axis=0, out=result)
 
         # out shape is incorrect -> ValueError
         result = dpnp.array(numpy.zeros((2, 2)), dtype=dpnp.intp)
         with pytest.raises(ValueError):
-            getattr(dpnp, self.func)(ia, axis=0, out=result)
+            getattr(dpnp, func)(ia, axis=0, out=result)
 
-    @pytest.mark.parametrize("arr_dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("in_dt", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("out_dt", get_all_dtypes(no_none=True))
-    def test_out_dtype(self, arr_dt, out_dt):
-        a = generate_random_numpy_array((2, 2, 3), dtype=arr_dt)
+    def test_out_dtype(self, func, in_dt, out_dt):
+        a = generate_random_numpy_array((2, 2, 3), dtype=in_dt)
         out = numpy.zeros_like(a, shape=(2, 3), dtype=out_dt)
         ia, iout = dpnp.array(a), dpnp.array(out)
 
         if numpy.can_cast(out.dtype, numpy.intp, casting="safe"):
-            result = getattr(dpnp, self.func)(ia, out=iout, axis=1)
-            expected = getattr(numpy, self.func)(a, out=out, axis=1)
+            result = getattr(dpnp, func)(ia, out=iout, axis=1)
+            expected = getattr(numpy, func)(a, out=out, axis=1)
             assert_array_equal(result, expected)
             assert result is iout
         else:
-            assert_raises(
-                TypeError, getattr(numpy, self.func), a, out=out, axis=1
-            )
-            assert_raises(
-                TypeError, getattr(dpnp, self.func), ia, out=iout, axis=1
-            )
+            assert_raises(TypeError, getattr(numpy, func), a, out=out, axis=1)
+            assert_raises(TypeError, getattr(dpnp, func), ia, out=iout, axis=1)
 
     @pytest.mark.parametrize("axis", [None, 0, 1, -1])
     @pytest.mark.parametrize("keepdims", [False, True])
-    def test_ndarray(self, axis, keepdims):
+    def test_ndarray(self, func, axis, keepdims):
         a = generate_random_numpy_array((4, 6, 8), dtype=numpy.float32)
         ia = dpnp.array(a)
 
-        expected = getattr(a, self.func)(axis=axis, keepdims=keepdims)
-        result = getattr(ia, self.func)(axis=axis, keepdims=keepdims)
+        expected = getattr(a, func)(axis=axis, keepdims=keepdims)
+        result = getattr(ia, func)(axis=axis, keepdims=keepdims)
         assert_array_equal(result, expected)
 
 
