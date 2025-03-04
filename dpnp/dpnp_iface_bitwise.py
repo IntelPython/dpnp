@@ -25,7 +25,7 @@
 # *****************************************************************************
 
 """
-Interface of the Binary operations of the DPNP
+Interface of the Bitwise part of the DPNP
 
 Notes
 -----
