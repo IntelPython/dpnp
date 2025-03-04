@@ -371,6 +371,15 @@ def test_logic_op_2in(op, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize("op", ["bitwise_count", "bitwise_not"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_bitwise_op_1in(op, usm_type):
+    x = dpnp.arange(-10, 10, usm_type=usm_type)
+    res = getattr(dpnp, op)(x)
+
+    assert x.usm_type == res.usm_type == usm_type
+
+
 @pytest.mark.parametrize(
     "op",
     ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
