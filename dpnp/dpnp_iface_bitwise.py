@@ -25,7 +25,7 @@
 # *****************************************************************************
 
 """
-Interface of the Binary operations of the DPNP
+Interface of the Bitwise part of the DPNP
 
 Notes
 -----
@@ -84,6 +84,7 @@ def binary_repr(num, width=None):
         at least a sufficient number of bits for `num` to be represented in the
         designated form. If the `width` value is insufficient, an error is
         raised.
+
         Default: ``None``.
 
     Returns
@@ -145,9 +146,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -232,9 +235,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -310,9 +315,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -386,9 +393,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -472,9 +481,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 Returns
 -------
@@ -549,9 +560,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {"C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
