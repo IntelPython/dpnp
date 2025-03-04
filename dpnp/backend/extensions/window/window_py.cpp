@@ -32,6 +32,7 @@
 
 #include "common.hpp"
 #include "hamming.hpp"
+#include "hanning.hpp"
 
 namespace window_ns = dpnp::extensions::window;
 namespace py = pybind11;
@@ -40,6 +41,7 @@ using window_ns::window_fn_ptr_t;
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
 static window_fn_ptr_t hamming_dispatch_vector[dpctl_td_ns::num_types];
+static window_fn_ptr_t hanning_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_window_impl, m)
 {
@@ -57,6 +59,21 @@ PYBIND11_MODULE(_window_impl, m)
         };
 
         m.def("_hamming", hamming_pyapi, "Call hamming kernel",
+              py::arg("sycl_queue"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        window_ns::init_window_dispatch_vectors<
+            window_ns::kernels::HanningFactory>(hanning_dispatch_vector);
+
+        auto hanning_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
+                                 const event_vecT &depends = {}) {
+            return window_ns::py_window(exec_q, result, depends,
+                                        hanning_dispatch_vector);
+        };
+
+        m.def("_hanning", hanning_pyapi, "Call hanning kernel",
               py::arg("sycl_queue"), py::arg("result"),
               py::arg("depends") = py::list());
     }

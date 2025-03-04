@@ -57,6 +57,7 @@ Mises
 multinomial
 multivalued
 namespace
+namespaces
 namedtuple
 NaN
 NaT

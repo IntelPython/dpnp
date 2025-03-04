@@ -68,6 +68,7 @@ def assert_sycl_queue_equal(result, expected):
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("geomspace", [1, 4, 8], {}),
         pytest.param("hamming", [10], {}),
+        pytest.param("hanning", [10], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
