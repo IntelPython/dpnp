@@ -8,5 +8,6 @@ var searchData=
   ['begin_5',['begin',['../class_d_p_n_p_c__id.html#a1e1427181e175dacfb37d3a042d4876f',1,'DPNPC_id']]],
   ['bessel_5fik_5f0_6',['bessel_ik_0',['../namespacedpnp_1_1kernels_1_1i0_1_1impl.html#af983672857d109bc8bbe77a8dbcf0358',1,'dpnp::kernels::i0::impl']]],
   ['bincount_7',['Bincount',['../structstatistics_1_1histogram_1_1_bincount.html',1,'statistics::histogram']]],
-  ['broadcast_5fto_5fshape_8',['broadcast_to_shape',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6',1,'DPNPC_id']]]
+  ['bitwisecountfunctor_8',['BitwiseCountFunctor',['../structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html',1,'dpnp::kernels::bitwise_count']]],
+  ['broadcast_5fto_5fshape_9',['broadcast_to_shape',['../group___b_a_c_k_e_n_d___u_t_i_l_s.html#ga5f47f787627aa8dbd02301760482d7d6',1,'DPNPC_id']]]
 ];

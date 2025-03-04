@@ -66,6 +66,9 @@ var annotated_dup =
         ] ]
       ] ],
       [ "kernels", null, [
+        [ "bitwise_count", null, [
+          [ "BitwiseCountFunctor", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ]
+        ] ],
         [ "degrees", null, [
           [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
         ] ],
