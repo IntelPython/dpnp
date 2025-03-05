@@ -149,19 +149,19 @@ def blackman(M, device=None, usm_type=None, sycl_queue=None):
     Creating the output array on a different device or with a
     specified usm_type:
 
-    >>> x = np.blackman(4) # default case
+    >>> x = np.blackman(3) # default case
     >>> x, x.device, x.usm_type
     (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),
      Device(level_zero:gpu:0),
      'device')
 
-    >>> y = np.blackman(4, device="cpu")
+    >>> y = np.blackman(3, device="cpu")
     >>> y, y.device, y.usm_type
     (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),
      Device(opencl:cpu:0),
      'device')
 
-    >>> z = np.blackman(4, usm_type="host")
+    >>> z = np.blackman(3, usm_type="host")
     >>> z, z.device, z.usm_type
     (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),
      Device(level_zero:gpu:0),
