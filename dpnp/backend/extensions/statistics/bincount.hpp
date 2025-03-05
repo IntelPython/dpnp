@@ -44,7 +44,6 @@ struct Bincount
                                 const void *,
                                 void *,
                                 const size_t,
-                                const size_t,
                                 const std::vector<sycl::event> &);
 
     common::DispatchTable2<FnT> dispatch_table;
