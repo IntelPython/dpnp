@@ -39,8 +39,8 @@ struct Bincount
 {
     using FnT = sycl::event (*)(sycl::queue &,
                                 const void *,
-                                const int64_t,
-                                const int64_t,
+                                const uint64_t,
+                                const uint64_t,
                                 const void *,
                                 void *,
                                 const size_t,
@@ -53,8 +53,8 @@ struct Bincount
 
     std::tuple<sycl::event, sycl::event>
         call(const dpctl::tensor::usm_ndarray &input,
-             const int64_t min,
-             const int64_t max,
+             const uint64_t min,
+             const uint64_t max,
              const std::optional<const dpctl::tensor::usm_ndarray> &weights,
              dpctl::tensor::usm_ndarray &output,
              const std::vector<sycl::event> &depends);
