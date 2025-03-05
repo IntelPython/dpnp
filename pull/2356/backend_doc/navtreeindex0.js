@@ -31,6 +31,7 @@ var NAVTREEINDEX0 =
 "classdpnp_1_1extensions_1_1indexing_1_1kernels_1_1_choose_functor.html":[2,0,0,0,2,0,0],
 "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html":[2,0,0,0,3,2],
 "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html":[2,0,0,0,4,0,1],
+"classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_functor.html":[2,0,0,0,4,0,3],
 "classdpnp__less__comp.html":[2,0,4],
 "classes.html":[2,1],
 "classstatistics_1_1common_1_1_dispatch_table.html":[2,0,1,0,1],
@@ -248,6 +249,5 @@ var NAVTREEINDEX0 =
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga3234f956d618f70bdbbc95e62085891d":[0,2,24],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga3335ff85936d6ecb6273eac430c73a4e":[0,2,18],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga35b32eec8a073d2d96551a8256bbcde7":[0,2,29],
-"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga37e231ebdeec9fef8a56743a28770183":[0,2,30],
-"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga41dd03c85f901c2dee88e709170ee1a1":[0,2,23]
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga37e231ebdeec9fef8a56743a28770183":[0,2,30]
 };
