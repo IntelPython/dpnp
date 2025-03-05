@@ -9,7 +9,7 @@ from dpnp.tests.helper import has_support_aspect64, numpy_version
 from dpnp.tests.third_party.cupy import testing
 
 # Note that numpy.bincount does not support uint64 on 64-bit environment
-# as it casts an input array to intp.
+# as it casts an input array to intp (planned to support since 2.2.4).
 # And it does not support uint32, int64 and uint64 on 32-bit environment.
 _all_types = (
     numpy.float16,
@@ -27,6 +27,9 @@ _signed_types = (numpy.int8, numpy.int16, numpy.int32, numpy.bool_)
 if sys.maxsize > 2**32:
     _all_types = _all_types + (numpy.int64, numpy.uint32)
     _signed_types = _signed_types + (numpy.int64,)
+
+if numpy_version() > "2.2.3":
+    _all_types = _all_types + (numpy.uint64,)
 
 
 def for_all_dtypes_bincount(name="dtype"):
