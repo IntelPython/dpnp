@@ -313,6 +313,11 @@ def bincount(x, weights=None, minlength=0):
 
     For full documentation refer to :obj:`numpy.bincount`.
 
+    Warning
+    -------
+    This function synchronizes in order to calculate binning edges.
+    This may harm performance in some applications.
+
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
@@ -506,6 +511,11 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram`.
 
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -672,6 +682,11 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram_bin_edges`.
 
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -756,6 +771,13 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
 def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
     """
     Compute the bi-dimensional histogram of two data samples.
+
+    For full documentation refer to :obj:`numpy.histogram2d`.
+
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
 
     Parameters
     ----------
@@ -1084,6 +1106,11 @@ def histogramdd(sample, bins=10, range=None, density=None, weights=None):
     Compute the multidimensional histogram of some data.
 
     For full documentation refer to :obj:`numpy.histogramdd`.
+
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
 
     Parameters
     ----------
