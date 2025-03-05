@@ -185,9 +185,8 @@ std::tuple<sycl::event, sycl::event> Bincount::call(
     void *weights_ptr =
         weights.has_value() ? weights.value().get_data() : nullptr;
 
-    auto ev =
-        bincount_func(exec_q, sample.get_data(), min, max, weights_ptr,
-                      histogram.get_data(), histogram.get_size(), depends);
+    auto ev = bincount_func(exec_q, sample.get_data(), min, max, weights_ptr,
+                            histogram.get_data(), sample.get_size(), depends);
 
     sycl::event args_ev;
     if (weights.has_value()) {
