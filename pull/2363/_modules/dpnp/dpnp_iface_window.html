@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+24.ga2b71325a7f documentation</title>
+  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+25.g197e49d3c10 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=30468317"></script>
+      <script src="../../_static/documentation_options.js?v=db9107af"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -236,19 +236,19 @@
 <span class="sd">    Creating the output array on a different device or with a</span>
 <span class="sd">    specified usm_type:</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.blackman(4) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x = np.blackman(3) # default case</span>
 <span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
 <span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
 <span class="sd">     &#39;device&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; y = np.blackman(4, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y = np.blackman(3, device=&quot;cpu&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
 <span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
 <span class="sd">     Device(opencl:cpu:0),</span>
 <span class="sd">     &#39;device&#39;)</span>
 
-<span class="sd">    &gt;&gt;&gt; z = np.blackman(4, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z = np.blackman(3, usm_type=&quot;host&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
 <span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
 <span class="sd">     Device(level_zero:gpu:0),</span>
