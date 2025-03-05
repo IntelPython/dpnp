@@ -293,8 +293,8 @@ def _bincount_run_native(
 
     mem_ev, bc_ev = statistics_ext.bincount(
         x_usm,
-        min_v,
-        max_v,
+        min_v.item(),
+        max_v.item(),
         weights_usm,
         n_usm,
         depends=_manager.submitted_events,
