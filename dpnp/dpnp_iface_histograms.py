@@ -391,10 +391,8 @@ def bincount(x, weights=None, minlength=0):
 
     if x_casted_dtype is None or ntype_casted is None:  # pragma: no cover
         raise ValueError(
-            f"function '{bincount}' does not support input types "
-            f"({x.dtype}, {ntype}), "
-            "and the inputs could not be coerced to any "
-            "supported types"
+            f"Input types ({x.dtype}, {ntype}) are not supported, "
+            "and the inputs could not be coerced to any supported types"
         )
 
     x_casted = dpnp.asarray(x, dtype=x_casted_dtype, order="C")
@@ -611,9 +609,8 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     if a_bin_dtype is None or hist_dtype is None:  # pragma: no cover
         raise ValueError(
-            f"function '{histogram}' does not support input types "
-            f"({a.dtype}, {bin_edges.dtype}, {ntype}), "
-            "and the inputs could not be coerced to any "
+            f"Input types ({a.dtype}, {bin_edges.dtype}, {ntype}) "
+            "are not supported, and the inputs could not be coerced to any "
             "supported types"
         )
 
