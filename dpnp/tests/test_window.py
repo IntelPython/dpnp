@@ -7,7 +7,7 @@ import dpnp
 from .helper import assert_dtype_allclose
 
 
-@pytest.mark.parametrize("func", ["blackman", "hamming", "hanning"])
+@pytest.mark.parametrize("func", ["bartlett", "blackman", "hamming", "hanning"])
 @pytest.mark.parametrize(
     "M",
     [
@@ -32,7 +32,7 @@ def test_window(func, M):
     assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize("func", ["blackman", "hamming", "hanning"])
+@pytest.mark.parametrize("func", ["bartlett", "blackman", "hamming", "hanning"])
 @pytest.mark.parametrize(
     "M",
     [
