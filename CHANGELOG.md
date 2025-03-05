@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Allowed input array of `uint64` dtype in `dpnp.bincount` [#2361](https://github.com/IntelPython/dpnp/pull/2361)
+
 ### Fixed
 
 
