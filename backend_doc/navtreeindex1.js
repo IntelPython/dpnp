@@ -1,5 +1,6 @@
 var NAVTREEINDEX1 =
 {
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga41dd03c85f901c2dee88e709170ee1a1":[0,2,23],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga430f99caa9b1ce1497c0f6b26ebb4e85":[0,2,7],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga51221588325d576caf0f235739ef0718":[0,2,1],
 "group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga78ffe853157e336c03a2773b0713eaa7":[0,2,8],
@@ -34,6 +35,7 @@ var NAVTREEINDEX1 =
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae4294907d97ba7d7a630d5097b435d0a":[0,3,11],
 "group___b_a_c_k_e_n_d___u_t_i_l_s.html#gae67edf544bf0edce8e1cd74d68d8dc76":[0,3,5],
 "hamming_8hpp_source.html":[3,0,0,8,1],
+"hanning_8hpp_source.html":[3,0,0,8,2],
 "heevd_8hpp_source.html":[3,0,0,4,12],
 "heevd__batch_8hpp_source.html":[3,0,0,4,13],
 "hierarchy.html":[2,2],
@@ -133,6 +135,7 @@ var NAVTREEINDEX1 =
 "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_batch_type_pair_support_factory.html":[2,0,0,0,3,1,14],
 "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html":[2,0,0,0,3,1,15],
 "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html":[2,0,0,0,4,0,0],
+"structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_factory.html":[2,0,0,0,4,0,2],
 "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html":[2,0,0,1,0,0],
 "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html":[2,0,0,1,1,0],
 "structdpnp_1_1kernels_1_1fabs_1_1_fabs_functor.html":[2,0,0,1,2,0],
