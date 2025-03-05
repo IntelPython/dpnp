@@ -1,0 +1,10 @@
+﻿
+
+dpnp.unique\_values
+===================
+
+.. currentmodule:: dpnp
+
+
+
+.. autofunction:: unique_values
