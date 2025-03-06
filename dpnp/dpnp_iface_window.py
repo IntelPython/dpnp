@@ -45,7 +45,7 @@ import dpctl.utils as dpu
 import dpnp
 import dpnp.backend.extensions.window._window_impl as wi
 
-__all__ = ["hamming", "hanning"]
+__all__ = ["blackman", "hamming", "hanning"]
 
 
 def _call_window_kernel(
@@ -79,6 +79,99 @@ def _call_window_kernel(
     _manager.add_event_pair(ht_ev, win_ev)
 
     return result
+
+
+def blackman(M, device=None, usm_type=None, sycl_queue=None):
+    r"""
+    Return the Blackman window.
+
+    The Blackman window is a taper formed by using the first three terms of a
+    summation of cosines. It was designed to have close to the minimal leakage
+    possible. It is close to optimal, only slightly worse than a Kaiser window.
+
+    For full documentation refer to :obj:`numpy.blackman`.
+
+    Parameters
+    ----------
+    M : int
+        Number of points in the output window. If zero or less, an empty array
+        is returned.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray of shape (M,)
+        The window, with the maximum value normalized to one (the value one
+        appears only if the number of samples is odd).
+
+    See Also
+    --------
+    :obj:`dpnp.bartlett` : Return the Bartlett window.
+    :obj:`dpnp.hamming` : Return the Hamming window.
+    :obj:`dpnp.hanning` : Return the Hanning window.
+    :obj:`dpnp.kaiser` : Return the Kaiser window.
+
+    Notes
+    -----
+    The Blackman window is defined as
+
+    .. math::  w(n) = 0.42 - 0.5\cos\left(\frac{2\pi{n}}{M-1}\right)
+               + 0.08\cos\left(\frac{4\pi{n}}{M-1}\right)
+               \qquad 0 \leq n \leq M-1
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.blackman(12)
+    array([-1.38777878e-17,  3.26064346e-02,  1.59903635e-01,  4.14397981e-01,
+            7.36045180e-01,  9.67046769e-01,  9.67046769e-01,  7.36045180e-01,
+            4.14397981e-01,  1.59903635e-01,  3.26064346e-02, -1.38777878e-17])
+
+    Creating the output array on a different device or with a
+    specified usm_type:
+
+    >>> x = np.blackman(3) # default case
+    >>> x, x.device, x.usm_type
+    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),
+     Device(level_zero:gpu:0),
+     'device')
+
+    >>> y = np.blackman(3, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),
+     Device(opencl:cpu:0),
+     'device')
+
+    >>> z = np.blackman(3, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),
+     Device(level_zero:gpu:0),
+     'host')
+
+    """
+
+    return _call_window_kernel(
+        M, wi._blackman, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
 def hamming(M, device=None, usm_type=None, sycl_queue=None):
