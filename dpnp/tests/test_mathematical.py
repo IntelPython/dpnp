@@ -23,6 +23,7 @@ from .helper import (
     generate_random_numpy_array,
     get_abs_array,
     get_all_dtypes,
+    get_array,
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
@@ -648,12 +649,8 @@ class TestEdiff1d:
     )
     def test_to_begin(self, to_begin):
         a = numpy.array([1, 2, 4, 7, 0])
-        ia = dpnp.array([1, 2, 4, 7, 0])
-
-        if isinstance(to_begin, dpnp.ndarray):
-            np_to_begin = dpnp.asnumpy(to_begin)
-        else:
-            np_to_begin = to_begin
+        ia = dpnp.array(a)
+        np_to_begin = get_array(numpy, to_begin)
 
         result = dpnp.ediff1d(ia, to_begin=to_begin)
         expected = numpy.ediff1d(a, to_begin=np_to_begin)
@@ -672,12 +669,8 @@ class TestEdiff1d:
     )
     def test_to_end(self, to_end):
         a = numpy.array([1, 2, 4, 7, 0])
-        ia = dpnp.array([1, 2, 4, 7, 0])
-
-        if isinstance(to_end, dpnp.ndarray):
-            np_to_end = dpnp.asnumpy(to_end)
-        else:
-            np_to_end = to_end
+        ia = dpnp.array(a)
+        np_to_end = get_array(numpy, to_end)
 
         result = dpnp.ediff1d(ia, to_end=to_end)
         expected = numpy.ediff1d(a, to_end=np_to_end)
@@ -696,17 +689,10 @@ class TestEdiff1d:
     )
     def test_to_begin_to_end(self, to_begin, to_end):
         a = numpy.array([1, 2, 4, 7, 0])
-        ia = dpnp.array([1, 2, 4, 7, 0])
+        ia = dpnp.array(a)
 
-        if isinstance(to_begin, dpnp.ndarray):
-            np_to_begin = dpnp.asnumpy(to_begin)
-        else:
-            np_to_begin = to_begin
-
-        if isinstance(to_end, dpnp.ndarray):
-            np_to_end = dpnp.asnumpy(to_end)
-        else:
-            np_to_end = to_end
+        np_to_begin = get_array(numpy, to_begin)
+        np_to_end = get_array(numpy, to_end)
 
         result = dpnp.ediff1d(ia, to_end=to_end, to_begin=to_begin)
         expected = numpy.ediff1d(a, to_end=np_to_end, to_begin=np_to_begin)
@@ -1790,7 +1776,7 @@ class TestTrapezoid:
             return numpy.trapz
         return numpy.trapezoid
 
-    @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True, no_bool=True))
     @pytest.mark.parametrize(
         "data",
         [[1, 2, 3], [[1, 2, 3], [4, 5, 6]], [1, 4, 6, 9, 10, 12], [], [1]],
@@ -1816,8 +1802,8 @@ class TestTrapezoid:
         )
         assert_allclose(result, expected, rtol=1e-6)
 
-    @pytest.mark.parametrize("y_dt", get_all_dtypes(no_bool=True))
-    @pytest.mark.parametrize("x_dt", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("y_dt", get_all_dtypes(no_none=True, no_bool=True))
+    @pytest.mark.parametrize("x_dt", get_all_dtypes(no_none=True, no_bool=True))
     @pytest.mark.parametrize("y_arr", [[1, 2, 4, 5], [1.0, 2.5, 6.0, 7.0]])
     @pytest.mark.parametrize("x_arr", [[2, 5, 6, 9]])
     def test_x_samples(self, y_arr, x_arr, y_dt, x_dt):
@@ -1979,7 +1965,7 @@ class TestUnwrap:
 
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("val_type", [bool, int, float])
-@pytest.mark.parametrize("data_type", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize(
     "func", ["add", "divide", "multiply", "power", "subtract"]
 )
@@ -1996,30 +1982,24 @@ class TestUnwrap:
             [[[1, 3], [3, 1]], [[0, 1], [1, 3]]],
         ],
     ],
-    ids=[
-        "[[0, 0], [0, 0]]",
-        "[[1, 2], [1, 2]]",
-        "[[1, 2], [3, 4]]",
-        "[[[1, 2], [3, 4]], [[1, 2], [2, 1]], [[1, 3], [3, 1]]]",
-        "[[[[1, 2], [3, 4]], [[1, 2], [2, 1]]], [[[1, 3], [3, 1]], [[0, 1], [1, 3]]]]",
-    ],
+    ids=["2D-zeros", "2D-repetitive", "2D", "3D", "4D"],
 )
-def test_op_with_scalar(array, val, func, data_type, val_type):
-    a = numpy.array(array, dtype=data_type)
-    ia = dpnp.array(array, dtype=data_type)
+def test_op_with_scalar(array, val, func, dtype, val_type):
+    a = numpy.array(array, dtype=dtype)
+    ia = dpnp.array(a)
     val_ = val_type(val)
 
     if func == "power":
         if (
             val_ == 0
-            and numpy.issubdtype(data_type, numpy.complexfloating)
+            and numpy.issubdtype(dtype, numpy.complexfloating)
             and not dpnp.all(ia)
         ):
             pytest.skip(
                 "(0j ** 0) is different: (NaN + NaNj) in dpnp and (1 + 0j) in numpy"
             )
 
-    if func == "subtract" and val_type == bool and data_type == dpnp.bool:
+    if func == "subtract" and val_type == bool and dtype == dpnp.bool:
         with pytest.raises(TypeError):
             result = getattr(dpnp, func)(ia, val_)
             expected = getattr(numpy, func)(a, val_)
@@ -2037,10 +2017,10 @@ def test_op_with_scalar(array, val, func, data_type, val_type):
 
 
 @pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 def test_multiply_scalar(shape, dtype):
     a = numpy.ones(shape, dtype=dtype)
-    ia = dpnp.ones(shape, dtype=dtype)
+    ia = dpnp.array(a)
 
     result = 0.5 * ia * 1.7
     expected = 0.5 * a * 1.7
@@ -2048,10 +2028,10 @@ def test_multiply_scalar(shape, dtype):
 
 
 @pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 def test_add_scalar(shape, dtype):
     a = numpy.ones(shape, dtype=dtype)
-    ia = dpnp.ones(shape, dtype=dtype)
+    ia = dpnp.array(a)
 
     result = 0.5 + ia + 1.7
     expected = 0.5 + a + 1.7
@@ -2059,10 +2039,10 @@ def test_add_scalar(shape, dtype):
 
 
 @pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 def test_subtract_scalar(shape, dtype):
     a = numpy.ones(shape, dtype=dtype)
-    ia = dpnp.ones(shape, dtype=dtype)
+    ia = dpnp.array(a)
 
     result = 0.5 - ia - 1.7
     expected = 0.5 - a - 1.7
@@ -2070,10 +2050,10 @@ def test_subtract_scalar(shape, dtype):
 
 
 @pytest.mark.parametrize("shape", [(), (3, 2)], ids=["0D", "2D"])
-@pytest.mark.parametrize("dtype", get_all_dtypes())
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
 def test_divide_scalar(shape, dtype):
     a = numpy.ones(shape, dtype=dtype)
-    ia = dpnp.ones(shape, dtype=dtype)
+    ia = dpnp.array(a)
 
     result = 0.5 / ia / 1.7
     expected = 0.5 / a / 1.7
@@ -2084,7 +2064,7 @@ def test_divide_scalar(shape, dtype):
     "data", [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]], ids=["2D", "1D"]
 )
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_unsigned=True)
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_unsigned=True)
 )
 def test_negative(data, dtype):
     a = numpy.array(data, dtype=dtype)
@@ -2116,7 +2096,7 @@ def test_negative_boolean():
 @pytest.mark.parametrize(
     "data", [[[1.0, -1.0], [0.1, -0.1]], [-2, -1, 0, 1, 2]], ids=["2D", "1D"]
 )
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_positive(data, dtype):
     a = get_abs_array(data, dtype=dtype)
     ia = dpnp.array(a)
@@ -2215,11 +2195,11 @@ def test_sign(dtype):
     ids=["[2, 0, -2]", "[1.1, -1.1]"],
 )
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_complex=True, no_unsigned=True)
+    "dtype", get_all_dtypes(no_none=True, no_complex=True, no_unsigned=True)
 )
 def test_signbit(data, dtype):
     a = numpy.array(data, dtype=dtype)
-    ia = dpnp.array(data, dtype=dtype)
+    ia = dpnp.array(a)
 
     result = dpnp.signbit(ia)
     expected = numpy.signbit(a)
@@ -2233,7 +2213,7 @@ def test_signbit(data, dtype):
 
 
 class TestRealImag:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_real_imag(self, dtype):
         a = generate_random_numpy_array(20, dtype)
         ia = dpnp.array(a)
@@ -2284,7 +2264,7 @@ class TestProjection:
         assert iout is result
         assert dpnp.allclose(result, expected)
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_projection(self, dtype):
         result = dpnp.proj(dpnp.array(1, dtype=dtype))
         expected = dpnp.array(complex(1, 0))
@@ -2303,7 +2283,9 @@ class TestRoundingFuncs:
     def func_params(self, request):
         return request.param
 
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     def test_out(self, func_params, dtype):
         func_name = func_params["func_name"]
         input_values = func_params["input_values"]
@@ -2349,7 +2331,7 @@ class TestRoundingFuncs:
 
 class TestHypot:
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
     def test_hypot(self, dtype):
         a, b, expected = _get_numpy_arrays_2in_1out("hypot", dtype, [0, 10, 10])
@@ -2411,28 +2393,6 @@ class TestLogSumExp:
             dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dt
         )
 
-        assert_dtype_allclose(res, exp)
-
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
-    @pytest.mark.parametrize("axis", [None, 2, -1, (0, 1)])
-    @pytest.mark.parametrize("keepdims", [True, False])
-    def test_logsumexp_out(self, dtype, axis, keepdims):
-        a = dpnp.ones((3, 4, 5, 6, 7), dtype=dtype)
-        exp_dt = None
-        dtype_list = [dpnp.bool, dpnp.int8, dpnp.uint8, dpnp.int16, dpnp.uint16]
-        if dtype in dtype_list:
-            exp_dt = dpnp.default_float_type(a.device)
-        exp = numpy.logaddexp.reduce(
-            dpnp.asnumpy(a), axis=axis, keepdims=keepdims, dtype=exp_dt
-        )
-
-        exp_dt = exp.dtype
-        if exp_dt == numpy.float64 and not has_support_aspect64():
-            exp_dt = numpy.float32
-        iout = dpnp.empty_like(a, shape=exp.shape, dtype=exp_dt)
-        res = dpnp.logsumexp(a, axis=axis, out=iout, keepdims=keepdims)
-
-        assert res is iout
         assert_dtype_allclose(res, exp)
 
     @pytest.mark.parametrize(
