@@ -103,7 +103,7 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
         the same shape as the expected output but the type (of the returned
         values) will be cast if necessary.
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
@@ -275,7 +275,7 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
         the same shape as the expected output but the type (of the returned
         values) will be cast if necessary.
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
