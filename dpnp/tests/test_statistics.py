@@ -602,7 +602,7 @@ class TestCov:
 class TestMaxMin:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=None))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_func(self, func, axis, keepdims, dtype):
         a = generate_random_numpy_array((4, 4, 6, 8), dtype=dtype)
         ia = dpnp.array(a)
@@ -781,7 +781,7 @@ class TestMedian:
     @pytest.mark.parametrize("axis", [None, 0, (0, 1), (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_nan(self, axis, keepdims):
-        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a = generate_random_numpy_array((2, 3, 4))
         a[0, 0, 0] = a[-1, -1, -1] = numpy.nan
         ia = dpnp.array(a)
 
@@ -793,7 +793,7 @@ class TestMedian:
     @pytest.mark.parametrize("axis", [None, 0, -1, (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_overwrite_input(self, axis, keepdims):
-        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a = generate_random_numpy_array((2, 3, 4))
         ia = dpnp.array(a)
 
         b = a.copy()
@@ -812,7 +812,7 @@ class TestMedian:
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
     @pytest.mark.parametrize("overwrite_input", [True, False])
     def test_usm_ndarray(self, axis, overwrite_input):
-        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a = generate_random_numpy_array((2, 3, 4))
         ia = dpt.asarray(a)
 
         expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
