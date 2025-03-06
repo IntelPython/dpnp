@@ -58,16 +58,19 @@ def count_nonzero(a, axis=None, *, keepdims=False, out=None):
         Axis or tuple of axes along which to count non-zeros.
         Default value means that non-zeros will be counted along a flattened
         version of `a`.
+
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes that are counted are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the input array.
+
         Default: ``False``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The array into which the result is written. The data type of `out` must
         match the expected shape and the expected data type of the result.
         If ``None`` then a new array is returned.
+
         Default: ``None``.
 
     Returns
