@@ -53,6 +53,7 @@ def assert_sycl_queue_equal(result, expected):
     "func, arg, kwargs",
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param("blackman", [10], {}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("empty", [(2, 2)], {}),
         pytest.param(

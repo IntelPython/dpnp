@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Added implementation of `dpnp.hamming` [#2341](https://github.com/IntelPython/dpnp/pull/2341), [#2357](https://github.com/IntelPython/dpnp/pull/2357)
 * Added implementation of `dpnp.hanning` [#2358](https://github.com/IntelPython/dpnp/pull/2358)
+* Added implementation of `dpnp.blackman` [#2363](https://github.com/IntelPython/dpnp/pull/2363)
 
 ### Changed
 
