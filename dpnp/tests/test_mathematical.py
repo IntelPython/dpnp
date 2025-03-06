@@ -1166,7 +1166,7 @@ class TestGradient:
 )
 def test_op_multiple_dtypes(dtype1, func, dtype2):
     a = numpy.array([[1, 2], [3, 4]], dtype=dtype1)
-    b = numpy.array(a, dtype=dtype2)
+    b = numpy.array([[1, 2], [3, 4]], dtype=dtype2)
     ia, ib = dpnp.array(a), dpnp.array(b)
 
     if func == "subtract" and (dtype1 == dtype2 == dpnp.bool):
