@@ -902,10 +902,13 @@ class TestMatmul:
             expected = numpy.matmul(a, a)
             assert_dtype_allclose(result, expected, factor=16)
 
-            iOUT = dpnp.empty(shape, dtype=result.dtype)
+            OUT = numpy.empty(shape, dtype=result.dtype)
+            out = OUT[slices]
+            iOUT = dpnp.array(OUT)
             iout = iOUT[slices]
             result = dpnp.matmul(ia, ia, out=iout)
             assert result is iout
+            expected = numpy.matmul(a, a, out=out)
             assert_dtype_allclose(result, expected, factor=16)
 
     @pytest.mark.parametrize("dtype", _selected_dtypes)

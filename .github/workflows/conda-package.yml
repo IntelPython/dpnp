@@ -218,7 +218,7 @@ jobs:
       - name: Run tests
         if: env.rerun-tests-on-failure != 'true'
         run: |
-          if [[ ${{ matrix.python }} == ${{ env.python-ver-test-all-dtypes }} ]]; then
+          if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
             export DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           else
@@ -238,7 +238,7 @@ jobs:
             . $CONDA/etc/profile.d/mamba.sh
             mamba activate ${{ env.test-env-name }}
 
-            if [[ ${{ matrix.python }} == ${{ env.python-ver-test-all-dtypes }} ]]; then
+            if [[ "${{ matrix.python }}" == "${{ env.python-ver-test-all-dtypes }}" ]]; then
               export DPNP_TEST_ALL_INT_TYPES=1
               python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             else
@@ -383,9 +383,10 @@ jobs:
 
       - name: Run tests
         if: env.rerun-tests-on-failure != 'true'
+        shell: pwsh
         run: |
           if (${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }}) {
-            set DPNP_TEST_ALL_INT_TYPES=1
+            $env:DPNP_TEST_ALL_INT_TYPES=1
             python -m pytest -ra --pyargs ${{ env.package-name }}.tests
           } else {
             python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
@@ -399,9 +400,10 @@ jobs:
           timeout_minutes: ${{ env.rerun-tests-timeout }}
           max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
+          shell: pwsh
           command: |
             if ( ${{ matrix.python }} -eq ${{ env.python-ver-test-all-dtypes }} ) {
-              set DPNP_TEST_ALL_INT_TYPES=1
+              $env:DPNP_TEST_ALL_INT_TYPES=1
               python -m pytest -ra --pyargs ${{ env.package-name }}.tests
             } else {
               python -m pytest -n auto -ra --pyargs ${{ env.package-name }}.tests
