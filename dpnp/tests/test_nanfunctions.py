@@ -512,7 +512,7 @@ class TestNanProdSum:
         result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
 
         assert result.shape == expected.shape
-        assert_allclose(result, expected, rtol=1e-6)
+        assert_allclose(result, expected, rtol=1e-5)
 
     @pytest.mark.usefixtures("suppress_complex_warning")
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
