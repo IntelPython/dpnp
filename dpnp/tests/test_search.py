@@ -16,7 +16,7 @@ class TestArgmaxArgmin:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2])
     @pytest.mark.parametrize("keepdims", [False, True])
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    def test_func(self, func, axis, keepdims, dtype):
+    def test_basic(self, func, axis, keepdims, dtype):
         a = generate_random_numpy_array((4, 4, 6, 8), dtype=dtype)
         ia = dpnp.array(a)
 
