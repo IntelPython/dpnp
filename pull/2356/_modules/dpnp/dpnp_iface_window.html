@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+32.g3eea26a8a4 documentation</title>
+  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+36.gf07ae897a45 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=da4e0796"></script>
+      <script src="../../_static/documentation_options.js?v=dc33d7f0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -130,7 +130,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.window._window_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">wi</span>
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;hamming&quot;</span><span class="p">,</span> <span class="s2">&quot;hanning&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;blackman&quot;</span><span class="p">,</span> <span class="s2">&quot;hamming&quot;</span><span class="p">,</span> <span class="s2">&quot;hanning&quot;</span><span class="p">]</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_call_window_kernel</span><span class="p">(</span>
@@ -164,6 +164,102 @@
     <span class="n">_manager</span><span class="o">.</span><span class="n">add_event_pair</span><span class="p">(</span><span class="n">ht_ev</span><span class="p">,</span> <span class="n">win_ev</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">result</span>
+
+
+<div class="viewcode-block" id="blackman">
+<a class="viewcode-back" href="../../reference/generated/dpnp.blackman.html#dpnp.blackman">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the Blackman window.</span>
+
+<span class="sd">    The Blackman window is a taper formed by using the first three terms of a</span>
+<span class="sd">    summation of cosines. It was designed to have close to the minimal leakage</span>
+<span class="sd">    possible. It is close to optimal, only slightly worse than a Kaiser window.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.blackman`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    M : int</span>
+<span class="sd">        Number of points in the output window. If zero or less, an empty array</span>
+<span class="sd">        is returned.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
+<span class="sd">        An array API concept of device where the output array is created.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
+<span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
+<span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
+<span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
+<span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
+<span class="sd">        a default queue.</span>
+
+<span class="sd">        Default: ``None``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray of shape (M,)</span>
+<span class="sd">        The window, with the maximum value normalized to one (the value one</span>
+<span class="sd">        appears only if the number of samples is odd).</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.bartlett` : Return the Bartlett window.</span>
+<span class="sd">    :obj:`dpnp.hamming` : Return the Hamming window.</span>
+<span class="sd">    :obj:`dpnp.hanning` : Return the Hanning window.</span>
+<span class="sd">    :obj:`dpnp.kaiser` : Return the Kaiser window.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The Blackman window is defined as</span>
+
+<span class="sd">    .. math::  w(n) = 0.42 - 0.5\cos\left(\frac{2\pi{n}}{M-1}\right)</span>
+<span class="sd">               + 0.08\cos\left(\frac{4\pi{n}}{M-1}\right)</span>
+<span class="sd">               \qquad 0 \leq n \leq M-1</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.blackman(12)</span>
+<span class="sd">    array([-1.38777878e-17,  3.26064346e-02,  1.59903635e-01,  4.14397981e-01,</span>
+<span class="sd">            7.36045180e-01,  9.67046769e-01,  9.67046769e-01,  7.36045180e-01,</span>
+<span class="sd">            4.14397981e-01,  1.59903635e-01,  3.26064346e-02, -1.38777878e-17])</span>
+
+<span class="sd">    Creating the output array on a different device or with a</span>
+<span class="sd">    specified usm_type:</span>
+
+<span class="sd">    &gt;&gt;&gt; x = np.blackman(3) # default case</span>
+<span class="sd">    &gt;&gt;&gt; x, x.device, x.usm_type</span>
+<span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; y = np.blackman(3, device=&quot;cpu&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; y, y.device, y.usm_type</span>
+<span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
+<span class="sd">     Device(opencl:cpu:0),</span>
+<span class="sd">     &#39;device&#39;)</span>
+
+<span class="sd">    &gt;&gt;&gt; z = np.blackman(3, usm_type=&quot;host&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; z, z.device, z.usm_type</span>
+<span class="sd">    (array([-1.38777878e-17,  1.00000000e+00, -1.38777878e-17]),</span>
+<span class="sd">     Device(level_zero:gpu:0),</span>
+<span class="sd">     &#39;host&#39;)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">_call_window_kernel</span><span class="p">(</span>
+        <span class="n">M</span><span class="p">,</span> <span class="n">wi</span><span class="o">.</span><span class="n">_blackman</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="hamming">
