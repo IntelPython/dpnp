@@ -602,20 +602,9 @@ class TestCov:
 class TestMaxMin:
     @pytest.mark.parametrize("axis", [None, 0, 1, -1, 2, -2, (1, 2), (0, -2)])
     @pytest.mark.parametrize("keepdims", [False, True])
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_func(self, func, axis, keepdims, dtype):
-        a = numpy.arange(768, dtype=dtype).reshape((4, 4, 6, 8))
-        ia = dpnp.array(a)
-
-        expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
-        result = getattr(dpnp, func)(ia, axis=axis, keepdims=keepdims)
-        assert_dtype_allclose(result, expected)
-
-    @pytest.mark.parametrize("axis", [None, 0, 1, -1])
-    @pytest.mark.parametrize("keepdims", [False, True])
-    def test_bool(self, func, axis, keepdims):
-        a = numpy.arange(2, dtype=numpy.bool_)
-        a = numpy.tile(a, (2, 2))
+        a = generate_random_numpy_array((4, 4, 6, 8), dtype=dtype)
         ia = dpnp.array(a)
 
         expected = getattr(numpy, func)(a, axis=axis, keepdims=keepdims)
@@ -792,7 +781,7 @@ class TestMedian:
     @pytest.mark.parametrize("axis", [None, 0, (0, 1), (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_nan(self, axis, keepdims):
-        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a = generate_random_numpy_array((2, 3, 4))
         a[0, 0, 0] = a[-1, -1, -1] = numpy.nan
         ia = dpnp.array(a)
 
@@ -804,7 +793,7 @@ class TestMedian:
     @pytest.mark.parametrize("axis", [None, 0, -1, (0, -2, -1)])
     @pytest.mark.parametrize("keepdims", [True, False])
     def test_overwrite_input(self, axis, keepdims):
-        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a = generate_random_numpy_array((2, 3, 4))
         ia = dpnp.array(a)
 
         b = a.copy()
@@ -823,7 +812,7 @@ class TestMedian:
     @pytest.mark.parametrize("axis", [None, 0, (-1,), [0, 1]])
     @pytest.mark.parametrize("overwrite_input", [True, False])
     def test_usm_ndarray(self, axis, overwrite_input):
-        a = numpy.random.uniform(-5, 5, 24).reshape(2, 3, 4)
+        a = generate_random_numpy_array((2, 3, 4))
         ia = dpt.asarray(a)
 
         expected = numpy.median(a, axis=axis, overwrite_input=overwrite_input)
