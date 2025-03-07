@@ -293,8 +293,8 @@ def _bincount_run_native(
 
     mem_ev, bc_ev = statistics_ext.bincount(
         x_usm,
-        min_v,
-        max_v,
+        min_v.item(),
+        max_v.item(),
         weights_usm,
         n_usm,
         depends=_manager.submitted_events,
@@ -312,6 +312,11 @@ def bincount(x, weights=None, minlength=0):
     Count number of occurrences of each value in array of non-negative ints.
 
     For full documentation refer to :obj:`numpy.bincount`.
+
+    Warning
+    -------
+    This function synchronizes in order to calculate binning edges.
+    This may harm performance in some applications.
 
     Parameters
     ----------
@@ -391,10 +396,8 @@ def bincount(x, weights=None, minlength=0):
 
     if x_casted_dtype is None or ntype_casted is None:  # pragma: no cover
         raise ValueError(
-            f"function '{bincount}' does not support input types "
-            f"({x.dtype}, {ntype}), "
-            "and the inputs could not be coerced to any "
-            "supported types"
+            f"Input types ({x.dtype}, {ntype}) are not supported, "
+            "and the inputs could not be coerced to any supported types"
         )
 
     x_casted = dpnp.asarray(x, dtype=x_casted_dtype, order="C")
@@ -508,6 +511,11 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram`.
 
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -611,9 +619,8 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     if a_bin_dtype is None or hist_dtype is None:  # pragma: no cover
         raise ValueError(
-            f"function '{histogram}' does not support input types "
-            f"({a.dtype}, {bin_edges.dtype}, {ntype}), "
-            "and the inputs could not be coerced to any "
+            f"Input types ({a.dtype}, {bin_edges.dtype}, {ntype}) "
+            "are not supported, and the inputs could not be coerced to any "
             "supported types"
         )
 
@@ -674,6 +681,11 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
     :obj:`dpnp.histogram` function.
 
     For full documentation refer to :obj:`numpy.histogram_bin_edges`.
+
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
 
     Parameters
     ----------
@@ -759,6 +771,13 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
 def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
     """
     Compute the bi-dimensional histogram of two data samples.
+
+    For full documentation refer to :obj:`numpy.histogram2d`.
+
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
 
     Parameters
     ----------
@@ -1087,6 +1106,11 @@ def histogramdd(sample, bins=10, range=None, density=None, weights=None):
     Compute the multidimensional histogram of some data.
 
     For full documentation refer to :obj:`numpy.histogramdd`.
+
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
 
     Parameters
     ----------
