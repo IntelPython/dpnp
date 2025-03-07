@@ -45,8 +45,9 @@ public:
     {
         const auto i = id.get(0);
 
-        data[i] = T(0.42) - T(0.5) * sycl::cospi(T(2) * i / (N - 1)) +
-                  T(0.08) * sycl::cospi(T(4) * i / (N - 1));
+        const T alpha = T(2) * i / (N - 1);
+        data[i] = T(0.42) - T(0.5) * sycl::cospi(alpha) +
+                  T(0.08) * sycl::cospi(T(2) * alpha);
     }
 };
 

@@ -45,8 +45,8 @@ public:
     {
         const auto i = id.get(0);
 
-        data[i] =
-            T(2) / (N - 1) * ((N - 1) / T(2) - sycl::fabs(i - (N - 1) / T(2)));
+        const T alpha = (N - 1) / T(2);
+        data[i] = T(1) - sycl::fabs(i - alpha) / alpha;
     }
 };
 
