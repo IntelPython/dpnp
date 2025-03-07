@@ -177,6 +177,7 @@ def test_array_creation_from_array(func, args, usm_type_x, usm_type_y):
     "func, arg, kwargs",
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param("blackman", [10], {}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("empty", [(3, 4)], {}),
         pytest.param(
