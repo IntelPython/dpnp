@@ -926,7 +926,7 @@ class dpnp_array:
 
         Parameters
         ----------
-        order : {"C", "F", "A", "K"}, optional
+        order : {None, "C", "F", "A", "K"}, optional
             Memory layout of the newly output array.
             Default: ``"C"``.
         device : {None, string, SyclDevice, SyclQueue, Device}, optional

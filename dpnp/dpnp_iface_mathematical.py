@@ -362,7 +362,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -437,7 +437,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -513,7 +513,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -617,7 +617,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -681,7 +681,7 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
         output. Its type is preserved.
 
         Default : ``None``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
         If `order` is ``None``, the default value ``"K"`` will be used.
 
@@ -753,7 +753,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -831,7 +831,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -1513,7 +1513,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -1683,7 +1683,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -1741,7 +1741,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -1820,7 +1820,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -1909,7 +1909,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -1977,7 +1977,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2055,7 +2055,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2144,7 +2144,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2230,7 +2230,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2303,7 +2303,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2572,7 +2572,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2622,7 +2622,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2666,7 +2666,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2732,7 +2732,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2793,7 +2793,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2862,7 +2862,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -2946,7 +2946,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3063,7 +3063,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3272,7 +3272,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3336,7 +3336,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3392,7 +3392,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3463,7 +3463,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3652,7 +3652,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3705,7 +3705,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3837,7 +3837,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -3915,7 +3915,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -4038,7 +4038,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -4095,7 +4095,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -4152,7 +4152,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -4214,7 +4214,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -4278,7 +4278,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.
@@ -4580,7 +4580,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Array must have the correct shape and the expected data type.
 
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
 
     Default: ``"K"``.

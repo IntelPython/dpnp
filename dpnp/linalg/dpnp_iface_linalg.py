@@ -962,7 +962,7 @@ def matrix_norm(x, /, *, keepdims=False, ord="fro"):
     x : {dpnp.ndarray, usm_ndarray}
         Input array having shape (..., M, N) and whose two innermost
         dimensions form ``MxN`` matrices.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
@@ -1290,7 +1290,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
         `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
 
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
@@ -2336,7 +2336,7 @@ def vector_norm(x, /, *, axis=None, keepdims=False, ord=2):
         equivalent to computing the vector norm of a flattened array).
 
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
