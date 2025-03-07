@@ -39,6 +39,7 @@ def run(
     verbose=False,
     cmake_opts="",
     target="intel",
+    arch=None,
     onemkl_interfaces=False,
     onemkl_interfaces_dir=None,
 ):
@@ -102,6 +103,16 @@ def run(
             "-DDPNP_TARGET_CUDA=ON",
         ]
         # Always builds using oneMKL interfaces for the cuda target
+        onemkl_interfaces = True
+
+    if target == "hip":
+        if not arch:
+            raise ValueError("--arch is required when --target=hip")
+        cmake_args += [
+            "-DDPNP_TARGET_HIP=ON",
+            f"-DHIP_TARGETS={arch}",
+        ]
+        # Always builds using oneMKL interfaces for the hip target
         onemkl_interfaces = True
 
     if onemkl_interfaces:
@@ -178,6 +189,12 @@ if __name__ == "__main__":
         type=str,
     )
     driver.add_argument(
+        "--arch",
+        help="Architecture for HIP target",
+        dest="arch",
+        type=str,
+    )
+    driver.add_argument(
         "--onemkl-interfaces",
         help="Build using oneMKL Interfaces",
         dest="onemkl_interfaces",
@@ -244,6 +261,7 @@ if __name__ == "__main__":
         verbose=args.verbose,
         cmake_opts=args.cmake_opts,
         target=args.target,
+        arch=args.arch,
         onemkl_interfaces=args.onemkl_interfaces,
         onemkl_interfaces_dir=args.onemkl_interfaces_dir,
     )
