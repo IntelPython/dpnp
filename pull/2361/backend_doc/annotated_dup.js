@@ -60,6 +60,8 @@ var annotated_dup =
         ] ],
         [ "window", null, [
           [ "kernels", null, [
+            [ "BlackmanFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
+            [ "BlackmanFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html", null ],
             [ "HammingFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html", null ],
             [ "HammingFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ],
             [ "HanningFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_factory.html", null ],
