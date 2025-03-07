@@ -320,7 +320,7 @@ def array(
         (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``
         exception if a copy can not be avoided.
         Default: ``True``.
-    order : {"C", "F", "A", "K"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: ``"K"``.
     ndmin : int, optional
@@ -998,7 +998,7 @@ def copy(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    order : {"C", "F", "A", "K"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: ``"K"``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
