@@ -66,7 +66,7 @@ def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
         Input arrays.
     dtype : dtype
         If not ``None`` and `out` is not defined, data type of the output array.
-    out : {out, dpnp.ndarray, usm_ndarray}
+    out : {None, dpnp.ndarray, usm_ndarray}
         If not ``None``, data type of the output array.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
