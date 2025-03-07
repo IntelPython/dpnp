@@ -30,12 +30,16 @@
 
 namespace dpnp::extensions::window
 {
-extern std::pair<sycl::event, sycl::event>
+
+template <typename T>
+std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
-              const float beta,
+              const T beta,
               const dpctl::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends);
 
 extern void init_kaiser_dispatch_vectors(void);
 
 } // namespace dpnp::extensions::window
+
+#include "kaiser.tpp" // Include template definition
