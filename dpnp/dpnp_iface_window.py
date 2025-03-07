@@ -575,7 +575,7 @@ def kaiser(M, beta, device=None, usm_type=None, sycl_queue=None):
 
     ht_ev, win_ev = wi._kaiser(
         exec_q,
-        beta,
+        dpnp.float32(beta),
         dpnp.get_usm_ndarray(result),
         depends=_manager.submitted_events,
     )
