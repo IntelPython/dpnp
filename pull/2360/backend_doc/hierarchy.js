@@ -12,6 +12,8 @@ var hierarchy =
     [ "backend_sycl", "classbackend__sycl.html", null ],
     [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "dpnp::kernels::bitwise_count::BitwiseCountFunctor< argT, resT >", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ],
+    [ "dpnp::extensions::window::kernels::BlackmanFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
+    [ "dpnp::extensions::window::kernels::BlackmanFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html", null ],
     [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
     [ "dpnp::extensions::indexing::kernels::ChooseFunctor< ProjectorT, IndOutIndexerT, ChoicesIndexerT, IndT, T >", "classdpnp_1_1extensions_1_1indexing_1_1kernels_1_1_choose_functor.html", null ],
     [ "std::conjunction", null, [
