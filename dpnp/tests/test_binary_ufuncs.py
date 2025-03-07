@@ -13,6 +13,7 @@ from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_abs_array,
     get_all_dtypes,
     get_complex_dtypes,
@@ -22,10 +23,7 @@ from .helper import (
     has_support_aspect16,
     numpy_version,
 )
-from .test_umath import (
-    _get_numpy_arrays_2in_1out,
-    _get_output_data_type,
-)
+from .test_umath import _get_output_data_type
 
 """
 The scope includes tests with only functions which are instances of
@@ -39,7 +37,9 @@ class TestAdd:
 
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
     def test_add(self, dtype):
-        a, b, expected = _get_numpy_arrays_2in_1out("add", dtype, [-5, 5, 10])
+        a = generate_random_numpy_array(10, dtype)
+        b = generate_random_numpy_array(10, dtype)
+        expected = numpy.add(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         iout = dpnp.empty(expected.shape, dtype=dtype)
@@ -139,37 +139,19 @@ class TestAdd:
         assert_raises(TypeError, xp.add, a, 2, out)
 
 
+@pytest.mark.parametrize("func", ["fmax", "fmin", "maximum", "minimum"])
 class TestBoundFuncs:
-    @pytest.fixture(
-        params=[
-            {"func_name": "fmax", "input_values": [-5, 5, 10]},
-            {"func_name": "fmin", "input_values": [-5, 5, 10]},
-            {"func_name": "maximum", "input_values": [-5, 5, 10]},
-            {"func_name": "minimum", "input_values": [-5, 5, 10]},
-        ],
-        ids=[
-            "fmax",
-            "fmin",
-            "maximum",
-            "minimum",
-        ],
-    )
-    def func_params(self, request):
-        return request.param
-
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
-    def test_out(self, func_params, dtype):
-        func_name = func_params["func_name"]
-        input_values = func_params["input_values"]
-        a, b, expected = _get_numpy_arrays_2in_1out(
-            func_name, dtype, input_values
-        )
+    def test_out(self, func, dtype):
+        a = generate_random_numpy_array(10, dtype)
+        b = generate_random_numpy_array(10, dtype)
+        expected = getattr(numpy, func)(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         iout = dpnp.empty(expected.shape, dtype=dtype)
-        result = getattr(dpnp, func_name)(ia, ib, out=iout)
+        result = getattr(dpnp, func)(ia, ib, out=iout)
 
         assert result is iout
         assert_dtype_allclose(result, expected)
@@ -177,25 +159,23 @@ class TestBoundFuncs:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_complex=True)
     )
-    def test_out_overlap(self, func_params, dtype):
-        func_name = func_params["func_name"]
+    def test_out_overlap(self, func, dtype):
         size = 15
         a = numpy.arange(2 * size, dtype=dtype)
         ia = dpnp.array(a)
 
-        getattr(dpnp, func_name)(ia[size::], ia[::2], out=ia[:size:])
-        getattr(numpy, func_name)(a[size::], a[::2], out=a[:size:])
+        getattr(dpnp, func)(ia[size::], ia[::2], out=ia[:size:])
+        getattr(numpy, func)(a[size::], a[::2], out=a[:size:])
 
         assert_dtype_allclose(ia, a)
 
     @pytest.mark.parametrize("shape", [(0,), (15,), (2, 2)])
-    def test_invalid_shape(self, func_params, shape):
-        func_name = func_params["func_name"]
+    def test_invalid_shape(self, func, shape):
         a, b = dpnp.arange(10), dpnp.arange(10)
         out = dpnp.empty(shape)
 
         with pytest.raises(ValueError):
-            getattr(dpnp, func_name)(a, b, out=out)
+            getattr(dpnp, func)(a, b, out=out)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
@@ -203,10 +183,9 @@ class TestBoundFuncs:
         [4, (), [], (3, 7), [2, 4]],
         ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
     )
-    def test_invalid_out(self, func_params, xp, out):
-        func_name = func_params["func_name"]
+    def test_invalid_out(self, func, xp, out):
         a = xp.arange(10)
-        assert_raises(TypeError, getattr(xp, func_name), a, 2, out)
+        assert_raises(TypeError, getattr(xp, func), a, 2, out)
 
 
 class TestDivide:
@@ -215,9 +194,9 @@ class TestDivide:
         "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
     def test_divide(self, dtype):
-        a, b, expected = _get_numpy_arrays_2in_1out(
-            "divide", dtype, [-5, 5, 10]
-        )
+        a = generate_random_numpy_array(10, dtype)
+        b = generate_random_numpy_array(10, dtype)
+        expected = numpy.divide(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         if numpy.issubdtype(dtype, numpy.integer):
@@ -318,7 +297,9 @@ class TestFloorDivideRemainder:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
     def test_basic(self, func, dtype):
-        a, b, expected = _get_numpy_arrays_2in_1out(func, dtype, [-5, 5, 10])
+        a = generate_random_numpy_array(10, dtype)
+        b = generate_random_numpy_array(10, dtype)
+        expected = getattr(numpy, func)(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         iout = dpnp.empty(expected.shape, dtype=dtype)
@@ -602,9 +583,9 @@ class TestMultiply:
 
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
     def test_multiply(self, dtype):
-        a, b, expected = _get_numpy_arrays_2in_1out(
-            "multiply", dtype, [0, 10, 10]
-        )
+        a = generate_random_numpy_array(10, dtype)
+        b = generate_random_numpy_array(10, dtype)
+        expected = numpy.multiply(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         iout = dpnp.empty(expected.shape, dtype=dtype)
@@ -853,8 +834,9 @@ class TestPower:
 
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
     def test_power(self, dtype):
-        numpy.random.seed(42)
-        a, b, expected = _get_numpy_arrays_2in_1out("power", dtype, [0, 10, 10])
+        a = generate_random_numpy_array(10, dtype, low=0)
+        b = generate_random_numpy_array(10, dtype, low=0)
+        expected = numpy.power(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         out_dtype = numpy.int8 if dtype == numpy.bool_ else dtype
@@ -1075,9 +1057,9 @@ class TestSubtract:
 
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
     def test_add(self, dtype):
-        a, b, expected = _get_numpy_arrays_2in_1out(
-            "subtract", dtype, [-5, 5, 10]
-        )
+        a = generate_random_numpy_array(10, dtype)
+        b = generate_random_numpy_array(10, dtype)
+        expected = numpy.subtract(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
         iout = dpnp.empty(expected.shape, dtype=dtype)
