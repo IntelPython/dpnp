@@ -32,7 +32,6 @@ class TestWindow(unittest.TestCase):
 )
 class TestKaiser(unittest.TestCase):
 
-    @pytest.mark.skip("kaiser function is not supported yet")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_kaiser_parametric(self, xp):
         return getattr(xp, self.name)(self.m, self.beta)
@@ -41,7 +40,6 @@ class TestKaiser(unittest.TestCase):
 @testing.parameterize(*testing.product({"m": [-1, 0, 1]}))
 class TestKaiserBoundary(unittest.TestCase):
 
-    @pytest.mark.skip("kaiser function is not supported yet")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_kaiser(self, xp):
         return xp.kaiser(self.m, 1.5)
