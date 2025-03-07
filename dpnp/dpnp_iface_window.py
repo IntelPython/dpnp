@@ -81,7 +81,7 @@ def _call_window_kernel(
     else:
         ht_ev, win_ev = _window_kernel(
             exec_q,
-            beta,
+            result.dtype.type(beta),
             dpnp.get_usm_ndarray(result),
             depends=_manager.submitted_events,
         )

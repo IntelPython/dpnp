@@ -28,7 +28,7 @@
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
 #include <sycl/sycl.hpp>
-
+#include <type_traits>
 /**
  * Version of SYCL DPC++ 2025.1 compiler where an issue with
  * sycl::ext::intel::math::cyl_bessel_i0(x) is fully resolved.
@@ -50,7 +50,7 @@ namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 typedef sycl::event (*kaiser_fn_ptr_t)(sycl::queue &,
                                        char *,
                                        const std::size_t,
-                                       const float,
+                                       const char *,
                                        const std::vector<sycl::event> &);
 
 static kaiser_fn_ptr_t kaiser_dispatch_vector[dpctl_td_ns::num_types];
@@ -61,10 +61,10 @@ class KaiserFunctor
 private:
     T *data = nullptr;
     const std::size_t N;
-    const float beta;
+    const T beta;
 
 public:
-    KaiserFunctor(T *data, const std::size_t N, const float beta)
+    KaiserFunctor(T *data, const std::size_t N, const T beta)
         : data(data), N(N), beta(beta)
     {
     }
@@ -76,6 +76,13 @@ public:
 #else
         using dpnp::kernels::i0::impl::cyl_bessel_i0;
 #endif
+
+        // if constexpr (std::is_same_v<T, sycl::half>) {
+        //     return static_cast<T>(cyl_bessel_i0<float>(float(beta)));
+        // }
+        // else {
+        //     return cyl_bessel_i0(beta);
+        // }
 
         const auto i = id.get(0);
         const T alpha = (N - 1) / T(2);
@@ -89,19 +96,22 @@ template <typename T, template <typename> class Functor>
 sycl::event kaiser_impl(sycl::queue &q,
                         char *result,
                         const std::size_t nelems,
-                        const float beta,
+                        const char *beta,
                         const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
 
+    std::cout << "Type in kaiser_impl: " << typeid(T).name() << std::endl;
+
     T *res = reinterpret_cast<T *>(result);
+    const T b = *reinterpret_cast<const T *>(beta);
 
     sycl::event kaiser_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
 
         using KaiserKernel = Functor<T>;
         cgh.parallel_for<KaiserKernel>(sycl::range<1>(nelems),
-                                       KaiserKernel(res, nelems, beta));
+                                       KaiserKernel(res, nelems, b));
     });
 
     return kaiser_ev;
@@ -121,13 +131,16 @@ struct KaiserFactory
     }
 };
 
+template <typename T>
 std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
-              const float beta,
+              const T beta,
               const dpctl::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
+
+    std::cout << "Type in py_kaiser: " << typeid(T).name() << std::endl;
 
     int nd = result.get_ndim();
     if (nd != 1) {
@@ -152,6 +165,7 @@ std::pair<sycl::event, sycl::event>
     int result_typenum = result.get_typenum();
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
+    std::cout << "result_type_id: " << result_type_id << std::endl;
     auto fn = kaiser_dispatch_vector[result_type_id];
 
     if (fn == nullptr) {
@@ -159,8 +173,9 @@ std::pair<sycl::event, sycl::event>
     }
 
     char *result_typeless_ptr = result.get_data();
+    const char *beta_typless_ptr = reinterpret_cast<const char *>(&beta);
     sycl::event kaiser_ev =
-        fn(exec_q, result_typeless_ptr, nelems, beta, depends);
+        fn(exec_q, result_typeless_ptr, nelems, beta_typless_ptr, depends);
     sycl::event args_ev =
         dpctl::utils::keep_args_alive(exec_q, {result}, {kaiser_ev});
 

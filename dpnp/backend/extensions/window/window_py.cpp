@@ -116,7 +116,10 @@ PYBIND11_MODULE(_window_impl, m)
     {
         window_ns::init_kaiser_dispatch_vectors();
 
-        m.def("_kaiser", window_ns::py_kaiser, "Call Kaiser kernel",
+        m.def("_kaiser", window_ns::py_kaiser<float>, "Call Kaiser kernel",
+              py::arg("sycl_queue"), py::arg("beta"), py::arg("result"),
+              py::arg("depends") = py::list());
+        m.def("_kaiser", window_ns::py_kaiser<double>, "Call Kaiser kernel",
               py::arg("sycl_queue"), py::arg("beta"), py::arg("result"),
               py::arg("depends") = py::list());
     }
