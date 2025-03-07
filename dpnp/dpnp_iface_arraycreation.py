@@ -3559,7 +3559,7 @@ def trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         precision, then the default integer precision is used. Otherwise, the
         precision is the same as that of `a`.
         Default: ``None``.
-    out : {dpnp.ndarray, usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         Array into which the output is placed. Its type is preserved and it
         must be of the right shape to hold the output.
         Default: ``None``.
