@@ -35,6 +35,7 @@
 #include "common.hpp"
 #include "hamming.hpp"
 #include "hanning.hpp"
+#include "kaiser.hpp"
 
 namespace window_ns = dpnp::extensions::window;
 namespace py = pybind11;
@@ -109,6 +110,14 @@ PYBIND11_MODULE(_window_impl, m)
 
         m.def("_hanning", hanning_pyapi, "Call Hanning kernel",
               py::arg("sycl_queue"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        window_ns::init_kaiser_dispatch_vectors();
+
+        m.def("_kaiser", window_ns::py_kaiser, "Call Kaiser kernel",
+              py::arg("sycl_queue"), py::arg("beta"), py::arg("result"),
               py::arg("depends") = py::list());
     }
 }
