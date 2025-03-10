@@ -67,12 +67,11 @@ sycl::event window_impl(sycl::queue &q,
     return window_ev;
 }
 
-template <typename dispatchT>
 std::pair<sycl::event, sycl::event>
     py_window(sycl::queue &exec_q,
               const dpctl::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends,
-              const dispatchT &window_dispatch_vector)
+              const window_fn_ptr_t *window_dispatch_vector)
 {
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
 
