@@ -1125,7 +1125,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
        but it will probably be fully or partially sorted.
 
        Default: ``False``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting

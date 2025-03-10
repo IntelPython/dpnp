@@ -400,7 +400,7 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
         broadcastable to some shape.
 
         Default: ``None``.
-    order : {"K", "C", "F", "A"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the new output array, if keyword `out` is ``None``.
 
         Default: ``"K"``.

@@ -572,7 +572,7 @@ def get_result_array(a, out=None, casting="safe"):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    out : {dpnp.ndarray, usm_ndarray}
+    out : {None, dpnp.ndarray, usm_ndarray}
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
@@ -585,7 +585,7 @@ def get_result_array(a, out=None, casting="safe"):
 
     Returns
     -------
-    out : {dpnp_array}
+    out : dpnp.ndarray
         Return `out` if provided, otherwise return `a`.
 
     """
