@@ -32,32 +32,31 @@ namespace dpnp::extensions::window::kernels
 {
 
 template <typename T>
-class BlackmanFunctor
+class BartlettFunctor
 {
 private:
     T *data = nullptr;
     const std::size_t N;
 
 public:
-    BlackmanFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+    BartlettFunctor(T *data, const std::size_t N) : data(data), N(N) {}
 
     void operator()(sycl::id<1> id) const
     {
         const auto i = id.get(0);
 
-        const T alpha = T(2) * i / (N - 1);
-        data[i] = T(0.42) - T(0.5) * sycl::cospi(alpha) +
-                  T(0.08) * sycl::cospi(T(2) * alpha);
+        const T alpha = (N - 1) / T(2);
+        data[i] = T(1) - sycl::fabs(i - alpha) / alpha;
     }
 };
 
 template <typename fnT, typename T>
-struct BlackmanFactory
+struct BartlettFactory
 {
     fnT get()
     {
         if constexpr (std::is_floating_point_v<T>) {
-            return window_impl<T, BlackmanFunctor>;
+            return window_impl<T, BartlettFunctor>;
         }
         else {
             return nullptr;

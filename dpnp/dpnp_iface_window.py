@@ -45,7 +45,7 @@ import dpctl.utils as dpu
 import dpnp
 import dpnp.backend.extensions.window._window_impl as wi
 
-__all__ = ["blackman", "hamming", "hanning"]
+__all__ = ["bartlett", "blackman", "hamming", "hanning"]
 
 
 def _call_window_kernel(
@@ -79,6 +79,100 @@ def _call_window_kernel(
     _manager.add_event_pair(ht_ev, win_ev)
 
     return result
+
+
+def bartlett(M, device=None, usm_type=None, sycl_queue=None):
+    r"""
+    Return the Bartlett window.
+
+    The Bartlett window is very similar to a triangular window, except that the
+    end points are at zero. It is often used in signal processing for tapering
+    a signal, without generating too much ripple in the frequency domain.
+
+    For full documentation refer to :obj:`numpy.bartlett`.
+
+    Parameters
+    ----------
+    M : int
+        Number of points in the output window. If zero or less, an empty array
+        is returned.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
+    usm_type : {None, "device", "shared", "host"}, optional
+        The type of SYCL USM allocation for the output array.
+
+        Default: ``None``.
+    sycl_queue : {None, SyclQueue}, optional
+        A SYCL queue to use for output array allocation and copying. The
+        `sycl_queue` can be passed as ``None`` (the default), which means
+        to get the SYCL queue from `device` keyword if present or to use
+        a default queue.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray of shape (M,)
+        The triangular window, with the maximum value normalized to one
+        (the value one appears only if the number of samples is odd), with the
+        first and last samples equal to zero.
+
+    See Also
+    --------
+    :obj:`dpnp.blackman` : Return the Blackman window.
+    :obj:`dpnp.hamming` : Return the Hamming window.
+    :obj:`dpnp.hanning` : Return the Hanning window.
+    :obj:`dpnp.kaiser` : Return the Kaiser window.
+
+    Notes
+    -----
+    The Bartlett window is defined as
+
+    .. math::  w(n) = \frac{2}{M-1} \left(\frac{M-1}{2} -
+               \left|n - \frac{M-1}{2}\right|\right)
+               \qquad 0 \leq n \leq M-1
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.bartlett(12)
+    array([0.        , 0.18181818, 0.36363636, 0.54545455, 0.72727273,
+        0.90909091, 0.90909091, 0.72727273, 0.54545455, 0.36363636,
+        0.18181818, 0.        ])
+
+    Creating the output array on a different device or with a
+    specified usm_type:
+
+    >>> x = np.bartlett(4) # default case
+    >>> x, x.device, x.usm_type
+    (array([0.        , 0.66666667, 0.66666667, 0.        ]),
+     Device(level_zero:gpu:0),
+     'device')
+
+    >>> y = np.bartlett(4, device="cpu")
+    >>> y, y.device, y.usm_type
+    (array([0.        , 0.66666667, 0.66666667, 0.        ]),
+     Device(opencl:cpu:0),
+     'device')
+
+    >>> z = np.bartlett(4, usm_type="host")
+    >>> z, z.device, z.usm_type
+    (array([0.        , 0.66666667, 0.66666667, 0.        ]),
+     Device(level_zero:gpu:0),
+     'host')
+
+    """
+
+    return _call_window_kernel(
+        M, wi._bartlett, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
 
 def blackman(M, device=None, usm_type=None, sycl_queue=None):
