@@ -10,6 +10,8 @@ var hierarchy =
     ] ],
     [ "statistics::common::AtomicOp< T, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
+    [ "dpnp::extensions::window::kernels::BartlettFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
+    [ "dpnp::extensions::window::kernels::BartlettFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html", null ],
     [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
     [ "dpnp::kernels::bitwise_count::BitwiseCountFunctor< argT, resT >", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ],
     [ "dpnp::extensions::window::kernels::BlackmanFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
