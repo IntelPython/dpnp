@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.17.0dev3+16.g0ae1123bd13 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gd84bf1c4f73 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7392af1d"></script>
+      <script src="../../_static/documentation_options.js?v=db60104a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -59,9 +59,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array manipulation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
@@ -83,15 +83,18 @@
 <li class="toctree-l4 current"><a class="reference internal" href="../math.html#miscellaneous">Miscellaneous</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -132,20 +135,23 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.convolve">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">convolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#convolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.convolve" title="Link to this definition"></a></dt>
-<dd><p>Returns the discrete, linear convolution of two one-dimensional sequences.</p>
-<p>The convolution operator is often seen in signal processing, where it
+<dd><p>Returns the discrete, linear convolution of two one-dimensional sequences.
+The convolution operator is often seen in signal processing, where it
 models the effect of a linear time-invariant system on a signal <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. In
 probability theory, the sum of two independent random variables is
 distributed according to the convolution of their individual
-distributions.</p>
-<p>If <cite>v</cite> is longer than <cite>a</cite>, the arrays are swapped before computation.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.convolve.html#numpy.convolve" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.convolve</span></code></a>.</p>
+distributions.
+If <cite>v</cite> is longer than <cite>a</cite>, the arrays are swapped before computation.
+For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.convolve.html#numpy.convolve" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.convolve</span></code></a>.
+:param a: First 1-D array.
+:type a: {dpnp.ndarray, usm_ndarray}
+:param v: Second 1-D array. The length of <cite>v</cite> must be less than or equal to</p>
+<blockquote>
+<div><p>the length of <cite>a</cite>.</p>
+</div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First 1-D array.</p></li>
-<li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second 1-D array. The length of <cite>v</cite> must be less than or equal to
-the length of <cite>a</cite>.</p></li>
 <li><p><strong>mode</strong> (<em>{'full'</em><em>, </em><em>'valid'</em><em>, </em><em>'same'}</em><em>, </em><em>optional</em>) -- <dl class="simple">
 <dt>'full':</dt><dd><p>By default, mode is 'full'. This returns the convolution
 at each point of overlap, with an output shape of (N+M-1,). At
@@ -174,8 +180,8 @@ an estimate of which is faster.</p>
 </dl>
 <p>Note: Use of the FFT convolution on input containing NAN or INF
 will lead to the entire output being NAN or INF.
-Use method='direct' when your input contains NAN or INF values.</p>
-<p>Default: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>.</p>
+Use method='direct' when your input contains NAN or INF values.
+Default: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>.</p>
 </p></li>
 </ul>
 </dd>
@@ -194,10 +200,9 @@ Use method='direct' when your input contains NAN or INF values.</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>The discrete convolution operation is defined as</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}(a * v)_n = \\sum_{m = -\\infty}^{\\infty} a_m v_{n - m}\end{split}\]</div>
-<p>It can be shown that a convolution <span class="math notranslate nohighlight">\(x(t) * y(t)\)</span> in time/space
+<p>The discrete convolution operation is defined as
+.. math:: (a * v)_n = \sum_{m = -\infty}^{\infty} a_m v_{n - m}
+It can be shown that a convolution <span class="math notranslate nohighlight">\(x(t) * y(t)\)</span> in time/space
 is equivalent to the multiplication <span class="math notranslate nohighlight">\(X(f) Y(f)\)</span> in the Fourier
 domain, after appropriate padding (padding is necessary to prevent
 circular convolution). Since multiplication is more efficient (faster)
@@ -213,27 +218,21 @@ which are regulated by the keyword <cite>method</cite>.</p>
 </aside>
 <p class="rubric">Examples</p>
 <p>Note how the convolution operator flips the second array
-before &quot;sliding&quot; the two across one another:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-<span class="go">array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)</span>
-</pre></div>
-</div>
-<p>Only return the middle values of the convolution.
+before &quot;sliding&quot; the two across one another:
+&gt;&gt;&gt; import dpnp as np
+&gt;&gt;&gt; a = np.array([1, 2, 3], dtype=np.float32)
+&gt;&gt;&gt; v = np.array([0, 1, 0.5], dtype=np.float32)
+&gt;&gt;&gt; np.convolve(a, v)
+array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)
+Only return the middle values of the convolution.
 Contains boundary effects, where zeros are taken
-into account:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="s1">&#39;same&#39;</span><span class="p">)</span>
-<span class="go">array([1. , 2.5, 4. ], dtype=float32)</span>
-</pre></div>
-</div>
-<p>The two arrays are of the same length, so there
-is only one position where they completely overlap:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">)</span>
-<span class="go">array([2.5], dtype=float32)</span>
-</pre></div>
-</div>
+into account:
+&gt;&gt;&gt; np.convolve(a, v, 'same')
+array([1. , 2.5, 4. ], dtype=float32)
+The two arrays are of the same length, so there
+is only one position where they completely overlap:
+&gt;&gt;&gt; np.convolve(a, v, 'valid')
+array([2.5], dtype=float32)</p>
 </dd></dl>
 
 </section>
@@ -249,7 +248,7 @@ is only one position where they completely overlap:</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

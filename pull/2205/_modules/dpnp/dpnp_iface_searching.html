@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.17.0dev3+16.g0ae1123bd13 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface_searching &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gd84bf1c4f73 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7392af1d"></script>
+      <script src="../../_static/documentation_options.js?v=db60104a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface_searching</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -122,25 +122,25 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">dpctl.tensor._tensor_impl</span> <span class="k">as</span> <span class="nn">dti</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dti</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils.dpnp_utils_reduction</span> <span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_reduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_wrap_reduction_call</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;argmax&quot;</span><span class="p">,</span> <span class="s2">&quot;argmin&quot;</span><span class="p">,</span> <span class="s2">&quot;argwhere&quot;</span><span class="p">,</span> <span class="s2">&quot;searchsorted&quot;</span><span class="p">,</span> <span class="s2">&quot;where&quot;</span><span class="p">]</span>
 
 
-<span class="k">def</span> <span class="nf">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">_dtype</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Get a data type used by dpctl for result array in search function.&quot;&quot;&quot;</span>
 
     <span class="c1"># get a data type used by dpctl for result array in search function</span>
     <span class="n">res_dt</span> <span class="o">=</span> <span class="n">dti</span><span class="o">.</span><span class="n">default_device_index_type</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
 
     <span class="c1"># numpy raises TypeError if &quot;out&quot; data type mismatch default index type</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">can_cast</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">res_dt</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;safe&quot;</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Cannot cast from </span><span class="si">{</span><span class="n">out</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2"> to </span><span class="si">{</span><span class="n">res_dt</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="s2">&quot;according to the rule safe.&quot;</span>
@@ -150,7 +150,7 @@
 
 <div class="viewcode-block" id="argmax">
 <a class="viewcode-back" href="../../reference/generated/dpnp.argmax.html#dpnp.argmax">[docs]</a>
-<span class="k">def</span> <span class="nf">argmax</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">argmax</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices of the maximum values along an axis.</span>
 
@@ -163,15 +163,18 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        By default, the index is into the flattened array, otherwise along</span>
 <span class="sd">        the specified axis.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
 <span class="sd">        result as dimensions with size one. With this option, the result will</span>
 <span class="sd">        broadcast correctly against the array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -230,11 +233,10 @@
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
+        <span class="n">usm_a</span><span class="p">,</span>
         <span class="n">out</span><span class="p">,</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">argmax</span><span class="p">,</span>
-        <span class="n">_get_search_res_dt</span><span class="p">,</span>
-        <span class="n">usm_a</span><span class="p">,</span>
+        <span class="n">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">),</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -243,7 +245,7 @@
 
 <div class="viewcode-block" id="argmin">
 <a class="viewcode-back" href="../../reference/generated/dpnp.argmin.html#dpnp.argmin">[docs]</a>
-<span class="k">def</span> <span class="nf">argmin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">argmin</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the indices of the minimum values along an axis.</span>
 
@@ -256,15 +258,18 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        By default, the index is into the flattened array, otherwise along</span>
 <span class="sd">        the specified axis.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be inserted into this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are reduced are left in the</span>
 <span class="sd">        result as dimensions with size one. With this option, the result will</span>
 <span class="sd">        broadcast correctly against the array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -324,11 +329,10 @@
 
     <span class="n">usm_a</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_usm_ndarray</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">dpnp_wrap_reduction_call</span><span class="p">(</span>
-        <span class="n">a</span><span class="p">,</span>
+        <span class="n">usm_a</span><span class="p">,</span>
         <span class="n">out</span><span class="p">,</span>
         <span class="n">dpt</span><span class="o">.</span><span class="n">argmin</span><span class="p">,</span>
-        <span class="n">_get_search_res_dt</span><span class="p">,</span>
-        <span class="n">usm_a</span><span class="p">,</span>
+        <span class="n">_get_search_res_dt</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">out</span><span class="p">),</span>
         <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span>
         <span class="n">keepdims</span><span class="o">=</span><span class="n">keepdims</span><span class="p">,</span>
     <span class="p">)</span></div>
@@ -337,7 +341,7 @@
 
 <div class="viewcode-block" id="argwhere">
 <a class="viewcode-back" href="../../reference/generated/dpnp.argwhere.html#dpnp.argwhere">[docs]</a>
-<span class="k">def</span> <span class="nf">argwhere</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">argwhere</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find the indices of array elements that are non-zero, grouped by element.</span>
 
@@ -396,7 +400,7 @@
 
 <div class="viewcode-block" id="searchsorted">
 <a class="viewcode-back" href="../../reference/generated/dpnp.searchsorted.html#dpnp.searchsorted">[docs]</a>
-<span class="k">def</span> <span class="nf">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">searchsorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">side</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">sorter</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Find indices where elements should be inserted to maintain order.</span>
 
@@ -413,13 +417,15 @@
 <span class="sd">    side : {&quot;left&quot;, &quot;right&quot;}, optional</span>
 <span class="sd">        If ``&quot;left&quot;``, the index of the first suitable location found is given.</span>
 <span class="sd">        If ``&quot;right&quot;``, return the last such index. If there is no suitable</span>
-<span class="sd">        index, return either 0 or N (where N is the length of `a`).</span>
+<span class="sd">        index, return either ``0`` or ``N`` (where ``N`` is the length of `a`).</span>
+
 <span class="sd">        Default: ``&quot;left&quot;``.</span>
-<span class="sd">    sorter : {dpnp.ndarray, usm_ndarray}, optional</span>
-<span class="sd">        Optional 1-D array of integer indices that sort array a into ascending</span>
-<span class="sd">        order. They are typically the result of :obj:`dpnp.argsort`.</span>
+<span class="sd">    sorter : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">        Optional 1-D array of integer indices that sort array `a` into ascending</span>
+<span class="sd">        order. They are typically the result of :py:func:`dpnp.argsort`.</span>
 <span class="sd">        Out of bound index values of `sorter` array are treated using</span>
 <span class="sd">        ``&quot;wrap&quot;`` mode documented in :py:func:`dpnp.take`.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -436,7 +442,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.array([11,12,13,14,15])</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([11, 12, 13, 14, 15])</span>
 <span class="sd">    &gt;&gt;&gt; np.searchsorted(a, 13)</span>
 <span class="sd">    array(2)</span>
 <span class="sd">    &gt;&gt;&gt; np.searchsorted(a, 13, side=&#39;right&#39;)</span>
@@ -444,6 +450,19 @@
 <span class="sd">    &gt;&gt;&gt; v = np.array([-10, 20, 12, 13])</span>
 <span class="sd">    &gt;&gt;&gt; np.searchsorted(a, v)</span>
 <span class="sd">    array([0, 5, 1, 2])</span>
+
+<span class="sd">    When `sorter` is used, the returned indices refer to the sorted</span>
+<span class="sd">    array of `a` and not `a` itself:</span>
+
+<span class="sd">    &gt;&gt;&gt; a = np.array([40, 10, 20, 30])</span>
+<span class="sd">    &gt;&gt;&gt; sorter = np.argsort(a)</span>
+<span class="sd">    &gt;&gt;&gt; sorter</span>
+<span class="sd">    array([1, 2, 3, 0])  # Indices that would sort the array &#39;a&#39;</span>
+<span class="sd">    &gt;&gt;&gt; result = np.searchsorted(a, 25, sorter=sorter)</span>
+<span class="sd">    &gt;&gt;&gt; result</span>
+<span class="sd">    array(2)</span>
+<span class="sd">    &gt;&gt;&gt; a[sorter[result]]</span>
+<span class="sd">    array(30)  # The element at index 2 of the sorted array is 30</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -462,7 +481,7 @@
 
 <div class="viewcode-block" id="where">
 <a class="viewcode-back" href="../../reference/generated/dpnp.where.html#dpnp.where">[docs]</a>
-<span class="k">def</span> <span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">where</span><span class="p">(</span><span class="n">condition</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;K&quot;</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return elements chosen from `x` or `y` depending on `condition`.</span>
 
@@ -475,16 +494,20 @@
 <span class="sd">    ----------</span>
 <span class="sd">    condition : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        When ``True``, yield `x`, otherwise yield `y`.</span>
-<span class="sd">    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
+<span class="sd">    x, y : {None, dpnp.ndarray, usm_ndarray, scalar}, optional</span>
 <span class="sd">        Values from which to choose. `x`, `y` and `condition` need to be</span>
 <span class="sd">        broadcastable to some shape.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {&quot;K&quot;, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;}, optional</span>
 <span class="sd">        Memory layout of the new output array, if keyword `out` is ``None``.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        The array into which the result is written. The data type of `out` must</span>
 <span class="sd">        match the expected shape and the expected data type of the result.</span>
 <span class="sd">        If ``None`` then a new array is returned.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -558,7 +581,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

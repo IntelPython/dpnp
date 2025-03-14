@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_libmath &mdash; Data Parallel Extension for NumPy 0.17.0dev3+16.g0ae1123bd13 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface_libmath &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gd84bf1c4f73 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7392af1d"></script>
+      <script src="../../_static/documentation_options.js?v=db60104a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface_libmath</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -122,15 +122,15 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
-<span class="kn">import</span> <span class="nn">dpnp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
 <span class="c1"># pylint: disable=no-name-in-module</span>
-<span class="kn">from</span> <span class="nn">.dpnp_algo</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_algo</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_erf</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">.dpnp_utils</span> <span class="kn">import</span> <span class="p">(</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">create_output_descriptor_py</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -139,7 +139,7 @@
 
 <div class="viewcode-block" id="erf">
 <a class="viewcode-back" href="../../reference/generated/dpnp.erf.html#dpnp.erf">[docs]</a>
-<span class="k">def</span> <span class="nf">erf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">erf</span><span class="p">(</span><span class="n">in_array1</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the error function of complex argument.</span>
 
@@ -169,6 +169,10 @@
         <span class="n">in_array1</span><span class="p">,</span> <span class="n">copy_when_strides</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">copy_when_nondefault_queue</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>
     <span class="k">if</span> <span class="n">x1_desc</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">is_cuda_backend</span><span class="p">(</span><span class="n">x1_desc</span><span class="o">.</span><span class="n">get_array</span><span class="p">()):</span>  <span class="c1"># pragma: no cover</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="s2">&quot;Running on CUDA is currently not supported&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">dpnp_erf</span><span class="p">(</span><span class="n">x1_desc</span><span class="p">)</span><span class="o">.</span><span class="n">get_pyobj</span><span class="p">()</span>
 
     <span class="n">result</span> <span class="o">=</span> <span class="n">create_output_descriptor_py</span><span class="p">(</span>
@@ -188,7 +192,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

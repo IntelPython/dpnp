@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.17.0dev3+16.g0ae1123bd13 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=fa44fd50" />
+  <title>Multi-Dimensional Array (ndarray) &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gd84bf1c4f73 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=7392af1d"></script>
+      <script src="../_static/documentation_options.js?v=db60104a"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -194,6 +194,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#special-methods">Special methods</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__copy__.html">dpnp.ndarray.__copy__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__new__.html">dpnp.ndarray.__new__</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__array__.html">dpnp.ndarray.__array__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__len__.html">dpnp.ndarray.__len__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__getitem__.html">dpnp.ndarray.__getitem__</a></li>
 <li class="toctree-l4"><a class="reference internal" href="generated/dpnp.ndarray.__setitem__.html">dpnp.ndarray.__setitem__</a></li>
@@ -211,7 +212,7 @@
 <li class="toctree-l2"><a class="reference internal" href="special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -247,7 +248,7 @@
              
   <section id="multi-dimensional-array-ndarray">
 <h1>Multi-Dimensional Array (ndarray)<a class="headerlink" href="#multi-dimensional-array-ndarray" title="Link to this heading"></a></h1>
-<p><a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> is the DPNP counterpart of NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
+<p><a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> is the DPNP counterpart of NumPy <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray" title="(in NumPy v2.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">numpy.ndarray</span></code></a>.</p>
 <p>For the basic concept of <code class="docutils literal notranslate"><span class="pre">ndarray</span></code>s, please refer to the <a class="reference external" href="https://docs.scipy.org/doc/numpy/reference/arrays.ndarray.html">NumPy documentation</a>.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -262,7 +263,7 @@
 <section id="constructing-arrays">
 <h2>Constructing arrays<a class="headerlink" href="#constructing-arrays" title="Link to this heading"></a></h2>
 <p>New arrays can be constructed using the routines detailed in
-<a class="reference internal" href="creation.html#routines-creation"><span class="std std-ref">Array Creation Routines</span></a>, and also by using the low-level
+<a class="reference internal" href="array-creation.html#routines-array-creation"><span class="std std-ref">Array Creation Routines</span></a>, and also by using the low-level
 <a class="reference internal" href="generated/dpnp.ndarray.html#dpnp.ndarray" title="dpnp.ndarray"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpnp.ndarray</span></code></a> constructor:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -446,7 +447,7 @@ the operation should proceed.</p>
 <td><p>Repeat elements of an array.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.choose.html#dpnp.ndarray.choose" title="dpnp.ndarray.choose"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.choose</span></code></a></p></td>
-<td><p>Construct an array from an index array and a set of arrays to choose from.</p></td>
+<td><p>Use an array as index array to construct a new array from a set of choices.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.sort.html#dpnp.ndarray.sort" title="dpnp.ndarray.sort"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.sort</span></code></a></p></td>
 <td><p>Sort an array in-place.</p></td>
@@ -542,8 +543,8 @@ are defined as element-wise operations, and generally yield
 <code class="docutils literal notranslate"><span class="pre">%</span></code>, <code class="docutils literal notranslate"><span class="pre">divmod()</span></code>, <code class="docutils literal notranslate"><span class="pre">**</span></code> or <code class="docutils literal notranslate"><span class="pre">pow()</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&amp;</span></code>,
 <code class="docutils literal notranslate"><span class="pre">^</span></code>, <code class="docutils literal notranslate"><span class="pre">|</span></code>, <code class="docutils literal notranslate"><span class="pre">~</span></code>) and the comparisons (<code class="docutils literal notranslate"><span class="pre">==</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;</span></code>,
 <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">&gt;=</span></code>, <code class="docutils literal notranslate"><span class="pre">!=</span></code>) is equivalent to the corresponding
-universal function (or <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-ufunc" title="(in NumPy v2.1)"><span class="xref std std-term">ufunc</span></a> for short) in DPNP. For
-more information, see the section on <a class="reference external" href="https://numpy.org/doc/stable/reference/ufuncs.html#ufuncs" title="(in NumPy v2.1)"><span class="xref std std-ref">Universal Functions</span></a>.</p>
+universal function (or <a class="reference external" href="https://numpy.org/doc/stable/glossary.html#term-ufunc" title="(in NumPy v2.2)"><span class="xref std std-term">ufunc</span></a> for short) in DPNP. For
+more information, see the section on <a class="reference external" href="https://numpy.org/doc/stable/reference/ufuncs.html#ufuncs" title="(in NumPy v2.2)"><span class="xref std std-ref">Universal Functions</span></a>.</p>
 <p>Comparison operators:</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
@@ -756,6 +757,9 @@ use for example <code class="docutils literal notranslate"><span class="pre">.si
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__new__.html#dpnp.ndarray.__new__" title="dpnp.ndarray.__new__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__new__</span></code></a></p></td>
 <td><p></p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.ndarray.__array__.html#dpnp.ndarray.__array__" title="dpnp.ndarray.__array__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.__array__</span></code></a></p></td>
+<td><p></p></td>
+</tr>
 </tbody>
 </table>
 <p>Container customization: (see <a class="reference internal" href="indexing.html#routines-indexing"><span class="std std-ref">Indexing</span></a>)</p>
@@ -814,7 +818,7 @@ and return the appropriate scalar.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

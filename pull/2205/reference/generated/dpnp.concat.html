@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.concat &mdash; Data Parallel Extension for NumPy 0.17.0dev3+16.g0ae1123bd13 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.concat &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gd84bf1c4f73 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7392af1d"></script>
+      <script src="../../_static/documentation_options.js?v=db60104a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -58,21 +58,21 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../manipulation.html">Array manipulation routines</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#basic-operations">Basic operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-array-shape">Changing array shape</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
-<li class="toctree-l4 current"><a class="reference internal" href="../manipulation.html#joining-arrays">Joining arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#splitting-arrays">Splitting arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#tiling-arrays">Tiling arrays</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
-<li class="toctree-l4"><a class="reference internal" href="../manipulation.html#rearranging-elements">Rearranging elements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#basic-operations">Basic operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#changing-array-shape">Changing array shape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#transpose-like-operations">Transpose-like operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#changing-number-of-dimensions">Changing number of dimensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#changing-kind-of-array">Changing kind of array</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="../array-manipulation.html#joining-arrays">Joining arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#splitting-arrays">Splitting arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#tiling-arrays">Tiling arrays</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#adding-and-removing-elements">Adding and removing elements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../array-manipulation.html#rearranging-elements">Rearranging elements</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
@@ -80,15 +80,18 @@
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -113,7 +116,7 @@
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
           <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
-          <li class="breadcrumb-item"><a href="../manipulation.html">Array manipulation routines</a></li>
+          <li class="breadcrumb-item"><a href="../array-manipulation.html">Array manipulation routines</a></li>
       <li class="breadcrumb-item active">dpnp.concat</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.concat.rst.txt" rel="nofollow"> View page source</a>
@@ -128,24 +131,31 @@
 <h1>dpnp.concat<a class="headerlink" href="#dpnp-concat" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.concat">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'same_kind'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.concat" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">concat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'same_kind'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.concat" title="Link to this definition"></a></dt>
 <dd><p>Join a sequence of arrays along an existing axis.</p>
 <p>Note that <a class="reference internal" href="#dpnp.concat" title="dpnp.concat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.concat</span></code></a> is an alias of <a class="reference internal" href="dpnp.concatenate.html#dpnp.concatenate" title="dpnp.concatenate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.concatenate</span></code></a>.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="(in NumPy v2.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.concatenate</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.concatenate.html#numpy.concatenate" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.concatenate</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>arrays</strong> (<em>{Sequence</em><em> of </em><em>dpnp.ndarray</em><em> or </em><em>usm_ndarray}</em>) -- The arrays must have the same shape, except in the dimension
 corresponding to axis (the first, by default).</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- The axis along which the arrays will be joined. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
-arrays are flattened before use.
-Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>dpnp.ndarray</em><em>, </em><em>optional</em>) -- If provided, the destination to place the result. The shape must be
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>The axis along which the arrays will be joined. If axis is <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+arrays are flattened before use.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</p></li>
+<li><p><strong>out</strong> (<em>dpnp.ndarray</em><em>, </em><em>optional</em>) -- <p>If provided, the destination to place the result. The shape must be
 correct, matching that of what concatenate would have returned
-if no out argument were specified.</p></li>
-<li><p><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> or </em><a class="reference internal" href="dpnp.dtype.html#dpnp.dtype" title="dpnp.dtype"><em>dtype</em></a>) -- If provided, the destination array will have this dtype. Cannot be
-provided together with <cite>out</cite>.</p></li>
-<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- Controls what kind of data casting may occur. Defaults to 'same_kind'.</p></li>
+if no out argument were specified.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>If provided, the destination array will have this dtype. Cannot be
+provided together with <cite>out</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -183,7 +193,7 @@ provided together with <cite>out</cite>.</p></li>
 </dl>
 </div>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">dpnp</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">]])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -212,7 +222,7 @@ provided together with <cite>out</cite>.</p></li>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

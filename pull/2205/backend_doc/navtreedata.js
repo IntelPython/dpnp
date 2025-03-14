@@ -27,7 +27,7 @@ var NAVTREE =
   [ "DPNP C++ backend kernel library", "index.html", [
     [ "Topics", "topics.html", "topics" ],
     [ "Namespaces", "namespaces.html", [
-      [ "Namespace List", "namespaces.html", null ],
+      [ "Namespace List", "namespaces.html", "namespaces_dup" ],
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ]
@@ -53,7 +53,7 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "abs_8hpp_source.html",
-"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga31adf1930f42170d8f40d1bd25779e66"
+"group___b_a_c_k_e_n_d___r_a_n_d_o_m___a_p_i.html#ga3234f956d618f70bdbbc95e62085891d"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

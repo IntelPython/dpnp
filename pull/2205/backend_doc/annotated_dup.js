@@ -25,6 +25,14 @@ var annotated_dup =
           [ "ScaleType< prec, mkl_dft::domain::REAL, false >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01false_01_4.html", null ],
           [ "ScaleType< prec, mkl_dft::domain::REAL, true >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_r_e_a_l_00_01true_01_4.html", null ]
         ] ],
+        [ "indexing", null, [
+          [ "kernels", null, [
+            [ "ChooseFunctor", "classdpnp_1_1extensions_1_1indexing_1_1kernels_1_1_choose_functor.html", null ]
+          ] ],
+          [ "strides_detail", null, [
+            [ "NthStrideOffsetUnpacked", "structdpnp_1_1extensions_1_1indexing_1_1strides__detail_1_1_nth_stride_offset_unpacked.html", null ]
+          ] ]
+        ] ],
         [ "lapack", null, [
           [ "helper", null, [
             [ "value_type_of", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
@@ -49,9 +57,24 @@ var annotated_dup =
             [ "UngqrTypePairSupportFactory", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ]
           ] ],
           [ "LinAlgError", "classdpnp_1_1extensions_1_1lapack_1_1_lin_alg_error.html", null ]
+        ] ],
+        [ "window", null, [
+          [ "kernels", null, [
+            [ "BartlettFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
+            [ "BartlettFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html", null ],
+            [ "BlackmanFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
+            [ "BlackmanFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html", null ],
+            [ "HammingFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html", null ],
+            [ "HammingFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ],
+            [ "HanningFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_factory.html", null ],
+            [ "HanningFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_functor.html", null ]
+          ] ]
         ] ]
       ] ],
       [ "kernels", null, [
+        [ "bitwise_count", null, [
+          [ "BitwiseCountFunctor", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ]
+        ] ],
         [ "degrees", null, [
           [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
         ] ],
@@ -88,6 +111,10 @@ var annotated_dup =
         [ "logaddexp2", null, [
           [ "Logaddexp2Functor", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ]
         ] ],
+        [ "nan_to_num", null, [
+          [ "NanToNumContigFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
+          [ "NanToNumFunctor", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ]
+        ] ],
         [ "radians", null, [
           [ "RadiansFunctor", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ]
         ] ],
@@ -102,14 +129,11 @@ var annotated_dup =
     [ "statistics", null, [
       [ "common", null, [
         [ "AtomicOp", "structstatistics_1_1common_1_1_atomic_op.html", null ],
-        [ "AtomicOp< std::complex< T >, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op_3_01std_1_1complex_3_01_t_01_4_00_01_order_00_01_scope_01_4.html", null ],
         [ "DispatchTable", "classstatistics_1_1common_1_1_dispatch_table.html", null ],
         [ "DispatchTable2", "classstatistics_1_1common_1_1_dispatch_table2.html", null ],
         [ "int_pair_hash", "structstatistics_1_1common_1_1int__pair__hash.html", null ],
         [ "IsNan", "structstatistics_1_1common_1_1_is_nan.html", null ],
-        [ "IsNan< std::complex< T > >", "structstatistics_1_1common_1_1_is_nan_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
         [ "Less", "structstatistics_1_1common_1_1_less.html", null ],
-        [ "Less< std::complex< T > >", "structstatistics_1_1common_1_1_less_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
         [ "one_of", "structstatistics_1_1common_1_1one__of.html", null ],
         [ "one_of< T, std::tuple< Top > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
         [ "one_of< T, std::tuple< Top, Rest... > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
@@ -125,6 +149,7 @@ var annotated_dup =
         [ "HistLocalType< uint64_t >", "structstatistics_1_1histogram_1_1_hist_local_type_3_01uint64__t_01_4.html", null ],
         [ "Histogram", "structstatistics_1_1histogram_1_1_histogram.html", null ],
         [ "histogram_kernel", "classstatistics_1_1histogram_1_1histogram__kernel.html", null ],
+        [ "Histogramdd", "structstatistics_1_1histogram_1_1_histogramdd.html", null ],
         [ "HistWithLocalCopies", "structstatistics_1_1histogram_1_1_hist_with_local_copies.html", null ],
         [ "NoWeights", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
         [ "UncachedData", "structstatistics_1_1histogram_1_1_uncached_data.html", null ],
@@ -149,10 +174,7 @@ var annotated_dup =
     [ "DPNPC_ptr_adapter", "class_d_p_n_p_c__ptr__adapter.html", null ],
     [ "DPNPFuncData", "struct_d_p_n_p_func_data.html", "struct_d_p_n_p_func_data" ],
     [ "engine_struct", "structengine__struct.html", null ],
-    [ "func_type_map_factory_t", "structfunc__type__map__factory__t.html", null ],
-    [ "func_type_pair_t", "structfunc__type__pair__t.html", null ],
     [ "is_any", "structis__any.html", null ],
     [ "mcg59_struct", "structmcg59__struct.html", null ],
-    [ "mt19937_struct", "structmt19937__struct.html", null ],
-    [ "python_constants", "structpython__constants.html", null ]
+    [ "mt19937_struct", "structmt19937__struct.html", null ]
 ];

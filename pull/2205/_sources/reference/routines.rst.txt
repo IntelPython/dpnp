@@ -11,9 +11,9 @@ These functions cover a subset of
 .. toctree::
    :maxdepth: 2
 
-   creation
-   manipulation
-   binary
+   array-creation
+   array-manipulation
+   bitwise
    dtype
    fft
    functional
@@ -21,7 +21,10 @@ These functions cover a subset of
    linalg
    logic
    math
+   other
    .. polynomials
    random
-   sorting
+   set
+   sort
    statistics
+   window

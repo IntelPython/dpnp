@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.17.0dev3+16.g0ae1123bd13 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dpnp_iface_types &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gd84bf1c4f73 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=7392af1d"></script>
+      <script src="../../_static/documentation_options.js?v=db60104a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,7 +85,7 @@
   <h1>Source code for dpnp.dpnp_iface_types</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="c1"># *****************************************************************************</span>
-<span class="c1"># Copyright (c) 2016-2024, Intel Corporation</span>
+<span class="c1"># Copyright (c) 2016-2025, Intel Corporation</span>
 <span class="c1"># All rights reserved.</span>
 <span class="c1">#</span>
 <span class="c1"># Redistribution and use in source and binary forms, with or without</span>
@@ -117,14 +117,15 @@
 <span class="sd">This module provides public type interface file for the library</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">dpctl.tensor</span> <span class="k">as</span> <span class="nn">dpt</span>
-<span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">dpt</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
-<span class="kn">from</span> <span class="nn">.dpnp_array</span> <span class="kn">import</span> <span class="n">dpnp_array</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_array</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_array</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;bool&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bool_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;byte&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cdouble&quot;</span><span class="p">,</span>
     <span class="s2">&quot;complex128&quot;</span><span class="p">,</span>
     <span class="s2">&quot;complex64&quot;</span><span class="p">,</span>
@@ -142,21 +143,35 @@
     <span class="s2">&quot;iinfo&quot;</span><span class="p">,</span>
     <span class="s2">&quot;inexact&quot;</span><span class="p">,</span>
     <span class="s2">&quot;inf&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;int&quot;</span><span class="p">,</span>
     <span class="s2">&quot;int_&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;int8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;int16&quot;</span><span class="p">,</span>
     <span class="s2">&quot;int32&quot;</span><span class="p">,</span>
     <span class="s2">&quot;int64&quot;</span><span class="p">,</span>
     <span class="s2">&quot;integer&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intc&quot;</span><span class="p">,</span>
     <span class="s2">&quot;intp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;isdtype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;issubdtype&quot;</span><span class="p">,</span>
     <span class="s2">&quot;is_type_supported&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;longlong&quot;</span><span class="p">,</span>
     <span class="s2">&quot;nan&quot;</span><span class="p">,</span>
     <span class="s2">&quot;newaxis&quot;</span><span class="p">,</span>
     <span class="s2">&quot;number&quot;</span><span class="p">,</span>
     <span class="s2">&quot;pi&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;short&quot;</span><span class="p">,</span>
     <span class="s2">&quot;signedinteger&quot;</span><span class="p">,</span>
     <span class="s2">&quot;single&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ubyte&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uint8&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uint16&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uint32&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uint64&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uintc&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;uintp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;unsignedinteger&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ushort&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ulonglong&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
 
@@ -166,6 +181,7 @@
 <span class="c1"># =============================================================================</span>
 <span class="nb">bool</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span>
 <span class="n">bool_</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">bool_</span>
+<span class="n">byte</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">byte</span>
 <span class="n">cdouble</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">cdouble</span>
 <span class="n">complex128</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex128</span>
 <span class="n">complex64</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">complex64</span>
@@ -178,16 +194,29 @@
 <span class="n">float64</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">float64</span>
 <span class="n">floating</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">floating</span>
 <span class="n">inexact</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">inexact</span>
-<span class="nb">int</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int_</span>
 <span class="n">int_</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int_</span>
+<span class="n">int8</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int8</span>
+<span class="n">int16</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int16</span>
 <span class="n">int32</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int32</span>
 <span class="n">int64</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">int64</span>
 <span class="n">integer</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">integer</span>
 <span class="n">intc</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">intc</span>
 <span class="n">intp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">intp</span>
+<span class="n">longlong</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">longlong</span>
 <span class="n">number</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">number</span>
+<span class="n">short</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">short</span>
 <span class="n">signedinteger</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">signedinteger</span>
 <span class="n">single</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">single</span>
+<span class="n">ubyte</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ubyte</span>
+<span class="n">uint8</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint8</span>
+<span class="n">uint16</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint16</span>
+<span class="n">uint32</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint32</span>
+<span class="n">uint64</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uint64</span>
+<span class="n">uintc</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uintc</span>
+<span class="n">uintp</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">uintp</span>
+<span class="n">unsignedinteger</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">unsignedinteger</span>
+<span class="n">ushort</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ushort</span>
+<span class="n">ulonglong</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ulonglong</span>
 
 
 <span class="c1"># =============================================================================</span>
@@ -204,7 +233,7 @@
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="finfo">
 <a class="viewcode-back" href="../../reference/generated/dpnp.finfo.html#dpnp.finfo">[docs]</a>
-<span class="k">def</span> <span class="nf">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">finfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns machine limits for floating-point data types.</span>
 
@@ -258,7 +287,7 @@
 <span class="c1"># pylint: disable=redefined-outer-name</span>
 <div class="viewcode-block" id="iinfo">
 <a class="viewcode-back" href="../../reference/generated/dpnp.iinfo.html#dpnp.iinfo">[docs]</a>
-<span class="k">def</span> <span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns machine limits for integer data types.</span>
 
@@ -284,15 +313,73 @@
 <span class="sd">            smallest representable number.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp_array</span><span class="p">):</span>
         <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="o">.</span><span class="n">dtype</span>
     <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">iinfo</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span></div>
 
 
 
+<div class="viewcode-block" id="isdtype">
+<a class="viewcode-back" href="../../reference/generated/dpnp.isdtype.html#dpnp.isdtype">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a boolean indicating whether a provided `dtype` is</span>
+<span class="sd">    of a specified data type `kind`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    dtype : dtype</span>
+<span class="sd">        The input dtype.</span>
+<span class="sd">    kind : {dtype, str, tuple of dtypes or strs}</span>
+<span class="sd">        The input dtype or dtype kind. Allowed dtype kinds are:</span>
+
+<span class="sd">        * ``&#39;bool&#39;`` : boolean kind</span>
+<span class="sd">        * ``&#39;signed integer&#39;`` : signed integer data types</span>
+<span class="sd">        * ``&#39;unsigned integer&#39;`` : unsigned integer data types</span>
+<span class="sd">        * ``&#39;integral&#39;`` : integer data types</span>
+<span class="sd">        * ``&#39;real floating&#39;`` : real-valued floating-point data types</span>
+<span class="sd">        * ``&#39;complex floating&#39;`` : complex floating-point data types</span>
+<span class="sd">        * ``&#39;numeric&#39;`` : numeric data types</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : bool</span>
+<span class="sd">        A boolean indicating whether a provided `dtype` is of a specified data</span>
+<span class="sd">        type `kind`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.issubdtype` : Test if the first argument is a type code</span>
+<span class="sd">                             lower/equal in type hierarchy.</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; np.isdtype(np.float32, np.float64)</span>
+<span class="sd">    False</span>
+<span class="sd">    &gt;&gt;&gt; np.isdtype(np.float32, &quot;real floating&quot;)</span>
+<span class="sd">    True</span>
+<span class="sd">    &gt;&gt;&gt; np.isdtype(np.complex128, (&quot;real floating&quot;, &quot;complex floating&quot;))</span>
+<span class="sd">    True</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">type</span><span class="p">):</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">kind</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">kind</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">kind</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">dpt</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">type</span><span class="p">)</span> <span class="k">else</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kind</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpt</span><span class="o">.</span><span class="n">isdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">kind</span><span class="p">)</span></div>
+
+
+
 <div class="viewcode-block" id="issubdtype">
 <a class="viewcode-back" href="../../reference/generated/dpnp.issubdtype.html#dpnp.issubdtype">[docs]</a>
-<span class="k">def</span> <span class="nf">issubdtype</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">issubdtype</span><span class="p">(</span><span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns ``True`` if the first argument is a type code lower/equal</span>
 <span class="sd">    in type hierarchy.</span>
@@ -305,7 +392,7 @@
 
 
 
-<span class="k">def</span> <span class="nf">is_type_supported</span><span class="p">(</span><span class="n">obj_type</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">is_type_supported</span><span class="p">(</span><span class="n">obj_type</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return True if type is supported by DPNP python level.&quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="n">obj_type</span> <span class="ow">in</span> <span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">float32</span><span class="p">,</span> <span class="n">int64</span><span class="p">,</span> <span class="n">int32</span><span class="p">):</span>
@@ -320,7 +407,7 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
