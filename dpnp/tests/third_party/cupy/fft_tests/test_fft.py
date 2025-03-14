@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64, is_cuda_device
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing._loops import _wraps_partial
 
@@ -413,8 +413,6 @@ class TestFft2:
         type_check=has_support_aspect64(),
     )
     def test_fft2(self, xp, dtype, order, enable_nd):
-        if is_cuda_device() and self.shape == (2, 3, 4, 5):
-            pytest.skip("SAT-7587")
         # assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
@@ -442,8 +440,6 @@ class TestFft2:
         type_check=has_support_aspect64(),
     )
     def test_ifft2(self, xp, dtype, order, enable_nd):
-        if is_cuda_device() and self.shape == (2, 3, 4, 5):
-            pytest.skip("SAT-7587")
         # assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
@@ -507,8 +503,6 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_fftn(self, xp, dtype, order, enable_nd):
-        if is_cuda_device() and self.shape == (2, 3, 4, 5):
-            pytest.skip("SAT-7587")
         # assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
@@ -536,8 +530,6 @@ class TestFftn:
         type_check=has_support_aspect64(),
     )
     def test_ifftn(self, xp, dtype, order, enable_nd):
-        if is_cuda_device() and self.shape == (2, 3, 4, 5):
-            pytest.skip("SAT-7587")
         # assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
@@ -889,7 +881,7 @@ class TestFftnContiguity:
                 pass
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *testing.product(
@@ -925,17 +917,6 @@ class TestRfft:
     def test_irfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.irfft(a, n=self.n, norm=self.norm)
-
-        if dtype == xp.float16 and xp is cupy:
-            # XXX: np2.0: f16 dtypes differ
-            out = out.astype(np.float16)
-        elif (
-            xp is np
-            and np.lib.NumpyVersion(np.__version__) < "2.0.0"
-            and dtype == np.float32
-        ):
-            out = out.astype(np.float32)
-
         return out
 
 
@@ -1008,7 +989,7 @@ class TestPlanCtxManagerRfft:
         assert "Target array size does not match the plan." in str(ex.value)
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *(
@@ -1069,13 +1050,6 @@ class TestRfft2:
 
         if self.s is None and self.axes in [None, (-2, -1)]:
             pytest.skip("Input is not Hermitian Symmetric")
-        elif dtype == xp.float16 and xp is cupy:
-            pytest.xfail("XXX: np2.0: f16 dtypes differ")
-        elif (
-            np.lib.NumpyVersion(np.__version__) < "2.0.0"
-            and dtype == np.float32
-        ):
-            pytest.skip("dtypes differ")
 
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
@@ -1105,7 +1079,7 @@ class TestRfft2EmptyAxes:
                 xp.fft.irfft2(a, s=self.s, axes=self.axes, norm=self.norm)
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *(
@@ -1166,13 +1140,6 @@ class TestRfftn:
 
         if self.s is None and self.axes in [None, (-2, -1)]:
             pytest.skip("Input is not Hermitian Symmetric")
-        elif dtype == xp.float16 and xp is cupy:
-            pytest.xfail("XXX: np2.0: f16 dtypes differ")
-        elif (
-            np.lib.NumpyVersion(np.__version__) < "2.0.0"
-            and dtype == np.float32
-        ):
-            pytest.skip("dtypes differ")
 
         a = testing.shaped_random(self.shape, xp, dtype)
         if order == "F":
@@ -1243,10 +1210,6 @@ class TestPlanCtxManagerRfftn:
     def test_irfftn(self, xp, dtype, enable_nd):
         assert config.enable_nd_planning == enable_nd
         a = testing.shaped_random(self.shape, xp, dtype)
-
-        if dtype == xp.float16 and xp is cupy:
-            pytest.xfail("XXX: np2.0: f16 dtypes differ")
-
         if xp is np:
             return xp.fft.irfftn(a, s=self.s, axes=self.axes, norm=self.norm)
 
@@ -1349,7 +1312,7 @@ class TestRfftnEmptyAxes:
                 xp.fft.irfftn(a, s=self.s, axes=self.axes, norm=self.norm)
 
 
-# @testing.with_requires("numpy>=2.0")
+@testing.with_requires("numpy>=2.0")
 @pytest.mark.usefixtures("skip_forward_backward")
 @testing.parameterize(
     *testing.product(
@@ -1373,17 +1336,6 @@ class TestHfft:
     def test_hfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
         out = xp.fft.hfft(a, n=self.n, norm=self.norm)
-
-        if dtype == xp.float16 and xp is cupy:
-            # XXX: np2.0: f16 dtypes differ
-            out = out.astype(np.float16)
-        elif (
-            xp is np
-            and np.lib.NumpyVersion(np.__version__) < "2.0.0"
-            and dtype == np.float32
-        ):
-            out = out.astype(np.float32)
-
         return out
 
     @testing.for_all_dtypes(no_complex=True)
@@ -1396,16 +1348,7 @@ class TestHfft:
     )
     def test_ihfft(self, xp, dtype):
         a = testing.shaped_random(self.shape, xp, dtype)
-        out = xp.fft.ihfft(a, n=self.n, norm=self.norm)
-
-        if (
-            xp is np
-            and np.lib.NumpyVersion(np.__version__) < "2.0.0"
-            and dtype == np.float32
-        ):
-            out = out.astype(np.complex64)
-
-        return out
+        return xp.fft.ihfft(a, n=self.n, norm=self.norm)
 
 
 # @testing.with_requires("numpy>=2.0")

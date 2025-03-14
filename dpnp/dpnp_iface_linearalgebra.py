@@ -37,10 +37,12 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
 import numpy
 
 import dpnp
 
+from .dpnp_utils import map_dtype_to_device
 from .dpnp_utils.dpnp_utils_einsum import dpnp_einsum
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
@@ -64,6 +66,20 @@ __all__ = [
     "vecdot",
     "vecmat",
 ]
+
+
+# TODO: implement a specific scalar-array kernel
+def _call_multiply(a, b, out=None):
+    """Call multiply function for special cases of scalar-array dots."""
+
+    sc, arr = (a, b) if dpnp.isscalar(a) else (b, a)
+    sc_dtype = map_dtype_to_device(type(sc), arr.sycl_device)
+    res_dtype = dpnp.result_type(sc_dtype, arr)
+    if out is not None and out.dtype == arr.dtype:
+        res = dpnp.multiply(a, b, out=out)
+    else:
+        res = dpnp.multiply(a, b, dtype=res_dtype)
+    return dpnp.get_result_array(res, out, casting="no")
 
 
 def dot(a, b, out=None):
@@ -139,8 +155,7 @@ def dot(a, b, out=None):
             raise ValueError("Only C-contiguous array is acceptable.")
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b, out=out)
+        return _call_multiply(a, b, out=out)
 
     a_ndim = a.ndim
     b_ndim = b.ndim
@@ -192,7 +207,7 @@ def einsum(
         These are the arrays for the operation.
     out : {dpnp.ndarrays, usm_ndarray, None}, optional
         If provided, the calculation is done into this array.
-    dtype : {dtype, None}, optional
+    dtype : {None, str, dtype object}, optional
         If provided, forces the calculation to use the data type specified.
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
@@ -635,8 +650,7 @@ def inner(a, b):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+        return _call_multiply(a, b)
 
     if a.ndim == 0 or b.ndim == 0:
         # TODO: use specific scalar-vector kernel
@@ -714,8 +728,7 @@ def kron(a, b):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+        return _call_multiply(a, b)
 
     a_ndim = a.ndim
     b_ndim = b.ndim
@@ -757,7 +770,7 @@ def matmul(
         (of the calculated values) will be cast if necessary.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
@@ -937,7 +950,7 @@ def matvec(
         If not provided or ``None``, a freshly-allocated array is used.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
@@ -1199,8 +1212,7 @@ def tensordot(a, b, axes=2):
             raise ValueError(
                 "One of the inputs is scalar, axes should be zero."
             )
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+        return _call_multiply(a, b)
 
     return dpnp_tensordot(a, b, axes=axes)
 
@@ -1263,13 +1275,13 @@ def vdot(a, b):
         if b.size != 1:
             raise ValueError("The second array should be of size one.")
         a_conj = numpy.conj(a)
-        return dpnp.multiply(a_conj, b)
+        return _call_multiply(a_conj, b)
 
     if dpnp.isscalar(b):
         if a.size != 1:
             raise ValueError("The first array should be of size one.")
         a_conj = dpnp.conj(a)
-        return dpnp.multiply(a_conj, b)
+        return _call_multiply(a_conj, b)
 
     if a.ndim == 1 and b.ndim == 1:
         return dpnp_dot(a, b, out=None, conjugate=True)
@@ -1327,7 +1339,7 @@ def vecdot(
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the vector dot product. By default, the
         returned array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
@@ -1441,7 +1453,7 @@ def vecmat(
         If not provided or ``None``, a freshly-allocated array is used.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.

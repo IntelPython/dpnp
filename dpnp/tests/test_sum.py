@@ -2,14 +2,13 @@ from itertools import permutations
 
 import numpy
 import pytest
-from numpy.testing import (
-    assert_array_equal,
-)
+from numpy.testing import assert_array_equal
 
 import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_all_dtypes,
     get_float_dtypes,
 )
@@ -32,14 +31,13 @@ from .helper import (
         (40, 35),
     ],
 )
-@pytest.mark.parametrize("dtype_in", get_all_dtypes())
+@pytest.mark.parametrize("dtype_in", get_all_dtypes(no_none=True))
 @pytest.mark.parametrize("dtype_out", get_all_dtypes())
 @pytest.mark.parametrize("transpose", [True, False])
 @pytest.mark.parametrize("keepdims", [True, False])
 @pytest.mark.parametrize("order", ["C", "F"])
 def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
-    size = numpy.prod(shape)
-    a_np = numpy.arange(size).astype(dtype_in).reshape(shape, order=order)
+    a_np = generate_random_numpy_array(shape, dtype_in, order)
     a = dpnp.asarray(a_np)
 
     if transpose:
@@ -53,27 +51,29 @@ def test_sum(shape, dtype_in, dtype_out, transpose, keepdims, order):
     axes.append(tuple(axes_range))
 
     for axis in axes:
-        numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
         dpnp_res = a.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
-        assert_array_equal(numpy_res, dpnp_res.asnumpy())
+        numpy_res = a_np.sum(axis=axis, dtype=dtype_out, keepdims=keepdims)
+        assert_dtype_allclose(dpnp_res, numpy_res, factor=16)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_sum_empty_out(dtype):
     a = dpnp.empty((1, 2, 0, 4), dtype=dtype)
     out = dpnp.ones((), dtype=dtype)
     res = a.sum(out=out)
-    assert_array_equal(out.asnumpy(), res.asnumpy())
-    assert_array_equal(out.asnumpy(), numpy.array(0, dtype=dtype))
+    assert out is res
+    assert_array_equal(out, numpy.array(0, dtype=dtype))
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True, no_bool=True))
+@pytest.mark.parametrize(
+    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+)
 @pytest.mark.parametrize("axis", [None, 0, 1, 2, 3])
 def test_sum_empty(dtype, axis):
     a = numpy.empty((1, 2, 0, 4), dtype=dtype)
     numpy_res = a.sum(axis=axis)
     dpnp_res = dpnp.array(a).sum(axis=axis)
-    assert_array_equal(numpy_res, dpnp_res.asnumpy())
+    assert_array_equal(numpy_res, dpnp_res)
 
 
 @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -128,7 +128,7 @@ def test_sum_out(dtype, axis):
     expected = numpy.sum(a_np, axis=axis)
     res = dpnp.empty(expected.shape, dtype=dtype)
     a.sum(axis=axis, out=res)
-    assert_array_equal(expected, res.asnumpy())
+    assert_array_equal(expected, res)
 
 
 @pytest.mark.usefixtures("suppress_complex_warning")

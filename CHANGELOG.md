@@ -4,13 +4,135 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.17.0] - MM/DD/2025
+## [0.18.0] - MM/DD/2025
 
 ### Added
 
+* Added implementation of `dpnp.hamming` [#2341](https://github.com/IntelPython/dpnp/pull/2341), [#2357](https://github.com/IntelPython/dpnp/pull/2357)
+* Added implementation of `dpnp.hanning` [#2358](https://github.com/IntelPython/dpnp/pull/2358)
+* Added implementation of `dpnp.blackman` [#2363](https://github.com/IntelPython/dpnp/pull/2363)
+* Added implementation of `dpnp.bartlett` [#2366](https://github.com/IntelPython/dpnp/pull/2366)
+
 ### Changed
 
+* Allowed input array of `uint64` dtype in `dpnp.bincount` [#2361](https://github.com/IntelPython/dpnp/pull/2361)
+
 ### Fixed
+
+
+## [0.17.0] - 02/26/2025
+
+This release achieves 100% compliance with Python Array API specification (revision [2023.12](https://data-apis.org/array-api/2023.12/)).
+The release provides enhanced compatibility with NumPy 2.2.3. Array manipulation, mathematical, logic, and statistics routines are complemented by a set of new functions.
+Furthermore, a number of issues relating to running on NVIDIA GPUs have been resolved.
+
+### Added
+
+* Added implementation of `dpnp.gcd` and `dpnp.lcm` functions [#2091](https://github.com/IntelPython/dpnp/pull/2091)
+* Added implementation of `dpnp.pad` function [#2093](https://github.com/IntelPython/dpnp/pull/2093)
+* Added implementation of `dpnp.linalg.svdvals` function [#2094](https://github.com/IntelPython/dpnp/pull/2094)
+* Added implementation of `dpnp.matrix_transpose` function and `dpnp.ndarray.mT` attribute [#2095](https://github.com/IntelPython/dpnp/pull/2095)
+* Exposed `cross`, `diagonal`, `matrix_norm`, `outer`, `tensordot`, `trace` and `vector_norm` functions as part of `dpnp.linalg` namespace [#2099](https://github.com/IntelPython/dpnp/pull/2099)
+* Added implementation of `dpnp.unstack` function [#2106](https://github.com/IntelPython/dpnp/pull/2106)
+* Added implementation of `dpnp.ldexp` function [#2110](https://github.com/IntelPython/dpnp/pull/2110)
+* Added implementation of `dpnp.vecdot` and `dpnp.linalg.vecdot` functions [#2112](https://github.com/IntelPython/dpnp/pull/2112)
+* Added implementation of `dpnp.i0` function [#2118](https://github.com/IntelPython/dpnp/pull/2118)
+* Added implementation of `dpnp.isfortran` function [#2122](https://github.com/IntelPython/dpnp/pull/2122)
+* Added implementation of `dpnp.spacing` function [#2125](https://github.com/IntelPython/dpnp/pull/2125)
+* Added implementation of `dpnp.sinc` function [#2133](https://github.com/IntelPython/dpnp/pull/2133)
+* Added implementation of `dpnp.corrcoef` function [#2139](https://github.com/IntelPython/dpnp/pull/2139)
+* Added implementation of `dpnp.delete` function [#2142](https://github.com/IntelPython/dpnp/pull/2142)
+* Added implementation of `dpnp.histogramdd` function [#2143](https://github.com/IntelPython/dpnp/pull/2143)
+* Added implementation of `dpnp.bincount` function [#2145](https://github.com/IntelPython/dpnp/pull/2145)
+* Added support of inplace matrix multiplication via the `@=` operator [#2147](https://github.com/IntelPython/dpnp/pull/2147)
+* Added implementation of `dpnp.insert` function [#2151](https://github.com/IntelPython/dpnp/pull/2151)
+* Added implementation of `dpnp.broadcast_shapes` function [#2153](https://github.com/IntelPython/dpnp/pull/2153)
+* Added implementation of `dpnp.byte_bounds` function [#2155](https://github.com/IntelPython/dpnp/pull/2155)
+* Added implementation of `dpnp.ndindex` class [#2157](https://github.com/IntelPython/dpnp/pull/2157)
+* Added implementation of `dpnp.histogram2d` function [#2262](https://github.com/IntelPython/dpnp/pull/2262)
+* Added implementation of `dpnp.binary_repr` function [#2168](https://github.com/IntelPython/dpnp/pull/2168)
+* Added implementation of `dpnp.apply_along_axis` function [#2169](https://github.com/IntelPython/dpnp/pull/2169)
+* Added implementation of `dpnp.cumulative_sum` and `dpnp.cumulative_prod` functions [#2171](https://github.com/IntelPython/dpnp/pull/2171)
+* Added implementation of `dpnp.apply_over_axes` function [#2174](https://github.com/IntelPython/dpnp/pull/2174)
+* Added implementation of `dpnp.compress` function and `dpnp_array.compress` method [#2177](https://github.com/IntelPython/dpnp/pull/2177)
+* Added implementation of `dpnp.correlate` function [#2180](https://github.com/IntelPython/dpnp/pull/2180), [#2203](https://github.com/IntelPython/dpnp/pull/2203)
+* Added implementation of `dpnp.nanmedian` function [#2191](https://github.com/IntelPython/dpnp/pull/2191)
+* Added implementation of `dpnp.ndarray.__iter__` method [#2206](https://github.com/IntelPython/dpnp/pull/2206)
+* Added implementation of `dpnp.iterable` function [#2208](https://github.com/IntelPython/dpnp/pull/2208)
+* Added missing aliases on integer data types [#2230](https://github.com/IntelPython/dpnp/pull/2230)
+* Enabled validation of dpnp conda/wheel packages with Python 3.13 (limited support) [#2249](https://github.com/IntelPython/dpnp/pull/2249)
+* Added implementation of `dpnp.ndarray.__array_namespace__` method [#2252](https://github.com/IntelPython/dpnp/pull/2252)
+* Added implementation of `dpnp.ndarray.__usm_ndarray__` protocol [#2261](https://github.com/IntelPython/dpnp/pull/2261)
+* Added implementation of `dpnp.isdtype` function [#2274](https://github.com/IntelPython/dpnp/pull/2274)
+* Added implementation of Python Array API Inspection namespace [#2275](https://github.com/IntelPython/dpnp/pull/2275)
+* Added implementation of `dpnp.matvec` and `dpnp.vecmat` functions [#2288](https://github.com/IntelPython/dpnp/pull/2288)
+* Added implementation of `dpnp.unique_all`, `dpnp.unique_counts`, `dpnp.unique_inverse` and `dpnp.unique_values` functions [#2320](https://github.com/IntelPython/dpnp/pull/2320)
+
+### Changed
+
+* Improved performance of `dpnp.histogram` function by implementing a dedicated kernel [#2027](https://github.com/IntelPython/dpnp/pull/2027)
+* Improved performance of `dpnp.ndarray.fill` method by leveraging on dpctl extension exposing `fill` kernel [#2055](https://github.com/IntelPython/dpnp/pull/2055)
+* Extended `dpnp.ndarray.reshape` method and `dpnp.reshape` function to support `shape` and `newshape` keywords [#2080](https://github.com/IntelPython/dpnp/pull/2080)
+* Extended support of `order` keyword in like-functions [#2088](https://github.com/IntelPython/dpnp/pull/2088)
+* Updated `dpnp.einsum` function to comply with NEP-50 [#2120](https://github.com/IntelPython/dpnp/pull/2120)
+* Extended `dpnp.linalg.pinv` and `dpnp.linalg.matrix_rank` functions to support `rtol` keyword [#2124](https://github.com/IntelPython/dpnp/pull/2124)
+* Extended `dpnp.array` function to support `ndmin` keyword [#2135](https://github.com/IntelPython/dpnp/pull/2135)
+* Leveraged `dpctl.tensor` implementation for `dpnp.put_along_axis` function [#2134](https://github.com/IntelPython/dpnp/pull/2134)
+* Corrected `dpnp.ndarray.item` implemented to return a python scalar instead of zero-dimensional array [#2138](https://github.com/IntelPython/dpnp/pull/2138)
+* Bumped NumPy, CuPy and Python versions used for building docs [#2158](https://github.com/IntelPython/dpnp/pull/2158)
+* Extended `dpnp.sort` and `dpnp.argsort` functions to support `kind="mergesort"` and `kind="radixsort"` values [#2159](https://github.com/IntelPython/dpnp/pull/2159)
+* Revised and updated information in `README.md` document [#2166](https://github.com/IntelPython/dpnp/pull/2166)
+* Permitted `"same_kind"` casting for elementwise inplace operators [#2170](https://github.com/IntelPython/dpnp/pull/2170)
+* Bumped oneMKL version up to `0.6` and added new `--onemkl-interfaces-dir` option to build script [#2193](https://github.com/IntelPython/dpnp/pull/2193)
+* Updated implementation of `dpnp.linalg.solve` function to align with `numpy >= 2.0` and Python array API [#2198](https://github.com/IntelPython/dpnp/pull/2198)
+* Improved performance of `dpnp.choose` function by implementing a dedicated kernel [#2201](https://github.com/IntelPython/dpnp/pull/2201)
+* Aligned with the functional changes introduced by NumPy 2.2 [#2226](https://github.com/IntelPython/dpnp/pull/2226)
+* Improved performance of `dpnp.nan_to_num` function by implementing a dedicated kernel [#2228](https://github.com/IntelPython/dpnp/pull/2228)
+* Enabled Intel MKL backends when building from the source with `--onemkl-interfaces` option [#2229](https://github.com/IntelPython/dpnp/pull/2229)
+* Extended `intersphinx_mapping` with a link to CuPy documentation to make cupy functions clickable from the rendered pages [#2232](https://github.com/IntelPython/dpnp/pull/2232)
+* Improved performance of `dpnp.nanmedian` function when `axis` is not `None` passed [#2240](https://github.com/IntelPython/dpnp/pull/2240)
+* Aligned `dpnp.trim_zeros` with NumPy 2.2 and added support of a multi-dimensional input array [#2241](https://github.com/IntelPython/dpnp/pull/2241)
+* Disallowed implicit conversion of `dpnp.ndarray` to `numpy.ndarray` [#2260](https://github.com/IntelPython/dpnp/pull/2260)
+* Extended `dpnp.ndarray.to_device` method to support `stream` keyword [#2263](https://github.com/IntelPython/dpnp/pull/2263)
+* Extended `dpnp.sort` and `dpnp.argsort` functions and `dpnp.ndarray.sort` and `dpnp.ndarray.argsort` methods to support `descending` keyword [#2269](https://github.com/IntelPython/dpnp/pull/2269)
+* Extended `dpnp.std` and `dpnp.var` functions and `dpnp.ndarray.std` and `dpnp.ndarray.var` methods to support `mean` keyword [#2271](https://github.com/IntelPython/dpnp/pull/2271)
+* Aligned `qr`, `eig`, `eigh`, `svd` and `slogdet` functions from `dpnp.linalg` to return namedtuple per Python array API [#2276](https://github.com/IntelPython/dpnp/pull/2276)
+* Extended `dpnp.std` and `dpnp.var` functions and `dpnp.ndarray.std` and `dpnp.ndarray.var` methods to support `correction` keyword [#2300](https://github.com/IntelPython/dpnp/pull/2300)
+* Extended `dpnp.cov` function to support all keyword arguments [#2303](https://github.com/IntelPython/dpnp/pull/2303)
+* Disallowed `minlength=None` value passed into `dpnp.bincount` function [#2310](https://github.com/IntelPython/dpnp/pull/2310)
+* Added build support with `oneMath` (new name of `oneMKL` interface) [#2313](https://github.com/IntelPython/dpnp/pull/2313)
+* Aligned the signature of `dpnp.astype` function with Python array API [#2318](https://github.com/IntelPython/dpnp/pull/2318)
+
+### Fixed
+
+* Migrated to experimental extension of DPC++ compiler with `group_load/group_store` per deprecation build warning [#2123](https://github.com/IntelPython/dpnp/pull/2123)
+* Fixed `DeprecationWarning` appearing during running the tests [#2156](https://github.com/IntelPython/dpnp/pull/2156)
+* Modified installation path for the tests to enable tests run by `pytest --pyargs dpnp.tests` command [#2116](https://github.com/IntelPython/dpnp/pull/2116)
+* Resolved issues with `dpnp.linalg.svd` implementation invoked on NVIDIA GPU [#2212](https://github.com/IntelPython/dpnp/pull/2212)
+* Fixed compilation warnings when building from the source with `--target=cuda` option [#2225](https://github.com/IntelPython/dpnp/pull/2225)
+* Passed `striped` property to `group_load/group_store` functions replicating legacy behavior [#2238](https://github.com/IntelPython/dpnp/pull/2238)
+* Added a workaround to prevent a race condition in `dpnp.linalg.qr` when running on NVIDIA GPU [#2265](https://github.com/IntelPython/dpnp/pull/2265)
+* Resolved `IndexError` exception raised by `dpnp.matmul` [#2278](https://github.com/IntelPython/dpnp/pull/2278)
+* Declared missing required dependencies on numpy and dpctl packages from dpnp wheel package [#2283](https://github.com/IntelPython/dpnp/pull/2283)
+* Resolved an issue with wrong result shape returned by `dpnp.vecdot` [#2294](https://github.com/IntelPython/dpnp/pull/2294)
+* Resolved an issue with wrong result returned by `dpnp.tensordot` for integer data types [#2296](https://github.com/IntelPython/dpnp/pull/2296)
+* Resolved `ValueError` exception raised by `dpnp.linalg.qr` with non-contiguous input array [#2314](https://github.com/IntelPython/dpnp/pull/2314)
+* Resolved an issue with wrong result returned by `dpnp.fft.fftn` and `dpnp.fft.rfftn` when running on NVIDIA GPU [#2332](https://github.com/IntelPython/dpnp/pull/2332)
+* Added a workaround to prevent a memory corruption in `dpnp.correlate` [#2333](https://github.com/IntelPython/dpnp/pull/2333)
+
+
+## [0.16.3] - 12/20/2024
+
+### Fixed
+
+* Bumped min version of DPC++ compiler required to support experimental SYCL properties [#2231](https://github.com/IntelPython/dpnp/pull/2231)
+
+
+## [0.16.2] - 12/20/2024
+
+### Fixed
+
+* Enabled `dpnp` in virtual environment on Windows platform [#2242](https://github.com/IntelPython/dpnp/pull/2242)
 
 
 ## [0.16.1] - 12/06/2024
@@ -124,7 +246,7 @@ In addition, this release completes implementation of `dpnp.fft` module and adds
 * Reworked `dpnp.unique` implementation to align with NumPy 2.0 [#1999](https://github.com/IntelPython/dpnp/pull/1999)
 * Reworked `dpnp.linalg.solve` backend implementation to work with OneMKL Interfaces [#2001](https://github.com/IntelPython/dpnp/pull/2001)
 * Reworked `dpnp.trapezoid` implementation through existing functions instead of falling back on NumPy [#2003](https://github.com/IntelPython/dpnp/pull/2003)
-* Added `copy` keyword to `dpnp.array` to align with NumPy 2.0  [#2006](https://github.com/IntelPython/dpnp/pull/2006)
+* Added `copy` keyword to `dpnp.array` to align with NumPy 2.0 [#2006](https://github.com/IntelPython/dpnp/pull/2006)
 * Extended `dpnp.heaviside` to support `order` and `out` keyword arguments by writing dedicated kernel for it [#2008](https://github.com/IntelPython/dpnp/pull/2008)
 * `dpnp` uses pybind11 2.13.5 [#2010](https://github.com/IntelPython/dpnp/pull/2010)
 * Added `COMPILER_VERSION_2025_OR_LATER` flag to be able to run `dpnp.fft` module with both 2024.2 and 2025.0 versions of the compiler [#2025](https://github.com/IntelPython/dpnp/pull/2025)

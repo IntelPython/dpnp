@@ -64,6 +64,7 @@ __all__ = [
     "asarray",
     "ascontiguousarray",
     "asfortranarray",
+    "astype",
     "copy",
     "diag",
     "diagflat",
@@ -203,17 +204,19 @@ def arange(
     step : {int, real}, optional
         Spacing between values. The default `step` size is 1. If `step`
         is specified as a position argument, `start` must also be given.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -306,7 +309,7 @@ def array(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -325,13 +328,14 @@ def array(
         should have. Ones will be prepended to the shape as needed to meet
         this requirement.
         Default: ``0``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
@@ -462,20 +466,22 @@ def asanyarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: ``"K"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -565,7 +571,7 @@ def asarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -573,13 +579,14 @@ def asarray(
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: ``"K"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
@@ -670,17 +677,19 @@ def ascontiguousarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -782,17 +791,19 @@ def asfortranarray(
         Input data, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -884,6 +895,95 @@ def asfortranarray(
     )
 
 
+def astype(x, dtype, /, *, order="K", casting="unsafe", copy=True, device=None):
+    """
+    Copy the array with data type casting.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Array data type casting.
+    dtype : {None, str, dtype object}
+        Target data type.
+    order : {None, "C", "F", "A", "K"}, optional
+        Row-major (C-style) or column-major (Fortran-style) order.
+        When `order` is ``"A"``, it uses ``"F"`` if `a` is column-major and
+        uses ``"C"`` otherwise. And when `order` is ``"K"``, it keeps strides
+        as closely as possible.
+
+        Default: ``"K"``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur. Defaults to ``"unsafe"``
+        for backwards compatibility.
+
+            - "no" means the data types should not be cast at all.
+            - "equiv" means only byte-order changes are allowed.
+            - "safe" means only casts which can preserve values are allowed.
+            - "same_kind" means only safe casts or casts within a kind, like
+              float64 to float32, are allowed.
+            - "unsafe" means any data conversions may be done.
+
+        Default: ``"unsafe"``.
+    copy : bool, optional
+        Specifies whether to copy an array when the specified dtype matches the
+        data type of the input array ``x``. If ``True``, a newly allocated
+        array must always be returned. If ``False`` and the specified dtype
+        matches the data type of the input array, the input array must be
+        returned; otherwise, a newly allocated array must be returned.
+
+        Default: ``True``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        If the value is ``None``, returned array is created on the same device
+        as `x`.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        An array having the specified data type.
+
+    See Also
+    --------
+    :obj:`dpnp.ndarray.astype` : Equivalent method.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 2, 3]); x
+    array([1, 2, 3])
+    >>> np.astype(x, np.float32)
+    array([1., 2., 3.], dtype=float32)
+
+    Non-copy case:
+
+    >>> x = np.array([1, 2, 3])
+    >>> result = np.astype(x, x.dtype, copy=False)
+    >>> result is x
+    True
+
+    """
+
+    if order is None:
+        order = "K"
+
+    usm_x = dpnp.get_usm_ndarray(x)
+    usm_res = dpt.astype(
+        usm_x, dtype, order=order, casting=casting, copy=copy, device=device
+    )
+
+    if usm_res is usm_x and isinstance(x, dpnp_array):
+        # return x if dpctl returns a zero copy of usm_x
+        return x
+    return dpnp_array._create_from_usm_ndarray(usm_res)
+
+
 def copy(
     a, order="K", subok=False, device=None, usm_type=None, sycl_queue=None
 ):
@@ -901,13 +1001,15 @@ def copy(
     order : {"C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
         Default: ``"K"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -1019,13 +1121,15 @@ def diag(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         Diagonal in question. Use k > 0 for diagonals above
         the main diagonal, and k < 0 for diagonals below the main diagonal.
         Default: ``0``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -1122,13 +1226,15 @@ def diagflat(v, /, k=0, *, device=None, usm_type=None, sycl_queue=None):
         Diagonal to set; 0, the default, corresponds to the "main" diagonal,
         a positive (negative) k giving the number of the diagonal above (below)
         the main.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -1219,20 +1325,22 @@ def empty(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
         Memory layout of the newly output array.
         Default: ``"C"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -1320,7 +1428,7 @@ def empty_like(
     a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -1330,13 +1438,15 @@ def empty_like(
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -1433,20 +1543,22 @@ def eye(
         Index of the diagonal: 0 (the default) refers to the main diagonal,
         a positive value refers to an upper diagonal, and a negative value to
         a lower diagonal.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
         Memory layout of the newly output array.
         Default: ``"C"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -1541,7 +1653,7 @@ def frombuffer(
     ----------
     buffer : buffer_like
         An object that exposes the buffer interface.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the returned array.
         Default is the default floating point data type for the device where
         the returned array is allocated.
@@ -1550,13 +1662,15 @@ def frombuffer(
     offset : int, optional
         Start reading the buffer from this offset (in bytes).
         Default: ``0``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -1646,7 +1760,7 @@ def fromfile(
     ----------
     file : file or str or Path
         Open file object or filename.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array.
         For binary files, it is used to determine the size and byte-order
         of the items in the file.
@@ -1664,13 +1778,15 @@ def fromfile(
     offset : int, optional
         The offset (in bytes) from the file's current position. Defaults to 0.
         Only permitted for binary files.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -1779,17 +1895,19 @@ def fromfunction(
     shape : (N,) tuple of ints
         Shape of the output array, which also determines the shape of
         the coordinate arrays passed to `function`.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the coordinate arrays passed to `function`.
         Default is the default floating point data type for the device where
         the returned array is allocated.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -1887,18 +2005,20 @@ def fromiter(
     ----------
     iter : iterable object
         An iterable object providing data for the array.
-    dtype : data-type
+    dtype : {None, str, dtype object}
         The data-type of the returned array.
     count : int, optional
         The number of items to read from *iterable*. The default is -1,
         which means all data is read.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -1981,7 +2101,7 @@ def fromstring(
     ----------
     string : str
         A string containing the data.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         The data type of the array.
         For binary input data, the data must be in exactly this format.
         Default is the default floating point data type for the device where
@@ -1992,13 +2112,15 @@ def fromstring(
     sep : str, optional
         The string separating numbers in the data; extra whitespace between
         elements is also ignored.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -2159,20 +2281,22 @@ def full(
         Fill value, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
         Memory layout of the newly output array.
         Default: ``"C"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -2263,7 +2387,7 @@ def full_like(
         Fill value, in any form that can be converted to an array. This
         includes scalars, lists, lists of tuples, tuples, tuples of tuples,
         tuples of lists, and ndarrays.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -2273,13 +2397,15 @@ def full_like(
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -2382,17 +2508,19 @@ def geomspace(
     num : int, optional
         Number of samples to generate.
         Default: ``50``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -2492,17 +2620,19 @@ def identity(
     ----------
     n : int
         Number of rows (and columns) in `n` x `n` output.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -2607,17 +2737,19 @@ def linspace(
         of tuples, tuples of lists, and ndarrays. If `endpoint` is set to
         ``False`` the sequence consists of all but the last of ``num + 1``
         evenly spaced samples, so that `stop` is excluded.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -2716,18 +2848,20 @@ def loadtxt(
         is ``.gz`` or ``.bz2``, the file is first decompressed. Note that
         generators must return bytes or strings. The strings in a list or
         produced by a generator are treated as lines.
-    dtype : data-type, optional
+    dtype : {None, str, dtype object}, optional
         Data-type of the resulting array.
         Default is the default floating point data type for the device where
         the returned array is allocated.
         A structured data-type is not supported.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -2834,13 +2968,15 @@ def logspace(
     num : int, optional
         Number of samples to generate.
         Default: ``50``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -2858,7 +2994,7 @@ def logspace(
         The `step` size between the elements in ``ln(samples) / ln(base)``
         (or log_base(samples)) is uniform.
         Default: ``10.0``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array. If not given, a default dtype will be
         used that can represent the values (by considering Promotion Type Rule
         and device capabilities when necessary).
@@ -3038,13 +3174,15 @@ class MGridClass:
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -3115,13 +3253,15 @@ class OGridClass:
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -3196,20 +3336,22 @@ def ones(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
         Memory layout of the newly output array.
         Default: ``"C"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -3303,7 +3445,7 @@ def ones_like(
     a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3313,13 +3455,15 @@ def ones_like(
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -3408,7 +3552,7 @@ def trace(a, offset=0, axis1=0, axis2=1, dtype=None, out=None):
         Axes to be used as the first and second axis of the 2-D sub-arrays from
         which the diagonals should be taken. Defaults are the first two axes of
         `a`.
-    dtype : dtype, optional
+    dtype : {None, str, dtype object}, optional
         Determines the data-type of the returned array and of the accumulator
         where the elements are summed. If `dtype` has the value ``None`` and
         `a` is of integer type of precision less than the default integer
@@ -3480,17 +3624,19 @@ def tri(
         The sub-diagonal at and below which the array is filled. k = 0 is
         the main diagonal, while k < 0 is below it, and k > 0 is above.
         Default: ``0``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -3720,13 +3866,15 @@ def vander(
     increasing : bool, optional
         Order of the powers of the columns. If ``True,`` the powers increase
         from left to right, if ``False`` (the default) they are reversed.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.
@@ -3841,20 +3989,22 @@ def zeros(
     ----------
     shape : {int, sequence of ints}
         Shape of the new array, e.g., (2, 3) or 2.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., `dpnp.int32`.
         Default is the default floating point data type for the device where
         input array is allocated.
     order : {None, "C", "F"}, optional
         Memory layout of the newly output array.
         Default: ``"C"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``"device"``.
@@ -3948,7 +4098,7 @@ def zeros_like(
     a : {dpnp.ndarray, usm_ndarray}
         The shape and dtype of `a` define these same attributes
         of the returned array.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the array, e.g., dpnp.int32.
         Default is the default floating point data type for the device where
         input array is allocated.
@@ -3958,13 +4108,15 @@ def zeros_like(
         Default: ``"K"``.
     shape : {None, int, sequence of ints}
         Overrides the shape of the result.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
         Default: ``None``.

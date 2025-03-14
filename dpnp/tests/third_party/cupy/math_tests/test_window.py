@@ -2,9 +2,8 @@ import unittest
 
 import pytest
 
+from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
-
-pytest.skip("window functions are not supported yet", allow_module_level=True)
 
 
 @testing.parameterize(
@@ -17,7 +16,7 @@ pytest.skip("window functions are not supported yet", allow_module_level=True)
 )
 class TestWindow(unittest.TestCase):
 
-    @testing.numpy_cupy_allclose(atol=1e-5)
+    @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_window(self, xp):
         return getattr(xp, self.name)(self.m)
 
@@ -33,6 +32,7 @@ class TestWindow(unittest.TestCase):
 )
 class TestKaiser(unittest.TestCase):
 
+    @pytest.mark.skip("kaiser function is not supported yet")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_kaiser_parametric(self, xp):
         return getattr(xp, self.name)(self.m, self.beta)
@@ -41,6 +41,7 @@ class TestKaiser(unittest.TestCase):
 @testing.parameterize(*testing.product({"m": [-1, 0, 1]}))
 class TestKaiserBoundary(unittest.TestCase):
 
+    @pytest.mark.skip("kaiser function is not supported yet")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_kaiser(self, xp):
         return xp.kaiser(self.m, 1.5)

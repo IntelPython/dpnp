@@ -1,9 +1,7 @@
 import unittest
 
-import numpy
 import pytest
 
-import dpnp as cupy
 from dpnp.tests.helper import has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 from dpnp.tests.third_party.cupy.testing._loops import (
@@ -316,7 +314,6 @@ class TestUnique:
             )
         return xp.unique(a, axis=1, equal_nan=equal_nan)
 
-    @pytest.mark.skip("unique_all() is not supported yet")
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
         "attr", ["values", "indices", "inverse_indices", "counts"]
@@ -327,7 +324,6 @@ class TestUnique:
         a = testing.shaped_random((100, 100), xp, dtype)
         return getattr(xp.unique_all(a), attr)
 
-    @pytest.mark.skip("unique_counts() is not supported yet")
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize("attr", ["values", "counts"])
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
@@ -336,7 +332,6 @@ class TestUnique:
         a = testing.shaped_random((100, 100), xp, dtype)
         return getattr(xp.unique_counts(a), attr)
 
-    @pytest.mark.skip("unique_inverse() is not supported yet")
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize("attr", ["values", "inverse_indices"])
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
@@ -345,7 +340,6 @@ class TestUnique:
         a = testing.shaped_random((100, 100), xp, dtype)
         return getattr(xp.unique_inverse(a), attr)
 
-    @pytest.mark.skip("unique_values() is not supported yet")
     @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
@@ -387,18 +381,17 @@ class TestTrim_zeros(unittest.TestCase):
         a = xp.array([1, 0, 2, 3, 0, 5, 0, 0, 0], dtype=dtype)
         return xp.trim_zeros(a, trim=self.trim)
 
-    @pytest.mark.skip("0-d array is supported")
+    @testing.with_requires("numpy>=2.2.0")
     @testing.for_all_dtypes()
-    def test_trim_zero_dim(self, dtype):
-        for xp in (numpy, cupy):
-            a = testing.shaped_arange((), xp, dtype)
-            with pytest.raises(TypeError):
-                xp.trim_zeros(a, trim=self.trim)
+    @testing.numpy_cupy_array_equal()
+    def test_trim_zero_dim(self, xp, dtype):
+        a = testing.shaped_arange((), xp, dtype)
+        return xp.trim_zeros(a, trim=self.trim)
 
-    @pytest.mark.skip("nd array is supported")
+    # @pytest.mark.xfail(reason='XXX: Not implemented')
+    @testing.with_requires("numpy>=2.2.0")
     @testing.for_all_dtypes()
-    def test_trim_ndim(self, dtype):
-        for xp in (numpy, cupy):
-            a = testing.shaped_arange((2, 3), xp, dtype=dtype)
-            with pytest.raises(ValueError):
-                xp.trim_zeros(a, trim=self.trim)
+    @testing.numpy_cupy_array_equal()
+    def test_trim_ndim(self, xp, dtype):
+        a = testing.shaped_arange((2, 3), xp, dtype=dtype)
+        return xp.trim_zeros(a, trim=self.trim)

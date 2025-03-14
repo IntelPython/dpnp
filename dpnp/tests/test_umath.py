@@ -12,6 +12,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    get_abs_array,
     get_all_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
@@ -72,19 +73,11 @@ def get_id(val):
     return val.__str__()
 
 
-# implement missing umaths and to remove the list
-new_umaths_numpy_20 = [
-    "bitwise_count",  # SAT-7323
-]
-
-
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("test_cases", test_cases, ids=get_id)
 def test_umaths(test_cases):
     umath, args_str = test_cases
-    if umath in new_umaths_numpy_20:
-        pytest.skip("new umaths from numpy 2.0 are not supported yet")
 
     if umath in ["matmul", "matvec", "vecmat"]:
         sh = (4, 4)
@@ -109,10 +102,7 @@ def test_umaths(test_cases):
         ):
             pytest.skip("numpy.ldexp doesn't have a loop for the input types")
 
-    # original
     expected = getattr(numpy, umath)(*args)
-
-    # DPNP
     result = getattr(dpnp, umath)(*iargs)
 
     assert_allclose(result, expected, rtol=1e-6)
@@ -128,7 +118,7 @@ def _get_numpy_arrays_1in_1out(func_name, dtype, range):
     low = range[0]
     high = range[1]
     size = range[2]
-    if dtype == numpy.bool_:
+    if dtype == dpnp.bool:
         np_array = numpy.arange(2, dtype=dtype)
         result = getattr(numpy, func_name)(np_array)
     elif dpnp.issubdtype(dtype, dpnp.complexfloating):
@@ -154,7 +144,7 @@ def _get_numpy_arrays_2in_1out(func_name, dtype, range):
     low = range[0]
     high = range[1]
     size = range[2]
-    if dtype == numpy.bool_:
+    if dtype == dpnp.bool:
         np_array1 = numpy.arange(2, dtype=dtype)
         np_array2 = numpy.arange(2, dtype=dtype)
         result = getattr(numpy, func_name)(np_array1, np_array2)
@@ -178,8 +168,16 @@ def _get_numpy_arrays_2in_1out(func_name, dtype, range):
 
 def _get_output_data_type(dtype):
     """Return a data type specified by input `dtype` and device capabilities."""
-    if dpnp.issubdtype(dtype, dpnp.bool):
+    dtype_float16 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
+    )
+    dtype_float32 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
+    )
+    if dtype_float16:
         out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
+    elif dtype_float32:
+        out_dtype = dpnp.float32
     elif dpnp.issubdtype(dtype, dpnp.complexfloating):
         out_dtype = dpnp.complex64
         if has_support_aspect64() and dtype != dpnp.complex64:
@@ -315,7 +313,7 @@ class TestDegrees:
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dtype):
-        a = numpy.array([numpy.pi, -0.5 * numpy.pi], dtype=dtype)
+        a = get_abs_array([numpy.pi, -0.5 * numpy.pi], dtype)
         ia = dpnp.array(a)
 
         result = dpnp.degrees(ia)
@@ -354,7 +352,9 @@ class TestFloatPower:
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
-    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_unsigned=True)
+    )
     def test_negative_base_value(self, dt):
         a = numpy.array([-1, -4], dtype=dt)
         ia = dpnp.array(a)
@@ -363,7 +363,9 @@ class TestFloatPower:
         expected = numpy.float_power(a, 1.5)
         assert_allclose(result, expected)
 
-    @pytest.mark.parametrize("dt", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_unsigned=True)
+    )
     def test_negative_base_value_complex_dtype(self, dt):
         a = numpy.array([-1, -4], dtype=dt)
         ia = dpnp.array(a)
@@ -461,8 +463,8 @@ class TestLogAddExp2:
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_range(self, dt):
-        a = numpy.array([1000000, -1000000, 1000200, -1000200], dtype=dt)
-        b = numpy.array([1000200, -1000200, 1000000, -1000000], dtype=dt)
+        a = get_abs_array([1000000, -1000000, 1000200, -1000200], dtype=dt)
+        b = get_abs_array([1000200, -1000200, 1000000, -1000000], dtype=dt)
         ia, ib = dpnp.array(a), dpnp.array(b)
 
         result = dpnp.logaddexp2(ia, ib)
@@ -506,7 +508,7 @@ class TestRadians:
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     def test_basic(self, dtype):
-        a = numpy.array([180.0, -90.0], dtype=dtype)
+        a = get_abs_array([120.0, -90.0], dtype)
         ia = dpnp.array(a)
 
         result = dpnp.radians(ia)
@@ -623,7 +625,7 @@ class TestSquare:
         )
 
         dp_array = dpnp.array(np_array)
-        out_dtype = numpy.int8 if dtype == numpy.bool_ else dtype
+        out_dtype = numpy.int8 if dtype == dpnp.bool else dtype
         dp_out = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.square(dp_array, out=dp_out)
 
@@ -648,16 +650,15 @@ class TestSquare:
         with pytest.raises(ValueError):
             dpnp.square(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
         [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
     )
-    def test_invalid_out(self, out):
-        a = dpnp.arange(10)
-
-        assert_raises(TypeError, dpnp.square, a, out)
-        assert_raises(TypeError, numpy.square, a.asnumpy(), out)
+    def test_invalid_out(self, xp, out):
+        a = xp.arange(10)
+        assert_raises(TypeError, xp.square, a, out)
 
 
 class TestUmath:
@@ -710,6 +711,7 @@ class TestUmath:
     def func_params(self, request):
         return request.param
 
+    @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes())
     def test_out(self, func_params, dtype):
@@ -747,16 +749,16 @@ class TestUmath:
         with pytest.raises(ValueError):
             getattr(dpnp, func_name)(dp_array, out=dp_out)
 
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize(
         "out",
         [4, (), [], (3, 7), [2, 4]],
-        ids=["4", "()", "[]", "(3, 7)", "[2, 4]"],
+        ids=["scalar", "empty_tuple", "empty_list", "tuple", "list"],
     )
-    def test_invalid_out(self, func_params, out):
+    def test_invalid_out(self, func_params, xp, out):
         func_name = func_params["func_name"]
-        a = dpnp.arange(10)
-        assert_raises(TypeError, getattr(dpnp, func_name), a, out)
-        assert_raises(TypeError, getattr(numpy, func_name), a.asnumpy(), out)
+        a = xp.arange(10)
+        assert_raises(TypeError, getattr(xp, func_name), a, out)
 
 
 def test_trigonometric_hyperbolic_aliases():

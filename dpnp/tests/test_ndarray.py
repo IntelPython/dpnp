@@ -11,6 +11,7 @@ from numpy.testing import (
 import dpnp
 
 from .helper import (
+    get_abs_array,
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
@@ -19,26 +20,27 @@ from .helper import (
 from .third_party.cupy import testing
 
 
-@pytest.mark.usefixtures("suppress_complex_warning")
-@pytest.mark.parametrize("res_dtype", get_all_dtypes())
-@pytest.mark.parametrize("arr_dtype", get_all_dtypes())
-@pytest.mark.parametrize(
-    "arr",
-    [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],
-    ids=["[-2, -1, 0, 1, 2]", "[[-2, -1], [1, 2]]", "[]"],
-)
-def test_astype(arr, arr_dtype, res_dtype):
-    numpy_array = numpy.array(arr, dtype=arr_dtype)
-    dpnp_array = dpnp.array(numpy_array)
-    expected = numpy_array.astype(res_dtype)
-    result = dpnp_array.astype(res_dtype)
-    assert_allclose(expected, result)
+class TestAsType:
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize("res_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("arr_dtype", get_all_dtypes())
+    @pytest.mark.parametrize(
+        "arr",
+        [[-2, -1, 0, 1, 2], [[-2, -1], [1, 2]], []],
+        ids=["1d", "2d", "empty"],
+    )
+    def test_basic(self, arr, arr_dtype, res_dtype):
+        a = get_abs_array(arr, arr_dtype)
+        ia = dpnp.array(a)
 
+        expected = a.astype(res_dtype)
+        result = ia.astype(res_dtype)
+        assert_allclose(expected, result)
 
-def test_astype_subok_error():
-    x = dpnp.ones((4))
-    with pytest.raises(NotImplementedError):
-        x.astype("i4", subok=False)
+    def test_subok_error(self):
+        x = dpnp.ones(4)
+        with pytest.raises(NotImplementedError):
+            x.astype("i4", subok=False)
 
 
 class TestAttributes:
@@ -93,8 +95,8 @@ def test_create_from_usm_ndarray_error(arr):
     ids=["[-2, -1, 0, 1, 2]", "[[-2, -1], [1, 2]]", "[]"],
 )
 def test_flatten(arr, arr_dtype):
-    numpy_array = numpy.array(arr, dtype=arr_dtype)
-    dpnp_array = dpnp.array(arr, dtype=arr_dtype)
+    numpy_array = get_abs_array(arr, arr_dtype)
+    dpnp_array = dpnp.array(numpy_array)
     expected = numpy_array.flatten()
     result = dpnp_array.flatten()
     assert_array_equal(expected, result)

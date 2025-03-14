@@ -832,7 +832,7 @@ def cumlogsumexp(
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1642,7 +1642,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1892,7 +1892,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -2448,7 +2448,7 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
     abs_p_diff = dpnp.abs(p_diff, out=p_diff)
     ph_correct = dpnp.where(abs_p_diff < discont, 0, ph_correct, out=ph_correct)
 
-    up = dpnp.astype(p, dtype=dt, copy=True)
+    up = dpnp.astype(p, dt, copy=True)
     up[slice1] = p[slice1]
     up[slice1] += ph_correct.cumsum(axis=axis)
     return up

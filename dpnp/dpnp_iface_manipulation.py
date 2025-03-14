@@ -71,6 +71,24 @@ class InsertDeleteParams(NamedTuple):
     usm_type: str
 
 
+# pylint:disable=missing-class-docstring
+class UniqueAllResult(NamedTuple):
+    values: dpnp.ndarray
+    indices: dpnp.ndarray
+    inverse_indices: dpnp.ndarray
+    counts: dpnp.ndarray
+
+
+class UniqueCountsResult(NamedTuple):
+    values: dpnp.ndarray
+    counts: dpnp.ndarray
+
+
+class UniqueInverseResult(NamedTuple):
+    values: dpnp.ndarray
+    inverse_indices: dpnp.ndarray
+
+
 __all__ = [
     "append",
     "array_split",
@@ -122,6 +140,10 @@ __all__ = [
     "transpose",
     "trim_zeros",
     "unique",
+    "unique_all",
+    "unique_counts",
+    "unique_inverse",
+    "unique_values",
     "unstack",
     "vsplit",
     "vstack",
@@ -554,16 +576,16 @@ def append(arr, values, axis=None):
     arr : {dpnp.ndarray, usm_ndarray}
         Values are appended to a copy of this array.
     values : {scalar, array_like}
-        These values are appended to a copy of `arr`. It must be of the
-        correct shape (the same shape as `arr`, excluding `axis`). If
-        `axis` is not specified, `values` can be any shape and will be
-        flattened before use.
-        These values can be in any form that can be converted to an array.
-        This includes scalars, lists, lists of tuples, tuples,
-        tuples of tuples, tuples of lists, and ndarrays.
+        These values are appended to a copy of `arr`. It must be of the correct
+        shape (the same shape as `arr`, excluding `axis`). If `axis` is not
+        specified, `values` can be any shape and will be flattened before use.
+        These values can be in any form that can be converted to an array. This
+        includes scalars, lists, lists of tuples, tuples, tuples of tuples,
+        tuples of lists, and ndarrays.
     axis : {None, int}, optional
-        The axis along which `values` are appended. If `axis` is not
-        given, both `arr` and `values` are flattened before use.
+        The axis along which `values` are appended. If `axis` is not given,
+        both `arr` and `values` are flattened before use.
+
         Default: ``None``.
 
     Returns
@@ -637,11 +659,11 @@ def array_split(ary, indices_or_sections, axis=0):
         If `indices_or_sections` is an integer, N, and array length is l, it
         returns ``l % n`` sub-arrays of size ``l//n + 1`` and the rest of size
         ``l//n``.
-
         If `indices_or_sections` is a sequence of sorted integers, the entries
         indicate where along `axis` the array is split.
     axis : int, optional
         The axis along which to split.
+
         Default: ``0``.
 
     Returns
@@ -715,26 +737,31 @@ def asarray_chkfinite(
         of lists and ndarrays. Success requires no NaNs or Infs.
     dtype : {None, str, dtype object}, optional
         By default, the data-type is inferred from the input data.
+
         Default: ``None``.
     order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array.
+
         Default: ``"K"``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -825,24 +852,32 @@ def asfarray(a, dtype=None, *, device=None, usm_type=None, sycl_queue=None):
         protocol, an instance of :class:`numpy.ndarray`, an object supporting
         Python buffer protocol, a Python scalar, or a (possibly nested)
         sequence of Python scalars.
-    dtype : str or dtype object, optional
+    dtype : {None, str, dtype object}, optional
         Float type code to coerce input array `a`.  If `dtype` is ``None``,
         :obj:`dpnp.bool` or one of the `int` dtypes, it is replaced with
         the default floating type (:obj:`dpnp.float64` if a device supports it,
         or :obj:`dpnp.float32` type otherwise).
-    device : {None, string, SyclDevice, SyclQueue}, optional
+
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by :obj:`dpnp.ndarray.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1112,7 +1147,7 @@ def broadcast_shapes(*args):
 
     Returns
     -------
-    tuple
+    out : tuple
         Broadcasted shape.
 
     See Also
@@ -1145,7 +1180,7 @@ def broadcast_to(array, /, shape, subok=False):
     ----------
     array : {dpnp.ndarray, usm_ndarray}
         The array to broadcast.
-    shape : tuple or int
+    shape : {int, tuple of ints}
         The shape of the desired array. A single integer ``i`` is interpreted
         as ``(i,)``.
 
@@ -1199,6 +1234,8 @@ def can_cast(from_, to, casting="safe"):
         Target data type.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur.
+
+        Default: ``"safe"``.
 
     Returns
     -------
@@ -1349,16 +1386,23 @@ def concatenate(
     axis : int, optional
         The axis along which the arrays will be joined. If axis is ``None``,
         arrays are flattened before use.
+
         Default: ``0``.
     out : dpnp.ndarray, optional
         If provided, the destination to place the result. The shape must be
         correct, matching that of what concatenate would have returned
         if no out argument were specified.
-    dtype : str or dtype
+
+        Default: ``None``.
+    dtype : {None, str, dtype object}, optional
         If provided, the destination array will have this dtype. Cannot be
         provided together with `out`.
+
+        Default: ``None``.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-        Controls what kind of data casting may occur. Defaults to 'same_kind'.
+        Controls what kind of data casting may occur.
+
+        Default: ``"same_kind"``.
 
     Returns
     -------
@@ -1440,10 +1484,14 @@ def copyto(dst, src, casting="same_kind", where=True):
         The array from which values are copied.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur when copying.
+
+        Default: ``"same_kind"``.
     where : {dpnp.ndarray, usm_ndarray, scalar} of bool, optional
         A boolean array or a scalar which is broadcasted to match
         the dimensions of `dst`, and selects elements to copy
         from `src` to `dst` wherever it contains the value ``True``.
+
+        Default: ``True``.
 
     Examples
     --------
@@ -1469,7 +1517,19 @@ def copyto(dst, src, casting="same_kind", where=True):
             f"but got {type(dst)}"
         )
     if not dpnp.is_supported_array_type(src):
+        python_sc = dpnp.isscalar(src) and not isinstance(src, numpy.generic)
         src = dpnp.array(src, sycl_queue=dst.sycl_queue)
+        if python_sc:
+            # Python scalar needs special handling to behave similar to NumPy
+            if dpnp.issubdtype(src, dpnp.integer) and dpnp.issubdtype(
+                dst, dpnp.unsignedinteger
+            ):
+                if dpnp.any(src < 0):
+                    raise OverflowError(
+                        "Cannot copy negative values to an unsigned int array"
+                    )
+
+                src = src.astype(dst.dtype)
 
     if not dpnp.can_cast(src.dtype, dst.dtype, casting=casting):
         raise TypeError(
@@ -1524,6 +1584,7 @@ def delete(arr, obj, axis=None):
     axis : {None, int}, optional
         The axis along which to delete the subarray defined by `obj`.
         If `axis` is ``None``, `obj` is applied to the flattened array.
+
         Default: ``None``.
 
     Returns
@@ -1750,7 +1811,7 @@ def expand_dims(a, axis):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : int or tuple of ints
+    axis : {int, tuple of ints}
         Position in the expanded axes where the new axis (or axes) is placed.
 
     Returns
@@ -1841,12 +1902,14 @@ def flip(m, axis=None):
     ----------
     m : {dpnp.ndarray, usm_ndarray}
         Input array.
-    axis : None or int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
          Axis or axes along which to flip over. The default,
          ``axis=None``, will flip over all of the axes of the input array.
          If `axis` is negative it counts from the last to the first axis.
          If `axis` is a tuple of integers, flipping is performed on all of
          the axes specified in the tuple.
+
+         Default: ``None``.
 
     Returns
     -------
@@ -2107,10 +2170,14 @@ def hstack(tup, *, dtype=None, casting="same_kind"):
     tup : {dpnp.ndarray, usm_ndarray}
         The arrays must have the same shape along all but the second axis,
         except 1-D arrays which can be any length.
-    dtype : str or dtype
+    dtype : {None, str, dtype object}, optional
         If provided, the destination array will have this dtype.
+
+        Default: ``None``.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
+        Default: ``"same_kind"``.
 
     Returns
     -------
@@ -2184,6 +2251,7 @@ def insert(arr, obj, values, axis=None):
     axis : {None, int}, optional
         Axis along which to insert `values`. If `axis` is ``None`` then `arr`
         is flattened first.
+
         Default: ``None``.
 
     Returns
@@ -2478,6 +2546,7 @@ def pad(array, pad_width, mode="constant", **kwargs):
             Pads with undefined values.
         <function>
             Padding function, see Notes.
+
         Default: ``"constant"``.
     stat_length : {None, int, sequence of ints}, optional
         Used in ``"maximum"``, ``"mean"``, ``"median"``, and ``"minimum"``.
@@ -2488,7 +2557,8 @@ def pad(array, pad_width, mode="constant", **kwargs):
         and after statistic lengths for each axis.
         ``(stat_length,)`` or ``int`` is a shortcut for
         ``before = after = statistic`` length for all axes.
-       Default: ``None``, to use the entire axis.
+
+        Default: ``None``, to use the entire axis.
     constant_values : {sequence, scalar}, optional
         Used in ``"constant"``. The values to set the padded values for each
         axis.
@@ -2498,6 +2568,7 @@ def pad(array, pad_width, mode="constant", **kwargs):
         and after constants for each axis.
         ``(constant,)`` or ``constant`` is a shortcut for
         ``before = after = constant`` for all axes.
+
         Default: ``0``.
     end_values : {sequence, scalar}, optional
         Used in ``"linear_ramp"``. The values used for the ending value of the
@@ -2508,12 +2579,14 @@ def pad(array, pad_width, mode="constant", **kwargs):
         and after end values for each axis.
         ``(constant,)`` or ``constant`` is a shortcut for
         ``before = after = constant`` for all axes.
+
         Default: ``0``.
     reflect_type : {"even", "odd"}, optional
         Used in ``"reflect"``, and ``"symmetric"``. The ``"even"`` style is the
         default with an unaltered reflection around the edge value. For
         the ``"odd"`` style, the extended part of the array is created by
         subtracting the reflected values from two times the edge value.
+
         Default: ``"even"``.
 
     Returns
@@ -2647,6 +2720,7 @@ def ravel(a, order="C"):
         Fortran-like index order if `a` is Fortran *contiguous* in
         memory, C-like order otherwise. ``order=None`` is an alias for
         ``order="C"``.
+
         Default: ``"C"``.
 
     Returns
@@ -2735,6 +2809,7 @@ def repeat(a, repeats, axis=None):
     axis : {None, int}, optional
         The axis along which to repeat values. By default, use the flattened
         input array, and return a flat output array.
+
         Default: ``None``.
 
     Returns
@@ -2795,14 +2870,18 @@ def require(a, dtype=None, requirements=None, *, like=None):
     a : {dpnp.ndarray, usm_ndarray}
        The input array to be converted to a type-and-requirement-satisfying
        array.
-    dtype : {None, data-type}, optional
+    dtype : {None, str, dtype object}, optional
        The required data-type. If ``None`` preserve the current dtype.
+
+       Default: ``None``.
     requirements : {None, str, sequence of str}, optional
        The requirements list can be any of the following:
 
        * 'F_CONTIGUOUS' ('F') - ensure a Fortran-contiguous array
        * 'C_CONTIGUOUS' ('C') - ensure a C-contiguous array
        * 'WRITABLE' ('W') - ensure a writable array
+
+        Default: ``None``.
 
     Returns
     -------
@@ -2897,11 +2976,13 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array to be reshaped.
-    shape : int or tuple of ints
+    shape : {int, tuple of ints}, optional
         The new shape should be compatible with the original shape. If
         an integer, then the result will be a 1-D array of that length.
         One shape dimension can be -1. In this case, the value is
         inferred from the length of the array and remaining dimensions.
+
+        Default: ``None``.
     order : {None, "C", "F", "A"}, optional
         Read the elements of `a` using this index order, and place the
         elements into the reshaped array using this index order. ``"C"``
@@ -2915,13 +2996,17 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
         ``order=None`` is an alias for ``order="C"``. ``"A"`` means to
         read / write the elements in Fortran-like index order if ``a`` is
         Fortran *contiguous* in memory, C-like order otherwise.
+
         Default: ``"C"``.
     newshape : int or tuple of ints
         Replaced by `shape` argument. Retained for backward compatibility.
+
+        Default: ``None``.
     copy : {None, bool}, optional
         If ``True``, then the array data is copied. If ``None``, a copy will
         only be made if it's required by ``order``. For ``False`` it raises
         a ``ValueError`` if a copy cannot be avoided.
+
         Default: ``None``.
 
     Returns
@@ -3175,6 +3260,8 @@ def roll(x, shift, axis=None):
         array is flattened before shifting, after which the original
         shape is restored.
 
+        Default: ``None``.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -3238,6 +3325,8 @@ def rollaxis(x, axis, start=0):
         lies before this position. The default, ``0``, results in a "complete"
         roll.
 
+        Default: ``0``.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -3294,10 +3383,12 @@ def rot90(m, k=1, axes=(0, 1)):
         Array of two or more dimensions.
     k : integer, optional
         Number of times the array is rotated by 90 degrees.
+
         Default: ``1``.
     axes : (2,) array_like of ints, optional
         The array is rotated in the plane defined by the axes.
         Axes must be different.
+
         Default: ``(0, 1)``.
 
     Returns
@@ -3392,7 +3483,7 @@ def shape(a):
 
     Returns
     -------
-    shape : tuple of integers
+    shape : {int, tuple of ints}
         The elements of the shape tuple give the lengths of the
         corresponding array dimensions.
 
@@ -3434,6 +3525,7 @@ def size(a, axis=None):
     axis : {None, int}, optional
         Axis along which the elements are counted.
         By default, give the total number of elements.
+
         Default: ``None``.
 
     Returns
@@ -3501,6 +3593,7 @@ def split(ary, indices_or_sections, axis=0):
         an empty sub-array is returned correspondingly.
     axis : int, optional
         The axis along which to split.
+
         Default: ``0``.
 
     Returns
@@ -3574,10 +3667,12 @@ def squeeze(a, /, axis=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input data.
-    axis : None or int or tuple of ints, optional
+    axis : {None, int, tuple of ints}, optional
         Selects a subset of the entries of length one in the shape.
         If an axis is selected with shape entry greater than one,
         an error is raised.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -3624,15 +3719,23 @@ def stack(arrays, /, *, axis=0, out=None, dtype=None, casting="same_kind"):
         Each array must have the same shape.
     axis : int, optional
         The axis in the result array along which the input arrays are stacked.
+
+        Default: ``0``.
     out : dpnp.ndarray, optional
         If provided, the destination to place the result. The shape must be
         correct, matching that of what stack would have returned if no out
         argument were specified.
-    dtype : str or dtype
+
+        Default: ``None``.
+    dtype : {None, str, dtype object}, optional
         If provided, the destination array will have this dtype. Cannot be
         provided together with `out`.
+
+        Default: ``None``.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
+        Default: ``"same_kind"``.
 
     Returns
     -------
@@ -3852,6 +3955,7 @@ def transpose(a, axes=None):
         numbered ``axes[i]`` of the input. If not specified or ``None``,
         defaults to ``range(a.ndim)[::-1]``, which reverses the order of
         the axes.
+
         Default: ``None``.
 
     Returns
@@ -3920,13 +4024,15 @@ def trim_zeros(filt, trim="fb", axis=None):
         to the edges of a dimension, with "front" referring to the side with
         the lowest index 0, and "back" referring to the highest index
         (or index -1).
+
         Default: ``"fb"``.
     axis : {None, int}, optional
-        If ``None``, `filt` is cropped such, that the smallest bounding box is
+        If ``None``, `filt` is cropped such that the smallest bounding box is
         returned that still contains all values which are not zero.
         If an `axis` is specified, `filt` will be sliced in that dimension only
         on the sides specified by `trim`. The remaining area will be the
         smallest that still contains all values which are not zero.
+
         Default: ``None``.
 
     Returns
@@ -4037,23 +4143,28 @@ def unique(
     return_index : bool, optional
         If ``True``, also return the indices of `ar` (along the specified axis,
         if provided, or in the flattened array) that result in the unique array.
+
         Default: ``False``.
     return_inverse : bool, optional
         If ``True``, also return the indices of the unique array (for the
         specified axis, if provided) that can be used to reconstruct `ar`.
+
         Default: ``False``.
     return_counts : bool, optional
         If ``True``, also return the number of times each unique item appears
         in `ar`.
+
         Default: ``False``.
     axis : {int, None}, optional
         The axis to operate on. If ``None``, `ar` will be flattened. If an
         integer, the subarrays indexed by the given axis will be flattened and
         treated as the elements of a 1-D array with the dimension of the given
         axis, see the notes for more details.
+
         Default: ``None``.
     equal_nan : bool, optional
         If ``True``, collapses multiple NaN values in the return array into one.
+
         Default: ``True``.
 
     Returns
@@ -4187,6 +4298,189 @@ def unique(
     return _unpack_tuple(result)
 
 
+def unique_all(x, /):
+    """
+    Find the unique elements of an array, and counts, inverse, and indices.
+
+    For full documentation refer to :obj:`numpy.unique_all`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    A namedtuple with the following attributes:
+
+    values : dpnp.ndarray
+        The unique elements of an input array.
+    indices : dpnp.ndarray
+        The first occurring indices for each unique element.
+    inverse_indices : dpnp.ndarray
+        The indices from the set of unique elements that reconstruct `x`.
+    counts : dpnp.ndarray
+        The corresponding counts for each unique element.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2])
+    >>> uniq = np.unique_all(x)
+    >>> uniq.values
+    array([1, 2])
+    >>> uniq.indices
+    array([0, 2])
+    >>> uniq.inverse_indices
+    array([0, 0, 1])
+    >>> uniq.counts
+    array([2, 1])
+
+    """
+
+    result = dpnp.unique(
+        x,
+        return_index=True,
+        return_inverse=True,
+        return_counts=True,
+        equal_nan=False,
+    )
+    return UniqueAllResult(*result)
+
+
+def unique_counts(x, /):
+    """
+    Find the unique elements and counts of an input array `x`.
+
+    For full documentation refer to :obj:`numpy.unique_counts`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    A namedtuple with the following attributes:
+
+    values : dpnp.ndarray
+        The unique elements of an input array.
+    counts : dpnp.ndarray
+        The corresponding counts for each unique element.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2])
+    >>> uniq = np.unique_counts(x)
+    >>> uniq.values
+    array([1, 2])
+    >>> uniq.counts
+    array([2, 1])
+
+    """
+
+    result = dpnp.unique(
+        x,
+        return_index=False,
+        return_inverse=False,
+        return_counts=True,
+        equal_nan=False,
+    )
+    return UniqueCountsResult(*result)
+
+
+def unique_inverse(x, /):
+    """
+    Find the unique elements of `x` and indices to reconstruct `x`.
+
+    For full documentation refer to :obj:`numpy.unique_inverse`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    A namedtuple with the following attributes:
+
+    values : dpnp.ndarray
+        The unique elements of an input array.
+    inverse_indices : dpnp.ndarray
+        The indices from the set of unique elements that reconstruct `x`.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.array([1, 1, 2])
+    >>> uniq = np.unique_inverse(x)
+    >>> uniq.values
+    array([1, 2])
+    >>> uniq.inverse_indices
+    array([0, 0, 1])
+
+    """
+
+    result = dpnp.unique(
+        x,
+        return_index=False,
+        return_inverse=True,
+        return_counts=False,
+        equal_nan=False,
+    )
+    return UniqueInverseResult(*result)
+
+
+def unique_values(x, /):
+    """
+    Returns the unique elements of an input array `x`.
+
+    For full documentation refer to :obj:`numpy.unique_values`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input array. It will be flattened if it is not already 1-D.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The unique elements of an input array.
+
+    See Also
+    --------
+    :obj:`dpnp.unique` : Find the unique elements of an array.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.unique_values(np.array([1, 1, 2]))
+    array([1, 2])
+
+    """
+
+    return dpnp.unique(
+        x,
+        return_index=False,
+        return_inverse=False,
+        return_counts=False,
+        equal_nan=False,
+    )
+
+
 def unstack(x, /, *, axis=0):
     """
     Split an array into a sequence of arrays along the given axis.
@@ -4205,6 +4499,7 @@ def unstack(x, /, *, axis=0):
         The array to be unstacked.
     axis : int, optional
         Axis along which the array will be split.
+
         Default: ``0``.
 
     Returns
@@ -4353,10 +4648,14 @@ def vstack(tup, *, dtype=None, casting="same_kind"):
     tup : {dpnp.ndarray, usm_ndarray}
         The arrays must have the same shape along all but the first axis.
         1-D arrays must have the same length.
-    dtype : str or dtype
+    dtype : {None, str, dtype object}, optional
         If provided, the destination array will have this dtype.
+
+        Default: ``None``.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur. Defaults to 'same_kind'.
+
+        Default: ``"same_kind"``.
 
     Returns
     -------

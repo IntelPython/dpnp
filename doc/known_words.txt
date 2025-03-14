@@ -2,7 +2,9 @@ al
 ary
 backend
 bandlimited
+bincount
 bitwise
+Blackman
 boolean
 broadcastable
 broadcasted
@@ -36,6 +38,7 @@ fs
 getter
 Golub
 Hadamard
+Hanning
 histogrammed
 Hypergeometric
 kwargs
@@ -49,9 +52,13 @@ Lanczos
 Lomax
 Mersenne
 meshgrid
+minlength
 Mises
 multinomial
 multivalued
+namespace
+namespaces
+namedtuple
 NaN
 NaT
 nd
@@ -69,6 +76,7 @@ Nyquist
 oneAPI
 ord
 orthonormal
+radix
 Penrose
 Polyutils
 pre
@@ -79,6 +87,7 @@ representable
 resampling
 runtimes
 scikit
+se
 signbit
 signum
 sinc

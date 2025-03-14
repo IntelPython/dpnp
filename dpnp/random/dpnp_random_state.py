@@ -61,13 +61,15 @@ class RandomState:
         A random seed to initialize the pseudo-random number generator.
         The `seed` can be ``None`` (the default), an integer scalar, or
         an array of at most three integer scalars.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means

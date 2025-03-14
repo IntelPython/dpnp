@@ -2,9 +2,12 @@ from sys import platform
 
 import dpctl
 import numpy
+import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+
+from . import config
 
 
 def assert_dtype_allclose(
@@ -84,98 +87,6 @@ def assert_dtype_allclose(
                 assert dpnp_arr.dtype == numpy_arr.dtype
 
 
-def get_integer_dtypes():
-    """
-    Build a list of integer types supported by DPNP.
-    """
-
-    return [dpnp.int32, dpnp.int64]
-
-
-def get_complex_dtypes(device=None):
-    """
-    Build a list of complex types supported by DPNP based on device capabilities.
-    """
-
-    dev = dpctl.select_default_device() if device is None else device
-
-    # add complex types
-    dtypes = [dpnp.complex64]
-    if dev.has_aspect_fp64:
-        dtypes.append(dpnp.complex128)
-    return dtypes
-
-
-def get_float_dtypes(no_float16=True, device=None):
-    """
-    Build a list of floating types supported by DPNP based on device capabilities.
-    """
-
-    dev = dpctl.select_default_device() if device is None else device
-
-    # add floating types
-    dtypes = []
-    if not no_float16 and dev.has_aspect_fp16:
-        dtypes.append(dpnp.float16)
-
-    dtypes.append(dpnp.float32)
-    if dev.has_aspect_fp64:
-        dtypes.append(dpnp.float64)
-    return dtypes
-
-
-def get_float_complex_dtypes(no_float16=True, device=None):
-    """
-    Build a list of floating and complex types supported by DPNP based on device capabilities.
-    """
-
-    dtypes = get_float_dtypes(no_float16, device)
-    dtypes.extend(get_complex_dtypes(device))
-    return dtypes
-
-
-def get_all_dtypes(
-    no_bool=False, no_float16=True, no_complex=False, no_none=False, device=None
-):
-    """
-    Build a list of types supported by DPNP based on input flags and device capabilities.
-    """
-
-    dev = dpctl.select_default_device() if device is None else device
-
-    # add boolean type
-    dtypes = [dpnp.bool] if not no_bool else []
-
-    # add integer types
-    dtypes.extend(get_integer_dtypes())
-
-    # add floating types
-    dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))
-
-    # add complex types
-    if not no_complex:
-        dtypes.extend(get_complex_dtypes(device=dev))
-
-    # add None value to validate a default dtype
-    if not no_none:
-        dtypes.append(None)
-    return dtypes
-
-
-def get_array(xp, a):
-    """
-    Cast input array `a` to a type supported by `xp` interface.
-
-    Implicit conversion of either DPNP or DPCTL array to a NumPy array is not
-    allowed. Input array has to be explicitly casted with `asnumpy` function.
-
-    """
-
-    if xp is numpy and dpnp.is_supported_array_type(a):
-        return dpnp.asnumpy(a)
-    return a
-
-
 def generate_random_numpy_array(
     shape,
     dtype=None,
@@ -241,6 +152,9 @@ def generate_random_numpy_array(
         seed_value = 42
     numpy.random.seed(seed_value)
 
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        low = 0
+
     # dtype=int is needed for 0d arrays
     size = numpy.prod(shape, dtype=int)
     if dtype == dpnp.bool:
@@ -271,6 +185,151 @@ def generate_random_numpy_array(
     return a
 
 
+def get_abs_array(data, dtype=None):
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        data = numpy.abs(data)
+    # it is better to use astype with the default casting=unsafe
+    # otherwise, we need to skip test for cases where overflow occurs
+    return numpy.array(data).astype(dtype)
+
+
+def get_all_dtypes(
+    no_bool=False,
+    no_float16=True,
+    no_complex=False,
+    no_none=False,
+    xfail_dtypes=None,
+    exclude=None,
+    no_unsigned=False,
+    device=None,
+):
+    """
+    Build a list of types supported by DPNP based on
+    input flags and device capabilities.
+    """
+
+    dev = dpctl.select_default_device() if device is None else device
+
+    # add boolean type
+    dtypes = [dpnp.bool] if not no_bool else []
+
+    # add integer types
+    dtypes.extend(get_integer_dtypes(no_unsigned=no_unsigned))
+
+    # add floating types
+    dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))
+
+    # add complex types
+    if not no_complex:
+        dtypes.extend(get_complex_dtypes(device=dev))
+
+    # add None value to validate a default dtype
+    if not no_none:
+        dtypes.append(None)
+
+    def mark_xfail(dtype):
+        if xfail_dtypes is not None and dtype in xfail_dtypes:
+            return pytest.param(dtype, marks=pytest.mark.xfail)
+        return dtype
+
+    def not_excluded(dtype):
+        if exclude is None:
+            return True
+        return dtype not in exclude
+
+    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
+    return dtypes
+
+
+def get_array(xp, a):
+    """
+    Cast input array `a` to a type supported by `xp` interface.
+
+    Implicit conversion of either DPNP or DPCTL array to a NumPy array is not
+    allowed. Input array has to be explicitly casted with `asnumpy` function.
+
+    """
+
+    if xp is numpy and dpnp.is_supported_array_type(a):
+        return dpnp.asnumpy(a)
+    return a
+
+
+def get_complex_dtypes(device=None):
+    """
+    Build a list of complex types supported by DPNP based on device capabilities.
+    """
+
+    dev = dpctl.select_default_device() if device is None else device
+
+    # add complex types
+    dtypes = [dpnp.complex64]
+    if dev.has_aspect_fp64:
+        dtypes.append(dpnp.complex128)
+    return dtypes
+
+
+def get_float_dtypes(no_float16=True, device=None):
+    """
+    Build a list of floating types supported by DPNP based on device capabilities.
+    """
+
+    dev = dpctl.select_default_device() if device is None else device
+
+    # add floating types
+    dtypes = []
+    if not no_float16 and dev.has_aspect_fp16:
+        dtypes.append(dpnp.float16)
+
+    dtypes.append(dpnp.float32)
+    if dev.has_aspect_fp64:
+        dtypes.append(dpnp.float64)
+    return dtypes
+
+
+def get_float_complex_dtypes(no_float16=True, device=None):
+    """
+    Build a list of floating and complex types supported by DPNP based on device capabilities.
+    """
+
+    dtypes = get_float_dtypes(no_float16, device)
+    dtypes.extend(get_complex_dtypes(device))
+    return dtypes
+
+
+def get_integer_dtypes(all_int_types=False, no_unsigned=False):
+    """
+    Build a list of integer types supported by DPNP.
+    """
+
+    dtypes = [dpnp.int32, dpnp.int64]
+
+    if config.all_int_types or all_int_types:
+        dtypes += [dpnp.int8, dpnp.int16]
+        if not no_unsigned:
+            dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
+
+    return dtypes
+
+
+def has_support_aspect16(device=None):
+    """
+    Return True if the device supports 16-bit precision floating point operations,
+    False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_fp16
+
+
+def has_support_aspect64(device=None):
+    """
+    Return True if the device supports 64-bit precision floating point operations,
+    False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_fp64
+
+
 def is_cpu_device(device=None):
     """
     Return True if a test is running on CPU device, False otherwise.
@@ -292,24 +351,6 @@ def is_win_platform():
     Return True if a test is running on Windows OS, False otherwise.
     """
     return platform.startswith("win")
-
-
-def has_support_aspect16(device=None):
-    """
-    Return True if the device supports 16-bit precision floating point operations,
-    False otherwise.
-    """
-    dev = dpctl.select_default_device() if device is None else device
-    return dev.has_aspect_fp16
-
-
-def has_support_aspect64(device=None):
-    """
-    Return True if the device supports 64-bit precision floating point operations,
-    False otherwise.
-    """
-    dev = dpctl.select_default_device() if device is None else device
-    return dev.has_aspect_fp64
 
 
 def numpy_version():

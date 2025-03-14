@@ -1,0 +1,6 @@
+name: Upload or clean up a conda package
+channels:
+  - conda-forge
+dependencies:
+  - python=3.13
+  - anaconda-client=1.12.3

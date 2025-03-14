@@ -60,6 +60,36 @@ __all__ = [
 ]
 
 
+def _replace_nan_no_mask(a, val):
+    """
+    Replace NaNs in array `a` with `val`.
+
+    If `a` is of inexact type, make a copy of `a`, replace NaNs with
+    the `val` value, and return the copy. If `a` is not of inexact type,
+    do nothing and return `a`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        Input array.
+    val : float
+        NaN values are set to `val` before doing the operation.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        If `a` is of inexact type, return a copy of `a` with the NaNs
+        replaced by the fill value, otherwise return `a`.
+
+    """
+
+    dpnp.check_supported_arrays_type(a)
+    if dpnp.issubdtype(a.dtype, dpnp.inexact):
+        return dpnp.nan_to_num(a, nan=val, posinf=dpnp.inf, neginf=-dpnp.inf)
+
+    return a
+
+
 def _replace_nan(a, val):
     """
     Replace NaNs in array `a` with `val`.
@@ -78,7 +108,7 @@ def _replace_nan(a, val):
 
     Returns
     -------
-    out : {dpnp.ndarray}
+    out : dpnp.ndarray
         If `a` is of inexact type, return a copy of `a` with the NaNs
         replaced by the fill value, otherwise return `a`.
     mask: {bool, None}
@@ -106,6 +136,18 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
     Returns the indices of the maximum values along an axis ignoring NaNs.
 
     For full documentation refer to :obj:`numpy.nanargmax`.
+
+    Warning
+    -------
+    This function synchronizes in order to test for all-NaN slices in the array.
+    This may harm performance in some applications. To avoid synchronization,
+    the user is recommended to filter NaNs themselves and use `dpnp.argmax`
+    on the filtered array.
+
+    Warning
+    -------
+    The results cannot be trusted if a slice contains only NaNs
+    and -Infs.
 
     Parameters
     ----------
@@ -136,8 +178,6 @@ def nanargmax(a, axis=None, out=None, *, keepdims=False):
         values ignoring NaNs. The returned array must have the default array
         index data type.
         For all-NaN slices ``ValueError`` is raised.
-        Warning: the results cannot be trusted if a slice contains only NaNs
-        and -Infs.
 
     Limitations
     -----------
@@ -181,6 +221,18 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
 
     For full documentation refer to :obj:`numpy.nanargmin`.
 
+    Warning
+    -------
+    This function synchronizes in order to test for all-NaN slices in the array.
+    This may harm performance in some applications. To avoid synchronization,
+    the user is recommended to filter NaNs themselves and use `dpnp.argmax`
+    on the filtered array.
+
+    Warning
+    -------
+    The results cannot be trusted if a slice contains only NaNs
+    and -Infs.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -210,8 +262,6 @@ def nanargmin(a, axis=None, out=None, *, keepdims=False):
         values ignoring NaNs. The returned array must have the default array
         index data type.
         For all-NaN slices ``ValueError`` is raised.
-        Warning: the results cannot be trusted if a slice contains only NaNs
-        and Infs.
 
     Limitations
     -----------
@@ -266,7 +316,7 @@ def nancumprod(a, axis=None, dtype=None, out=None):
         is to compute the cumulative product over the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
@@ -315,7 +365,7 @@ def nancumprod(a, axis=None, dtype=None, out=None):
 
     """
 
-    a, _ = _replace_nan(a, 1)
+    a = _replace_nan_no_mask(a, 1.0)
     return dpnp.cumprod(a, axis=axis, dtype=dtype, out=out)
 
 
@@ -336,7 +386,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
         compute the cumulative sum over the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
@@ -385,7 +435,7 @@ def nancumsum(a, axis=None, dtype=None, out=None):
 
     """
 
-    a, _ = _replace_nan(a, 0)
+    a = _replace_nan_no_mask(a, 0.0)
     return dpnp.cumsum(a, axis=axis, dtype=dtype, out=out)
 
 
@@ -499,7 +549,7 @@ def nanmean(a, axis=None, dtype=None, out=None, keepdims=False, *, where=True):
         axes. If ``None``, the mean is computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the mean. By default, if `a` has a
         floating-point data type, the returned array will have
         the same data type as `a`.
@@ -823,7 +873,7 @@ def nanprod(
         compute the product of the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array and of the accumulator in which the
         elements are multiplied. By default, the dtype of `a` is used. An
         exception is when `a` has an integer type with less precision than
@@ -884,7 +934,7 @@ def nanprod(
 
     """
 
-    a, _ = _replace_nan(a, 1)
+    a = _replace_nan_no_mask(a, 1.0)
     return dpnp.prod(
         a,
         axis=axis,
@@ -920,7 +970,7 @@ def nansum(
         the sum of the flattened array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array and of the accumulator in which the
         elements are summed. By default, the dtype of `a` is used. An exception
         is when `a` has an integer type with less precision than the platform
@@ -988,7 +1038,7 @@ def nansum(
 
     """
 
-    a, _ = _replace_nan(a, 0)
+    a = _replace_nan_no_mask(a, 0.0)
     return dpnp.sum(
         a,
         axis=axis,
@@ -1029,7 +1079,7 @@ def nanstd(
         computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the standard deviation. By default, if `a` has
         a floating-point data type, the returned array will have the same data
         type as `a`. If `a` has a boolean or integral data type, the returned
@@ -1177,7 +1227,7 @@ def nanvar(
         axes. If ``None``, the variance is computed over the entire array.
 
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the variance. By default, if `a` has a
         floating-point data type, the returned array will have
         the same data type as `a`. If `a` has a boolean or integral data type,

@@ -9,43 +9,25 @@ on:
 permissions: read-all
 
 env:
-  CHANNELS: '-c dppy/label/dev -c https://software.repos.intel.com/python/conda/ -c conda-forge --override-channels'
-  TEST_ENV_NAME: 'test_onemkl_interfaces'
-  RERUN_TESTS_ON_FAILURE: 'true'
-  RUN_TESTS_MAX_ATTEMPTS: 2
-  BUILD_DEP_PKGS: >-
-      mkl-devel-dpcpp
-      tbb-devel
-      dpctl
-      onedpl-devel
-      setuptools
-      python
-      numpy">=2.0"
-      cython
-      cmake
-      ninja
-      scikit-build
+  environment-file: 'environments/environment.yml'
+  environment-file-name: 'environment.yml'
+  environment-file-loc: '${{ github.workspace }}/environments'
+  build-with-oneapi-env: 'environments/build_with_oneapi.yml'
+  oneapi-pkgs-env: 'environments/oneapi_pkgs.yml'
+  test-env-name: 'test_onemkl_interfaces'
+  rerun-tests-on-failure: 'true'
+  rerun-tests-max-attempts: 2
+  rerun-tests-timeout: 20
 
 jobs:
-  test_by_tag:
-    name: Run tests with oneMKL tag
-
-    strategy:
-      matrix:
-        python: ['3.13']
-        os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
+  build_env_file:
+    name: Build conda env file
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
       actions: write
 
-    runs-on: ${{ matrix.os }}
-
-    defaults:
-      run:
-        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
-
-    continue-on-error: false
+    runs-on: 'ubuntu-latest'
 
     steps:
       - name: Cancel Previous Runs
@@ -58,25 +40,72 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Install conda-merge tool
+        uses: BSFishy/pip-action@8f2d471d809dc20b6ada98c91910b6ae6243f318 # v1
+        with:
+          packages: conda-merge
+
+      - name: Merge conda env files
+        run: |
+          conda-merge ${{ env.build-with-oneapi-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: ${{ env.environment-file-name }}
+          path: ${{ env.environment-file }}
+
+  test_by_tag:
+    name: Run tests with oneMKL tag
+
+    needs: build_env_file
+
+    strategy:
+      fail-fast: false
+      matrix:
+        # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
+        # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
+        python: ['3.12']
+        os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
+
+    runs-on: ${{ matrix.os }}
+
+    defaults:
+      run:
+        shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
+
+    steps:
+      - name: Checkout DPNP repo
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Download artifact
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        with:
+          name: ${{ env.environment-file-name }}
+          path: ${{ env.environment-file-loc }}
+
       - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
         uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          environment-file: ${{ env.environment-file }}
+          activate-environment: ${{ env.test-env-name }}
 
-      # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
-      - name: Disable speed limit check in mamba
-        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
-
-      - name: Install dpnp build dependencies
-        run: |
-          mamba install ${{ env.DPCPP_PKG }} ${{ env.BUILD_DEP_PKGS }} ${{ env.CHANNELS }}
-        env:
-          DPCPP_PKG: ${{ matrix.os == 'windows-2019' && 'dpcpp_win-64 vs_win-64=2017.9' || 'dpcpp_linux-64' }}
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.environment-file }}
+          activate-environment: ${{ env.test-env-name }}
 
       - name: Conda info
         run: |
@@ -92,29 +121,25 @@ jobs:
           python -m dpctl -f
           python -c "import dpnp; print(dpnp.__version__)"
 
-      - name: Install pytest
-        run: |
-          mamba install pytest ${{ env.CHANNELS }}
-
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        if: env.rerun-tests-on-failure != 'true'
         run: |
           python -m pytest -ra --pyargs dpnp.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Linux
-        if: env.RERUN_TESTS_ON_FAILURE == 'true'
+        if: env.rerun-tests-on-failure == 'true'
         id: run_tests
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
-          timeout_minutes: 12
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
             . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.TEST_ENV_NAME }}
+            mamba activate ${{ env.test-env-name }}
 
             python -m pytest -ra --pyargs dpnp.tests
         env:
@@ -123,14 +148,15 @@ jobs:
   test_by_branch:
     name: Run tests with oneMKL develop branch
 
-    strategy:
-      matrix:
-        python: ['3.13']
-        os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
+    needs: build_env_file
 
-    permissions:
-      # Needed to cancel any previous runs that are not completed for a given workflow
-      actions: write
+    strategy:
+      fail-fast: false
+      matrix:
+        # python 3.13 is blocked since BLAS requires "mkl<2025.0" (see https://github.com/conda-forge/blas-feedstock/pull/128
+        # which depends on resolving MKL issue https://github.com/conda-forge/intel_repack-feedstock/issues/83)
+        python: ['3.12']
+        os: [ubuntu-22.04] # windows-2019 - no DFT support for Windows in oneMKL
 
     runs-on: ${{ matrix.os }}
 
@@ -138,21 +164,20 @@ jobs:
       run:
         shell: ${{ matrix.os == 'windows-2019' && 'cmd /C CALL {0}' || 'bash -el {0}' }}
 
-    continue-on-error: true
-
     env:
       onemkl-source-dir: '${{ github.workspace }}/onemkl/'
 
     steps:
-      - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
-        with:
-          access_token: ${{ github.token }}
-
       - name: Checkout DPNP repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           fetch-depth: 0
+
+      - name: Download artifact
+        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        with:
+          name: ${{ env.environment-file-name }}
+          path: ${{ env.environment-file-loc }}
 
       - name: Checkout oneMKL repo
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -167,24 +192,25 @@ jobs:
           ls -la ${{ env.onemkl-source-dir }}
 
       - name: Setup miniconda
+        id: setup_miniconda
+        continue-on-error: true
         uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ matrix.python }}
-          activate-environment: ${{ env.TEST_ENV_NAME }}
+          environment-file: ${{ env.environment-file }}
+          activate-environment: ${{ env.test-env-name }}
 
-      # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
-      - name: Disable speed limit check in mamba
-        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
-
-      - name: Install dpnp build dependencies
-        run: |
-          mamba install ${{ env.DPCPP_PKG }} ${{ env.BUILD_DEP_PKGS }} ${{ env.CHANNELS }}
-        env:
-          DPCPP_PKG: ${{ matrix.os == 'windows-2019' && 'dpcpp_win-64 vs_win-64=2017.9' || 'dpcpp_linux-64' }}
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.environment-file }}
+          activate-environment: ${{ env.test-env-name }}
 
       - name: Conda info
         run: |
@@ -200,29 +226,25 @@ jobs:
           python -m dpctl -f
           python -c "import dpnp; print(dpnp.__version__)"
 
-      - name: Install pytest
-        run: |
-          mamba install pytest ${{ env.CHANNELS }}
-
       - name: Run tests
-        if: env.RERUN_TESTS_ON_FAILURE != 'true'
+        if: env.rerun-tests-on-failure == 'true'
         run: |
           python -m pytest -ra --pyargs dpnp.tests
         env:
           SYCL_CACHE_PERSISTENT: 1
 
       - name: ReRun tests on Linux
-        if: env.RERUN_TESTS_ON_FAILURE == 'true'
+        if: env.rerun-tests-on-failure == 'true'
         id: run_tests
-        uses: nick-fields/retry@7152eba30c6575329ac0576536151aca5a72780e # v3.0.0
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
         with:
-          timeout_minutes: 15
-          max_attempts: ${{ env.RUN_TESTS_MAX_ATTEMPTS }}
+          timeout_minutes: ${{ env.rerun-tests-timeout }}
+          max_attempts: ${{ env.rerun-tests-max-attempts }}
           retry_on: any
           command: |
             . $CONDA/etc/profile.d/conda.sh
             . $CONDA/etc/profile.d/mamba.sh
-            mamba activate ${{ env.TEST_ENV_NAME }}
+            mamba activate ${{ env.test-env-name }}
 
             python -m pytest -ra --pyargs dpnp.tests
         env:

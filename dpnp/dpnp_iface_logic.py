@@ -844,7 +844,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         )
     elif dpnp.issubdtype(b, dpnp.integer):
         dt = dpnp.result_type(b, 1.0, rtol, atol)
-        b = dpnp.astype(b, dtype=dt)
+        b = dpnp.astype(b, dt)
 
     # Firstly handle finite values:
     # result = absolute(a - b) <= atol + rtol * absolute(b)
