@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.18.0dev0+29.g2956a29d383 documentation</title>
+  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.18.0dev0+30.g15b7644d6d0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=d7375847"></script>
+      <script src="../../_static/documentation_options.js?v=d71c1c7e"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -143,21 +143,24 @@ place and of the same sign in both arrays.</p>
 Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
 <li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have numeric data type.
 Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>rtol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- The relative tolerance parameter.
-Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code>.</p></li>
-<li><p><strong>atol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- The absolute tolerance parameter.
-Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code>.</p></li>
-<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) -- Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
-be considered equal to <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>b</cite> in the output array.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>rtol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The relative tolerance parameter.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code>.</p>
+</p></li>
+<li><p><strong>atol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The absolute tolerance parameter.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code>.</p>
+</p></li>
+<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) -- <p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
+be considered equal to <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>b</cite> in the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- A 0-dim array with <code class="docutils literal notranslate"><span class="pre">True</span></code> value if the two arrays are equal within
-the given tolerance; with <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+<dd class="field-even"><p><strong>out</strong> -- A 0-d array with <code class="docutils literal notranslate"><span class="pre">True</span></code> value if the two arrays are equal within the
+given tolerance; with <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -174,8 +177,8 @@ the given tolerance; with <code class="docutils literal notranslate"><span class
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>The comparison of <cite>a</cite> and <cite>b</cite> uses standard broadcasting, which
-means that <cite>a</cite> and <cite>b</cite> need not have the same shape in order for
+<p>The comparison of <cite>a</cite> and <cite>b</cite> uses standard broadcasting, which means that
+<cite>a</cite> and <cite>b</cite> need not have the same shape in order for
 <code class="docutils literal notranslate"><span class="pre">dpnp.allclose(a,</span> <span class="pre">b)</span></code> to evaluate to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
 The same is true for <a class="reference internal" href="dpnp.equal.html#dpnp.equal" title="dpnp.equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.equal</span></code></a> but not <a class="reference internal" href="dpnp.array_equal.html#dpnp.array_equal" title="dpnp.array_equal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.array_equal</span></code></a>.</p>
 <p class="rubric">Examples</p>
