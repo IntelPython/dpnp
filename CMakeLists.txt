@@ -89,6 +89,8 @@ set(_use_onemkl_interfaces_hip OFF)
 
 set(_dpnp_sycl_target_compile_options)
 set(_dpnp_sycl_target_link_options)
+set(_dpnp_sycl_mkl_target_compile_options)
+set(_dpnp_sycl_mkl_target_link_options)
 
 if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
     if(DPNP_TARGET_CUDA)
@@ -120,9 +122,19 @@ if (_dpnp_sycl_targets)
    message(STATUS "Compiling for -fsycl-targets=${_dpnp_sycl_targets}")
    list(APPEND _dpnp_sycl_target_compile_options -fsycl-targets=${_dpnp_sycl_targets})
    list(APPEND _dpnp_sycl_target_link_options -fsycl-targets=${_dpnp_sycl_targets})
+   list(APPEND _dpnp_sycl_mkl_target_compile_options -fsycl-targets=${_dpnp_sycl_targets})
+   list(APPEND _dpnp_sycl_mkl_target_link_options -fsycl-targets=${_dpnp_sycl_targets})
    if(_dpnp_amd_targets)
-      list(APPEND _dpnp_sycl_target_compile_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpnp_amd_targets})
-      list(APPEND _dpnp_sycl_target_link_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpnp_amd_targets})
+      set(_dpnp_hip_compile_options -Xsycl-target-backend=amdgcn-amd-amdhsa --offload-arch=${_dpnp_amd_targets})
+      set(_dpnp_hip_mkl_compile_options -Xsycl-target-backend --offload-arch=${_dpnp_amd_targets})
+
+      # Append HIP-specific flags for general SYCL modules
+      list(APPEND _dpnp_sycl_target_compile_options ${_dpnp_hip_compile_options})
+      list(APPEND _dpnp_sycl_target_link_options ${_dpnp_hip_compile_options})
+
+      # Append HIP-specific flags for MKL modules
+      list(APPEND _dpnp_sycl_mkl_target_compile_options -fsycl-unnamed-lambda ${_dpnp_hip_mkl_compile_options})
+      list(APPEND _dpnp_sycl_mkl_target_link_options ${_dpnp_hip_mkl_compile_options})
    endif()
 endif()
 

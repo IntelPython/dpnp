@@ -39,12 +39,12 @@ if(_dpnp_sycl_targets)
     target_compile_options(
         ${python_module_name}
         PRIVATE
-        -fsycl-targets=${_dpnp_sycl_targets}
+        ${_dpnp_sycl_mkl_target_compile_options}
     )
     target_link_options(
         ${python_module_name}
         PRIVATE
-        -fsycl-targets=${_dpnp_sycl_targets}
+        ${_dpnp_sycl_mkl_target_link_options}
     )
 endif()
 
