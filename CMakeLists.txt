@@ -71,10 +71,6 @@ option(DPNP_TARGET_CUDA
     "Build DPNP to target CUDA devices"
     OFF
 )
-option(DPNP_TARGET_HIP
-    "Build DPNP to target HIP devices"
-    OFF
-)
 option(DPNP_USE_ONEMKL_INTERFACES
     "Build DPNP with oneMKL Interfaces"
     OFF
@@ -97,24 +93,27 @@ if ("x${DPNP_SYCL_TARGETS}" STREQUAL "x")
         set(_dpnp_sycl_targets "nvptx64-nvidia-cuda,spir64-unknown-unknown")
         set(_use_onemkl_interfaces_cuda ON)
     endif()
-    if(DPNP_TARGET_HIP)
-        if (NOT "x${HIP_TARGETS}" STREQUAL "x")
-            set(_dpnp_amd_targets ${HIP_TARGETS})
-            set(_use_onemkl_interfaces_hip ON)
-            if(_dpnp_sycl_targets)
-                set(_dpnp_sycl_targets "amdgcn-amd-amdhsa,${_dpnp_sycl_targets}")
-            else()
-                set(_dpnp_sycl_targets "amdgcn-amd-amdhsa,spir64-unknown-unknown")
-            endif()
-        else()
-            message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
-        endif()
-    endif()
-else()
-    set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
+
     if (NOT "x${HIP_TARGETS}" STREQUAL "x")
         set(_dpnp_amd_targets ${HIP_TARGETS})
         set(_use_onemkl_interfaces_hip ON)
+
+        if ("x${_dpnp_sycl_targets}" STREQUAL "x")
+            set(_dpnp_sycl_targets "amdgcn-amd-amdhsa,${_dpnp_sycl_targets}")
+        else()
+            set(_dpnp_sycl_targets "amdgcn-amd-amdhsa,spir64-unknown-unknown")
+        endif()
+    elseif (DEFINED HIP_TARGETS AND "x${HIP_TARGETS}" STREQUAL "x")
+        message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
+    endif()
+else()
+    set(_dpnp_sycl_targets ${DPNP_SYCL_TARGETS})
+
+    if (NOT "x${HIP_TARGETS}" STREQUAL "x")
+        set(_dpnp_amd_targets ${HIP_TARGETS})
+        set(_use_onemkl_interfaces_hip ON)
+    elseif (DEFINED HIP_TARGETS AND "x${HIP_TARGETS}" STREQUAL "x")
+        message(FATAL_ERROR "HIP_TARGETS must be specified when using HIP backend")
     endif()
 endif()
 
