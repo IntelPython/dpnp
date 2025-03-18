@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.isclose &mdash; Data Parallel Extension for NumPy 0.18.0dev0+21.g83ab777ec0a documentation</title>
+  <title>dpnp.isclose &mdash; Data Parallel Extension for NumPy 0.18.0dev0+34.g5f3158f27fe documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=45964498"></script>
+      <script src="../../_static/documentation_options.js?v=c931f6c0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -144,13 +144,16 @@ place and of the same sign in both arrays.</p>
 Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
 <li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have numeric data type.
 Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>rtol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- The relative tolerance parameter.
-Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code>.</p></li>
-<li><p><strong>atol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- The absolute tolerance parameter.
-Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code>.</p></li>
-<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) -- Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
-be considered equal to <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>b</cite> in the output array.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>rtol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The relative tolerance parameter.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code>.</p>
+</p></li>
+<li><p><strong>atol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The absolute tolerance parameter.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code>.</p>
+</p></li>
+<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) -- <p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
+be considered equal to <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>b</cite> in the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -158,7 +161,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">False</spa
 tolerance.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
 </dd>
 </dl>
 <div class="admonition seealso">

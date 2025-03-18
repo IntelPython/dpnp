@@ -60,12 +60,21 @@ var annotated_dup =
         ] ],
         [ "window", null, [
           [ "kernels", null, [
+            [ "BartlettFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
+            [ "BartlettFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html", null ],
+            [ "BlackmanFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
+            [ "BlackmanFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html", null ],
             [ "HammingFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html", null ],
-            [ "HammingFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ]
+            [ "HammingFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ],
+            [ "HanningFactory", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_factory.html", null ],
+            [ "HanningFunctor", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_functor.html", null ]
           ] ]
         ] ]
       ] ],
       [ "kernels", null, [
+        [ "bitwise_count", null, [
+          [ "BitwiseCountFunctor", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ]
+        ] ],
         [ "degrees", null, [
           [ "DegreesFunctor", "structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html", null ]
         ] ],
