@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.17.0dev6+5.g8512901760e documentation</title>
+  <title>dpnp.dpnp_iface_histograms &mdash; Data Parallel Extension for NumPy 0.18.0dev0+44.g8e0d50b8fb3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=80fecd95"></script>
+      <script src="../../_static/documentation_options.js?v=432d66b9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -310,17 +310,23 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_bincount_validate</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="p">,</span> <span class="n">minlength</span><span class="p">):</span>
+    <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object too deep for desired array&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;object of too small depth for desired array&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span>
         <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">bool</span>
     <span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;x must be an integer array&quot;</span><span class="p">)</span>
+
     <span class="k">if</span> <span class="n">weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">weights</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">weights</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The weights and x don&#39;t have the same length.&quot;</span><span class="p">)</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">integer</span><span class="p">)</span>
             <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">)</span>
@@ -330,10 +336,12 @@
                 <span class="sa">f</span><span class="s2">&quot;Weights must be integer or float. Got </span><span class="si">{</span><span class="n">weights</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">minlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">minlength</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">minlength</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">minlength</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;minlength must be non-negative&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">minlength</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;use 0 instead of None for minlength&quot;</span><span class="p">)</span>
+
+    <span class="n">minlength</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">minlength</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">minlength</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;minlength must be non-negative&quot;</span><span class="p">)</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_bincount_run_native</span><span class="p">(</span>
@@ -347,9 +355,7 @@
     <span class="k">if</span> <span class="n">min_v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;x argument must have no negative arguments&quot;</span><span class="p">)</span>
 
-    <span class="n">size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">max_v</span><span class="p">))</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="k">if</span> <span class="n">minlength</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">size</span><span class="p">,</span> <span class="n">minlength</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">max_v</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">minlength</span><span class="p">)</span>
 
     <span class="c1"># bincount implementation uses atomics, but atomics doesn&#39;t work with</span>
     <span class="c1"># host usm memory</span>
@@ -372,8 +378,8 @@
 
     <span class="n">mem_ev</span><span class="p">,</span> <span class="n">bc_ev</span> <span class="o">=</span> <span class="n">statistics_ext</span><span class="o">.</span><span class="n">bincount</span><span class="p">(</span>
         <span class="n">x_usm</span><span class="p">,</span>
-        <span class="n">min_v</span><span class="p">,</span>
-        <span class="n">max_v</span><span class="p">,</span>
+        <span class="n">min_v</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+        <span class="n">max_v</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
         <span class="n">weights_usm</span><span class="p">,</span>
         <span class="n">n_usm</span><span class="p">,</span>
         <span class="n">depends</span><span class="o">=</span><span class="n">_manager</span><span class="o">.</span><span class="n">submitted_events</span><span class="p">,</span>
@@ -386,13 +392,18 @@
 
 <div class="viewcode-block" id="bincount">
 <a class="viewcode-back" href="../../reference/generated/dpnp.bincount.html#dpnp.bincount">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">bincount</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bincount</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">minlength</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    bincount(x, /, weights=None, minlength=None)</span>
+<span class="sd">    bincount(x, /, weights=None, minlength=0)</span>
 
 <span class="sd">    Count number of occurrences of each value in array of non-negative ints.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.bincount`.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function synchronizes in order to calculate binning edges.</span>
+<span class="sd">    This may harm performance in some applications.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -400,10 +411,12 @@
 <span class="sd">        Input 1-dimensional array with non-negative integer values.</span>
 <span class="sd">    weights : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Weights, array of the same shape as `x`.</span>
+
 <span class="sd">        Default: ``None``</span>
-<span class="sd">    minlength : {None, int}, optional</span>
+<span class="sd">    minlength : int, optional</span>
 <span class="sd">        A minimum number of bins for the output array.</span>
-<span class="sd">        Default: ``None``</span>
+
+<span class="sd">        Default: ``0``</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -470,10 +483,8 @@
 
     <span class="k">if</span> <span class="n">x_casted_dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">ntype_casted</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;function &#39;</span><span class="si">{</span><span class="n">bincount</span><span class="si">}</span><span class="s2">&#39; does not support input types &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">), &quot;</span>
-            <span class="s2">&quot;and the inputs could not be coerced to any &quot;</span>
-            <span class="s2">&quot;supported types&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Input types (</span><span class="si">{</span><span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">) are not supported, &quot;</span>
+            <span class="s2">&quot;and the inputs could not be coerced to any supported types&quot;</span>
         <span class="p">)</span>
 
     <span class="n">x_casted</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">x_casted_dtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span>
@@ -506,6 +517,7 @@
 <span class="sd">        increasing or decreasing.</span>
 <span class="sd">    right : bool, optional</span>
 <span class="sd">        Indicates whether the intervals include the right or the left bin edge.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -591,6 +603,11 @@
 <span class="sd">    Compute the histogram of a data set.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.histogram`.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function may synchronize in order to check a monotonically increasing</span>
+<span class="sd">    array of bin edges. This may harm performance in some applications.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -695,9 +712,8 @@
 
     <span class="k">if</span> <span class="n">a_bin_dtype</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">hist_dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;function &#39;</span><span class="si">{</span><span class="n">histogram</span><span class="si">}</span><span class="s2">&#39; does not support input types &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;(</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bin_edges</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">), &quot;</span>
-            <span class="s2">&quot;and the inputs could not be coerced to any &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Input types (</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">bin_edges</span><span class="o">.</span><span class="n">dtype</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">ntype</span><span class="si">}</span><span class="s2">) &quot;</span>
+            <span class="s2">&quot;are not supported, and the inputs could not be coerced to any &quot;</span>
             <span class="s2">&quot;supported types&quot;</span>
         <span class="p">)</span>
 
@@ -762,6 +778,11 @@
 
 <span class="sd">    For full documentation refer to :obj:`numpy.histogram_bin_edges`.</span>
 
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function may synchronize in order to check a monotonically increasing</span>
+<span class="sd">    array of bin edges. This may harm performance in some applications.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
@@ -771,6 +792,7 @@
 <span class="sd">        given range.</span>
 <span class="sd">        If `bins` is a sequence, it defines the bin edges, including the</span>
 <span class="sd">        rightmost edge, allowing for non-uniform bin widths.</span>
+
 <span class="sd">        Default: ``10``.</span>
 <span class="sd">    range : {None, 2-tuple of float}, optional</span>
 <span class="sd">        The lower and upper range of the bins. If not provided, range is simply</span>
@@ -779,12 +801,14 @@
 <span class="sd">        affects the automatic bin computation as well. While bin width is</span>
 <span class="sd">        computed to be optimal based on the actual data within `range`, the bin</span>
 <span class="sd">        count will fill the entire range including portions containing no data.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    weights : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        An array of weights, of the same shape as `a`. Each value in `a` only</span>
 <span class="sd">        contributes its associated weight towards the bin count (instead of 1).</span>
 <span class="sd">        This is currently not used by any of the bin estimators, but may be in</span>
 <span class="sd">        the future.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -846,6 +870,13 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">histogram2d</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">range</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">density</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">weights</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the bi-dimensional histogram of two data samples.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.histogram2d`.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function may synchronize in order to check a monotonically increasing</span>
+<span class="sd">    array of bin edges. This may harm performance in some applications.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1177,6 +1208,11 @@
 <span class="sd">    Compute the multidimensional histogram of some data.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.histogramdd`.</span>
+
+<span class="sd">    Warning</span>
+<span class="sd">    -------</span>
+<span class="sd">    This function may synchronize in order to check a monotonically increasing</span>
+<span class="sd">    array of bin edges. This may harm performance in some applications.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

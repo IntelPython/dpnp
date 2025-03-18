@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.17.0dev6+5.g8512901760e documentation</title>
+  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.18.0dev0+44.g8e0d50b8fb3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=80fecd95"></script>
+      <script src="../../_static/documentation_options.js?v=432d66b9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -110,7 +110,7 @@
 <span class="c1"># *****************************************************************************</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">Interface of the Binary operations of the DPNP</span>
+<span class="sd">Interface of the Bitwise part of the DPNP</span>
 
 <span class="sd">Notes</span>
 <span class="sd">-----</span>
@@ -123,16 +123,18 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="c1"># pylint: disable=protected-access</span>
-
+<span class="c1"># pylint: disable=no-name-in-module</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpctl.tensor._tensor_elementwise_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ti</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">dpnp.backend.extensions.ufunc._ufunc_impl</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">ufi</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">dpnp.dpnp_algo.dpnp_elementwise_common</span><span class="w"> </span><span class="kn">import</span> <span class="n">DPNPBinaryFunc</span><span class="p">,</span> <span class="n">DPNPUnaryFunc</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;binary_repr&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_and&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;bitwise_count&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_invert&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_left_shift&quot;</span><span class="p">,</span>
     <span class="s2">&quot;bitwise_not&quot;</span><span class="p">,</span>
@@ -171,6 +173,7 @@
 <span class="sd">        at least a sufficient number of bits for `num` to be represented in the</span>
 <span class="sd">        designated form. If the `width` value is insufficient, an error is</span>
 <span class="sd">        raised.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -233,9 +236,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -300,6 +305,59 @@
 <span class="p">)</span>
 
 
+<span class="n">_BITWISE_COUNT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the number of 1-bits in the absolute value of `x`.</span>
+
+<span class="s2">For full documentation refer to :obj:`numpy.bitwise_count`.</span>
+
+<span class="s2">Parameters</span>
+<span class="s2">----------</span>
+<span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
+<span class="s2">    Input array, expected to have integer or boolean data type.</span>
+<span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="s2">    Output array to populate.</span>
+<span class="s2">    Array must have the correct shape and the expected data type.</span>
+
+<span class="s2">    Default: ``None``.</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
+<span class="s2">    Default: ``&quot;K&quot;``.</span>
+
+<span class="s2">Returns</span>
+<span class="s2">-------</span>
+<span class="s2">out : dpnp.ndarray</span>
+<span class="s2">    The corresponding number of 1-bits in the input. Returns ``uint8`` for all</span>
+<span class="s2">    integer types.</span>
+
+<span class="s2">Limitations</span>
+<span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
+<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
+
+<span class="s2">Examples</span>
+<span class="s2">--------</span>
+<span class="s2">&gt;&gt;&gt; import dpnp as np</span>
+<span class="s2">&gt;&gt;&gt; a = np.array(1023)</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_count(a)</span>
+<span class="s2">array(10, dtype=uint8)</span>
+
+<span class="s2">&gt;&gt;&gt; a = np.array([2**i - 1 for i in range(16)])</span>
+<span class="s2">&gt;&gt;&gt; np.bitwise_count(a)</span>
+<span class="s2">array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15],</span>
+<span class="s2">      dtype=uint8)</span>
+
+<span class="s2">&quot;&quot;&quot;</span>
+
+<span class="n">bitwise_count</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;bitwise_count&quot;</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_bitwise_count_result_type</span><span class="p">,</span>
+    <span class="n">ufi</span><span class="o">.</span><span class="n">_bitwise_count</span><span class="p">,</span>
+    <span class="n">_BITWISE_COUNT_DOCSTRING</span><span class="p">,</span>
+<span class="p">)</span>
+
+
 <span class="n">_BITWISE_OR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the bitwise OR of the underlying binary representation of each</span>
 <span class="s2">element `x1_i` of the input array `x1` with the respective element `x2_i`</span>
@@ -320,9 +378,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -398,9 +458,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -474,9 +536,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>
@@ -560,9 +624,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
@@ -637,9 +703,11 @@
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
+
 <span class="s2">    Default: ``None``.</span>
-<span class="s2">order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="s2">order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="s2">    Memory layout of the newly output array, if parameter `out` is ``None``.</span>
+
 <span class="s2">    Default: ``&quot;K&quot;``.</span>
 
 <span class="s2">Returns</span>

@@ -15,21 +15,21 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.broadcast_shapes &mdash; Data Parallel Extension for NumPy 0.17.0dev6+5.g8512901760e documentation</title>
+  <title>dpnp.broadcast_shapes &mdash; Data Parallel Extension for NumPy 0.18.0dev0+44.g8e0d50b8fb3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=80fecd95"></script>
+      <script src="../../_static/documentation_options.js?v=432d66b9"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="dpnp.byte_bounds" href="dpnp.byte_bounds.html" />
-    <link rel="prev" title="Miscellaneous routines" href="../misc.html" /> 
+    <link rel="next" title="Random sampling (dpnp.random)" href="../random.html" />
+    <link rel="prev" title="dpnp.get_include" href="dpnp.get_include.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,19 +57,31 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../routines.html">Routines</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../dtype.html">Data type routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../fft.html">Discrete Fourier Transform</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../functional.html">Functional programming</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../indexing.html">Indexing routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../other.html">Miscellaneous routines</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="../other.html#utility">Utility</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../misc.html">Miscellaneous routines</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="../misc.html#utility">Utility</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">dpnp.broadcast_shapes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.byte_bounds.html">dpnp.byte_bounds</a></li>
-<li class="toctree-l4"><a class="reference internal" href="dpnp.get_include.html">dpnp.get_include</a></li>
-</ul>
-</li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
@@ -94,7 +106,8 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">API Reference</a></li>
-          <li class="breadcrumb-item"><a href="../misc.html">Miscellaneous routines</a></li>
+          <li class="breadcrumb-item"><a href="../routines.html">Routines</a></li>
+          <li class="breadcrumb-item"><a href="../other.html">Miscellaneous routines</a></li>
       <li class="breadcrumb-item active">dpnp.broadcast_shapes</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../../_sources/reference/generated/dpnp.broadcast_shapes.rst.txt" rel="nofollow"> View page source</a>
@@ -117,7 +130,7 @@
 <dd class="field-odd"><p><strong>*args</strong> (<em>tuples</em><em> of </em><em>ints</em><em>, or </em><em>ints</em>) -- The shapes to be broadcast against each other.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Broadcasted shape.</p>
+<dd class="field-even"><p><strong>out</strong> -- Broadcasted shape.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)">tuple</a></p>
@@ -148,8 +161,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../misc.html" class="btn btn-neutral float-left" title="Miscellaneous routines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="dpnp.byte_bounds.html" class="btn btn-neutral float-right" title="dpnp.byte_bounds" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dpnp.get_include.html" class="btn btn-neutral float-left" title="dpnp.get_include" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../random.html" class="btn btn-neutral float-right" title="Random sampling (dpnp.random)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

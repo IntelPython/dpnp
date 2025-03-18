@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.17.0dev6+5.g8512901760e documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.18.0dev0+44.g8e0d50b8fb3 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=80fecd95"></script>
+      <script src="_static/documentation_options.js?v=432d66b9"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -192,13 +192,22 @@ installation layout of compatible version. The following plugins from CodePlay a
 <blockquote>
 <div><ul class="simple">
 <li><p><a class="reference external" href="https://developer.codeplay.com/products/oneapi/nvidia/">oneAPI for NVIDIA(R) GPUs</a></p></li>
+<li><p><a class="reference external" href="https://developer.codeplay.com/products/oneapi/amd/">oneAPI for AMD GPUs</a></p></li>
 </ul>
 </div></blockquote>
 <p>Building <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> also requires <a class="reference external" href="https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets">building Data Parallel Control Library for custom SYCL targets.</a></p>
-<p>Build <code class="docutils literal notranslate"><span class="pre">dpnp</span></code> as follows:</p>
+<p><code class="docutils literal notranslate"><span class="pre">dpnp</span></code> can be built for CUDA devices as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target<span class="o">=</span>cuda
 </pre></div>
 </div>
+<p>And for AMD devices:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target-hip<span class="o">=</span>gfx90a
+</pre></div>
+</div>
+<p>Note that the <em>oneAPI for AMD GPUs</em> plugin requires the architecture be specified and only
+one architecture can be specified at a time.</p>
+<p>It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
+architecture all at once:</p>
 </section>
 </section>
 <section id="testing">
