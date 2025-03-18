@@ -2097,13 +2097,13 @@ class TestNorm:
             assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
             assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
         elif axis is None and a.ndim != 1 and a.shape[-1] == 0:
-            # TODO: when similar changes in numpy are available,
-            # instead of assert_equal with zero, we should compare with numpy
             if ord in [-2, -1, 0, 3]:
                 # reduction cannot be performed over zero-size axes
                 assert_raises(ValueError, dpnp.linalg.norm, ia, **kwarg)
                 assert_raises(ValueError, numpy.linalg.norm, a, **kwarg)
             else:
+                # TODO: when similar changes in numpy are available, instead
+                # of assert_equal with zero, we should compare with numpy
                 # ord in [None, 1, 2]
                 assert_equal(dpnp.linalg.norm(ia, **kwarg), 0)
         else:
@@ -2295,7 +2295,7 @@ class TestNorm:
 
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
     @pytest.mark.parametrize(
-        "shape_axis", [[(2, 0), None], [(2, 0, 3), (0, 1)]]
+        "shape_axis", [[(2, 0), None], [(2, 0), (0, 1)], [(0, 2), (0, 1)]]
     )
     def test_matrix_norm_empty(self, dtype, shape_axis):
         shape, axis = shape_axis[0], shape_axis[1]
@@ -2303,6 +2303,7 @@ class TestNorm:
 
         # TODO: when similar changes in numpy are available,
         # instead of assert_equal with zero, we should compare with numpy
+        assert_equal(dpnp.linalg.norm(x, axis=axis), 0)
         assert_equal(dpnp.linalg.norm(x, axis=axis, ord="fro"), 0)
         assert_equal(dpnp.linalg.norm(x, axis=axis, ord="nuc"), 0)
         assert_equal(dpnp.linalg.norm(x, axis=axis, ord=2), 0)
@@ -2315,6 +2316,7 @@ class TestNorm:
         x = dpnp.zeros(0, dtype=dtype)
         # TODO: when similar changes in numpy are available,
         # instead of assert_equal with zero, we should compare with numpy
+        assert_equal(dpnp.linalg.vector_norm(x, axis=axis), 0)
         assert_equal(dpnp.linalg.vector_norm(x, axis=axis, ord=1), 0)
         assert_equal(dpnp.linalg.vector_norm(x, axis=axis, ord=2), 0)
         assert_equal(dpnp.linalg.vector_norm(x, axis=axis, ord=dpnp.inf), 0)

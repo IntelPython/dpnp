@@ -1185,6 +1185,9 @@ def _norm_int_axis(x, ord, axis, keepdims):
     """
 
     if ord == dpnp.inf:
+        if x.shape[axis] == 0:
+            x = dpnp.moveaxis(x, axis, -1)
+            return dpnp.zeros_like(x, shape=x.shape[:-1])
         return dpnp.abs(x).max(axis=axis, keepdims=keepdims)
     if ord == -dpnp.inf:
         return dpnp.abs(x).min(axis=axis, keepdims=keepdims)
@@ -1220,6 +1223,10 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
     """
 
     axis = (row_axis, col_axis)
+    flag = x.shape[row_axis] == 0 or x.shape[col_axis] == 0
+    if flag and ord in [1, 2, dpnp.inf]:
+        x = dpnp.moveaxis(x, axis, (-2, -1))
+        return dpnp.zeros_like(x, shape=x.shape[:-2])
     if row_axis == col_axis:
         raise ValueError("Duplicate axes given.")
     if ord == 2:
@@ -2401,17 +2408,10 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
         axis = (axis,)
 
     if len(axis) == 1:
-        if x.shape[axis[0]] == 0 and ord in [1, 2, dpnp.inf]:
-            x = dpnp.moveaxis(x, axis, -1)
-            return dpnp.zeros_like(x, shape=x.shape[:-1])
         axis = normalize_axis_index(axis[0], ndim)
         return _norm_int_axis(x, ord, axis, keepdims)
 
     if len(axis) == 2:
-        flag = x.shape[axis[0]] == 0 or x.shape[axis[1]] == 0
-        if flag and ord in ["fro", "nuc", 1, 2, dpnp.inf]:
-            x = dpnp.moveaxis(x, axis, (-2, -1))
-            return dpnp.zeros_like(x, shape=x.shape[:-2])
         row_axis, col_axis = axis
         row_axis = normalize_axis_index(row_axis, ndim)
         col_axis = normalize_axis_index(col_axis, ndim)
