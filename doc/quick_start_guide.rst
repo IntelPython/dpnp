@@ -126,17 +126,35 @@ Building ``dpnp`` for these targets requires that these CodePlay plugins be inst
 installation layout of compatible version. The following plugins from CodePlay are supported:
 
     - `oneAPI for NVIDIA(R) GPUs <codeplay_nv_plugin_>`_
+    - `oneAPI for AMD GPUs <codeplay_amd_plugin_>`_
 
 .. _codeplay_nv_plugin: https://developer.codeplay.com/products/oneapi/nvidia/
+.. _codeplay_amd_plugin: https://developer.codeplay.com/products/oneapi/amd/
 
 Building ``dpnp`` also requires `building Data Parallel Control Library for custom SYCL targets.
 <https://intelpython.github.io/dpctl/latest/beginners_guides/installation.html#building-for-custom-sycl-targets>`_
 
-Build ``dpnp`` as follows:
+``dpnp`` can be built for CUDA devices as follows:
 
 .. code-block:: bash
 
     python scripts/build_locally.py --target=cuda
+
+And for AMD devices:
+
+.. code-block:: bash
+
+    python scripts/build_locally.py --target-hip=gfx90a
+
+Note that the *oneAPI for AMD GPUs* plugin requires the architecture be specified and only
+one architecture can be specified at a time.
+
+It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
+architecture all at once:
+
+.. code-block:: bash
+    python scripts/build_locally.py --target=cuda --target-hip=gfx90a
+
 
 Testing
 =======
