@@ -199,9 +199,14 @@ class TestConvolve:
         else:
             result = result.astype(rdtype)
             if method == "direct":
-                expected = numpy.convolve(an, vn, **numpy_kwargs)
                 # For 'direct' method we can use standard validation
-                assert_dtype_allclose(result, expected, factor=30)
+                # acceptable error depends on the kernel size
+                # while error grows linearly with the kernel size,
+                # this empirically found formula provides a good balance
+                # the resulting factor is 40 for kernel size = 1,
+                # 400 for kernel size = 100 and 4000 for kernel size = 10000
+                factor = int(40 * (min(a_size, v_size) ** 0.5))
+                assert_dtype_allclose(result, expected, factor=factor)
             else:
                 rtol = 1e-3
                 atol = 1e-10
