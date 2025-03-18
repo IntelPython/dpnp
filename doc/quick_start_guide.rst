@@ -153,6 +153,7 @@ It is, however, possible to build for Intel devices, CUDA devices, and an AMD de
 architecture all at once:
 
 .. code-block:: bash
+
     python scripts/build_locally.py --target=cuda --target-hip=gfx90a
 
 
