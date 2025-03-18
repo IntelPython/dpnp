@@ -30,8 +30,11 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
+#include "bartlett.hpp"
+#include "blackman.hpp"
 #include "common.hpp"
 #include "hamming.hpp"
+#include "hanning.hpp"
 
 namespace window_ns = dpnp::extensions::window;
 namespace py = pybind11;
@@ -39,12 +42,45 @@ using window_ns::window_fn_ptr_t;
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
+static window_fn_ptr_t bartlett_dispatch_vector[dpctl_td_ns::num_types];
+static window_fn_ptr_t blackman_dispatch_vector[dpctl_td_ns::num_types];
 static window_fn_ptr_t hamming_dispatch_vector[dpctl_td_ns::num_types];
+static window_fn_ptr_t hanning_dispatch_vector[dpctl_td_ns::num_types];
 
 PYBIND11_MODULE(_window_impl, m)
 {
     using arrayT = dpctl::tensor::usm_ndarray;
     using event_vecT = std::vector<sycl::event>;
+
+    {
+        window_ns::init_window_dispatch_vectors<
+            window_ns::kernels::BartlettFactory>(bartlett_dispatch_vector);
+
+        auto bartlett_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
+                                  const event_vecT &depends = {}) {
+            return window_ns::py_window(exec_q, result, depends,
+                                        bartlett_dispatch_vector);
+        };
+
+        m.def("_bartlett", bartlett_pyapi, "Call Bartlett kernel",
+              py::arg("sycl_queue"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        window_ns::init_window_dispatch_vectors<
+            window_ns::kernels::BlackmanFactory>(blackman_dispatch_vector);
+
+        auto blackman_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
+                                  const event_vecT &depends = {}) {
+            return window_ns::py_window(exec_q, result, depends,
+                                        blackman_dispatch_vector);
+        };
+
+        m.def("_blackman", blackman_pyapi, "Call Blackman kernel",
+              py::arg("sycl_queue"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
 
     {
         window_ns::init_window_dispatch_vectors<
@@ -56,7 +92,22 @@ PYBIND11_MODULE(_window_impl, m)
                                         hamming_dispatch_vector);
         };
 
-        m.def("_hamming", hamming_pyapi, "Call hamming kernel",
+        m.def("_hamming", hamming_pyapi, "Call Hamming kernel",
+              py::arg("sycl_queue"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        window_ns::init_window_dispatch_vectors<
+            window_ns::kernels::HanningFactory>(hanning_dispatch_vector);
+
+        auto hanning_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
+                                 const event_vecT &depends = {}) {
+            return window_ns::py_window(exec_q, result, depends,
+                                        hanning_dispatch_vector);
+        };
+
+        m.def("_hanning", hanning_pyapi, "Call Hanning kernel",
               py::arg("sycl_queue"), py::arg("result"),
               py::arg("depends") = py::list());
     }

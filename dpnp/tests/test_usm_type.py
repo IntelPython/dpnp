@@ -177,6 +177,8 @@ def test_array_creation_from_array(func, args, usm_type_x, usm_type_y):
     "func, arg, kwargs",
     [
         pytest.param("arange", [-25.7], {"stop": 10**8, "step": 15}),
+        pytest.param("bartlett", [10], {}),
+        pytest.param("blackman", [10], {}),
         pytest.param("eye", [4, 2], {}),
         pytest.param("empty", [(3, 4)], {}),
         pytest.param(
@@ -192,6 +194,7 @@ def test_array_creation_from_array(func, args, usm_type_x, usm_type_y):
         pytest.param("full", [(2, 2)], {"fill_value": 5}),
         pytest.param("geomspace", [1, 4, 8], {}),
         pytest.param("hamming", [10], {}),
+        pytest.param("hanning", [10], {}),
         pytest.param("identity", [4], {}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
@@ -371,13 +374,22 @@ def test_logic_op_2in(op, usm_type_x, usm_type_y):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_y])
 
 
+@pytest.mark.parametrize("op", ["bitwise_count", "bitwise_not"])
+@pytest.mark.parametrize("usm_type", list_of_usm_types)
+def test_bitwise_op_1in(op, usm_type):
+    x = dpnp.arange(-10, 10, usm_type=usm_type)
+    res = getattr(dpnp, op)(x)
+
+    assert x.usm_type == res.usm_type == usm_type
+
+
 @pytest.mark.parametrize(
     "op",
     ["bitwise_and", "bitwise_or", "bitwise_xor", "left_shift", "right_shift"],
 )
 @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
 @pytest.mark.parametrize("usm_type_y", list_of_usm_types)
-def test_bitwise_op(op, usm_type_x, usm_type_y):
+def test_bitwise_op_2in(op, usm_type_x, usm_type_y):
     x = dpnp.arange(25, usm_type=usm_type_x)
     y = dpnp.arange(25, usm_type=usm_type_y)[::-1]
 

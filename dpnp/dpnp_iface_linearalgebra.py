@@ -780,7 +780,7 @@ def matmul(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
@@ -960,7 +960,7 @@ def matvec(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
@@ -1335,7 +1335,7 @@ def vecdot(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
@@ -1463,7 +1463,7 @@ def vecmat(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.

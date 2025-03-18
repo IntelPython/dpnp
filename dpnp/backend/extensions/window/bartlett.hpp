@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,53 +23,45 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <pybind11/pybind11.h>
+#pragma once
 
-#include "bitwise_count.hpp"
-#include "degrees.hpp"
-#include "fabs.hpp"
-#include "fix.hpp"
-#include "float_power.hpp"
-#include "fmax.hpp"
-#include "fmin.hpp"
-#include "fmod.hpp"
-#include "gcd.hpp"
-#include "heaviside.hpp"
-#include "i0.hpp"
-#include "lcm.hpp"
-#include "ldexp.hpp"
-#include "logaddexp2.hpp"
-#include "nan_to_num.hpp"
-#include "radians.hpp"
-#include "sinc.hpp"
-#include "spacing.hpp"
+#include "common.hpp"
+#include <sycl/sycl.hpp>
 
-namespace py = pybind11;
-
-namespace dpnp::extensions::ufunc
+namespace dpnp::extensions::window::kernels
 {
-/**
- * @brief Add elementwise functions to Python module
- */
-void init_elementwise_functions(py::module_ m)
+
+template <typename T>
+class BartlettFunctor
 {
-    init_bitwise_count(m);
-    init_degrees(m);
-    init_fabs(m);
-    init_fix(m);
-    init_float_power(m);
-    init_fmax(m);
-    init_fmin(m);
-    init_fmod(m);
-    init_gcd(m);
-    init_heaviside(m);
-    init_i0(m);
-    init_lcm(m);
-    init_ldexp(m);
-    init_logaddexp2(m);
-    init_nan_to_num(m);
-    init_radians(m);
-    init_sinc(m);
-    init_spacing(m);
-}
-} // namespace dpnp::extensions::ufunc
+private:
+    T *data = nullptr;
+    const std::size_t N;
+
+public:
+    BartlettFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+
+    void operator()(sycl::id<1> id) const
+    {
+        const auto i = id.get(0);
+
+        const T alpha = (N - 1) / T(2);
+        data[i] = T(1) - sycl::fabs(i - alpha) / alpha;
+    }
+};
+
+template <typename fnT, typename T>
+struct BartlettFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_floating_point_v<T>) {
+            return window_impl<T, BartlettFunctor>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+} // namespace dpnp::extensions::window::kernels

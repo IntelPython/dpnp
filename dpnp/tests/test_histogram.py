@@ -12,8 +12,11 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
     get_abs_array,
     get_all_dtypes,
+    get_complex_dtypes,
+    get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
@@ -532,34 +535,29 @@ class TestHistogramBinEdges:
 
 
 class TestBincount:
-    @pytest.mark.parametrize("dtype", get_integer_dtypes())
-    def test_rand_data(self, dtype):
-        n = 100
-        upper_bound = 10 if dtype != dpnp.bool_ else 1
-        v = numpy.random.randint(0, upper_bound, size=n, dtype=dtype)
+    @pytest.mark.parametrize("dt", get_integer_dtypes() + [numpy.bool_])
+    def test_rand_data(self, dt):
+        v = generate_random_numpy_array(100, dtype=dt, low=0)
         iv = dpnp.array(v)
 
-        if numpy.issubdtype(dtype, numpy.uint64):
-            # discussed in numpy issue 17760
-            assert_raises(TypeError, numpy.bincount, v)
-            assert_raises(ValueError, dpnp.bincount, iv)
-        else:
-            expected_hist = numpy.bincount(v)
-            result_hist = dpnp.bincount(iv)
-            assert_array_equal(result_hist, expected_hist)
+        if numpy.issubdtype(dt, numpy.uint64) and numpy_version() < "2.2.4":
+            v = v.astype(numpy.int64)
 
-    @pytest.mark.parametrize("dtype", get_integer_dtypes())
-    def test_arange_data(self, dtype):
-        v = numpy.arange(100).astype(dtype)
+        expected_hist = numpy.bincount(v)
+        result_hist = dpnp.bincount(iv)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    def test_arange_data(self, dt):
+        v = numpy.arange(100, dtype=dt)
         iv = dpnp.array(v)
 
-        if numpy.issubdtype(dtype, numpy.uint64):
-            assert_raises(TypeError, numpy.bincount, v)
-            assert_raises(ValueError, dpnp.bincount, iv)
-        else:
-            expected_hist = numpy.bincount(v)
-            result_hist = dpnp.bincount(iv)
-            assert_array_equal(result_hist, expected_hist)
+        if numpy.issubdtype(dt, numpy.uint64) and numpy_version() < "2.2.4":
+            v = v.astype(numpy.int64)
+
+        expected_hist = numpy.bincount(v)
+        result_hist = dpnp.bincount(iv)
+        assert_array_equal(result_hist, expected_hist)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_negative_values(self, xp):
@@ -581,11 +579,17 @@ class TestBincount:
             dpnp.bincount(v, weights=w)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_weights_unsupported_dtype(self, xp):
-        v = dpnp.arange(5)
-        w = dpnp.arange(5, dtype=dpnp.complex64)
-        with assert_raises(ValueError):
-            dpnp.bincount(v, weights=w)
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    def test_data_unsupported_dtype(self, xp, dt):
+        v = xp.arange(5, dtype=dt)
+        assert_raises(TypeError, xp.bincount, v)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_weights_unsupported_dtype(self, xp, dt):
+        v = xp.arange(5)
+        w = xp.arange(5, dtype=dt)
+        assert_raises((TypeError, ValueError), xp.bincount, v, weights=w)
 
     @pytest.mark.parametrize(
         "bins_count",
@@ -606,11 +610,11 @@ class TestBincount:
     )
     @pytest.mark.parametrize("minlength", [0, 1, 3, 5])
     def test_minlength(self, array, minlength):
-        np_a = numpy.array(array)
-        dpnp_a = dpnp.array(array)
+        a = numpy.array(array)
+        ia = dpnp.array(a)
 
-        expected = numpy.bincount(np_a, minlength=minlength)
-        result = dpnp.bincount(dpnp_a, minlength=minlength)
+        expected = numpy.bincount(a, minlength=minlength)
+        result = dpnp.bincount(ia, minlength=minlength)
         assert_allclose(result, expected)
 
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -639,21 +643,23 @@ class TestBincount:
         )
 
     @pytest.mark.parametrize(
-        "array", [[1, 2, 2, 1, 2, 4]], ids=["[1, 2, 2, 1, 2, 4]"]
+        "weights",
+        [None, [0.3, 0.5, 0, 0.7, 1.0, -0.6], [2, 2, 2, 2, 2, 2]],
+        ids=["None", "float_data", "int_data"],
     )
     @pytest.mark.parametrize(
-        "weights",
-        [None, [0.3, 0.5, 0.2, 0.7, 1.0, -0.6], [2, 2, 2, 2, 2, 2]],
-        ids=["None", "[0.3, 0.5, 0.2, 0.7, 1., -0.6]", "[2, 2, 2, 2, 2, 2]"],
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_weights(self, array, weights):
-        np_a = numpy.array(array)
-        np_weights = numpy.array(weights) if weights is not None else weights
-        dpnp_a = dpnp.array(array)
-        dpnp_weights = dpnp.array(weights) if weights is not None else weights
+    def test_weights(self, weights, dt):
+        a = numpy.array([1, 2, 2, 1, 2, 4])
+        ia = dpnp.array(a)
+        w = iw = None
+        if weights is not None:
+            w = numpy.array(weights, dtype=dt)
+            iw = dpnp.array(w)
 
-        expected = numpy.bincount(np_a, weights=np_weights)
-        result = dpnp.bincount(dpnp_a, weights=dpnp_weights)
+        expected = numpy.bincount(a, weights=w)
+        result = dpnp.bincount(ia, weights=iw)
         assert_allclose(result, expected)
 
     @pytest.mark.parametrize(
