@@ -25,6 +25,7 @@ from .helper import (
     has_support_aspect64,
     is_cpu_device,
     is_cuda_device,
+    numpy_version,
 )
 from .third_party.cupy import testing
 
@@ -2299,27 +2300,48 @@ class TestNorm:
         expected = numpy.linalg.matrix_norm(a, ord=ord, keepdims=keepdims)
         assert_dtype_allclose(result, expected)
 
+    @pytest.mark.parametrize(
+        "xp",
+        [
+            dpnp,
+            pytest.param(
+                numpy,
+                marks=pytest.mark.skipif(
+                    numpy_version() < "2.3.0",
+                    reason="numpy raises an error",
+                ),
+            ),
+        ],
+    )
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
     @pytest.mark.parametrize(
         "shape_axis", [[(2, 0), None], [(2, 0), (0, 1)], [(0, 2), (0, 1)]]
     )
     @pytest.mark.parametrize("ord", [None, "fro", "nuc", 1, 2, dpnp.inf])
-    def test_matrix_norm_empty(self, dtype, shape_axis, ord):
+    def test_matrix_norm_empty(self, xp, dtype, shape_axis, ord):
         shape, axis = shape_axis[0], shape_axis[1]
-        x = dpnp.zeros(shape, dtype=dtype)
+        x = xp.zeros(shape, dtype=dtype)
+        assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), 0)
 
-        # TODO: when similar changes in numpy are available,
-        # instead of assert_equal with zero, we should compare with numpy
-        assert_equal(dpnp.linalg.norm(x, axis=axis, ord=ord), 0)
-
+    @pytest.mark.parametrize(
+        "xp",
+        [
+            dpnp,
+            pytest.param(
+                numpy,
+                marks=pytest.mark.skipif(
+                    numpy_version() < "2.3.0",
+                    reason="numpy raises an error",
+                ),
+            ),
+        ],
+    )
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
     @pytest.mark.parametrize("axis", [None, 0])
     @pytest.mark.parametrize("ord", [None, 1, 2, dpnp.inf])
-    def test_vector_norm_empty(self, dtype, axis, ord):
-        x = dpnp.zeros(0, dtype=dtype)
-        # TODO: when similar changes in numpy are available,
-        # instead of assert_equal with zero, we should compare with numpy
-        assert_equal(dpnp.linalg.vector_norm(x, axis=axis, ord=ord), 0)
+    def test_vector_norm_empty(self, xp, dtype, axis, ord):
+        x = xp.zeros(0, dtype=dtype)
+        assert_equal(xp.linalg.vector_norm(x, axis=axis, ord=ord), 0)
 
     @testing.with_requires("numpy>=2.0")
     @pytest.mark.parametrize(
