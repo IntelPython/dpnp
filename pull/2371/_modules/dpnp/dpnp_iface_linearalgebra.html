@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev0+38.g4bf59329253 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev0+41.gab3a5381d9c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=36da7620"></script>
+      <script src="../../_static/documentation_options.js?v=f77c44ba"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -189,6 +189,8 @@
 <span class="sd">        C-contiguous. If these conditions are not met, an exception is</span>
 <span class="sd">        raised, instead of attempting to be flexible.</span>
 
+<span class="sd">        Default: ``None``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray</span>
@@ -297,8 +299,11 @@
 <span class="sd">        These are the arrays for the operation.</span>
 <span class="sd">    out : {dpnp.ndarrays, usm_ndarray, None}, optional</span>
 <span class="sd">        If provided, the calculation is done into this array.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        If provided, forces the calculation to use the data type specified.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Controls the memory layout of the output. ``&quot;C&quot;`` means it should be</span>
@@ -306,6 +311,7 @@
 <span class="sd">        it should be ``&quot;F&quot;`` if the inputs are all ``&quot;F&quot;``, ``&quot;C&quot;`` otherwise.</span>
 <span class="sd">        ``&quot;K&quot;`` means it should be as close to the layout as the inputs as</span>
 <span class="sd">        is possible, including arbitrarily permuted axes.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Setting this to</span>
@@ -323,12 +329,14 @@
 <span class="sd">        ``&quot;same_kind&quot;``. This is to prevent errors that may occur when data</span>
 <span class="sd">        needs to be converted to `float64`, but the device does not support it.</span>
 <span class="sd">        In such cases, the data is instead converted to `float32`.</span>
+
 <span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 <span class="sd">    optimize : {False, True, &quot;greedy&quot;, &quot;optimal&quot;}, optional</span>
 <span class="sd">        Controls if intermediate optimization should occur. No optimization</span>
 <span class="sd">        will occur if ``False`` and ``True`` will default to the ``&quot;greedy&quot;``</span>
 <span class="sd">        algorithm. Also accepts an explicit contraction list from the</span>
 <span class="sd">        :obj:`dpnp.einsum_path` function.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -349,15 +357,15 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.arange(25).reshape(5,5)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(25).reshape(5, 5)</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(5)</span>
-<span class="sd">    &gt;&gt;&gt; c = np.arange(6).reshape(2,3)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.arange(6).reshape(2, 3)</span>
 
 <span class="sd">    Trace of a matrix:</span>
 
 <span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ii&quot;, a)</span>
 <span class="sd">    array(60)</span>
-<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0,0])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0, 0])</span>
 <span class="sd">    array(60)</span>
 <span class="sd">    &gt;&gt;&gt; np.trace(a)</span>
 <span class="sd">    array(60)</span>
@@ -413,14 +421,14 @@
 <span class="sd">    array(30)</span>
 <span class="sd">    &gt;&gt;&gt; np.einsum(b, [0], b, [0])</span>
 <span class="sd">    array(30)</span>
-<span class="sd">    &gt;&gt;&gt; np.inner(b,b)</span>
+<span class="sd">    &gt;&gt;&gt; np.inner(b, b)</span>
 <span class="sd">    array(30)</span>
 
 <span class="sd">    Matrix vector multiplication:</span>
 
 <span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ij,j&quot;, a, b)</span>
 <span class="sd">    array([ 30,  80, 130, 180, 230])</span>
-<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0,1], b, [1])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0, 1], b, [1])</span>
 <span class="sd">    array([ 30,  80, 130, 180, 230])</span>
 <span class="sd">    &gt;&gt;&gt; np.dot(a, b)</span>
 <span class="sd">    array([ 30,  80, 130, 180, 230])</span>
@@ -502,22 +510,26 @@
 <span class="sd">    Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th</span>
 <span class="sd">    Gen Intel\u00AE Core\u2122 i7 processor)</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a, a, a, a, a)</span>
 
 <span class="sd">    Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(</span>
+<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;optimal&quot;</span>
+<span class="sd">    )</span>
 
 <span class="sd">    Greedy `einsum`: 28.6 ms ± 4.8 ms per loop</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;greedy&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(</span>
+<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;greedy&quot;</span>
+<span class="sd">    )</span>
 
 <span class="sd">    Optimal `einsum`: 26.9 ms ± 6.3 ms per loop</span>
 
 <span class="sd">    &gt;&gt;&gt; path = np.einsum_path(</span>
-<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
+<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;optimal&quot;</span>
 <span class="sd">    )[0]</span>
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=path)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=path)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -602,10 +614,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    We can begin with a chain dot example. In this case, it is optimal to</span>
-<span class="sd">    contract the ``b`` and ``c`` tensors first as represented by the first</span>
-<span class="sd">    element of the path ``(1, 2)``. The resulting tensor is added to the end</span>
-<span class="sd">    of the contraction and the remaining contraction ``(0, 1)`` is then</span>
-<span class="sd">    completed.</span>
+<span class="sd">    contract the `b` and `c` tensors first as represented by the first element</span>
+<span class="sd">    of the path ``(1, 2)``. The resulting tensor is added to the end of the</span>
+<span class="sd">    contraction and the remaining contraction ``(0, 1)`` is then completed.</span>
 
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.random.seed(123)</span>
@@ -718,7 +729,7 @@
 
 <span class="sd">    # Some multidimensional examples</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(24).reshape((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(24).reshape((2, 3, 4))</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(4)</span>
 <span class="sd">    &gt;&gt;&gt; c = np.inner(a, b)</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
@@ -727,8 +738,8 @@
 <span class="sd">    array([[ 14,  38,  62],</span>
 <span class="sd">           [86, 110, 134]])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(2).reshape((1,1,2))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(6).reshape((3,2))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(2).reshape((1, 1, 2))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(6).reshape((3, 2))</span>
 <span class="sd">    &gt;&gt;&gt; c = np.inner(a, b)</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
 <span class="sd">    (1, 1, 3)</span>
@@ -803,19 +814,19 @@
 <span class="sd">    &gt;&gt;&gt; np.kron(b, a)</span>
 <span class="sd">    array([  5,  50, 500, ...,   7,  70, 700])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.kron(np.eye(2), np.ones((2,2)))</span>
+<span class="sd">    &gt;&gt;&gt; np.kron(np.eye(2), np.ones((2, 2)))</span>
 <span class="sd">    array([[1.,  1.,  0.,  0.],</span>
 <span class="sd">           [1.,  1.,  0.,  0.],</span>
 <span class="sd">           [0.,  0.,  1.,  1.],</span>
 <span class="sd">           [0.,  0.,  1.,  1.]])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(100).reshape((2,5,2,5))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(24).reshape((2,3,4))</span>
-<span class="sd">    &gt;&gt;&gt; c = np.kron(a,b)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(100).reshape((2, 5, 2, 5))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24).reshape((2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; c = np.kron(a, b)</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
 <span class="sd">    (2, 10, 6, 20)</span>
-<span class="sd">    &gt;&gt;&gt; I = (1,3,0,2)</span>
-<span class="sd">    &gt;&gt;&gt; J = (0,2,1)</span>
+<span class="sd">    &gt;&gt;&gt; I = (1, 3, 0, 2)</span>
+<span class="sd">    &gt;&gt;&gt; J = (0, 2, 1)</span>
 <span class="sd">    &gt;&gt;&gt; J1 = (0,) + J             # extend to ndim=4</span>
 <span class="sd">    &gt;&gt;&gt; S1 = (1,) + b.shape</span>
 <span class="sd">    &gt;&gt;&gt; K = tuple(np.array(I) * np.array(S1) + np.array(J1))</span>
@@ -971,7 +982,7 @@
 
 <span class="sd">    &gt;&gt;&gt; a = np.arange(2 * 2 * 4).reshape((2, 2, 4))</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(2 * 2 * 4).reshape((2, 4, 2))</span>
-<span class="sd">    &gt;&gt;&gt; np.matmul(a,b).shape</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(a, b).shape</span>
 <span class="sd">    (2, 2, 2)</span>
 <span class="sd">    &gt;&gt;&gt; np.matmul(a, b)[0, 1, 1]</span>
 <span class="sd">    array(98)</span>
@@ -1150,6 +1161,7 @@
 <span class="sd">        Second input vector. Input is flattened if not already 1-dimensional.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        A location where the result is stored.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1287,9 +1299,9 @@
 <span class="sd">    &gt;&gt;&gt; np.tensordot(a, b, 1)</span>
 <span class="sd">    array([14, 32, 50])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3,4,5)</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4,3,2)</span>
-<span class="sd">    &gt;&gt;&gt; c = np.tensordot(a,b, axes=([1,0],[0,1]))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3, 4, 5)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4, 3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.tensordot(a, b, axes=([1, 0], [0, 1]))</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
 <span class="sd">    (5, 2)</span>
 <span class="sd">    &gt;&gt;&gt; c</span>
@@ -1301,12 +1313,12 @@
 
 <span class="sd">    A slower but equivalent way of computing the same...</span>
 
-<span class="sd">    &gt;&gt;&gt; d = np.zeros((5,2))</span>
+<span class="sd">    &gt;&gt;&gt; d = np.zeros((5, 2))</span>
 <span class="sd">    &gt;&gt;&gt; for i in range(5):</span>
 <span class="sd">    ...   for j in range(2):</span>
 <span class="sd">    ...     for k in range(3):</span>
 <span class="sd">    ...       for n in range(4):</span>
-<span class="sd">    ...         d[i,j] += a[k,n,i] * b[n,k,j]</span>
+<span class="sd">    ...         d[i, j] += a[k, n, i] * b[n, k, j]</span>
 <span class="sd">    &gt;&gt;&gt; c == d</span>
 <span class="sd">    array([[ True,  True],</span>
 <span class="sd">           [ True,  True],</span>
