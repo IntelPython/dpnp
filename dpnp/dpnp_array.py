@@ -1029,7 +1029,7 @@ class dpnp_array:
         Examples
         --------
         >>> import dpnp as np
-        >>> a = np.arange(4).reshape(2,2)
+        >>> a = np.arange(4).reshape(2, 2)
         >>> a.diagonal()
         array([0, 3])
 

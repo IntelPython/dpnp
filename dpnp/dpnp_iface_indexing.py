@@ -665,7 +665,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(4).reshape(2,2)
+    >>> a = np.arange(4).reshape(2, 2)
     >>> a
     array([[0, 1],
            [2, 3]])
@@ -676,7 +676,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
 
     A 3-D example:
 
-    >>> a = np.arange(8).reshape(2,2,2)
+    >>> a = np.arange(8).reshape(2, 2, 2)
     >>> a
     array([[[0, 1],
             [2, 3]],
@@ -1234,8 +1234,8 @@ def ix_(*args):
     N dimensions.
 
     Using :obj:`dpnp.ix_` one can quickly construct index arrays that will
-    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
-    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.
+    index the cross product. ``a[dpnp.ix_([1, 3],[2, 5])]`` returns the array
+    ``[[a[1, 2] a[1, 5]], [a[3, 2] a[3, 5]]]``.
 
     Parameters
     ----------

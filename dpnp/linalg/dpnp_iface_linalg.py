@@ -364,7 +364,7 @@ def diagonal(x, /, *, offset=0):
 
     Parameters
     ----------
-    x : (...,M,N) {dpnp.ndarray, usm_ndarray}
+    x : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array having shape (..., M, N) and whose innermost two
         dimensions form ``MxN`` matrices.
     offset : int, optional
@@ -379,7 +379,7 @@ def diagonal(x, /, *, offset=0):
 
     Returns
     -------
-    out : (...,min(N,M)) dpnp.ndarray
+    out : (...,min(N, M)) dpnp.ndarray
         An array containing the diagonals and whose shape is determined by
         removing the last two dimensions and appending a dimension equal to
         the size of the resulting diagonals. The returned array must have
@@ -393,7 +393,7 @@ def diagonal(x, /, *, offset=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(4).reshape(2,2); a
+    >>> a = np.arange(4).reshape(2, 2); a
     array([[0, 1],
            [2, 3]])
     >>> np.linalg.diagonal(a)
@@ -401,7 +401,7 @@ def diagonal(x, /, *, offset=0):
 
     A 3-D example:
 
-    >>> a = np.arange(8).reshape(2,2,2); a
+    >>> a = np.arange(8).reshape(2, 2, 2); a
     array([[[0, 1],
             [2, 3]],
            [[4, 5],
@@ -673,7 +673,7 @@ def eigvals(a):
     Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the
     other:
 
-    >>> D = np.diag((-1,1))
+    >>> D = np.diag((-1, 1))
     >>> LA.eigvals(D)
     array([-1.,  1.])
     >>> A = np.dot(Q, D)
@@ -929,7 +929,7 @@ def matmul(x1, x2, /):
 
     >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
     >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
-    >>> np.linalg.matmul(a,b).shape
+    >>> np.linalg.matmul(a, b).shape
     (2, 2, 2)
     >>> np.linalg.matmul(a, b)[0, 1, 1]
     array(98)
@@ -1333,7 +1333,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
 
     The Frobenius norm is given by [1]_:
 
-    :math:`||A||_F = [\sum_{i,j} abs(a_{i,j})^2]^{1/2}`
+    :math:`||A||_F = [\sum_{i, j} abs(a_{i, j})^2]^{1/2}`
 
     The nuclear norm is the sum of the singular values.
 
@@ -1407,8 +1407,8 @@ def norm(x, ord=None, axis=None, keepdims=False):
 
     Using the `axis` argument to compute matrix norms:
 
-    >>> m = np.arange(8).reshape(2,2,2)
-    >>> np.linalg.norm(m, axis=(1,2))
+    >>> m = np.arange(8).reshape(2, 2, 2)
+    >>> np.linalg.norm(m, axis=(1, 2))
     array([  3.74165739,  11.22497216])
     >>> np.linalg.norm(m[0, :, :]), np.linalg.norm(m[1, :, :])
     (array(3.74165739), array(11.22497216))
@@ -2004,9 +2004,9 @@ def tensordot(a, b, /, *, axes=2):
     >>> np.linalg.tensordot(a, b, axes=1)
     array([14, 32, 50])
 
-    >>> a = np.arange(60.).reshape(3,4,5)
-    >>> b = np.arange(24.).reshape(4,3,2)
-    >>> c = np.linalg.tensordot(a,b, axes=([1,0],[0,1]))
+    >>> a = np.arange(60.).reshape(3, 4, 5)
+    >>> b = np.arange(24.).reshape(4, 3, 2)
+    >>> c = np.linalg.tensordot(a, b, axes=([1, 0], [0, 1]))
     >>> c.shape
     (5, 2)
     >>> c
@@ -2018,12 +2018,12 @@ def tensordot(a, b, /, *, axes=2):
 
     A slower but equivalent way of computing the same...
 
-    >>> d = np.zeros((5,2))
+    >>> d = np.zeros((5, 2))
     >>> for i in range(5):
     ...   for j in range(2):
     ...     for k in range(3):
     ...       for n in range(4):
-    ...         d[i,j] += a[k,n,i] * b[n,k,j]
+    ...         d[i, j] += a[k, n, i] * b[n, k, j]
     >>> c == d
     array([[ True,  True],
            [ True,  True],
@@ -2183,7 +2183,7 @@ def trace(x, /, *, offset=0, dtype=None):
 
     Parameters
     ----------
-    x : (...,M,N) {dpnp.ndarray, usm_ndarray}
+    x : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array having shape (..., M, N) and whose innermost two
         dimensions form ``MxN`` matrices.
     offset : int, optional
