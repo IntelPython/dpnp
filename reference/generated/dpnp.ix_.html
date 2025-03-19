@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.ix_ &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gc2f07350587 documentation</title>
+  <title>dpnp.ix_ &mdash; Data Parallel Extension for NumPy 0.18.0dev0+32.g764f92c13f9 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=aa1b071c"></script>
+      <script src="../../_static/documentation_options.js?v=56b7fb33"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -132,8 +132,8 @@ dimensions each, such that the shape is 1 in all but one dimension
 and the dimension with the non-unit shape value cycles through all
 N dimensions.</p>
 <p>Using <a class="reference internal" href="#dpnp.ix_" title="dpnp.ix_"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ix_</span></code></a> one can quickly construct index arrays that will
-index the cross product. <code class="docutils literal notranslate"><span class="pre">a[dpnp.ix_([1,3],[2,5])]</span></code> returns the array
-<code class="docutils literal notranslate"><span class="pre">[[a[1,2]</span> <span class="pre">a[1,5]],</span> <span class="pre">[a[3,2]</span> <span class="pre">a[3,5]]]</span></code>.</p>
+index the cross product. <code class="docutils literal notranslate"><span class="pre">a[dpnp.ix_([1,</span> <span class="pre">3],[2,</span> <span class="pre">5])]</span></code> returns the array
+<code class="docutils literal notranslate"><span class="pre">[[a[1,</span> <span class="pre">2]</span> <span class="pre">a[1,</span> <span class="pre">5]],</span> <span class="pre">[a[3,</span> <span class="pre">2]</span> <span class="pre">a[3,</span> <span class="pre">5]]]</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
