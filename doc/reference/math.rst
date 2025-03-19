@@ -232,5 +232,3 @@ Miscellaneous
    dpnp.real_if_close
 
    dpnp.interp
-
-   dpnp.bitwise_count
