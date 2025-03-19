@@ -3127,7 +3127,7 @@ def meshgrid(*xi, copy=True, sparse=False, indexing="xy"):
     >>> y = np.arange(-5, 5, 0.1)
     >>> xx, yy = np.meshgrid(x, y, sparse=True)
     >>> z = np.sin(xx**2 + yy**2) / (xx**2 + yy**2)
-    >>> h = plt.contourf(x,y,z)
+    >>> h = plt.contourf(x, y, z)
     >>> plt.show()
 
     """
@@ -3202,7 +3202,7 @@ class MGridClass:
     Examples
     --------
     >>> import dpnp as np
-    >>> np.mgrid[0:5,0:5]
+    >>> np.mgrid[0:5, 0:5]
     array([[[0, 0, 0, 0, 0],
             [1, 1, 1, 1, 1],
             [2, 2, 2, 2, 2],
