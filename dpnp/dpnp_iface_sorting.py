@@ -110,22 +110,26 @@ def argsort(
     axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is ``-1``, which sorts along the last axis.
+
         Default: ``-1``.
     kind : {None, "stable", "mergesort", "radixsort"}, optional
         Sorting algorithm. The default is ``None``, which uses parallel
         merge-sort or parallel radix-sort algorithms depending on the array
         data type.
+
         Default: ``None``.
     descending : bool, optional
         Sort order. If ``True``, the array must be sorted in descending order
         (by value). If ``False``, the array must be sorted in ascending order
         (by value).
+
         Default: ``False``.
     stable : {None, bool}, optional
         Sort stability. If ``True``, the returned array will maintain the
         relative order of `a` values which compare as equal. The same behavior
         applies when set to ``False`` or ``None``.
         Internally, this option selects ``kind="stable"``.
+
         Default: ``None``.
 
     Returns
@@ -251,22 +255,26 @@ def sort(a, axis=-1, kind=None, order=None, *, descending=False, stable=None):
     axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is ``-1``, which sorts along the last axis.
+
         Default: ``-1``.
     kind : {None, "stable", "mergesort", "radixsort"}, optional
         Sorting algorithm. The default is ``None``, which uses parallel
         merge-sort or parallel radix-sort algorithms depending on the array
         data type.
+
         Default: ``None``.
     descending : bool, optional
         Sort order. If ``True``, the array must be sorted in descending order
         (by value). If ``False``, the array must be sorted in ascending order
         (by value).
+
         Default: ``False``.
     stable : {None, bool}, optional
         Sort stability. If ``True``, the returned array will maintain the
         relative order of `a` values which compare as equal. The same behavior
         applies when set to ``False`` or ``None``.
         Internally, this option selects ``kind="stable"``.
+
         Default: ``None``.
 
     Returns
