@@ -533,7 +533,7 @@ def test_triu_size_null(k):
 def test_vander(array, dtype, n, increase):
     if dtype in [dpnp.complex64, dpnp.complex128] and array == [0, 3, 5]:
         pytest.skip(
-            "per array API dpnp.power(complex(0,0)), 0) returns nan+nanj while NumPy returns 1+0j"
+            "per array API dpnp.power(complex(0, 0)), 0) returns nan+nanj while NumPy returns 1+0j"
         )
     vander_func = lambda xp, x: xp.vander(x, N=n, increasing=increase)
 

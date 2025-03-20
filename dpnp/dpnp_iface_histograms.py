@@ -803,7 +803,7 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
           is the number of bins and array is the bin edges.
 
         Default: ``10``.
-    range : {None, dpnp.ndarray, usm_ndarray} of shape (2,2), optional
+    range : {None, dpnp.ndarray, usm_ndarray} of shape (2, 2), optional
         The leftmost and rightmost edges of the bins along each dimension
         If ``None`` the ranges are
         ``[[x.min(), x.max()], [y.min(), y.max()]]``. All values outside

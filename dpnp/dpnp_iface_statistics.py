@@ -605,7 +605,7 @@ def corrcoef(x, y=None, rowvar=True, *, dtype=None):
     out /= stddev[None, :]
 
     # Clip real and imaginary parts to [-1, 1]. This does not guarantee
-    # abs(a[i,j]) <= 1 for complex arrays, but is the best we can do without
+    # abs(a[i, j]) <= 1 for complex arrays, but is the best we can do without
     # excessive work.
     dpnp.clip(out.real, -1, 1, out=out.real)
     if dpnp.iscomplexobj(out):
@@ -974,7 +974,7 @@ def cov(
     array([[ 1., -1.],
            [-1.,  1.]])
 
-    Note that element :math:`C_{0,1}`, which shows the correlation between
+    Note that element :math:`C_{0, 1}`, which shows the correlation between
     :math:`x_0` and :math:`x_1`, is negative.
 
     Further, note how `x` and `y` are combined:
@@ -1097,7 +1097,7 @@ def max(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(4).reshape((2,2))
+    >>> a = np.arange(4).reshape((2, 2))
     >>> a
     array([[0, 1],
            [2, 3]])
@@ -1248,7 +1248,7 @@ def median(a, axis=None, out=None, overwrite_input=False, keepdims=False):
        but it will probably be fully or partially sorted.
 
        Default: ``False``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
@@ -1374,7 +1374,7 @@ def min(a, axis=None, out=None, keepdims=False, initial=None, where=True):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(4).reshape((2,2))
+    >>> a = np.arange(4).reshape((2, 2))
     >>> a
     array([[0, 1],
            [2, 3]])
