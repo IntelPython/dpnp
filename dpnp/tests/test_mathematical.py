@@ -2277,7 +2277,7 @@ class TestRoundingFuncs:
         expected = getattr(numpy, func)(a)
 
         ia = dpnp.array(a)
-        out_dt = numpy.int8 if dtype == numpy.bool_ else dtype
+        out_dt = numpy.int8 if dtype == dpnp.bool else dtype
         iout = dpnp.empty(expected.shape, dtype=out_dt)
         result = getattr(dpnp, func)(ia, out=iout)
 
