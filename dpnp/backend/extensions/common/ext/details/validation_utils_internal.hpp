@@ -23,17 +23,13 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "validation_utils.hpp"
+#include "ext/validation_utils.hpp"
 #include "utils/memory_overlap.hpp"
 
-using statistics::validation::array_names;
-using statistics::validation::array_ptr;
-
-namespace
+namespace ext::validation
 {
-
-sycl::queue get_queue(const std::vector<array_ptr> &inputs,
-                      const std::vector<array_ptr> &outputs)
+inline sycl::queue get_queue(const std::vector<array_ptr> &inputs,
+                             const std::vector<array_ptr> &outputs)
 {
     auto it = std::find_if(inputs.cbegin(), inputs.cend(),
                            [](const array_ptr &arr) { return arr != nullptr; });
@@ -51,11 +47,8 @@ sycl::queue get_queue(const std::vector<array_ptr> &inputs,
 
     throw py::value_error("No input or output arrays found");
 }
-} // namespace
 
-namespace statistics::validation
-{
-std::string name_of(const array_ptr &arr, const array_names &names)
+inline std::string name_of(const array_ptr &arr, const array_names &names)
 {
     auto name_it = names.find(arr);
     assert(name_it != names.end());
@@ -66,8 +59,8 @@ std::string name_of(const array_ptr &arr, const array_names &names)
     return "'unknown'";
 }
 
-void check_writable(const std::vector<array_ptr> &arrays,
-                    const array_names &names)
+inline void check_writable(const std::vector<array_ptr> &arrays,
+                           const array_names &names)
 {
     for (const auto &arr : arrays) {
         if (arr != nullptr && !arr->is_writable()) {
@@ -77,8 +70,8 @@ void check_writable(const std::vector<array_ptr> &arrays,
     }
 }
 
-void check_c_contig(const std::vector<array_ptr> &arrays,
-                    const array_names &names)
+inline void check_c_contig(const std::vector<array_ptr> &arrays,
+                           const array_names &names)
 {
     for (const auto &arr : arrays) {
         if (arr != nullptr && !arr->is_c_contiguous()) {
@@ -88,9 +81,9 @@ void check_c_contig(const std::vector<array_ptr> &arrays,
     }
 }
 
-void check_queue(const std::vector<array_ptr> &arrays,
-                 const array_names &names,
-                 const sycl::queue &exec_q)
+inline void check_queue(const std::vector<array_ptr> &arrays,
+                        const array_names &names,
+                        const sycl::queue &exec_q)
 {
     auto unequal_queue =
         std::find_if(arrays.cbegin(), arrays.cend(), [&](const array_ptr &arr) {
@@ -104,9 +97,9 @@ void check_queue(const std::vector<array_ptr> &arrays,
     }
 }
 
-void check_no_overlap(const array_ptr &input,
-                      const array_ptr &output,
-                      const array_names &names)
+inline void check_no_overlap(const array_ptr &input,
+                             const array_ptr &output,
+                             const array_names &names)
 {
     if (input == nullptr || output == nullptr) {
         return;
@@ -121,9 +114,9 @@ void check_no_overlap(const array_ptr &input,
     }
 }
 
-void check_no_overlap(const std::vector<array_ptr> &inputs,
-                      const std::vector<array_ptr> &outputs,
-                      const array_names &names)
+inline void check_no_overlap(const std::vector<array_ptr> &inputs,
+                             const std::vector<array_ptr> &outputs,
+                             const array_names &names)
 {
     for (const auto &input : inputs) {
         for (const auto &output : outputs) {
@@ -132,9 +125,9 @@ void check_no_overlap(const std::vector<array_ptr> &inputs,
     }
 }
 
-void check_num_dims(const array_ptr &arr,
-                    const size_t ndim,
-                    const array_names &names)
+inline void check_num_dims(const array_ptr &arr,
+                           const size_t ndim,
+                           const array_names &names)
 {
     size_t arr_n_dim = arr != nullptr ? arr->get_ndim() : 0;
     if (arr != nullptr && arr_n_dim != ndim) {
@@ -144,9 +137,9 @@ void check_num_dims(const array_ptr &arr,
     }
 }
 
-void check_max_dims(const array_ptr &arr,
-                    const size_t max_ndim,
-                    const array_names &names)
+inline void check_max_dims(const array_ptr &arr,
+                           const size_t max_ndim,
+                           const array_names &names)
 {
     size_t arr_n_dim = arr != nullptr ? arr->get_ndim() : 0;
     if (arr != nullptr && arr_n_dim > max_ndim) {
@@ -157,9 +150,9 @@ void check_max_dims(const array_ptr &arr,
     }
 }
 
-void check_size_at_least(const array_ptr &arr,
-                         const size_t size,
-                         const array_names &names)
+inline void check_size_at_least(const array_ptr &arr,
+                                const size_t size,
+                                const array_names &names)
 {
     size_t arr_size = arr != nullptr ? arr->get_size() : 0;
     if (arr != nullptr && arr_size < size) {
@@ -170,9 +163,9 @@ void check_size_at_least(const array_ptr &arr,
     }
 }
 
-void common_checks(const std::vector<array_ptr> &inputs,
-                   const std::vector<array_ptr> &outputs,
-                   const array_names &names)
+inline void common_checks(const std::vector<array_ptr> &inputs,
+                          const std::vector<array_ptr> &outputs,
+                          const array_names &names)
 {
     check_writable(outputs, names);
 
@@ -187,4 +180,4 @@ void common_checks(const std::vector<array_ptr> &inputs,
     check_no_overlap(inputs, outputs, names);
 }
 
-} // namespace statistics::validation
+} // namespace ext::validation

@@ -31,14 +31,15 @@
 
 #include <stdio.h>
 
-#include "common.hpp"
+#include "ext/common.hpp"
 
 using dpctl::tensor::usm_ndarray;
 
+using ext::common::Align;
+using ext::common::CeilDiv;
+
 namespace statistics
 {
-using common::Align;
-using common::CeilDiv;
 
 namespace sliding_window1d
 {

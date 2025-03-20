@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include "dispatch_table.hpp"
+#include "ext/dispatch_table.hpp"
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
@@ -43,7 +43,7 @@ struct SlidingDotProduct1d
                                 const size_t,
                                 const std::vector<sycl::event> &);
 
-    common::DispatchTable<FnT> dispatch_table;
+    ext::common::DispatchTable<FnT> dispatch_table;
 
     SlidingDotProduct1d();
 

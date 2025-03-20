@@ -35,24 +35,25 @@
 
 #include "histogram_common.hpp"
 
-#include "validation_utils.hpp"
+#include "ext/validation_utils.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 using dpctl_td_ns::typenum_t;
 
+using ext::common::CeilDiv;
+
+using ext::validation::array_names;
+using ext::validation::array_ptr;
+
+using ext::validation::check_max_dims;
+using ext::validation::check_num_dims;
+using ext::validation::check_size_at_least;
+using ext::validation::common_checks;
+using ext::validation::name_of;
+
 namespace statistics
 {
-using common::CeilDiv;
-
-using validation::array_names;
-using validation::array_ptr;
-
-using validation::check_max_dims;
-using validation::check_num_dims;
-using validation::check_size_at_least;
-using validation::common_checks;
-using validation::name_of;
 
 namespace histogram
 {
