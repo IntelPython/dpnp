@@ -10,8 +10,7 @@ from dpnp.tests.third_party.cupy import testing
     *testing.product(
         {
             "m": [0, 1, -1, 1024],
-            # TODO: add ["bartlett"] when supported
-            "name": ["blackman", "hamming", "hanning"],
+            "name": ["bartlett", "blackman", "hamming", "hanning"],
         }
     )
 )
