@@ -120,10 +120,7 @@ def _complex_nd_fft(a, s, norm, out, forward, in_place, c2c, axes, batch_fft):
         axes_chunk, shape_chunk = _extract_axes_chunk(axes, s, chunk_size=3)
         for i, (s_chunk, a_chunk) in enumerate(zip(shape_chunk, axes_chunk)):
             a = _truncate_or_pad(a, shape=s_chunk, axes=a_chunk)
-            # if out is used in an intermediate step, it will have memory
-            # overlap with input and cannot be used in the final step (a new
-            # result array will be created for the final step), so there is no
-            # benefit in using out in an intermediate step
+            # if out is used in an intermediate step
             if i == len(axes_chunk) - 1:
                 tmp_out = out
             else:
@@ -175,15 +172,28 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
             dsc, a_usm, forward, depends=dep_evs
         )
         result = a
+        print("in-place")
     else:
         if (
             out is not None
             and out.strides == tuple(out_strides)
-            and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
+            # and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
+            print("inja, using out kwarg")
+            print(a.strides, out.strides, out_strides)
+            # print("strides:", out.strides == tuple(out_strides))
+            # print(
+            #    "overlap:", ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
+            # )
             res_usm = dpnp.get_usm_ndarray(out)
             result = out
         else:
+            print("onja, cannot use out kwarg")
+            print(a.strides, out_strides)
+            # print("strides:", out.strides == tuple(out_strides))
+            # print(
+            #    "overlap:", ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
+            # )
             # Result array that is used in OneMKL must have the exact same
             # stride as input array
 
@@ -382,9 +392,8 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
     """Calculates FFT of the input array along the specified axes."""
 
     index = 0
-    fft_1d = isinstance(axes, int)
     if batch_fft:
-        len_axes = 1 if fft_1d else len(axes)
+        len_axes = 1 if isinstance(axes, int) else len(axes)
         local_axes = numpy.arange(-len_axes, 0)
         a = dpnp.moveaxis(a, axes, local_axes)
         a_shape_orig = a.shape
@@ -409,6 +418,7 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
         a = dpnp.moveaxis(a, -1, -2)
 
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
+    print("a_strides:", a_strides, a.strides)
     dsc, out_strides = _commit_descriptor(
         a, forward, in_place, c2c, a_strides, index, batch_fft
     )
@@ -503,7 +513,7 @@ def _validate_out_keyword(a, out, s, axes, c2c, c2r, r2c):
                 "Input and output allocation queues are not compatible"
             )
 
-        # validate out shape against the final shape,
+        # validate `out`` shape against the final shape,
         # intermediate shapes may vary
         expected_shape = list(a.shape)
         if r2c:
@@ -584,9 +594,9 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     _validate_out_keyword(a, out, (n,), (axis,), c2c, c2r, r2c)
     # if input array is copied, in-place FFT can be used
     a, in_place = _copy_array(a, c2c or c2r)
-    if not in_place and out is not None:
-        # if input is also given for out, in-place FFT can be used
-        in_place = dpnp.are_same_logical_tensors(a, out)
+    # if not in_place and out is not None:
+    # if input is also given for out, in-place FFT can be used
+    #    in_place = dpnp.are_same_logical_tensors(a, out)
 
     if a.size == 0:
         return dpnp.get_result_array(a, out=out, casting="same_kind")
@@ -647,10 +657,7 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
         a = _fft(
             a,
             norm=norm,
-            # if out is used in an intermediate step, it will have memory
-            # overlap with input and cannot be used in the final step (a new
-            # result array will be created for the final step), so there is no
-            # benefit in using out in an intermediate step
+            # if `out is used in an intermediate step,
             out=None,
             forward=forward,
             in_place=in_place and c2c,
