@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,22 +25,43 @@
 
 #pragma once
 
-#include <oneapi/mkl.hpp>
+#include "common.hpp"
 #include <sycl/sycl.hpp>
 
-#include <dpctl4pybind11.hpp>
-
-namespace dpnp::extensions::fft
+namespace dpnp::extensions::window::kernels
 {
-namespace mkl_dft = oneapi::mkl::dft;
 
-template <mkl_dft::precision prec, mkl_dft::domain dom>
-std::pair<sycl::event, sycl::event>
-    compute_fft_in_place(DescriptorWrapper<prec, dom> &descr,
-                         const dpctl::tensor::usm_ndarray &in_out,
-                         const bool is_forward,
-                         const std::vector<sycl::event> &depends);
+template <typename T>
+class BartlettFunctor
+{
+private:
+    T *data = nullptr;
+    const std::size_t N;
 
-} // namespace dpnp::extensions::fft
+public:
+    BartlettFunctor(T *data, const std::size_t N) : data(data), N(N) {}
 
-#include "in_place.tpp" // Include template definition
+    void operator()(sycl::id<1> id) const
+    {
+        const auto i = id.get(0);
+
+        const T alpha = (N - 1) / T(2);
+        data[i] = T(1) - sycl::fabs(i - alpha) / alpha;
+    }
+};
+
+template <typename fnT, typename T>
+struct BartlettFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_floating_point_v<T>) {
+            return window_impl<T, BartlettFunctor>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+} // namespace dpnp::extensions::window::kernels

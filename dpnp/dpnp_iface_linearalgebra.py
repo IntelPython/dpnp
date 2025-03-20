@@ -102,6 +102,8 @@ def dot(a, b, out=None):
         C-contiguous. If these conditions are not met, an exception is
         raised, instead of attempting to be flexible.
 
+        Default: ``None``.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -207,8 +209,11 @@ def einsum(
         These are the arrays for the operation.
     out : {dpnp.ndarrays, usm_ndarray, None}, optional
         If provided, the calculation is done into this array.
+
+        Default: ``None``.
     dtype : {None, str, dtype object}, optional
         If provided, forces the calculation to use the data type specified.
+
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Controls the memory layout of the output. ``"C"`` means it should be
@@ -216,6 +221,7 @@ def einsum(
         it should be ``"F"`` if the inputs are all ``"F"``, ``"C"`` otherwise.
         ``"K"`` means it should be as close to the layout as the inputs as
         is possible, including arbitrarily permuted axes.
+
         Default: ``"K"``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur. Setting this to
@@ -233,12 +239,14 @@ def einsum(
         ``"same_kind"``. This is to prevent errors that may occur when data
         needs to be converted to `float64`, but the device does not support it.
         In such cases, the data is instead converted to `float32`.
+
         Default: ``"same_kind"``.
     optimize : {False, True, "greedy", "optimal"}, optional
         Controls if intermediate optimization should occur. No optimization
         will occur if ``False`` and ``True`` will default to the ``"greedy"``
         algorithm. Also accepts an explicit contraction list from the
         :obj:`dpnp.einsum_path` function.
+
         Default: ``False``.
 
     Returns
@@ -259,15 +267,15 @@ def einsum(
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(25).reshape(5,5)
+    >>> a = np.arange(25).reshape(5, 5)
     >>> b = np.arange(5)
-    >>> c = np.arange(6).reshape(2,3)
+    >>> c = np.arange(6).reshape(2, 3)
 
     Trace of a matrix:
 
     >>> np.einsum("ii", a)
     array(60)
-    >>> np.einsum(a, [0,0])
+    >>> np.einsum(a, [0, 0])
     array(60)
     >>> np.trace(a)
     array(60)
@@ -323,14 +331,14 @@ def einsum(
     array(30)
     >>> np.einsum(b, [0], b, [0])
     array(30)
-    >>> np.inner(b,b)
+    >>> np.inner(b, b)
     array(30)
 
     Matrix vector multiplication:
 
     >>> np.einsum("ij,j", a, b)
     array([ 30,  80, 130, 180, 230])
-    >>> np.einsum(a, [0,1], b, [1])
+    >>> np.einsum(a, [0, 1], b, [1])
     array([ 30,  80, 130, 180, 230])
     >>> np.dot(a, b)
     array([ 30,  80, 130, 180, 230])
@@ -412,22 +420,26 @@ def einsum(
     Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th
     Gen Intel\u00AE Core\u2122 i7 processor)
 
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a)
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a, a, a, a, a)
 
     Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop
 
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal")
+    >>> %timeit np.einsum(
+        "ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize="optimal"
+    )
 
     Greedy `einsum`: 28.6 ms ± 4.8 ms per loop
 
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="greedy")
+    >>> %timeit np.einsum(
+        "ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize="greedy"
+    )
 
     Optimal `einsum`: 26.9 ms ± 6.3 ms per loop
 
     >>> path = np.einsum_path(
-        "ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal"
+        "ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize="optimal"
     )[0]
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize=path)
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize=path)
 
     """
 
@@ -509,10 +521,9 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
     Examples
     --------
     We can begin with a chain dot example. In this case, it is optimal to
-    contract the ``b`` and ``c`` tensors first as represented by the first
-    element of the path ``(1, 2)``. The resulting tensor is added to the end
-    of the contraction and the remaining contraction ``(0, 1)`` is then
-    completed.
+    contract the `b` and `c` tensors first as represented by the first element
+    of the path ``(1, 2)``. The resulting tensor is added to the end of the
+    contraction and the remaining contraction ``(0, 1)`` is then completed.
 
     >>> import dpnp as np
     >>> np.random.seed(123)
@@ -622,7 +633,7 @@ def inner(a, b):
 
     # Some multidimensional examples
 
-    >>> a = np.arange(24).reshape((2,3,4))
+    >>> a = np.arange(24).reshape((2, 3, 4))
     >>> b = np.arange(4)
     >>> c = np.inner(a, b)
     >>> c.shape
@@ -631,8 +642,8 @@ def inner(a, b):
     array([[ 14,  38,  62],
            [86, 110, 134]])
 
-    >>> a = np.arange(2).reshape((1,1,2))
-    >>> b = np.arange(6).reshape((3,2))
+    >>> a = np.arange(2).reshape((1, 1, 2))
+    >>> b = np.arange(6).reshape((3, 2))
     >>> c = np.inner(a, b)
     >>> c.shape
     (1, 1, 3)
@@ -704,19 +715,19 @@ def kron(a, b):
     >>> np.kron(b, a)
     array([  5,  50, 500, ...,   7,  70, 700])
 
-    >>> np.kron(np.eye(2), np.ones((2,2)))
+    >>> np.kron(np.eye(2), np.ones((2, 2)))
     array([[1.,  1.,  0.,  0.],
            [1.,  1.,  0.,  0.],
            [0.,  0.,  1.,  1.],
            [0.,  0.,  1.,  1.]])
 
-    >>> a = np.arange(100).reshape((2,5,2,5))
-    >>> b = np.arange(24).reshape((2,3,4))
-    >>> c = np.kron(a,b)
+    >>> a = np.arange(100).reshape((2, 5, 2, 5))
+    >>> b = np.arange(24).reshape((2, 3, 4))
+    >>> c = np.kron(a, b)
     >>> c.shape
     (2, 10, 6, 20)
-    >>> I = (1,3,0,2)
-    >>> J = (0,2,1)
+    >>> I = (1, 3, 0, 2)
+    >>> J = (0, 2, 1)
     >>> J1 = (0,) + J             # extend to ndim=4
     >>> S1 = (1,) + b.shape
     >>> K = tuple(np.array(I) * np.array(S1) + np.array(J1))
@@ -780,7 +791,7 @@ def matmul(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
@@ -869,7 +880,7 @@ def matmul(
 
     >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
     >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
-    >>> np.matmul(a,b).shape
+    >>> np.matmul(a, b).shape
     (2, 2, 2)
     >>> np.matmul(a, b)[0, 1, 1]
     array(98)
@@ -960,7 +971,7 @@ def matvec(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
@@ -1042,6 +1053,7 @@ def outer(a, b, out=None):
         Second input vector. Input is flattened if not already 1-dimensional.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         A location where the result is stored.
+
         Default: ``None``.
 
     Returns
@@ -1176,9 +1188,9 @@ def tensordot(a, b, axes=2):
     >>> np.tensordot(a, b, 1)
     array([14, 32, 50])
 
-    >>> a = np.arange(60.).reshape(3,4,5)
-    >>> b = np.arange(24.).reshape(4,3,2)
-    >>> c = np.tensordot(a,b, axes=([1,0],[0,1]))
+    >>> a = np.arange(60.).reshape(3, 4, 5)
+    >>> b = np.arange(24.).reshape(4, 3, 2)
+    >>> c = np.tensordot(a, b, axes=([1, 0], [0, 1]))
     >>> c.shape
     (5, 2)
     >>> c
@@ -1190,12 +1202,12 @@ def tensordot(a, b, axes=2):
 
     A slower but equivalent way of computing the same...
 
-    >>> d = np.zeros((5,2))
+    >>> d = np.zeros((5, 2))
     >>> for i in range(5):
     ...   for j in range(2):
     ...     for k in range(3):
     ...       for n in range(4):
-    ...         d[i,j] += a[k,n,i] * b[n,k,j]
+    ...         d[i, j] += a[k, n, i] * b[n, k, j]
     >>> c == d
     array([[ True,  True],
            [ True,  True],
@@ -1335,7 +1347,7 @@ def vecdot(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.
@@ -1463,7 +1475,7 @@ def vecmat(
         Controls what kind of data casting may occur.
 
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
 
         Default: ``"K"``.

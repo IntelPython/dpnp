@@ -106,7 +106,9 @@ using CachedEdges = HistogramEdges<T, CachedData<const T, 1>>;
 template <typename T>
 using UncachedEdges = HistogramEdges<T, UncachedData<const T, 1>>;
 
-template <typename T, typename BinsT, typename HistType = size_t>
+using DefaultHistType = int64_t;
+
+template <typename T, typename BinsT, typename HistType = DefaultHistType>
 struct HistogramF
 {
     static sycl::event impl(sycl::queue &exec_q,
@@ -186,26 +188,27 @@ using HistogramF_ = HistogramF<SampleType, SampleType, HistType>;
 
 } // namespace
 
-using SupportedTypes = std::tuple<std::tuple<uint64_t, int64_t>,
-                                  std::tuple<int64_t, int64_t>,
-                                  std::tuple<uint64_t, float>,
-                                  std::tuple<int64_t, float>,
-                                  std::tuple<uint64_t, double>,
-                                  std::tuple<int64_t, double>,
-                                  std::tuple<uint64_t, std::complex<float>>,
-                                  std::tuple<int64_t, std::complex<float>>,
-                                  std::tuple<uint64_t, std::complex<double>>,
-                                  std::tuple<int64_t, std::complex<double>>,
-                                  std::tuple<float, int64_t>,
-                                  std::tuple<double, int64_t>,
-                                  std::tuple<float, float>,
-                                  std::tuple<double, double>,
-                                  std::tuple<float, std::complex<float>>,
-                                  std::tuple<double, std::complex<double>>,
-                                  std::tuple<std::complex<float>, int64_t>,
-                                  std::tuple<std::complex<double>, int64_t>,
-                                  std::tuple<std::complex<float>, float>,
-                                  std::tuple<std::complex<double>, double>>;
+using SupportedTypes =
+    std::tuple<std::tuple<uint64_t, DefaultHistType>,
+               std::tuple<int64_t, DefaultHistType>,
+               std::tuple<uint64_t, float>,
+               std::tuple<int64_t, float>,
+               std::tuple<uint64_t, double>,
+               std::tuple<int64_t, double>,
+               std::tuple<uint64_t, std::complex<float>>,
+               std::tuple<int64_t, std::complex<float>>,
+               std::tuple<uint64_t, std::complex<double>>,
+               std::tuple<int64_t, std::complex<double>>,
+               std::tuple<float, DefaultHistType>,
+               std::tuple<double, DefaultHistType>,
+               std::tuple<float, float>,
+               std::tuple<double, double>,
+               std::tuple<float, std::complex<float>>,
+               std::tuple<double, std::complex<double>>,
+               std::tuple<std::complex<float>, DefaultHistType>,
+               std::tuple<std::complex<double>, DefaultHistType>,
+               std::tuple<std::complex<float>, float>,
+               std::tuple<std::complex<double>, double>>;
 
 Histogram::Histogram() : dispatch_table("sample", "histogram")
 {

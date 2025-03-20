@@ -926,7 +926,7 @@ class dpnp_array:
 
         Parameters
         ----------
-        order : {"C", "F", "A", "K"}, optional
+        order : {None, "C", "F", "A", "K"}, optional
             Memory layout of the newly output array.
             Default: ``"C"``.
         device : {None, string, SyclDevice, SyclQueue, Device}, optional
@@ -1029,7 +1029,7 @@ class dpnp_array:
         Examples
         --------
         >>> import dpnp as np
-        >>> a = np.arange(4).reshape(2,2)
+        >>> a = np.arange(4).reshape(2, 2)
         >>> a.diagonal()
         array([0, 3])
 

@@ -242,7 +242,7 @@ def chisquare(df, size=None):
 
     Examples
     --------
-    >>> dpnp.random.chisquare(2,4)
+    >>> dpnp.random.chisquare(2, 4)
     array([ 1.89920014,  9.00867716,  3.13710533,  5.62318272]) # random
 
     """
