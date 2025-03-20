@@ -1109,7 +1109,7 @@ def _multi_dot_matrix_chain_order(n, arrays, return_costs=False):
         else [arrays[-1].shape[0], arrays[-1].shape[1]]
     )
     # m is a matrix of costs of the subproblems
-    # m[i,j]: min number of scalar multiplications needed to compute A_{i..j}
+    # m[i, j]: min number of scalar multiplications needed to compute A_{i..j}
     m = dpnp.zeros((n, n), usm_type=usm_type, sycl_queue=exec_q)
     # s is the actual ordering
     # s[i, j] is the value of k at which we split the product A_i..A_j
