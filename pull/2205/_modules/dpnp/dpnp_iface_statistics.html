@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.18.0dev0+40.gcd8d88f1b74 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.18.0dev0+42.g9547dea325 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e82c6dae"></script>
+      <script src="../../_static/documentation_options.js?v=dbf86963"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -493,29 +493,23 @@
 <span class="sd">        Second 1-D array. The length of `v` must be less than or equal to</span>
 <span class="sd">        the length of `a`.</span>
 <span class="sd">    mode : {&#39;full&#39;, &#39;valid&#39;, &#39;same&#39;}, optional</span>
-<span class="sd">        &#39;full&#39;:</span>
-<span class="sd">          By default, mode is &#39;full&#39;. This returns the convolution</span>
+<span class="sd">        - &#39;full&#39;: By default, mode is &#39;full&#39;. This returns the convolution</span>
 <span class="sd">          at each point of overlap, with an output shape of (N+M-1,). At</span>
 <span class="sd">          the end-points of the convolution, the signals do not overlap</span>
 <span class="sd">          completely, and boundary effects may be seen.</span>
-<span class="sd">        &#39;same&#39;:</span>
-<span class="sd">          Mode &#39;same&#39; returns output of length ``max(M, N)``. Boundary</span>
+<span class="sd">        - &#39;same&#39;: Mode &#39;same&#39; returns output of length ``max(M, N)``. Boundary</span>
 <span class="sd">          effects are still visible.</span>
-<span class="sd">        &#39;valid&#39;:</span>
-<span class="sd">          Mode &#39;valid&#39; returns output of length</span>
+<span class="sd">        - &#39;valid&#39;: Mode &#39;valid&#39; returns output of length</span>
 <span class="sd">          ``max(M, N) - min(M, N) + 1``. The convolution product is only given</span>
 <span class="sd">          for points where the signals overlap completely. Values outside</span>
 <span class="sd">          the signal boundary have no effect.</span>
 
 <span class="sd">          Default: ``&#39;full&#39;``.</span>
 <span class="sd">    method : {&#39;auto&#39;, &#39;direct&#39;, &#39;fft&#39;}, optional</span>
-<span class="sd">        &#39;direct&#39;:</span>
-<span class="sd">         The convolution is determined directly from sums.</span>
-<span class="sd">        &#39;fft&#39;:</span>
-<span class="sd">         The Fourier Transform is used to perform the calculations.</span>
+<span class="sd">        - &#39;direct&#39;: The convolution is determined directly from sums.</span>
+<span class="sd">        - &#39;fft&#39;: The Fourier Transform is used to perform the calculations.</span>
 <span class="sd">         This method is faster for long sequences but can have accuracy issues.</span>
-<span class="sd">        &#39;auto&#39;:</span>
-<span class="sd">         Automatically chooses direct or Fourier method based on</span>
+<span class="sd">        - &#39;auto&#39;: Automatically chooses direct or Fourier method based on</span>
 <span class="sd">         an estimate of which is faster.</span>
 
 <span class="sd">        Note: Use of the FFT convolution on input containing NAN or INF</span>

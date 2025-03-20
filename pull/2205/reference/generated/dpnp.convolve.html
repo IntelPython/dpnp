@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.18.0dev0+40.gcd8d88f1b74 documentation</title>
+  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.18.0dev0+42.g9547dea325 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e82c6dae"></script>
+      <script src="../../_static/documentation_options.js?v=dbf86963"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -149,33 +149,34 @@ distributions.</p>
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First 1-D array.</p></li>
 <li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second 1-D array. The length of <cite>v</cite> must be less than or equal to
 the length of <cite>a</cite>.</p></li>
-<li><p><strong>mode</strong> (<em>{'full'</em><em>, </em><em>'valid'</em><em>, </em><em>'same'}</em><em>, </em><em>optional</em>) -- <dl>
-<dt>'full':</dt><dd><p>By default, mode is 'full'. This returns the convolution
+<li><p><strong>mode</strong> (<em>{'full'</em><em>, </em><em>'valid'</em><em>, </em><em>'same'}</em><em>, </em><em>optional</em>) -- <ul>
+<li><p>'full': By default, mode is 'full'. This returns the convolution
 at each point of overlap, with an output shape of (N+M-1,). At
 the end-points of the convolution, the signals do not overlap
-completely, and boundary effects may be seen.</p>
-</dd>
-<dt>'same':</dt><dd><p>Mode 'same' returns output of length <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span></code>. Boundary
-effects are still visible.</p>
-</dd>
-<dt>'valid':</dt><dd><p>Mode 'valid' returns output of length
+completely, and boundary effects may be seen.</p></li>
+<li><p>'same': Mode 'same' returns output of length <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span></code>. Boundary
+effects are still visible.</p></li>
+<li><p>'valid': Mode 'valid' returns output of length
 <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span> <span class="pre">-</span> <span class="pre">min(M,</span> <span class="pre">N)</span> <span class="pre">+</span> <span class="pre">1</span></code>. The convolution product is only given
 for points where the signals overlap completely. Values outside
 the signal boundary have no effect.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">'full'</span></code>.</p>
-</dd>
-</dl>
+</li>
+</ul>
 </p></li>
-<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'direct'</em><em>, </em><em>'fft'}</em><em>, </em><em>optional</em>) -- <dl class="simple">
-<dt>'direct':</dt><dd><p>The convolution is determined directly from sums.</p>
-</dd>
-<dt>'fft':</dt><dd><p>The Fourier Transform is used to perform the calculations.
-This method is faster for long sequences but can have accuracy issues.</p>
-</dd>
-<dt>'auto':</dt><dd><p>Automatically chooses direct or Fourier method based on
-an estimate of which is faster.</p>
-</dd>
-</dl>
+<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'direct'</em><em>, </em><em>'fft'}</em><em>, </em><em>optional</em>) -- <ul>
+<li><p>'direct': The convolution is determined directly from sums.</p></li>
+<li><p>'fft': The Fourier Transform is used to perform the calculations.</p></li>
+</ul>
+<blockquote>
+<div><p>This method is faster for long sequences but can have accuracy issues.</p>
+</div></blockquote>
+<ul>
+<li><p>'auto': Automatically chooses direct or Fourier method based on</p></li>
+</ul>
+<blockquote>
+<div><p>an estimate of which is faster.</p>
+</div></blockquote>
 <p>Note: Use of the FFT convolution on input containing NAN or INF
 will lead to the entire output being NAN or INF.
 Use method='direct' when your input contains NAN or INF values.</p>
