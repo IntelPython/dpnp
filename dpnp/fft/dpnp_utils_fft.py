@@ -178,15 +178,24 @@ def _compute_result(dsc, a, out, forward, c2c, out_strides):
             dsc, a_usm, forward, depends=dep_evs
         )
         result = a
+        print("in-place")
     else:
         if (
             out is not None
             and out.strides == tuple(out_strides)
-            and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
+            # and not ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
         ):
+            print("strides:", out.strides == tuple(out_strides))
+            print(
+                "overlap:", ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
+            )
             res_usm = dpnp.get_usm_ndarray(out)
             result = out
         else:
+            print("strides:", out.strides == tuple(out_strides))
+            print(
+                "overlap:", ti._array_overlap(a_usm, dpnp.get_usm_ndarray(out))
+            )
             # Result array that is used in OneMKL must have the exact same
             # stride as input array
 
@@ -588,9 +597,9 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     _validate_out_keyword(a, out, (n,), (axis,), c2c, c2r, r2c)
     # if input array is copied, in-place FFT can be used
     a, in_place = _copy_array(a, c2c or c2r)
-    if not in_place and out is not None:
-        # if input is also given for out, in-place FFT can be used
-        in_place = dpnp.are_same_logical_tensors(a, out)
+    # if not in_place and out is not None:
+    # if input is also given for out, in-place FFT can be used
+    #    in_place = dpnp.are_same_logical_tensors(a, out)
 
     if a.size == 0:
         return dpnp.get_result_array(a, out=out, casting="same_kind")
