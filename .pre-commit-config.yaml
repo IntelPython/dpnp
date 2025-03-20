@@ -102,3 +102,8 @@ repos:
             "--disable=unused-wildcard-import"
             ]
         files: '^dpnp/(dpnp_iface.*|fft|linalg)'
+- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+  rev: v2.14.0
+  hooks:
+  - id: pretty-format-toml
+    args: [--autofix]
