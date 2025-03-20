@@ -9,13 +9,13 @@ permissions: read-all
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Set up clang-format
         run: |
-          sudo apt-get install -y clang-format-12
+          sudo apt-get install -y clang-format-14
           sudo unlink /usr/bin/clang-format
-          sudo ln -s /usr/bin/clang-format-12 /usr/bin/clang-format
+          sudo ln -s /usr/bin/clang-format-14 /usr/bin/clang-format
           clang-format --version
 
       - name: Set up pip packages

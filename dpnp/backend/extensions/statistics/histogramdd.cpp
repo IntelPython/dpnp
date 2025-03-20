@@ -86,10 +86,7 @@ struct EdgesDd
         }
     }
 
-    boundsT get_bounds() const
-    {
-        return {&min[0], &max[0]};
-    }
+    boundsT get_bounds() const { return {&min[0], &max[0]}; }
 
     auto get_bin_for_dim(const EdgesT &val,
                          const EdgesT *edges_data,

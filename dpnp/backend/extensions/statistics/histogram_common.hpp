@@ -63,10 +63,7 @@ struct CachedData
         local_data = LocalData(shape, cgh);
     }
 
-    T *get_ptr() const
-    {
-        return &local_data[0];
-    }
+    T *get_ptr() const { return &local_data[0]; }
 
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &item) const
@@ -82,15 +79,9 @@ struct CachedData
         }
     }
 
-    size_t size() const
-    {
-        return local_data.size();
-    }
+    size_t size() const { return local_data.size(); }
 
-    T &operator[](const sycl::id<Dims> &id) const
-    {
-        return local_data[id];
-    }
+    T &operator[](const sycl::id<Dims> &id) const { return local_data[id]; }
 
     template <typename = std::enable_if_t<Dims == 1>>
     T &operator[](const size_t id) const
@@ -118,25 +109,16 @@ struct UncachedData
         _shape = shape;
     }
 
-    T *get_ptr() const
-    {
-        return global_data;
-    }
+    T *get_ptr() const { return global_data; }
 
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &) const
     {
     }
 
-    size_t size() const
-    {
-        return _shape.size();
-    }
+    size_t size() const { return _shape.size(); }
 
-    T &operator[](const sycl::id<Dims> &id) const
-    {
-        return global_data[id];
-    }
+    T &operator[](const sycl::id<Dims> &id) const { return global_data[id]; }
 
     template <typename = std::enable_if_t<Dims == 1>>
     T &operator[](const size_t id) const
@@ -234,10 +216,7 @@ struct HistWithLocalCopies
         }
     }
 
-    uint32_t size() const
-    {
-        return local_hist.size();
-    }
+    uint32_t size() const { return local_hist.size(); }
 
 private:
     LocalHist local_hist;
@@ -250,10 +229,7 @@ struct HistGlobalMemory
     static constexpr bool const sync_after_init = false;
     static constexpr bool const sync_before_finalize = false;
 
-    HistGlobalMemory(T *global_data)
-    {
-        global_hist = global_data;
-    }
+    HistGlobalMemory(T *global_data) { global_hist = global_data; }
 
     template <int _Dims>
     void init(const sycl::nd_item<_Dims> &) const
@@ -279,24 +255,15 @@ private:
 template <typename T = uint32_t>
 struct NoWeights
 {
-    constexpr T get(size_t) const
-    {
-        return 1;
-    }
+    constexpr T get(size_t) const { return 1; }
 };
 
 template <typename T>
 struct Weights
 {
-    Weights(T *weights)
-    {
-        data = weights;
-    }
+    Weights(T *weights) { data = weights; }
 
-    T get(size_t id) const
-    {
-        return data[id];
-    }
+    T get(size_t id) const { return data[id]; }
 
 private:
     T *data = nullptr;
