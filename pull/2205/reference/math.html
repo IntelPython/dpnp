@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.18.0dev0+38.g7175d27cec7 documentation</title>
+  <title>Mathematical functions &mdash; Data Parallel Extension for NumPy 0.18.0dev0+40.gcd8d88f1b74 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=fa51270d"></script>
+      <script src="../_static/documentation_options.js?v=e82c6dae"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -515,7 +515,7 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/dpnp.convolve.html#dpnp.convolve" title="dpnp.convolve"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.convolve</span></code></a></p></td>
-<td><p>Returns the discrete, linear convolution of two one-dimensional sequences. The convolution operator is often seen in signal processing, where it models the effect of a linear time-invariant system on a signal <a href="#id2"><span class="problematic" id="id1">[1]_</span></a>. In probability theory, the sum of two independent random variables is distributed according to the convolution of their individual distributions. If <cite>v</cite> is longer than <cite>a</cite>, the arrays are swapped before computation. For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.convolve.html#numpy.convolve" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.convolve</span></code></a>. :param a: First 1-D array. :type a: {dpnp.ndarray, usm_ndarray} :param v: Second 1-D array. The length of <cite>v</cite> must be less than or equal to           the length of <cite>a</cite>. :type v: {dpnp.ndarray, usm_ndarray} :param mode:              'full':                By default, mode is 'full'. This returns the convolution                at each point of overlap, with an output shape of (N+M-1,). At                the end-points of the convolution, the signals do not overlap                completely, and boundary effects may be seen. 'same':                Mode 'same' returns output of length <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span></code>. Boundary                effects are still visible. 'valid':                Mode 'valid' returns output of length                <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span> <span class="pre">-</span> <span class="pre">min(M,</span> <span class="pre">N)</span> <span class="pre">+</span> <span class="pre">1</span></code>. The convolution product is only given                for points where the signals overlap completely. Values outside                the signal boundary have no effect. :type mode: {'full', 'valid', 'same'}, optional :param method:                'direct':                 The convolution is determined directly from sums. 'fft':                 The Fourier Transform is used to perform the calculations. This method is faster for long sequences but can have accuracy issues. 'auto':                 Automatically chooses direct or Fourier method based on                 an estimate of which is faster. Note: Use of the FFT convolution on input containing NAN or INF                will lead to the entire output being NAN or INF. Use method='direct' when your input contains NAN or INF values. Default: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>. :type method: {'auto', 'direct', 'fft'}, optional.</p></td>
+<td><p>Returns the discrete, linear convolution of two one-dimensional sequences.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/dpnp.clip.html#dpnp.clip" title="dpnp.clip"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.clip</span></code></a></p></td>
 <td><p>Clip (limit) the values in an array.</p></td>

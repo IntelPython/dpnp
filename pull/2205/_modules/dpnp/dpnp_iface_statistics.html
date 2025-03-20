@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.18.0dev0+38.g7175d27cec7 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.18.0dev0+40.gcd8d88f1b74 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fa51270d"></script>
+      <script src="../../_static/documentation_options.js?v=e82c6dae"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -480,8 +480,11 @@
 <span class="sd">    probability theory, the sum of two independent random variables is</span>
 <span class="sd">    distributed according to the convolution of their individual</span>
 <span class="sd">    distributions.</span>
+
 <span class="sd">    If `v` is longer than `a`, the arrays are swapped before computation.</span>
+
 <span class="sd">    For full documentation refer to :obj:`numpy.convolve`.</span>
+
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
@@ -503,6 +506,8 @@
 <span class="sd">          ``max(M, N) - min(M, N) + 1``. The convolution product is only given</span>
 <span class="sd">          for points where the signals overlap completely. Values outside</span>
 <span class="sd">          the signal boundary have no effect.</span>
+
+<span class="sd">          Default: ``&#39;full&#39;``.</span>
 <span class="sd">    method : {&#39;auto&#39;, &#39;direct&#39;, &#39;fft&#39;}, optional</span>
 <span class="sd">        &#39;direct&#39;:</span>
 <span class="sd">         The convolution is determined directly from sums.</span>
@@ -512,14 +517,18 @@
 <span class="sd">        &#39;auto&#39;:</span>
 <span class="sd">         Automatically chooses direct or Fourier method based on</span>
 <span class="sd">         an estimate of which is faster.</span>
+
 <span class="sd">        Note: Use of the FFT convolution on input containing NAN or INF</span>
 <span class="sd">        will lead to the entire output being NAN or INF.</span>
 <span class="sd">        Use method=&#39;direct&#39; when your input contains NAN or INF values.</span>
+
 <span class="sd">        Default: ``&#39;auto&#39;``.</span>
+
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : ndarray</span>
 <span class="sd">        Discrete, linear convolution of `a` and `v`.</span>
+
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.correlate` : Cross-correlation of two 1-dimensional sequences.</span>
@@ -533,26 +542,33 @@
 <span class="sd">    circular convolution). Since multiplication is more efficient (faster)</span>
 <span class="sd">    than convolution, the function implements two approaches - direct and fft</span>
 <span class="sd">    which are regulated by the keyword `method`.</span>
+
 <span class="sd">    References</span>
 <span class="sd">    ----------</span>
 <span class="sd">    .. [1] Wikipedia, &quot;Convolution&quot;,</span>
 <span class="sd">        https://en.wikipedia.org/wiki/Convolution</span>
+
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    Note how the convolution operator flips the second array</span>
 <span class="sd">    before &quot;sliding&quot; the two across one another:</span>
+
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3], dtype=np.float32)</span>
 <span class="sd">    &gt;&gt;&gt; v = np.array([0, 1, 0.5], dtype=np.float32)</span>
 <span class="sd">    &gt;&gt;&gt; np.convolve(a, v)</span>
+
 <span class="sd">    array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)</span>
 <span class="sd">    Only return the middle values of the convolution.</span>
 <span class="sd">    Contains boundary effects, where zeros are taken</span>
 <span class="sd">    into account:</span>
+
 <span class="sd">    &gt;&gt;&gt; np.convolve(a, v, &#39;same&#39;)</span>
+
 <span class="sd">    array([1. , 2.5, 4. ], dtype=float32)</span>
 <span class="sd">    The two arrays are of the same length, so there</span>
 <span class="sd">    is only one position where they completely overlap:</span>
+
 <span class="sd">    &gt;&gt;&gt; np.convolve(a, v, &#39;valid&#39;)</span>
 <span class="sd">    array([2.5], dtype=float32)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -1065,7 +1081,7 @@
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; x = np.array([[0, 2], [1, 1], [2, 0]]).T</span>
 
-<span class="sd">    Consider two variables, :math:`x_0` and  :math:`x_1`, which correlate</span>
+<span class="sd">    Consider two variables, :math:`x_0` and :math:`x_1`, which correlate</span>
 <span class="sd">    perfectly, but in opposite directions:</span>
 
 <span class="sd">    &gt;&gt;&gt; x</span>
