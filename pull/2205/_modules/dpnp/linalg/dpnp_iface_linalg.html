@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.18.0dev0+31.gd84bf1c4f73 documentation</title>
+  <title>dpnp.linalg.dpnp_iface_linalg &mdash; Data Parallel Extension for NumPy 0.18.0dev0+36.g4614da805be documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=db60104a"></script>
+      <script src="../../../_static/documentation_options.js?v=cf7655c4"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -463,7 +463,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x : (...,M,N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    x : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array having shape (..., M, N) and whose innermost two</span>
 <span class="sd">        dimensions form ``MxN`` matrices.</span>
 <span class="sd">    offset : int, optional</span>
@@ -478,7 +478,7 @@
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    out : (...,min(N,M)) dpnp.ndarray</span>
+<span class="sd">    out : (...,min(N, M)) dpnp.ndarray</span>
 <span class="sd">        An array containing the diagonals and whose shape is determined by</span>
 <span class="sd">        removing the last two dimensions and appending a dimension equal to</span>
 <span class="sd">        the size of the resulting diagonals. The returned array must have</span>
@@ -492,7 +492,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape(2,2); a</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape(2, 2); a</span>
 <span class="sd">    array([[0, 1],</span>
 <span class="sd">           [2, 3]])</span>
 <span class="sd">    &gt;&gt;&gt; np.linalg.diagonal(a)</span>
@@ -500,7 +500,7 @@
 
 <span class="sd">    A 3-D example:</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(8).reshape(2,2,2); a</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(8).reshape(2, 2, 2); a</span>
 <span class="sd">    array([[[0, 1],</span>
 <span class="sd">            [2, 3]],</span>
 <span class="sd">           [[4, 5],</span>
@@ -781,7 +781,7 @@
 <span class="sd">    Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the</span>
 <span class="sd">    other:</span>
 
-<span class="sd">    &gt;&gt;&gt; D = np.diag((-1,1))</span>
+<span class="sd">    &gt;&gt;&gt; D = np.diag((-1, 1))</span>
 <span class="sd">    &gt;&gt;&gt; LA.eigvals(D)</span>
 <span class="sd">    array([-1.,  1.])</span>
 <span class="sd">    &gt;&gt;&gt; A = np.dot(Q, D)</span>
@@ -1049,7 +1049,7 @@
 
 <span class="sd">    &gt;&gt;&gt; a = np.arange(2 * 2 * 4).reshape((2, 2, 4))</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(2 * 2 * 4).reshape((2, 4, 2))</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.matmul(a,b).shape</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.matmul(a, b).shape</span>
 <span class="sd">    (2, 2, 2)</span>
 <span class="sd">    &gt;&gt;&gt; np.linalg.matmul(a, b)[0, 1, 1]</span>
 <span class="sd">    array(98)</span>
@@ -1085,7 +1085,7 @@
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array having shape (..., M, N) and whose two innermost</span>
 <span class="sd">        dimensions form ``MxN`` matrices.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
@@ -1428,7 +1428,7 @@
 <span class="sd">        `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
@@ -1471,7 +1471,7 @@
 
 <span class="sd">    The Frobenius norm is given by [1]_:</span>
 
-<span class="sd">    :math:`||A||_F = [\sum_{i,j} abs(a_{i,j})^2]^{1/2}`</span>
+<span class="sd">    :math:`||A||_F = [\sum_{i, j} abs(a_{i, j})^2]^{1/2}`</span>
 
 <span class="sd">    The nuclear norm is the sum of the singular values.</span>
 
@@ -1545,8 +1545,8 @@
 
 <span class="sd">    Using the `axis` argument to compute matrix norms:</span>
 
-<span class="sd">    &gt;&gt;&gt; m = np.arange(8).reshape(2,2,2)</span>
-<span class="sd">    &gt;&gt;&gt; np.linalg.norm(m, axis=(1,2))</span>
+<span class="sd">    &gt;&gt;&gt; m = np.arange(8).reshape(2, 2, 2)</span>
+<span class="sd">    &gt;&gt;&gt; np.linalg.norm(m, axis=(1, 2))</span>
 <span class="sd">    array([  3.74165739,  11.22497216])</span>
 <span class="sd">    &gt;&gt;&gt; np.linalg.norm(m[0, :, :]), np.linalg.norm(m[1, :, :])</span>
 <span class="sd">    (array(3.74165739), array(11.22497216))</span>
@@ -2166,9 +2166,9 @@
 <span class="sd">    &gt;&gt;&gt; np.linalg.tensordot(a, b, axes=1)</span>
 <span class="sd">    array([14, 32, 50])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3,4,5)</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4,3,2)</span>
-<span class="sd">    &gt;&gt;&gt; c = np.linalg.tensordot(a,b, axes=([1,0],[0,1]))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3, 4, 5)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4, 3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.linalg.tensordot(a, b, axes=([1, 0], [0, 1]))</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
 <span class="sd">    (5, 2)</span>
 <span class="sd">    &gt;&gt;&gt; c</span>
@@ -2180,12 +2180,12 @@
 
 <span class="sd">    A slower but equivalent way of computing the same...</span>
 
-<span class="sd">    &gt;&gt;&gt; d = np.zeros((5,2))</span>
+<span class="sd">    &gt;&gt;&gt; d = np.zeros((5, 2))</span>
 <span class="sd">    &gt;&gt;&gt; for i in range(5):</span>
 <span class="sd">    ...   for j in range(2):</span>
 <span class="sd">    ...     for k in range(3):</span>
 <span class="sd">    ...       for n in range(4):</span>
-<span class="sd">    ...         d[i,j] += a[k,n,i] * b[n,k,j]</span>
+<span class="sd">    ...         d[i, j] += a[k, n, i] * b[n, k, j]</span>
 <span class="sd">    &gt;&gt;&gt; c == d</span>
 <span class="sd">    array([[ True,  True],</span>
 <span class="sd">           [ True,  True],</span>
@@ -2354,7 +2354,7 @@
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    x : (...,M,N) {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">    x : (..., M, N) {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array having shape (..., M, N) and whose innermost two</span>
 <span class="sd">        dimensions form ``MxN`` matrices.</span>
 <span class="sd">    offset : int, optional</span>
@@ -2513,7 +2513,7 @@
 <span class="sd">        equivalent to computing the vector norm of a flattened array).</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes which are normed over are left in</span>
 <span class="sd">        the result as dimensions with size one. With this option the result</span>
 <span class="sd">        will broadcast correctly against the original `x`.</span>
