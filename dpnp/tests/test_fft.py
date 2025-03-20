@@ -37,7 +37,7 @@ def _make_array_Hermitian(a, n):
 
 
 # TODO: `assert_dtype_allclose` calls in this file have `check_only_type_kind=True`
-# since stock NumPy is currently used in public CI for code coverege which
+# since stock NumPy is currently used in public CI for code coverage which
 # always returns complex128/float64 for FFT functions, but Intel® NumPy and
 # dpnp return complex64/float32 if input is complex64/float32
 class TestFft:
@@ -232,8 +232,7 @@ class TestFft:
             assert_dtype_allclose(y4[:, 15:], y_np[:, 15:])
 
         # Overwrite in a transpose.
-        # for this case, out-of-place FFT is called with a temporary
-        # buffer for output array in FFT call
+        # for this case, out-of-place FFT is called
         y5 = y.copy()
         out5 = y5.T
         result5 = dpnp.fft.fft(y5, axis=axis, out=out5)
