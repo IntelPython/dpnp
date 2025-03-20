@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.array_equal &mdash; Data Parallel Extension for NumPy 0.18.0dev0+27.gca3c28e75ca documentation</title>
+  <title>dpnp.array_equal &mdash; Data Parallel Extension for NumPy 0.18.0dev0+39.g5044e6d9b38 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fdc2b2a4"></script>
+      <script src="../../_static/documentation_options.js?v=68adaaae"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -137,18 +137,18 @@ otherwise.</p>
 Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
 <li><p><strong>a2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array.
 Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If the dtype of <cite>a1</cite> and <cite>a2</cite> is
+<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If the dtype of <cite>a1</cite> and <cite>a2</cite> is
 complex, values will be considered equal if either the real or the
-imaginary component of a given value is <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+imaginary component of a given value is <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>b</strong> -- An array with a data type of <cite>bool</cite>.
-Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if the arrays are equal.</p>
+<dd class="field-even"><p><strong>out</strong> -- A 0-d array with <code class="docutils literal notranslate"><span class="pre">True</span></code> value if the arrays are equal.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
 </dd>
 </dl>
 <div class="admonition seealso">

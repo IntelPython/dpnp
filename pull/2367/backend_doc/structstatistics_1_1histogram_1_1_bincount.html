@@ -108,14 +108,14 @@ $(function(){initNavTree('structstatistics_1_1histogram_1_1_bincount.html',''); 
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a37371267583c5e8fc980aef260783344" id="r_a37371267583c5e8fc980aef260783344"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37371267583c5e8fc980aef260783344">FnT</a></td></tr>
-<tr class="separator:a37371267583c5e8fc980aef260783344"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9e02719f6e459d270281b0fd079167d6" id="r_a9e02719f6e459d270281b0fd079167d6"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e02719f6e459d270281b0fd079167d6">FnT</a></td></tr>
+<tr class="separator:a9e02719f6e459d270281b0fd079167d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a03e60f9c8a68ed88f3fd77f71eb831e0" id="r_a03e60f9c8a68ed88f3fd77f71eb831e0"><td class="memItemLeft" align="right" valign="top"><a id="a03e60f9c8a68ed88f3fd77f71eb831e0" name="a03e60f9c8a68ed88f3fd77f71eb831e0"></a>
-std::tuple&lt; sycl::event, sycl::event &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>call</b> (const dpctl::tensor::usm_ndarray &amp;input, const int64_t min, const int64_t max, const std::optional&lt; const dpctl::tensor::usm_ndarray &gt; &amp;weights, dpctl::tensor::usm_ndarray &amp;output, const std::vector&lt; sycl::event &gt; &amp;depends)</td></tr>
-<tr class="separator:a03e60f9c8a68ed88f3fd77f71eb831e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90f28c400a103026db5503d85780fed9" id="r_a90f28c400a103026db5503d85780fed9"><td class="memItemLeft" align="right" valign="top"><a id="a90f28c400a103026db5503d85780fed9" name="a90f28c400a103026db5503d85780fed9"></a>
+std::tuple&lt; sycl::event, sycl::event &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>call</b> (const dpctl::tensor::usm_ndarray &amp;input, const uint64_t min, const uint64_t max, const std::optional&lt; const dpctl::tensor::usm_ndarray &gt; &amp;weights, dpctl::tensor::usm_ndarray &amp;output, const std::vector&lt; sycl::event &gt; &amp;depends)</td></tr>
+<tr class="separator:a90f28c400a103026db5503d85780fed9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -126,8 +126,8 @@ Public Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="bincount_8hpp_source.html#l00038">38</a> of file <a class="el" href="bincount_8hpp_source.html">bincount.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a37371267583c5e8fc980aef260783344" name="a37371267583c5e8fc980aef260783344"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a37371267583c5e8fc980aef260783344">&#9670;&#160;</a></span>FnT</h2>
+<a id="a9e02719f6e459d270281b0fd079167d6" name="a9e02719f6e459d270281b0fd079167d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e02719f6e459d270281b0fd079167d6">&#9670;&#160;</a></span>FnT</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -139,11 +139,10 @@ Public Attributes</h2></td></tr>
 </div><div class="memdoc">
 <b>Initial value:</b><div class="fragment"><div class="line"> sycl::event (*)(sycl::queue &amp;,</div>
 <div class="line">                                <span class="keyword">const</span> <span class="keywordtype">void</span> *,</div>
-<div class="line">                                <span class="keyword">const</span> int64_t,</div>
-<div class="line">                                <span class="keyword">const</span> int64_t,</div>
+<div class="line">                                <span class="keyword">const</span> uint64_t,</div>
+<div class="line">                                <span class="keyword">const</span> uint64_t,</div>
 <div class="line">                                <span class="keyword">const</span> <span class="keywordtype">void</span> *,</div>
 <div class="line">                                <span class="keywordtype">void</span> *,</div>
-<div class="line">                                <span class="keyword">const</span> size_t,</div>
 <div class="line">                                <span class="keyword">const</span> size_t,</div>
 <div class="line">                                <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;)</div>
 </div><!-- fragment -->
@@ -164,7 +163,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="bincount_8hpp_source.html#l00050">50</a> of file <a class="el" href="bincount_8hpp_source.html">bincount.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="bincount_8hpp_source.html#l00049">49</a> of file <a class="el" href="bincount_8hpp_source.html">bincount.hpp</a>.</p>
 
 </div>
 </div>

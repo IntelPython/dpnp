@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.18.0dev0+27.gca3c28e75ca documentation</title>
+  <title>dpnp.dpnp_iface_arraycreation &mdash; Data Parallel Extension for NumPy 0.18.0dev0+39.g5044e6d9b38 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=fdc2b2a4"></script>
+      <script src="../../_static/documentation_options.js?v=68adaaae"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -410,7 +410,7 @@
 <span class="sd">        (``dtype``, ``order``, etc.). For ``False`` it raises a ``ValueError``</span>
 <span class="sd">        exception if a copy can not be avoided.</span>
 <span class="sd">        Default: ``True``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    ndmin : int, optional</span>
@@ -1106,7 +1106,7 @@
 <span class="sd">        Input data, in any form that can be converted to an array. This</span>
 <span class="sd">        includes scalars, lists, lists of tuples, tuples, tuples of tuples,</span>
 <span class="sd">        tuples of lists, and ndarrays.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array.</span>
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
@@ -3292,7 +3292,7 @@
 <span class="sd">    &gt;&gt;&gt; y = np.arange(-5, 5, 0.1)</span>
 <span class="sd">    &gt;&gt;&gt; xx, yy = np.meshgrid(x, y, sparse=True)</span>
 <span class="sd">    &gt;&gt;&gt; z = np.sin(xx**2 + yy**2) / (xx**2 + yy**2)</span>
-<span class="sd">    &gt;&gt;&gt; h = plt.contourf(x,y,z)</span>
+<span class="sd">    &gt;&gt;&gt; h = plt.contourf(x, y, z)</span>
 <span class="sd">    &gt;&gt;&gt; plt.show()</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -3368,7 +3368,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; np.mgrid[0:5,0:5]</span>
+<span class="sd">    &gt;&gt;&gt; np.mgrid[0:5, 0:5]</span>
 <span class="sd">    array([[[0, 0, 0, 0, 0],</span>
 <span class="sd">            [1, 1, 1, 1, 1],</span>
 <span class="sd">            [2, 2, 2, 2, 2],</span>
@@ -3733,7 +3733,7 @@
 <span class="sd">        precision, then the default integer precision is used. Otherwise, the</span>
 <span class="sd">        precision is the same as that of `a`.</span>
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    out : {dpnp.ndarray, usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        Array into which the output is placed. Its type is preserved and it</span>
 <span class="sd">        must be of the right shape to hold the output.</span>
 <span class="sd">        Default: ``None``.</span>
