@@ -397,29 +397,23 @@ def convolve(a, v, mode="full", method="auto"):
         Second 1-D array. The length of `v` must be less than or equal to
         the length of `a`.
     mode : {'full', 'valid', 'same'}, optional
-        'full':
-          By default, mode is 'full'. This returns the convolution
+        - 'full': By default, mode is 'full'. This returns the convolution
           at each point of overlap, with an output shape of (N+M-1,). At
           the end-points of the convolution, the signals do not overlap
           completely, and boundary effects may be seen.
-        'same':
-          Mode 'same' returns output of length ``max(M, N)``. Boundary
+        - 'same': Mode 'same' returns output of length ``max(M, N)``. Boundary
           effects are still visible.
-        'valid':
-          Mode 'valid' returns output of length
+        - 'valid': Mode 'valid' returns output of length
           ``max(M, N) - min(M, N) + 1``. The convolution product is only given
           for points where the signals overlap completely. Values outside
           the signal boundary have no effect.
 
           Default: ``'full'``.
     method : {'auto', 'direct', 'fft'}, optional
-        'direct':
-         The convolution is determined directly from sums.
-        'fft':
-         The Fourier Transform is used to perform the calculations.
+        - 'direct': The convolution is determined directly from sums.
+        - 'fft': The Fourier Transform is used to perform the calculations.
          This method is faster for long sequences but can have accuracy issues.
-        'auto':
-         Automatically chooses direct or Fourier method based on
+        - 'auto': Automatically chooses direct or Fourier method based on
          an estimate of which is faster.
 
         Note: Use of the FFT convolution on input containing NAN or INF
