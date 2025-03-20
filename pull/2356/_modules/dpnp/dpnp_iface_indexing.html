@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.18.0dev0+36.gf07ae897a45 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.18.0dev0+46.g74a1d650ab8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dc33d7f0"></script>
+      <script src="../../_static/documentation_options.js?v=4cba6de0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -764,7 +764,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape(2,2)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape(2, 2)</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[0, 1],</span>
 <span class="sd">           [2, 3]])</span>
@@ -775,7 +775,7 @@
 
 <span class="sd">    A 3-D example:</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(8).reshape(2,2,2)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(8).reshape(2, 2, 2)</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[[0, 1],</span>
 <span class="sd">            [2, 3]],</span>
@@ -1351,8 +1351,8 @@
 <span class="sd">    N dimensions.</span>
 
 <span class="sd">    Using :obj:`dpnp.ix_` one can quickly construct index arrays that will</span>
-<span class="sd">    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array</span>
-<span class="sd">    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.</span>
+<span class="sd">    index the cross product. ``a[dpnp.ix_([1, 3],[2, 5])]`` returns the array</span>
+<span class="sd">    ``[[a[1, 2] a[1, 5]], [a[3, 2] a[3, 5]]]``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>

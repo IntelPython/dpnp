@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.18.0dev0+36.gf07ae897a45 documentation</title>
+  <title>dpnp.einsum &mdash; Data Parallel Extension for NumPy 0.18.0dev0+46.g74a1d650ab8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dc33d7f0"></script>
+      <script src="../../_static/documentation_options.js?v=4cba6de0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -139,15 +139,19 @@ subscript labels. An implicit (classical Einstein summation)
 calculation is performed unless the explicit indicator '-&gt;' is
 included as well as subscript labels of the precise output form.</p></li>
 <li><p><strong>*operands</strong> (<em>sequence</em><em> of </em><em>{dpnp.ndarrays</em><em>, </em><em>usm_ndarray}</em>) -- These are the arrays for the operation.</p></li>
-<li><p><strong>out</strong> (<em>{dpnp.ndarrays</em><em>, </em><em>usm_ndarray</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- If provided, the calculation is done into this array.</p></li>
-<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- If provided, forces the calculation to use the data type specified.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- Controls the memory layout of the output. <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> means it should be
+<li><p><strong>out</strong> (<em>{dpnp.ndarrays</em><em>, </em><em>usm_ndarray</em><em>, </em><em>None}</em><em>, </em><em>optional</em>) -- <p>If provided, the calculation is done into this array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>If provided, forces the calculation to use the data type specified.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>order</strong> (<em>{&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Controls the memory layout of the output. <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> means it should be
 C-contiguous. <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> means it should be F-contiguous, <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code> means
 it should be <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> if the inputs are all <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> otherwise.
 <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code> means it should be as close to the layout as the inputs as
-is possible, including arbitrarily permuted axes.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p></li>
+is possible, including arbitrarily permuted axes.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
+</p></li>
 <li><p><strong>casting</strong> (<em>{&quot;no&quot;</em><em>, </em><em>&quot;equiv&quot;</em><em>, </em><em>&quot;safe&quot;</em><em>, </em><em>&quot;same_kind&quot;</em><em>, </em><em>&quot;unsafe&quot;}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur. Setting this to
 <code class="docutils literal notranslate"><span class="pre">&quot;unsafe&quot;</span></code> is not recommended, as it can adversely affect
 accumulations.</p>
@@ -164,14 +168,15 @@ like float64 to float32, are allowed.</p></li>
 <p>Please note that, in contrast to NumPy, the default setting here is
 <code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code>. This is to prevent errors that may occur when data
 needs to be converted to <cite>float64</cite>, but the device does not support it.
-In such cases, the data is instead converted to <cite>float32</cite>.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code>.</p>
+In such cases, the data is instead converted to <cite>float32</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;same_kind&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>optimize</strong> (<em>{False</em><em>, </em><em>True</em><em>, </em><em>&quot;greedy&quot;</em><em>, </em><em>&quot;optimal&quot;}</em><em>, </em><em>optional</em>) -- Controls if intermediate optimization should occur. No optimization
+<li><p><strong>optimize</strong> (<em>{False</em><em>, </em><em>True</em><em>, </em><em>&quot;greedy&quot;</em><em>, </em><em>&quot;optimal&quot;}</em><em>, </em><em>optional</em>) -- <p>Controls if intermediate optimization should occur. No optimization
 will occur if <code class="docutils literal notranslate"><span class="pre">False</span></code> and <code class="docutils literal notranslate"><span class="pre">True</span></code> will default to the <code class="docutils literal notranslate"><span class="pre">&quot;greedy&quot;</span></code>
 algorithm. Also accepts an explicit contraction list from the
-<a class="reference internal" href="dpnp.einsum_path.html#dpnp.einsum_path" title="dpnp.einsum_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum_path</span></code></a> function.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<a class="reference internal" href="dpnp.einsum_path.html#dpnp.einsum_path" title="dpnp.einsum_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.einsum_path</span></code></a> function.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -200,15 +205,15 @@ Default: <code class="docutils literal notranslate"><span class="pre">False</spa
 </div>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Trace of a matrix:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ii&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
 <span class="go">array(60)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
 <span class="go">array(60)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 <span class="go">array(60)</span>
@@ -264,14 +269,14 @@ with ellipsis:</p>
 <span class="go">array(30)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">b</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="go">array(30)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">b</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">inner</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">array(30)</span>
 </pre></div>
 </div>
 <p>Matrix vector multiplication:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ij,j&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">array([ 30,  80, 130, 180, 230])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">b</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">b</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 <span class="go">array([ 30,  80, 130, 180, 230])</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 <span class="go">array([ 30,  80, 130, 180, 230])</span>
@@ -353,22 +358,26 @@ significant with larger arrays:</p>
 </div>
 <p>Basic <cite>einsum</cite>: 119 ms ± 26 ms per loop (evaluated on 12th
 Gen Intel® Core™ i7 processor)</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Sub-optimal <cite>einsum</cite>: 32.9 ms ± 5.1 ms per loop</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;optimal&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+<span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;optimal&quot;</span>
+<span class="go">)</span>
 </pre></div>
 </div>
 <p>Greedy <cite>einsum</cite>: 28.6 ms ± 4.8 ms per loop</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;greedy&quot;</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span>
+<span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;greedy&quot;</span>
+<span class="go">)</span>
 </pre></div>
 </div>
 <p>Optimal <cite>einsum</cite>: 26.9 ms ± 6.3 ms per loop</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">path</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">(</span>
-<span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
+<span class="go">    &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;optimal&quot;</span>
 <span class="go">)[0]</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span><span class="n">a</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="o">%</span><span class="n">timeit</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="n">path</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd></dl>

@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.isposinf &mdash; Data Parallel Extension for NumPy 0.18.0dev0+36.gf07ae897a45 documentation</title>
+  <title>dpnp.isposinf &mdash; Data Parallel Extension for NumPy 0.18.0dev0+46.g74a1d650ab8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dc33d7f0"></script>
+      <script src="../../_static/documentation_options.js?v=4cba6de0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -133,18 +133,25 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- A location into which the result is stored. If provided, it must have a
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>A location into which the result is stored. If provided, it must have a
 shape that the input broadcasts to and a boolean data type.
 If not provided or <code class="docutils literal notranslate"><span class="pre">None</span></code>, a freshly-allocated boolean array
-is returned.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+is returned.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- Boolean array of same shape as <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p>
+<dd class="field-even"><p><strong>out</strong> -- An array with the same shape as <cite>x</cite>.
+If <cite>out</cite> is <code class="docutils literal notranslate"><span class="pre">None</span></code> then an array is returned with values <code class="docutils literal notranslate"><span class="pre">True</span></code>
+where the corresponding element of the input is positive infinity
+and values <code class="docutils literal notranslate"><span class="pre">False</span></code> where the element of the input is not positive
+infinity.
+If <cite>out</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> then the result is stored there and <cite>out</cite> is
+a reference to that array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
 </dd>
 </dl>
 <div class="admonition seealso">

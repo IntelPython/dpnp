@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.any &mdash; Data Parallel Extension for NumPy 0.18.0dev0+36.gf07ae897a45 documentation</title>
+  <title>dpnp.any &mdash; Data Parallel Extension for NumPy 0.18.0dev0+46.g74a1d650ab8 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=dc33d7f0"></script>
+      <script src="../../_static/documentation_options.js?v=4cba6de0"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -133,32 +133,34 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- Axis or axes along which a logical OR reduction is performed.
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><em>tuple</em></a><em> of </em><em>ints}</em><em>, </em><em>optional</em>) -- <p>Axis or axes along which a logical OR reduction is performed.
 The default is to perform a logical OR over all the dimensions
 of the input array.`axis` may be negative, in which case it counts
-from the last to the first axis.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Alternative output array in which to place the result. It must have
+from the last to the first axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternative output array in which to place the result. It must have
 the same shape as the expected output but the type (of the returned
-values) will be cast if necessary.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>keepdims</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
+values) will be cast if necessary.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>keepdims</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the reduced axes (dimensions) are included in the result
 as singleton dimensions, so that the returned array remains
 compatible with the input array according to Array Broadcasting
 rules. Otherwise, if <code class="docutils literal notranslate"><span class="pre">False</span></code>, the reduced axes are not included in
-the returned array.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+the returned array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array with a data type of <cite>bool</cite>.
-containing the results of the logical OR reduction is returned
+<dd class="field-even"><p><strong>out</strong> -- An array containing the results of the logical OR reduction is returned
 unless <cite>out</cite> is specified. Otherwise, a reference to <cite>out</cite> is returned.
-The result has the same shape as <cite>a</cite> if <cite>axis</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code>
-or <cite>a</cite> is a 0-d array.</p>
+The result has the same shape as <cite>a</cite> if <cite>axis</cite> is not <code class="docutils literal notranslate"><span class="pre">None</span></code> or <cite>a</cite>
+is a 0-d array.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
 </dd>
 </dl>
 <p class="rubric">Limitations</p>
