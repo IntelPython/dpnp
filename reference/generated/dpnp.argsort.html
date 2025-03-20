@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.argsort &mdash; Data Parallel Extension for NumPy 0.18.0dev0+33.g337becf20fe documentation</title>
+  <title>dpnp.argsort &mdash; Data Parallel Extension for NumPy 0.18.0dev0+35.g4986f397b55 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ae205c0c"></script>
+      <script src="../../_static/documentation_options.js?v=69ea4d12"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -131,22 +131,26 @@
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array to be sorted.</p></li>
-<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- Axis along which to sort. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the array is flattened before
-sorting. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which sorts along the last axis.
-Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p></li>
-<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;stable&quot;</em><em>, </em><em>&quot;mergesort&quot;</em><em>, </em><em>&quot;radixsort&quot;}</em><em>, </em><em>optional</em>) -- Sorting algorithm. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which uses parallel
+<li><p><strong>axis</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>Axis along which to sort. If <code class="docutils literal notranslate"><span class="pre">None</span></code>, the array is flattened before
+sorting. The default is <code class="docutils literal notranslate"><span class="pre">-1</span></code>, which sorts along the last axis.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+<li><p><strong>kind</strong> (<em>{None</em><em>, </em><em>&quot;stable&quot;</em><em>, </em><em>&quot;mergesort&quot;</em><em>, </em><em>&quot;radixsort&quot;}</em><em>, </em><em>optional</em>) -- <p>Sorting algorithm. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, which uses parallel
 merge-sort or parallel radix-sort algorithms depending on the array
-data type.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>descending</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- Sort order. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the array must be sorted in descending order
+data type.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>descending</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Sort order. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the array must be sorted in descending order
 (by value). If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the array must be sorted in ascending order
-(by value).
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
-<li><p><strong>stable</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- Sort stability. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned array will maintain the
+(by value).</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
+<li><p><strong>stable</strong> (<em>{None</em><em>, </em><em>bool}</em><em>, </em><em>optional</em>) -- <p>Sort stability. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, the returned array will maintain the
 relative order of <cite>a</cite> values which compare as equal. The same behavior
 applies when set to <code class="docutils literal notranslate"><span class="pre">False</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.
-Internally, this option selects <code class="docutils literal notranslate"><span class="pre">kind=&quot;stable&quot;</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+Internally, this option selects <code class="docutils literal notranslate"><span class="pre">kind=&quot;stable&quot;</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
