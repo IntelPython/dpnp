@@ -162,6 +162,8 @@ class TestConvolve:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("method", ["auto", "direct", "fft"])
     def test_convolve_random(self, a_size, v_size, mode, dtype, method):
+        if dtype in [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16]:
+            pytest.skip("avoid overflow.")
         if dtype == dpnp.bool:
             an = numpy.random.rand(a_size) > 0.9
             vn = numpy.random.rand(v_size) > 0.9
@@ -385,7 +387,7 @@ class TestCorrelate:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("method", ["auto", "direct", "fft"])
     def test_correlate_random(self, a_size, v_size, mode, dtype, method):
-        if dtype in [numpy.int8, numpy.uint8]:
+        if dtype in [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16]:
             pytest.skip("avoid overflow.")
         an = generate_random_numpy_array(
             a_size, dtype, low=-3, high=3, probability=0.9
