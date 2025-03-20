@@ -42,3 +42,5 @@ std::pair<sycl::event, sycl::event>
                          const std::vector<sycl::event> &depends);
 
 } // namespace dpnp::extensions::fft
+
+#include "in_place.tpp" // Include template definition
