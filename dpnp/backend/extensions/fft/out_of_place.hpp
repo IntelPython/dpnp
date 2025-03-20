@@ -43,3 +43,5 @@ std::pair<sycl::event, sycl::event>
                              const std::vector<sycl::event> &depends);
 
 } // namespace dpnp::extensions::fft
+
+#include "out_of_place.tpp" // Include template definition

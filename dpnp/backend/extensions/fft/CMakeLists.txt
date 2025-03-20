@@ -27,8 +27,6 @@
 set(python_module_name _fft_impl)
 set(_module_src
     ${CMAKE_CURRENT_SOURCE_DIR}/fft_py.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/in_place.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/out_of_place.cpp
 )
 
 pybind11_add_module(${python_module_name} MODULE ${_module_src})
