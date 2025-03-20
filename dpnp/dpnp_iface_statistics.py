@@ -384,8 +384,11 @@ def convolve(a, v, mode="full", method="auto"):
     probability theory, the sum of two independent random variables is
     distributed according to the convolution of their individual
     distributions.
+
     If `v` is longer than `a`, the arrays are swapped before computation.
+
     For full documentation refer to :obj:`numpy.convolve`.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -407,6 +410,8 @@ def convolve(a, v, mode="full", method="auto"):
           ``max(M, N) - min(M, N) + 1``. The convolution product is only given
           for points where the signals overlap completely. Values outside
           the signal boundary have no effect.
+
+          Default: ``'full'``.
     method : {'auto', 'direct', 'fft'}, optional
         'direct':
          The convolution is determined directly from sums.
@@ -416,14 +421,18 @@ def convolve(a, v, mode="full", method="auto"):
         'auto':
          Automatically chooses direct or Fourier method based on
          an estimate of which is faster.
+
         Note: Use of the FFT convolution on input containing NAN or INF
         will lead to the entire output being NAN or INF.
         Use method='direct' when your input contains NAN or INF values.
+
         Default: ``'auto'``.
+
     Returns
     -------
     out : ndarray
         Discrete, linear convolution of `a` and `v`.
+
     See Also
     --------
     :obj:`dpnp.correlate` : Cross-correlation of two 1-dimensional sequences.
@@ -437,26 +446,33 @@ def convolve(a, v, mode="full", method="auto"):
     circular convolution). Since multiplication is more efficient (faster)
     than convolution, the function implements two approaches - direct and fft
     which are regulated by the keyword `method`.
+
     References
     ----------
     .. [1] Wikipedia, "Convolution",
         https://en.wikipedia.org/wiki/Convolution
+
     Examples
     --------
     Note how the convolution operator flips the second array
     before "sliding" the two across one another:
+
     >>> import dpnp as np
     >>> a = np.array([1, 2, 3], dtype=np.float32)
     >>> v = np.array([0, 1, 0.5], dtype=np.float32)
     >>> np.convolve(a, v)
+
     array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)
     Only return the middle values of the convolution.
     Contains boundary effects, where zeros are taken
     into account:
+
     >>> np.convolve(a, v, 'same')
+
     array([1. , 2.5, 4. ], dtype=float32)
     The two arrays are of the same length, so there
     is only one position where they completely overlap:
+
     >>> np.convolve(a, v, 'valid')
     array([2.5], dtype=float32)
     """
