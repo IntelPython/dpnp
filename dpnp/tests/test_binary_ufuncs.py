@@ -195,8 +195,8 @@ class TestDivide:
         expected = numpy.divide(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        if numpy.issubdtype(dtype, numpy.bool):
-            out_dtype = dpnp.float64
+        if numpy.issubdtype(dtype, numpy.integer) or dtype == dpnp.bool:
+            out_dtype = map_dtype_to_device(dpnp.float64, ia.sycl_device)
         else:
             out_dtype = _get_output_data_type(dtype)
         iout = dpnp.empty(expected.shape, dtype=out_dtype)
