@@ -141,9 +141,7 @@ class TestAdd:
 
 @pytest.mark.parametrize("func", ["fmax", "fmin", "maximum", "minimum"])
 class TestBoundFuncs:
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_out(self, func, dtype):
         a = generate_random_numpy_array(10, dtype)
         b = generate_random_numpy_array(10, dtype)
@@ -157,7 +155,7 @@ class TestBoundFuncs:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True)
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
     )
     def test_out_overlap(self, func, dtype):
         size = 15
@@ -190,17 +188,15 @@ class TestBoundFuncs:
 
 class TestDivide:
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_divide(self, dtype):
         a = generate_random_numpy_array(10, dtype)
         b = generate_random_numpy_array(10, dtype)
         expected = numpy.divide(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        if numpy.issubdtype(dtype, numpy.integer):
-            out_dtype = map_dtype_to_device(dpnp.float64, ia.sycl_device)
+        if numpy.issubdtype(dtype, numpy.bool):
+            out_dtype = dpnp.float64
         else:
             out_dtype = _get_output_data_type(dtype)
         iout = dpnp.empty(expected.shape, dtype=out_dtype)
@@ -379,9 +375,9 @@ class TestFloorDivideRemainder:
         assert_raises(TypeError, getattr(xp, func), a, 2, out)
 
 
+@pytest.mark.parametrize("func", ["fmax", "fmin"])
 class TestFmaxFmin:
     @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
-    @pytest.mark.parametrize("func", ["fmax", "fmin"])
     def test_half(self, func):
         a = numpy.array([0, 1, 2, 4, 2], dtype=numpy.float16)
         b = numpy.array([-2, 5, 1, 4, 3], dtype=numpy.float16)
@@ -396,7 +392,6 @@ class TestFmaxFmin:
         expected = getattr(numpy, func)(b, c)
         assert_equal(result, expected)
 
-    @pytest.mark.parametrize("func", ["fmax", "fmin"])
     @pytest.mark.parametrize("dtype", get_float_dtypes())
     def test_float_nans(self, func, dtype):
         a = numpy.array([0, numpy.nan, numpy.nan], dtype=dtype)
@@ -407,7 +402,6 @@ class TestFmaxFmin:
         expected = getattr(numpy, func)(a, b)
         assert_equal(result, expected)
 
-    @pytest.mark.parametrize("func", ["fmax", "fmin"])
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize(
         "nan_val",
@@ -427,7 +421,6 @@ class TestFmaxFmin:
         expected = getattr(numpy, func)(a, b)
         assert_equal(result, expected)
 
-    @pytest.mark.parametrize("func", ["fmax", "fmin"])
     @pytest.mark.parametrize("dtype", get_float_dtypes(no_float16=False))
     def test_precision(self, func, dtype):
         dtmin = numpy.finfo(dtype).min

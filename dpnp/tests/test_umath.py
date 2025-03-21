@@ -74,7 +74,6 @@ def get_id(val):
     return val.__str__()
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("test_cases", test_cases, ids=get_id)
 def test_umaths(test_cases):
@@ -134,7 +133,9 @@ def _get_output_data_type(dtype):
 
 
 class TestArctan2:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     def test_arctan2(self, dtype):
         a = generate_random_numpy_array(10, dtype, low=0)
         b = generate_random_numpy_array(10, dtype, low=0)
@@ -149,10 +150,10 @@ class TestArctan2:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dpnp_dtype = get_all_dtypes(no_none=True, no_complex=True)[-1]
         a = dpnp.arange(10, dtype=dpnp_dtype)
         iout = dpnp.empty(10, dtype=dtype)
 
@@ -178,7 +179,9 @@ class TestArctan2:
 
 
 class TestCbrt:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     def test_cbrt(self, dtype):
         a = generate_random_numpy_array(10, dtype)
         expected = numpy.cbrt(a)
@@ -192,10 +195,10 @@ class TestCbrt:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dpnp_dtype = get_all_dtypes(no_none=True, no_complex=True)[-1]
         a = dpnp.arange(10, dtype=dpnp_dtype)
         iout = dpnp.empty(10, dtype=dtype)
 
@@ -214,7 +217,9 @@ class TestCbrt:
 
 
 class TestCopySign:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     def test_copysign(self, dtype):
         a = generate_random_numpy_array(10, dtype, low=0)
         b = generate_random_numpy_array(10, dtype, low=0)
@@ -229,10 +234,10 @@ class TestCopySign:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dpnp_dtype = get_all_dtypes(no_none=True, no_complex=True)[-1]
         a = dpnp.arange(10, dtype=dpnp_dtype)
         iout = dpnp.empty(10, dtype=dtype)
         with pytest.raises(ValueError):
@@ -331,7 +336,9 @@ class TestFloatPower:
 
 
 class TestLogAddExp:
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     def test_logaddexp(self, dtype):
         a = generate_random_numpy_array(10, dtype, low=0)
         b = generate_random_numpy_array(10, dtype, low=0)
@@ -346,10 +353,10 @@ class TestLogAddExp:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dpnp_dtype = get_all_dtypes(no_none=True, no_complex=True)[-1]
         a = dpnp.arange(10, dtype=dpnp_dtype)
         iout = dpnp.empty(10, dtype=dtype)
         with pytest.raises(ValueError):
@@ -510,7 +517,9 @@ class TestReciprocal:
 
 class TestRsqrt:
     @pytest.mark.usefixtures("suppress_divide_numpy_warnings")
-    @pytest.mark.parametrize("dtype", get_all_dtypes(no_complex=True))
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+    )
     def test_rsqrt(self, dtype):
         a = generate_random_numpy_array(10, dtype, low=0)
         expected = numpy.reciprocal(numpy.sqrt(a))
@@ -524,10 +533,10 @@ class TestRsqrt:
         assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+        "dtype", get_all_dtypes(no_none=True, no_complex=True)[:-1]
     )
     def test_invalid_dtype(self, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
+        dpnp_dtype = get_all_dtypes(no_none=True, no_complex=True)[-1]
         a = dpnp.arange(10, dtype=dpnp_dtype)
         iout = dpnp.empty(10, dtype=dtype)
 
@@ -554,7 +563,7 @@ class TestRsqrt:
 
 
 class TestSquare:
-    @pytest.mark.parametrize("dtype", get_all_dtypes())
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     def test_square(self, dtype):
         a = generate_random_numpy_array(10, dtype)
         expected = numpy.square(a)
