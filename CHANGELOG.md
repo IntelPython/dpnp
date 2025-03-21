@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+* Resolved an issue with an incorrect result returned due to missing dependency from the strided kernel on a copy event in `dpnp.erf` [#2378](https://github.com/IntelPython/dpnp/pull/2378)
+
 
 ## [0.17.0] - 02/26/2025
 
