@@ -27,7 +27,7 @@
 
 #include <sycl/sycl.hpp>
 
-#include "common.hpp"
+#include "ext/common.hpp"
 
 namespace dpctl::tensor
 {
@@ -36,11 +36,12 @@ class usm_ndarray;
 
 using dpctl::tensor::usm_ndarray;
 
+using ext::common::AtomicOp;
+using ext::common::IsNan;
+using ext::common::Less;
+
 namespace statistics
 {
-using common::AtomicOp;
-using common::IsNan;
-using common::Less;
 
 namespace histogram
 {

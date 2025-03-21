@@ -34,12 +34,12 @@
 #include <pybind11/stl.h>
 #include <sycl/sycl.hpp>
 
-#include "common.hpp"
+#include "ext/common.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 namespace py = pybind11;
 
-namespace statistics::common
+namespace ext::common
 {
 template <typename T, typename Rest>
 struct one_of
@@ -383,4 +383,4 @@ private:
     Table2<FnT> table;
 };
 
-} // namespace statistics::common
+} // namespace ext::common

@@ -34,7 +34,7 @@
 using dpctl::tensor::usm_ndarray;
 
 using namespace statistics::histogram;
-using namespace statistics::common;
+using namespace ext::common;
 
 namespace
 {
