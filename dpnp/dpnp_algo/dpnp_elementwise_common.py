@@ -274,7 +274,7 @@ class DPNPBinaryFunc(BinaryElementwiseFunc):
     ):
         def _call_func(src1, src2, dst, sycl_queue, depends=None):
             """
-            A callback to register in UnaryElementwiseFunc class of
+            A callback to register in BinaryElementwiseFunc class of
             dpctl.tensor
             """
 

@@ -32,7 +32,6 @@
 #include <pybind11/pybind11.h>
 
 // dpctl tensor headers
-#include "utils/memory_overlap.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "dpnp_utils.hpp"
@@ -114,12 +113,6 @@ bool need_to_call_unary_ufunc(sycl::queue &exec_q,
         if (range + 1 < src_nelems) {
             return false;
         }
-    }
-
-    // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(src, dst)) {
-        return false;
     }
 
     // support only contiguous inputs
@@ -217,12 +210,6 @@ bool need_to_call_binary_ufunc(sycl::queue &exec_q,
         if (range + 1 < src_nelems) {
             return false;
         }
-    }
-
-    // check memory overlap
-    auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
-    if (overlap(src1, dst) || overlap(src2, dst)) {
-        return false;
     }
 
     // support only contiguous inputs
