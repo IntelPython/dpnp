@@ -457,6 +457,14 @@ jobs:
           mamba info
           mamba list
 
+      - name: Conda info
+        run: pip install -i https://pypi.anaconda.org/dppy/label/dev/simple dpctl
+
+      - name: Conda info
+        run: |
+          mamba info
+          mamba list
+
       - name: Create test file
         uses: 1arp/create-a-file-action@0.4.5
         with:
