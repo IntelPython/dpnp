@@ -108,7 +108,7 @@ jobs:
       - name: Install dpctl
         if: env.oneapi-pkgs-env == ''
         run: |
-          pip install -i https://pypi.anaconda.org/dppy/label/dev/simple dpctl
+          pip install -i https://pypi.anaconda.org/dppy/label/dev/simple dpctl==0.20.0dev0
 
       - name: Conda info
         run: |
