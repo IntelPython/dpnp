@@ -66,8 +66,54 @@ jobs:
           sudo LD_LIBRARY_PATH="/opt/intel/oneapi/compiler/2025.0/lib" ldd /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
           echo "Looking for undefined symbols in libmkl_sycl_vm.so.5:"
           sudo nm -A -u /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
-          echo "Grep for SubmissionInfo:"
-          sudo nm -A /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5 | grep SubmissionInfo
+
+      - name: Create test file
+        uses: 1arp/create-a-file-action@0.4.5
+        with:
+          path: 'example'
+          isAbsolutePath: false
+          file: 'test.cpp'
+          content: |
+            #include <sycl/sycl.hpp>
+            #include <oneapi/mkl.hpp>
+
+            namespace mkl_vm = oneapi::mkl::vm;
+
+            int main(void)
+            {
+                sycl::queue q{sycl::default_selector_v};
+
+                const auto &dev = q.get_device();
+                std::cout << "Device: " << dev.get_info<sycl::info::device::name>() << std::endl;
+                std::cout << "Driver_version: " << dev.get_info<sycl::info::device::driver_version>() << std::endl;
+
+                using T = float;
+                constexpr std::size_t size = 10;
+
+                T *data = sycl::malloc_device<T>(size, q);
+                T *res = sycl::malloc_device<T>(size, q);
+
+                auto fill_ev = q.fill<T>(data, T(-1.0), size);
+
+                mkl_vm::abs(q, size, data, res, {fill_ev}).wait_and_throw();
+
+                sycl::free(data, q);
+                sycl::free(res, q);
+
+                std::cout << "Exit" << std::endl;
+                return 0;
+            }
+
+      - name: Cat test file
+        run: cat example/test.cpp
+
+      - name: Build test file
+        run: icpx -fsycl test.cpp -DMKL_ILP64  -qmkl-ilp64=parallel -qtbb -o test.x
+        working-directory: example
+
+      - name: Run test file
+        run: ./test.x
+        working-directory: example
 
   new-release:
     name: Install oneAPI with 2025.1
