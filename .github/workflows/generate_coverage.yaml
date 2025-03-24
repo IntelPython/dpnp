@@ -273,10 +273,10 @@ jobs:
         run: |
           sudo apt install hwloc                           \
                            intel-oneapi-mkl                \
-                           intel-oneapi-umf                \
+                           intel-oneapi-umf=0.9.1-6                \
                            intel-oneapi-mkl-devel          \
                            intel-oneapi-tbb-devel          \
-                           intel-oneapi-libdpstd-devel     \
+                           intel-oneapi-libdpstd-devel=2022.7.1-14     \
                            intel-oneapi-compiler-dpcpp-cpp=2025.0.4-1519
 
       - name: Debug new oneAPI pkgs
