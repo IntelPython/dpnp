@@ -62,6 +62,8 @@ jobs:
           sudo readelf -d /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
           echo "Searching for libsycl:"
           sudo find /opt/intel/oneapi -name "libsycl.so*"
+          echo "Running LDD with LD_LIBRARY_PATH to compiler:"
+          sudo LD_LIBRARY_PATH="/opt/intel/oneapi/compiler/2025.1/lib" ldd /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
 
       - name: Install Lcov
         run: |
