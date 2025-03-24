@@ -53,6 +53,12 @@ jobs:
                            intel-oneapi-libdpstd-devel     \
                            intel-oneapi-compiler-dpcpp-cpp
 
+      - name: Debug new oneAPI pkgs
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          sudo ldd /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
+          sudo readelf -d /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
+
       - name: Install Lcov
         run: |
           sudo apt-get install lcov
