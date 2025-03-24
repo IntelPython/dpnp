@@ -70,6 +70,12 @@ jobs:
       - name: Cat setvars.sh
         run: cat /opt/intel/oneapi/setvars.sh
 
+      - name: Cat DPC++ vars.sh
+        run: cat /opt/intel/oneapi/compiler/2025.0/env/vars.sh
+
+      - name: Cat MKL vars.sh
+        run: cat /opt/intel/oneapi/mkl/2025.0/env/vars.sh
+
       - name: Create test file
         uses: 1arp/create-a-file-action@0.4.5
         with:
@@ -186,6 +192,12 @@ jobs:
 
       - name: Cat setvars.sh
         run: cat /opt/intel/oneapi/setvars.sh
+
+      - name: Cat DPC++ vars.sh
+        run: cat /opt/intel/oneapi/compiler/2025.1/env/vars.sh
+
+      - name: Cat MKL vars.sh
+        run: cat /opt/intel/oneapi/mkl/2025.1/env/vars.sh
 
       - name: Create test file
         uses: 1arp/create-a-file-action@0.4.5
