@@ -108,11 +108,15 @@ jobs:
         run: cat example/test.cpp
 
       - name: Build test file
-        run: icpx -fsycl test.cpp -DMKL_ILP64  -qmkl-ilp64=parallel -qtbb -o test.x
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          icpx -fsycl test.cpp -DMKL_ILP64  -qmkl-ilp64=parallel -qtbb -o test.x
         working-directory: example
 
       - name: Run test file
-        run: ./test.x
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          ./test.x
         working-directory: example
 
   new-release:
