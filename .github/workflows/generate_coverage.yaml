@@ -66,8 +66,6 @@ jobs:
           sudo LD_LIBRARY_PATH="/opt/intel/oneapi/compiler/2025.0/lib" ldd /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
           echo "Looking for undefined symbols in libmkl_sycl_vm.so.5:"
           sudo nm -A -u /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
-          echo "Dump all dynamic info from nm:"
-          sudo nm --dynamic /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
           echo "Grep for SubmissionInfo:"
           sudo nm -A /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5 | grep SubmissionInfo
 
@@ -130,8 +128,68 @@ jobs:
           sudo LD_LIBRARY_PATH="/opt/intel/oneapi/compiler/2025.1/lib" ldd /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
           echo "Looking for undefined symbols in libmkl_sycl_vm.so.5:"
           sudo nm -A -u /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
-          echo "Dump all dynamic info from nm:"
-          sudo nm --dynamic /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
+          echo "Grep for SubmissionInfo:"
+          sudo nm -A /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5 | grep SubmissionInfo
+
+  new-release-old-compiler:
+    name: Install oneAPI with 2025.1, but DPC++ from 2025.0
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Needed to cancel any previous runs that are not completed for a given workflow
+      actions: write
+
+    defaults:
+      run:
+        shell: bash -el {0}
+
+    env:
+      environment-file: 'environments/environment.yml'
+      build-with-oneapi-env: 'environments/build_with_oneapi.yml'
+      coverage-env: 'environments/coverage.yml'
+      oneapi-pkgs-env: ''
+      # Enable env when it's required to use only conda packages without OneAPI installation
+      # oneapi-pkgs-env: '${{ github.workspace }}/environments/oneapi_pkgs.yml'
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@85880fa0301c86cca9da44039ee3bb12d3bedbfa # 0.12.1
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Add Intel repository
+        if: env.oneapi-pkgs-env == ''
+        run: |
+          wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          cat GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
+          rm GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
+          echo "deb [signed-by=/usr/share/keyrings/oneapi-archive-keyring.gpg] https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+          sudo apt update
+
+      - name: Install latest Intel OneAPI
+        if: env.oneapi-pkgs-env == ''
+        run: |
+          sudo apt install hwloc                           \
+                           intel-oneapi-mkl                \
+                           intel-oneapi-umf                \
+                           intel-oneapi-mkl-devel          \
+                           intel-oneapi-tbb-devel          \
+                           intel-oneapi-libdpstd-devel     \
+                           intel-oneapi-compiler-dpcpp-cpp=2025.0.4-1519
+
+      - name: Debug new oneAPI pkgs
+        run: |
+          [ -f /opt/intel/oneapi/setvars.sh ] && source /opt/intel/oneapi/setvars.sh
+          echo "Running LDD:"
+          sudo ldd /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
+          echo "Running ReadELF:"
+          sudo readelf -d /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
+          echo "Searching for libsycl:"
+          sudo find /opt/intel/oneapi -name "libsycl.so*"
+          echo "Running LDD with LD_LIBRARY_PATH to compiler:"
+          sudo LD_LIBRARY_PATH="/opt/intel/oneapi/compiler/2025.0/lib" ldd /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
+          echo "Looking for undefined symbols in libmkl_sycl_vm.so.5:"
+          sudo nm -A -u /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
           echo "Grep for SubmissionInfo:"
           sudo nm -A /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5 | grep SubmissionInfo
 
