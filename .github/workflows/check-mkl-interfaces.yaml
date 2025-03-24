@@ -13,6 +13,7 @@ env:
   environment-file-name: 'environment.yml'
   environment-file-loc: '${{ github.workspace }}/environments'
   build-with-oneapi-env: 'environments/build_with_oneapi.yml'
+  dpctl-pkg-env: 'environments/dpctl_pkg.yml'
   oneapi-pkgs-env: 'environments/oneapi_pkgs.yml'
   test-env-name: 'test_onemkl_interfaces'
   rerun-tests-on-failure: 'true'
@@ -47,7 +48,8 @@ jobs:
 
       - name: Merge conda env files
         run: |
-          conda-merge ${{ env.build-with-oneapi-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
+          conda-merge ${{ env.build-with-oneapi-env }} ${{ env.dpctl-pkg-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
+          cat ${{ env.environment-file }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
