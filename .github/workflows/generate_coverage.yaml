@@ -66,6 +66,8 @@ jobs:
           sudo LD_LIBRARY_PATH="/opt/intel/oneapi/compiler/2025.0/lib" ldd /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
           echo "Looking for undefined symbols in libmkl_sycl_vm.so.5:"
           sudo nm -A -u /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
+          echo "Dump all info from nm:"
+          sudo nm -A /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5
           echo "Grep for SubmissionInfo:"
           sudo nm -A /opt/intel/oneapi/mkl/2025.0/lib/libmkl_sycl_vm.so.5 | grep SubmissionInfo
 
@@ -128,6 +130,8 @@ jobs:
           sudo LD_LIBRARY_PATH="/opt/intel/oneapi/compiler/2025.1/lib" ldd /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
           echo "Looking for undefined symbols in libmkl_sycl_vm.so.5:"
           sudo nm -A -u /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
+          echo "Dump all info from nm:"
+          sudo nm -A /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5
           echo "Grep for SubmissionInfo:"
           sudo nm -A /opt/intel/oneapi/mkl/2025.1/lib/libmkl_sycl_vm.so.5 | grep SubmissionInfo
 
