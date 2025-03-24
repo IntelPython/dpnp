@@ -79,13 +79,14 @@ jobs:
       - name: Install Intel OneAPI
         if: env.oneapi-pkgs-env == ''
         run: |
-          sudo apt install hwloc                           \
-                           intel-oneapi-mkl                \
-                           intel-oneapi-umf                \
-                           intel-oneapi-mkl-devel          \
-                           intel-oneapi-tbb-devel          \
-                           intel-oneapi-libdpstd-devel     \
-                           intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install hwloc                                   \
+                           intel-oneapi-mkl                        \
+                           intel-oneapi-umf                        \
+                           intel-oneapi-mkl-devel                  \
+                           intel-oneapi-tbb-devel                  \
+                           intel-oneapi-libdpstd-devel             \
+                           intel-oneapi-compiler-dpcpp-cpp         \
+                           intel-oneapi-compiler-dpcpp-cpp-runtime
 
       # required by sphinxcontrib-spelling extension
       - name: Install enchant package

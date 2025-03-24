@@ -45,13 +45,14 @@ jobs:
       - name: Install latest Intel OneAPI
         if: env.oneapi-pkgs-env == ''
         run: |
-          sudo apt install hwloc                           \
-                           intel-oneapi-mkl                \
-                           intel-oneapi-umf                \
-                           intel-oneapi-mkl-devel          \
-                           intel-oneapi-tbb-devel          \
-                           intel-oneapi-libdpstd-devel     \
-                           intel-oneapi-compiler-dpcpp-cpp
+          sudo apt install hwloc                                   \
+                           intel-oneapi-mkl                        \
+                           intel-oneapi-umf                        \
+                           intel-oneapi-mkl-devel                  \
+                           intel-oneapi-tbb-devel                  \
+                           intel-oneapi-libdpstd-devel             \
+                           intel-oneapi-compiler-dpcpp-cpp         \
+                           intel-oneapi-compiler-dpcpp-cpp-runtime
 
       - name: Install Lcov
         run: |
