@@ -237,7 +237,7 @@ jobs:
                            intel-oneapi-mkl-devel          \
                            intel-oneapi-tbb-devel          \
                            intel-oneapi-libdpstd-devel     \
-                           intel-oneapi-compiler-dpcpp-cpp
+                           intel-oneapi-compiler-dpcpp-cpp=2025.0.4-1519
 
       - name: Install Lcov
         run: |
