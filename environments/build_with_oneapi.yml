@@ -5,8 +5,9 @@ channels:
 dependencies:
   - cmake
   - cython
-  # - dpctl>=0.19.0dev0
   - ninja
   - numpy
   - pytest
   - scikit-build
+  - pip:
+    - dpctl==0.20.0dev0
