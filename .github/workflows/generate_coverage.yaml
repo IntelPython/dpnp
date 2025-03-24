@@ -94,6 +94,22 @@ jobs:
           environment-file: ${{ env.environment-file }}
           activate-environment: 'coverage'
 
+      # We can't install dpctl as a conda package when the environment is created through
+      # installing of Intel OneAPI packages because the dpctl conda package has a runtime
+      # dependency on DPC++ RT one. Whereas the DPC++ RT package has beedn already installed
+      # by the apt command above and its version has been matched with the DPC++ compiler.
+      # In case where we install the DPC++ compiler with the apt (including DPC++ RT) and
+      # install the DPC++ RT conda package while resolving dependencies, this can lead
+      # to a versioning error, i.e. compatibility issue as the DPC++ compiler only guarantees
+      # backwards compatibility, not forward compatibility (DPC++ RT may not run a binary built
+      # with a newer version of the DPC++ compiler).
+      # Installing dpctl via the pip manager has no such limitation, as the package has no
+      # run dependency on the DPC++ RT pip package, so this is why the step is necessary here.
+      - name: Install dpctl
+        if: env.oneapi-pkgs-env == ''
+        run: |
+          pip install -i https://pypi.anaconda.org/dppy/label/dev/simple dpctl
+
       - name: Conda info
         run: |
           mamba info
