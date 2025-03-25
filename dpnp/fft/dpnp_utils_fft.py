@@ -60,6 +60,7 @@ from ..dpnp_utils.dpnp_utils_linearalgebra import (
 __all__ = [
     "dpnp_fft",
     "dpnp_fftn",
+    "dpnp_fillfreq",
 ]
 
 
@@ -698,3 +699,18 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     return _complex_nd_fft(
         a, s, norm, out, forward, in_place, c2c, axes, a.ndim != len_axes
     )
+
+
+def dpnp_fillfreq(a, m, n, val):
+    """Fill an array with the sample frequencies"""
+
+    exec_q = a.sycl_queue
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+
+    # it's assumed there are no dependent events to populate the array
+    ht_lin_ev, lin_ev = ti._linspace_step(0, 1, a[:m].get_array(), exec_q)
+    _manager.add_event_pair(ht_lin_ev, lin_ev)
+
+    ht_lin_ev, lin_ev = ti._linspace_step(m - n, 1, a[m:].get_array(), exec_q)
+    _manager.add_event_pair(ht_lin_ev, lin_ev)
+    return a * val
