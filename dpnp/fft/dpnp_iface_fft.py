@@ -102,19 +102,24 @@ def fft(a, n=None, axis=-1, norm=None, out=None):
         If `n` is smaller than the length of the input, the input is cropped.
         If it is larger, the input is padded with zeros. If `n` is not given,
         the length of the input along the axis specified by `axis` is used.
+
         Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
-        used. Default: ``-1``.
+        used.
+
+        Default: ``-1``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate shape (consistent with the choice of `n`) and dtype.
+
         Default: ``None``.
 
     Returns
@@ -184,7 +189,9 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes specified
         by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``
-        either. Default: ``None``.
+        either.
+
+        Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the FFT. If not given, the last two axes are
         used. A repeated index in `axes` means the transform over that axis is
@@ -192,16 +199,19 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         to be transformed must be explicitly specified too. A one-element
         sequence means that a one-dimensional FFT is performed. An empty
         sequence means that no FFT is performed.
+
         Default: ``(-2, -1)``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate shape (consistent with the choice of `s`) and dtype.
+
         Default: ``None``.
 
     Returns
@@ -281,6 +291,7 @@ def fftfreq(
         Window length.
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
+
         Default: ``1.0``.
     dtype : {None, str, dtype object}, optional
         The output array data type. Must be a real-valued floating-point data
@@ -299,12 +310,14 @@ def fftfreq(
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -389,7 +402,9 @@ def fftn(a, s=None, axes=None, norm=None, out=None):
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes specified
         by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``
-        either. Default: ``None``.
+        either.
+
+        Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the FFT. If not given, the last ``len(s)``
         axes are used, or all axes if `s` is also not specified.
@@ -398,16 +413,19 @@ def fftn(a, s=None, axes=None, norm=None, out=None):
         to be transformed must be explicitly specified too. A one-element
         sequence means that a one-dimensional FFT is performed. An empty
         sequence means that no FFT is performed.
+
         Default: ``None``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate shape (consistent with the choice of `s`) and dtype.
+
         Default: ``None``.
 
     Returns
@@ -481,8 +499,9 @@ def fftshift(x, axes=None):
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
     axes : {None, int, list or tuple of ints}, optional
-        Axes over which to shift.
-        Default is ``None``, which shifts all axes.
+        Axes over which to shift. By default, it shifts over all axes.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -546,19 +565,25 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
         input is longer than this, it is cropped. If it is shorter than this,
         it is padded with zeros. If `n` is not given, it is taken to be
         ``2*(m-1)`` where `m` is the length of the input along the axis
-        specified by `axis`. Default: ``None``.
+        specified by `axis`.
+
+        Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
-        used. Default: ``-1``.
+        used.
+
+        Default: ``-1``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
 
     Returns
@@ -656,19 +681,24 @@ def ifft(a, n=None, axis=-1, norm=None, out=None):
         If `n` is smaller than the length of the input, the input is cropped.
         If it is larger, the input is padded with zeros. If `n` is not given,
         the length of the input along the axis specified by `axis` is used.
+
         Default: ``None``.
     axis : int, optional
         Axis over which to compute the inverse FFT. If not given, the last
-        axis is used. Default: ``-1``.
-    norm : {"backward", "ortho", "forward"}, optional
+        axis is used.
+
+        Default: ``-1``.
+    norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate shape (consistent with the choice of `n`) and dtype.
+
         Default: ``None``.
 
     Returns
@@ -741,7 +771,9 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         If `s` is not given, the shape of the input along the axes specified
         by `axes` is used. See notes for issue on :obj:`dpnp.fft.ifft`
         zero padding. If `s` is not ``None``, `axes` must not be ``None``
-        either. Default: ``None``.
+        either.
+
+        Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the inverse FFT. If not given, the last two
         axes are used. A repeated index in `axes` means the transform over that
@@ -749,16 +781,19 @@ def ifft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         corresponding `axes` to be transformed must be explicitly specified
         too. A one-element sequence means that a one-dimensional FFT is
         performed. An empty sequence means that no FFT is performed.
+
         Default: ``(-2, -1)``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate shape (consistent with the choice of `s`) and dtype.
+
         Default: ``None``.
 
     Returns
@@ -839,7 +874,9 @@ def ifftn(a, s=None, axes=None, norm=None, out=None):
         If it is ``-1``, the whole input is used (no padding/trimming).
         if `s` is not given, the shape of the input along the axes specified
         by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``
-        either. Default: ``None``.
+        either.
+
+        Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the inverse FFT. If not given, the last
         ``len(s)`` axes are used, or all axes if `s` is also not specified.
@@ -848,16 +885,19 @@ def ifftn(a, s=None, axes=None, norm=None, out=None):
         to be transformed must be explicitly specified too. A one-element
         sequence means that a one-dimensional FFT is performed. An empty
         sequence means that no FFT is performed.
+
         Default: ``None``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate shape (consistent with the choice of `s`) and dtype.
+
         Default: ``None``.
 
     Returns
@@ -919,8 +959,9 @@ def ifftshift(x, axes=None):
     x : {dpnp.ndarray, usm_ndarray}
         Input array.
     axes : {None, int, list or tuple of ints}, optional
-        Axes over which to calculate.
-        Defaults to ``None``, which shifts all axes.
+        Axes over which to shift. By default, it shifts over all axes.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -976,19 +1017,24 @@ def ihfft(a, n=None, axis=-1, norm=None, out=None):
         the length of the input, the input is cropped. If it is larger,
         the input is padded with zeros. If `n` is not given, the length of
         the input along the axis specified by `axis` is used.
+
         Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
-        used. Default: ``-1``.
+        used.
+
+        Default: ``-1``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
 
     Returns
@@ -1060,19 +1106,25 @@ def irfft(a, n=None, axis=-1, norm=None, out=None):
         input is longer than this, it is cropped. If it is shorter than this,
         it is padded with zeros. If `n` is not given, it is taken to be
         ``2*(m-1)`` where `m` is the length of the input along the axis
-        specified by `axis`. Default: ``None``.
+        specified by `axis`.
+
+        Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
-        used. Default: ``-1``.
+        used.
+
+        Default: ``-1``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
 
     Returns
@@ -1158,7 +1210,8 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         If `s` is not given, the shape of the input along the axes
         specified by `axes` is used. Except for the last axis which is taken to
         be ``2*(m-1)`` where `m` is the length of the input along that axis.
-        If `s` is not ``None``, `axes` must not be ``None``
+        If `s` is not ``None``, `axes` must not be ``None`` either.
+
         Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the inverse FFT. If not given, the last
@@ -1168,17 +1221,20 @@ def irfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         to be transformed must be explicitly specified too. A one-element
         sequence means that a one-dimensional FFT is performed. An empty
         sequence means that no FFT is performed.
+
         Default: ``(-2, -1)``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
-    out : {None, dpnp.ndarray or usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate dtype and shape for the last transformation
         (consistent with the choice of `s`).
+
         Default: ``None``.
 
     Returns
@@ -1255,9 +1311,10 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         the input is cropped. If it is larger, the input is padded with zeros.
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes
-        specified by axes is used. Except for the last axis which is taken to
+        specified by `axes` is used. Except for the last axis which is taken to
         be ``2*(m-1)`` where `m` is the length of the input along that axis.
-        If `s` is not ``None``, `axes` must not be ``None``
+        If `s` is not ``None``, `axes` must not be ``None`` either.
+
         Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the inverse FFT. If not given, the last
@@ -1267,17 +1324,20 @@ def irfftn(a, s=None, axes=None, norm=None, out=None):
         to be transformed must be explicitly specified too. A one-element
         sequence means that a one-dimensional FFT is performed. An empty
         sequence means that no FFT is performed.
+
         Default: ``None``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
-    out : {None, dpnp.ndarray or usm_ndarray}, optional
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate dtype and shape for the last transformation
         (consistent with the choice of `s`).
+
         Default: ``None``.
 
     Returns
@@ -1361,19 +1421,24 @@ def rfft(a, n=None, axis=-1, norm=None, out=None):
         If `n` is smaller than the length of the input, the input is cropped.
         If it is larger, the input is padded with zeros. If `n` is not given,
         the length of the input along the axis specified by `axis` is used.
+
         Default: ``None``.
     axis : int, optional
         Axis over which to compute the FFT. If not given, the last axis is
-        used. Default: ``-1``.
+        used.
+
+        Default: ``-1``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
 
     Returns
@@ -1453,7 +1518,9 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes specified
         by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``
-        either. Default: ``None``.
+        either.
+
+        Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the FFT. If not given, the last two axes are
         used. A repeated index in `axes` means the transform over that axis is
@@ -1461,17 +1528,20 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
         to be transformed must be explicitly specified too. A one-element
         sequence means that a one-dimensional FFT is performed. An empty
         sequence means that no FFT is performed.
+
         Default: ``(-2, -1)``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate dtype and shape for the last transformation
         (consistent with the choice of `s`).
+
         Default: ``None``.
 
     Returns
@@ -1539,6 +1609,7 @@ def rfftfreq(
         Window length.
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
+
         Default: ``1.0``.
     dtype : {None, str, dtype object}, optional
         The output array data type. Must be a real-valued floating-point data
@@ -1557,12 +1628,14 @@ def rfftfreq(
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1657,7 +1730,9 @@ def rfftn(a, s=None, axes=None, norm=None, out=None):
         If it is ``-1``, the whole input is used (no padding/trimming).
         If `s` is not given, the shape of the input along the axes specified
         by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``
-        either. Default: ``None``.
+        either.
+
+        Default: ``None``.
     axes : {None, sequence of ints}, optional
         Axes over which to compute the FFT. If not given, the last ``len(s)``
         axes are used, or all axes if `s` is also not specified.
@@ -1666,17 +1741,20 @@ def rfftn(a, s=None, axes=None, norm=None, out=None):
         to be transformed must be explicitly specified too. A one-element
         sequence means that a one-dimensional FFT is performed. An empty
         sequence means that no FFT is performed.
+
         Default: ``None``.
     norm : {None, "backward", "ortho", "forward"}, optional
         Normalization mode (see :obj:`dpnp.fft`).
         Indicates which direction of the forward/backward pair of transforms
         is scaled and with what normalization factor. ``None`` is an alias of
         the default option ``"backward"``.
+
         Default: ``"backward"``.
     out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional
         If provided, the result will be placed in this array. It should be of
         the appropriate dtype and shape for the last transformation
         (consistent with the choice of `s`).
+
         Default: ``None``.
 
     Returns
