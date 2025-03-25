@@ -397,7 +397,7 @@ def convolve(a, v, mode="full", method="auto"):
         Second 1-D array. The length of `v` must be less than or equal to
         the length of `a`.
     mode : {'full', 'valid', 'same'}, optional
-        - 'full': By default, mode is 'full'. This returns the convolution
+        - 'full': This returns the convolution
           at each point of overlap, with an output shape of (N+M-1,). At
           the end-points of the convolution, the signals do not overlap
           completely, and boundary effects may be seen.
@@ -433,7 +433,9 @@ def convolve(a, v, mode="full", method="auto"):
     Notes
     -----
     The discrete convolution operation is defined as
-    .. math:: (a * v)_n = \\sum_{m = -\\infty}^{\\infty} a_m v_{n - m}
+    
+    .. math:: (a * v)_n = \sum_{m = -\infty}^{\infty} a_m v_{n - m}
+    
     It can be shown that a convolution :math:`x(t) * y(t)` in time/space
     is equivalent to the multiplication :math:`X(f) Y(f)` in the Fourier
     domain, after appropriate padding (padding is necessary to prevent
@@ -455,15 +457,15 @@ def convolve(a, v, mode="full", method="auto"):
     >>> a = np.array([1, 2, 3], dtype=np.float32)
     >>> v = np.array([0, 1, 0.5], dtype=np.float32)
     >>> np.convolve(a, v)
-
     array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)
+    
     Only return the middle values of the convolution.
     Contains boundary effects, where zeros are taken
     into account:
 
     >>> np.convolve(a, v, 'same')
-
     array([1. , 2.5, 4. ], dtype=float32)
+    
     The two arrays are of the same length, so there
     is only one position where they completely overlap:
 
