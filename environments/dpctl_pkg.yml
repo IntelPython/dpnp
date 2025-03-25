@@ -1,0 +1,5 @@
+name: Install dpctl package
+channels:
+  - dppy/label/dev
+dependencies:
+  - dpctl>=0.20.0dev0
