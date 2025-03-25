@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2016-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -58,15 +58,7 @@
  */
 enum class DPNPFuncName : size_t
 {
-    DPNP_FN_NONE,          /**< Very first element of the enumeration */
-    DPNP_FN_CHOOSE,        /**< Used in numpy.choose() impl  */
-    DPNP_FN_CHOOSE_EXT,    /**< Used in numpy.choose() impl, requires extra
-                              parameters */
-    DPNP_FN_CORRELATE,     /**< Used in numpy.correlate() impl  */
-    DPNP_FN_CORRELATE_EXT, /**< Used in numpy.correlate() impl, requires extra
-                              parameters */
-    DPNP_FN_DOT,           /**< Used in numpy.dot() impl  */
-    DPNP_FN_DOT_EXT, /**< Used in numpy.dot() impl, requires extra parameters */
+    DPNP_FN_NONE,    /**< Very first element of the enumeration */
     DPNP_FN_ERF,     /**< Used in scipy.special.erf impl  */
     DPNP_FN_ERF_EXT, /**< Used in scipy.special.erf impl, requires extra
                         parameters */
@@ -77,7 +69,6 @@ enum class DPNPFuncName : size_t
     DPNP_FN_MODF,        /**< Used in numpy.modf() impl  */
     DPNP_FN_MODF_EXT,  /**< Used in numpy.modf() impl, requires extra parameters
                         */
-    DPNP_FN_MULTIPLY,  /**< Used in numpy.multiply() impl  */
     DPNP_FN_ONES,      /**< Used in numpy.ones() impl */
     DPNP_FN_ONES_LIKE, /**< Used in numpy.ones_like() impl */
     DPNP_FN_PARTITION, /**< Used in numpy.partition() impl */

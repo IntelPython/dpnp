@@ -10,6 +10,7 @@ from numpy.testing import (
     assert_array_equal,
     assert_equal,
     assert_raises,
+    assert_raises_regex,
 )
 
 import dpnp
@@ -17,6 +18,7 @@ import dpnp
 from .helper import (
     assert_dtype_allclose,
     get_all_dtypes,
+    get_array,
 )
 from .third_party.cupy import testing
 
@@ -54,6 +56,28 @@ class TestArray:
     def test_error(self):
         x = numpy.ones((3, 4))
         assert_raises(TypeError, dpnp.array, x, ndmin=3.0)
+
+
+class TestAsType:
+    @testing.with_requires("numpy>=2.0")
+    @pytest.mark.parametrize("xp", [dpnp, numpy])
+    def test_validate_positional_args(self, xp):
+        x = xp.ones(4)
+        assert_raises_regex(
+            TypeError,
+            "got some positional-only arguments passed as keyword arguments",
+            xp.astype,
+            x,
+            dtype="f4",
+        )
+        assert_raises_regex(
+            TypeError,
+            "takes 2 positional arguments but 3 were given",
+            xp.astype,
+            x,
+            "f4",
+            None,
+        )
 
 
 class TestTrace:
@@ -176,21 +200,23 @@ def test_exception_subok(func, args):
 
 
 @pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
-@pytest.mark.parametrize("stop", [None, 10, -2, 20.5, 1000])
-@pytest.mark.parametrize("step", [None, 1, 2.7, -1.6, 100])
+@pytest.mark.parametrize("stop", [None, 10, -2, 20.5, 100])
+@pytest.mark.parametrize("step", [None, 1, 2.7, -1.6, 80])
 @pytest.mark.parametrize(
     "dtype", get_all_dtypes(no_bool=True, no_float16=False)
 )
 def test_arange(start, stop, step, dtype):
-    rtol_mult = 2
-    if dpnp.issubdtype(dtype, dpnp.float16):
-        # numpy casts to float32 type when computes float16 data
-        rtol_mult = 4
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        start = abs(start)
+        stop = abs(stop) if stop else None
+
+    # numpy casts to float32 type when computes float16 data
+    rtol_mult = 4 if dpnp.issubdtype(dtype, dpnp.float16) else 2
 
     func = lambda xp: xp.arange(start, stop=stop, step=step, dtype=dtype)
 
     exp_array = func(numpy)
-    res_array = func(dpnp).asnumpy()
+    res_array = func(dpnp)
 
     if dtype is None:
         _device = dpctl.SyclQueue().sycl_device
@@ -208,7 +234,7 @@ def test_arange(start, stop, step, dtype):
         _dtype, dpnp.complexfloating
     ):
         assert_allclose(
-            exp_array, res_array, rtol=rtol_mult * numpy.finfo(_dtype).eps
+            res_array, exp_array, rtol=rtol_mult * numpy.finfo(_dtype).eps
         )
     else:
         assert_array_equal(exp_array, res_array)
@@ -339,6 +365,11 @@ def test_fromstring(dtype):
 def test_identity(n, dtype):
     func = lambda xp: xp.identity(n, dtype=dtype)
     assert_array_equal(func(numpy), func(dpnp))
+
+
+def test_identity_error():
+    # negative dimensions
+    assert_raises(ValueError, dpnp.identity, -5)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_float16=False))
@@ -502,14 +533,14 @@ def test_triu_size_null(k):
 def test_vander(array, dtype, n, increase):
     if dtype in [dpnp.complex64, dpnp.complex128] and array == [0, 3, 5]:
         pytest.skip(
-            "per array API dpnp.power(complex(0,0)), 0) returns nan+nanj while NumPy returns 1+0j"
+            "per array API dpnp.power(complex(0, 0)), 0) returns nan+nanj while NumPy returns 1+0j"
         )
     vander_func = lambda xp, x: xp.vander(x, N=n, increasing=increase)
 
     a_np = numpy.array(array, dtype=dtype)
     a_dpnp = dpnp.array(array, dtype=dtype)
 
-    assert_allclose(vander_func(numpy, a_np), vander_func(dpnp, a_dpnp))
+    assert_allclose(vander_func(dpnp, a_dpnp), vander_func(numpy, a_np))
 
 
 def test_vander_raise_error():
@@ -529,7 +560,7 @@ def test_vander_raise_error():
 )
 def test_vander_seq(sequence):
     vander_func = lambda xp, x: xp.vander(x)
-    assert_allclose(vander_func(numpy, sequence), vander_func(dpnp, sequence))
+    assert_allclose(vander_func(dpnp, sequence), vander_func(numpy, sequence))
 
 
 @pytest.mark.usefixtures("suppress_complex_warning")
@@ -576,19 +607,19 @@ def test_full_order(order1, order2):
 
     assert ia.flags.c_contiguous == a.flags.c_contiguous
     assert ia.flags.f_contiguous == a.flags.f_contiguous
-    assert numpy.array_equal(dpnp.asnumpy(ia), a)
+    assert_equal(ia, a)
 
 
 def test_full_strides():
     a = numpy.full((3, 3), numpy.arange(3, dtype="i4"))
     ia = dpnp.full((3, 3), dpnp.arange(3, dtype="i4"))
     assert ia.strides == tuple(el // a.itemsize for el in a.strides)
-    assert_array_equal(dpnp.asnumpy(ia), a)
+    assert_array_equal(ia, a)
 
     a = numpy.full((3, 3), numpy.arange(6, dtype="i4")[::2])
     ia = dpnp.full((3, 3), dpnp.arange(6, dtype="i4")[::2])
     assert ia.strides == tuple(el // a.itemsize for el in a.strides)
-    assert_array_equal(dpnp.asnumpy(ia), a)
+    assert_array_equal(ia, a)
 
 
 @pytest.mark.parametrize(
@@ -701,17 +732,22 @@ def test_dpctl_tensor_input(func, args):
 
 
 @pytest.mark.parametrize("start", [0, -5, 10, -2.5, 9.7])
-@pytest.mark.parametrize("stop", [0, 10, -2, 20.5, 1000])
+@pytest.mark.parametrize("stop", [0, 10, -2, 20.5, 120])
 @pytest.mark.parametrize(
     "num",
     [1, 5, numpy.array(10), dpnp.array(17), dpt.asarray(100)],
     ids=["1", "5", "numpy.array(10)", "dpnp.array(17)", "dpt.asarray(100)"],
 )
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_bool=True, no_float16=False)
+    "dtype",
+    get_all_dtypes(no_bool=True, no_float16=False),
 )
 @pytest.mark.parametrize("retstep", [True, False])
 def test_linspace(start, stop, num, dtype, retstep):
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        start = abs(start)
+        stop = abs(stop)
+
     res_np = numpy.linspace(start, stop, num, dtype=dtype, retstep=retstep)
     res_dp = dpnp.linspace(start, stop, num, dtype=dtype, retstep=retstep)
 
@@ -726,20 +762,12 @@ def test_linspace(start, stop, num, dtype, retstep):
         assert_dtype_allclose(res_dp, res_np)
 
 
+@pytest.mark.parametrize("func", ["geomspace", "linspace", "logspace"])
 @pytest.mark.parametrize(
-    "func",
-    ["geomspace", "linspace", "logspace"],
-    ids=["geomspace", "linspace", "logspace"],
+    "start_dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32]
 )
 @pytest.mark.parametrize(
-    "start_dtype",
-    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-    ids=["float64", "float32", "int64", "int32"],
-)
-@pytest.mark.parametrize(
-    "stop_dtype",
-    [numpy.float64, numpy.float32, numpy.int64, numpy.int32],
-    ids=["float64", "float32", "int64", "int32"],
+    "stop_dtype", [numpy.float64, numpy.float32, numpy.int64, numpy.int32]
 )
 def test_space_numpy_dtype(func, start_dtype, stop_dtype):
     start = numpy.array([1, 2, 3], dtype=start_dtype)
@@ -768,7 +796,7 @@ def test_space_numpy_dtype(func, start_dtype, stop_dtype):
     ],
 )
 def test_linspace_arrays(start, stop):
-    func = lambda xp: xp.linspace(start, stop, 10)
+    func = lambda xp: xp.linspace(get_array(xp, start), get_array(xp, stop), 10)
     assert func(numpy).shape == func(dpnp).shape
 
 
@@ -845,7 +873,7 @@ def test_space_num_error():
 @pytest.mark.parametrize("endpoint", [True, False])
 def test_geomspace(sign, dtype, num, endpoint):
     start = 2 * sign
-    stop = 256 * sign
+    stop = 127 * sign
 
     func = lambda xp: xp.geomspace(
         start, stop, num, endpoint=endpoint, dtype=dtype
@@ -854,10 +882,7 @@ def test_geomspace(sign, dtype, num, endpoint):
     np_res = func(numpy)
     dpnp_res = func(dpnp)
 
-    if dtype in [numpy.int64, numpy.int32]:
-        assert_allclose(dpnp_res, np_res, rtol=1)
-    else:
-        assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res, rtol=1e-06)
 
 
 @pytest.mark.parametrize("start", [1j, 1 + 1j])
@@ -866,7 +891,7 @@ def test_geomspace_complex(start, stop):
     func = lambda xp: xp.geomspace(start, stop, num=10)
     np_res = func(numpy)
     dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res, rtol=1e-06)
 
 
 @pytest.mark.parametrize("axis", [0, 1])
@@ -874,14 +899,14 @@ def test_geomspace_axis(axis):
     func = lambda xp: xp.geomspace([2, 3], [20, 15], num=10, axis=axis)
     np_res = func(numpy)
     dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res, rtol=1e-06)
 
 
 def test_geomspace_num0():
     func = lambda xp: xp.geomspace(1, 10, num=0, endpoint=False)
     np_res = func(numpy)
     dpnp_res = func(dpnp)
-    assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes())
@@ -899,10 +924,7 @@ def test_logspace(dtype, num, endpoint):
     np_res = func(numpy)
     dpnp_res = func(dpnp)
 
-    if dtype in [numpy.int64, numpy.int32]:
-        assert_allclose(dpnp_res, np_res, rtol=1)
-    else:
-        assert_allclose(dpnp_res, np_res, rtol=1e-04)
+    assert_allclose(dpnp_res, np_res, rtol=1e-06)
 
 
 @pytest.mark.parametrize("axis", [0, 1])
@@ -915,6 +937,12 @@ def test_logspace_axis(axis):
         [2, 3], [20, 15], num=2, base=[[1, 3], [5, 7]], axis=axis
     )
     assert_dtype_allclose(func(dpnp), func(numpy))
+
+
+def test_logspace_list_input():
+    expected = numpy.logspace([0], [2], base=[5])
+    result = dpnp.logspace([0], [2], base=[5])
+    assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -960,6 +988,48 @@ def test_meshgrid_raise_error():
     b = dpnp.array([1, 2, 3, 4])
     with pytest.raises(ValueError):
         dpnp.meshgrid(b, indexing="ab")
+
+
+class TestMgrid:
+    def check_results(self, result, expected):
+        if isinstance(result, (list, tuple)):
+            assert len(result) == len(expected)
+            for dp_arr, np_arr in zip(result, expected):
+                assert_allclose(dp_arr, np_arr)
+        else:
+            assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "slice",
+        [
+            slice(0, 5, 0.5),  # float step
+            slice(0, 5, 1j),  # complex step
+            slice(0, 5, 5j),  # complex step
+            slice(None, 5, 1),  # no start
+            slice(0, 5, None),  # no step
+        ],
+    )
+    def test_single_slice(self, slice):
+        dpnp_result = dpnp.mgrid[slice]
+        numpy_result = numpy.mgrid[slice]
+        self.check_results(dpnp_result, numpy_result)
+
+    @pytest.mark.parametrize(
+        "slices",
+        [
+            (slice(None, 5, 1), slice(None, 10, 2)),  # no start
+            (slice(0, 5), slice(0, 10)),  # no step
+            (slice(0, 5.5, 1), slice(0, 10, 3j)),  # float stop and complex step
+            (
+                slice(0.0, 5, 1),
+                slice(0, 10, 1j),
+            ),  # float start and complex step
+        ],
+    )
+    def test_md_slice(self, slices):
+        dpnp_result = dpnp.mgrid[slices]
+        numpy_result = numpy.mgrid[slices]
+        self.check_results(dpnp_result, numpy_result)
 
 
 def test_exception_tri():

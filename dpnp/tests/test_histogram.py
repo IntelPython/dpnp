@@ -2,22 +2,25 @@ import dpctl
 import numpy
 import pytest
 from numpy.testing import (
-    assert_,
     assert_allclose,
     assert_array_equal,
     assert_raises,
     assert_raises_regex,
-    suppress_warnings,
 )
 
 import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    generate_random_numpy_array,
+    get_abs_array,
     get_all_dtypes,
+    get_complex_dtypes,
+    get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
     has_support_aspect64,
+    numpy_version,
 )
 
 
@@ -44,7 +47,12 @@ class TestDigitize:
         ],
     )
     def test_digitize(self, x, bins, dtype, right):
-        x = x.astype(dtype)
+        x = get_abs_array(x, dtype)
+        if numpy.issubdtype(dtype, numpy.unsignedinteger):
+            min_bin = bins.min()
+            if min_bin < 0:
+                # bins should be monotonically increasing, cannot use get_abs_array
+                bins -= min_bin
         bins = bins.astype(dtype)
         x_dp = dpnp.array(x)
         bins_dp = dpnp.array(bins)
@@ -276,9 +284,10 @@ class TestHistogram:
         assert_dtype_allclose(result_hist, expected_hist)
         assert_dtype_allclose(result_edges, expected_edges)
 
-    def test_integer_weights(self):
+    @pytest.mark.parametrize("dt", get_integer_dtypes(all_int_types=True))
+    def test_integer_weights(self, dt):
         v = numpy.array([1, 2, 2, 4])
-        w = numpy.array([4, 3, 2, 1])
+        w = numpy.array([4, 3, 2, 1], dtype=dt)
 
         iv = dpnp.array(v)
         iw = dpnp.array(w)
@@ -372,6 +381,12 @@ class TestHistogram:
             xp.histogram(vals, range=[0.1, 0.01])
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_size(self, xp):
+        # range shape must be [2]
+        vals = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogram, vals, range=[[0, 1, 2]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
     def test_infinite_edge(self, xp, inf_val):
         v = xp.array([0.5, 1.5, inf_val])
@@ -394,8 +409,8 @@ class TestHistogram:
 
         # floating-point computations correctly place edge cases
         for x, left, right in zip(v, left_edges, right_edges):
-            assert_(x >= left)
-            assert_(x < right)
+            assert x >= left
+            assert x < right
 
     @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 required")
     def test_last_bin_inclusive_range(self):
@@ -520,21 +535,25 @@ class TestHistogramBinEdges:
 
 
 class TestBincount:
-    @pytest.mark.parametrize("dtype", get_integer_dtypes())
-    def test_rand_data(self, dtype):
-        n = 100
-        upper_bound = 10 if dtype != dpnp.bool_ else 1
-        v = numpy.random.randint(0, upper_bound, size=n, dtype=dtype)
+    @pytest.mark.parametrize("dt", get_integer_dtypes() + [numpy.bool_])
+    def test_rand_data(self, dt):
+        v = generate_random_numpy_array(100, dtype=dt, low=0)
         iv = dpnp.array(v)
+
+        if numpy.issubdtype(dt, numpy.uint64) and numpy_version() < "2.2.4":
+            v = v.astype(numpy.int64)
 
         expected_hist = numpy.bincount(v)
         result_hist = dpnp.bincount(iv)
         assert_array_equal(result_hist, expected_hist)
 
-    @pytest.mark.parametrize("dtype", get_integer_dtypes())
-    def test_arange_data(self, dtype):
-        v = numpy.arange(100).astype(dtype)
+    @pytest.mark.parametrize("dt", get_integer_dtypes())
+    def test_arange_data(self, dt):
+        v = numpy.arange(100, dtype=dt)
         iv = dpnp.array(v)
+
+        if numpy.issubdtype(dt, numpy.uint64) and numpy_version() < "2.2.4":
+            v = v.astype(numpy.int64)
 
         expected_hist = numpy.bincount(v)
         result_hist = dpnp.bincount(iv)
@@ -560,11 +579,17 @@ class TestBincount:
             dpnp.bincount(v, weights=w)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
-    def test_weights_unsupported_dtype(self, xp):
-        v = dpnp.arange(5)
-        w = dpnp.arange(5, dtype=dpnp.complex64)
-        with assert_raises(ValueError):
-            dpnp.bincount(v, weights=w)
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    def test_data_unsupported_dtype(self, xp, dt):
+        v = xp.arange(5, dtype=dt)
+        assert_raises(TypeError, xp.bincount, v)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_weights_unsupported_dtype(self, xp, dt):
+        v = xp.arange(5)
+        w = xp.arange(5, dtype=dt)
+        assert_raises((TypeError, ValueError), xp.bincount, v, weights=w)
 
     @pytest.mark.parametrize(
         "bins_count",
@@ -581,36 +606,75 @@ class TestBincount:
     @pytest.mark.parametrize(
         "array",
         [[1, 2, 3], [1, 2, 2, 1, 2, 4], [2, 2, 2, 2]],
-        ids=["[1, 2, 3]", "[1, 2, 2, 1, 2, 4]", "[2, 2, 2, 2]"],
+        ids=["size=3", "size=6", "size=4"],
     )
-    @pytest.mark.parametrize(
-        "minlength", [0, 1, 3, 5], ids=["0", "1", "3", "5"]
-    )
-    def test_bincount_minlength(self, array, minlength):
-        np_a = numpy.array(array)
-        dpnp_a = dpnp.array(array)
+    @pytest.mark.parametrize("minlength", [0, 1, 3, 5])
+    def test_minlength(self, array, minlength):
+        a = numpy.array(array)
+        ia = dpnp.array(a)
 
-        expected = numpy.bincount(np_a, minlength=minlength)
-        result = dpnp.bincount(dpnp_a, minlength=minlength)
-        assert_allclose(expected, result)
+        expected = numpy.bincount(a, minlength=minlength)
+        result = dpnp.bincount(ia, minlength=minlength)
+        assert_allclose(result, expected)
 
+    @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @pytest.mark.parametrize(
-        "array", [[1, 2, 2, 1, 2, 4]], ids=["[1, 2, 2, 1, 2, 4]"]
+        "xp",
+        [
+            dpnp,
+            pytest.param(
+                numpy,
+                marks=pytest.mark.xfail(
+                    numpy_version() < "2.3.0",
+                    reason="numpy deprecates but accepts that",
+                    strict=True,
+                ),
+            ),
+        ],
     )
+    def test_minlength_none(self, xp):
+        a = xp.array([1, 2, 3])
+        assert_raises_regex(
+            TypeError,
+            "use 0 instead of None for minlength",
+            xp.bincount,
+            a,
+            minlength=None,
+        )
+
     @pytest.mark.parametrize(
         "weights",
-        [None, [0.3, 0.5, 0.2, 0.7, 1.0, -0.6], [2, 2, 2, 2, 2, 2]],
-        ids=["None", "[0.3, 0.5, 0.2, 0.7, 1., -0.6]", "[2, 2, 2, 2, 2, 2]"],
+        [None, [0.3, 0.5, 0, 0.7, 1.0, -0.6], [2, 2, 2, 2, 2, 2]],
+        ids=["None", "float_data", "int_data"],
     )
-    def test_bincount_weights(self, array, weights):
-        np_a = numpy.array(array)
-        np_weights = numpy.array(weights) if weights is not None else weights
-        dpnp_a = dpnp.array(array)
-        dpnp_weights = dpnp.array(weights) if weights is not None else weights
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_weights(self, weights, dt):
+        a = numpy.array([1, 2, 2, 1, 2, 4])
+        ia = dpnp.array(a)
+        w = iw = None
+        if weights is not None:
+            w = numpy.array(weights, dtype=dt)
+            iw = dpnp.array(w)
 
-        expected = numpy.bincount(np_a, weights=np_weights)
-        result = dpnp.bincount(dpnp_a, weights=dpnp_weights)
-        assert_allclose(expected, result)
+        expected = numpy.bincount(a, weights=w)
+        result = dpnp.bincount(ia, weights=iw)
+        assert_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "data",
+        [numpy.arange(5), 3, [2, 1]],
+        ids=["numpy.ndarray", "scalar", "list"],
+    )
+    def test_unsupported_data_weights(self, data):
+        # check input array
+        msg = "An array must be any of supported type"
+        assert_raises_regex(TypeError, msg, dpnp.bincount, data)
+
+        # check array of weights
+        a = dpnp.ones(5, dtype=dpnp.int32)
+        assert_raises_regex(TypeError, msg, dpnp.bincount, a, weights=data)
 
 
 class TestHistogramDd:
@@ -720,6 +784,18 @@ class TestHistogramDd:
             xp.histogramdd(vals, range=[[0.1, 0.01]])
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_dims(self, xp):
+        # start of range must be < end of range
+        vals = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogramdd, vals, range=[[0, 1]] * 2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_size(self, xp):
+        # range shape must be [2, 2]
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogramdd, x, y, range=[[0, 1, 2]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
     def test_infinite_edge(self, xp, inf_val):
         v = xp.array([0.5, 1.5, inf_val])
@@ -798,3 +874,245 @@ class TestHistogramDd:
         result_hist, result_edges = dpnp.histogramdd(iv, bins=[bins_count])
         assert_array_equal(result_hist, expected_hist)
         assert_allclose(result_edges, expected_edges)
+
+
+class TestHistogram2d:
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_rand_data(self, dtype):
+        n = 100
+        x, y = numpy.random.rand(2, n).astype(dtype=dtype)
+        ix = dpnp.array(x, dtype=dtype)
+        iy = dpnp.array(y, dtype=dtype)
+
+        expected_hist, _, _ = numpy.histogram2d(x, y)
+        result_hist, _, _ = dpnp.histogram2d(ix, iy)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.usefixtures("suppress_complex_warning")
+    @pytest.mark.parametrize(
+        "dtype", get_all_dtypes(no_none=True, no_bool=True)
+    )
+    def test_linspace_data(self, dtype):
+        n = 100
+        x, y = numpy.linspace(0, 10, 2 * n, dtype=dtype).reshape(2, n)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        expected_hist, _, _ = numpy.histogram2d(x, y)
+        result_hist, _, _ = dpnp.histogram2d(ix, iy)
+        assert_array_equal(result_hist, expected_hist)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_bin_float(self, xp):
+        x = y = xp.array([[1, 2]])
+        assert_raises(ValueError, xp.histogram2d, x, y, bins=0.1)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_bin_2d_array(self, xp):
+        x = y = xp.array([[1, 2]])
+        assert_raises(ValueError, xp.histogram2d, x, y, bins=[10, 10, 10])
+
+    @pytest.mark.parametrize(
+        "bins",
+        [
+            11,
+            [11] * 2,
+            [[0, 20, 40, 60, 80, 100]] * 2,
+            [[0, 20, 40, 60, 80, 300]] * 2,
+        ],
+    )
+    def test_bins(self, bins):
+        n = 100
+        dims = 2
+        x, y = numpy.arange(n * dims).reshape(dims, n)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        bins_dpnp = bins
+        if isinstance(bins, list):
+            if isinstance(bins[0], list):
+                bins = [numpy.array(b) for b in bins]
+                bins_dpnp = [dpnp.array(b) for b in bins]
+
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            x, y, bins
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            ix, iy, bins_dpnp
+        )
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+    def test_no_side_effects(self):
+        x = dpnp.array([1.3, 2.5, 2.3])
+        y = dpnp.array([2.3, 3.5, 4.3])
+        copy_x = x.copy()
+        copy_y = y.copy()
+
+        # check that ensures that values passed to ``histogram2d`` are unchanged
+        _, _, _ = dpnp.histogram2d(x, y)
+        assert (x == copy_x).all()
+        assert (y == copy_y).all()
+
+    def test_empty(self):
+        x = y = numpy.array([])
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            x, y
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(ix, iy)
+
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+    def test_0d(self):
+        x = dpnp.array(1)
+        y = dpnp.array(2)
+
+        assert_raises(ValueError, dpnp.histogram2d, x, y)
+
+    def test_2d(self):
+        x = dpnp.ones((10, 10))
+        y = dpnp.ones((10, 10))
+
+        assert_raises(ValueError, dpnp.histogram2d, x, y)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_finite_range(self, xp):
+        x = y = xp.linspace(0.0, 1.0, num=100)
+
+        # normal ranges should be finite
+        _, _, _ = xp.histogram2d(x, y, range=[[0.25, 0.75]] * 2)
+        assert_raises(
+            ValueError, xp.histogram2d, x, y, range=[[xp.nan, 0.75]] * 2
+        )
+        assert_raises(
+            ValueError, xp.histogram2d, x, y, range=[[0.25, xp.inf]] * 2
+        )
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range(self, xp):
+        # start of range must be < end of range
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        with assert_raises_regex(ValueError, "max must be larger than"):
+            xp.histogram2d(x, y, range=[[0.1, 0.01]] * 2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_dims(self, xp):
+        # range shape must be [2, 2]
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogram2d, x, y, range=[[0, 1]])
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_invalid_range_size(self, xp):
+        # range shape must be [2, 2]
+        x = y = xp.linspace(0.0, 1.0, num=100)
+        assert_raises(ValueError, xp.histogram2d, x, y, range=[[0, 1, 2]] * 2)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("inf_val", [-numpy.inf, numpy.inf])
+    def test_infinite_edge(self, xp, inf_val):
+        x = y = xp.array([0.5, 1.5, inf_val])
+        min, max = x.min(), x.max()
+
+        # both first and last ranges must be finite
+        with assert_raises_regex(
+            ValueError,
+            f"autodetected range of \\[{min}, {max}\\] is not finite",
+        ):
+            xp.histogram2d(x, y)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_unsigned_monotonicity_check(self, xp):
+        # bins must increase monotonically when bins contain unsigned values
+        x = y = xp.array([2])
+        bins = [xp.array([1, 3, 1], dtype="uint64")] * 2
+        with assert_raises(ValueError):
+            xp.histogram2d(x, y, bins=bins)
+
+    def test_nan_values(self):
+        one_nan = numpy.array([0, 1, numpy.nan])
+        all_nan = numpy.array([numpy.nan, numpy.nan])
+
+        ione_nan = dpnp.array(one_nan)
+        iall_nan = dpnp.array(all_nan)
+
+        # NaN is not counted
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            one_nan, one_nan, bins=[[0, 1]] * 2
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            ione_nan, ione_nan, bins=[[0, 1]] * 2
+        )
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+        # NaN is not counted
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            all_nan, all_nan, bins=[[0, 1]] * 2
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            iall_nan, iall_nan, bins=[[0, 1]] * 2
+        )
+        assert_allclose(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x)
+        assert_allclose(result_edges_y, expected_edges_y)
+
+    def test_bins_another_sycl_queue(self):
+        x = y = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        bins = dpnp.arange(4, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogram2d(x, y, bins=[bins] * 2)
+
+    def test_sample_array_like(self):
+        x = y = [0, 1, 2, 3, 4]
+        with assert_raises(TypeError):
+            dpnp.histogram2d(x, y)
+
+    def test_weights_array_like(self):
+        x = y = dpnp.arange(5)
+        w = [1, 2, 3, 4, 5]
+        with assert_raises(TypeError):
+            dpnp.histogram2d(x, y, weights=w)
+
+    def test_weights_another_sycl_queue(self):
+        x = y = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        w = dpnp.arange(7, 12, sycl_queue=dpctl.SyclQueue())
+        with assert_raises(ValueError):
+            dpnp.histogram2d(x, y, weights=w)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    def test_size_mismatch(self, xp):
+        # x and y must have same shape
+        x = xp.linspace(0.0, 1.0, num=10)
+        y = xp.linspace(0.0, 1.0, num=20)
+        assert_raises(ValueError, xp.histogram2d, x, y)
+
+    @pytest.mark.parametrize(
+        "bins_count",
+        [10, 10**2, 10**3],
+    )
+    def test_different_bins_amount(self, bins_count):
+        x, y = numpy.linspace(
+            0, bins_count, 2 * bins_count, dtype=numpy.float32
+        ).reshape(2, bins_count)
+        ix = dpnp.array(x)
+        iy = dpnp.array(y)
+
+        expected_hist, expected_edges_x, expected_edges_y = numpy.histogram2d(
+            x, y, bins=bins_count
+        )
+        result_hist, result_edges_x, result_edges_y = dpnp.histogram2d(
+            ix, iy, bins=bins_count
+        )
+        assert_array_equal(result_hist, expected_hist)
+        assert_allclose(result_edges_x, expected_edges_x, rtol=1e-6)
+        assert_allclose(result_edges_y, expected_edges_y, rtol=1e-6)

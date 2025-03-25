@@ -1,0 +1,3 @@
+pyenchant==3.2.2
+sphinxcontrib-googleanalytics==0.4
+sphinxcontrib-spelling==8.0.1

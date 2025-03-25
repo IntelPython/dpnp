@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ it contains:
 
 
 import dpctl.tensor as dpt
-import dpctl.tensor._tensor_elementwise_impl as tei
+import dpctl.tensor._tensor_elementwise_impl as ti
 import numpy
 
 import dpnp
@@ -97,27 +97,29 @@ def all(a, /, axis=None, out=None, keepdims=False, *, where=True):
         The default is to perform a logical AND over all the dimensions
         of the input array.`axis` may be negative, in which case it counts
         from the last to the first axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the returned
         values) will be cast if necessary.
+
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
         the returned array.
+
         Default: ``False``.
 
     Returns
     -------
-    out : dpnp.ndarray
-        An array with a data type of `bool`.
-        containing the results of the logical AND reduction is returned
-        unless `out` is specified. Otherwise, a reference to `out` is returned.
-        The result has the same shape as `a` if `axis` is not ``None``
+    out : dpnp.ndarray of bool dtype
+        An array containing the results of the logical AND reduction is
+        returned unless `out` is specified. Otherwise, a reference to `out` is
+        returned. The result has the same shape as `a` if `axis` is not ``None``
         or `a` is a 0-d array.
 
     Limitations
@@ -200,20 +202,23 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
         Both inputs `a` and `b` can not be scalars at the same time.
     rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional
         The relative tolerance parameter.
+
         Default: ``1e-05``.
     atol : {dpnp.ndarray, usm_ndarray, scalar}, optional
         The absolute tolerance parameter.
+
         Default: ``1e-08``.
     equal_nan : bool
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
+
         Default: ``False``.
 
     Returns
     -------
-    out : dpnp.ndarray
-        A 0-dim array with ``True`` value if the two arrays are equal within
-        the given tolerance; with ``False`` otherwise.
+    out : dpnp.ndarray of bool dtype
+        A 0-d array with ``True`` value if the two arrays are equal within the
+        given tolerance; with ``False`` otherwise.
 
     See Also
     --------
@@ -224,8 +229,8 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
 
     Notes
     -----
-    The comparison of `a` and `b` uses standard broadcasting, which
-    means that `a` and `b` need not have the same shape in order for
+    The comparison of `a` and `b` uses standard broadcasting, which means that
+    `a` and `b` need not have the same shape in order for
     ``dpnp.allclose(a, b)`` to evaluate to ``True``.
     The same is true for :obj:`dpnp.equal` but not :obj:`dpnp.array_equal`.
 
@@ -269,28 +274,30 @@ def any(a, /, axis=None, out=None, keepdims=False, *, where=True):
         The default is to perform a logical OR over all the dimensions
         of the input array.`axis` may be negative, in which case it counts
         from the last to the first axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output but the type (of the returned
         values) will be cast if necessary.
+
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
         as singleton dimensions, so that the returned array remains
         compatible with the input array according to Array Broadcasting
         rules. Otherwise, if ``False``, the reduced axes are not included in
         the returned array.
+
         Default: ``False``.
 
     Returns
     -------
-    out : dpnp.ndarray
-        An array with a data type of `bool`.
-        containing the results of the logical OR reduction is returned
+    out : dpnp.ndarray of bool dtype
+        An array containing the results of the logical OR reduction is returned
         unless `out` is specified. Otherwise, a reference to `out` is returned.
-        The result has the same shape as `a` if `axis` is not ``None``
-        or `a` is a 0-d array.
+        The result has the same shape as `a` if `axis` is not ``None`` or `a`
+        is a 0-d array.
 
     Limitations
     -----------
@@ -366,13 +373,13 @@ def array_equal(a1, a2, equal_nan=False):
         Whether to compare ``NaNs`` as equal. If the dtype of `a1` and `a2` is
         complex, values will be considered equal if either the real or the
         imaginary component of a given value is ``NaN``.
+
         Default: ``False``.
 
     Returns
     -------
-    b : dpnp.ndarray
-        An array with a data type of `bool`.
-        Returns ``True`` if the arrays are equal.
+    out : dpnp.ndarray of bool dtype
+        A 0-d array with ``True`` value if the arrays are equal.
 
     See Also
     --------
@@ -490,9 +497,9 @@ def array_equiv(a1, a2):
 
     Returns
     -------
-    out : dpnp.ndarray
-        An array with a data type of `bool`.
-        ``True`` if equivalent, ``False`` otherwise.
+    out : dpnp.ndarray of bool dtype
+        A 0-d array with ``True`` value if the arrays are equivalent, ``False``
+        otherwise.
 
     Examples
     --------
@@ -551,15 +558,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array have the correct shape and the expected data type.
-order : {"C", "F", "A", "K"}, optional
+
+    Default: ``None``.
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the result of element-wise equality comparison.
-    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -595,12 +604,13 @@ The ``==`` operator can be used as a shorthand for ``equal`` on
 >>> b = np.array([2, 4, 2])
 >>> a == b
 array([ True,  True, False])
+
 """
 
 equal = DPNPBinaryFunc(
     "equal",
-    tei._equal_result_type,
-    tei._equal,
+    ti._equal_result_type,
+    ti._equal,
     _EQUAL_DOCSTRING,
 )
 
@@ -624,16 +634,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the result of element-wise greater-than comparison.
-    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -663,12 +674,13 @@ The ``>`` operator can be used as a shorthand for ``greater`` on
 >>> b = np.array([2, 2])
 >>> a > b
 array([ True, False])
+
 """
 
 greater = DPNPBinaryFunc(
     "greater",
-    tei._greater_result_type,
-    tei._greater,
+    ti._greater_result_type,
+    ti._greater,
     _GREATER_DOCSTRING,
 )
 
@@ -692,17 +704,18 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the result of element-wise greater-than or equal-to
     comparison.
-    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -732,12 +745,13 @@ The ``>=`` operator can be used as a shorthand for ``greater_equal`` on
 >>> b = np.array([2, 2, 2])
 >>> a >= b
 array([ True,  True, False])
+
 """
 
 greater_equal = DPNPBinaryFunc(
     "greater",
-    tei._greater_equal_result_type,
-    tei._greater_equal,
+    ti._greater_equal_result_type,
+    ti._greater_equal,
     _GREATER_EQUAL_DOCSTRING,
 )
 
@@ -768,18 +782,21 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         Both inputs `a` and `b` can not be scalars at the same time.
     rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional
         The relative tolerance parameter.
+
         Default: ``1e-05``.
     atol : {dpnp.ndarray, usm_ndarray, scalar}, optional
         The absolute tolerance parameter.
+
         Default: ``1e-08``.
     equal_nan : bool
         Whether to compare ``NaNs`` as equal. If ``True``, ``NaNs`` in `a` will
         be considered equal to ``NaNs`` in `b` in the output array.
+
         Default: ``False``.
 
     Returns
     -------
-    out : dpnp.ndarray
+    out : dpnp.ndarray of bool dtype
         Returns a boolean array of where `a` and `b` are equal within the given
         tolerance.
 
@@ -844,7 +861,7 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
         )
     elif dpnp.issubdtype(b, dpnp.integer):
         dt = dpnp.result_type(b, 1.0, rtol, atol)
-        b = dpnp.astype(b, dtype=dt)
+        b = dpnp.astype(b, dt)
 
     # Firstly handle finite values:
     # result = absolute(a - b) <= atol + rtol * absolute(b)
@@ -880,7 +897,7 @@ def iscomplex(x):
 
     Returns
     -------
-    out : dpnp.ndarray
+    out : dpnp.ndarray of bool dtype
         Output array.
 
     See Also
@@ -898,6 +915,7 @@ def iscomplex(x):
     array([ True, False, False, False, False,  True])
 
     """
+
     dpnp.check_supported_arrays_type(x)
     if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
         return x.imag != 0
@@ -945,6 +963,7 @@ def iscomplexobj(x):
     True
 
     """
+
     return numpy.iscomplexobj(x)
 
 
@@ -960,17 +979,18 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array which is True where `x` is not positive infinity,
     negative infinity, or ``NaN``, False otherwise.
-    The data type of the returned array is `bool`.
 
 Limitations
 -----------
@@ -998,12 +1018,13 @@ Examples
 >>> x = np.array([-np.inf, 0., np.inf])
 >>> np.isfinite(x)
 array([False,  True, False])
+
 """
 
 isfinite = DPNPUnaryFunc(
     "isfinite",
-    tei._isfinite_result_type,
-    tei._isfinite,
+    ti._isfinite_result_type,
+    ti._isfinite,
     _ISFINITE_DOCSTRING,
 )
 
@@ -1074,7 +1095,6 @@ def isfortran(a):
     """
 
     dpnp.check_supported_arrays_type(a)
-
     return a.flags.fnc
 
 
@@ -1090,16 +1110,18 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array which is True where `x` is positive or negative infinity,
-    False otherwise. The data type of the returned array is `bool`.
+    False otherwise.
 
 Limitations
 -----------
@@ -1122,12 +1144,13 @@ Examples
 >>> x = np.array([-np.inf, 0., np.inf])
 >>> np.isinf(x)
 array([ True, False,  True])
+
 """
 
 isinf = DPNPUnaryFunc(
     "isinf",
-    tei._isinf_result_type,
-    tei._isinf,
+    ti._isinf_result_type,
+    ti._isinf,
     _ISINF_DOCSTRING,
 )
 
@@ -1144,16 +1167,17 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array which is True where `x` is ``NaN``, False otherwise.
-    The data type of the returned array is `bool`.
 
 Limitations
 -----------
@@ -1168,8 +1192,6 @@ See Also
 :obj:`dpnp.isposinf` : Test element-wise for positive infinity,
                         return result as bool array.
 :obj:`dpnp.isfinite` : Test element-wise for finiteness.
-:obj:`dpnp.isnat` : Test element-wise for NaT (not a time)
-                    and return result as a boolean array.
 
 Examples
 --------
@@ -1177,12 +1199,13 @@ Examples
 >>> x = np.array([np.inf, 0., np.nan])
 >>> np.isnan(x)
 array([False, False,  True])
+
 """
 
 isnan = DPNPUnaryFunc(
     "isnan",
-    tei._isnan_result_type,
-    tei._isnan,
+    ti._isnan_result_type,
+    ti._isnan,
     _ISNAN_DOCSTRING,
 )
 
@@ -1202,12 +1225,19 @@ def isneginf(x, out=None):
         shape that the input broadcasts to and a boolean data type.
         If not provided or ``None``, a freshly-allocated boolean array
         is returned.
+
         Default: ``None``.
 
     Returns
     -------
-    out : dpnp.ndarray
-        Boolean array of same shape as ``x``.
+    out : dpnp.ndarray of bool dtype
+        An array with the same shape as `x`.
+        If `out` is ``None`` then an array is returned with values ``True``
+        where the corresponding element of the input is negative infinity
+        and values ``False`` where the element of the input is not negative
+        infinity.
+        If `out` is not ``None`` then the result is stored there and `out` is
+        a reference to that array.
 
     See Also
     --------
@@ -1274,12 +1304,19 @@ def isposinf(x, out=None):
         shape that the input broadcasts to and a boolean data type.
         If not provided or ``None``, a freshly-allocated boolean array
         is returned.
+
         Default: ``None``.
 
     Returns
     -------
-    out : dpnp.ndarray
-        Boolean array of same shape as ``x``.
+    out : dpnp.ndarray of bool dtype
+        An array with the same shape as `x`.
+        If `out` is ``None`` then an array is returned with values ``True``
+        where the corresponding element of the input is positive infinity
+        and values ``False`` where the element of the input is not positive
+        infinity.
+        If `out` is not ``None`` then the result is stored there and `out` is
+        a reference to that array.
 
     See Also
     --------
@@ -1347,8 +1384,8 @@ def isreal(x):
 
     Returns
     -------
-    out : : dpnp.ndarray
-        Boolean array of same shape as `x`.
+    out : dpnp.ndarray of bool dtype
+        An array of same shape as `x`.
 
     See Also
     --------
@@ -1364,6 +1401,7 @@ def isreal(x):
     array([False,  True,  True,  True,  True, False])
 
     """
+
     dpnp.check_supported_arrays_type(x)
     if dpnp.issubdtype(x.dtype, dpnp.complexfloating):
         return x.imag == 0
@@ -1412,6 +1450,7 @@ def isrealobj(x):
     False
 
     """
+
     return not iscomplexobj(x)
 
 
@@ -1444,7 +1483,9 @@ def isscalar(element):
     True
     >>> np.isscalar("dpnp")
     True
+
     """
+
     return numpy.isscalar(element)
 
 
@@ -1467,16 +1508,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the result of element-wise less-than comparison.
-    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -1506,12 +1548,13 @@ The ``<`` operator can be used as a shorthand for ``less`` on
 >>> b = np.array([2, 2])
 >>> a < b
 array([ True, False])
+
 """
 
 less = DPNPBinaryFunc(
     "less",
-    tei._less_result_type,
-    tei._less,
+    ti._less_result_type,
+    ti._less,
     _LESS_DOCSTRING,
 )
 
@@ -1535,16 +1578,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the result of element-wise less-than or equal-to
-    comparison. The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -1574,12 +1618,13 @@ The ``<=`` operator can be used as a shorthand for ``less_equal`` on
 >>> b = np.array([2, 2, 2])
 >>> a <= b
 array([False,  True,  True])
+
 """
 
 less_equal = DPNPBinaryFunc(
     "less_equal",
-    tei._less_equal_result_type,
-    tei._less_equal,
+    ti._less_equal_result_type,
+    ti._less_equal,
     _LESS_EQUAL_DOCSTRING,
 )
 
@@ -1603,16 +1648,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the element-wise logical AND results.
-    The shape is determined by broadcasting.
 
 Limitations
 -----------
@@ -1645,12 +1691,13 @@ boolean :class:`dpnp.ndarray`.
 >>> b = np.array([False, False])
 >>> a & b
 array([False, False])
+
 """
 
 logical_and = DPNPBinaryFunc(
     "logical_and",
-    tei._logical_and_result_type,
-    tei._logical_and,
+    ti._logical_and_result_type,
+    ti._logical_and,
     _LOGICAL_AND_DOCSTRING,
 )
 
@@ -1667,14 +1714,16 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the element-wise logical NOT results.
 
 Limitations
@@ -1698,12 +1747,13 @@ array([False,  True,  True, False])
 >>> x = np.arange(5)
 >>> np.logical_not(x < 3)
 array([False, False, False,  True,  True])
+
 """
 
 logical_not = DPNPUnaryFunc(
     "logical_not",
-    tei._logical_not_result_type,
-    tei._logical_not,
+    ti._logical_not_result_type,
+    ti._logical_not,
     _LOGICAL_NOT_DOCSTRING,
 )
 
@@ -1727,16 +1777,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the element-wise logical OR results.
-    The shape is determined by broadcasting.
 
 Limitations
 -----------
@@ -1769,12 +1820,13 @@ boolean :class:`dpnp.ndarray`.
 >>> b = np.array([False, False])
 >>> a | b
 array([ True, False])
+
 """
 
 logical_or = DPNPBinaryFunc(
     "logical_or",
-    tei._logical_or_result_type,
-    tei._logical_or,
+    ti._logical_or_result_type,
+    ti._logical_or,
     _LOGICAL_OR_DOCSTRING,
 )
 
@@ -1798,16 +1850,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the element-wise logical XOR results.
-    The shape is determined by broadcasting.
 
 Limitations
 -----------
@@ -1838,12 +1891,13 @@ Simple example showing support of broadcasting
 >>> np.logical_xor(0, np.eye(2))
 array([[ True, False],
        [False,  True]])
+
 """
 
 logical_xor = DPNPBinaryFunc(
     "logical_xor",
-    tei._logical_xor_result_type,
-    tei._logical_xor,
+    ti._logical_xor_result_type,
+    ti._logical_xor,
     _LOGICAL_XOR_DOCSTRING,
 )
 
@@ -1867,16 +1921,17 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
 -------
-out : dpnp.ndarray
+out : dpnp.ndarray of bool dtype
     An array containing the result of element-wise inequality comparison.
-    The returned array has a data type of `bool`.
 
 Limitations
 -----------
@@ -1906,11 +1961,12 @@ The ``!=`` operator can be used as a shorthand for ``not_equal`` on
 >>> b = np.array([1., 3.])
 >>> a != b
 array([False,  True])
+
 """
 
 not_equal = DPNPBinaryFunc(
     "not_equal",
-    tei._not_equal_result_type,
-    tei._not_equal,
+    ti._not_equal_result_type,
+    ti._not_equal,
     _NOT_EQUAL_DOCSTRING,
 )

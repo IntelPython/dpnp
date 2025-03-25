@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
 
 #include "elementwise_functions/common.hpp"
 
-namespace py = pybind11;
 namespace ufunc_ns = dpnp::extensions::ufunc;
 
 PYBIND11_MODULE(_ufunc_impl, m)

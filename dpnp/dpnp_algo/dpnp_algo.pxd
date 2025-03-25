@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -33,8 +33,6 @@ from dpnp.dpnp_utils.dpnp_algo_utils cimport dpnp_descriptor
 
 cdef extern from "dpnp_iface_fptr.hpp" namespace "DPNPFuncName":  # need this namespace for Enum import
     cdef enum DPNPFuncName "DPNPFuncName":
-        DPNP_FN_CHOOSE_EXT
-        DPNP_FN_CORRELATE_EXT
         DPNP_FN_ERF_EXT
         DPNP_FN_MODF_EXT
         DPNP_FN_PARTITION_EXT
@@ -96,18 +94,6 @@ cdef extern from "dpnp_iface_fptr.hpp":
 
     DPNPFuncData get_dpnp_function_ptr(DPNPFuncName name, DPNPFuncType first_type, DPNPFuncType second_type) except +
 
-
-cdef extern from "constants.hpp":
-    void dpnp_python_constants_initialize_c(void * py_none, void * py_nan)
-
-cdef extern from "dpnp_iface.hpp":
-
-    char * dpnp_memory_alloc_c(size_t size_in_bytes) except +
-    void dpnp_memory_free_c(void * ptr)
-    void dpnp_memory_memcpy_c(void * dst, const void * src, size_t size_in_bytes)
-    void dpnp_rng_srand_c(size_t seed)
-
-
 # C function pointer to the C library template functions
 ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_1out_strides_t)(c_dpctl.DPCTLSyclQueueRef,
                                                              void *, const size_t, const size_t,
@@ -116,18 +102,6 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_1out_strides_t)(c_dpctl.DPCTLSyclQu
                                                              const shape_elem_type * , const shape_elem_type * ,
                                                              const long * ,
                                                              const c_dpctl.DPCTLEventVectorRef)
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_2in_1out_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                     void * ,
-                                                     const void * ,
-                                                     const size_t,
-                                                     const shape_elem_type * ,
-                                                     const size_t,
-                                                     const void *,
-                                                     const size_t,
-                                                     const shape_elem_type * ,
-                                                     const size_t,
-                                                     const long * ,
-                                                     const c_dpctl.DPCTLEventVectorRef)
 
 
 """

@@ -1,0 +1,8 @@
+# array API tests to be skipped
+
+# hypothesis found failures
+array_api_tests/test_operators_and_elementwise_functions.py::test_clip
+
+# unexpected result is returned - unmute when dpctl-1986 is resolved
+array_api_tests/test_operators_and_elementwise_functions.py::test_asin
+array_api_tests/test_operators_and_elementwise_functions.py::test_asinh

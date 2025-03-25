@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -72,7 +72,7 @@ struct BincountEdges
     template <typename dT>
     bool in_bounds(const dT *val, const boundsT &bounds) const
     {
-        return check_in_bounds(val[0], std::get<0>(bounds),
+        return check_in_bounds(static_cast<T>(val[0]), std::get<0>(bounds),
                                std::get<1>(bounds));
     }
 
@@ -81,16 +81,17 @@ private:
     T max;
 };
 
-template <typename T, typename HistType = size_t>
+using DefaultHistType = int64_t;
+
+template <typename T, typename HistType = DefaultHistType>
 struct BincountF
 {
     static sycl::event impl(sycl::queue &exec_q,
                             const void *vin,
-                            const int64_t min,
-                            const int64_t max,
+                            const uint64_t min,
+                            const uint64_t max,
                             const void *vweights,
                             void *vout,
-                            const size_t,
                             const size_t size,
                             const std::vector<sycl::event> &depends)
     {
@@ -145,9 +146,12 @@ struct BincountF
     }
 };
 
-using SupportedTypes = std::tuple<std::tuple<int64_t, int64_t>,
+using SupportedTypes = std::tuple<std::tuple<int64_t, DefaultHistType>,
+                                  std::tuple<uint64_t, DefaultHistType>,
                                   std::tuple<int64_t, float>,
-                                  std::tuple<int64_t, double>>;
+                                  std::tuple<uint64_t, float>,
+                                  std::tuple<int64_t, double>,
+                                  std::tuple<uint64_t, double>>;
 
 } // namespace
 
@@ -158,8 +162,8 @@ Bincount::Bincount() : dispatch_table("sample", "histogram")
 
 std::tuple<sycl::event, sycl::event> Bincount::call(
     const dpctl::tensor::usm_ndarray &sample,
-    const int64_t min,
-    const int64_t max,
+    const uint64_t min,
+    const uint64_t max,
     const std::optional<const dpctl::tensor::usm_ndarray> &weights,
     dpctl::tensor::usm_ndarray &histogram,
     const std::vector<sycl::event> &depends)
@@ -182,8 +186,7 @@ std::tuple<sycl::event, sycl::event> Bincount::call(
         weights.has_value() ? weights.value().get_data() : nullptr;
 
     auto ev = bincount_func(exec_q, sample.get_data(), min, max, weights_ptr,
-                            histogram.get_data(), histogram.get_shape(0),
-                            sample.get_shape(0), depends);
+                            histogram.get_data(), sample.get_size(), depends);
 
     sycl::event args_ev;
     if (weights.has_value()) {

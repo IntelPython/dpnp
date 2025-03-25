@@ -12,7 +12,7 @@ requirements:
     host:
       - python
       - setuptools
-      - numpy
+      - numpy >=1.23
       - cython
       - cmake >=3.21
       - ninja
@@ -69,8 +69,8 @@ about:
 
 extra:
     recipe-maintainers:
-        - oleksandr-pavlyk
         - antonwolfy
         - AlexanderKalistratov
         - vtavana
         - vlad-perevezentsev
+        - ndgrigorian

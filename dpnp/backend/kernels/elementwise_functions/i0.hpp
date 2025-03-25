@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
  * sycl::ext::intel::math::cyl_bessel_i0(x) is fully resolved.
  */
 #ifndef __SYCL_COMPILER_BESSEL_I0_SUPPORT
-#define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241210L
+#define __SYCL_COMPILER_BESSEL_I0_SUPPORT 20241208L
 #endif
 
 #if __SYCL_COMPILER_VERSION >= __SYCL_COMPILER_BESSEL_I0_SUPPORT

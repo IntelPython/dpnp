@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,21 +23,45 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include <iostream>
+#pragma once
 
-#include "constants.hpp"
+#include "common.hpp"
+#include <sycl/sycl.hpp>
 
-void *python_constants::py_none = nullptr;
-void *python_constants::py_nan = nullptr;
-
-void dpnp_python_constants_initialize_c(void *_py_none, void *_py_nan)
+namespace dpnp::extensions::window::kernels
 {
-    python_constants::py_none = _py_none;
-    python_constants::py_nan = _py_nan;
-    //    std::cout << "========dpnp_python_constants_initialize_c============="
-    //    << std::endl; std::cout << "\t None=" << _py_none
-    //              << "\n\t NaN=" << _py_nan
-    //              << "\n\t py_none=" << python_constants::py_none
-    //              << "\n\t py_nan=" << python_constants::py_nan
-    //              << std::endl;
-}
+
+template <typename T>
+class BartlettFunctor
+{
+private:
+    T *data = nullptr;
+    const std::size_t N;
+
+public:
+    BartlettFunctor(T *data, const std::size_t N) : data(data), N(N) {}
+
+    void operator()(sycl::id<1> id) const
+    {
+        const auto i = id.get(0);
+
+        const T alpha = (N - 1) / T(2);
+        data[i] = T(1) - sycl::fabs(i - alpha) / alpha;
+    }
+};
+
+template <typename fnT, typename T>
+struct BartlettFactory
+{
+    fnT get()
+    {
+        if constexpr (std::is_floating_point_v<T>) {
+            return window_impl<T, BartlettFunctor>;
+        }
+        else {
+            return nullptr;
+        }
+    }
+};
+
+} // namespace dpnp::extensions::window::kernels

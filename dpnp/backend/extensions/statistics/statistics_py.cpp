@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,12 +23,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 //
-// This file defines functions of dpnp.backend._lapack_impl extensions
+// This file defines functions of dpnp.backend._statistics_impl extensions
 //
 //*****************************************************************************
 
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
 
 #include "bincount.hpp"
 #include "histogram.hpp"

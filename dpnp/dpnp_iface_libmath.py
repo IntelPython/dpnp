@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -82,6 +82,10 @@ def erf(in_array1):
         in_array1, copy_when_strides=False, copy_when_nondefault_queue=False
     )
     if x1_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
         return dpnp_erf(x1_desc).get_pyobj()
 
     result = create_output_descriptor_py(

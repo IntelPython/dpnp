@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,14 +48,14 @@ from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
 __all__ = ["argmax", "argmin", "argwhere", "searchsorted", "where"]
 
 
-def _get_search_res_dt(a, _dtype, out):
+def _get_search_res_dt(a, out):
     """Get a data type used by dpctl for result array in search function."""
 
     # get a data type used by dpctl for result array in search function
     res_dt = dti.default_device_index_type(a.sycl_device)
 
     # numpy raises TypeError if "out" data type mismatch default index type
-    if not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
+    if out is not None and not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
         raise TypeError(
             f"Cannot cast from {out.dtype} to {res_dt} "
             "according to the rule safe."
@@ -76,15 +76,18 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
     axis : {None, int}, optional
         By default, the index is into the flattened array, otherwise along
         the specified axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.
+
         Default: ``False``.
 
     Returns
@@ -143,11 +146,10 @@ def argmax(a, axis=None, out=None, *, keepdims=False):
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.argmax,
-        _get_search_res_dt,
-        usm_a,
+        _get_search_res_dt(a, out),
         axis=axis,
         keepdims=keepdims,
     )
@@ -166,15 +168,18 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
     axis : {None, int}, optional
         By default, the index is into the flattened array, otherwise along
         the specified axis.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be inserted into this array. It should be
         of the appropriate shape and dtype.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the array.
+
         Default: ``False``.
 
     Returns
@@ -234,11 +239,10 @@ def argmin(a, axis=None, out=None, *, keepdims=False):
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.argmin,
-        _get_search_res_dt,
-        usm_a,
+        _get_search_res_dt(a, out),
         axis=axis,
         keepdims=keepdims,
     )
@@ -317,13 +321,15 @@ def searchsorted(a, v, side="left", sorter=None):
     side : {"left", "right"}, optional
         If ``"left"``, the index of the first suitable location found is given.
         If ``"right"``, return the last such index. If there is no suitable
-        index, return either 0 or N (where N is the length of `a`).
+        index, return either ``0`` or ``N`` (where ``N`` is the length of `a`).
+
         Default: ``"left"``.
-    sorter : {dpnp.ndarray, usm_ndarray}, optional
-        Optional 1-D array of integer indices that sort array a into ascending
-        order. They are typically the result of :obj:`dpnp.argsort`.
+    sorter : {None, dpnp.ndarray, usm_ndarray}, optional
+        Optional 1-D array of integer indices that sort array `a` into ascending
+        order. They are typically the result of :py:func:`dpnp.argsort`.
         Out of bound index values of `sorter` array are treated using
         ``"wrap"`` mode documented in :py:func:`dpnp.take`.
+
         Default: ``None``.
 
     Returns
@@ -340,7 +346,7 @@ def searchsorted(a, v, side="left", sorter=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([11,12,13,14,15])
+    >>> a = np.array([11, 12, 13, 14, 15])
     >>> np.searchsorted(a, 13)
     array(2)
     >>> np.searchsorted(a, 13, side='right')
@@ -348,6 +354,19 @@ def searchsorted(a, v, side="left", sorter=None):
     >>> v = np.array([-10, 20, 12, 13])
     >>> np.searchsorted(a, v)
     array([0, 5, 1, 2])
+
+    When `sorter` is used, the returned indices refer to the sorted
+    array of `a` and not `a` itself:
+
+    >>> a = np.array([40, 10, 20, 30])
+    >>> sorter = np.argsort(a)
+    >>> sorter
+    array([1, 2, 3, 0])  # Indices that would sort the array 'a'
+    >>> result = np.searchsorted(a, 25, sorter=sorter)
+    >>> result
+    array(2)
+    >>> a[sorter[result]]
+    array(30)  # The element at index 2 of the sorted array is 30
 
     """
 
@@ -376,16 +395,20 @@ def where(condition, x=None, y=None, /, *, order="K", out=None):
     ----------
     condition : {dpnp.ndarray, usm_ndarray}
         When ``True``, yield `x`, otherwise yield `y`.
-    x, y : {dpnp.ndarray, usm_ndarray, scalar}, optional
+    x, y : {None, dpnp.ndarray, usm_ndarray, scalar}, optional
         Values from which to choose. `x`, `y` and `condition` need to be
         broadcastable to some shape.
-    order : {"K", "C", "F", "A"}, optional
+
+        Default: ``None``.
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the new output array, if keyword `out` is ``None``.
+
         Default: ``"K"``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The array into which the result is written. The data type of `out` must
         match the expected shape and the expected data type of the result.
         If ``None`` then a new array is returned.
+
         Default: ``None``.
 
     Returns

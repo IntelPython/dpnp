@@ -2,7 +2,7 @@
 # cython: linetrace=True
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,60 +36,8 @@ and the rest of the library
 # NO IMPORTs here. All imports must be placed into main "dpnp_algo.pyx" file
 
 __all__ += [
-    "dpnp_choose",
     "dpnp_putmask",
 ]
-
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_choose_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                        void *, void * , void ** , size_t, size_t, size_t,
-                                                        const c_dpctl.DPCTLEventVectorRef)
-
-cpdef utils.dpnp_descriptor dpnp_choose(utils.dpnp_descriptor x1, list choices1):
-    cdef vector[void * ] choices
-    cdef utils.dpnp_descriptor choice
-    for desc in choices1:
-        choice = desc
-        choices.push_back(choice.get_data())
-
-    cdef shape_type_c x1_shape = x1.shape
-    cdef size_t choice_size = choices1[0].size
-
-    cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
-
-    cdef DPNPFuncType param2_type = dpnp_dtype_to_DPNPFuncType(choices1[0].dtype)
-
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_CHOOSE_EXT, param1_type, param2_type)
-
-    x1_obj = x1.get_array()
-
-    cdef utils.dpnp_descriptor res_array = utils.create_output_descriptor(x1_shape,
-                                                                          kernel_data.return_type,
-                                                                          None,
-                                                                          device=x1_obj.sycl_device,
-                                                                          usm_type=x1_obj.usm_type,
-                                                                          sycl_queue=x1_obj.sycl_queue)
-
-    result_sycl_queue = res_array.get_array().sycl_queue
-
-    cdef c_dpctl.SyclQueue q = <c_dpctl.SyclQueue> result_sycl_queue
-    cdef c_dpctl.DPCTLSyclQueueRef q_ref = q.get_queue_ref()
-
-    cdef fptr_dpnp_choose_t func = <fptr_dpnp_choose_t > kernel_data.ptr
-
-    cdef c_dpctl.DPCTLSyclEventRef event_ref = func(q_ref,
-                                                    res_array.get_data(),
-                                                    x1.get_data(),
-                                                    choices.data(),
-                                                    x1_shape[0],
-                                                    choices.size(),
-                                                    choice_size,
-                                                    NULL)  # dep_events_ref
-
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
-    c_dpctl.DPCTLEvent_Delete(event_ref)
-
-    return res_array
-
 
 cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
     cdef int values_size = values.size

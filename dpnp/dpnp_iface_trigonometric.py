@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -98,7 +98,7 @@ __all__ = [
 ]
 
 
-def _get_accumulation_res_dt(a, dtype, _out):
+def _get_accumulation_res_dt(a, dtype):
     """Get a dtype used by dpctl for result array in accumulation function."""
 
     if dtype is None:
@@ -124,7 +124,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -200,7 +200,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -277,7 +277,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -356,7 +356,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -433,7 +433,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -522,7 +522,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -595,7 +595,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -668,7 +668,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -720,7 +720,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -774,7 +774,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -832,7 +832,7 @@ def cumlogsumexp(
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -893,11 +893,10 @@ def cumlogsumexp(
         usm_x = dpnp.get_usm_ndarray(x)
 
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.cumulative_logsumexp,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         include_initial=include_initial,
@@ -917,7 +916,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -972,7 +971,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1030,7 +1029,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1083,7 +1082,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1139,7 +1138,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1206,7 +1205,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1267,7 +1266,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1322,7 +1321,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1382,7 +1381,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1442,7 +1441,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1513,7 +1512,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1587,7 +1586,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1643,7 +1642,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1705,11 +1704,10 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.logsumexp,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -1729,7 +1727,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1784,7 +1782,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1843,7 +1841,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -1894,7 +1892,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
         inferred from the "kind" of the input array data type.
 
@@ -1952,11 +1950,10 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
 
     usm_x = dpnp.get_usm_ndarray(x)
     return dpnp_wrap_reduction_call(
-        x,
+        usm_x,
         out,
         dpt.reduce_hypot,
-        _get_accumulation_res_dt,
-        usm_x,
+        _get_accumulation_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -1970,11 +1967,11 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a real floating-point data type.
-out : ({None, dpnp.ndarray, usm_ndarray}, optional):
+out : {None, dpnp.ndarray, usm_ndarray}, optional:
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : ({'C', 'F', 'A', 'K'}, optional):
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is `None`.
     Default: ``"K"``
 
@@ -2025,7 +2022,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -2079,7 +2076,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -2132,7 +2129,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -2188,7 +2185,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -2243,7 +2240,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -2297,7 +2294,7 @@ out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
     Default: ``"K"``.
 
@@ -2451,9 +2448,7 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
     abs_p_diff = dpnp.abs(p_diff, out=p_diff)
     ph_correct = dpnp.where(abs_p_diff < discont, 0, ph_correct, out=ph_correct)
 
-    up = dpnp.astype(p, dtype=dt, copy=True)
+    up = dpnp.astype(p, dt, copy=True)
     up[slice1] = p[slice1]
-    # TODO: replace, once dpctl-1757 resolved
-    # up[slice1] += ph_correct.cumsum(axis=axis)
-    up[slice1] += ph_correct.cumsum(axis=axis, dtype=dt)
+    up[slice1] += ph_correct.cumsum(axis=axis)
     return up

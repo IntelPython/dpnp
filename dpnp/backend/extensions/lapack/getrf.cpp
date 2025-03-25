@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -120,6 +120,15 @@ static sycl::event getrf_impl(sycl::queue &exec_q,
                          "call:\nreason: "
                       << e.what() << "\ninfo: " << e.info();
         }
+    } catch (oneapi::mkl::computation_error const &e) {
+        // TODO: remove this catch when gh-642(oneMath) is fixed
+        // Workaround for oneMath interfaces
+        // oneapi::mkl::computation_error is thrown instead of
+        // oneapi::mkl::lapack::computation_error.
+        is_exception_caught = false;
+        // computation_error means the input matrix is singular
+        // dev_info must be set to any positive value.
+        dev_info[0] = 2;
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during getrf() call:\n"

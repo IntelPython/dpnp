@@ -25,7 +25,7 @@ jobs:
   build-and-deploy:
     name: Build and Deploy Docs
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     permissions:
       # Needed to cancel any previous runs that are not completed for a given workflow
@@ -36,11 +36,12 @@ jobs:
       pull-requests: write
 
     env:
-      python-ver: '3.12'
-      CHANNELS: '-c dppy/label/dev -c intel -c conda-forge --override-channels'
-      NO_INTEL_CHANNELS: '-c dppy/label/dev -c conda-forge --override-channels'
-      # Install the latest oneAPI compiler to work around an issue
-      INSTALL_ONE_API: 'yes'
+      environment-file: 'environments/environment.yml'
+      build-with-oneapi-env: 'environments/build_with_oneapi.yml'
+      building-docs-env: 'environments/building_docs.yml'
+      oneapi-pkgs-env: ''
+      # Enable env when it's required to use only conda packages without OneAPI installation
+      # oneapi-pkgs-env: '${{ github.workspace }}/environments/oneapi_pkgs.yml'
 
     steps:
       - name: Cancel Previous Runs
@@ -60,6 +61,7 @@ jobs:
           docker-images: false
 
       - name: Add Intel repository
+        if: env.oneapi-pkgs-env == ''
         run: |
           wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB
           cat GPG-PUB-KEY-INTEL-SW-PRODUCTS.PUB | gpg --dearmor | sudo tee /usr/share/keyrings/oneapi-archive-keyring.gpg > /dev/null
@@ -75,6 +77,7 @@ jobs:
           sudo apt install --reinstall -y gcc-9 g++-9 libstdc++-9-dev
 
       - name: Install Intel OneAPI
+        if: env.oneapi-pkgs-env == ''
         run: |
           sudo apt install hwloc                           \
                            intel-oneapi-mkl                \
@@ -89,7 +92,6 @@ jobs:
         run: |
           sudo apt-get install enchant-2
 
-      # https://github.com/marketplace/actions/checkout
       - name: Install nvidia-cuda support drivers
         run: |
           sudo add-apt-repository ppa:graphics-drivers/ppa
@@ -102,46 +104,57 @@ jobs:
         with:
           fetch-depth: 0
 
-      # https://github.com/marketplace/actions/setup-miniconda
+      - name: Install conda-merge tool
+        uses: BSFishy/pip-action@8f2d471d809dc20b6ada98c91910b6ae6243f318 # v1
+        with:
+          packages: conda-merge
+
+      - name: Merge conda env files
+        run: |
+          conda-merge ${{ env.build-with-oneapi-env }} ${{ env.building-docs-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
+          cat ${{ env.environment-file }}
+
       - name: Setup miniconda
-        uses: conda-incubator/setup-miniconda@d2e6a045a86077fb6cad6f5adf368e9076ddaa8d # v3.1.0
+        id: setup_miniconda
+        continue-on-error: true
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
         with:
           miniforge-version: latest
           use-mamba: 'true'
-          channels: conda-forge
           conda-remove-defaults: 'true'
-          python-version: ${{ env.python-ver }}
+          environment-file: ${{ env.environment-file }}
           activate-environment: 'docs'
 
-      # Sometimes `mamba install ...` fails due to slow download speed rate, so disable the check in mamba
-      - name: Disable speed limit check in mamba
-        run: echo "MAMBA_NO_LOW_SPEED_LIMIT=1" >> $GITHUB_ENV
+      - name: ReSetup miniconda
+        if: steps.setup_miniconda.outcome == 'failure'
+        uses: conda-incubator/setup-miniconda@505e6394dae86d6a5c7fbb6e3fb8938e3e863830 # v3.1.1
+        with:
+          miniforge-version: latest
+          use-mamba: 'true'
+          conda-remove-defaults: 'true'
+          environment-file: ${{ env.environment-file }}
+          activate-environment: 'docs'
 
-      - name: Install sphinx dependencies
+      # We can't install dpctl as a conda package when the environment is created through
+      # installing of Intel OneAPI packages because the dpctl conda package has a runtime
+      # dependency on DPC++ RT one. Whereas the DPC++ RT package has been already installed
+      # by the apt command above and its version has been matched with the DPC++ compiler.
+      # In case where we install the DPC++ compiler with the apt (including DPC++ RT) and
+      # install the DPC++ RT conda package while resolving dependencies, this can lead
+      # to a versioning error, i.e. compatibility issue as the DPC++ compiler only guarantees
+      # backwards compatibility, not forward compatibility (DPC++ RT may not run a binary built
+      # with a newer version of the DPC++ compiler).
+      # Installing dpctl via the pip manager has no such limitation, as the package has no
+      # run dependency on the DPC++ RT pip package, so this is why the step is necessary here.
+      - name: Install dpctl
+        if: env.oneapi-pkgs-env == ''
         run: |
-          mamba install sphinx sphinx_rtd_theme
-          pip install sphinxcontrib-googleanalytics==0.4 \
-            pyenchant sphinxcontrib-spelling
-
-      - name: Install dpnp dependencies
-        if: env.INSTALL_ONE_API == 'yes'
-        run: |
-          mamba install numpy dpctl">=0.18.0dev0" cmake cython pytest ninja scikit-build ${{ env.NO_INTEL_CHANNELS }}
-
-      - name: Install dpnp dependencies
-        if: env.INSTALL_ONE_API != 'yes'
-        run: |
-          mamba install numpy dpctl">=0.18.0dev0" mkl-devel-dpcpp onedpl-devel tbb-devel dpcpp_linux-64 \
-              cmake cython pytest ninja scikit-build ${{ env.CHANNELS }}
-
-      - name: Install cuPy dependencies
-        run: mamba install cupy
+          pip install -i https://pypi.anaconda.org/dppy/label/dev/simple dpctl==0.20.0dev0
 
       - name: Conda info
-        run: mamba info
-
-      - name: Conda list
-        run: mamba list
+        run: |
+          mamba info
+          mamba list
 
       - name: Build library
         run: |
@@ -167,16 +180,14 @@ jobs:
           echo PROJECT_NUMBER=${PROJECT_NUMBER}
           echo "PROJECT_NUMBER=$PROJECT_NUMBER" >> $GITHUB_ENV
 
-      # https://github.com/marketplace/actions/doxygen-action
       - name: Build backend docs
-        uses: mattnotmitt/doxygen-action@cbe72c8e402e8a3faa1f0b247ef90aa6c8e4ce74 # v1.9.8
+        uses: mattnotmitt/doxygen-action@b84fe17600245bb5db3d6c247cc274ea98c15a3b # v1.12
         with:
             working-directory: 'dpnp/backend/doc'
 
       - name: Copy backend docs
         run: cp -r dpnp/backend/doc/html ${{ env.PUBLISH_DIR }}/backend_doc
 
-      # https://github.com/marketplace/actions/github-pages-action
       # The step is only used to build docs while pushing a PR to "master"
       - name: Deploy docs
         if: env.GH_EVENT_PUSH_UPSTREAM == 'true'
@@ -212,6 +223,7 @@ jobs:
           PR_NUM: ${{ github.event.number }}
         uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
         with:
+          message-id: url_to_docs
           message: |
             View rendered docs @ https://intelpython.github.io/dpnp/pull/${{ env.PR_NUM }}/index.html
           allow-repeats: false
@@ -254,6 +266,7 @@ jobs:
       - name: Modify the comment with URL to official documentation
         uses: mshick/add-pr-comment@b8f338c590a895d50bcbfa6c5859251edc8952fc # v2.8.2
         with:
+          message-id: url_to_docs
           find: |
             View rendered docs @.+
           replace: |

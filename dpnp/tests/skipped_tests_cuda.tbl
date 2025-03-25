@@ -1,0 +1,819 @@
+# NotImplementedError
+
+# modf
+tests/test_arithmetic.py::TestArithmetic::test_modf_part1
+tests/test_arithmetic.py::TestArithmetic::test_modf_part2
+tests/test_sycl_queue.py::test_modf[cuda:gpu:0]
+tests/test_umath.py::test_umaths[('modf', 'f')]
+tests/test_umath.py::test_umaths[('modf', 'd')]
+tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticModf::test_modf
+
+# random
+tests/test_random_state.py::TestNormal::test_distr[host-float32]
+tests/test_random_state.py::TestNormal::test_distr[host-float64]
+tests/test_random_state.py::TestNormal::test_distr[host-None]
+tests/test_random_state.py::TestNormal::test_distr[device-float32]
+tests/test_random_state.py::TestNormal::test_distr[device-float64]
+tests/test_random_state.py::TestNormal::test_distr[device-None]
+tests/test_random_state.py::TestNormal::test_distr[shared-float32]
+tests/test_random_state.py::TestNormal::test_distr[shared-float64]
+tests/test_random_state.py::TestNormal::test_distr[shared-None]
+tests/test_random_state.py::TestNormal::test_scale[host-float32]
+tests/test_random_state.py::TestNormal::test_scale[host-float64]
+tests/test_random_state.py::TestNormal::test_scale[host-None]
+tests/test_random_state.py::TestNormal::test_scale[device-float32]
+tests/test_random_state.py::TestNormal::test_scale[device-float64]
+tests/test_random_state.py::TestNormal::test_scale[device-None]
+tests/test_random_state.py::TestNormal::test_scale[shared-float32]
+tests/test_random_state.py::TestNormal::test_scale[shared-float64]
+tests/test_random_state.py::TestNormal::test_scale[shared-None]
+tests/test_random_state.py::TestNormal::test_inf_loc[numpy.inf]
+tests/test_random_state.py::TestNormal::test_inf_loc[-numpy.inf]
+tests/test_random_state.py::TestNormal::test_inf_loc[nextafter(max, 0)]
+tests/test_random_state.py::TestNormal::test_inf_loc[nextafter(min, 0)]
+tests/test_random_state.py::TestNormal::test_inf_scale
+tests/test_random_state.py::TestNormal::test_inf_loc_scale[numpy.inf]
+tests/test_random_state.py::TestNormal::test_inf_loc_scale[-numpy.inf]
+tests/test_random_state.py::TestNormal::test_extreme_bounds
+tests/test_random_state.py::TestNormal::test_fallback[[2]-dpnp.array([3])]
+tests/test_random_state.py::TestNormal::test_fallback[[2]-numpy.array([3])]
+tests/test_random_state.py::TestNormal::test_fallback[dpnp.array([2])-dpnp.array([3])]
+tests/test_random_state.py::TestNormal::test_fallback[dpnp.array([2])-numpy.array([3])]
+tests/test_random_state.py::TestNormal::test_fallback[numpy.array([2])-dpnp.array([3])]
+tests/test_random_state.py::TestNormal::test_fallback[numpy.array([2])-numpy.array([3])]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.float16]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[float]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.int64]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.int32]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.int]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[int]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[numpy.clongdouble]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.complex128]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.complex64]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.bool]
+tests/test_random_state.py::TestNormal::test_invalid_dtype[dpnp.bool_]
+tests/test_random_state.py::TestNormal::test_invalid_usm_type[Empty]
+tests/test_random_state.py::TestNormal::test_invalid_usm_type[Unknown]
+tests/test_random_state.py::TestRand::test_distr[host]
+tests/test_random_state.py::TestRand::test_distr[device]
+tests/test_random_state.py::TestRand::test_distr[shared]
+tests/test_random_state.py::TestRand::test_zero_dims[(0,)]
+tests/test_random_state.py::TestRand::test_zero_dims[(3, 0)]
+tests/test_random_state.py::TestRand::test_zero_dims[(3, 0, 10)]
+tests/test_random_state.py::TestRand::test_zero_dims[()]
+tests/test_random_state.py::TestRand::test_wrong_dims
+tests/test_random_state.py::TestRandInt::test_distr[host-int]
+tests/test_random_state.py::TestRandInt::test_distr[host-dpnp.int32]
+tests/test_random_state.py::TestRandInt::test_distr[device-int]
+tests/test_random_state.py::TestRandInt::test_distr[device-dpnp.int32]
+tests/test_random_state.py::TestRandInt::test_distr[shared-int]
+tests/test_random_state.py::TestRandInt::test_distr[shared-dpnp.int32]
+tests/test_random_state.py::TestRandInt::test_float_bounds
+tests/test_random_state.py::TestRandInt::test_full_range
+tests/test_random_state.py::TestRandInt::test_negative_bounds
+tests/test_random_state.py::TestRandInt::test_negative_interval
+tests/test_random_state.py::TestRandInt::test_bounds_checking
+tests/test_random_state.py::TestRandInt::test_rng_zero_and_extremes
+tests/test_random_state.py::TestRandInt::test_full_range
+tests/test_random_state.py::TestRandInt::test_in_bounds_fuzz
+tests/test_random_state.py::TestRandInt::test_zero_size[(3, 0, 4)]
+tests/test_random_state.py::TestRandInt::test_zero_size[0]
+tests/test_random_state.py::TestRandInt::test_zero_size[(0,)]
+tests/test_random_state.py::TestRandInt::test_zero_size[()]
+tests/test_random_state.py::TestRandInt::test_bounds_fallback[[2]-dpnp.array([3])]
+tests/test_random_state.py::TestRandInt::test_bounds_fallback[[2]-numpy.array([3])]
+tests/test_random_state.py::TestRandInt::test_bounds_fallback[dpnp.array([2])-dpnp.array([3])]
+tests/test_random_state.py::TestRandInt::test_bounds_fallback[dpnp.array([2])-numpy.array([3])]
+tests/test_random_state.py::TestRandInt::test_bounds_fallback[numpy.array([2])-dpnp.array([3])]
+tests/test_random_state.py::TestRandInt::test_bounds_fallback[numpy.array([2])-numpy.array([3])]
+tests/test_random_state.py::TestRandInt::test_dtype_fallback[dpnp.int64]
+tests/test_random_state.py::TestRandInt::test_dtype_fallback[dpnp.int]
+tests/test_random_state.py::TestRandInt::test_dtype_fallback[dpnp.bool]
+tests/test_random_state.py::TestRandInt::test_dtype_fallback[dpnp.bool_]
+tests/test_random_state.py::TestRandInt::test_dtype_fallback[bool]
+tests/test_random_state.py::TestRandInt::test_invalid_usm_type[Empty]
+tests/test_random_state.py::TestRandInt::test_invalid_usm_type[Unknown]
+tests/test_random_state.py::TestRandN::test_distr[host]
+tests/test_random_state.py::TestRandN::test_distr[device]
+tests/test_random_state.py::TestRandN::test_distr[shared]
+tests/test_random_state.py::TestRandN::test_zero_dims[(0,)]
+tests/test_random_state.py::TestRandN::test_zero_dims[(3, 0)]
+tests/test_random_state.py::TestRandN::test_zero_dims[(3, 0, 10)]
+tests/test_random_state.py::TestRandN::test_zero_dims[()]
+tests/test_random_state.py::TestRandN::test_wrong_dims
+tests/test_random_state.py::TestSeed::test_scalar[normal]
+tests/test_random_state.py::TestSeed::test_scalar[standard_normal]
+tests/test_random_state.py::TestSeed::test_scalar[random_sample]
+tests/test_random_state.py::TestSeed::test_scalar[uniform]
+tests/test_random_state.py::TestStandardNormal::test_distr[host]
+tests/test_random_state.py::TestStandardNormal::test_distr[device]
+tests/test_random_state.py::TestStandardNormal::test_distr[shared]
+tests/test_random_state.py::TestStandardNormal::test_wrong_dims
+tests/test_random_state.py::TestRandSample::test_distr[host]
+tests/test_random_state.py::TestRandSample::test_distr[device]
+tests/test_random_state.py::TestRandSample::test_distr[shared]
+tests/test_random_state.py::TestRandSample::test_wrong_dims
+tests/test_random_state.py::TestUniform::test_distr[host-float32-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[host-float32-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[host-float64-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[host-float64-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[host-int32-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[host-int32-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[host-None-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[host-None-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[device-float32-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[device-float32-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[device-float64-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[device-float64-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[device-int32-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[device-int32-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[device-None-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[device-None-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[shared-float32-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[shared-float32-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[shared-float64-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[shared-float64-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[shared-int32-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[shared-int32-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_distr[shared-None-(low, high)=[1.23, 10.54]]
+tests/test_random_state.py::TestUniform::test_distr[shared-None-(low, high)=[10.54, 1.23]]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-float32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-float64]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-int32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[host-None]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-float32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-float64]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-int32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[device-None]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-float32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-float64]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-int32]
+tests/test_random_state.py::TestUniform::test_low_high_equal[shared-None]
+tests/test_random_state.py::TestUniform::test_range_bounds
+tests/test_random_state.py::TestUniform::test_fallback[[2]-dpnp.array([3])]
+tests/test_random_state.py::TestUniform::test_fallback[[2]-numpy.array([3])]
+tests/test_random_state.py::TestUniform::test_fallback[dpnp.array([2])-dpnp.array([3])]
+tests/test_random_state.py::TestUniform::test_fallback[dpnp.array([2])-numpy.array([3])]
+tests/test_random_state.py::TestUniform::test_fallback[numpy.array([2])-dpnp.array([3])]
+tests/test_random_state.py::TestUniform::test_fallback[numpy.array([2])-numpy.array([3])]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.float16]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[float]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.int64]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.int]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[int]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[numpy.clongdouble]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.complex128]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.complex64]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.bool]
+tests/test_random_state.py::TestUniform::test_invalid_dtype[dpnp.bool_]
+tests/test_random_state.py::TestUniform::test_invalid_usm_type[Empty]
+tests/test_random_state.py::TestUniform::test_invalid_usm_type[Unknown]
+
+tests/test_random.py::test_input_size[chisquare]
+tests/test_random.py::test_input_size[rand]
+tests/test_random.py::test_input_size[randn]
+tests/test_random.py::test_input_shape[chisquare]
+tests/test_random.py::test_input_shape[random]
+tests/test_random.py::test_input_shape[random_sample]
+tests/test_random.py::test_input_shape[ranf]
+tests/test_random.py::test_input_shape[sample]
+tests/test_random.py::test_check_output[random]
+tests/test_random.py::test_check_output[random_sample]
+tests/test_random.py::test_check_output[ranf]
+tests/test_random.py::test_check_output[sample]
+tests/test_random.py::test_check_output[rand]
+tests/test_random.py::test_seed[random]
+tests/test_random.py::test_seed[random_sample]
+tests/test_random.py::test_seed[ranf]
+tests/test_random.py::test_seed[sample]
+tests/test_random.py::test_seed[rand]
+tests/test_random.py::test_randn_normal_distribution
+tests/test_random.py::TestDistributionsBeta::test_invalid_args
+tests/test_random.py::TestDistributionsBeta::test_moments
+tests/test_random.py::TestDistributionsBeta::test_seed
+tests/test_random.py::TestDistributionsBinomial::test_extreme_value
+tests/test_random.py::TestDistributionsBinomial::test_invalid_args
+tests/test_random.py::TestDistributionsBinomial::test_moments
+tests/test_random.py::TestDistributionsBinomial::test_seed
+tests/test_random.py::TestDistributionsChisquare::test_invalid_args
+tests/test_random.py::TestDistributionsChisquare::test_seed
+tests/test_random.py::TestDistributionsExponential::test_invalid_args
+tests/test_random.py::TestDistributionsExponential::test_seed
+tests/test_random.py::TestDistributionsF::test_invalid_args
+tests/test_random.py::TestDistributionsF::test_moments
+tests/test_random.py::TestDistributionsF::test_seed
+tests/test_random.py::TestDistributionsGamma::test_invalid_args
+tests/test_random.py::TestDistributionsGamma::test_moments
+tests/test_random.py::TestDistributionsGamma::test_seed
+tests/test_random.py::TestDistributionsGeometric::test_extreme_value
+tests/test_random.py::TestDistributionsGeometric::test_invalid_args
+tests/test_random.py::TestDistributionsGeometric::test_moments
+tests/test_random.py::TestDistributionsGeometric::test_seed
+tests/test_random.py::TestDistributionsGumbel::test_extreme_value
+tests/test_random.py::TestDistributionsGumbel::test_invalid_args
+tests/test_random.py::TestDistributionsGumbel::test_moments
+tests/test_random.py::TestDistributionsGumbel::test_seed
+tests/test_random.py::TestDistributionsHypergeometric::test_extreme_value
+tests/test_random.py::TestDistributionsHypergeometric::test_invalid_args
+tests/test_random.py::TestDistributionsHypergeometric::test_moments
+tests/test_random.py::TestDistributionsHypergeometric::test_seed
+tests/test_random.py::TestDistributionsLaplace::test_extreme_value
+tests/test_random.py::TestDistributionsLaplace::test_invalid_args
+tests/test_random.py::TestDistributionsLaplace::test_moments
+tests/test_random.py::TestDistributionsLaplace::test_seed
+tests/test_random.py::TestDistributionsLogistic::test_invalid_args
+tests/test_random.py::TestDistributionsLogistic::test_moments
+tests/test_random.py::TestDistributionsLogistic::test_seed
+tests/test_random.py::TestDistributionsLognormal::test_extreme_value
+tests/test_random.py::TestDistributionsLognormal::test_invalid_args
+tests/test_random.py::TestDistributionsLognormal::test_moments
+tests/test_random.py::TestDistributionsLognormal::test_seed
+tests/test_random.py::TestDistributionsMultinomial::test_check_sum
+tests/test_random.py::TestDistributionsMultinomial::test_extreme_value
+tests/test_random.py::TestDistributionsMultinomial::test_invalid_args
+tests/test_random.py::TestDistributionsMultinomial::test_moments
+tests/test_random.py::TestDistributionsMultinomial::test_seed
+tests/test_random.py::TestDistributionsMultinomial::test_seed1
+tests/test_random.py::TestDistributionsMultivariateNormal::test_invalid_args
+tests/test_random.py::TestDistributionsNegativeBinomial::test_extreme_value
+tests/test_random.py::TestDistributionsNegativeBinomial::test_invalid_args
+tests/test_random.py::TestDistributionsNegativeBinomial::test_seed
+tests/test_random.py::TestDistributionsNormal::test_extreme_value
+tests/test_random.py::TestDistributionsNormal::test_invalid_args
+tests/test_random.py::TestDistributionsNormal::test_moments
+tests/test_random.py::TestDistributionsNormal::test_seed
+tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_grt_1]
+tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_eq_1]
+tests/test_random.py::TestDistributionsNoncentralChisquare::test_moments[df_less_1]
+tests/test_random.py::TestDistributionsNoncentralChisquare::test_invalid_args
+tests/test_random.py::TestDistributionsNoncentralChisquare::test_seed[df_grt_1]
+tests/test_random.py::TestDistributionsNoncentralChisquare::test_seed[df_eq_1]
+tests/test_random.py::TestDistributionsNoncentralChisquare::test_seed[df_less_1]
+tests/test_random.py::TestDistributionsPareto::test_invalid_args
+tests/test_random.py::TestDistributionsPareto::test_moments
+tests/test_random.py::TestDistributionsPareto::test_seed
+tests/test_random.py::TestDistributionsPoisson::test_extreme_value
+tests/test_random.py::TestDistributionsPoisson::test_invalid_args
+tests/test_random.py::TestDistributionsPoisson::test_moments
+tests/test_random.py::TestDistributionsPoisson::test_seed
+tests/test_random.py::TestDistributionsPower::test_invalid_args
+tests/test_random.py::TestDistributionsPower::test_moments
+tests/test_random.py::TestDistributionsPower::test_seed
+tests/test_random.py::TestDistributionsRayleigh::test_extreme_value
+tests/test_random.py::TestDistributionsRayleigh::test_invalid_args
+tests/test_random.py::TestDistributionsRayleigh::test_moments
+tests/test_random.py::TestDistributionsRayleigh::test_seed
+tests/test_random.py::TestDistributionsStandardCauchy::test_seed
+tests/test_random.py::TestDistributionsStandardExponential::test_moments
+tests/test_random.py::TestDistributionsStandardExponential::test_seed
+tests/test_random.py::TestDistributionsStandardGamma::test_extreme_value
+tests/test_random.py::TestDistributionsStandardGamma::test_invalid_args
+tests/test_random.py::TestDistributionsStandardGamma::test_moments
+tests/test_random.py::TestDistributionsStandardGamma::test_seed
+tests/test_random.py::TestDistributionsStandardNormal::test_moments
+tests/test_random.py::TestDistributionsStandardNormal::test_seed
+tests/test_random.py::TestDistributionsStandardT::test_invalid_args
+tests/test_random.py::TestDistributionsStandardT::test_moments
+tests/test_random.py::TestDistributionsStandardT::test_seed
+tests/test_random.py::TestDistributionsTriangular::test_invalid_args
+tests/test_random.py::TestDistributionsTriangular::test_moments
+tests/test_random.py::TestDistributionsTriangular::test_seed
+tests/test_random.py::TestDistributionsUniform::test_extreme_value
+tests/test_random.py::TestDistributionsUniform::test_moments
+tests/test_random.py::TestDistributionsUniform::test_seed
+tests/test_random.py::TestDistributionsVonmises::test_moments[large_kappa]
+tests/test_random.py::TestDistributionsVonmises::test_moments[small_kappa]
+tests/test_random.py::TestDistributionsVonmises::test_invalid_args
+tests/test_random.py::TestDistributionsVonmises::test_seed[large_kappa]
+tests/test_random.py::TestDistributionsVonmises::test_seed[small_kappa]
+tests/test_random.py::TestDistributionsWald::test_invalid_args
+tests/test_random.py::TestDistributionsWald::test_moments
+tests/test_random.py::TestDistributionsWald::test_seed
+tests/test_random.py::TestDistributionsWeibull::test_extreme_value
+tests/test_random.py::TestDistributionsWeibull::test_invalid_args
+tests/test_random.py::TestDistributionsWeibull::test_seed
+tests/test_random.py::TestDistributionsZipf::test_invalid_args
+tests/test_random.py::TestDistributionsZipf::test_seed
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.array([])]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.astype(dpnp.asarray(x), dpnp.float32)]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1[lambda x: dpnp.asarray([[i, i] for i in x])]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1_fallback[lambda x: x]
+tests/test_random.py::TestPermutationsTestShuffle::test_shuffle1_fallback[lambda x: [(i, i) for i in x]]
+
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-random-args4-kwargs4]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-random_integers-args5-kwargs5]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-random_sample-args6-kwargs6]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-ranf-args7-kwargs7]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-sample-args8-kwargs8]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-standard_normal-args9-kwargs9]
+tests/test_sycl_queue.py::test_random[host-cuda:gpu:0-uniform-args10-kwargs10]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-random-args4-kwargs4]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-random_integers-args5-kwargs5]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-random_sample-args6-kwargs6]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-ranf-args7-kwargs7]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-sample-args8-kwargs8]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-standard_normal-args9-kwargs9]
+tests/test_sycl_queue.py::test_random[device-cuda:gpu:0-uniform-args10-kwargs10]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-random-args4-kwargs4]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-random_integers-args5-kwargs5]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-random_sample-args6-kwargs6]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-ranf-args7-kwargs7]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-sample-args8-kwargs8]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-standard_normal-args9-kwargs9]
+tests/test_sycl_queue.py::test_random[shared-cuda:gpu:0-uniform-args10-kwargs10]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-random_sample-args4-kwargs4]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-standard_normal-args5-kwargs5]
+tests/test_sycl_queue.py::test_random_state[host-cuda:gpu:0-uniform-args6-kwargs6]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-random_sample-args4-kwargs4]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-standard_normal-args5-kwargs5]
+tests/test_sycl_queue.py::test_random_state[device-cuda:gpu:0-uniform-args6-kwargs6]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-normal-args0-kwargs0]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-rand-args1-kwargs1]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-randint-args2-kwargs2]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-randn-args3-kwargs3]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-random_sample-args4-kwargs4]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-standard_normal-args5-kwargs5]
+tests/test_sycl_queue.py::test_random_state[shared-cuda:gpu:0-uniform-args6-kwargs6]
+
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_0_{a_shape=(), b_shape=(), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_1_{a_shape=(), b_shape=(), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_2_{a_shape=(), b_shape=(3, 2), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_3_{a_shape=(), b_shape=(3, 2), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_4_{a_shape=(3, 2), b_shape=(), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_5_{a_shape=(3, 2), b_shape=(), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_6_{a_shape=(3, 2), b_shape=(3, 2), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsBeta::test_beta[_param_7_{a_shape=(3, 2), b_shape=(3, 2), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare::test_chisquare[_param_0_{df_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare::test_chisquare[_param_1_{df_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare::test_chisquare[_param_2_{df_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsChisquare::test_chisquare[_param_3_{df_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential::test_exponential[_param_0_{scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential::test_exponential[_param_1_{scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential::test_exponential[_param_2_{scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential::test_exponential[_param_3_{scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential::test_exponential[_param_4_{scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponential::test_exponential[_param_5_{scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsExponentialError::test_negative_scale
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_0_{dfden_shape=(), dfnum_shape=(), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_1_{dfden_shape=(), dfnum_shape=(), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_2_{dfden_shape=(), dfnum_shape=(3, 2), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_3_{dfden_shape=(), dfnum_shape=(3, 2), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_4_{dfden_shape=(3, 2), dfnum_shape=(), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_5_{dfden_shape=(3, 2), dfnum_shape=(), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_6_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=None, shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsF::test_f[_param_7_{dfden_shape=(3, 2), dfnum_shape=(3, 2), dtype=None, shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_0_{dtype=None, scale_shape=(), shape=(4, 3, 2), shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_1_{dtype=None, scale_shape=(), shape=(4, 3, 2), shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_2_{dtype=None, scale_shape=(), shape=(3, 2), shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_3_{dtype=None, scale_shape=(), shape=(3, 2), shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_4_{dtype=None, scale_shape=(), shape=None, shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_5_{dtype=None, scale_shape=(), shape=None, shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_6_{dtype=None, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_7_{dtype=None, scale_shape=(3, 2), shape=(4, 3, 2), shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_8_{dtype=None, scale_shape=(3, 2), shape=(3, 2), shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_9_{dtype=None, scale_shape=(3, 2), shape=(3, 2), shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_10_{dtype=None, scale_shape=(3, 2), shape=None, shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGamma::test_gamma_legacy[_param_11_{dtype=None, scale_shape=(3, 2), shape=None, shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric::test_geometric[_param_0_{dtype=None, p_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric::test_geometric[_param_1_{dtype=None, p_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric::test_geometric[_param_2_{dtype=None, p_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGeometric::test_geometric[_param_3_{dtype=None, p_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_2_{loc_shape=(), scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_4_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_5_{loc_shape=(), scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_6_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_7_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_8_{loc_shape=(3, 2), scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_9_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_10_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsGumbel::test_gumbel[_param_11_{loc_shape=(3, 2), scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_0_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_1_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_2_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_3_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_4_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_5_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_6_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_7_{dtype=None, nbad_shape=(), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_8_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_9_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_10_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_11_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_12_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_13_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_14_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_15_{dtype=None, nbad_shape=(), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_16_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_17_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_18_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_19_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_20_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_21_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_22_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_23_{dtype=None, nbad_shape=(3, 2), ngood_shape=(), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_24_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_25_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_26_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_27_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int32, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_28_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_29_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_30_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsHyperGeometric::test_hypergeometric[_param_31_{dtype=None, nbad_shape=(3, 2), ngood_shape=(3, 2), nsample_dtype=int64, nsample_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_2_{loc_shape=(), scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_4_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_5_{loc_shape=(), scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_6_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_7_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_8_{loc_shape=(3, 2), scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_9_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_10_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsuLaplace::test_laplace[_param_11_{loc_shape=(3, 2), scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_2_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_4_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_5_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_6_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLogistic::test_logistic[_param_7_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_0_{mean_shape=(), shape=(4, 3, 2), sigma_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_1_{mean_shape=(), shape=(4, 3, 2), sigma_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_2_{mean_shape=(), shape=(3, 2), sigma_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_3_{mean_shape=(), shape=(3, 2), sigma_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_4_{mean_shape=(), shape=None, sigma_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_5_{mean_shape=(), shape=None, sigma_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_6_{mean_shape=(3, 2), shape=(4, 3, 2), sigma_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_7_{mean_shape=(3, 2), shape=(4, 3, 2), sigma_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_8_{mean_shape=(3, 2), shape=(3, 2), sigma_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_9_{mean_shape=(3, 2), shape=(3, 2), sigma_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_10_{mean_shape=(3, 2), shape=None, sigma_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsLognormal::test_lognormal[_param_11_{mean_shape=(3, 2), shape=None, sigma_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_0_{dtype=None, n_shape=(), p_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_1_{dtype=None, n_shape=(), p_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_2_{dtype=None, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_3_{dtype=None, n_shape=(), p_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_4_{dtype=None, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_5_{dtype=None, n_shape=(3, 2), p_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_6_{dtype=None, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial[_param_7_{dtype=None, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_0_{dtype=None, n_shape=(), p_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_1_{dtype=None, n_shape=(), p_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_2_{dtype=None, n_shape=(), p_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_3_{dtype=None, n_shape=(), p_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_4_{dtype=None, n_shape=(3, 2), p_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_5_{dtype=None, n_shape=(3, 2), p_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_6_{dtype=None, n_shape=(3, 2), p_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNegativeBinomial::test_negative_binomial_for_noninteger_n[_param_7_{dtype=None, n_shape=(3, 2), p_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_0_{df_shape=(), dtype=None, nonc_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_1_{df_shape=(), dtype=None, nonc_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_2_{df_shape=(), dtype=None, nonc_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_3_{df_shape=(), dtype=None, nonc_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_4_{df_shape=(3, 2), dtype=None, nonc_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_5_{df_shape=(3, 2), dtype=None, nonc_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_6_{df_shape=(3, 2), dtype=None, nonc_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare[_param_7_{df_shape=(3, 2), dtype=None, nonc_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_0_{df_shape=(), dtype=None, nonc_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_1_{df_shape=(), dtype=None, nonc_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_2_{df_shape=(), dtype=None, nonc_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_3_{df_shape=(), dtype=None, nonc_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_4_{df_shape=(3, 2), dtype=None, nonc_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_5_{df_shape=(3, 2), dtype=None, nonc_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_6_{df_shape=(3, 2), dtype=None, nonc_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNoncentralChisquare::test_noncentral_chisquare_for_invalid_params[_param_7_{df_shape=(3, 2), dtype=None, nonc_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_0_{loc_shape=(), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_1_{loc_shape=(), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_2_{loc_shape=(), scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_3_{loc_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_4_{loc_shape=(), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_5_{loc_shape=(), scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_6_{loc_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_7_{loc_shape=(3, 2), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_8_{loc_shape=(3, 2), scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_9_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_10_{loc_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsNormal::test_normal[_param_11_{loc_shape=(3, 2), scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto::test_pareto[_param_0_{a_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto::test_pareto[_param_1_{a_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto::test_pareto[_param_2_{a_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto::test_pareto[_param_3_{a_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto::test_pareto[_param_4_{a_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPareto::test_pareto[_param_5_{a_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson::test_poisson_legacy[_param_0_{lam_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson::test_poisson_legacy[_param_1_{lam_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson::test_poisson_legacy[_param_2_{lam_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson::test_poisson_legacy[_param_3_{lam_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson::test_poisson_legacy[_param_4_{lam_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoisson::test_poisson_legacy[_param_5_{lam_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPoissonInvalid::test_none_lam_legacy
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPower::test_power[_param_0_{a_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPower::test_power[_param_1_{a_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPower::test_power_for_negative_a[_param_0_{a_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsPower::test_power_for_negative_a[_param_1_{a_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh[_param_0_{scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh[_param_1_{scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh[_param_2_{scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh[_param_3_{scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh[_param_4_{scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh[_param_5_{scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_zero_scale[_param_0_{scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_zero_scale[_param_1_{scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_zero_scale[_param_2_{scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_zero_scale[_param_3_{scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_zero_scale[_param_4_{scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_zero_scale[_param_5_{scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_negative_scale[_param_0_{scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_negative_scale[_param_1_{scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_negative_scale[_param_2_{scale_shape=(), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_negative_scale[_param_3_{scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_negative_scale[_param_4_{scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsRayleigh::test_rayleigh_for_negative_scale[_param_5_{scale_shape=(3, 2), shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy::test_standard_cauchy[_param_0_{shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardCauchy::test_standard_cauchy[_param_1_{shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential::test_standard_exponential[_param_0_{shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential::test_standard_exponential[_param_1_{shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardExponential::test_standard_exponential[_param_2_{shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma::test_standard_gamma_legacy[_param_0_{shape=(4, 3, 2), shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma::test_standard_gamma_legacy[_param_1_{shape=(4, 3, 2), shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma::test_standard_gamma_legacy[_param_2_{shape=(3, 2), shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma::test_standard_gamma_legacy[_param_3_{shape=(3, 2), shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma::test_standard_gamma_legacy[_param_4_{shape=None, shape_shape=()}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGamma::test_standard_gamma_legacy[_param_5_{shape=None, shape_shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardGammaInvalid::test_none_shape_legacy
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal::test_standard_normal[_param_0_{shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal::test_standard_normal[_param_1_{shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardNormal::test_standard_normal[_param_2_{shape=None}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT::test_standard_t[_param_0_{df_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT::test_standard_t[_param_1_{df_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT::test_standard_t[_param_2_{df_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsStandardT::test_standard_t[_param_3_{df_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_0_{dtype=None, left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_1_{dtype=None, left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_2_{dtype=None, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_3_{dtype=None, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_4_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_5_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_6_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_7_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_8_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_9_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_10_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_11_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_12_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_13_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_14_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular[_param_15_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_0_{dtype=None, left_shape=(), mode_shape=(), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_1_{dtype=None, left_shape=(), mode_shape=(), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_2_{dtype=None, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_3_{dtype=None, left_shape=(), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_4_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_5_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_6_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_7_{dtype=None, left_shape=(), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_8_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_9_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_10_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_11_{dtype=None, left_shape=(3, 2), mode_shape=(), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_12_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_13_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_14_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsTriangular::test_triangular_for_invalid_params[_param_15_{dtype=None, left_shape=(3, 2), mode_shape=(3, 2), right_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_0_{high_shape=(), low_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_1_{high_shape=(), low_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_2_{high_shape=(), low_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_3_{high_shape=(), low_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_4_{high_shape=(3, 2), low_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_5_{high_shape=(3, 2), low_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_6_{high_shape=(3, 2), low_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsUniform::test_uniform[_param_7_{high_shape=(3, 2), low_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_0_{dtype=None, kappa_shape=(), mu_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_1_{dtype=None, kappa_shape=(), mu_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_2_{dtype=None, kappa_shape=(), mu_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_3_{dtype=None, kappa_shape=(), mu_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_4_{dtype=None, kappa_shape=(3, 2), mu_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_5_{dtype=None, kappa_shape=(3, 2), mu_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_6_{dtype=None, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsVonmises::test_vonmises[_param_7_{dtype=None, kappa_shape=(3, 2), mu_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_0_{dtype=None, mean_shape=(), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_1_{dtype=None, mean_shape=(), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_2_{dtype=None, mean_shape=(), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_3_{dtype=None, mean_shape=(), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_4_{dtype=None, mean_shape=(3, 2), scale_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_5_{dtype=None, mean_shape=(3, 2), scale_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_6_{dtype=None, mean_shape=(3, 2), scale_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWald::test_wald[_param_7_{dtype=None, mean_shape=(3, 2), scale_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull[_param_0_{a_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull[_param_1_{a_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull[_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull[_param_3_{a_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_inf_a[_param_0_{a_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_inf_a[_param_1_{a_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_inf_a[_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_inf_a[_param_3_{a_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_negative_a[_param_0_{a_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_negative_a[_param_1_{a_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_negative_a[_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsWeibull::test_weibull_for_negative_a[_param_3_{a_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf::test_zipf[_param_0_{a_shape=(), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf::test_zipf[_param_1_{a_shape=(), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf::test_zipf[_param_2_{a_shape=(3, 2), shape=(4, 3, 2)}]
+tests/third_party/cupy/random_tests/test_distributions.py::TestDistributionsZipf::test_zipf[_param_3_{a_shape=(3, 2), shape=(3, 2)}]
+tests/third_party/cupy/random_tests/test_permutations.py::TestPermutations_param_0_{seed=None}::test_permutation_seed1
+tests/third_party/cupy/random_tests/test_permutations.py::TestPermutations_param_0_{seed=None}::test_permutation_sort_1dim
+tests/third_party/cupy/random_tests/test_permutations.py::TestPermutations_param_0_{seed=None}::test_permutation_sort_ndim
+tests/third_party/cupy/random_tests/test_permutations.py::TestShuffle::test_shuffle_seed1
+tests/third_party/cupy/random_tests/test_permutations.py::TestShuffle::test_shuffle_sort_1dim
+tests/third_party/cupy/random_tests/test_permutations.py::TestShuffle::test_shuffle_sort_ndim
+tests/third_party/cupy/random_tests/test_permutations.py::TestPermutationSoundness_param_0_{num=0}::test_permutation_soundness
+tests/third_party/cupy/random_tests/test_permutations.py::TestPermutationSoundness_param_1_{num=1}::test_permutation_soundness
+tests/third_party/cupy/random_tests/test_permutations.py::TestPermutationSoundness_param_2_{num=100}::test_permutation_soundness
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint::test_lo_hi_equal
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint::test_lo_hi_nonrandom
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint::test_lo_hi_reversed
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint::test_zero_sizes
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_1
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_2
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float1
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_float2
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_bound_overflow
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit
+tests/third_party/cupy/random_tests/test_sample.py::TestRandint2::test_goodness_of_fit_2
+tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_1
+tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_bound_2
+tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit
+tests/third_party/cupy/random_tests/test_sample.py::TestRandomIntegers2::test_goodness_of_fit_2
+
+# partition
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-bool-0]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-bool-1]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-int32-0]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-int32-1]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-int64-0]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-int64-1]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-float32-0]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-float32-1]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-float64-0]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-float64-1]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex64-0]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex64-1]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex128-0]
+tests/test_sort.py::test_partition[[3, 4, 2, 1]-complex128-1]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-bool-0]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-bool-1]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int32-0]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int32-1]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int64-0]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-int64-1]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float32-0]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float32-1]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float64-0]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-float64-1]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex64-0]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex64-1]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex128-0]
+tests/test_sort.py::test_partition[[[1, 0], [3, 0]]-complex128-1]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-bool-0]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-bool-1]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int32-0]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int32-1]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int64-0]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-int64-1]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float32-0]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float32-1]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float64-0]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-float64-1]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex64-0]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex64-1]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex128-0]
+tests/test_sort.py::test_partition[[[3, 2], [1, 6]]-complex128-1]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-bool-0]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-bool-1]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int32-0]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int32-1]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int64-0]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-int64-1]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float32-0]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float32-1]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float64-0]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-float64-1]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex64-0]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex64-1]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex128-0]
+tests/test_sort.py::test_partition[[[4, 2, 3], [3, 4, 1]]-complex128-1]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-bool-0]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-bool-1]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int32-0]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int32-1]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int64-0]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-int64-1]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float32-0]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float32-1]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float64-0]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-float64-1]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex64-0]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex64-1]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex128-0]
+tests/test_sort.py::test_partition[[[[1, -3], [3, 0]], [[5, 2], [0, 1]], [[1, 0], [0, 1]]]-complex128-1]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-bool-0]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-bool-1]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int32-0]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int32-1]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int64-0]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-int64-1]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float32-0]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float32-1]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float64-0]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-float64-1]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex64-0]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex64-1]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex128-0]
+tests/test_sort.py::test_partition[[[[[8, 2], [3, 0]], [[5, 2], [0, 1]]], [[[1, 3], [3, 1]], [[5, 2], [0, 1]]]]-complex128-1]
+
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_invalid_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_non_contiguous
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_one_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_sequence_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_0_{external=False, length=10}::test_partition_zero_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_invalid_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_non_contiguous
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_one_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_sequence_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_1_{external=False, length=20000}::test_partition_zero_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_invalid_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_non_contiguous
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_none_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_one_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_sequence_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_2_{external=True, length=10}::test_partition_zero_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_axis1
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_axis2
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_invalid_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_negative_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_non_contiguous
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_none_axis
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_one_dim
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_sequence_kth
+tests/third_party/cupy/sorting_tests/test_sort.py::TestPartition_param_3_{external=True, length=20000}::test_partition_zero_dim
+
+# erf
+tests/test_special.py::test_erf
+tests/test_special.py::test_erf_fallback
+tests/test_strides.py::test_erf[int32]
+tests/test_strides.py::test_erf[int64]
+tests/test_strides.py::test_erf[float32]
+tests/test_strides.py::test_erf[float64]

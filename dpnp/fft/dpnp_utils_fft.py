@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2024, Intel Corporation
+# Copyright (c) 2024-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -60,6 +60,7 @@ from ..dpnp_utils.dpnp_utils_linearalgebra import (
 __all__ = [
     "dpnp_fft",
     "dpnp_fftn",
+    "dpnp_fillfreq",
 ]
 
 
@@ -282,7 +283,10 @@ def _copy_array(x, complex_input):
         # r2c FFT, if input is integer or float16 dtype, convert to
         # float32 or float64 depending on device capabilities
         copy_flag = True
-        dtype = map_dtype_to_device(dpnp.float64, x.sycl_device)
+        if dtype == dpnp.float16:
+            dtype = dpnp.float32
+        else:
+            dtype = map_dtype_to_device(dpnp.float64, x.sycl_device)
 
     if copy_flag:
         x_copy = dpnp.empty_like(x, dtype=dtype, order="C")
@@ -392,12 +396,32 @@ def _fft(a, norm, out, forward, in_place, c2c, axes, batch_fft=True):
         a = dpnp.reshape(a, local_shape)
         index = 1
 
+        # cuFFT requires input arrays to be C-contiguous (row-major)
+        # for correct execution
+        if (
+            dpnp.is_cuda_backend(a) and not a.flags.c_contiguous
+        ):  # pragma: no cover
+            a = dpnp.ascontiguousarray(a)
+
+    # w/a for cuFFT to avoid "Invalid strides" error when
+    # the last dimension is 1 and there are multiple axes
+    # by swapping the last two axes to correct the input.
+    # TODO: Remove this ones the OneMath issue is resolved
+    # https://github.com/uxlfoundation/oneMath/issues/631
+    cufft_wa = dpnp.is_cuda_backend(a) and a.shape[-1] == 1 and len(axes) > 1
+    if cufft_wa:  # pragma: no cover
+        a = dpnp.moveaxis(a, -1, -2)
+
     a_strides = _standardize_strides_to_nonzero(a.strides, a.shape)
     dsc, out_strides = _commit_descriptor(
         a, forward, in_place, c2c, a_strides, index, batch_fft
     )
     res = _compute_result(dsc, a, out, forward, c2c, out_strides)
     res = _scale_result(res, a.shape, norm, forward, index)
+
+    # Revert swapped axes
+    if cufft_wa:  # pragma: no cover
+        res = dpnp.moveaxis(res, -1, -2)
 
     if batch_fft:
         tmp_shape = a_shape_orig[:-1] + (res.shape[-1],)
@@ -675,3 +699,18 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     return _complex_nd_fft(
         a, s, norm, out, forward, in_place, c2c, axes, a.ndim != len_axes
     )
+
+
+def dpnp_fillfreq(a, m, n, val):
+    """Fill an array with the sample frequencies"""
+
+    exec_q = a.sycl_queue
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+
+    # it's assumed there are no dependent events to populate the array
+    ht_lin_ev, lin_ev = ti._linspace_step(0, 1, a[:m].get_array(), exec_q)
+    _manager.add_event_pair(ht_lin_ev, lin_ev)
+
+    ht_lin_ev, lin_ev = ti._linspace_step(m - n, 1, a[m:].get_array(), exec_q)
+    _manager.add_event_pair(ht_lin_ev, lin_ev)
+    return a * val

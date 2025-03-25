@@ -25,8 +25,8 @@ class TestAllAny:
         assert_allclose(result, expected)
 
     @pytest.mark.parametrize("func", ["all", "any"])
-    @pytest.mark.parametrize("a_dtype", get_all_dtypes())
-    @pytest.mark.parametrize("out_dtype", get_all_dtypes())
+    @pytest.mark.parametrize("a_dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("out_dtype", get_all_dtypes(no_none=True))
     def test_all_any_out(self, func, a_dtype, out_dtype):
         dp_array = dpnp.array([[0, 1, 2], [3, 4, 0]], dtype=a_dtype)
         np_array = dpnp.asnumpy(dp_array)
@@ -396,12 +396,15 @@ def test_elemwise_comparison(op, x1, x2, dtype):
     "sh2", [[12], [4, 8], [1, 8, 6]], ids=["(12,)", "(4, 8)", "(1, 8, 6)"]
 )
 def test_comparison_no_broadcast_with_shapes(op, sh1, sh2):
-    x1, x2 = dpnp.random.randn(*sh1), dpnp.random.randn(*sh2)
+    x1_np = numpy.random.randn(*sh1)
+    x2_np = numpy.random.randn(*sh2)
+    x1 = dpnp.asarray(x1_np)
+    x2 = dpnp.asarray(x2_np)
 
     # x1 OP x2
     with pytest.raises(ValueError):
         getattr(dpnp, op)(x1, x2)
-        getattr(numpy, op)(x1.asnumpy(), x2.asnumpy())
+        getattr(numpy, op)(x1_np, x2_np)
 
 
 @pytest.mark.parametrize(
@@ -543,7 +546,7 @@ def test_array_equiv(a, b):
     result = dpnp.array_equiv(dpnp.array(a), dpnp.array(b))
     expected = numpy.array_equiv(a, b)
 
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -555,12 +558,12 @@ def test_array_equiv_dtype(dtype):
     result = dpnp.array_equiv(dpnp.array(a), dpnp.array(b))
     expected = numpy.array_equiv(a, b)
 
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
     result = dpnp.array_equiv(dpnp.array(a), dpnp.array(c))
     expected = numpy.array_equiv(a, c)
 
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("a", [numpy.array([1, 2]), numpy.array([1, 1])])
@@ -569,7 +572,7 @@ def test_array_equiv_scalar(a):
     result = dpnp.array_equiv(dpnp.array(a), b)
     expected = numpy.array_equiv(a, b)
 
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
 
 @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
@@ -582,12 +585,12 @@ def test_array_equal_dtype(dtype, equal_nan):
     result = dpnp.array_equal(dpnp.array(a), dpnp.array(b), equal_nan=equal_nan)
     expected = numpy.array_equal(a, b, equal_nan=equal_nan)
 
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
     result = dpnp.array_equal(dpnp.array(a), dpnp.array(c), equal_nan=equal_nan)
     expected = numpy.array_equal(a, c, equal_nan=equal_nan)
 
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -602,11 +605,11 @@ def test_array_equal_same_arr(a):
     expected = numpy.array_equal(a, a)
     b = dpnp.array(a)
     result = dpnp.array_equal(b, b)
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
     expected = numpy.array_equal(a, a, equal_nan=True)
     result = dpnp.array_equal(b, b, equal_nan=True)
-    assert_equal(expected, result)
+    assert_equal(result, expected)
 
 
 @pytest.mark.parametrize(
@@ -622,4 +625,4 @@ def test_array_equal_nan(a):
     b = numpy.array([1.0, 2.0])
     result = dpnp.array_equal(dpnp.array(a), dpnp.array(b), equal_nan=True)
     expected = numpy.array_equal(a, b, equal_nan=True)
-    assert_equal(expected, result)
+    assert_equal(result, expected)

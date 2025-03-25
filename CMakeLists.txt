@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.21...3.27 FATAL_ERROR)
 
 project(dpnp
-  VERSION 0.17
+  VERSION 0.18
   LANGUAGES CXX
   DESCRIPTION "NumPy-like API accelerated by SYCL."
 )
@@ -121,12 +121,20 @@ if(_use_onemkl_interfaces)
     else()
         FetchContent_Declare(
                 onemkl_interfaces_library
-                GIT_REPOSITORY https://github.com/oneapi-src/oneMKL.git
+                GIT_REPOSITORY https://github.com/uxlfoundation/oneMath.git
                 GIT_TAG 8f4312ef966420b9b8b4b82b9d5c22e2c91a1fe7  # v0.6
         )
     endif()
 
     FetchContent_MakeAvailable(onemkl_interfaces_library)
+    if(TARGET onemath)
+        set(MKL_INTERFACES_LIB "onemath" CACHE INTERNAL "OneMath lib target")
+    elseif(TARGET onemkl)
+        set(MKL_INTERFACES_LIB "onemkl" CACHE INTERNAL "OneMKL lib target")
+    else()
+        message(FATAL_ERROR "Neither 'oneMath' nor 'oneMKL' found!")
+    endif()
+    message(STATUS "MKL interfaces lib target used: ${MKL_INTERFACES_LIB}")
     set(CMAKE_INSTALL_RPATH "${CMAKE_BINARY_DIR}/lib")
 endif()
 

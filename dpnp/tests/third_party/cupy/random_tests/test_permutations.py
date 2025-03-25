@@ -38,6 +38,11 @@ class TestPermutations(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_permutation_sort_1dim(self, dtype):
+        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
+        if flag or dtype in [cupy.int8, cupy.int16]:
+            pytest.skip(
+                "dpnp.random.permutation() does not support new integer dtypes."
+            )
         cupy_random = self._xp_random(cupy)
         a = cupy.arange(10, dtype=dtype)
         b = cupy.copy(a)
@@ -47,6 +52,11 @@ class TestPermutations(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_permutation_sort_ndim(self, dtype):
+        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
+        if flag or dtype in [cupy.int8, cupy.int16]:
+            pytest.skip(
+                "dpnp.random.permutation() does not support new integer dtypes."
+            )
         cupy_random = self._xp_random(cupy)
         a = cupy.arange(15, dtype=dtype).reshape(5, 3)
         b = cupy.copy(a)
@@ -58,6 +68,11 @@ class TestPermutations(unittest.TestCase):
 
     @testing.for_all_dtypes()
     def test_permutation_seed1(self, dtype):
+        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
+        if flag or dtype in [cupy.int8, cupy.int16]:
+            pytest.skip(
+                "dpnp.random.permutation() does not support new integer dtypes."
+            )
         a = testing.shaped_random((10,), cupy, dtype)
         b = cupy.copy(a)
 
@@ -89,6 +104,11 @@ class TestShuffle(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_shuffle_sort_1dim(self, dtype):
+        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
+        if flag or dtype in [cupy.int8, cupy.int16]:
+            pytest.skip(
+                "dpnp.random.shuffle() does not support new integer dtypes."
+            )
         a = cupy.arange(10, dtype=dtype)
         b = cupy.copy(a)
         cupy.random.shuffle(a)
@@ -96,6 +116,11 @@ class TestShuffle(unittest.TestCase):
 
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_shuffle_sort_ndim(self, dtype):
+        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
+        if flag or dtype in [cupy.int8, cupy.int16]:
+            pytest.skip(
+                "dpnp.random.shuffle() does not support new integer dtypes."
+            )
         a = cupy.arange(15, dtype=dtype).reshape(5, 3)
         b = cupy.copy(a)
         cupy.random.shuffle(a)
@@ -105,6 +130,11 @@ class TestShuffle(unittest.TestCase):
 
     @testing.for_all_dtypes()
     def test_shuffle_seed1(self, dtype):
+        flag = cupy.issubdtype(dtype, cupy.unsignedinteger)
+        if flag or dtype in [cupy.int8, cupy.int16]:
+            pytest.skip(
+                "dpnp.random.shuffle() does not support new integer dtypes."
+            )
         a = testing.shaped_random((10,), cupy, dtype)
         b = cupy.copy(a)
         cupy.random.seed(0)
@@ -129,7 +159,7 @@ class TestPermutationSoundness(unittest.TestCase):
 
     def setUp(self):
         a = cupy.random.permutation(self.num)
-        self.a = a
+        self.a = a.asnumpy()
 
     # Test soundness
 

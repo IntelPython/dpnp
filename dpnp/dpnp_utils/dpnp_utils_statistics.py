@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2023-2024, Intel Corporation
+# Copyright (c) 2023-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,6 @@ from dpctl.utils import ExecutionPlacementError
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
-from dpnp.dpnp_utils import get_usm_allocations, map_dtype_to_device
 
 __all__ = ["dpnp_cov", "dpnp_median"]
 
@@ -57,10 +56,10 @@ def _calc_median(a, axis, out=None):
     return res
 
 
-def _calc_nanmedian(a, axis, out=None):
+def _calc_nanmedian(a, out=None):
     """Compute the median of an array along a specified axis, ignoring NaNs."""
     mask = dpnp.isnan(a)
-    valid_counts = dpnp.sum(~mask, axis=axis)
+    valid_counts = dpnp.sum(~mask, axis=-1)
     if out is None:
         res = dpnp.empty_like(valid_counts, dtype=a.dtype)
     else:
@@ -76,27 +75,19 @@ def _calc_nanmedian(a, axis, out=None):
             )
         res = out
 
-    # Iterate over all indices of the output shape
-    for idx in dpnp.ndindex(res.shape):
-        current_valid_counts = valid_counts[idx]
+    left = (valid_counts - 1) // 2
+    right = valid_counts // 2
 
-        if current_valid_counts > 0:
-            # Extract the corresponding slice from the last axis of `a`
-            data = a[idx][:current_valid_counts]
-            left = (current_valid_counts - 1) // 2
-            right = current_valid_counts // 2
+    left_data = dpnp.take_along_axis(a, left[..., None], axis=-1)
+    right_data = dpnp.take_along_axis(a, right[..., None], axis=-1)
+    res = dpnp.where(
+        valid_counts[..., None] > 0, (left_data + right_data) / 2.0, dpnp.nan
+    )
 
-            if left == right:
-                res[idx] = data[left]
-            else:
-                res[idx] = (data[left] + data[right]) / 2.0
-        else:
-            warnings.warn(
-                "All-NaN slice encountered", RuntimeWarning, stacklevel=6
-            )
-            res[idx] = dpnp.nan
+    if mask.all(axis=-1).any():
+        warnings.warn("All-NaN slice encountered", RuntimeWarning, stacklevel=6)
 
-    return res
+    return dpnp.squeeze(res)
 
 
 def _flatten_array_along_axes(a, axes_to_flatten, overwrite_input):
@@ -127,66 +118,77 @@ def _flatten_array_along_axes(a, axes_to_flatten, overwrite_input):
     return a_flatten, overwrite_input
 
 
-def dpnp_cov(m, y=None, rowvar=True, dtype=None):
+def dpnp_cov(
+    m, y=None, rowvar=True, ddof=1, dtype=None, fweights=None, aweights=None
+):
     """
-    dpnp_cov(m, y=None, rowvar=True, dtype=None)
-
     Estimate a covariance matrix based on passed data.
-    No support for given weights is provided now.
 
-    The implementation is done through existing dpnp and dpctl methods
-    instead of separate function call of dpnp backend.
+    The implementation is done through existing dpnp functions.
 
     """
 
-    def _get_2dmin_array(x, dtype):
-        """
-        Transform an input array to a form required for building a covariance matrix.
+    # need to create a copy of input, since it will be modified in-place
+    x = dpnp.array(m, ndmin=2, dtype=dtype)
+    if not rowvar and m.ndim != 1:
+        x = x.T
 
-        If applicable, it reshapes the input array to have 2 dimensions or greater.
-        If applicable, it transposes the input array when 'rowvar' is False.
-        It casts to another dtype, if the input array differs from requested one.
+    if x.shape[0] == 0:
+        return dpnp.empty_like(
+            x, shape=(0, 0), dtype=dpnp.default_float_type(m.sycl_queue)
+        )
 
-        """
-        if x.ndim == 0:
-            x = x.reshape((1, 1))
-        elif x.ndim == 1:
-            x = x[dpnp.newaxis, :]
-
-        if not rowvar and x.ndim != 1:
-            x = x.T
-
-        if x.dtype != dtype:
-            x = dpnp.astype(x, dtype)
-        return x
-
-    # input arrays must follow CFD paradigm
-    _, queue = get_usm_allocations((m,) if y is None else (m, y))
-
-    # calculate a type of result array if not passed explicitly
-    if dtype is None:
-        dtypes = [m.dtype, dpnp.default_float_type(sycl_queue=queue)]
-        if y is not None:
-            dtypes.append(y.dtype)
-        dtype = dpnp.result_type(*dtypes)
-        # TODO: remove when dpctl.result_type() is returned dtype based on fp64
-        dtype = map_dtype_to_device(dtype, queue.sycl_device)
-
-    X = _get_2dmin_array(m, dtype)
     if y is not None:
-        y = _get_2dmin_array(y, dtype)
+        y_ndim = y.ndim
+        y = dpnp.array(y, copy=None, ndmin=2, dtype=dtype)
+        if not rowvar and y_ndim != 1:
+            y = y.T
+        x = dpnp.concatenate((x, y), axis=0)
 
-        X = dpnp.concatenate((X, y), axis=0)
+    # get the product of frequencies and weights
+    w = None
+    if fweights is not None:
+        if fweights.shape[0] != x.shape[1]:
+            raise ValueError("incompatible numbers of samples and fweights")
 
-    avg = X.mean(axis=1)
+        w = fweights
 
-    fact = X.shape[1] - 1
-    X -= avg[:, None]
+    if aweights is not None:
+        if aweights.shape[0] != x.shape[1]:
+            raise ValueError("incompatible numbers of samples and aweights")
 
-    c = dpnp.dot(X, X.T.conj())
-    c *= 1 / fact if fact != 0 else dpnp.nan
+        if w is None:
+            w = aweights
+        else:
+            w *= aweights
 
-    return dpnp.squeeze(c)
+    avg, w_sum = dpnp.average(x, axis=1, weights=w, returned=True)
+    w_sum = w_sum[0]
+
+    # determine the normalization
+    if w is None:
+        fact = x.shape[1] - ddof
+    elif ddof == 0:
+        fact = w_sum
+    elif aweights is None:
+        fact = w_sum - ddof
+    else:
+        fact = w_sum - ddof * dpnp.sum(w * aweights) / w_sum
+
+    if fact <= 0:
+        warnings.warn(
+            "Degrees of freedom <= 0 for slice", RuntimeWarning, stacklevel=2
+        )
+        fact = 0.0
+
+    x -= avg[:, None]
+    if w is None:
+        x_t = x.T
+    else:
+        x_t = (x * w).T
+
+    c = dpnp.dot(x, x_t.conj()) / fact
+    return c.squeeze()
 
 
 def dpnp_median(
@@ -232,7 +234,8 @@ def dpnp_median(
 
     if ignore_nan:
         # sorting puts NaNs at the end
-        res = _calc_nanmedian(a_sorted, axis=axis, out=out)
+        assert axis == -1
+        res = _calc_nanmedian(a_sorted, out=out)
     else:
         # We can't pass keepdims and use it in dpnp.mean and dpnp.any
         # because of the reshape hack that might have been used in

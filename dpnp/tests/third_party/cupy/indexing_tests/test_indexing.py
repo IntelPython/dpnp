@@ -204,11 +204,14 @@ class TestChoose(unittest.TestCase):
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose(self, xp, dtype):
+        # TODO: include additional dtype when dpnp#2201 is merged
+        dtype_list = [xp.int8, xp.int16]
+        if dtype in dtype_list or xp.issubdtype(dtype, xp.unsignedinteger):
+            pytest.skip("dpnp.choose() does not support new integer dtypes.")
         a = xp.array([0, 2, 1, 2])
         c = testing.shaped_arange((3, 4), xp, dtype)
         return a.choose(c)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_broadcast(self, xp, dtype):
@@ -216,7 +219,6 @@ class TestChoose(unittest.TestCase):
         c = xp.array([-10, 10]).astype(dtype)
         return a.choose(c)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_broadcast2(self, xp, dtype):
@@ -224,7 +226,7 @@ class TestChoose(unittest.TestCase):
         c = testing.shaped_arange((3, 5, 2), xp, dtype)
         return a.choose(c)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.skip("Different implementation of `wrap` keyword")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_wrap(self, xp, dtype):
@@ -232,7 +234,6 @@ class TestChoose(unittest.TestCase):
         c = testing.shaped_arange((3, 4), xp, dtype)
         return a.choose(c, mode="wrap")
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose_clip(self, xp, dtype):
@@ -240,7 +241,6 @@ class TestChoose(unittest.TestCase):
         c = testing.shaped_arange((3, 4), xp, dtype)
         return a.choose(c, mode="clip")
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.with_requires("numpy>=1.19")
     def test_unknown_clip(self):
         for xp in (numpy, cupy):
@@ -249,14 +249,13 @@ class TestChoose(unittest.TestCase):
             with pytest.raises(ValueError):
                 a.choose(c, mode="unknown")
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
+    @pytest.mark.skip("`raise` keyword not implemented")
     def test_raise(self):
         a = cupy.array([2])
         c = cupy.array([[0, 1]])
         with self.assertRaises(ValueError):
             a.choose(c)
 
-    @pytest.mark.usefixtures("allow_fall_back_on_numpy")
     @testing.for_all_dtypes()
     def test_choose_broadcast_fail(self, dtype):
         for xp in (numpy, cupy):

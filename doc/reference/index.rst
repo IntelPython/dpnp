@@ -33,3 +33,4 @@ API reference of the Data Parallel Extension for NumPy*
    dtypes_table
    comparison
    misc
+   array_api

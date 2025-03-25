@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023, Intel Corporation
+// Copyright (c) 2023-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -147,12 +147,12 @@ static sycl::event gesvd_batch_impl(sycl::queue &exec_q,
                 exec_q,
                 jobu,  // Character specifying how to compute the matrix U:
                        // 'A' computes all columns of U,
-                       // 'S' computes the first min(m,n) columns of U,
+                       // 'S' computes the first min(m, n) columns of U,
                        // 'O' overwrites A with the columns of U,
                        // 'N' does not compute U.
                 jobvt, // Character specifying how to compute the matrix VT:
                        // 'A' computes all rows of VT,
-                       // 'S' computes the first min(m,n) rows of VT,
+                       // 'S' computes the first min(m, n) rows of VT,
                        // 'O' overwrites A with the rows of VT,
                        // 'N' does not compute VT.
                 m, // The number of rows in the input batch matrix A (0 <= m).

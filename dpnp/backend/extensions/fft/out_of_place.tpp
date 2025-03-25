@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -23,6 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#pragma once
 #include <stdexcept>
 
 #include <oneapi/mkl.hpp>
@@ -32,7 +33,6 @@
 
 #include "common.hpp"
 #include "fft_utils.hpp"
-#include "out_of_place.hpp"
 // dpctl tensor headers
 #include "utils/memory_overlap.hpp"
 #include "utils/output_validation.hpp"
@@ -167,38 +167,4 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(fft_event, args_ev);
 }
 
-// Explicit instantiations
-// single precision c2c FFT
-template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
-    DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::COMPLEX>
-        &descr,
-    const dpctl::tensor::usm_ndarray &in,
-    const dpctl::tensor::usm_ndarray &out,
-    const bool is_forward,
-    const std::vector<sycl::event> &depends);
-
-// double precision c2c FFT
-template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
-    DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::COMPLEX>
-        &descr,
-    const dpctl::tensor::usm_ndarray &in,
-    const dpctl::tensor::usm_ndarray &out,
-    const bool is_forward,
-    const std::vector<sycl::event> &depends);
-
-// single precision r2c/c2r FFT
-template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
-    DescriptorWrapper<mkl_dft::precision::SINGLE, mkl_dft::domain::REAL> &descr,
-    const dpctl::tensor::usm_ndarray &in,
-    const dpctl::tensor::usm_ndarray &out,
-    const bool is_forward,
-    const std::vector<sycl::event> &depends);
-
-// double precision r2c/c2r FFT
-template std::pair<sycl::event, sycl::event> compute_fft_out_of_place(
-    DescriptorWrapper<mkl_dft::precision::DOUBLE, mkl_dft::domain::REAL> &descr,
-    const dpctl::tensor::usm_ndarray &in,
-    const dpctl::tensor::usm_ndarray &out,
-    const bool is_forward,
-    const std::vector<sycl::event> &depends);
 } // namespace dpnp::extensions::fft

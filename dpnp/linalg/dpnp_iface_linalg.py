@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@ it contains:
 
 # pylint: disable=invalid-name
 # pylint: disable=no-member
+
+from typing import NamedTuple
 
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_tuple
@@ -100,6 +102,12 @@ __all__ = [
 ]
 
 
+# pylint:disable=missing-class-docstring
+class EigResult(NamedTuple):
+    eigenvalues: dpnp.ndarray
+    eigenvectors: dpnp.ndarray
+
+
 def cholesky(a, /, *, upper=False):
     """
     Cholesky decomposition.
@@ -123,6 +131,7 @@ def cholesky(a, /, *, upper=False):
     upper : {bool}, optional
         If ``True``, the result must be the upper-triangular Cholesky factor.
         If ``False``, the result must be the lower-triangular Cholesky factor.
+
         Default: ``False``.
 
     Returns
@@ -174,6 +183,7 @@ def cond(x, p=None):
         Order of the norm used in the condition number computation.
         ``inf`` means the `dpnp.inf` object, and the Frobenius norm is
         the root-of-sum-of-squares norm.
+
         Default: ``None``.
 
     Returns
@@ -244,6 +254,7 @@ def cross(x1, x2, /, *, axis=-1):
     axis : int, optional
         The axis (dimension) of `x1` and `x2` containing the vectors for
         which to compute the cross-product.
+
         Default: ``-1``.
 
     Returns
@@ -353,7 +364,7 @@ def diagonal(x, /, *, offset=0):
 
     Parameters
     ----------
-    x : (...,M,N) {dpnp.ndarray, usm_ndarray}
+    x : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array having shape (..., M, N) and whose innermost two
         dimensions form ``MxN`` matrices.
     offset : int, optional
@@ -368,7 +379,7 @@ def diagonal(x, /, *, offset=0):
 
     Returns
     -------
-    out : (...,min(N,M)) dpnp.ndarray
+    out : (...,min(N, M)) dpnp.ndarray
         An array containing the diagonals and whose shape is determined by
         removing the last two dimensions and appending a dimension equal to
         the size of the resulting diagonals. The returned array must have
@@ -382,7 +393,7 @@ def diagonal(x, /, *, offset=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(4).reshape(2,2); a
+    >>> a = np.arange(4).reshape(2, 2); a
     array([[0, 1],
            [2, 3]])
     >>> np.linalg.diagonal(a)
@@ -390,7 +401,7 @@ def diagonal(x, /, *, offset=0):
 
     A 3-D example:
 
-    >>> a = np.arange(8).reshape(2,2,2); a
+    >>> a = np.arange(8).reshape(2, 2, 2); a
     array([[[0, 1],
             [2, 3]],
            [[4, 5],
@@ -451,17 +462,18 @@ def eig(a):
 
     Returns
     -------
+    A namedtuple with the following attributes:
+
     eigenvalues : (..., M) dpnp.ndarray
         The eigenvalues, each repeated according to its multiplicity.
-        The eigenvalues are not necessarily ordered. The resulting
-        array will be of complex type, unless the imaginary part is
-        zero in which case it will be cast to a real type. When `a`
-        is real the resulting eigenvalues will be real (0 imaginary
-        part) or occur in conjugate pairs
+        The eigenvalues are not necessarily ordered. The resulting array will
+        be of complex type, unless the imaginary part is zero in which case it
+        will be cast to a real type. When `a` is real the resulting eigenvalues
+        will be real (zero imaginary part) or occur in conjugate pairs.
     eigenvectors : (..., M, M) dpnp.ndarray
-        The normalized (unit "length") eigenvectors, such that the
-        column ``v[:,i]`` is the eigenvector corresponding to the
-        eigenvalue ``w[i]``.
+        The normalized (unit "length") eigenvectors, such that the column
+        ``eigenvectors[:,i]`` is the eigenvector corresponding to the
+        eigenvalue ``eigenvalues[i]``.
 
     Note
     ----
@@ -532,7 +544,7 @@ def eig(a):
     # Since geev function from OneMKL LAPACK is not implemented yet,
     # use NumPy for this calculation.
     w_np, v_np = numpy.linalg.eig(dpnp.asnumpy(a))
-    return (
+    return EigResult(
         dpnp.array(w_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
         dpnp.array(v_np, sycl_queue=a_sycl_queue, usm_type=a_usm_type),
     )
@@ -561,16 +573,19 @@ def eigh(a, UPLO="L"):
         considered to preserve the Hermite matrix property.
         It therefore follows that the imaginary part of the diagonal
         will always be treated as zero.
+
         Default: ``"L"``.
 
     Returns
     -------
-    w : (..., M) dpnp.ndarray
-        The eigenvalues in ascending order, each repeated according to
-        its multiplicity.
-    v : (..., M, M) dpnp.ndarray
-        The column ``v[:, i]`` is the normalized eigenvector corresponding
-        to the eigenvalue ``w[i]``.
+    A namedtuple with the following attributes:
+
+    eigenvalues : (..., M) dpnp.ndarray
+        The eigenvalues in ascending order, each repeated according to its
+        multiplicity.
+    eigenvectors : (..., M, M) dpnp.ndarray
+        The column ``eigenvectors[:, i]`` is the normalized eigenvector
+        corresponding to the eigenvalue ``eigenvalues[i]``.
 
     See Also
     --------
@@ -644,7 +659,7 @@ def eigvals(a):
     Illustration, using the fact that the eigenvalues of a diagonal matrix
     are its diagonal elements, that multiplying a matrix on the left
     by an orthogonal matrix, `Q`, and on the right by `Q.T` (the transpose
-    of `Q`), preserves the eigenvalues of the "middle" matrix.  In other words,
+    of `Q`), preserves the eigenvalues of the "middle" matrix. In other words,
     if `Q` is orthogonal, then ``Q * A * Q.T`` has the same eigenvalues as
     ``A``:
 
@@ -658,7 +673,7 @@ def eigvals(a):
     Now multiply a diagonal matrix by ``Q`` on one side and by ``Q.T`` on the
     other:
 
-    >>> D = np.diag((-1,1))
+    >>> D = np.diag((-1, 1))
     >>> LA.eigvals(D)
     array([-1.,  1.])
     >>> A = np.dot(Q, D)
@@ -698,6 +713,7 @@ def eigvalsh(a, UPLO="L"):
         considered to preserve the Hermite matrix property.
         It therefore follows that the imaginary part of the diagonal
         will always be treated as zero.
+
         Default: ``"L"``.
 
     Returns
@@ -809,6 +825,7 @@ def lstsq(a, b, rcond=None):
         of `a`.
         The default uses the machine precision times ``max(M, N)``. Passing
         ``-1`` will use machine precision.
+
         Default: ``None``.
 
     Returns
@@ -839,7 +856,7 @@ def lstsq(a, b, rcond=None):
     gradient of roughly 1 and cut the y-axis at, more or less, -1.
 
     We can rewrite the line equation as ``y = Ap``, where ``A = [[x 1]]``
-    and ``p = [[m], [c]]``.  Now use `lstsq` to solve for `p`:
+    and ``p = [[m], [c]]``. Now use `lstsq` to solve for `p`:
 
     >>> A = np.vstack([x, np.ones(len(x))]).T
     >>> A
@@ -912,7 +929,7 @@ def matmul(x1, x2, /):
 
     >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
     >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
-    >>> np.linalg.matmul(a,b).shape
+    >>> np.linalg.matmul(a, b).shape
     (2, 2, 2)
     >>> np.linalg.matmul(a, b)[0, 1, 1]
     array(98)
@@ -945,14 +962,16 @@ def matrix_norm(x, /, *, keepdims=False, ord="fro"):
     x : {dpnp.ndarray, usm_ndarray}
         Input array having shape (..., M, N) and whose two innermost
         dimensions form ``MxN`` matrices.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
+
         Default: ``False``.
     ord : {None, 1, -1, 2, -2, dpnp.inf, -dpnp.inf, 'fro', 'nuc'}, optional
         The order of the norm. For details see the table under ``Notes``
         section in :obj:`dpnp.linalg.norm`.
+
         Default: ``"fro"``.
 
     Returns
@@ -1079,16 +1098,19 @@ def matrix_rank(A, tol=None, hermitian=False, *, rtol=None):
         `rtol` can be set at a time. If none of them are provided, defaults
         to ``S.max() * max(M, N) * eps`` where `S` is an array with singular
         values for `A`, and `eps` is the epsilon value for datatype of `S`.
+
         Default: ``None``.
     hermitian : bool, optional
         If ``True``, `A` is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
+
         Default: ``False``.
     rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Parameter for the relative tolerance component. Only `tol` or `rtol`
         can be set at a time. If none of them are provided, defaults to
         ``max(M, N) * eps`` where `eps` is the epsilon value for datatype
         of `S` (an array with singular values for `A`).
+
         Default: ``None``.
 
     Returns
@@ -1191,6 +1213,7 @@ def multi_dot(arrays, *, out=None):
         C-contiguous, and its dtype must be the dtype that would be returned
         for `dot(a, b)`. If these conditions are not met, an exception is
         raised, instead of attempting to be flexible.
+
         Default: ``None``.
 
     Returns
@@ -1252,11 +1275,12 @@ def norm(x, ord=None, axis=None, keepdims=False):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array.  If `axis` is ``None``, `x` must be 1-D or 2-D, unless
+        Input array. If `axis` is ``None``, `x` must be 1-D or 2-D, unless
         `ord` is ``None``. If both `axis` and `ord` are ``None``, the 2-norm
         of ``x.ravel`` will be returned.
     ord : {int, float, inf, -inf, "fro", "nuc"}, optional
         Norm type. inf means dpnp's `inf` object.
+
         Default: ``None``.
     axis : {None, int, 2-tuple of ints}, optional
         If `axis` is an integer, it specifies the axis of `x` along which to
@@ -1264,11 +1288,13 @@ def norm(x, ord=None, axis=None, keepdims=False):
         axes that hold 2-D matrices, and the matrix norms of these matrices
         are computed. If `axis` is ``None`` then either a vector norm (when
         `x` is 1-D) or a matrix norm (when `x` is 2-D) is returned.
+
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
+
         Default: ``False``.
 
     Returns
@@ -1307,7 +1333,7 @@ def norm(x, ord=None, axis=None, keepdims=False):
 
     The Frobenius norm is given by [1]_:
 
-    :math:`||A||_F = [\sum_{i,j} abs(a_{i,j})^2]^{1/2}`
+    :math:`||A||_F = [\sum_{i, j} abs(a_{i, j})^2]^{1/2}`
 
     The nuclear norm is the sum of the singular values.
 
@@ -1381,8 +1407,8 @@ def norm(x, ord=None, axis=None, keepdims=False):
 
     Using the `axis` argument to compute matrix norms:
 
-    >>> m = np.arange(8).reshape(2,2,2)
-    >>> np.linalg.norm(m, axis=(1,2))
+    >>> m = np.arange(8).reshape(2, 2, 2)
+    >>> np.linalg.norm(m, axis=(1, 2))
     array([  3.74165739,  11.22497216])
     >>> np.linalg.norm(m[0, :, :]), np.linalg.norm(m[1, :, :])
     (array(3.74165739), array(11.22497216))
@@ -1486,15 +1512,18 @@ def pinv(a, rcond=None, hermitian=False, *, rtol=None):
         are set to zero. Broadcasts against the stack of matrices.
         Only `rcond` or `rtol` can be set at a time. If none of them are
         provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.
+
         Default: ``None``.
     hermitian : bool, optional
         If ``True``, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
+
         Default: ``False``.
     rtol : (...) {None, float, dpnp.ndarray, usm_ndarray}, optional
         Same as `rcond`, but it's an Array API compatible parameter name.
         Only `rcond` or `rtol` can be set at a time. If none of them are
         provided, defaults to ``max(M, N) * dpnp.finfo(a.dtype).eps``.
+
         Default: ``None``.
 
     Returns
@@ -1557,20 +1586,22 @@ def qr(a, mode="reduced"):
     Returns
     -------
     When mode is "reduced" or "complete", the result will be a namedtuple with
-    the attributes Q and R.
-    Q : dpnp.ndarray
+    the attributes `Q` and `R`:
+
+    Q : dpnp.ndarray of float or complex, optional
         A matrix with orthonormal columns.
-        When mode = "complete" the result is an orthogonal/unitary matrix
-        depending on whether or not a is real/complex.
-        The determinant may be either +/- 1 in that case.
-        In case the number of dimensions in the input array is greater
-        than 2 then a stack of the matrices with above properties is returned.
-    R : dpnp.ndarray
-        The upper-triangular matrix or a stack of upper-triangular matrices
-        if the number of dimensions in the input array is greater than 2.
-    (h, tau) : tuple of dpnp.ndarray
-        The `h` array contains the Householder reflectors that generate Q along
-        with R. The `tau` array contains scaling factors for the reflectors.
+        When mode is ``"complete"`` the result is an orthogonal/unitary matrix
+        depending on whether or not `a` is real/complex. The determinant may be
+        either ``+/- 1`` in that case. In case the number of dimensions in the
+        input array is greater than 2 then a stack of the matrices with above
+        properties is returned.
+    R : dpnp.ndarray of float or complex, optional
+        The upper-triangular matrix or a stack of upper-triangular matrices if
+        the number of dimensions in the input array is greater than 2.
+    (h, tau) : tuple of dpnp.ndarray of float or complex, optional
+        The array `h` contains the Householder reflectors that generate `Q`
+        along with `R`. The `tau` array contains scaling factors for the
+        reflectors.
 
     Examples
     --------
@@ -1698,33 +1729,39 @@ def svd(a, full_matrices=True, compute_uv=True, hermitian=False):
     full_matrices : {bool}, optional
         If ``True``, it returns `u` and `Vh` with full-sized matrices.
         If ``False``, the matrices are reduced in size.
+
         Default: ``True``.
     compute_uv : {bool}, optional
         If ``False``, it only returns singular values.
+
         Default: ``True``.
     hermitian : {bool}, optional
         If True, a is assumed to be Hermitian (symmetric if real-valued),
         enabling a more efficient method for finding singular values.
+
         Default: ``False``.
 
     Returns
     -------
-    u : { (…, M, M), (…, M, K) } dpnp.ndarray
+    When `compute_uv` is ``True``, the result is a namedtuple with the
+    following attribute names:
+
+    U : { (…, M, M), (…, M, K) } dpnp.ndarray
         Unitary matrix, where M is the number of rows of the input array `a`.
-        The shape of the matrix `u` depends on the value of `full_matrices`.
-        If `full_matrices` is ``True``, `u` has the shape (…, M, M).
-        If `full_matrices` is ``False``, `u` has the shape (…, M, K), where
-        K = min(M, N), and N is the number of columns of the input array `a`.
-        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
-    s : (…, K) dpnp.ndarray
+        The shape of the matrix `U` depends on the value of `full_matrices`.
+        If `full_matrices` is ``True``, `U` has the shape (…, M, M). If
+        `full_matrices` is ``False``, `U` has the shape (…, M, K), where
+        ``K = min(M, N)``, and N is the number of columns of the input array
+        `a`. If `compute_uv` is ``False``, neither `U` or `Vh` are computed.
+    S : (…, K) dpnp.ndarray
         Vector containing the singular values of `a`, sorted in descending
-        order. The length of `s` is min(M, N).
+        order. The length of `S` is min(M, N).
     Vh : { (…, N, N), (…, K, N) } dpnp.ndarray
         Unitary matrix, where N is the number of columns of the input array `a`.
         The shape of the matrix `Vh` depends on the value of `full_matrices`.
         If `full_matrices` is ``True``, `Vh` has the shape (…, N, N).
         If `full_matrices` is ``False``, `Vh` has the shape (…, K, N).
-        If `compute_uv` is ``False``, neither `u` or `Vh` are computed.
+        If `compute_uv` is ``False``, neither `U` or `Vh` are computed.
 
     Examples
     --------
@@ -1852,6 +1889,8 @@ def slogdet(a):
 
     Returns
     -------
+    A namedtuple with the following attributes:
+
     sign : (...) dpnp.ndarray
         A number representing the sign of the determinant. For a real matrix,
         this is 1, 0, or -1. For a complex matrix, this is a complex number
@@ -1924,6 +1963,8 @@ def tensordot(a, b, /, *, axes=2):
           applying to `a`, second to `b`. Both elements array_like must be of
           the same length.
 
+          Default: ``2``.
+
     Returns
     -------
     out : dpnp.ndarray
@@ -1963,9 +2004,9 @@ def tensordot(a, b, /, *, axes=2):
     >>> np.linalg.tensordot(a, b, axes=1)
     array([14, 32, 50])
 
-    >>> a = np.arange(60.).reshape(3,4,5)
-    >>> b = np.arange(24.).reshape(4,3,2)
-    >>> c = np.linalg.tensordot(a,b, axes=([1,0],[0,1]))
+    >>> a = np.arange(60.).reshape(3, 4, 5)
+    >>> b = np.arange(24.).reshape(4, 3, 2)
+    >>> c = np.linalg.tensordot(a, b, axes=([1, 0], [0, 1]))
     >>> c.shape
     (5, 2)
     >>> c
@@ -1977,12 +2018,12 @@ def tensordot(a, b, /, *, axes=2):
 
     A slower but equivalent way of computing the same...
 
-    >>> d = np.zeros((5,2))
+    >>> d = np.zeros((5, 2))
     >>> for i in range(5):
     ...   for j in range(2):
     ...     for k in range(3):
     ...       for n in range(4):
-    ...         d[i,j] += a[k,n,i] * b[n,k,j]
+    ...         d[i, j] += a[k, n, i] * b[n, k, j]
     >>> c == d
     array([[ True,  True],
            [ True,  True],
@@ -2009,6 +2050,7 @@ def tensorinv(a, ind=2):
     ind : int, optional
         Number of first indices that are involved in the inverse sum.
         Must be a positive integer.
+
         Default: ``2``.
 
     Returns
@@ -2074,6 +2116,7 @@ def tensorsolve(a, b, axes=None):
     axes : {None, tuple of ints}, optional
         Axes in `a` to reorder to the right, before inversion.
         If ``None`` , no reordering is done.
+
         Default: ``None``.
 
     Returns
@@ -2140,7 +2183,7 @@ def trace(x, /, *, offset=0, dtype=None):
 
     Parameters
     ----------
-    x : (...,M,N) {dpnp.ndarray, usm_ndarray}
+    x : (..., M, N) {dpnp.ndarray, usm_ndarray}
         Input array having shape (..., M, N) and whose innermost two
         dimensions form ``MxN`` matrices.
     offset : int, optional
@@ -2152,12 +2195,13 @@ def trace(x, /, *, offset=0, dtype=None):
             * offset < 0: off-diagonal below the main diagonal.
 
         Default: ``0``.
-    dtype : dtype, optional
+    dtype : {None, str, dtype object}, optional
         Determines the data-type of the returned array and of the accumulator
         where the elements are summed. If `dtype` has the value ``None`` and
         `a` is of integer type of precision less than the default integer
         precision, then the default integer precision is used. Otherwise, the
         precision is the same as that of `a`.
+
         Default: ``None``.
 
     Returns
@@ -2243,6 +2287,7 @@ def vecdot(x1, x2, /, *, axis=-1):
         Second input array.
     axis : int, optional
         Axis over which to compute the dot product.
+
         Default: ``-1``.
 
     Returns
@@ -2289,15 +2334,18 @@ def vector_norm(x, /, *, axis=None, keepdims=False, ord=2):
         (dimensions) along which to compute batched vector norms. If ``None``,
         the vector norm must be computed over all array values (i.e.,
         equivalent to computing the vector norm of a flattened array).
+
         Default: ``None``.
-    keepdims : bool, optional
+    keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are normed over are left in
         the result as dimensions with size one. With this option the result
         will broadcast correctly against the original `x`.
+
         Default: ``False``.
     ord : {int, float, inf, -inf, 'fro', 'nuc'}, optional
         The order of the norm. For details see the table under ``Notes``
         section in :obj:`dpnp.linalg.norm`.
+
         Default: ``2``.
 
     Returns

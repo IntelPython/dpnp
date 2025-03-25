@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,15 +37,17 @@ it contains:
 
 """
 
+# pylint: disable=no-name-in-module
 import numpy
 
 import dpnp
 
+from .dpnp_utils import map_dtype_to_device
 from .dpnp_utils.dpnp_utils_einsum import dpnp_einsum
 from .dpnp_utils.dpnp_utils_linearalgebra import (
     dpnp_dot,
     dpnp_kron,
-    dpnp_matmul,
+    dpnp_multiplication,
     dpnp_tensordot,
     dpnp_vecdot,
 )
@@ -57,11 +59,27 @@ __all__ = [
     "inner",
     "kron",
     "matmul",
+    "matvec",
     "outer",
     "tensordot",
     "vdot",
     "vecdot",
+    "vecmat",
 ]
+
+
+# TODO: implement a specific scalar-array kernel
+def _call_multiply(a, b, out=None):
+    """Call multiply function for special cases of scalar-array dots."""
+
+    sc, arr = (a, b) if dpnp.isscalar(a) else (b, a)
+    sc_dtype = map_dtype_to_device(type(sc), arr.sycl_device)
+    res_dtype = dpnp.result_type(sc_dtype, arr)
+    if out is not None and out.dtype == arr.dtype:
+        res = dpnp.multiply(a, b, out=out)
+    else:
+        res = dpnp.multiply(a, b, dtype=res_dtype)
+    return dpnp.get_result_array(res, out, casting="no")
 
 
 def dot(a, b, out=None):
@@ -83,6 +101,8 @@ def dot(a, b, out=None):
         the same shape and data type as the expected output and should be
         C-contiguous. If these conditions are not met, an exception is
         raised, instead of attempting to be flexible.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -137,8 +157,7 @@ def dot(a, b, out=None):
             raise ValueError("Only C-contiguous array is acceptable.")
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b, out=out)
+        return _call_multiply(a, b, out=out)
 
     a_ndim = a.ndim
     b_ndim = b.ndim
@@ -190,8 +209,11 @@ def einsum(
         These are the arrays for the operation.
     out : {dpnp.ndarrays, usm_ndarray, None}, optional
         If provided, the calculation is done into this array.
-    dtype : {dtype, None}, optional
+
+        Default: ``None``.
+    dtype : {None, str, dtype object}, optional
         If provided, forces the calculation to use the data type specified.
+
         Default: ``None``.
     order : {"C", "F", "A", "K"}, optional
         Controls the memory layout of the output. ``"C"`` means it should be
@@ -199,6 +221,7 @@ def einsum(
         it should be ``"F"`` if the inputs are all ``"F"``, ``"C"`` otherwise.
         ``"K"`` means it should be as close to the layout as the inputs as
         is possible, including arbitrarily permuted axes.
+
         Default: ``"K"``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur. Setting this to
@@ -216,12 +239,14 @@ def einsum(
         ``"same_kind"``. This is to prevent errors that may occur when data
         needs to be converted to `float64`, but the device does not support it.
         In such cases, the data is instead converted to `float32`.
+
         Default: ``"same_kind"``.
     optimize : {False, True, "greedy", "optimal"}, optional
         Controls if intermediate optimization should occur. No optimization
         will occur if ``False`` and ``True`` will default to the ``"greedy"``
         algorithm. Also accepts an explicit contraction list from the
         :obj:`dpnp.einsum_path` function.
+
         Default: ``False``.
 
     Returns
@@ -242,15 +267,15 @@ def einsum(
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(25).reshape(5,5)
+    >>> a = np.arange(25).reshape(5, 5)
     >>> b = np.arange(5)
-    >>> c = np.arange(6).reshape(2,3)
+    >>> c = np.arange(6).reshape(2, 3)
 
     Trace of a matrix:
 
     >>> np.einsum("ii", a)
     array(60)
-    >>> np.einsum(a, [0,0])
+    >>> np.einsum(a, [0, 0])
     array(60)
     >>> np.trace(a)
     array(60)
@@ -306,14 +331,14 @@ def einsum(
     array(30)
     >>> np.einsum(b, [0], b, [0])
     array(30)
-    >>> np.inner(b,b)
+    >>> np.inner(b, b)
     array(30)
 
     Matrix vector multiplication:
 
     >>> np.einsum("ij,j", a, b)
     array([ 30,  80, 130, 180, 230])
-    >>> np.einsum(a, [0,1], b, [1])
+    >>> np.einsum(a, [0, 1], b, [1])
     array([ 30,  80, 130, 180, 230])
     >>> np.dot(a, b)
     array([ 30,  80, 130, 180, 230])
@@ -395,22 +420,26 @@ def einsum(
     Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th
     Gen Intel\u00AE Core\u2122 i7 processor)
 
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a)
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a, a, a, a, a)
 
     Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop
 
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal")
+    >>> %timeit np.einsum(
+        "ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize="optimal"
+    )
 
     Greedy `einsum`: 28.6 ms ± 4.8 ms per loop
 
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="greedy")
+    >>> %timeit np.einsum(
+        "ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize="greedy"
+    )
 
     Optimal `einsum`: 26.9 ms ± 6.3 ms per loop
 
     >>> path = np.einsum_path(
-        "ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize="optimal"
+        "ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize="optimal"
     )[0]
-    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a,a,a,a,a, optimize=path)
+    >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->", a, a, a, a, a, optimize=path)
 
     """
 
@@ -492,10 +521,9 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
     Examples
     --------
     We can begin with a chain dot example. In this case, it is optimal to
-    contract the ``b`` and ``c`` tensors first as represented by the first
-    element of the path ``(1, 2)``. The resulting tensor is added to the end
-    of the contraction and the remaining contraction ``(0, 1)`` is then
-    completed.
+    contract the `b` and `c` tensors first as represented by the first element
+    of the path ``(1, 2)``. The resulting tensor is added to the end of the
+    contraction and the remaining contraction ``(0, 1)`` is then completed.
 
     >>> import dpnp as np
     >>> np.random.seed(123)
@@ -548,6 +576,12 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
 
     """
 
+    # explicit casting to numpy array if applicable
+    operands = [
+        dpnp.asnumpy(x) if dpnp.is_supported_array_type(x) else x
+        for x in operands
+    ]
+
     return numpy.einsum_path(
         *operands,
         optimize=optimize,
@@ -599,7 +633,7 @@ def inner(a, b):
 
     # Some multidimensional examples
 
-    >>> a = np.arange(24).reshape((2,3,4))
+    >>> a = np.arange(24).reshape((2, 3, 4))
     >>> b = np.arange(4)
     >>> c = np.inner(a, b)
     >>> c.shape
@@ -608,8 +642,8 @@ def inner(a, b):
     array([[ 14,  38,  62],
            [86, 110, 134]])
 
-    >>> a = np.arange(2).reshape((1,1,2))
-    >>> b = np.arange(6).reshape((3,2))
+    >>> a = np.arange(2).reshape((1, 1, 2))
+    >>> b = np.arange(6).reshape((3, 2))
     >>> c = np.inner(a, b)
     >>> c.shape
     (1, 1, 3)
@@ -627,8 +661,7 @@ def inner(a, b):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+        return _call_multiply(a, b)
 
     if a.ndim == 0 or b.ndim == 0:
         # TODO: use specific scalar-vector kernel
@@ -682,19 +715,19 @@ def kron(a, b):
     >>> np.kron(b, a)
     array([  5,  50, 500, ...,   7,  70, 700])
 
-    >>> np.kron(np.eye(2), np.ones((2,2)))
+    >>> np.kron(np.eye(2), np.ones((2, 2)))
     array([[1.,  1.,  0.,  0.],
            [1.,  1.,  0.,  0.],
            [0.,  0.,  1.,  1.],
            [0.,  0.,  1.,  1.]])
 
-    >>> a = np.arange(100).reshape((2,5,2,5))
-    >>> b = np.arange(24).reshape((2,3,4))
-    >>> c = np.kron(a,b)
+    >>> a = np.arange(100).reshape((2, 5, 2, 5))
+    >>> b = np.arange(24).reshape((2, 3, 4))
+    >>> c = np.kron(a, b)
     >>> c.shape
     (2, 10, 6, 20)
-    >>> I = (1,3,0,2)
-    >>> J = (0,2,1)
+    >>> I = (1, 3, 0, 2)
+    >>> J = (0, 2, 1)
     >>> J1 = (0,) + J             # extend to ndim=4
     >>> S1 = (1,) + b.shape
     >>> K = tuple(np.array(I) * np.array(S1) + np.array(J1))
@@ -706,8 +739,7 @@ def kron(a, b):
     dpnp.check_supported_arrays_type(a, b, scalar_type=True)
 
     if dpnp.isscalar(a) or dpnp.isscalar(b):
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+        return _call_multiply(a, b)
 
     a_ndim = a.ndim
     b_ndim = b.ndim
@@ -747,17 +779,21 @@ def matmul(
         Alternative output array in which to place the result. It must have
         a shape that matches the signature `(n,k),(k,m)->(n,m)` but the type
         (of the calculated values) will be cast if necessary.
+
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the matrix product. By default, the returned
         array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
+
         Default: ``None``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
+
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
+
         Default: ``"K"``.
     axes : {None, list of tuples}, optional
         A list of tuples with indices of axes the matrix product should operate
@@ -765,6 +801,7 @@ def matmul(
         elements are 2d matrices and these are taken to be stored in the two
         last axes of each argument. The corresponding axes keyword would be
         ``[(-2, -1), (-2, -1), (-2, -1)]``.
+
         Default: ``None``.
 
     Returns
@@ -775,18 +812,49 @@ def matmul(
 
     Limitations
     -----------
-    Keyword arguments `subok`, `signature`, and `axis` are only supported with
-    their default values.
-    Otherwise ``NotImplementedError`` exception will be raised.
+    Keyword arguments `subok`, and `signature`, are only supported with their
+    default values. Otherwise ``NotImplementedError`` exception will be raised.
 
     See Also
     --------
     :obj:`dpnp.linalg.matmul` : Array API compatible version.
-    :obj:`dpnp.vdot` : Complex-conjugating dot product.
+    :obj:`dpnp.vecdot` : Complex-conjugating dot product for stacks of vectors.
+    :obj:`dpnp.matvec` : Matrix-vector product for stacks of
+                         matrices and vectors.
+    :obj:`dpnp.vecmat` : Vector-matrix product for stacks of
+                         vectors and matrices.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
     :obj:`dpnp.einsum` : Einstein summation convention.
     :obj:`dpnp.dot` : Alternative matrix product with
                       different broadcasting rules.
+
+    Notes
+    -----
+    The behavior depends on the arguments in the following way.
+
+    - If both arguments are 2-D they are multiplied like conventional matrices.
+    - If either argument is N-D, N > 2, it is treated as a stack of matrices
+      residing in the last two indexes and broadcast accordingly.
+    - If the first argument is 1-D, it is promoted to a matrix by prepending
+      a 1 to its dimensions. After matrix multiplication the prepended 1 is
+      removed. (For stacks of vectors, use :obj:`dpnp.vecmat`.)
+    - If the second argument is 1-D, it is promoted to a matrix by appending
+      a 1 to its dimensions. After matrix multiplication the appended 1 is
+      removed. (For stacks of vectors, use :obj:`dpnp.matvec`.)
+
+    :obj:`dpnp.matmul` differs from :obj:`dpnp.dot` in two important ways:
+
+    - Multiplication by scalars is not allowed, use ``*`` instead.
+    - Stacks of matrices are broadcast together as if the matrices
+      were elements, respecting the signature ``(n,k),(k,m)->(n,m)``:
+
+    >>> import dpnp as np
+    >>> a = np.ones([9, 5, 7, 4])
+    >>> c = np.ones([9, 5, 4, 3])
+    >>> np.dot(a, c).shape
+    (9, 5, 7, 9, 5, 3)
+    >>> np.matmul(a, c).shape
+    (9, 5, 7, 3) # n is 7, k is 4, m is 3
 
     Examples
     --------
@@ -812,7 +880,7 @@ def matmul(
 
     >>> a = np.arange(2 * 2 * 4).reshape((2, 2, 4))
     >>> b = np.arange(2 * 2 * 4).reshape((2, 4, 2))
-    >>> np.matmul(a,b).shape
+    >>> np.matmul(a, b).shape
     (2, 2, 2)
     >>> np.matmul(a, b)[0, 1, 1]
     array(98)
@@ -827,7 +895,7 @@ def matmul(
     >>> np.matmul(x1, x2)
     array(-13+0j)
 
-    The ``@`` operator can be used as a shorthand for ``matmul`` on
+    The ``@`` operator can be used as a shorthand for :obj:`dpnp.matmul` on
     :class:`dpnp.ndarray`.
 
     >>> x1 @ x2
@@ -835,20 +903,11 @@ def matmul(
 
     """
 
-    if not subok:
-        raise NotImplementedError(
-            "subok keyword argument is only supported by its default value."
-        )
-    if signature is not None:
-        raise NotImplementedError(
-            "signature keyword argument is only supported by its default value."
-        )
-    if axis is not None:
-        raise NotImplementedError(
-            "axis keyword argument is only supported by its default value."
-        )
+    dpnp.check_limitations(subok_linalg=subok, signature=signature)
+    dpnp.check_supported_arrays_type(x1, x2)
 
-    return dpnp_matmul(
+    return dpnp_multiplication(
+        "matmul",
         x1,
         x2,
         out=out,
@@ -856,6 +915,127 @@ def matmul(
         order=order,
         dtype=dtype,
         axes=axes,
+        axis=axis,
+    )
+
+
+def matvec(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    casting="same_kind",
+    order="K",
+    dtype=None,
+    subok=True,
+    signature=None,
+    axes=None,
+    axis=None,
+):
+    r"""
+    Matrix-vector dot product of two arrays.
+
+    Given a matrix (or stack of matrices) :math:`\mathbf{A}` in `x1` and
+    a vector (or stack of vectors) :math:`\mathbf{v}` in `x2`, the
+    matrix-vector product is defined as:
+
+    .. math::
+       \mathbf{A} \cdot \mathbf{b} = \sum_{i=0}^{n-1} A_{ij}v_j
+
+    where the sum is over the last dimensions in `x1` and `x2` (unless `axes`
+    is specified). (For a matrix-vector product with the vector conjugated,
+    use ``dpnp.vecmat(x2, x1.mT)``.)
+
+    For full documentation refer to :obj:`numpy.matvec`.
+
+    Parameters
+    ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    x2 : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        A location into which the result is stored. If provided, it must have
+        the broadcasted shape of `x1` and `x2` with the summation axis removed.
+        If not provided or ``None``, a freshly-allocated array is used.
+
+        Default: ``None``.
+    dtype : {None, str, dtype object}, optional
+        Type to use in computing the matrix product. By default, the returned
+        array will have data type that is determined by considering
+        Promotion Type Rule and device capabilities.
+
+        Default: ``None``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur.
+
+        Default: ``"same_kind"``.
+    order : {None, "C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+
+        Default: ``"K"``.
+    axes : {None, list of tuples}, optional
+        A list of tuples with indices of axes the matrix-vector product should
+        operate on. For instance, for the signature of ``(i,j),(j)->(i)``, the
+        base elements are 2d matrices and 1d vectors, where the matrices are
+        assumed to be stored in the last two axes of the first argument, and
+        the vectors in the last axis of the second argument. The corresponding
+        axes keyword would be ``[(-2, -1), (-1,), (-1,)]``.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Returns the matrix-vector product of the inputs.
+
+    Limitations
+    -----------
+    Keyword arguments `subok`, and `signature` are only supported with their
+    default values. Otherwise ``NotImplementedError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.vecdot` : Vector-vector product..
+    :obj:`dpnp.vecmat` : Vector-matrix product.
+    :obj:`dpnp.matmul` : Matrix-matrix product.
+    :obj:`dpnp.einsum` : Einstein summation convention.
+
+
+    Examples
+    --------
+    Rotate a set of vectors from Y to X along Z.
+
+    >>> import dpnp as np
+    >>> a = np.array([[0., 1., 0.],
+    ...               [-1., 0., 0.],
+    ...               [0., 0., 1.]])
+    >>> v = np.array([[1., 0., 0.],
+    ...               [0., 1., 0.],
+    ...               [0., 0., 1.],
+    ...               [0., 6., 8.]])
+    >>> np.matvec(a, v)
+    array([[ 0., -1.,  0.],
+           [ 1.,  0.,  0.],
+           [ 0.,  0.,  1.],
+           [ 6.,  0.,  8.]])
+
+    """
+
+    dpnp.check_limitations(subok_linalg=subok, signature=signature)
+    dpnp.check_supported_arrays_type(x1, x2)
+
+    return dpnp_multiplication(
+        "matvec",
+        x1,
+        x2,
+        out=out,
+        casting=casting,
+        order=order,
+        dtype=dtype,
+        axes=axes,
+        axis=axis,
     )
 
 
@@ -873,6 +1053,7 @@ def outer(a, b, out=None):
         Second input vector. Input is flattened if not already 1-dimensional.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         A location where the result is stored.
+
         Default: ``None``.
 
     Returns
@@ -1007,9 +1188,9 @@ def tensordot(a, b, axes=2):
     >>> np.tensordot(a, b, 1)
     array([14, 32, 50])
 
-    >>> a = np.arange(60.).reshape(3,4,5)
-    >>> b = np.arange(24.).reshape(4,3,2)
-    >>> c = np.tensordot(a,b, axes=([1,0],[0,1]))
+    >>> a = np.arange(60.).reshape(3, 4, 5)
+    >>> b = np.arange(24.).reshape(4, 3, 2)
+    >>> c = np.tensordot(a, b, axes=([1, 0], [0, 1]))
     >>> c.shape
     (5, 2)
     >>> c
@@ -1021,12 +1202,12 @@ def tensordot(a, b, axes=2):
 
     A slower but equivalent way of computing the same...
 
-    >>> d = np.zeros((5,2))
+    >>> d = np.zeros((5, 2))
     >>> for i in range(5):
     ...   for j in range(2):
     ...     for k in range(3):
     ...       for n in range(4):
-    ...         d[i,j] += a[k,n,i] * b[n,k,j]
+    ...         d[i, j] += a[k, n, i] * b[n, k, j]
     >>> c == d
     array([[ True,  True],
            [ True,  True],
@@ -1043,8 +1224,7 @@ def tensordot(a, b, axes=2):
             raise ValueError(
                 "One of the inputs is scalar, axes should be zero."
             )
-        # TODO: use specific scalar-vector kernel
-        return dpnp.multiply(a, b)
+        return _call_multiply(a, b)
 
     return dpnp_tensordot(a, b, axes=axes)
 
@@ -1107,13 +1287,13 @@ def vdot(a, b):
         if b.size != 1:
             raise ValueError("The second array should be of size one.")
         a_conj = numpy.conj(a)
-        return dpnp.multiply(a_conj, b)
+        return _call_multiply(a_conj, b)
 
     if dpnp.isscalar(b):
         if a.size != 1:
             raise ValueError("The first array should be of size one.")
         a_conj = dpnp.conj(a)
-        return dpnp.multiply(a_conj, b)
+        return _call_multiply(a_conj, b)
 
     if a.ndim == 1 and b.ndim == 1:
         return dpnp_dot(a, b, out=None, conjugate=True)
@@ -1159,27 +1339,31 @@ def vecdot(
         Second input array.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         A location into which the result is stored. If provided, it must have
-        a shape that the broadcasted shape of `x1` and `x2` with the last axis
-        removed. If not provided or ``None``, a freshly-allocated array is
-        used.
+        the broadcasted shape of `x1` and `x2` with the last axis removed.
+        If not provided or ``None``, a freshly-allocated array is used.
+
         Default: ``None``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
+
         Default: ``"same_kind"``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
+
         Default: ``"K"``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type to use in computing the vector dot product. By default, the
         returned array will have data type that is determined by considering
         Promotion Type Rule and device capabilities.
+
         Default: ``None``.
     axes : {None, list of tuples}, optional
-        A list of tuples with indices of axes the matrix product should operate
+        A list of tuples with indices of axes the dot product should operate
         on. For instance, for the signature of ``(i),(i)->()``, the base
         elements are vectors and these are taken to be stored in the last axes
         of each argument. The corresponding axes keyword would be
-        ``[(-1,), (-1), ()]``.
+        ``[(-1,), (-1,), ()]``.
+
         Default: ``None``.
     axis : {None, int}, optional
         Axis over which to compute the dot product. This is a short-cut for
@@ -1187,6 +1371,7 @@ def vecdot(
         single-core-dimension argument and ``()`` for all others. For instance,
         for a signature ``(i),(i)->()``, it is equivalent to passing in
         ``axes=[(axis,), (axis,), ()]``.
+
         Default: ``None``.
 
     Returns
@@ -1203,7 +1388,11 @@ def vecdot(
     See Also
     --------
     :obj:`dpnp.linalg.vecdot` : Array API compatible version.
-    :obj:`dpnp.vdot` : Complex-conjugating dot product.
+    :obj:`dpnp.vdot` : Complex-conjugating dot product but flattens
+                       arguments first.
+    :obj:`dpnp.matmul` : Matrix-matrix product.
+    :obj:`dpnp.vecmat` : Vector-matrix product.
+    :obj:`dpnp.matvec` : Matrix-vector product.
     :obj:`dpnp.einsum` : Einstein summation convention.
 
     Examples
@@ -1218,16 +1407,129 @@ def vecdot(
 
     """
 
-    if not subok:
-        raise NotImplementedError(
-            "subok keyword argument is only supported by its default value."
-        )
-    if signature is not None:
-        raise NotImplementedError(
-            "signature keyword argument is only supported by its default value."
-        )
+    dpnp.check_limitations(subok_linalg=subok, signature=signature)
 
     return dpnp_vecdot(
+        x1,
+        x2,
+        out=out,
+        casting=casting,
+        order=order,
+        dtype=dtype,
+        axes=axes,
+        axis=axis,
+    )
+
+
+def vecmat(
+    x1,
+    x2,
+    /,
+    out=None,
+    *,
+    casting="same_kind",
+    order="K",
+    dtype=None,
+    subok=True,
+    signature=None,
+    axes=None,
+    axis=None,
+):
+    r"""
+    Vector-matrix dot product of two arrays.
+
+    Given a vector (or stack of vector) :math:`\mathbf{v}` in `x1` and a matrix
+    (or stack of matrices) :math:`\mathbf{A}` in `x2`, the vector-matrix product
+    is defined as:
+
+    .. math::
+       \mathbf{b} \cdot \mathbf{A} = \sum_{i=0}^{n-1} \overline{v_i}A_{ij}
+
+    where the sum is over the last dimension of `x1` and the one-but-last
+    dimensions in `x2` (unless `axes` is specified) and where
+    :math:`\overline{v_i}` denotes the complex conjugate if :math:`{v}` is
+    complex and the identity otherwise. (For a non-conjugated
+    vector-matrix product, use ``dpnp.matvec(x2.mT, x1)``.)
+
+    For full documentation refer to :obj:`numpy.vecmat`.
+
+    Parameters
+    ----------
+    x1 : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    x2 : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        A location into which the result is stored. If provided, it must have
+        the broadcasted shape of `x1` and `x2` with the summation axis removed.
+        If not provided or ``None``, a freshly-allocated array is used.
+
+        Default: ``None``.
+    dtype : {None, str, dtype object}, optional
+        Type to use in computing the matrix product. By default, the returned
+        array will have data type that is determined by considering
+        Promotion Type Rule and device capabilities.
+
+        Default: ``None``.
+    casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
+        Controls what kind of data casting may occur.
+
+        Default: ``"same_kind"``.
+    order : {None, "C", "F", "A", "K"}, optional
+        Memory layout of the newly output array, if parameter `out` is ``None``.
+
+        Default: ``"K"``.
+    axes : {None, list of tuples}, optional
+        A list of tuples with indices of axes the vector-matrix product should
+        operate on. For instance, for the signature of ``(i),(i,j)->(j)``, the
+        base elements are 1D vectors and 2D matrices, where the vectors are
+        assumed to be stored in the last axis of the first argument, and the
+        matrices in the last two axes of the second argument. The corresponding
+        axes keyword would be ``[(-1,), (-2, -1), (-1,)]``.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The vector-matrix product of the inputs.
+
+    Limitations
+    -----------
+    Keyword arguments `subok`, and `signature`, are only supported with their
+    default values. Otherwise ``NotImplementedError`` exception will be raised.
+
+    See Also
+    --------
+    :obj:`dpnp.vecdot` : Vector-vector product..
+    :obj:`dpnp.matvec` : Matrix-vector product.
+    :obj:`dpnp.matmul` : Matrix-matrix product.
+    :obj:`dpnp.einsum` : Einstein summation convention.
+
+
+    Examples
+    --------
+    Project a vector along X and Y.
+
+    >>> import dpnp as np
+    >>> v = np.array([0., 4., 2.])
+    >>> a = np.array([[1., 0., 0.],
+    ...               [0., 1., 0.],
+    ...               [0., 0., 0.]])
+    >>> np.vecmat(v, a)
+    array([0., 4., 0.])
+
+    """
+
+    dpnp.check_limitations(subok_linalg=subok, signature=signature)
+    dpnp.check_supported_arrays_type(x1, x2)
+
+    # cannot directly use dpnp.conj(x1) as it returns `int8` for boolean input
+    if dpnp.issubdtype(x1.dtype, dpnp.complexfloating):
+        x1 = dpnp.conj(x1)
+
+    return dpnp_multiplication(
+        "vecmat",
         x1,
         x2,
         out=out,

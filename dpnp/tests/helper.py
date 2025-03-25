@@ -2,9 +2,12 @@ from sys import platform
 
 import dpctl
 import numpy
+import pytest
 from numpy.testing import assert_allclose, assert_array_equal
 
 import dpnp
+
+from . import config
 
 
 def assert_dtype_allclose(
@@ -13,6 +16,7 @@ def assert_dtype_allclose(
     check_type=True,
     check_only_type_kind=False,
     factor=8,
+    relative_factor=None,
 ):
     """
     Assert DPNP and NumPy array based on maximum dtype resolution of input arrays
@@ -83,12 +87,172 @@ def assert_dtype_allclose(
                 assert dpnp_arr.dtype == numpy_arr.dtype
 
 
-def get_integer_dtypes():
+def generate_random_numpy_array(
+    shape,
+    dtype=None,
+    order="C",
+    hermitian=False,
+    seed_value=None,
+    low=-10,
+    high=10,
+    probability=0.5,
+):
     """
-    Build a list of integer types supported by DPNP.
+    Generate a random numpy array with the specified shape and dtype.
+
+    If required, the array can be made Hermitian (for complex data types) or
+    symmetric (for real data types).
+
+    Parameters
+    ----------
+    shape : tuple
+        Shape of the generated array.
+    dtype : str or dtype, optional
+        Desired data-type for the output array.
+        If not specified, data type will be determined by numpy.
+
+        Default : ``None``
+    order : {"C", "F"}, optional
+        Specify the memory layout of the output array.
+
+        Default: ``"C"``.
+    hermitian : bool, optional
+        If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
+
+        Default : ``False``
+    seed_value : int, optional
+        The seed value to initialize the random number generator.
+
+        Default : ``None``
+    low : {int, float}, optional
+        Lower boundary of the generated samples from a uniform distribution.
+
+        Default : ``-10``.
+    high : {int, float}, optional
+        Upper boundary of the generated samples from a uniform distribution.
+
+        Default : ``10``.
+    probability : float, optional
+        If dtype is bool, the probability of True. Ignored for other dtypes.
+
+        Default : ``0.5``.
+    Returns
+    -------
+    out : numpy.ndarray
+        A random numpy array of the specified shape, dtype and memory layout.
+        The array is Hermitian or symmetric if `hermitian` is True.
+
+    Note:
+    For arrays with more than 2 dimensions, the Hermitian or
+    symmetric property is ensured for each 2D sub-array.
+
     """
 
-    return [dpnp.int32, dpnp.int64]
+    if seed_value is None:
+        seed_value = 42
+    numpy.random.seed(seed_value)
+
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        low = 0
+
+    # dtype=int is needed for 0d arrays
+    size = numpy.prod(shape, dtype=int)
+    if dtype == dpnp.bool:
+        a = numpy.random.choice(
+            [False, True], size, p=[1 - probability, probability]
+        )
+    else:
+        a = numpy.random.uniform(low, high, size).astype(dtype)
+
+        if numpy.issubdtype(a.dtype, numpy.complexfloating):
+            a += 1j * numpy.random.uniform(low, high, size)
+
+    a = a.reshape(shape)
+    if hermitian and a.size > 0:
+        if a.ndim > 2:
+            orig_shape = a.shape
+            # get 3D array
+            a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
+            for i in range(a.shape[0]):
+                a[i] = numpy.conj(a[i].T) @ a[i]
+            a = a.reshape(orig_shape)
+        else:
+            a = numpy.conj(a.T) @ a
+
+    # a.reshape(shape) returns an array in C order by default
+    if order != "C" and a.ndim > 1:
+        a = numpy.array(a, order=order)
+    return a
+
+
+def get_abs_array(data, dtype=None):
+    if numpy.issubdtype(dtype, numpy.unsignedinteger):
+        data = numpy.abs(data)
+    # it is better to use astype with the default casting=unsafe
+    # otherwise, we need to skip test for cases where overflow occurs
+    return numpy.array(data).astype(dtype)
+
+
+def get_all_dtypes(
+    no_bool=False,
+    no_float16=True,
+    no_complex=False,
+    no_none=False,
+    xfail_dtypes=None,
+    exclude=None,
+    no_unsigned=False,
+    device=None,
+):
+    """
+    Build a list of types supported by DPNP based on
+    input flags and device capabilities.
+    """
+
+    dev = dpctl.select_default_device() if device is None else device
+
+    # add boolean type
+    dtypes = [dpnp.bool] if not no_bool else []
+
+    # add integer types
+    dtypes.extend(get_integer_dtypes(no_unsigned=no_unsigned))
+
+    # add floating types
+    dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))
+
+    # add complex types
+    if not no_complex:
+        dtypes.extend(get_complex_dtypes(device=dev))
+
+    # add None value to validate a default dtype
+    if not no_none:
+        dtypes.append(None)
+
+    def mark_xfail(dtype):
+        if xfail_dtypes is not None and dtype in xfail_dtypes:
+            return pytest.param(dtype, marks=pytest.mark.xfail)
+        return dtype
+
+    def not_excluded(dtype):
+        if exclude is None:
+            return True
+        return dtype not in exclude
+
+    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
+    return dtypes
+
+
+def get_array(xp, a):
+    """
+    Cast input array `a` to a type supported by `xp` interface.
+
+    Implicit conversion of either DPNP or DPCTL array to a NumPy array is not
+    allowed. Input array has to be explicitly casted with `asnumpy` function.
+
+    """
+
+    if xp is numpy and dpnp.is_supported_array_type(a):
+        return dpnp.asnumpy(a)
+    return a
 
 
 def get_complex_dtypes(device=None):
@@ -133,113 +297,19 @@ def get_float_complex_dtypes(no_float16=True, device=None):
     return dtypes
 
 
-def get_all_dtypes(
-    no_bool=False, no_float16=True, no_complex=False, no_none=False, device=None
-):
+def get_integer_dtypes(all_int_types=False, no_unsigned=False):
     """
-    Build a list of types supported by DPNP based on input flags and device capabilities.
+    Build a list of integer types supported by DPNP.
     """
 
-    dev = dpctl.select_default_device() if device is None else device
+    dtypes = [dpnp.int32, dpnp.int64]
 
-    # add boolean type
-    dtypes = [dpnp.bool] if not no_bool else []
+    if config.all_int_types or all_int_types:
+        dtypes += [dpnp.int8, dpnp.int16]
+        if not no_unsigned:
+            dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
 
-    # add integer types
-    dtypes.extend(get_integer_dtypes())
-
-    # add floating types
-    dtypes.extend(get_float_dtypes(no_float16=no_float16, device=dev))
-
-    # add complex types
-    if not no_complex:
-        dtypes.extend(get_complex_dtypes(device=dev))
-
-    # add None value to validate a default dtype
-    if not no_none:
-        dtypes.append(None)
     return dtypes
-
-
-def generate_random_numpy_array(
-    shape, dtype=None, hermitian=False, seed_value=None, low=-10, high=10
-):
-    """
-    Generate a random numpy array with the specified shape and dtype.
-
-    If required, the array can be made Hermitian (for complex data types) or
-    symmetric (for real data types).
-
-    Parameters
-    ----------
-    shape : tuple
-        Shape of the generated array.
-    dtype : str or dtype, optional
-        Desired data-type for the output array.
-        If not specified, data type will be determined by numpy.
-        Default : ``None``
-    hermitian : bool, optional
-        If True, generates a Hermitian (symmetric if `dtype` is real) matrix.
-        Default : ``False``
-    seed_value : int, optional
-        The seed value to initialize the random number generator.
-        Default : ``None``
-    low : {int, float}, optional
-        Lower boundary of the generated samples from a uniform distribution.
-        Default : ``-10``.
-    high : {int, float}, optional
-        Upper boundary of the generated samples from a uniform distribution.
-        Default : ``10``.
-
-    Returns
-    -------
-    out : numpy.ndarray
-        A random numpy array of the specified shape and dtype.
-        The array is Hermitian or symmetric if `hermitian` is True.
-
-    Note:
-    For arrays with more than 2 dimensions, the Hermitian or
-    symmetric property is ensured for each 2D sub-array.
-
-    """
-
-    if seed_value is None:
-        seed_value = 42
-    numpy.random.seed(seed_value)
-
-    # dtype=int is needed for 0d arrays
-    size = numpy.prod(shape, dtype=int)
-    a = numpy.random.uniform(low, high, size).astype(dtype)
-    if numpy.issubdtype(a.dtype, numpy.complexfloating):
-        a += 1j * numpy.random.uniform(low, high, size)
-
-    a = a.reshape(shape)
-    if hermitian and a.size > 0:
-        if a.ndim > 2:
-            orig_shape = a.shape
-            # get 3D array
-            a = a.reshape(-1, orig_shape[-2], orig_shape[-1])
-            for i in range(a.shape[0]):
-                a[i] = numpy.conj(a[i].T) @ a[i]
-            a = a.reshape(orig_shape)
-        else:
-            a = numpy.conj(a.T) @ a
-    return a
-
-
-def is_cpu_device(device=None):
-    """
-    Return True if a test is running on CPU device, False otherwise.
-    """
-    dev = dpctl.select_default_device() if device is None else device
-    return dev.has_aspect_cpu
-
-
-def is_win_platform():
-    """
-    Return True if a test is running on Windows OS, False otherwise.
-    """
-    return platform.startswith("win")
 
 
 def has_support_aspect16(device=None):
@@ -258,6 +328,29 @@ def has_support_aspect64(device=None):
     """
     dev = dpctl.select_default_device() if device is None else device
     return dev.has_aspect_fp64
+
+
+def is_cpu_device(device=None):
+    """
+    Return True if a test is running on CPU device, False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_cpu
+
+
+def is_cuda_device(device=None):
+    """
+    Return True if a test is running on CUDA device, False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.backend == dpctl.backend_type.cuda
+
+
+def is_win_platform():
+    """
+    Return True if a test is running on Windows OS, False otherwise.
+    """
+    return platform.startswith("win")
 
 
 def numpy_version():

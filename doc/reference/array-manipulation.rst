@@ -135,7 +135,6 @@ Adding and removing elements
    dpnp.append
    dpnp.resize
    dpnp.trim_zeros
-   dpnp.unique
    dpnp.pad
 
 

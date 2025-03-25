@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -37,6 +37,7 @@ it contains:
 
 """
 # pylint: disable=protected-access
+# pylint: disable=redefined-outer-name
 
 import os
 
@@ -57,7 +58,6 @@ from dpnp.random import *
 __all__ = [
     "are_same_logical_tensors",
     "asnumpy",
-    "astype",
     "as_usm_ndarray",
     "check_limitations",
     "check_supported_arrays_type",
@@ -68,12 +68,12 @@ __all__ = [
     "get_result_array",
     "get_usm_ndarray",
     "get_usm_ndarray_or_scalar",
+    "is_cuda_backend",
     "is_supported_array_or_scalar",
     "is_supported_array_type",
     "synchronize_array_data",
 ]
 
-from dpnp import float64
 from dpnp.dpnp_iface_arraycreation import *
 from dpnp.dpnp_iface_arraycreation import __all__ as __all__arraycreation
 from dpnp.dpnp_iface_bitwise import *
@@ -106,6 +106,8 @@ from dpnp.dpnp_iface_statistics import *
 from dpnp.dpnp_iface_statistics import __all__ as __all__statistics
 from dpnp.dpnp_iface_trigonometric import *
 from dpnp.dpnp_iface_trigonometric import __all__ as __all__trigonometric
+from dpnp.dpnp_iface_window import *
+from dpnp.dpnp_iface_window import __all__ as __all__window
 
 # pylint: disable=no-name-in-module
 from .dpnp_utils import (
@@ -130,6 +132,7 @@ __all__ += __all__searching
 __all__ += __all__sorting
 __all__ += __all__statistics
 __all__ += __all__trigonometric
+__all__ += __all__window
 
 
 def are_same_logical_tensors(ar1, ar2):
@@ -181,11 +184,13 @@ def asnumpy(a, order="C"):
     ----------
     a : {array_like}
         Arbitrary object that can be converted to :obj:`numpy.ndarray`.
-    order : {'C', 'F', 'A', 'K'}
+    order : {None, 'C', 'F', 'A', 'K'}, optional
         The desired memory layout of the converted array.
-        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses
-        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely
-        as possible.
+        When `order` is ``'A'``, it uses ``'F'`` if `a` is column-major and
+        uses ``'C'`` otherwise. And when `order` is ``'K'``, it keeps strides
+        as closely as possible.
+
+        Default: ``'C'``.
 
     Returns
     -------
@@ -207,71 +212,6 @@ def asnumpy(a, order="C"):
     return numpy.asarray(a, order=order)
 
 
-# pylint: disable=redefined-outer-name
-def astype(x1, dtype, order="K", casting="unsafe", copy=True, device=None):
-    """
-    Copy the array with data type casting.
-
-    Parameters
-    ----------
-    x1 : {dpnp.ndarray, usm_ndarray}
-        Array data type casting.
-    dtype : dtype
-        Target data type.
-    order : {'C', 'F', 'A', 'K'}
-        Row-major (C-style) or column-major (Fortran-style) order.
-        When `order` is ``A``, it uses ``F`` if `a` is column-major and uses
-        ``C`` otherwise. And when `order` is ``K``, it keeps strides as closely
-        as possible.
-    copy : bool
-        If it is ``False`` and no cast happens, then this method returns
-        the array itself. Otherwise, a copy is returned.
-    casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
-        Controls what kind of data casting may occur. Defaults to ``unsafe``
-        for backwards compatibility.
-
-            - 'no' means the data types should not be cast at all.
-            - 'equiv' means only byte-order changes are allowed.
-            - 'safe' means only casts which can preserve values are allowed.
-            - 'same_kind' means only safe casts or casts within a kind, like
-              float64 to float32, are allowed.
-            - 'unsafe' means any data conversions may be done.
-
-    copy : {bool}, optional
-        By default, ``astype`` always returns a newly allocated array. If this
-        is set to ``False``, and the `dtype`, `order`, and `subok` requirements
-        are satisfied, the input array is returned instead of a copy.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property. Default: ``None``.
-
-    Returns
-    -------
-    arr_t : dpnp.ndarray
-        Unless `copy` is ``False`` and the other conditions for returning
-        the input array are satisfied, `arr_t` is a new array of the same shape
-        as the input array, with dtype, order given by dtype, order.
-
-    """
-
-    if order is None:
-        order = "K"
-
-    x1_obj = dpnp.get_usm_ndarray(x1)
-    array_obj = dpt.astype(
-        x1_obj, dtype, order=order, casting=casting, copy=copy, device=device
-    )
-
-    if array_obj is x1_obj and isinstance(x1, dpnp_array):
-        # return x1 if dpctl returns a zero copy of x1_obj
-        return x1
-    return dpnp_array._create_from_usm_ndarray(array_obj)
-
-
 def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     """
     Return :class:`dpctl.tensor.usm_ndarray` from input object `a`.
@@ -280,26 +220,31 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     ----------
     a : {array_like, scalar}
         Input array or scalar.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The desired dtype for the result array if new array is creating. If not
         given, a default dtype will be used that can represent the values (by
         considering Promotion Type Rule and device capabilities when necessary).
+
         Default: ``None``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where the result array is created if
-        required.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        If the value is ``None``, returned array is created on the same device
+        as `a`.
+
         Default: ``None``.
     usm_type : {None, "device", "shared", "host"}, optional
         The type of SYCL USM allocation for the result array if new array
         is created.
+
         Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for result array allocation if required.
+
         Default: ``None``.
 
     Returns
@@ -321,14 +266,25 @@ def as_usm_ndarray(a, dtype=None, device=None, usm_type=None, sycl_queue=None):
     )
 
 
-def check_limitations(subok=False, like=None, initial=None, where=True):
+def check_limitations(
+    subok=False,
+    like=None,
+    initial=None,
+    where=True,
+    subok_linalg=True,
+    signature=None,
+):
     """
     Checking limitation kwargs for their supported values.
 
-    Parameter `subok` is only supported with default value ``False``.
+    Parameter `subok` for array creation functions is only supported with
+    default value ``False``.
     Parameter `like` is only supported with default value ``None``.
     Parameter `initial` is only supported with default value ``None``.
     Parameter `where` is only supported with default value ``True``.
+    Parameter `subok` for linear algebra functions, named as `subok_linalg`
+    here, and is only supported with default value ``True``.
+    Parameter `signature` is only supported with default value ``None``.
 
     Raises
     ------
@@ -340,22 +296,32 @@ def check_limitations(subok=False, like=None, initial=None, where=True):
     if like is not None:
         raise NotImplementedError(
             "Keyword argument `like` is supported only with "
-            f"default value ``None``, but got {like}"
+            f"default value ``None``, but got {like}."
         )
     if subok is not False:
         raise NotImplementedError(
             "Keyword argument `subok` is supported only with "
-            f"default value ``False``, but got {subok}"
+            f"default value ``False``, but got {subok}."
         )
     if initial is not None:
         raise NotImplementedError(
             "Keyword argument `initial` is only supported with "
-            f"default value ``None``, but got {initial}"
+            f"default value ``None``, but got {initial}."
         )
     if where is not True:
         raise NotImplementedError(
             "Keyword argument `where` is supported only with "
-            f"default value ``True``, but got {where}"
+            f"default value ``True``, but got {where}."
+        )
+    if not subok_linalg:
+        raise NotImplementedError(
+            "keyword argument `subok` is only supported with "
+            f"default value ``True``, but got {subok_linalg}."
+        )
+    if signature is not None:
+        raise NotImplementedError(
+            "keyword argument `signature` is only supported with "
+            f"default value ``None``, but got {signature}."
         )
 
 
@@ -369,10 +335,14 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
     ----------
     arrays : {dpnp.ndarray, usm_ndarray}
         Input arrays to check for supported types.
-    scalar_type : {bool}, optional
+    scalar_type : bool, optional
         A scalar type is also considered as supported if flag is ``True``.
-    all_scalars : {bool}, optional
+
+        Default: ``False``.
+    all_scalars : bool, optional
         All the input arrays can be scalar if flag is ``True``.
+
+        Default: ``False``.
 
     Returns
     -------
@@ -415,19 +385,23 @@ def default_float_type(device=None, sycl_queue=None):
 
     Parameters
     ----------
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array of default floating type
-        might be created. The `device` can be ``None`` (the default), an OneAPI
-        filter selector string, an instance of :class:`dpctl.SyclDevice`
-        corresponding to a non-partitioned SYCL device, an instance of
-        :class:`dpctl.SyclQueue`, or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
         The value ``None`` is interpreted as to use a default device.
+
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue which might be used to create an array of default floating
         type. The `sycl_queue` can be ``None`` (the default), which is
         interpreted as to get the SYCL queue from `device` keyword if present
         or to use a default queue.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -439,7 +413,7 @@ def default_float_type(device=None, sycl_queue=None):
     _sycl_queue = get_normalized_queue_device(
         device=device, sycl_queue=sycl_queue
     )
-    return map_dtype_to_device(float64, _sycl_queue.sycl_device)
+    return map_dtype_to_device(dpnp.float64, _sycl_queue.sycl_device)
 
 
 def get_dpnp_descriptor(
@@ -547,16 +521,24 @@ def get_normalized_queue_device(obj=None, device=None, sycl_queue=None):
         and implementing `__sycl_usm_array_interface__` protocol, an instance
         of `numpy.ndarray`, an object supporting Python buffer protocol,
         a Python scalar, or a (possibly nested) sequence of Python scalars.
-    sycl_queue : class:`dpctl.SyclQueue`, optional
+    sycl_queue : {None, class:`dpctl.SyclQueue`}, optional
         A queue which explicitly indicates where USM allocation is done
         and the population code (if any) is executed.
         Value ``None`` is interpreted as to get the SYCL queue from either
         `obj` parameter if not ``None`` or from `device` keyword,
         or to use default queue.
-    device : {string, :class:`dpctl.SyclDevice`, :class:`dpctl.SyclQueue,
-              :class:`dpctl.tensor.Device`}, optional
-        An array-API keyword indicating non-partitioned SYCL device
-        where array is allocated.
+
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where the output array is created.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+        The value ``None`` is interpreted as to use the same device as `obj`.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -590,16 +572,20 @@ def get_result_array(a, out=None, casting="safe"):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array.
-    out : {dpnp.ndarray, usm_ndarray}
+    out : {None, dpnp.ndarray, usm_ndarray}
         If provided, value of `a` array will be copied into it
         according to ``safe`` casting rule.
         It should be of the appropriate shape.
+
+        Default: ``None``.
     casting : {'no', 'equiv', 'safe', 'same_kind', 'unsafe'}, optional
         Controls what kind of data casting may occur.
 
+        Default: ``'safe'``.
+
     Returns
     -------
-    out : {dpnp_array}
+    out : dpnp.ndarray
         Return `out` if provided, otherwise return `a`.
 
     """
@@ -679,6 +665,42 @@ def get_usm_ndarray_or_scalar(a):
     """
 
     return a if dpnp.isscalar(a) else get_usm_ndarray(a)
+
+
+def is_cuda_backend(obj=None):
+    """
+    Checks that object has a CUDA backend.
+
+    Parameters
+    ----------
+    obj : {Device, SyclDevice, SyclQueue, dpnp.ndarray, usm_ndarray, None},
+          optional
+        An input object with sycl_device property to check device backend.
+        If `obj` is ``None``, device backend will be checked for the default
+        queue.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    out : bool
+        Return ``True`` if data of the input object resides on a CUDA backend,
+        otherwise ``False``.
+
+    """
+
+    if obj is None:
+        sycl_device = dpctl.select_default_device()
+    elif isinstance(obj, dpctl.SyclDevice):
+        sycl_device = obj
+    else:
+        sycl_device = getattr(obj, "sycl_device", None)
+    if (
+        sycl_device is not None
+        and sycl_device.backend == dpctl.backend_type.cuda
+    ):  # pragma: no cover
+        return True
+    return False
 
 
 def is_supported_array_or_scalar(a):

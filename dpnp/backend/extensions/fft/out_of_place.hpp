@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -43,3 +43,5 @@ std::pair<sycl::event, sycl::event>
                              const std::vector<sycl::event> &depends);
 
 } // namespace dpnp::extensions::fft
+
+#include "out_of_place.tpp" // Include template definition

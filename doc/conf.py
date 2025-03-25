@@ -9,6 +9,7 @@
 from datetime import datetime
 
 from sphinx.ext.autodoc import FunctionDocumenter
+from sphinx.ext.napoleon import NumpyDocstring, docstring
 
 from dpnp.dpnp_algo.dpnp_elementwise_common import DPNPBinaryFunc, DPNPUnaryFunc
 
@@ -218,9 +219,10 @@ autosummary_generate = True
 
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "numpy": ("https://docs.scipy.org/doc/numpy/", None),
+    "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/reference/", None),
     "dpctl": ("https://intelpython.github.io/dpctl/latest/", None),
+    "cupy": ("https://docs.cupy.dev/en/stable/", None),
 }
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
@@ -230,3 +232,59 @@ todo_include_todos = True
 napoleon_use_ivar = True
 napoleon_include_special_with_doc = True
 napoleon_custom_sections = ["limitations"]
+
+
+# Napoleon extension can't properly render "Returns" section in case of
+# namedtuple as a return type. That patch proposes to extend the parse logic
+# which allows text in a header of "Returns" section.
+def _parse_returns_section_patched(self, section: str) -> list[str]:
+    fields = self._consume_returns_section()
+    multi = len(fields) > 1
+    use_rtype = False if multi else self._config.napoleon_use_rtype
+    lines: list[str] = []
+    header: list[str] = []
+    is_logged_header = False
+
+    for _name, _type, _desc in fields:
+        # self._consume_returns_section() stores the header block
+        # into `_type` argument, while `_name` has to be empty string and
+        # `_desc` has to be empty list of strings
+        if _name == "" and (not _desc or len(_desc) == 1 and _desc[0] == ""):
+            if not is_logged_header:
+                docstring.logger.info(
+                    "parse a header block of 'Returns' section",
+                    location=self._get_location(),
+                )
+                is_logged_header = True
+
+            # build a list with lines of the header block
+            header.extend([_type])
+            continue
+
+        if use_rtype:
+            field = self._format_field(_name, "", _desc)
+        else:
+            field = self._format_field(_name, _type, _desc)
+
+        if multi:
+            if lines:
+                lines.extend(self._format_block("          * ", field))
+            else:
+                if header:
+                    # add the header block + the 1st parameter stored in `field`
+                    lines.extend([":returns:", ""])
+                    lines.extend(self._format_block(" " * 4, header))
+                    lines.extend(self._format_block("          * ", field))
+                else:
+                    lines.extend(self._format_block(":returns: * ", field))
+        else:
+            if any(field):  # only add :returns: if there's something to say
+                lines.extend(self._format_block(":returns: ", field))
+            if _type and use_rtype:
+                lines.extend([f":rtype: {_type}", ""])
+    if lines and lines[-1]:
+        lines.append("")
+    return lines
+
+
+NumpyDocstring._parse_returns_section = _parse_returns_section_patched

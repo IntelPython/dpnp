@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,8 @@ import warnings
 import dpctl
 import numpy
 import pytest
+
+from . import config as dtype_config
 
 if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0b1":
     from numpy.exceptions import ComplexWarning
@@ -123,23 +125,35 @@ def pytest_collection_modifyitems(config, items):
         test_path, "skipped_tests_gpu_no_fp64.tbl"
     )
 
+    # global skip file for cuda backend
+    test_exclude_file_cuda = os.path.join(test_path, "skipped_tests_cuda.tbl")
+
     dev = dpctl.select_default_device()
     is_cpu = dev.is_cpu
-    is_gpu_no_fp64 = not dev.has_aspect_fp64
+    is_gpu = dev.is_gpu
+    support_fp64 = dev.has_aspect_fp64
+    is_cuda = dpnp.is_cuda_backend(dev)
 
     print("")
+    print(
+        f"DPNP Test scope includes all integer dtypes: {bool(dtype_config.all_int_types)}"
+    )
     print(f"DPNP current device is CPU: {is_cpu}")
-    print(f"DPNP current device is GPU without fp64 support: {is_gpu_no_fp64}")
+    print(f"DPNP current device is GPU: {is_gpu}")
+    print(f"DPNP current device supports fp64: {support_fp64}")
+    print(f"DPNP current device is GPU with cuda backend: {is_cuda}")
     print(f"DPNP version: {dpnp.__version__}, location: {dpnp}")
     print(f"NumPy version: {numpy.__version__}, location: {numpy}")
     print(f"Python version: {sys.version}")
     print("")
-    if not is_cpu or os.getenv("DPNP_QUEUE_GPU") == "1":
+    if is_gpu or os.getenv("DPNP_QUEUE_GPU") == "1":
         excluded_tests.extend(get_excluded_tests(test_exclude_file_gpu))
-        if is_gpu_no_fp64:
+        if not support_fp64:
             excluded_tests.extend(
                 get_excluded_tests(test_exclude_file_gpu_no_fp64)
             )
+        if is_cuda:
+            excluded_tests.extend(get_excluded_tests(test_exclude_file_cuda))
     else:
         excluded_tests.extend(get_excluded_tests(test_exclude_file))
 

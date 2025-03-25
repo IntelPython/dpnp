@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -24,31 +24,36 @@
 //*****************************************************************************
 
 #pragma once
-#ifndef CONSTANTS_H // Cython compatibility
-#define CONSTANTS_H
 
-#include "dpnp_iface.hpp"
+#include <sycl/sycl.hpp>
 
-/**
- * This is container for the constants from Python interpreter and other
- * modules. These constants are subject to use in algorithms.
- */
-struct python_constants
+// dpctl tensor headers
+#include "utils/type_utils.hpp"
+
+namespace dpnp::kernels::bitwise_count
 {
-    static void *py_none; /**< Python None */
-    static void *py_nan;  /**< Python NAN or NumPy.nan */
+namespace tu_ns = dpctl::tensor::type_utils;
+
+template <typename argT, typename resT>
+struct BitwiseCountFunctor
+{
+    // is function constant for given argT
+    using is_constant = typename std::false_type;
+    // constant value, if constant
+    // constexpr resT constant_value = resT{};
+    // is function defined for sycl::vec
+    using supports_vec = typename std::false_type;
+    // do both argT and resT support subgroup store/load operation
+    using supports_sg_loadstore = typename std::true_type;
+
+    resT operator()(const argT &x) const
+    {
+        if constexpr (std::is_unsigned_v<argT>) {
+            return sycl::popcount(x);
+        }
+        else {
+            return sycl::popcount(sycl::abs(x));
+        }
+    }
 };
-
-/**
- * @ingroup BACKEND_API
- * @brief Python constants initialization in the backend.
- *
- * Global values from Python to use in algorithms.
- *
- * @param [in]  py_none   Python NONE representation
- * @param [in]  py_nan    Python NAN representation
- */
-INP_DLLEXPORT void dpnp_python_constants_initialize_c(void *py_none,
-                                                      void *py_nan);
-
-#endif // CONSTANTS_H
+} // namespace dpnp::kernels::bitwise_count

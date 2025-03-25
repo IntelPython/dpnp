@@ -1,3 +1,7 @@
+.. _routines.linalg:
+
+.. py:module:: dpnp.linalg
+
 Linear algebra
 ==============
 
@@ -19,6 +23,8 @@ Matrix and vector products
    dpnp.outer
    dpnp.matmul
    dpnp.linalg.matmul (Array API compatible)
+   dpnp.matvec
+   dpnp.vecmat
    dpnp.tensordot
    dpnp.linalg.tensordot (Array API compatible)
    dpnp.einsum
@@ -91,7 +97,7 @@ Other matrix operations
 
    dpnp.diagonal
    dpnp.linalg.diagonal (Array API compatible)
-   dpnp.linalg.matrix_tranpose (Array API compatible)
+   dpnp.linalg.matrix_transpose (Array API compatible)
 
 Exceptions
 ----------

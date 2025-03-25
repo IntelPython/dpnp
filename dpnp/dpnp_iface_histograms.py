@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2024, Intel Corporation
+# Copyright (c) 2024-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,21 +42,25 @@ from collections.abc import Iterable
 
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._type_utils import _can_cast
 
 import dpnp
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
+from dpnp.dpnp_utils.dpnp_utils_common import (
+    result_type_for_device,
+    to_supported_dtypes,
+)
 
 # pylint: disable=no-name-in-module
-from .dpnp_utils import get_usm_allocations, map_dtype_to_device
+from .dpnp_utils import get_usm_allocations
 
 __all__ = [
     "bincount",
     "digitize",
     "histogram",
     "histogram_bin_edges",
+    "histogram2d",
     "histogramdd",
 ]
 
@@ -65,33 +69,15 @@ __all__ = [
 _range = range
 
 
-def _result_type_for_device(dtypes, device):
-    rt = dpnp.result_type(*dtypes)
-    return map_dtype_to_device(rt, device)
-
-
 def _align_dtypes(a_dtype, bins_dtype, ntype, supported_types, device):
-    has_fp64 = device.has_aspect_fp64
-    has_fp16 = device.has_aspect_fp16
-
-    a_bin_dtype = _result_type_for_device([a_dtype, bins_dtype], device)
+    a_bin_dtype = result_type_for_device([a_dtype, bins_dtype], device)
 
     # histogram implementation doesn't support uint64 as histogram type
     # we can use int64 instead. Result would be correct even in case of overflow
     if ntype == numpy.uint64:
         ntype = dpnp.int64
 
-    if (a_bin_dtype, ntype) in supported_types:
-        return a_bin_dtype, ntype
-
-    for sample_type, hist_type in supported_types:
-        if _can_cast(
-            a_bin_dtype, sample_type, has_fp16, has_fp64
-        ) and _can_cast(ntype, hist_type, has_fp16, has_fp64):
-            return sample_type, hist_type
-
-    # should not happen
-    return None, None
+    return to_supported_dtypes([a_bin_dtype, ntype], supported_types, device)
 
 
 def _ravel_check_a_and_weights(a, weights):
@@ -138,6 +124,9 @@ def _get_outer_edges(a, range):
         return numpy.isfinite(a)
 
     if range is not None:
+        if len(range) != 2:
+            raise ValueError("range argument must consist of 2 elements.")
+
         first_edge, last_edge = range
         if first_edge > last_edge:
             raise ValueError("max must be larger than min in range parameter.")
@@ -236,17 +225,23 @@ def _get_bin_edges(a, bins, range, usm_type):
 
 
 def _bincount_validate(x, weights, minlength):
+    dpnp.check_supported_arrays_type(x)
     if x.ndim > 1:
         raise ValueError("object too deep for desired array")
+
     if x.ndim < 1:
         raise ValueError("object of too small depth for desired array")
+
     if not dpnp.issubdtype(x.dtype, dpnp.integer) and not dpnp.issubdtype(
         x.dtype, dpnp.bool
     ):
         raise TypeError("x must be an integer array")
+
     if weights is not None:
+        dpnp.check_supported_arrays_type(weights)
         if x.shape != weights.shape:
             raise ValueError("The weights and x don't have the same length.")
+
         if not (
             dpnp.issubdtype(weights.dtype, dpnp.integer)
             or dpnp.issubdtype(weights.dtype, dpnp.floating)
@@ -256,10 +251,12 @@ def _bincount_validate(x, weights, minlength):
                 f"Weights must be integer or float. Got {weights.dtype}"
             )
 
-    if minlength is not None:
-        minlength = int(minlength)
-        if minlength < 0:
-            raise ValueError("minlength must be non-negative")
+    if minlength is None:
+        raise TypeError("use 0 instead of None for minlength")
+
+    minlength = int(minlength)
+    if minlength < 0:
+        raise ValueError("minlength must be non-negative")
 
 
 def _bincount_run_native(
@@ -273,9 +270,7 @@ def _bincount_run_native(
     if min_v < 0:
         raise ValueError("x argument must have no negative arguments")
 
-    size = int(dpnp.max(max_v)) + 1
-    if minlength is not None:
-        size = max(size, minlength)
+    size = max(int(max_v) + 1, minlength)
 
     # bincount implementation uses atomics, but atomics doesn't work with
     # host usm memory
@@ -298,8 +293,8 @@ def _bincount_run_native(
 
     mem_ev, bc_ev = statistics_ext.bincount(
         x_usm,
-        min_v,
-        max_v,
+        min_v.item(),
+        max_v.item(),
         weights_usm,
         n_usm,
         depends=_manager.submitted_events,
@@ -310,24 +305,31 @@ def _bincount_run_native(
     return n_casted
 
 
-def bincount(x, weights=None, minlength=None):
+def bincount(x, weights=None, minlength=0):
     """
-    bincount(x, /, weights=None, minlength=None)
+    bincount(x, /, weights=None, minlength=0)
 
     Count number of occurrences of each value in array of non-negative ints.
 
     For full documentation refer to :obj:`numpy.bincount`.
 
+    Warning
+    -------
+    This function synchronizes in order to calculate binning edges.
+    This may harm performance in some applications.
+
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input 1-dimensional array with nonnegative integer values.
+        Input 1-dimensional array with non-negative integer values.
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         Weights, array of the same shape as `x`.
+
         Default: ``None``
-    minlength : {None, int}, optional
+    minlength : int, optional
         A minimum number of bins for the output array.
-        Default: ``None``
+
+        Default: ``0``
 
     Returns
     -------
@@ -392,12 +394,10 @@ def bincount(x, weights=None, minlength=None):
         x.dtype, x.dtype, ntype, supported_types, device
     )
 
-    if x_casted_dtype is None or ntype_casted is None:
+    if x_casted_dtype is None or ntype_casted is None:  # pragma: no cover
         raise ValueError(
-            f"function '{bincount}' does not support input types "
-            f"({x.dtype}, {ntype}), "
-            "and the inputs could not be coerced to any "
-            "supported types"
+            f"Input types ({x.dtype}, {ntype}) are not supported, "
+            "and the inputs could not be coerced to any supported types"
         )
 
     x_casted = dpnp.asarray(x, dtype=x_casted_dtype, order="C")
@@ -427,6 +427,7 @@ def digitize(x, bins, right=False):
         increasing or decreasing.
     right : bool, optional
         Indicates whether the intervals include the right or the left bin edge.
+
         Default: ``False``.
 
     Returns
@@ -510,6 +511,11 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram`.
 
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -520,6 +526,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         If `bins` is a sequence, it defines a monotonically increasing array
         of bin edges, including the rightmost edge, allowing for non-uniform
         bin widths.
+
         Default: ``10``.
     range : {None, 2-tuple of float}, optional
         The lower and upper range of the bins. If not provided, range is simply
@@ -528,6 +535,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         affects the automatic bin computation as well. While bin width is
         computed to be optimal based on the actual data within `range`, the bin
         count will fill the entire range including portions containing no data.
+
         Default: ``None``.
     density : {None, bool}, optional
         If ``False`` or ``None``, the result will contain the number of samples
@@ -536,6 +544,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         the range is ``1``. Note that the sum of the histogram values will not
         be equal to ``1`` unless bins of unity width are chosen; it is not
         a probability *mass* function.
+
         Default: ``None``.
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         An array of weights, of the same shape as `a`. Each value in `a` only
@@ -545,6 +554,7 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         Please note that the ``dtype`` of `weights` will also become the
         ``dtype`` of the returned accumulator (`hist`), so it must be large
         enough to hold accumulated values as well.
+
         Default: ``None``.
 
     Returns
@@ -607,11 +617,10 @@ def histogram(a, bins=10, range=None, density=None, weights=None):
         a.dtype, bin_edges.dtype, ntype, supported_types, device
     )
 
-    if a_bin_dtype is None or hist_dtype is None:
+    if a_bin_dtype is None or hist_dtype is None:  # pragma: no cover
         raise ValueError(
-            f"function '{histogram}' does not support input types "
-            f"({a.dtype}, {bin_edges.dtype}, {ntype}), "
-            "and the inputs could not be coerced to any "
+            f"Input types ({a.dtype}, {bin_edges.dtype}, {ntype}) "
+            "are not supported, and the inputs could not be coerced to any "
             "supported types"
         )
 
@@ -673,6 +682,11 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
 
     For full documentation refer to :obj:`numpy.histogram_bin_edges`.
 
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
+
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
@@ -682,6 +696,7 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
         given range.
         If `bins` is a sequence, it defines the bin edges, including the
         rightmost edge, allowing for non-uniform bin widths.
+
         Default: ``10``.
     range : {None, 2-tuple of float}, optional
         The lower and upper range of the bins. If not provided, range is simply
@@ -690,12 +705,14 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
         affects the automatic bin computation as well. While bin width is
         computed to be optimal based on the actual data within `range`, the bin
         count will fill the entire range including portions containing no data.
+
         Default: ``None``.
     weights : {None, dpnp.ndarray, usm_ndarray}, optional
         An array of weights, of the same shape as `a`. Each value in `a` only
         contributes its associated weight towards the bin count (instead of 1).
         This is currently not used by any of the bin estimators, but may be in
         the future.
+
         Default: ``None``.
 
     Returns
@@ -749,6 +766,174 @@ def histogram_bin_edges(a, bins=10, range=None, weights=None):
     a, weights, usm_type = _ravel_check_a_and_weights(a, weights)
     bin_edges, _ = _get_bin_edges(a, bins, range, usm_type)
     return bin_edges
+
+
+def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
+    """
+    Compute the bi-dimensional histogram of two data samples.
+
+    For full documentation refer to :obj:`numpy.histogram2d`.
+
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray} of shape (N,)
+        An array containing the `x` coordinates of the points to be
+        histogrammed.
+    y : {dpnp.ndarray, usm_ndarray} of shape (N,)
+        An array containing the `y` coordinates of the points to be
+        histogrammed.
+    bins : {int, dpnp.ndarray, usm_ndarray, [int, int], [array, array], \
+        [int, array], [array, int]}, optional
+
+        The bins specification:
+
+        * If int, the number of bins for the two dimensions (nx=ny=bins).
+        * If array, the bin edges for the two dimensions
+          (x_edges=y_edges=bins).
+        * If [int, int], the number of bins in each dimension
+          (nx, ny = bins).
+        * If [array, array], the bin edges in each dimension
+          (x_edges, y_edges = bins).
+        * A combination [int, array] or [array, int], where int
+          is the number of bins and array is the bin edges.
+
+        Default: ``10``.
+    range : {None, dpnp.ndarray, usm_ndarray} of shape (2, 2), optional
+        The leftmost and rightmost edges of the bins along each dimension
+        If ``None`` the ranges are
+        ``[[x.min(), x.max()], [y.min(), y.max()]]``. All values outside
+        of this range will be considered outliers and not tallied in the
+        histogram.
+
+        Default: ``None``.
+    density : {None, bool}, optional
+        If ``False`` or ``None``, the default, returns the number of
+        samples in each bin.
+        If ``True``, returns the probability *density* function at the bin,
+        ``bin_count / sample_count / bin_volume``.
+
+        Default: ``None``.
+    weights : {None, dpnp.ndarray, usm_ndarray} of shape (N,), optional
+        An array of values ``w_i`` weighing each sample ``(x_i, y_i)``.
+        Weights are normalized to ``1`` if `density` is ``True``.
+        If `density` is ``False``, the values of the returned histogram
+        are equal to the sum of the weights belonging to the samples
+        falling into each bin.
+        If ``None`` all samples are assigned a weight of ``1``.
+
+        Default: ``None``.
+    Returns
+    -------
+    H : dpnp.ndarray of shape (nx, ny)
+        The bi-dimensional histogram of samples `x` and `y`. Values in `x`
+        are histogrammed along the first dimension and values in `y` are
+        histogrammed along the second dimension.
+    xedges : dpnp.ndarray of shape (nx+1,)
+        The bin edges along the first dimension.
+    yedges : dpnp.ndarray of shape (ny+1,)
+        The bin edges along the second dimension.
+
+    See Also
+    --------
+    :obj:`dpnp.histogram` : 1D histogram
+    :obj:`dpnp.histogramdd` : Multidimensional histogram
+
+    Notes
+    -----
+    When `density` is ``True``, then the returned histogram is the sample
+    density, defined such that the sum over bins of the product
+    ``bin_value * bin_area`` is 1.
+
+    Please note that the histogram does not follow the Cartesian convention
+    where `x` values are on the abscissa and `y` values on the ordinate
+    axis. Rather, `x` is histogrammed along the first dimension of the
+    array (vertical), and `y` along the second dimension of the array
+    (horizontal). This ensures compatibility with `histogramdd`.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> x = np.random.randn(20).astype("float32")
+    >>> y = np.random.randn(20).astype("float32")
+    >>> hist, edges_x, edges_y = np.histogram2d(x, y, bins=(4, 3))
+    >>> hist.shape
+    (4, 3)
+    >>> hist
+    array([[1., 2., 0.],
+           [0., 3., 1.],
+           [1., 4., 1.],
+           [1., 3., 3.]], dtype=float32)
+    >>> edges_x.shape
+    (5,)
+    >>> edges_x
+    array([-1.7516936 , -0.96109843, -0.17050326,  0.62009203,  1.4106871 ],
+          dtype=float32)
+    >>> edges_y.shape
+    (4,)
+    >>> edges_y
+    array([-2.6604428 , -0.94615364,  0.76813555,  2.4824247 ], dtype=float32)
+
+    Please note, that resulting values of histogram and edges may vary.
+
+    """
+
+    dpnp.check_supported_arrays_type(x, y)
+    if weights is not None:
+        dpnp.check_supported_arrays_type(weights)
+
+    if x.ndim != 1 or y.ndim != 1:
+        raise ValueError(
+            f"x and y must be 1-dimensional arrays."
+            f"Got {x.ndim} and {y.ndim} respectively"
+        )
+
+    if len(x) != len(y):
+        raise ValueError(
+            f"x and y must have the same length."
+            f"Got {len(x)} and {len(y)} respectively"
+        )
+
+    usm_type, exec_q = get_usm_allocations([x, y, bins, range, weights])
+    device = exec_q.sycl_device
+
+    sample_dtype = result_type_for_device([x.dtype, y.dtype], device)
+
+    # Unlike histogramdd histogram2d accepts 1d bins and
+    # apply it to both dimensions
+    # at the same moment two elements bins should be interpreted as
+    # number of bins in each dimension and array-like bins with one element
+    # is not allowed
+    if isinstance(bins, Iterable) and len(bins) > 2:
+        bins = [bins] * 2
+
+    bins = _histdd_normalize_bins(bins, 2)
+    bins_dtypes = [sample_dtype]
+    bins_dtypes += [b.dtype for b in bins if hasattr(b, "dtype")]
+
+    bins_dtype = result_type_for_device(bins_dtypes, device)
+    hist_dtype = _histdd_hist_dtype(exec_q, weights)
+
+    supported_types = statistics_ext.histogramdd_dtypes()
+
+    sample_dtype, _ = _align_dtypes(
+        sample_dtype, bins_dtype, hist_dtype, supported_types, device
+    )
+
+    sample = dpnp.empty_like(
+        x, shape=x.shape + (2,), dtype=sample_dtype, usm_type=usm_type
+    )
+    sample[:, 0] = x
+    sample[:, 1] = y
+
+    hist, edges = histogramdd(
+        sample, bins=bins, range=range, density=density, weights=weights
+    )
+    return hist, edges[0], edges[1]
 
 
 def _histdd_validate_bins(bins):
@@ -873,9 +1058,7 @@ def _histdd_hist_dtype(queue, weights):
         # hist_dtype is either float or complex, so it is ok
         # to calculate it as result type between default_float and
         # weights.dtype
-        hist_dtype = _result_type_for_device(
-            [hist_dtype, weights.dtype], device
-        )
+        hist_dtype = result_type_for_device([hist_dtype, weights.dtype], device)
 
     return hist_dtype
 
@@ -886,7 +1069,7 @@ def _histdd_sample_dtype(queue, sample, bin_edges_list):
     dtypes_ = [bin_edges.dtype for bin_edges in bin_edges_list]
     dtypes_.append(sample.dtype)
 
-    return _result_type_for_device(dtypes_, device)
+    return result_type_for_device(dtypes_, device)
 
 
 def _histdd_supported_dtypes(sample, bin_edges_list, weights):
@@ -918,11 +1101,16 @@ def _histdd_extract_arrays(sample, weights, bins):
     return all_arrays
 
 
-def histogramdd(sample, bins=10, range=None, weights=None, density=False):
+def histogramdd(sample, bins=10, range=None, density=None, weights=None):
     """
     Compute the multidimensional histogram of some data.
 
     For full documentation refer to :obj:`numpy.histogramdd`.
+
+    Warning
+    -------
+    This function may synchronize in order to check a monotonically increasing
+    array of bin edges. This may harm performance in some applications.
 
     Parameters
     ----------
@@ -936,30 +1124,33 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
         * The number of bins for each dimension (nx, ny, ... =bins)
         * The number of bins for all dimensions (nx=ny=...=bins).
 
-        Default: ``10``
+        Default: ``10``.
     range : {None, sequence}, optional
         A sequence of length D, each an optional (lower, upper) tuple giving
         the outer bin edges to be used if the edges are not given explicitly in
         `bins`.
-        An entry of None in the sequence results in the minimum and maximum
+        An entry of ``None`` in the sequence results in the minimum and maximum
         values being used for the corresponding dimension.
-        None is equivalent to passing a tuple of D None values.
+        ``None`` is equivalent to passing a tuple of D ``None`` values.
 
-        Default: ``None``
-    weights : {dpnp.ndarray, usm_ndarray}, optional
-        An (N,)-shaped array of values `w_i` weighing each sample
-        `(x_i, y_i, z_i, ...)`.
-        Weights are normalized to 1 if density is True. If density is False,
-        the values of the returned histogram are equal to the sum of the
-        weights belonging to the samples falling into each bin.
-
-        Default: ``None``
-    density : bool, optional
-        If ``False``, the default, returns the number of samples in each bin.
+        Default: ``None``.
+    density : {None, bool}, optional
+        If ``False`` or ``None``, the default, returns the number of
+        samples in each bin.
         If ``True``, returns the probability *density* function at the bin,
         ``bin_count / sample_count / bin_volume``.
 
-        Default: ``False``
+        Default: ``None``.
+    weights : {None, dpnp.ndarray, usm_ndarray}, optional
+        An (N,)-shaped array of values `w_i` weighing each sample
+        `(x_i, y_i, z_i, ...)`.
+        Weights are normalized to ``1`` if density is ``True``.
+        If density is ``False``, the values of the returned histogram
+        are equal to the sum of the weights belonging to the samples
+        falling into each bin.
+        If ``None`` all samples are assigned a weight of ``1``.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -993,7 +1184,7 @@ def histogramdd(sample, bins=10, range=None, weights=None, density=False):
     elif sample.ndim > 2:
         raise ValueError("sample must have no more than 2 dimensions")
 
-    ndim = sample.shape[1] if sample.size > 0 else 1
+    ndim = sample.shape[1]
 
     _arrays = _histdd_extract_arrays(sample, weights, bins)
     usm_type, queue = get_usm_allocations(_arrays)

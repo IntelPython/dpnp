@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ it contains:
 # pylint: disable=protected-access
 
 import operator
+from collections.abc import Iterable
 
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_impl as ti
@@ -52,8 +53,10 @@ from dpctl.tensor._numpy_helper import normalize_axis_index
 import dpnp
 
 # pylint: disable=no-name-in-module
+import dpnp.backend.extensions.indexing._indexing_impl as indexing_ext
+
+# pylint: disable=no-name-in-module
 from .dpnp_algo import (
-    dpnp_choose,
     dpnp_putmask,
 )
 from .dpnp_array import dpnp_array
@@ -117,50 +120,177 @@ def _ravel_multi_index_checks(multi_index, dims, order):
         )
 
 
-def choose(x1, choices, out=None, mode="raise"):
+def _build_choices_list(choices):
+    """
+    Gather queues and USM types for the input, expected to be an array or
+    list of arrays. If a single array of dimension greater than one, the array
+    will be unstacked.
+
+    Returns a list of :class:`dpctl.tensor.usm_ndarray`s.
+    """
+
+    if dpnp.is_supported_array_type(choices):
+        choices = dpnp.unstack(choices)
+    elif not isinstance(choices, Iterable):
+        raise TypeError("`choices` must be an array or sequence of arrays")
+    return [dpnp.get_usm_ndarray(chc) for chc in choices]
+
+
+def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
+    # arg validation, broadcasting, type coercion assumed done by caller
+    if out is not None:
+        out = dpnp.get_usm_ndarray(out)
+
+        if not out.flags.writable:
+            raise ValueError("provided `out` array is read-only")
+
+        if out.shape != inds.shape:
+            raise ValueError(
+                "The shape of input and output arrays are inconsistent. "
+                f"Expected output shape is {inds.shape}, got {out.shape}"
+            )
+
+        if chcs[0].dtype != out.dtype:
+            raise TypeError(
+                f"Output array of type {chcs[0].dtype} is needed, "
+                f"got {out.dtype}"
+            )
+
+        if dpu.get_execution_queue((q, out.sycl_queue)) is None:
+            raise dpu.ExecutionPlacementError(
+                "Input and output allocation queues are not compatible"
+            )
+
+        if ti._array_overlap(inds, out) or any(
+            ti._array_overlap(out, chc) for chc in chcs
+        ):
+            # Allocate a temporary buffer to avoid memory overlapping.
+            out = dpt.empty_like(out)
+    else:
+        out = dpt.empty(
+            inds.shape, dtype=chcs[0].dtype, usm_type=usm_type, sycl_queue=q
+        )
+
+    _manager = dpu.SequentialOrderManager[q]
+    dep_evs = _manager.submitted_events
+
+    h_ev, choose_ev = indexing_ext._choose(inds, chcs, out, mode, q, dep_evs)
+    _manager.add_event_pair(h_ev, choose_ev)
+
+    return out
+
+
+def choose(a, choices, out=None, mode="wrap"):
     """
     Construct an array from an index array and a set of arrays to choose from.
 
     For full documentation refer to :obj:`numpy.choose`.
 
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        An integer array of indices indicating the position of the array
+        in `choices` to choose from. Behavior of out-of-bounds integers (i.e.,
+        integers outside of `[0, n-1]` where `n` is the number of choices) is
+        determined by the `mode` keyword.
+    choices : {dpnp.ndarray, usm_ndarray, \
+               sequence of dpnp.ndarrays and usm_ndarrays}
+        Choice arrays. `a` and choice arrays must be broadcast-compatible.
+        If `choices` is an array, the array is unstacked into a sequence of
+        arrays.
+    out : {None, dpnp.ndarray, usm_ndarray}, optional
+        If provided, the result will be placed in this array. It should
+        be of the appropriate shape and dtype.
+
+        Default: ``None``.
+    mode : {"wrap", "clip"}, optional
+        Specifies how out-of-bounds indices will be handled. Possible values
+        are:
+
+        - ``"wrap"``: clamps indices to (``-n <= i < n``), then wraps
+          negative indices.
+        - ``"clip"``: clips indices to (``0 <= i < n``).
+
+        Default: ``"wrap"``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        The merged result.
+
     See also
     --------
-    :obj:`dpnp.take_along_axis` : Preferable if choices is an array.
+    :obj:`dpnp.ndarray.choose` : Equivalent method.
+    :obj:`dpnp.take_along_axis` : Preferable if `choices` is an array.
 
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> choices = np.array([[0, 1, 2, 3], [10, 11, 12, 13],
+    ...   [20, 21, 22, 23], [30, 31, 32, 33]])
+    >>> np.choose(np.array([2, 3, 1, 0]), choices
+    ... # the first element of the result will be the first element of the
+    ... # third (2+1) "array" in choices, namely, 20; the second element
+    ... # will be the second element of the fourth (3+1) choice array, i.e.,
+    ... # 31, etc.
+    ... )
+    array([20, 31, 12, 3])
+    >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='clip'
+    ... # 4 goes to 3 (4-1)
+    ... )
+    array([20, 31, 12, 3])
+    >>> # because there are 4 choice arrays
+    >>> np.choose(np.array([2, 4, 1, 0]), choices, mode='wrap'
+    ... # 4 is clipped to 3
+    ... )
+    array([20, 31, 12, 3])
+    >>> np.choose(np.array([2, -1, 1, 0]), choices, mode='wrap'
+    ... # -1 goes to 3 (-1+4)
+    ... )
+    array([20, 31, 12, 3])
+
+    An example using broadcasting:
+
+    >>> a = np.array([[1, 0, 1], [0, 1, 0], [1, 0, 1]])
+    >>> choices = np.array([-10, 10])
+    >>> np.choose(a, choices)
+    array([[ 10, -10,  10],
+           [-10,  10, -10],
+           [ 10, -10,  10]])
     """
-    x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
+    mode = _get_indexing_mode(mode)
 
-    choices_list = []
-    for choice in choices:
-        choices_list.append(
-            dpnp.get_dpnp_descriptor(choice, copy_when_nondefault_queue=False)
-        )
-
-    if x1_desc:
-        if any(not desc for desc in choices_list):
-            pass
-        elif out is not None:
-            pass
-        elif mode != "raise":
-            pass
-        elif any(not choices[0].dtype == choice.dtype for choice in choices):
-            pass
-        elif not choices_list:
-            pass
+    inds = dpnp.get_usm_ndarray(a)
+    ind_dt = inds.dtype
+    if not dpnp.issubdtype(ind_dt, dpnp.integer):
+        # NumPy will cast up to int64 in general but
+        # int32 is more than safe for bool
+        if ind_dt == dpnp.bool:
+            inds = dpt.astype(inds, dpt.int32)
         else:
-            size = x1_desc.size
-            choices_size = choices_list[0].size
-            if any(
-                choice.size != choices_size or choice.size != size
-                for choice in choices
-            ):
-                pass
-            elif any(x >= choices_size for x in dpnp.asnumpy(x1)):
-                pass
-            else:
-                return dpnp_choose(x1_desc, choices_list).get_pyobj()
+            raise TypeError("input index array must be of integer data type")
 
-    return call_origin(numpy.choose, x1, choices, out, mode)
+    choices = _build_choices_list(choices)
+
+    res_usm_type, exec_q = get_usm_allocations(choices + [inds])
+    # apply type promotion to input choices
+    res_dt = dpt.result_type(*choices)
+    if len(choices) > 1:
+        choices = tuple(
+            map(
+                lambda chc: (
+                    chc if chc.dtype == res_dt else dpt.astype(chc, res_dt)
+                ),
+                choices,
+            )
+        )
+    arrs_broadcast = dpt.broadcast_arrays(inds, *choices)
+    inds = arrs_broadcast[0]
+    choices = tuple(arrs_broadcast[1:])
+
+    res = _choose_run(inds, choices, exec_q, res_usm_type, out=out, mode=mode)
+
+    return dpnp.get_result_array(res, out=out)
 
 
 def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
@@ -236,10 +366,12 @@ def compress(condition, a, axis=None, out=None):
     axis : {None, int}, optional
         Axis along which to extract slices. If ``None``, works over the
         flattened array.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         If provided, the result will be placed in this array. It should
         be of the appropriate shape and dtype.
+
         Default: ``None``.
 
     Returns
@@ -332,21 +464,28 @@ def diag_indices(n, ndim=2, device=None, usm_type="device", sycl_queue=None):
         The size, along each dimension, of the arrays for which the returned
         indices can be used.
     ndim : int, optional
-        The number of dimensions. Default: ``2``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+        The number of dimensions.
+
+        Default: ``2``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -491,13 +630,19 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
         Array from which the diagonals are taken.
     offset : int, optional
         Offset of the diagonal from the main diagonal. Can be positive or
-        negative. Defaults to main diagonal (``0``).
+        negative. Defaults to main diagonal.
+
+        Default: ``0``.
     axis1 : int, optional
         Axis to be used as the first axis of the 2-D sub-arrays from which
-        the diagonals should be taken. Defaults to first axis (``0``).
+        the diagonals should be taken. Defaults to first axis.
+
+        Default: ``0``.
     axis2 : int, optional
         Axis to be used as the second axis of the 2-D sub-arrays from
-        which the diagonals should be taken. Defaults to second axis (``1``).
+        which the diagonals should be taken. Defaults to second axis.
+
+        Default: ``1``.
 
     Returns
     -------
@@ -520,7 +665,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.arange(4).reshape(2,2)
+    >>> a = np.arange(4).reshape(2, 2)
     >>> a
     array([[0, 1],
            [2, 3]])
@@ -531,7 +676,7 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
 
     A 3-D example:
 
-    >>> a = np.arange(8).reshape(2,2,2)
+    >>> a = np.arange(8).reshape(2, 2, 2)
     >>> a
     array([[[0, 1],
             [2, 3]],
@@ -622,14 +767,8 @@ def diagonal(a, offset=0, axis1=0, axis2=1):
         out_strides = a_straides[:-2] + (1,)
         out_offset = a_element_offset
 
-    return dpnp_array._create_from_usm_ndarray(
-        dpt.usm_ndarray(
-            out_shape,
-            dtype=a.dtype,
-            buffer=a.get_array(),
-            strides=out_strides,
-            offset=out_offset,
-        )
+    return dpnp_array(
+        out_shape, buffer=a, strides=out_strides, offset=out_offset
     )
 
 
@@ -736,7 +875,9 @@ def fill_diagonal(a, val, wrap=False):
         diagonal entries.
     wrap : bool
         It enables the diagonal "wrapped" after N columns. This affects only
-        tall matrices. Default: ``False``.
+        tall matrices.
+
+        Default: ``False``.
 
     See Also
     --------
@@ -924,25 +1065,34 @@ def indices(
     ----------
     dimensions : sequence of ints
         The shape of the grid.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Data type of the result.
+
+        Default: ``int``.
     sparse : {None, boolean}, optional
         Return a sparse representation of the grid instead of a dense
-        representation. Default is ``False``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+        representation.
+
+        Default is ``False``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1084,8 +1234,8 @@ def ix_(*args):
     N dimensions.
 
     Using :obj:`dpnp.ix_` one can quickly construct index arrays that will
-    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array
-    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.
+    index the cross product. ``a[dpnp.ix_([1, 3],[2, 5])]`` returns the array
+    ``[[a[1, 2] a[1, 5]], [a[3, 2] a[3, 5]]]``.
 
     Parameters
     ----------
@@ -1185,21 +1335,28 @@ def mask_indices(
     k : scalar
         An optional argument which is passed through to `mask_func`. Functions
         like :obj:`dpnp.triu`, :obj:`dpnp.tril` take a second argument that is
-        interpreted as an offset. Default: ``0``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+        interpreted as an offset.
+
+        Default: ``0``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -1507,6 +1664,7 @@ def put(a, ind, v, /, *, axis=None, mode="wrap"):
     axis : {None, int}, optional
         The axis along which the values will be placed. If `a` is 1-D array,
         this argument is optional.
+
         Default: ``None``.
     mode : {'wrap', 'clip'}, optional
         Specifies how out-of-bounds indices will behave.
@@ -1725,10 +1883,12 @@ def ravel_multi_index(multi_index, dims, mode="raise", order="C"):
 
         In ``"clip"`` mode, a negative index which would normally wrap will
         clip to 0 instead.
+
         Default: ``"raise"``.
     order : {None, "C", "F"}, optional
         Determines whether the multi-index should be viewed as indexing in
         row-major (C-style) or column-major (Fortran-style) order.
+
         Default: ``"C"``.
 
     Returns
@@ -1829,7 +1989,9 @@ def select(condlist, choicelist, default=0):
         to be of the same length as `condlist`.
     default : {scalar, dpnp.ndarray, usm_ndarray}, optional
         The element inserted in `output` when all conditions evaluate to
-        ``False``. Default: ``0``.
+        ``False``.
+
+        Default: ``0``.
 
     Returns
     -------
@@ -1860,9 +2022,9 @@ def select(condlist, choicelist, default=0):
 
     >>> x = np.arange(6)
     >>> condlist = [x<3, x>3]
-    >>> choicelist = [x, x**2]
+    >>> choicelist = [-x, x**2]
     >>> np.select(condlist, choicelist, 42)
-    array([ 0,  1,  2, 42, 16, 25])
+    array([ 0, -1, -2, 42, 16, 25])
 
     When multiple conditions are satisfied, the first one encountered in
     `condlist` is used.
@@ -1951,10 +2113,12 @@ def take(a, indices, /, *, axis=None, out=None, mode="wrap"):
     axis : {None, int, bool, 0-d array of integer dtype}, optional
         The axis over which to select values. By default, the flattened
         input array is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)
         If provided, the result will be placed in this array. It should
         be of the appropriate shape and dtype.
+
         Default: ``None``.
     mode : {"wrap", "clip"}, optional
         Specifies how out-of-bounds indices will be handled. Possible values
@@ -2175,25 +2339,34 @@ def tril_indices(
         The row dimension of the arrays for which the returned
         indices will be valid.
     k : int, optional
-        Diagonal offset (see :obj:`dpnp.tril` for details). Default: ``0``.
+        Diagonal offset (see :obj:`dpnp.tril` for details).
+
+        Default: ``0``.
     m : {None, int}, optional
         The column dimension of the arrays for which the returned
         arrays will be valid.
-        By default `m` is taken equal to `n`. Default: ``None``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+        By default `m` is taken equal to `n`.
+
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``"device"``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -2288,7 +2461,9 @@ def tril_indices_from(arr, k=0):
         The indices will be valid for square arrays whose dimensions are
         the same as arr.
     k : int, optional
-        Diagonal offset (see :obj:`dpnp.tril` for details). Default: ``0``.
+        Diagonal offset (see :obj:`dpnp.tril` for details).
+
+        Default: ``0``.
 
     Returns
     -------
@@ -2373,25 +2548,34 @@ def triu_indices(
         The size of the arrays for which the returned indices will
         be valid.
     k : int, optional
-        Diagonal offset (see :obj:`dpnp.triu` for details). Default: ``0``.
+        Diagonal offset (see :obj:`dpnp.triu` for details).
+
+        Default: ``0``.
     m : int, optional
         The column dimension of the arrays for which the returned
         arrays will be valid.
-        By default `m` is taken equal to `n`. Default: ``None``.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+        By default `m` is taken equal to `n`.
+
+        Default: ``None``.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     usm_type : {"device", "shared", "host"}, optional
         The type of SYCL USM allocation for the output array.
+
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
         to get the SYCL queue from `device` keyword if present or to use
         a default queue.
+
         Default: ``None``.
 
     Returns
@@ -2488,7 +2672,9 @@ def triu_indices_from(arr, k=0):
         The indices will be valid for square arrays whose dimensions are
         the same as arr.
     k : int, optional
-        Diagonal offset (see :obj:`dpnp.triu` for details). Default: ``0``.
+        Diagonal offset (see :obj:`dpnp.triu` for details).
+
+        Default: ``0``.
 
     Returns
     -------
@@ -2571,6 +2757,7 @@ def unravel_index(indices, shape, order="C"):
     order : {None, "C", "F"}, optional
         Determines whether the indices should be viewed as indexing in
         row-major (C-style) or column-major (Fortran-style) order.
+
         Default: ``"C"``.
 
     Returns

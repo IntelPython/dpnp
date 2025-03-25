@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2016-2024, Intel Corporation
+// Copyright (c) 2016-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -55,15 +55,6 @@
 #endif
 
 /**
- * Version of SYCL DPC++ 2023 compiler at which transition to SYCL 2020 occurs.
- * Intel(R) oneAPI DPC++ 2022.2.1 compiler has version 20221020L on Linux and
- * 20221101L on Windows.
- */
-#ifndef __SYCL_COMPILER_VERSION_REQUIRED
-#define __SYCL_COMPILER_VERSION_REQUIRED 20221102L
-#endif
-
-/**
  * Version of Intel MKL at which transition to OneMKL release 2023.0.0 occurs.
  */
 #ifndef __INTEL_MKL_2023_0_0_VERSION_REQUIRED
@@ -112,37 +103,6 @@ void get_shape_offsets_inkernel(const _DataType *shape,
         dim_prod_input *= shape[i_reverse];
     }
 
-    return;
-}
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Calculation of indices in array
- *
- * Calculates indices of element in array with given linear position
- * for example:
- *   idx = 5, shape = (2, 3), ndim = 2,
- *   indices xyz should be [1, 1]
- *
- * @param [in]  idx     linear index of the element in multy-D array.
- * @param [in]  ndim    number of dimensions.
- * @param [in]  shape   offsets of array.
- * @param [out] xyz     indices.
- */
-template <typename _DataType>
-void get_xyz_by_id(size_t idx,
-                   size_t ndim,
-                   const _DataType *offsets,
-                   _DataType *xyz)
-{
-    size_t quotient;
-    size_t remainder = idx;
-
-    for (size_t i = 0; i < ndim; ++i) {
-        quotient = remainder / offsets[i];
-        remainder = remainder - quotient * offsets[i];
-        xyz[i] = quotient;
-    }
     return;
 }
 
@@ -251,32 +211,6 @@ static inline bool array_equal(const _DataType *input1,
     return std::equal(std::begin(input1_vec), std::end(input1_vec),
                       std::begin(input2_vec));
 }
-
-/**
- * @ingroup BACKEND_UTILS
- * @brief Cast vector of DPCtl events to vector of SYCL enents.
- *
- * @param [in] events_ref      Reference to vector of DPCtl events.
- *
- * @return                     Vector of SYCL events.
- */
-namespace
-{
-[[maybe_unused]] std::vector<sycl::event>
-    cast_event_vector(const DPCTLEventVectorRef event_vec_ref)
-{
-    const size_t event_vec_size = DPCTLEventVector_Size(event_vec_ref);
-
-    std::vector<sycl::event> event_vec;
-    event_vec.reserve(event_vec_size);
-    for (size_t i = 0; i < event_vec_size; ++i) {
-        DPCTLSyclEventRef event_ref = DPCTLEventVector_GetAt(event_vec_ref, i);
-        sycl::event event = *(reinterpret_cast<sycl::event *>(event_ref));
-        event_vec.push_back(event);
-    }
-    return event_vec;
-}
-} // namespace
 
 /**
  * @ingroup BACKEND_UTILS

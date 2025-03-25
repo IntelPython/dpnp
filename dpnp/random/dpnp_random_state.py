@@ -1,7 +1,7 @@
 # cython: language_level=3
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,13 +61,15 @@ class RandomState:
         A random seed to initialize the pseudo-random number generator.
         The `seed` can be ``None`` (the default), an integer scalar, or
         an array of at most three integer scalars.
-    device : {None, string, SyclDevice, SyclQueue}, optional
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
-        The `device` can be ``None`` (the default), an OneAPI filter selector
-        string, an instance of :class:`dpctl.SyclDevice` corresponding to
-        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
-        or a `Device` object returned by
-        :obj:`dpnp.dpnp_array.dpnp_array.device` property.
+        `device` can be ``None``, a oneAPI filter selector string, an instance
+        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL
+        device, an instance of :class:`dpctl.SyclQueue`, or a
+        :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
     sycl_queue : {None, SyclQueue}, optional
         A SYCL queue to use for output array allocation and copying. The
         `sycl_queue` can be passed as ``None`` (the default), which means
@@ -81,6 +83,7 @@ class RandomState:
         self._sycl_queue = dpnp.get_normalized_queue_device(
             device=device, sycl_queue=sycl_queue
         )
+
         self._sycl_device = self._sycl_queue.sycl_device
 
         is_cpu = self._sycl_device.is_cpu
@@ -234,6 +237,11 @@ class RandomState:
         """
 
         if not use_origin_backend():
+            if dpnp.is_cuda_backend(self):  # pragma: no cover
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(loc):
                 pass
             elif not dpnp.isscalar(scale):
@@ -363,6 +371,11 @@ class RandomState:
         """
 
         if not use_origin_backend(low):
+            if dpnp.is_cuda_backend(self):  # pragma: no cover
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(low):
                 pass
             elif not (high is None or dpnp.isscalar(high)):
@@ -587,6 +600,11 @@ class RandomState:
         """
 
         if not use_origin_backend():
+            if dpnp.is_cuda_backend(self):  # pragma: no cover
+                raise NotImplementedError(
+                    "Running on CUDA is currently not supported"
+                )
+
             if not dpnp.isscalar(low):
                 pass
             elif not dpnp.isscalar(high):

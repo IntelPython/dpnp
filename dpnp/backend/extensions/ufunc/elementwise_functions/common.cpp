@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2024-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
 
 #include <pybind11/pybind11.h>
 
+#include "bitwise_count.hpp"
 #include "degrees.hpp"
 #include "fabs.hpp"
 #include "fix.hpp"
@@ -38,6 +39,7 @@
 #include "lcm.hpp"
 #include "ldexp.hpp"
 #include "logaddexp2.hpp"
+#include "nan_to_num.hpp"
 #include "radians.hpp"
 #include "sinc.hpp"
 #include "spacing.hpp"
@@ -51,6 +53,7 @@ namespace dpnp::extensions::ufunc
  */
 void init_elementwise_functions(py::module_ m)
 {
+    init_bitwise_count(m);
     init_degrees(m);
     init_fabs(m);
     init_fix(m);
@@ -64,6 +67,7 @@ void init_elementwise_functions(py::module_ m)
     init_lcm(m);
     init_ldexp(m);
     init_logaddexp2(m);
+    init_nan_to_num(m);
     init_radians(m);
     init_sinc(m);
     init_spacing(m);

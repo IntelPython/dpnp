@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2023-2024, Intel Corporation
+// Copyright (c) 2023-2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -144,6 +144,16 @@ static sycl::event gesv_impl(sycl::queue &exec_q,
         is_exception_caught = true;
         gesv_utils::handle_lapack_exc(exec_q, lda, a, scratchpad_size,
                                       scratchpad, ipiv, e, error_msg);
+    } catch (oneapi::mkl::computation_error const &e) {
+        // TODO: remove this catch when gh-642(oneMath) is fixed
+        // Workaround for oneMath interfaces
+        // oneapi::mkl::computation_error is thrown instead of
+        // oneapi::mkl::lapack::computation_error.
+        if (scratchpad != nullptr)
+            sycl_free_noexcept(scratchpad, exec_q);
+        if (ipiv != nullptr)
+            sycl_free_noexcept(ipiv, exec_q);
+        throw LinAlgError("The input coefficient matrix is singular.");
     } catch (sycl::exception const &e) {
         is_exception_caught = true;
         error_msg << "Unexpected SYCL exception caught during getrf() or "

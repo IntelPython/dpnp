@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2024, Intel Corporation
+# Copyright (c) 2024-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -24,6 +24,7 @@
 # *****************************************************************************
 
 set(_elementwise_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/bitwise_count.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/degrees.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/fabs.cpp
@@ -38,6 +39,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/lcm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/ldexp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/logaddexp2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/nan_to_num.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/radians.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/sinc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/spacing.cpp

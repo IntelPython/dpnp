@@ -38,10 +38,12 @@ Programming Language :: Python :: 3.9
 Programming Language :: Python :: 3.10
 Programming Language :: Python :: 3.11
 Programming Language :: Python :: 3.12
+Programming Language :: Python :: 3.13
 Programming Language :: Python :: Implementation :: CPython
 Topic :: Software Development
 Topic :: Scientific/Engineering
 Operating System :: Microsoft :: Windows
+Operating System :: POSIX :: Linux
 Operating System :: POSIX
 Operating System :: Unix
 """
@@ -81,4 +83,6 @@ setup(
         ]
     },
     include_package_data=False,
+    python_requires=">=3.9,<3.14",
+    install_requires=["dpctl >= 0.19.0dev0", "numpy"],
 )

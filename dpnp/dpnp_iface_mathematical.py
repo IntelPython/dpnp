@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -152,7 +152,7 @@ def _get_max_min(dtype):
     return f.max, f.min
 
 
-def _get_reduction_res_dt(a, dtype, _out):
+def _get_reduction_res_dt(a, dtype):
     """Get a data type used by dpctl for result array in reduction function."""
 
     if dtype is None:
@@ -360,9 +360,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -433,9 +435,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -502,13 +506,16 @@ x : {dpnp.ndarray, usm_ndarray}
     Input array, expected to have a complex-valued floating-point data type.
 deg : bool, optional
     Return angle in degrees if ``True``, radians if ``False``.
+
     Default: ``False``.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -562,12 +569,14 @@ def around(x, /, decimals=0, out=None):
     x : {dpnp.ndarray, usm_ndarray}
         Input array, expected to have numeric data type.
     decimals : int, optional
-        Number of decimal places to round to (default: 0). If decimals is
-        negative, it specifies the number of positions to the left of the
-        decimal point.
+        Number of decimal places to round to. If `decimals` is negative, it
+        specifies the number of positions to the left of the decimal point.
+
+        Default: ``0``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Output array to populate.
         Array must have the correct shape and the expected data type.
+
         Default: ``None``.
 
     Returns
@@ -606,9 +615,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -657,20 +668,23 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Array containing elements to clip.
-    min, max : {dpnp.ndarray, usm_ndarray, None}
+    min, max : {None, dpnp.ndarray, usm_ndarray}
         Minimum and maximum value. If ``None``, clipping is not performed on
         the corresponding edge. If both `min` and `max` are ``None``,
         the elements of the returned array stay the same.
         Both are broadcast against `a`.
+
         Default : ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The results will be placed in this array. It may be the input array
         for in-place clipping. `out` must be of the right shape to hold the
         output. Its type is preserved.
+
         Default : ``None``.
-    order : {"C", "F", "A", "K", None}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Memory layout of the newly output array, if parameter `out` is ``None``.
         If `order` is ``None``, the default value ``"K"`` will be used.
+
         Default: ``"K"``.
 
     Returns
@@ -737,9 +751,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -813,9 +829,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -882,15 +900,22 @@ def cross(a, b, axisa=-1, axisb=-1, axisc=-1, axis=None):
         Second input array.
     axisa : int, optional
         Axis of `a` that defines the vector(s). By default, the last axis.
+
+        Default: ``-1``.
     axisb : int, optional
         Axis of `b` that defines the vector(s). By default, the last axis.
+
+        Default: ``-1``.
     axisc : int, optional
-        Axis of `c` containing the cross product vector(s). Ignored if
-        both input vectors have dimension 2, as the return is scalar.
-        By default, the last axis.
+        Axis of `c` containing the cross product vector(s). Ignored if both
+        input vectors have dimension ``2``, as the return is scalar. By default,
+        the last axis.
+
+        Default: ``-1``.
     axis : {int, None}, optional
         If defined, the axis of `a`, `b` and `c` that defines the vector(s)
         and cross product(s). Overrides `axisa`, `axisb` and `axisc`.
+
         Default: ``None``.
 
     Returns
@@ -1046,18 +1071,21 @@ def cumprod(a, axis=None, dtype=None, out=None):
     axis : {None, int}, optional
         Axis along which the cumulative product is computed. It defaults to
         compute the cumulative product over the flattened array.
+
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are multiplied. If `dtype` is not specified, it defaults to the dtype
         of `a`, unless `a` has an integer dtype with a precision less than that
         of the default platform integer. In that case, the default platform
         integer is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+
         Default: ``None``.
 
     Returns
@@ -1106,11 +1134,10 @@ def cumprod(a, axis=None, dtype=None, out=None):
         usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.cumulative_prod,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
     )
@@ -1129,18 +1156,21 @@ def cumsum(a, axis=None, dtype=None, out=None):
     axis : {None, int}, optional
         Axis along which the cumulative sum is computed. It defaults to compute
         the cumulative sum over the flattened array.
+
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `a`, unless `a` has an integer dtype with a precision less than that of
         the default platform integer. In that case, the default platform
         integer is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+
         Default: ``None``.
 
     Returns
@@ -1196,11 +1226,10 @@ def cumsum(a, axis=None, dtype=None, out=None):
         usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.cumulative_sum,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
     )
@@ -1224,23 +1253,27 @@ def cumulative_prod(
         Axis along which the cumulative product is computed. The default value
         is only allowed for one-dimensional arrays. For arrays with more than
         one dimension `axis` is required.
+
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `x`, unless `x` has an integer dtype with a precision less than that of
         the default platform integer. In that case, the default platform
         integer is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+
         Default: ``None``.
     include_initial : bool, optional
         Boolean indicating whether to include the initial value (ones) as
         the first value in the output. With ``include_initial=True``
         the shape of the output is different than the shape of the input.
+
         Default: ``False``.
 
     Returns
@@ -1281,11 +1314,10 @@ def cumulative_prod(
     """
 
     return dpnp_wrap_reduction_call(
-        x,
+        dpnp.get_usm_ndarray(x),
         out,
         dpt.cumulative_prod,
-        _get_reduction_res_dt,
-        dpnp.get_usm_ndarray(x),
+        _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         include_initial=include_initial,
@@ -1310,23 +1342,27 @@ def cumulative_sum(
         Axis along which the cumulative sum is computed. The default value
         is only allowed for one-dimensional arrays. For arrays with more than
         one dimension `axis` is required.
+
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         Type of the returned array and of the accumulator in which the elements
         are summed. If `dtype` is not specified, it defaults to the dtype of
         `x`, unless `x` has an integer dtype with a precision less than that of
         the default platform integer. In that case, the default platform
         integer is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape and buffer length as the expected output but the type will
         be cast if necessary.
+
         Default: ``None``.
     include_initial : bool, optional
         Boolean indicating whether to include the initial value (ones) as
         the first value in the output. With ``include_initial=True``
         the shape of the output is different than the shape of the input.
+
         Default: ``False``.
 
     Returns
@@ -1373,11 +1409,10 @@ def cumulative_sum(
     """
 
     return dpnp_wrap_reduction_call(
-        x,
+        dpnp.get_usm_ndarray(x),
         out,
         dpt.cumulative_sum,
-        _get_reduction_res_dt,
-        dpnp.get_usm_ndarray(x),
+        _get_reduction_res_dt(x, dtype),
         axis=axis,
         dtype=dtype,
         include_initial=include_initial,
@@ -1394,18 +1429,23 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     ----------
     a : {dpnp.ndarray, usm_ndarray}
         Input array
-    n : {int}, optional
-        The number of times the values differ. If ``zero``, the input
-        is returned as-is.
-    axis : {int}, optional
-        The axis along which the difference is taken, default is the
-        last axis.
+    n : int, optional
+        The number of times the values differ. If ``0``, the input is returned
+        as-is.
+
+        Default: ``0``.
+    axis : int, optional
+        The axis along which the difference is taken, default is the last axis.
+
+        Default: ``-1``.
     prepend, append : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
-        Values to prepend or append to `a` along axis prior to
-        performing the difference. Scalar values are expanded to
-        arrays with length 1 in the direction of axis and the shape
-        of the input array in along all other axes. Otherwise the
-        dimension and shape must match `a` except along axis.
+        Values to prepend or append to `a` along axis prior to performing the
+        difference. Scalar values are expanded to arrays with length ``1`` in
+        the direction of axis and the shape of the input array in along all
+        other axes. Otherwise the dimension and shape must match `a` except
+        along `axis`.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -1471,9 +1511,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1543,9 +1585,11 @@ def ediff1d(ary, to_end=None, to_begin=None):
         If necessary, will be flattened before the differences are taken.
     to_end : array_like, optional
         Number(s) to append at the end of the returned differences.
+
         Default: ``None``.
     to_begin : array_like, optional
         Number(s) to prepend at the beginning of the returned differences.
+
         Default: ``None``.
 
     Returns
@@ -1637,9 +1681,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1693,9 +1739,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1770,9 +1818,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1857,9 +1907,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1923,9 +1975,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1999,9 +2053,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2086,9 +2142,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2170,9 +2228,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2241,9 +2301,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2307,17 +2369,20 @@ def gradient(f, *varargs, axis=None, edge_order=1):
         4. Any combination of N scalars/arrays with the meaning of 2. and 3.
 
         If `axis` is given, the number of `varargs` must equal the number of
-        axes.
+        axes specified in the `axis` parameter.
+
         Default: ``1``.
     axis : {None, int, tuple of ints}, optional
         Gradient is calculated only along the given axis or axes.
         The default is to calculate the gradient for all the axes of the input
         array. `axis` may be negative, in which case it counts from the last to
         the first axis.
+
         Default: ``None``.
     edge_order : {1, 2}, optional
         Gradient is calculated using N-th order accurate differences
         at the boundaries.
+
         Default: ``1``.
 
     Returns
@@ -2505,9 +2570,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2553,9 +2620,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2595,9 +2664,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2659,9 +2730,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2718,9 +2791,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2785,9 +2860,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2867,9 +2944,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2949,8 +3028,16 @@ def modf(x1, **kwargs):
     """
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
-    if x1_desc and not kwargs:
-        return dpnp_modf(x1_desc)
+    if x1_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
+        if kwargs:
+            pass
+        else:
+            return dpnp_modf(x1_desc)
 
     return call_origin(numpy.modf, x1, **kwargs)
 
@@ -2974,9 +3061,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3057,18 +3146,23 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
         Whether to create a copy of `x` (``True``) or to replace values
         in-place (``False``). The in-place operation only occurs if casting to
         an array does not require a copy.
+
+        Default: ``True``.
     nan : {int, float, bool}, optional
         Value to be used to fill ``NaN`` values.
+
         Default: ``0.0``.
     posinf : {int, float, bool, None}, optional
         Value to be used to fill positive infinity values. If no value is
         passed then positive infinity values will be replaced with a very
         large number.
+
         Default: ``None``.
     neginf : {int, float, bool, None} optional
         Value to be used to fill negative infinity values. If no value is
         passed then negative infinity values will be replaced with a very
         small (or negative) number.
+
         Default: ``None``.
 
     Returns
@@ -3121,21 +3215,11 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
             "nan must be a scalar of an integer, float, bool, "
             f"but got {type(nan)}"
         )
-
-    out = dpnp.empty_like(x) if copy else x
     x_type = x.dtype.type
 
     if not issubclass(x_type, dpnp.inexact):
-        return x
+        return dpnp.copy(x) if copy else dpnp.get_result_array(x)
 
-    parts = (
-        (x.real, x.imag) if issubclass(x_type, dpnp.complexfloating) else (x,)
-    )
-    parts_out = (
-        (out.real, out.imag)
-        if issubclass(x_type, dpnp.complexfloating)
-        else (out,)
-    )
     max_f, min_f = _get_max_min(x.real.dtype)
     if posinf is not None:
         if not isinstance(posinf, (int, float)):
@@ -3152,16 +3236,26 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
             )
         min_f = neginf
 
-    for part, part_out in zip(parts, parts_out):
-        nan_mask = dpnp.isnan(part)
-        posinf_mask = dpnp.isposinf(part)
-        neginf_mask = dpnp.isneginf(part)
+    if copy:
+        out = dpnp.empty_like(x)
+    else:
+        if not x.flags.writable:
+            raise ValueError("copy is required for read-only array `x`")
+        out = x
 
-        part = dpnp.where(nan_mask, nan, part, out=part_out)
-        part = dpnp.where(posinf_mask, max_f, part, out=part_out)
-        part = dpnp.where(neginf_mask, min_f, part, out=part_out)
+    x_ary = dpnp.get_usm_ndarray(x)
+    out_ary = dpnp.get_usm_ndarray(out)
 
-    return out
+    q = x.sycl_queue
+    _manager = dpu.SequentialOrderManager[q]
+
+    h_ev, comp_ev = ufi._nan_to_num(
+        x_ary, nan, max_f, min_f, out_ary, q, depends=_manager.submitted_events
+    )
+
+    _manager.add_event_pair(h_ev, comp_ev)
+
+    return dpnp.get_result_array(out)
 
 
 _NEGATIVE_DOCSTRING = """
@@ -3176,9 +3270,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3238,9 +3334,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3292,9 +3390,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3361,9 +3461,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3460,24 +3562,28 @@ def prod(
         If `axis` is a tuple of integers, a product is performed on all of the
         axes specified in the tuple instead of a single axis or all the axes as
         before.
+
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array, as well as of the accumulator in which
         the elements are multiplied. The dtype of `a` is used by default unless
         `a` has an integer dtype of less precision than the default platform
         integer. In that case, if `a` is signed then the platform integer is
         used while if `a` is unsigned then an unsigned integer of the same
         precision as the platform integer is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have
         the same shape as the expected output, but the type of the output
         values will be cast if necessary.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the input array.
+
         Default: ``False``.
 
     Returns
@@ -3524,11 +3630,10 @@ def prod(
     usm_a = dpnp.get_usm_ndarray(a)
 
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.prod,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -3545,9 +3650,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3596,9 +3703,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3657,6 +3766,7 @@ def real_if_close(a, tol=100):
     tol : scalar, optional
         Tolerance in machine epsilons for the complex part of the elements in
         the array. If the tolerance is <=1, then the absolute tolerance is used.
+
         Default: ``100``.
 
     Returns
@@ -3725,9 +3835,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3801,9 +3913,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3863,6 +3977,7 @@ decimals : int, optional
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 
 Returns
@@ -3921,9 +4036,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -3976,9 +4093,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -4031,9 +4150,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -4091,9 +4212,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -4153,9 +4276,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -4233,24 +4358,28 @@ def sum(
         If `axis` is a tuple of integers, a sum is performed on all of the axes
         specified in the tuple instead of a single axis or all the axes as
         before.
+
         Default: ``None``.
-    dtype : {None, dtype}, optional
+    dtype : {None, str, dtype object}, optional
         The type of the returned array and of the accumulator in which the
         elements are summed. The dtype of `a` is used by default unless `a` has
         an integer dtype of less precision than the default platform integer.
         In that case, if `a` is signed then the platform integer is used while
         if `a` is unsigned then an unsigned integer of the same precision as
         the platform integer is used.
+
         Default: ``None``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         Alternative output array in which to place the result. It must have the
         same shape as the expected output, but the type of the output values
         will be cast if necessary.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If this is set to ``True``, the axes which are reduced are left in the
         result as dimensions with size one. With this option, the result will
         broadcast correctly against the input array.
+
         Default: ``False``.
 
     Returns
@@ -4297,11 +4426,10 @@ def sum(
 
     usm_a = dpnp.get_usm_ndarray(a)
     return dpnp_wrap_reduction_call(
-        a,
+        usm_a,
         out,
         dpt.sum,
-        _get_reduction_res_dt,
-        usm_a,
+        _get_reduction_res_dt(a, dtype),
         axis=axis,
         dtype=dtype,
         keepdims=keepdims,
@@ -4327,15 +4455,18 @@ def trapezoid(y, x=None, dx=1.0, axis=-1):
     ----------
     y : {dpnp.ndarray, usm_ndarray}
         Input array to integrate.
-    x : {dpnp.ndarray, usm_ndarray, None}, optional
+    x : {None, dpnp.ndarray, usm_ndarray}, optional
         The sample points corresponding to the `y` values. If `x` is ``None``,
         the sample points are assumed to be evenly spaced `dx` apart.
+
         Default: ``None``.
     dx : scalar, optional
         The spacing between sample points when `x` is ``None``.
+
         Default: ``1``.
     axis : int, optional
         The axis along which to integrate.
+
         Default: ``-1``.
 
     Returns
@@ -4447,9 +4578,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
-order : {"C", "F", "A", "K"}, optional
+order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns

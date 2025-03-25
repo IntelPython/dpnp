@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -40,6 +40,7 @@ from .dpnp_array import dpnp_array
 __all__ = [
     "bool",
     "bool_",
+    "byte",
     "cdouble",
     "complex128",
     "complex64",
@@ -57,21 +58,35 @@ __all__ = [
     "iinfo",
     "inexact",
     "inf",
-    "int",
     "int_",
+    "int8",
+    "int16",
     "int32",
     "int64",
     "integer",
     "intc",
     "intp",
+    "isdtype",
     "issubdtype",
     "is_type_supported",
+    "longlong",
     "nan",
     "newaxis",
     "number",
     "pi",
+    "short",
     "signedinteger",
     "single",
+    "ubyte",
+    "uint8",
+    "uint16",
+    "uint32",
+    "uint64",
+    "uintc",
+    "uintp",
+    "unsignedinteger",
+    "ushort",
+    "ulonglong",
 ]
 
 
@@ -81,6 +96,7 @@ __all__ = [
 # =============================================================================
 bool = numpy.bool_
 bool_ = numpy.bool_
+byte = numpy.byte
 cdouble = numpy.cdouble
 complex128 = numpy.complex128
 complex64 = numpy.complex64
@@ -93,16 +109,29 @@ float32 = numpy.float32
 float64 = numpy.float64
 floating = numpy.floating
 inexact = numpy.inexact
-int = numpy.int_
 int_ = numpy.int_
+int8 = numpy.int8
+int16 = numpy.int16
 int32 = numpy.int32
 int64 = numpy.int64
 integer = numpy.integer
 intc = numpy.intc
 intp = numpy.intp
+longlong = numpy.longlong
 number = numpy.number
+short = numpy.short
 signedinteger = numpy.signedinteger
 single = numpy.single
+ubyte = numpy.ubyte
+uint8 = numpy.uint8
+uint16 = numpy.uint16
+uint32 = numpy.uint32
+uint64 = numpy.uint64
+uintc = numpy.uintc
+uintp = numpy.uintp
+unsignedinteger = numpy.unsignedinteger
+ushort = numpy.ushort
+ulonglong = numpy.ulonglong
 
 
 # =============================================================================
@@ -194,9 +223,64 @@ def iinfo(dtype):
             smallest representable number.
 
     """
+
     if isinstance(dtype, dpnp_array):
         dtype = dtype.dtype
     return dpt.iinfo(dtype)
+
+
+def isdtype(dtype, kind):
+    """
+    Returns a boolean indicating whether a provided `dtype` is
+    of a specified data type `kind`.
+
+    Parameters
+    ----------
+    dtype : dtype
+        The input dtype.
+    kind : {dtype, str, tuple of dtypes or strs}
+        The input dtype or dtype kind. Allowed dtype kinds are:
+
+        * ``'bool'`` : boolean kind
+        * ``'signed integer'`` : signed integer data types
+        * ``'unsigned integer'`` : unsigned integer data types
+        * ``'integral'`` : integer data types
+        * ``'real floating'`` : real-valued floating-point data types
+        * ``'complex floating'`` : complex floating-point data types
+        * ``'numeric'`` : numeric data types
+
+    Returns
+    -------
+    out : bool
+        A boolean indicating whether a provided `dtype` is of a specified data
+        type `kind`.
+
+    See Also
+    --------
+    :obj:`dpnp.issubdtype` : Test if the first argument is a type code
+                             lower/equal in type hierarchy.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.isdtype(np.float32, np.float64)
+    False
+    >>> np.isdtype(np.float32, "real floating")
+    True
+    >>> np.isdtype(np.complex128, ("real floating", "complex floating"))
+    True
+
+    """
+
+    if isinstance(dtype, type):
+        dtype = dpt.dtype(dtype)
+
+    if isinstance(kind, type):
+        kind = dpt.dtype(kind)
+    elif isinstance(kind, tuple):
+        kind = tuple(dpt.dtype(k) if isinstance(k, type) else k for k in kind)
+
+    return dpt.isdtype(dtype, kind)
 
 
 def issubdtype(arg1, arg2):

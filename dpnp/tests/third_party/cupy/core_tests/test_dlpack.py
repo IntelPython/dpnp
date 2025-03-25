@@ -7,26 +7,21 @@ import dpnp as cupy
 from dpnp.tests.third_party.cupy import testing
 
 
+# TODO: to roll back the changes once the issue with CUDA support is resolved for random
 def _gen_array(dtype, alloc_q=None):
     if cupy.issubdtype(dtype, numpy.unsignedinteger):
-        array = cupy.random.randint(
-            0, 10, size=(2, 3), sycl_queue=alloc_q
-        ).astype(dtype)
+        array = numpy.random.randint(0, 10, size=(2, 3))
     elif cupy.issubdtype(dtype, cupy.integer):
-        array = cupy.random.randint(
-            -10, 10, size=(2, 3), sycl_queue=alloc_q
-        ).astype(dtype)
+        array = numpy.random.randint(-10, 10, size=(2, 3))
     elif cupy.issubdtype(dtype, cupy.floating):
-        array = cupy.random.rand(2, 3, sycl_queue=alloc_q).astype(dtype)
+        array = numpy.random.rand(2, 3)
     elif cupy.issubdtype(dtype, cupy.complexfloating):
-        array = cupy.random.random((2, 3), sycl_queue=alloc_q).astype(dtype)
+        array = numpy.random.random((2, 3))
     elif dtype == cupy.bool_:
-        array = cupy.random.randint(
-            0, 2, size=(2, 3), sycl_queue=alloc_q
-        ).astype(cupy.bool_)
+        array = numpy.random.randint(0, 2, size=(2, 3))
     else:
         assert False, f"unrecognized dtype: {dtype}"
-    return array
+    return cupy.asarray(array, sycl_queue=alloc_q).astype(dtype)
 
 
 class DLDummy:
@@ -206,7 +201,13 @@ class TestNewDLPackConversion:
         for src_s in [self._get_stream(s) for s in allowed_streams]:
             for dst_s in [self._get_stream(s) for s in allowed_streams]:
                 orig_array = _gen_array(cupy.float32, alloc_q=src_s)
-                dltensor = orig_array.__dlpack__(stream=orig_array)
+
+                q = dpctl.SyclQueue(
+                    orig_array.sycl_context,
+                    orig_array.sycl_device,
+                    property="enable_profiling",
+                )
+                dltensor = orig_array.__dlpack__(stream=q)
 
                 out_array = dlp.from_dlpack_capsule(dltensor)
                 out_array = cupy.from_dlpack(out_array, device=dst_s)

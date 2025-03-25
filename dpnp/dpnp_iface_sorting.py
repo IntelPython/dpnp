@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # *****************************************************************************
-# Copyright (c) 2016-2024, Intel Corporation
+# Copyright (c) 2016-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,13 @@ __all__ = ["argsort", "partition", "sort", "sort_complex"]
 
 
 def _wrap_sort_argsort(
-    a, _sorting_fn, axis=-1, kind=None, order=None, stable=True
+    a,
+    _sorting_fn,
+    axis=-1,
+    kind=None,
+    order=None,
+    descending=False,
+    stable=True,
 ):
     """Wrap a sorting call from dpctl.tensor interface."""
 
@@ -83,11 +89,15 @@ def _wrap_sort_argsort(
         axis = -1
 
     axis = normalize_axis_index(axis, ndim=usm_a.ndim)
-    usm_res = _sorting_fn(usm_a, axis=axis, stable=stable, kind=kind)
+    usm_res = _sorting_fn(
+        usm_a, axis=axis, descending=descending, stable=stable, kind=kind
+    )
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
-def argsort(a, axis=-1, kind=None, order=None, *, stable=None):
+def argsort(
+    a, axis=-1, kind=None, order=None, *, descending=False, stable=None
+):
     """
     Returns the indices that would sort an array.
 
@@ -100,14 +110,26 @@ def argsort(a, axis=-1, kind=None, order=None, *, stable=None):
     axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is ``-1``, which sorts along the last axis.
+
+        Default: ``-1``.
     kind : {None, "stable", "mergesort", "radixsort"}, optional
-        Sorting algorithm. Default is ``None``, which is equivalent to
-         ``"stable"``.
+        Sorting algorithm. The default is ``None``, which uses parallel
+        merge-sort or parallel radix-sort algorithms depending on the array
+        data type.
+
+        Default: ``None``.
+    descending : bool, optional
+        Sort order. If ``True``, the array must be sorted in descending order
+        (by value). If ``False``, the array must be sorted in ascending order
+        (by value).
+
+        Default: ``False``.
     stable : {None, bool}, optional
-        Sort stability. If ``True``, the returned array will maintain
-        the relative order of ``a`` values which compare as equal.
-        The same behavior applies when set to ``False`` or ``None``.
+        Sort stability. If ``True``, the returned array will maintain the
+        relative order of `a` values which compare as equal. The same behavior
+        applies when set to ``False`` or ``None``.
         Internally, this option selects ``kind="stable"``.
+
         Default: ``None``.
 
     Returns
@@ -129,7 +151,6 @@ def argsort(a, axis=-1, kind=None, order=None, *, stable=None):
     Parameters `order` is only supported with its default value.
     Otherwise ``NotImplementedError`` exception will be raised.
     Sorting algorithms ``"quicksort"`` and ``"heapsort"`` are not supported.
-
 
     See Also
     --------
@@ -171,7 +192,13 @@ def argsort(a, axis=-1, kind=None, order=None, *, stable=None):
     """
 
     return _wrap_sort_argsort(
-        a, dpt.argsort, axis=axis, kind=kind, order=order, stable=stable
+        a,
+        dpt.argsort,
+        axis=axis,
+        kind=kind,
+        order=order,
+        descending=descending,
+        stable=stable,
     )
 
 
@@ -192,6 +219,11 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_nondefault_queue=False)
     if x1_desc:
+        if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
+            raise NotImplementedError(
+                "Running on CUDA is currently not supported"
+            )
+
         if not isinstance(kth, int):
             pass
         elif x1_desc.ndim == 0:
@@ -210,7 +242,7 @@ def partition(x1, kth, axis=-1, kind="introselect", order=None):
     return call_origin(numpy.partition, x1, kth, axis, kind, order)
 
 
-def sort(a, axis=-1, kind=None, order=None, *, stable=None):
+def sort(a, axis=-1, kind=None, order=None, *, descending=False, stable=None):
     """
     Return a sorted copy of an array.
 
@@ -223,14 +255,26 @@ def sort(a, axis=-1, kind=None, order=None, *, stable=None):
     axis : {None, int}, optional
         Axis along which to sort. If ``None``, the array is flattened before
         sorting. The default is ``-1``, which sorts along the last axis.
+
+        Default: ``-1``.
     kind : {None, "stable", "mergesort", "radixsort"}, optional
-        Sorting algorithm. Default is ``None``, which is equivalent to
-        ``"stable"``.
+        Sorting algorithm. The default is ``None``, which uses parallel
+        merge-sort or parallel radix-sort algorithms depending on the array
+        data type.
+
+        Default: ``None``.
+    descending : bool, optional
+        Sort order. If ``True``, the array must be sorted in descending order
+        (by value). If ``False``, the array must be sorted in ascending order
+        (by value).
+
+        Default: ``False``.
     stable : {None, bool}, optional
-        Sort stability. If ``True``, the returned array will maintain
-        the relative order of ``a`` values which compare as equal.
-        The same behavior applies when set to ``False`` or ``None``.
+        Sort stability. If ``True``, the returned array will maintain the
+        relative order of `a` values which compare as equal. The same behavior
+        applies when set to ``False`` or ``None``.
         Internally, this option selects ``kind="stable"``.
+
         Default: ``None``.
 
     Returns
@@ -260,7 +304,7 @@ def sort(a, axis=-1, kind=None, order=None, *, stable=None):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.array([[1,4],[3,1]])
+    >>> a = np.array([[1, 4], [3, 1]])
     >>> np.sort(a)                # sort along the last axis
     array([[1, 4],
            [1, 3]])
@@ -273,7 +317,13 @@ def sort(a, axis=-1, kind=None, order=None, *, stable=None):
     """
 
     return _wrap_sort_argsort(
-        a, dpt.sort, axis=axis, kind=kind, order=order, stable=stable
+        a,
+        dpt.sort,
+        axis=axis,
+        kind=kind,
+        order=order,
+        descending=descending,
+        stable=stable,
     )
 
 

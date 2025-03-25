@@ -1,5 +1,5 @@
 # *****************************************************************************
-# Copyright (c) 2023-2024, Intel Corporation
+# Copyright (c) 2023-2025, Intel Corporation
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,6 +38,8 @@ available as a pybind11 extension.
 # pylint: disable=protected-access
 # pylint: disable=useless-import-alias
 
+from typing import NamedTuple
+
 import dpctl.tensor._tensor_impl as ti
 import dpctl.utils as dpu
 import numpy
@@ -69,6 +71,29 @@ __all__ = [
     "dpnp_solve",
     "dpnp_svd",
 ]
+
+
+# pylint:disable=missing-class-docstring
+class EighResult(NamedTuple):
+    eigenvalues: dpnp.ndarray
+    eigenvectors: dpnp.ndarray
+
+
+class QRResult(NamedTuple):
+    Q: dpnp.ndarray
+    R: dpnp.ndarray
+
+
+class SlogdetResult(NamedTuple):
+    sign: dpnp.ndarray
+    logabsdet: dpnp.ndarray
+
+
+class SVDResult(NamedTuple):
+    U: dpnp.ndarray
+    S: dpnp.ndarray
+    Vh: dpnp.ndarray
+
 
 _jobz = {"N": 0, "V": 1}
 _upper_lower = {"U": 0, "L": 1}
@@ -162,7 +187,7 @@ def _batched_eigh(a, UPLO, eigen_mode, w_type, v_type):
         # Convert to contiguous to align with NumPy
         if a_orig_order == "C":
             v = dpnp.ascontiguousarray(v)
-        return w, v
+        return EighResult(w, v)
     return w
 
 
@@ -397,7 +422,14 @@ def _batched_qr(a, mode="reduced"):
         batch_size,
         depends=[copy_ev],
     )
-    _manager.add_event_pair(ht_ev, geqrf_ev)
+
+    # w/a to avoid raice conditional on CUDA during multiple runs
+    # TODO: Remove it ones the OneMath issue is resolved
+    # https://github.com/uxlfoundation/oneMath/issues/626
+    if dpnp.is_cuda_backend(a_sycl_queue):  # pragma: no cover
+        ht_ev.wait()
+    else:
+        _manager.add_event_pair(ht_ev, geqrf_ev)
 
     if mode in ["r", "raw"]:
         if mode == "r":
@@ -417,6 +449,7 @@ def _batched_qr(a, mode="reduced"):
             a_t,
             shape=(batch_size, m, m),
             dtype=res_type,
+            order="C",
         )
     else:
         mc = k
@@ -424,6 +457,7 @@ def _batched_qr(a, mode="reduced"):
             a_t,
             shape=(batch_size, n, m),
             dtype=res_type,
+            order="C",
         )
 
     # use DPCTL tensor function to fill the matrix array `q[..., :n, :]`
@@ -469,7 +503,7 @@ def _batched_qr(a, mode="reduced"):
 
     r = _triu_inplace(r)
 
-    return (
+    return QRResult(
         q.reshape(batch_shape + q.shape[-2:]),
         r.reshape(batch_shape + r.shape[-2:]),
     )
@@ -625,7 +659,7 @@ def _batched_svd(
         u = dpnp.ascontiguousarray(u)
         vt = dpnp.ascontiguousarray(vt)
         # Swap `u` and `vt` for transposed input to restore correct order
-        return (vt, s, u) if trans_flag else (u, s, vt)
+        return SVDResult(vt, s, u) if trans_flag else SVDResult(u, s, vt)
     return s
 
 
@@ -812,9 +846,9 @@ def _hermitian_svd(a, compute_uv):
     # but dpnp.linalg.eigh returns s sorted ascending so we re-order
     # the eigenvalues and related arrays to have the correct order
     if compute_uv:
-        s, u = dpnp.linalg.eigh(a)
+        s, u = dpnp_eigh(a, eigen_mode="V")
         sgn = dpnp.sign(s)
-        s = dpnp.absolute(s)
+        s = dpnp.abs(s, out=s)
         sidx = dpnp.argsort(s)[..., ::-1]
         # Rearrange the signs according to sorted indices
         sgn = dpnp.take_along_axis(sgn, sidx, axis=-1)
@@ -825,11 +859,10 @@ def _hermitian_svd(a, compute_uv):
         # Singular values are unsigned, move the sign into v
         # Compute V^T adjusting for the sign and conjugating
         vt = dpnp.transpose(u * sgn[..., None, :]).conjugate()
-        return u, s, vt
+        return SVDResult(u, s, vt)
 
-    # TODO: use dpnp.linalg.eighvals when it is updated
-    s, _ = dpnp.linalg.eigh(a)
-    s = dpnp.abs(s)
+    s = dpnp_eigh(a, eigen_mode="N")
+    s = dpnp.abs(s, out=s)
     return dpnp.sort(s)[..., ::-1]
 
 
@@ -1076,7 +1109,7 @@ def _multi_dot_matrix_chain_order(n, arrays, return_costs=False):
         else [arrays[-1].shape[0], arrays[-1].shape[1]]
     )
     # m is a matrix of costs of the subproblems
-    # m[i,j]: min number of scalar multiplications needed to compute A_{i..j}
+    # m[i, j]: min number of scalar multiplications needed to compute A_{i..j}
     m = dpnp.zeros((n, n), usm_type=usm_type, sycl_queue=exec_q)
     # s is the actual ordering
     # s[i, j] is the value of k at which we split the product A_i..A_j
@@ -1152,6 +1185,9 @@ def _norm_int_axis(x, ord, axis, keepdims):
     """
 
     if ord == dpnp.inf:
+        if x.shape[axis] == 0:
+            x = dpnp.moveaxis(x, axis, -1)
+            return dpnp.zeros_like(x, shape=x.shape[:-1])
         return dpnp.abs(x).max(axis=axis, keepdims=keepdims)
     if ord == -dpnp.inf:
         return dpnp.abs(x).min(axis=axis, keepdims=keepdims)
@@ -1187,6 +1223,10 @@ def _norm_tuple_axis(x, ord, row_axis, col_axis, keepdims):
     """
 
     axis = (row_axis, col_axis)
+    flag = x.shape[row_axis] == 0 or x.shape[col_axis] == 0
+    if flag and ord in [1, 2, dpnp.inf]:
+        x = dpnp.moveaxis(x, axis, (-2, -1))
+        return dpnp.zeros_like(x, shape=x.shape[:-2])
     if row_axis == col_axis:
         raise ValueError("Duplicate axes given.")
     if ord == 2:
@@ -1263,9 +1303,15 @@ def _real_type(dtype, device=None):
     ----------
     dtype : dpnp.dtype
         The dtype for which to find the corresponding real data type.
-    device : {None, string, SyclDevice, SyclQueue}, optional
-        An array API concept of device where an array of default floating type
-        might be created.
+    device : {None, string, SyclDevice, SyclQueue, Device}, optional
+        An array API concept of device where an array of default floating data
+        type is created. `device` can be ``None``, a oneAPI filter selector
+        string, an instance of :class:`dpctl.SyclDevice` corresponding to
+        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,
+        or a :class:`dpctl.tensor.Device` object returned by
+        :attr:`dpnp.ndarray.device`.
+
+        Default: ``None``.
 
     Returns
     -------
@@ -1416,7 +1462,7 @@ def _zero_batched_qr(a, mode, m, n, k, res_type):
     batch_shape = a.shape[:-2]
 
     if mode == "reduced":
-        return (
+        return QRResult(
             dpnp.empty_like(
                 a,
                 shape=batch_shape + (m, k),
@@ -1436,7 +1482,7 @@ def _zero_batched_qr(a, mode, m, n, k, res_type):
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
-        return (
+        return QRResult(
             q,
             dpnp.empty_like(
                 a,
@@ -1523,7 +1569,7 @@ def _zero_batched_svd(
             usm_type=usm_type,
             sycl_queue=exec_q,
         )
-        return u, s, vt
+        return SVDResult(u, s, vt)
     return s
 
 
@@ -1541,22 +1587,28 @@ def _zero_k_qr(a, mode, m, n, res_type):
     m, n = a.shape
 
     if mode == "reduced":
-        return dpnp.empty_like(
-            a,
-            shape=(m, 0),
-            dtype=res_type,
-        ), dpnp.empty_like(
-            a,
-            shape=(0, n),
-            dtype=res_type,
+        return QRResult(
+            dpnp.empty_like(
+                a,
+                shape=(m, 0),
+                dtype=res_type,
+            ),
+            dpnp.empty_like(
+                a,
+                shape=(0, n),
+                dtype=res_type,
+            ),
         )
     if mode == "complete":
-        return dpnp.identity(
-            m, dtype=res_type, sycl_queue=a_sycl_queue, usm_type=a_usm_type
-        ), dpnp.empty_like(
-            a,
-            shape=(m, n),
-            dtype=res_type,
+        return QRResult(
+            dpnp.identity(
+                m, dtype=res_type, sycl_queue=a_sycl_queue, usm_type=a_usm_type
+            ),
+            dpnp.empty_like(
+                a,
+                shape=(m, n),
+                dtype=res_type,
+            ),
         )
     if mode == "r":
         return dpnp.empty_like(
@@ -1641,7 +1693,7 @@ def _zero_m_n_batched_svd(
                 usm_type=usm_type,
                 sycl_queue=exec_q,
             )
-        return u, s, vt
+        return SVDResult(u, s, vt)
     return s
 
 
@@ -1685,7 +1737,7 @@ def _zero_m_n_svd(
             usm_type=usm_type,
             sycl_queue=exec_q,
         )
-        return u, s, vt
+        return SVDResult(u, s, vt)
     return s
 
 
@@ -1986,7 +2038,7 @@ def dpnp_det(a):
     return det.reshape(shape)
 
 
-def dpnp_eigh(a, UPLO, eigen_mode="V"):
+def dpnp_eigh(a, UPLO="L", eigen_mode="V"):
     """
     dpnp_eigh(a, UPLO, eigen_mode="V")
 
@@ -2009,7 +2061,7 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
         w = dpnp.empty_like(a, shape=a.shape[:-1], dtype=w_type)
         if eigen_mode == "V":
             v = dpnp.empty_like(a, dtype=v_type)
-            return w, v
+            return EighResult(w, v)
         return w
 
     if a.ndim > 2:
@@ -2090,7 +2142,7 @@ def dpnp_eigh(a, UPLO, eigen_mode="V"):
     else:
         out_v = v
 
-    return (w, out_v) if eigen_mode == "V" else w
+    return EighResult(w, out_v) if eigen_mode == "V" else w
 
 
 def dpnp_inv(a):
@@ -2320,7 +2372,7 @@ def dpnp_norm(x, ord=None, axis=None, keepdims=False):
     """Compute matrix or vector norm."""
 
     if not dpnp.issubdtype(x.dtype, dpnp.inexact):
-        x = dpnp.astype(x, dtype=dpnp.default_float_type(x.device))
+        x = dpnp.astype(x, dpnp.default_float_type(x.device))
 
     ndim = x.ndim
     # Immediately handle some default, simple, fast, and common cases.
@@ -2468,7 +2520,14 @@ def dpnp_qr(a, mode="reduced"):
     ht_ev, geqrf_ev = li._geqrf(
         a_sycl_queue, a_t.get_array(), tau_h.get_array(), depends=[copy_ev]
     )
-    _manager.add_event_pair(ht_ev, geqrf_ev)
+
+    # w/a to avoid raice conditional on CUDA during multiple runs
+    # TODO: Remove it ones the OneMath issue is resolved
+    # https://github.com/uxlfoundation/oneMath/issues/626
+    if dpnp.is_cuda_backend(a_sycl_queue):  # pragma: no cover
+        ht_ev.wait()
+    else:
+        _manager.add_event_pair(ht_ev, geqrf_ev)
 
     if mode in ["r", "raw"]:
         if mode == "r":
@@ -2488,6 +2547,7 @@ def dpnp_qr(a, mode="reduced"):
             a_t,
             shape=(m, m),
             dtype=res_type,
+            order="C",
         )
     else:
         mc = k
@@ -2495,6 +2555,7 @@ def dpnp_qr(a, mode="reduced"):
             a_t,
             shape=(n, m),
             dtype=res_type,
+            order="C",
         )
 
     # use DPCTL tensor function to fill the matrix array `q[:n]`
@@ -2532,7 +2593,7 @@ def dpnp_qr(a, mode="reduced"):
     r = a_t[:, :mc].transpose()
 
     r = _triu_inplace(r)
-    return (q, r)
+    return QRResult(q, r)
 
 
 def dpnp_solve(a, b):
@@ -2661,7 +2722,7 @@ def dpnp_slogdet(a):
             usm_type=a_usm_type,
             sycl_queue=a_sycl_queue,
         )
-        return sign, logdet
+        return SlogdetResult(sign, logdet)
 
     lu, ipiv, dev_info = _lu_factor(a, res_type)
 
@@ -2673,7 +2734,7 @@ def dpnp_slogdet(a):
 
     logdet = logdet.astype(logdet_dtype, copy=False)
     singular = dev_info > 0
-    return (
+    return SlogdetResult(
         dpnp.where(singular, res_type.type(0), sign).reshape(shape),
         dpnp.where(singular, logdet_dtype.type("-inf"), logdet).reshape(shape),
     )
@@ -2801,10 +2862,10 @@ def dpnp_svd(
         # For A^T = V S^T U^T, `u_h` becomes V and `vt_h` becomes U^T.
         # Transpose and swap them back to restore correct order for A.
         if trans_flag:
-            return vt_h.T, s_h, u_h.T
+            return SVDResult(vt_h.T, s_h, u_h.T)
         # gesvd call writes `u_h` and `vt_h` in Fortran order;
         # Convert to contiguous to align with NumPy
         u_h = dpnp.ascontiguousarray(u_h)
         vt_h = dpnp.ascontiguousarray(vt_h)
-        return u_h, s_h, vt_h
+        return SVDResult(u_h, s_h, vt_h)
     return s_h
