@@ -708,9 +708,9 @@ def dpnp_fillfreq(a, m, n, val):
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
 
     # it's assumed there is no dependent events to fill the array
-    ht_lin_ev, lin_ev = ti._linspace_step(0, m, a[:m].get_array(), exec_q)
+    ht_lin_ev, lin_ev = ti._linspace_step(0, 1, a[:m].get_array(), exec_q)
     _manager.add_event_pair(ht_lin_ev, lin_ev)
 
-    ht_lin_ev, lin_ev = ti._linspace_step(m - n, 0, a[m:].get_array(), exec_q)
+    ht_lin_ev, lin_ev = ti._linspace_step(m - n, 1, a[m:].get_array(), exec_q)
     _manager.add_event_pair(ht_lin_ev, lin_ev)
     return a * val

@@ -269,7 +269,7 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
 
 
 def fftfreq(
-    n, /, *, d=1.0, dtype=None, device=None, usm_type=None, sycl_queue=None
+    n, /, d=1.0, *, dtype=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Return the Discrete Fourier Transform sample frequencies.
@@ -1583,7 +1583,7 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
 
 
 def rfftfreq(
-    n, /, *, d=1.0, dtype=None, device=None, usm_type=None, sycl_queue=None
+    n, /, d=1.0, *, dtype=None, device=None, usm_type=None, sycl_queue=None
 ):
     """
     Return the Discrete Fourier Transform sample frequencies
