@@ -707,7 +707,7 @@ def dpnp_fillfreq(a, m, n, val):
     exec_q = a.sycl_queue
     _manager = dpctl.utils.SequentialOrderManager[exec_q]
 
-    # it's assumed there is no dependent events to fill the array
+    # it's assumed there are no dependent events to populate the array
     ht_lin_ev, lin_ev = ti._linspace_step(0, 1, a[:m].get_array(), exec_q)
     _manager.add_event_pair(ht_lin_ev, lin_ev)
 
