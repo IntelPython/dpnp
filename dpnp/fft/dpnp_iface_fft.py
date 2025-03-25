@@ -41,6 +41,7 @@ import dpnp
 from .dpnp_utils_fft import (
     dpnp_fft,
     dpnp_fftn,
+    dpnp_fillfreq,
 )
 
 __all__ = [
@@ -257,7 +258,9 @@ def fft2(a, s=None, axes=(-2, -1), norm=None, out=None):
     )
 
 
-def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
+def fftfreq(
+    n, /, *, d=1.0, dtype=None, device=None, usm_type=None, sycl_queue=None
+):
     """
     Return the Discrete Fourier Transform sample frequencies.
 
@@ -279,6 +282,12 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
         Default: ``1.0``.
+    dtype : {None, str, dtype object}, optional
+        The output array data type. Must be a real-valued floating-point data
+        type. If `dtype` is ``None``, the output array data type must be the
+        default real-valued floating-point data type.
+
+        Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
         `device` can be ``None``, a oneAPI filter selector string, an instance
@@ -342,23 +351,19 @@ def fftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     if not dpnp.isscalar(d):
         raise ValueError("`d` should be an scalar")
 
-    cfd_kwarg = {
-        "device": device,
-        "usm_type": usm_type,
-        "sycl_queue": sycl_queue,
-    }
+    if dtype and not dpnp.issubdtype(dtype, dpnp.floating):
+        raise ValueError(
+            "dtype must a real-valued floating-point data type, "
+            f"but got {dtype}"
+        )
 
     val = 1.0 / (n * d)
-    results = dpnp.empty(n, dtype=dpnp.intp, **cfd_kwarg)
+    results = dpnp.empty(
+        n, dtype=dtype, device=device, usm_type=usm_type, sycl_queue=sycl_queue
+    )
 
     m = (n - 1) // 2 + 1
-    p1 = dpnp.arange(0, m, dtype=dpnp.intp, **cfd_kwarg)
-
-    results[:m] = p1
-    p2 = dpnp.arange(m - n, 0, dtype=dpnp.intp, **cfd_kwarg)
-
-    results[m:] = p2
-    return results * val
+    return dpnp_fillfreq(results, m, n, val)
 
 
 def fftn(a, s=None, axes=None, norm=None, out=None):
@@ -1507,7 +1512,9 @@ def rfft2(a, s=None, axes=(-2, -1), norm=None, out=None):
     )
 
 
-def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
+def rfftfreq(
+    n, /, *, d=1.0, dtype=None, device=None, usm_type=None, sycl_queue=None
+):
     """
     Return the Discrete Fourier Transform sample frequencies
     (for usage with :obj:`dpnp.fft.rfft`, :obj:`dpnp.fft.irfft`).
@@ -1533,6 +1540,12 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
     d : scalar, optional
         Sample spacing (inverse of the sampling rate).
         Default: ``1.0``.
+    dtype : {None, str, dtype object}, optional
+        The output array data type. Must be a real-valued floating-point data
+        type. If `dtype` is ``None``, the output array data type must be the
+        default real-valued floating-point data type.
+
+        Default: ``None``.
     device : {None, string, SyclDevice, SyclQueue, Device}, optional
         An array API concept of device where the output array is created.
         `device` can be ``None``, a oneAPI filter selector string, an instance
@@ -1598,12 +1611,19 @@ def rfftfreq(n, d=1.0, device=None, usm_type=None, sycl_queue=None):
         raise ValueError("`n` should be an integer")
     if not dpnp.isscalar(d):
         raise ValueError("`d` should be an scalar")
+
+    if dtype and not dpnp.issubdtype(dtype, dpnp.floating):
+        raise ValueError(
+            "dtype must a real-valued floating-point data type, "
+            f"but got {dtype}"
+        )
+
     val = 1.0 / (n * d)
     m = n // 2 + 1
     results = dpnp.arange(
         0,
         m,
-        dtype=dpnp.intp,
+        dtype=dtype,
         device=device,
         usm_type=usm_type,
         sycl_queue=sycl_queue,
