@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+47.gdc3ba3a3663 documentation</title>
+  <title>dpnp.dpnp_iface_window &mdash; Data Parallel Extension for NumPy 0.18.0dev0+46.gce99ef4a18f documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=209b6493"></script>
+      <script src="../../_static/documentation_options.js?v=c023c612"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -178,7 +178,7 @@
 
 <div class="viewcode-block" id="bartlett">
 <a class="viewcode-back" href="../../reference/generated/dpnp.bartlett.html#dpnp.bartlett">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">bartlett</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">bartlett</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Bartlett window.</span>
 
@@ -275,7 +275,7 @@
 
 <div class="viewcode-block" id="blackman">
 <a class="viewcode-back" href="../../reference/generated/dpnp.blackman.html#dpnp.blackman">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">blackman</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Blackman window.</span>
 
@@ -371,7 +371,7 @@
 
 <div class="viewcode-block" id="hamming">
 <a class="viewcode-back" href="../../reference/generated/dpnp.hamming.html#dpnp.hamming">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">hamming</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hamming</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Hamming window.</span>
 
@@ -458,7 +458,7 @@
 
 <div class="viewcode-block" id="hanning">
 <a class="viewcode-back" href="../../reference/generated/dpnp.hanning.html#dpnp.hanning">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">hanning</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hanning</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Hanning window.</span>
 
@@ -545,7 +545,7 @@
 
 <div class="viewcode-block" id="kaiser">
 <a class="viewcode-back" href="../../reference/generated/dpnp.kaiser.html#dpnp.kaiser">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">kaiser</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">kaiser</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Kaiser window.</span>
 
