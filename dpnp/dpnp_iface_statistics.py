@@ -433,9 +433,9 @@ def convolve(a, v, mode="full", method="auto"):
     Notes
     -----
     The discrete convolution operation is defined as
-    
+
     .. math:: (a * v)_n = \sum_{m = -\infty}^{\infty} a_m v_{n - m}
-    
+
     It can be shown that a convolution :math:`x(t) * y(t)` in time/space
     is equivalent to the multiplication :math:`X(f) Y(f)` in the Fourier
     domain, after appropriate padding (padding is necessary to prevent
@@ -458,14 +458,14 @@ def convolve(a, v, mode="full", method="auto"):
     >>> v = np.array([0, 1, 0.5], dtype=np.float32)
     >>> np.convolve(a, v)
     array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)
-    
+
     Only return the middle values of the convolution.
     Contains boundary effects, where zeros are taken
     into account:
 
     >>> np.convolve(a, v, 'same')
     array([1. , 2.5, 4. ], dtype=float32)
-    
+
     The two arrays are of the same length, so there
     is only one position where they completely overlap:
 

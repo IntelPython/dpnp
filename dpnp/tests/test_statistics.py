@@ -128,6 +128,17 @@ class TestAverage:
 
 
 class TestConvolve:
+    @staticmethod
+    def _get_kwargs(mode=None, method=None):
+        dpnp_kwargs = {}
+        numpy_kwargs = {}
+        if mode is not None:
+            dpnp_kwargs["mode"] = mode
+            numpy_kwargs["mode"] = mode
+        if method is not None:
+            dpnp_kwargs["method"] = method
+        return dpnp_kwargs, numpy_kwargs
+
     def setup_method(self):
         numpy.random.seed(0)
 
@@ -143,13 +154,7 @@ class TestConvolve:
         ad = dpnp.array(an)
         vd = dpnp.array(vn)
 
-        dpnp_kwargs = {}
-        numpy_kwargs = {}
-        if mode is not None:
-            dpnp_kwargs["mode"] = mode
-            numpy_kwargs["mode"] = mode
-        if method is not None:
-            dpnp_kwargs["method"] = method
+        dpnp_kwargs, numpy_kwargs = self._get_kwargs(mode, method)
 
         expected = numpy.convolve(an, vn, **numpy_kwargs)
         result = dpnp.convolve(ad, vd, **dpnp_kwargs)
@@ -164,34 +169,20 @@ class TestConvolve:
     def test_convolve_random(self, a_size, v_size, mode, dtype, method):
         if dtype in [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16]:
             pytest.skip("avoid overflow.")
-        if dtype == dpnp.bool:
-            an = numpy.random.rand(a_size) > 0.9
-            vn = numpy.random.rand(v_size) > 0.9
-        else:
-            an = (100 * numpy.random.rand(a_size)).astype(dtype)
-            vn = (100 * numpy.random.rand(v_size)).astype(dtype)
-
-            if dpnp.issubdtype(dtype, dpnp.complexfloating):
-                an = an + 1j * (100 * numpy.random.rand(a_size)).astype(dtype)
-                vn = vn + 1j * (100 * numpy.random.rand(v_size)).astype(dtype)
+        an = generate_random_numpy_array(
+            a_size, dtype, low=-3, high=3, probability=0.9
+        )
+        vn = generate_random_numpy_array(
+            v_size, dtype, low=-3, high=3, probability=0.9
+        )
 
         ad = dpnp.array(an)
         vd = dpnp.array(vn)
 
-        dpnp_kwargs = {}
-        numpy_kwargs = {}
-        if mode is not None:
-            dpnp_kwargs["mode"] = mode
-            numpy_kwargs["mode"] = mode
-        if method is not None:
-            dpnp_kwargs["method"] = method
+        dpnp_kwargs, numpy_kwargs = self._get_kwargs(mode, method)
 
         result = dpnp.convolve(ad, vd, **dpnp_kwargs)
         expected = numpy.convolve(an, vn, **numpy_kwargs)
-
-        rdtype = result.dtype
-        if dpnp.issubdtype(rdtype, dpnp.integer):
-            rdtype = dpnp.default_float_type(ad.device)
 
         if method != "fft" and (
             dpnp.issubdtype(dtype, dpnp.integer) or dtype == dpnp.bool
@@ -199,7 +190,6 @@ class TestConvolve:
             # For 'direct' and 'auto' methods, we expect exact results for integer types
             assert_array_equal(result, expected)
         else:
-            result = result.astype(rdtype)
             if method == "direct":
                 # For 'direct' method we can use standard validation
                 # acceptable error depends on the kernel size
@@ -210,6 +200,16 @@ class TestConvolve:
                 factor = int(40 * (min(a_size, v_size) ** 0.5))
                 assert_dtype_allclose(result, expected, factor=factor)
             else:
+                rdtype = result.dtype
+                if dpnp.issubdtype(rdtype, dpnp.integer):
+                    # 'fft' do its calculations in float
+                    # and 'auto' could use fft
+                    # also assert_dtype_allclose for integer types is
+                    # always check for exact match
+                    rdtype = dpnp.default_float_type(ad.device)
+
+                result = result.astype(rdtype)
+
                 rtol = 1e-3
                 atol = 1e-10
 
@@ -231,6 +231,8 @@ class TestConvolve:
                 # We can tolerate a few such outliers.
                 max_outliers = 8 if expected.size > 1 else 0
                 if invalid.sum() > max_outliers:
+                    # we already failed check,
+                    # call assert_dtype_allclose just to report error nicely
                     assert_dtype_allclose(result, expected, factor=1000)
 
     def test_convolve_mode_error(self):
@@ -248,6 +250,19 @@ class TestConvolve:
 
         with pytest.raises(ValueError):
             dpnp.convolve(a, v)
+
+    @pytest.mark.parametrize("a, v", [([1], 2), (3, [4]), (5, 6)])
+    def test_convolve_scalar(self, a, v):
+        an = numpy.asarray(a, dtype=numpy.float32)
+        vn = numpy.asarray(v, dtype=numpy.float32)
+
+        ad = dpnp.asarray(a, dtype=numpy.float32)
+        vd = dpnp.asarray(v, dtype=numpy.float32)
+
+        expected = numpy.convolve(an, vn)
+        result = dpnp.convolve(ad, vd)
+
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "a, v",
@@ -404,17 +419,12 @@ class TestCorrelate:
         result = dpnp.correlate(ad, vd, **dpnp_kwargs)
         expected = numpy.correlate(an, vn, **numpy_kwargs)
 
-        rdtype = result.dtype
-        if dpnp.issubdtype(rdtype, dpnp.integer):
-            rdtype = dpnp.default_float_type(ad.device)
-
         if method != "fft" and (
             dpnp.issubdtype(dtype, dpnp.integer) or dtype == dpnp.bool
         ):
             # For 'direct' and 'auto' methods, we expect exact results for integer types
             assert_array_equal(result, expected)
         else:
-            result = result.astype(rdtype)
             if method == "direct":
                 expected = numpy.correlate(an, vn, **numpy_kwargs)
                 # For 'direct' method we can use standard validation
@@ -426,6 +436,16 @@ class TestCorrelate:
                 factor = int(40 * (min(a_size, v_size) ** 0.5))
                 assert_dtype_allclose(result, expected, factor=factor)
             else:
+                rdtype = result.dtype
+                if dpnp.issubdtype(rdtype, dpnp.integer):
+                    # 'fft' do its calculations in float
+                    # and 'auto' could use fft
+                    # also assert_dtype_allclose for integer types is
+                    # always check for exact match
+                    rdtype = dpnp.default_float_type(ad.device)
+
+                result = result.astype(rdtype)
+
                 rtol = 1e-3
                 atol = 1e-3
 
@@ -447,6 +467,8 @@ class TestCorrelate:
                 # We can tolerate a few such outliers.
                 max_outliers = 10 if expected.size > 1 else 0
                 if invalid.sum() > max_outliers:
+                    # we already failed check,
+                    # call assert_dtype_allclose just to report error nicely
                     assert_dtype_allclose(result, expected, factor=1000)
 
     def test_correlate_mode_error(self):
