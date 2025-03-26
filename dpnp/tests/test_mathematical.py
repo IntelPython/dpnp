@@ -17,6 +17,7 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
     assert_dtype_allclose,
@@ -32,8 +33,31 @@ from .helper import (
     has_support_aspect64,
     numpy_version,
 )
-from .test_umath import _get_output_data_type
 from .third_party.cupy import testing
+
+
+def _get_output_data_type(dtype):
+    """Return a data type specified by input `dtype` and device capabilities."""
+    dtype_float16 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
+    )
+    dtype_float32 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
+    )
+    if dtype_float16:
+        out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
+    elif dtype_float32:
+        out_dtype = dpnp.float32
+    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
+        out_dtype = dpnp.complex64
+        if has_support_aspect64() and dtype != dpnp.complex64:
+            out_dtype = dpnp.complex128
+    else:
+        out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            out_dtype = dpnp.float64
+
+    return out_dtype
 
 
 @pytest.mark.parametrize("deg", [True, False])
@@ -2323,7 +2347,7 @@ class TestHypot:
         expected = numpy.hypot(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        out_dt = _get_output_data_type(dtype)
+        out_dt = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=out_dt)
         result = dpnp.hypot(ia, ib, out=iout)
 

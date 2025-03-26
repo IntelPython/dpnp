@@ -23,7 +23,6 @@ from .helper import (
     has_support_aspect16,
     numpy_version,
 )
-from .test_umath import _get_output_data_type
 
 """
 The scope includes tests with only functions which are instances of
@@ -195,10 +194,7 @@ class TestDivide:
         expected = numpy.divide(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        if numpy.issubdtype(dtype, numpy.integer) or dtype == dpnp.bool:
-            out_dtype = map_dtype_to_device(dpnp.float64, ia.sycl_device)
-        else:
-            out_dtype = _get_output_data_type(dtype)
+        out_dtype = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=out_dtype)
         result = dpnp.divide(ia, ib, out=iout)
 

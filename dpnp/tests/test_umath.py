@@ -9,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
     assert_dtype_allclose,
@@ -108,30 +109,6 @@ def test_umaths(test_cases):
     assert_allclose(result, expected, rtol=1e-6)
 
 
-def _get_output_data_type(dtype):
-    """Return a data type specified by input `dtype` and device capabilities."""
-    dtype_float16 = any(
-        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
-    )
-    dtype_float32 = any(
-        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
-    )
-    if dtype_float16:
-        dt_out = dpnp.float16 if has_support_aspect16() else dpnp.float32
-    elif dtype_float32:
-        dt_out = dpnp.float32
-    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
-        dt_out = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            dt_out = dpnp.complex128
-    else:
-        dt_out = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            dt_out = dpnp.float64
-
-    return dt_out
-
-
 class TestArctan2:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
@@ -142,10 +119,10 @@ class TestArctan2:
         expected = numpy.arctan2(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        dt_out = _get_output_data_type(dtype)
+        dt_out = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=dt_out)
-        result = dpnp.arctan2(ia, ib, out=iout)
 
+        result = dpnp.arctan2(ia, ib, out=iout)
         assert result is iout
         assert_dtype_allclose(result, expected)
 
@@ -188,7 +165,7 @@ class TestCopySign:
         expected = numpy.copysign(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        dt_out = _get_output_data_type(dtype)
+        dt_out = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=dt_out)
         result = dpnp.copysign(ia, ib, out=iout)
 
@@ -307,7 +284,7 @@ class TestLogAddExp:
         expected = numpy.logaddexp(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        dt_out = _get_output_data_type(dtype)
+        dt_out = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=dt_out)
         result = dpnp.logaddexp(ia, ib, out=iout)
 
@@ -450,7 +427,7 @@ class TestReciprocal:
         expected = numpy.reciprocal(a)
 
         ia = dpnp.array(a)
-        dt_out = _get_output_data_type(dtype)
+        dt_out = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=dt_out)
         result = dpnp.reciprocal(ia, out=iout)
 
@@ -500,7 +477,7 @@ class TestRsqrtCbrt:
             expected = getattr(numpy, func)(a)
 
         ia = dpnp.array(a)
-        dt_out = _get_output_data_type(dtype)
+        dt_out = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=dt_out)
         result = getattr(dpnp, func)(ia, out=iout)
         assert result is iout
@@ -591,7 +568,7 @@ class TestUmath:
     @pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
     @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    def test_out(self, func_params, dtype):
+    def test_basic(self, func_params, dtype):
         func = func_params["func"]
         values = func_params["values"]
         a = generate_random_numpy_array(
@@ -600,10 +577,7 @@ class TestUmath:
         expected = getattr(numpy, func)(a)
 
         ia = dpnp.array(a)
-        if func == "square":
-            dt_out = numpy.int8 if dtype == dpnp.bool else dtype
-        else:
-            dt_out = _get_output_data_type(dtype)
+        dt_out = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=dt_out)
         result = getattr(dpnp, func)(ia, out=iout)
 
