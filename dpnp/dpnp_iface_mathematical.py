@@ -1750,8 +1750,8 @@ Returns
 -------
 out : dpnp.ndarray
     An array with the rounded values and with the same dimensions as the input.
-    The returned array will have the default floating point data type for the
-    device where `a` is allocated.
+    The returned array will have a floating point data type that input can cast
+    to it safely considering device capabilities.
     If `out` is ``None`` then a float array is returned with the rounded values.
     Otherwise the result is stored there and the return value `out` is
     a reference to that array.

@@ -36,30 +36,6 @@ from .helper import (
 from .third_party.cupy import testing
 
 
-def _get_output_data_type(dtype):
-    """Return a data type specified by input `dtype` and device capabilities."""
-    dtype_float16 = any(
-        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
-    )
-    dtype_float32 = any(
-        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
-    )
-    if dtype_float16:
-        out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
-    elif dtype_float32:
-        out_dtype = dpnp.float32
-    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
-        out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            out_dtype = dpnp.complex128
-    else:
-        out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            out_dtype = dpnp.float64
-
-    return out_dtype
-
-
 @pytest.mark.parametrize("deg", [True, False])
 class TestAngle:
     def test_angle_bool(self, deg):
@@ -775,6 +751,16 @@ class TestEdiff1d:
 
 
 class TestFix:
+    def get_numpy_output_dtype(self, dtype):
+        # this is used to determine the output dtype of numpy array
+        # which is on cpu so no need for checking has_support_aspect64
+        if has_support_aspect16() and dpnp.can_cast(dtype, dpnp.float16):
+            return dpnp.float16
+        if dpnp.can_cast(dtype, dpnp.float32):
+            return dpnp.float32
+        if dpnp.can_cast(dtype, dpnp.float64):
+            return dpnp.float64
+
     @pytest.mark.parametrize(
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
@@ -794,28 +780,25 @@ class TestFix:
             xp.fix(a)
 
     @pytest.mark.parametrize(
-        "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_out(self, a_dt):
-        a = get_abs_array(
-            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], a_dt
-        )
-        ia = dpnp.array(a)
-
-        out_dt = _get_output_data_type(a.dtype)
-        out = numpy.zeros_like(a, dtype=out_dt)
-        iout = dpnp.array(out)
+    def test_out(self, dt):
+        data = [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]]
+        a = get_abs_array(data, dtype=dt)
+        # numpy output has the same dtype as input
+        # dpnp output always has a floating point dtype
+        dt_out = self.get_numpy_output_dtype(a.dtype)
+        out = numpy.zeros_like(a, dtype=dt_out)
+        ia, iout = dpnp.array(a), dpnp.array(out)
 
         result = dpnp.fix(ia, out=iout)
         expected = numpy.fix(a, out=out)
         assert_array_equal(result, expected)
 
     @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
-    @pytest.mark.parametrize("dt", [bool, numpy.float16])
-    def test_out_float16(self, dt):
-        a = numpy.array(
-            [[1.0, 1.1], [1.5, 1.8], [-1.0, -1.1], [-1.5, -1.8]], dtype=dt
-        )
+    def test_out_float16(self):
+        data = [[1.0, 1.1], [1.5, 1.8], [-1.0, -1.1], [-1.5, -1.8]]
+        a = numpy.array(data, dtype=numpy.float16)
         out = numpy.zeros_like(a, dtype=numpy.float16)
         ia, iout = dpnp.array(a), dpnp.array(out)
 
