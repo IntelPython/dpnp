@@ -6,3 +6,8 @@ array_api_tests/test_operators_and_elementwise_functions.py::test_clip
 # unexpected result is returned - unmute when dpctl-1986 is resolved
 array_api_tests/test_operators_and_elementwise_functions.py::test_asin
 array_api_tests/test_operators_and_elementwise_functions.py::test_asinh
+
+# advanced indexing relating issues (waiting a fix from dpctl)
+array_api_tests/test_array_object.py::test_getitem_arrays_and_ints_1[1]
+array_api_tests/test_array_object.py::test_getitem_arrays_and_ints_1[None]
+array_api_tests/test_array_object.py::test_getitem_arrays_and_ints_2[None]
