@@ -107,6 +107,8 @@ def test_umaths(test_cases):
         and is_gpu_device()
     ):
         pytest.skip("dpctl-1652")
+    elif umath in ["ceil", "floor", "trunc"] and args[0].dtype == dpnp.bool:
+        pytest.skip("dpctl-2030")
     elif umath in ["divmod", "frexp"]:
         pytest.skip("Not implemented umath")
     elif umath == "modf":
