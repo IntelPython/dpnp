@@ -17,6 +17,7 @@ from numpy.testing import (
 
 import dpnp
 from dpnp.dpnp_array import dpnp_array
+from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
     assert_dtype_allclose,
@@ -32,12 +33,31 @@ from .helper import (
     has_support_aspect64,
     numpy_version,
 )
-from .test_umath import (
-    _get_numpy_arrays_1in_1out,
-    _get_numpy_arrays_2in_1out,
-    _get_output_data_type,
-)
 from .third_party.cupy import testing
+
+
+def _get_output_data_type(dtype):
+    """Return a data type specified by input `dtype` and device capabilities."""
+    dtype_float16 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
+    )
+    dtype_float32 = any(
+        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
+    )
+    if dtype_float16:
+        out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
+    elif dtype_float32:
+        out_dtype = dpnp.float32
+    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
+        out_dtype = dpnp.complex64
+        if has_support_aspect64() and dtype != dpnp.complex64:
+            out_dtype = dpnp.complex128
+    else:
+        out_dtype = dpnp.float32
+        if has_support_aspect64() and dtype != dpnp.float32:
+            out_dtype = dpnp.float64
+
+    return out_dtype
 
 
 @pytest.mark.parametrize("deg", [True, False])
@@ -2271,30 +2291,19 @@ class TestProjection:
         assert dpnp.allclose(result, expected)
 
 
+@pytest.mark.parametrize("func", ["ceil", "floor", "trunc"])
 class TestRoundingFuncs:
-    @pytest.fixture(
-        params=[
-            {"func_name": "ceil", "input_values": [-5, 5, 10]},
-            {"func_name": "floor", "input_values": [-5, 5, 10]},
-            {"func_name": "trunc", "input_values": [-5, 5, 10]},
-        ],
-        ids=["ceil", "floor", "trunc"],
-    )
-    def func_params(self, request):
-        return request.param
-
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_out(self, func_params, dtype):
-        func_name = func_params["func_name"]
-        input_values = func_params["input_values"]
-        a, expected = _get_numpy_arrays_1in_1out(func_name, dtype, input_values)
+    def test_out(self, func, dtype):
+        a = generate_random_numpy_array(10, dtype)
+        expected = getattr(numpy, func)(a)
 
         ia = dpnp.array(a)
         out_dt = numpy.int8 if dtype == dpnp.bool else dtype
         iout = dpnp.empty(expected.shape, dtype=out_dt)
-        result = getattr(dpnp, func_name)(ia, out=iout)
+        result = getattr(dpnp, func)(ia, out=iout)
 
         assert result is iout
         # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
@@ -2310,23 +2319,22 @@ class TestRoundingFuncs:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
     )
-    def test_invalid_dtype(self, func_params, dtype):
-        func_name = func_params["func_name"]
+    def test_invalid_dtype(self, func, dtype):
         dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
         ia = dpnp.arange(10, dtype=dpnp_dtype)
         iout = dpnp.empty(10, dtype=dtype)
 
         with pytest.raises(ValueError):
-            getattr(dpnp, func_name)(ia, out=iout)
+            getattr(dpnp, func)(ia, out=iout)
 
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15,)", "(2, 2)"]
     )
-    def test_invalid_shape(self, func_params, shape):
-        func_name = func_params["func_name"]
+    def test_invalid_shape(self, func, shape):
         ia = dpnp.arange(10, dtype=dpnp.float32)
         iout = dpnp.empty(shape, dtype=dpnp.float32)
-        assert_raises(ValueError, getattr(dpnp, func_name), ia, out=iout)
+
+        assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
 
 
 class TestHypot:
@@ -2334,10 +2342,12 @@ class TestHypot:
         "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
     )
     def test_hypot(self, dtype):
-        a, b, expected = _get_numpy_arrays_2in_1out("hypot", dtype, [0, 10, 10])
+        a = generate_random_numpy_array(10, dtype, low=0)
+        b = generate_random_numpy_array(10, dtype, low=0)
+        expected = numpy.hypot(a, b)
 
         ia, ib = dpnp.array(a), dpnp.array(b)
-        out_dt = _get_output_data_type(dtype)
+        out_dt = map_dtype_to_device(expected.dtype, ia.sycl_device)
         iout = dpnp.empty(expected.shape, dtype=out_dt)
         result = dpnp.hypot(ia, ib, out=iout)
 
