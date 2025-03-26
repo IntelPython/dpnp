@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.irfft &mdash; Data Parallel Extension for NumPy 0.18.0dev0+43.g4c0c6cd6af4 documentation</title>
+  <title>dpnp.fft.irfft &mdash; Data Parallel Extension for NumPy 0.18.0dev0+53.gf83294e8a44 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=9bbccac5"></script>
+      <script src="../../_static/documentation_options.js?v=3a163eff"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -142,22 +142,28 @@ positive frequency terms.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array.</p></li>
-<li><p><strong>n</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- Length of the transformed axis of the output.
+<li><p><strong>n</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>Length of the transformed axis of the output.
 For <cite>n</cite> output points, <code class="docutils literal notranslate"><span class="pre">n//2+1</span></code> input points are necessary. If the
 input is longer than this, it is cropped. If it is shorter than this,
 it is padded with zeros. If <cite>n</cite> is not given, it is taken to be
 <code class="docutils literal notranslate"><span class="pre">2*(m-1)</span></code> where <cite>m</cite> is the length of the input along the axis
-specified by <cite>axis</cite>. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
-<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- Axis over which to compute the FFT. If not given, the last axis is
-used. Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p></li>
-<li><p><strong>norm</strong> (<em>{None</em><em>, </em><em>&quot;backward&quot;</em><em>, </em><em>&quot;ortho&quot;</em><em>, </em><em>&quot;forward&quot;}</em><em>, </em><em>optional</em>) -- Normalization mode (see <a class="reference internal" href="../fft.html#module-dpnp.fft" title="dpnp.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code></a>).
+specified by <cite>axis</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
+<li><p><strong>axis</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>, </em><em>optional</em>) -- <p>Axis over which to compute the FFT. If not given, the last axis is
+used.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">-1</span></code>.</p>
+</p></li>
+<li><p><strong>norm</strong> (<em>{None</em><em>, </em><em>&quot;backward&quot;</em><em>, </em><em>&quot;ortho&quot;</em><em>, </em><em>&quot;forward&quot;}</em><em>, </em><em>optional</em>) -- <p>Normalization mode (see <a class="reference internal" href="../fft.html#module-dpnp.fft" title="dpnp.fft"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fft</span></code></a>).
 Indicates which direction of the forward/backward pair of transforms
 is scaled and with what normalization factor. <code class="docutils literal notranslate"><span class="pre">None</span></code> is an alias of
-the default option <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- If provided, the result will be placed in this array. It should be
-of the appropriate shape and dtype.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+the default option <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.</p>
+</p></li>
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>If provided, the result will be placed in this array. It should be
+of the appropriate shape and dtype.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.18.0dev0+43.g4c0c6cd6af4 documentation</title>
+  <title>dpnp.fft.dpnp_iface_fft &mdash; Data Parallel Extension for NumPy 0.18.0dev0+53.gf83294e8a44 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=9bbccac5"></script>
+      <script src="../../../_static/documentation_options.js?v=3a163eff"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../../_static/js/theme.js"></script>
@@ -126,6 +126,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils_fft</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_fft</span><span class="p">,</span>
     <span class="n">dpnp_fftn</span><span class="p">,</span>
+    <span class="n">dpnp_fillfreq</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
@@ -188,19 +189,24 @@
 <span class="sd">        If `n` is smaller than the length of the input, the input is cropped.</span>
 <span class="sd">        If it is larger, the input is padded with zeros. If `n` is not given,</span>
 <span class="sd">        the length of the input along the axis specified by `axis` is used.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the FFT. If not given, the last axis is</span>
-<span class="sd">        used. Default: ``-1``.</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate shape (consistent with the choice of `n`) and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -273,7 +279,9 @@
 <span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
 <span class="sd">        If `s` is not given, the shape of the input along the axes specified</span>
 <span class="sd">        by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``</span>
-<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">        either.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the FFT. If not given, the last two axes are</span>
 <span class="sd">        used. A repeated index in `axes` means the transform over that axis is</span>
@@ -281,16 +289,19 @@
 <span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
 <span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
 <span class="sd">        sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``(-2, -1)``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -350,7 +361,9 @@
 
 <div class="viewcode-block" id="fftfreq">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.fftfreq.html#dpnp.fft.fftfreq">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">fftfreq</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">fftfreq</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Discrete Fourier Transform sample frequencies.</span>
 
@@ -371,7 +384,14 @@
 <span class="sd">        Window length.</span>
 <span class="sd">    d : scalar, optional</span>
 <span class="sd">        Sample spacing (inverse of the sampling rate).</span>
+
 <span class="sd">        Default: ``1.0``.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        The output array data type. Must be a real-valued floating-point data</span>
+<span class="sd">        type. If `dtype` is ``None``, the output array data type must be the</span>
+<span class="sd">        default real-valued floating-point data type.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -383,12 +403,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -435,23 +457,19 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`d` should be an scalar&quot;</span><span class="p">)</span>
 
-    <span class="n">cfd_kwarg</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;device&quot;</span><span class="p">:</span> <span class="n">device</span><span class="p">,</span>
-        <span class="s2">&quot;usm_type&quot;</span><span class="p">:</span> <span class="n">usm_type</span><span class="p">,</span>
-        <span class="s2">&quot;sycl_queue&quot;</span><span class="p">:</span> <span class="n">sycl_queue</span><span class="p">,</span>
-    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;dtype must a real-valued floating-point data type, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="n">val</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+        <span class="n">n</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span>
+    <span class="p">)</span>
 
     <span class="n">m</span> <span class="o">=</span> <span class="p">(</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
-    <span class="n">p1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
-
-    <span class="n">results</span><span class="p">[:</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">p1</span>
-    <span class="n">p2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">m</span> <span class="o">-</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span> <span class="o">**</span><span class="n">cfd_kwarg</span><span class="p">)</span>
-
-    <span class="n">results</span><span class="p">[</span><span class="n">m</span><span class="p">:]</span> <span class="o">=</span> <span class="n">p2</span>
-    <span class="k">return</span> <span class="n">results</span> <span class="o">*</span> <span class="n">val</span></div>
+    <span class="k">return</span> <span class="n">dpnp_fillfreq</span><span class="p">(</span><span class="n">results</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">val</span><span class="p">)</span></div>
 
 
 
@@ -480,7 +498,9 @@
 <span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
 <span class="sd">        If `s` is not given, the shape of the input along the axes specified</span>
 <span class="sd">        by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``</span>
-<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">        either.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the FFT. If not given, the last ``len(s)``</span>
 <span class="sd">        axes are used, or all axes if `s` is also not specified.</span>
@@ -489,16 +509,19 @@
 <span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
 <span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
 <span class="sd">        sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -575,8 +598,9 @@
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axes : {None, int, list or tuple of ints}, optional</span>
-<span class="sd">        Axes over which to shift.</span>
-<span class="sd">        Default is ``None``, which shifts all axes.</span>
+<span class="sd">        Axes over which to shift. By default, it shifts over all axes.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -643,19 +667,25 @@
 <span class="sd">        input is longer than this, it is cropped. If it is shorter than this,</span>
 <span class="sd">        it is padded with zeros. If `n` is not given, it is taken to be</span>
 <span class="sd">        ``2*(m-1)`` where `m` is the length of the input along the axis</span>
-<span class="sd">        specified by `axis`. Default: ``None``.</span>
+<span class="sd">        specified by `axis`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the FFT. If not given, the last axis is</span>
-<span class="sd">        used. Default: ``-1``.</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -756,19 +786,24 @@
 <span class="sd">        If `n` is smaller than the length of the input, the input is cropped.</span>
 <span class="sd">        If it is larger, the input is padded with zeros. If `n` is not given,</span>
 <span class="sd">        the length of the input along the axis specified by `axis` is used.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the inverse FFT. If not given, the last</span>
-<span class="sd">        axis is used. Default: ``-1``.</span>
-<span class="sd">    norm : {&quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
+<span class="sd">        axis is used.</span>
+
+<span class="sd">        Default: ``-1``.</span>
+<span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate shape (consistent with the choice of `n`) and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -844,7 +879,9 @@
 <span class="sd">        If `s` is not given, the shape of the input along the axes specified</span>
 <span class="sd">        by `axes` is used. See notes for issue on :obj:`dpnp.fft.ifft`</span>
 <span class="sd">        zero padding. If `s` is not ``None``, `axes` must not be ``None``</span>
-<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">        either.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the inverse FFT. If not given, the last two</span>
 <span class="sd">        axes are used. A repeated index in `axes` means the transform over that</span>
@@ -852,16 +889,19 @@
 <span class="sd">        corresponding `axes` to be transformed must be explicitly specified</span>
 <span class="sd">        too. A one-element sequence means that a one-dimensional FFT is</span>
 <span class="sd">        performed. An empty sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``(-2, -1)``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -945,7 +985,9 @@
 <span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
 <span class="sd">        if `s` is not given, the shape of the input along the axes specified</span>
 <span class="sd">        by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``</span>
-<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">        either.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the inverse FFT. If not given, the last</span>
 <span class="sd">        ``len(s)`` axes are used, or all axes if `s` is also not specified.</span>
@@ -954,16 +996,19 @@
 <span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
 <span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
 <span class="sd">        sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate shape (consistent with the choice of `s`) and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1028,8 +1073,9 @@
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="sd">        Input array.</span>
 <span class="sd">    axes : {None, int, list or tuple of ints}, optional</span>
-<span class="sd">        Axes over which to calculate.</span>
-<span class="sd">        Defaults to ``None``, which shifts all axes.</span>
+<span class="sd">        Axes over which to shift. By default, it shifts over all axes.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -1088,19 +1134,24 @@
 <span class="sd">        the length of the input, the input is cropped. If it is larger,</span>
 <span class="sd">        the input is padded with zeros. If `n` is not given, the length of</span>
 <span class="sd">        the input along the axis specified by `axis` is used.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the FFT. If not given, the last axis is</span>
-<span class="sd">        used. Default: ``-1``.</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1175,19 +1226,25 @@
 <span class="sd">        input is longer than this, it is cropped. If it is shorter than this,</span>
 <span class="sd">        it is padded with zeros. If `n` is not given, it is taken to be</span>
 <span class="sd">        ``2*(m-1)`` where `m` is the length of the input along the axis</span>
-<span class="sd">        specified by `axis`. Default: ``None``.</span>
+<span class="sd">        specified by `axis`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the FFT. If not given, the last axis is</span>
-<span class="sd">        used. Default: ``-1``.</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1276,7 +1333,8 @@
 <span class="sd">        If `s` is not given, the shape of the input along the axes</span>
 <span class="sd">        specified by `axes` is used. Except for the last axis which is taken to</span>
 <span class="sd">        be ``2*(m-1)`` where `m` is the length of the input along that axis.</span>
-<span class="sd">        If `s` is not ``None``, `axes` must not be ``None``</span>
+<span class="sd">        If `s` is not ``None``, `axes` must not be ``None`` either.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the inverse FFT. If not given, the last</span>
@@ -1286,17 +1344,20 @@
 <span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
 <span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
 <span class="sd">        sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``(-2, -1)``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
-<span class="sd">    out : {None, dpnp.ndarray or usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate dtype and shape for the last transformation</span>
 <span class="sd">        (consistent with the choice of `s`).</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1376,9 +1437,10 @@
 <span class="sd">        the input is cropped. If it is larger, the input is padded with zeros.</span>
 <span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
 <span class="sd">        If `s` is not given, the shape of the input along the axes</span>
-<span class="sd">        specified by axes is used. Except for the last axis which is taken to</span>
+<span class="sd">        specified by `axes` is used. Except for the last axis which is taken to</span>
 <span class="sd">        be ``2*(m-1)`` where `m` is the length of the input along that axis.</span>
-<span class="sd">        If `s` is not ``None``, `axes` must not be ``None``</span>
+<span class="sd">        If `s` is not ``None``, `axes` must not be ``None`` either.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the inverse FFT. If not given, the last</span>
@@ -1388,17 +1450,20 @@
 <span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
 <span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
 <span class="sd">        sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
-<span class="sd">    out : {None, dpnp.ndarray or usm_ndarray}, optional</span>
+<span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate dtype and shape for the last transformation</span>
 <span class="sd">        (consistent with the choice of `s`).</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1485,19 +1550,24 @@
 <span class="sd">        If `n` is smaller than the length of the input, the input is cropped.</span>
 <span class="sd">        If it is larger, the input is padded with zeros. If `n` is not given,</span>
 <span class="sd">        the length of the input along the axis specified by `axis` is used.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis over which to compute the FFT. If not given, the last axis is</span>
-<span class="sd">        used. Default: ``-1``.</span>
+<span class="sd">        used.</span>
+
+<span class="sd">        Default: ``-1``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be</span>
 <span class="sd">        of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1580,7 +1650,9 @@
 <span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
 <span class="sd">        If `s` is not given, the shape of the input along the axes specified</span>
 <span class="sd">        by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``</span>
-<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">        either.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the FFT. If not given, the last two axes are</span>
 <span class="sd">        used. A repeated index in `axes` means the transform over that axis is</span>
@@ -1588,17 +1660,20 @@
 <span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
 <span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
 <span class="sd">        sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``(-2, -1)``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate dtype and shape for the last transformation</span>
 <span class="sd">        (consistent with the choice of `s`).</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1642,7 +1717,9 @@
 
 <div class="viewcode-block" id="rfftfreq">
 <a class="viewcode-back" href="../../../reference/generated/dpnp.fft.rfftfreq.html#dpnp.fft.rfftfreq">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">rfftfreq</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">rfftfreq</span><span class="p">(</span>
+    <span class="n">n</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">usm_type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sycl_queue</span><span class="o">=</span><span class="kc">None</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Return the Discrete Fourier Transform sample frequencies</span>
 <span class="sd">    (for usage with :obj:`dpnp.fft.rfft`, :obj:`dpnp.fft.irfft`).</span>
@@ -1667,7 +1744,14 @@
 <span class="sd">        Window length.</span>
 <span class="sd">    d : scalar, optional</span>
 <span class="sd">        Sample spacing (inverse of the sampling rate).</span>
+
 <span class="sd">        Default: ``1.0``.</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        The output array data type. Must be a real-valued floating-point data</span>
+<span class="sd">        type. If `dtype` is ``None``, the output array data type must be the</span>
+<span class="sd">        default real-valued floating-point data type.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
 <span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
@@ -1679,12 +1763,14 @@
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {None, &quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1733,12 +1819,19 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`n` should be an integer&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">d</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`d` should be an scalar&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">issubdtype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">floating</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;dtype must a real-valued floating-point data type, &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but got </span><span class="si">{</span><span class="n">dtype</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
     <span class="n">val</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="n">n</span> <span class="o">*</span> <span class="n">d</span><span class="p">)</span>
     <span class="n">m</span> <span class="o">=</span> <span class="n">n</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">1</span>
     <span class="n">results</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span>
         <span class="mi">0</span><span class="p">,</span>
         <span class="n">m</span><span class="p">,</span>
-        <span class="n">dtype</span><span class="o">=</span><span class="n">dpnp</span><span class="o">.</span><span class="n">intp</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
         <span class="n">usm_type</span><span class="o">=</span><span class="n">usm_type</span><span class="p">,</span>
         <span class="n">sycl_queue</span><span class="o">=</span><span class="n">sycl_queue</span><span class="p">,</span>
@@ -1775,7 +1868,9 @@
 <span class="sd">        If it is ``-1``, the whole input is used (no padding/trimming).</span>
 <span class="sd">        If `s` is not given, the shape of the input along the axes specified</span>
 <span class="sd">        by `axes` is used. If `s` is not ``None``, `axes` must not be ``None``</span>
-<span class="sd">        either. Default: ``None``.</span>
+<span class="sd">        either.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    axes : {None, sequence of ints}, optional</span>
 <span class="sd">        Axes over which to compute the FFT. If not given, the last ``len(s)``</span>
 <span class="sd">        axes are used, or all axes if `s` is also not specified.</span>
@@ -1784,17 +1879,20 @@
 <span class="sd">        to be transformed must be explicitly specified too. A one-element</span>
 <span class="sd">        sequence means that a one-dimensional FFT is performed. An empty</span>
 <span class="sd">        sequence means that no FFT is performed.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    norm : {None, &quot;backward&quot;, &quot;ortho&quot;, &quot;forward&quot;}, optional</span>
 <span class="sd">        Normalization mode (see :obj:`dpnp.fft`).</span>
 <span class="sd">        Indicates which direction of the forward/backward pair of transforms</span>
 <span class="sd">        is scaled and with what normalization factor. ``None`` is an alias of</span>
 <span class="sd">        the default option ``&quot;backward&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;backward&quot;``.</span>
 <span class="sd">    out : {None, dpnp.ndarray or usm_ndarray of complex dtype}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should be of</span>
 <span class="sd">        the appropriate dtype and shape for the last transformation</span>
 <span class="sd">        (consistent with the choice of `s`).</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
