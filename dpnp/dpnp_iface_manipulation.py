@@ -1319,7 +1319,8 @@ def common_type(*arrays):
     The return type will always be an inexact (i.e. floating point or complex)
     scalar type, even if all the arrays are integer arrays.
     If one of the inputs is an integer array, the minimum precision type
-    that is returned is determined by the device capabilities.
+    that is returned is the default floating point data type for the device
+    where the input arrays are allocated.
 
     For full documentation refer to :obj:`numpy.common_type`.
 
@@ -1339,9 +1340,9 @@ def common_type(*arrays):
     >>> np.common_type(np.arange(2, dtype=np.float32))
     numpy.float32
     >>> np.common_type(np.arange(2, dtype=np.float32), np.arange(2))
-    numpy.float64
+    numpy.float64 # may vary
     >>> np.common_type(np.arange(4), np.array([45, 6.j]), np.array([45.0]))
-    numpy.complex128
+    numpy.complex128 # may vary
 
     """
 
@@ -1358,9 +1359,9 @@ def common_type(*arrays):
     default_float_dtype = dpnp.default_float_type(sycl_queue=exec_q)
     dtypes = []
     for a in arrays:
-        if a.dtype.kind == "b":
+        if not dpnp.issubdtype(a.dtype, dpnp.number):
             raise TypeError("can't get common type for non-numeric array")
-        if a.dtype.kind in "iu":
+        if dpnp.issubdtype(a.dtype, dpnp.integer):
             dtypes.append(default_float_dtype)
         else:
             dtypes.append(a.dtype)
