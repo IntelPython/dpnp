@@ -9,6 +9,7 @@ from numpy.testing import (
 )
 
 import dpnp
+import dpnp.backend.extensions.vm._vm_impl as vmi
 from dpnp.dpnp_utils import map_dtype_to_device
 
 from .helper import (
@@ -109,6 +110,12 @@ def test_umaths(test_cases):
         pytest.skip("dpctl-1652")
     elif umath in ["ceil", "floor", "trunc"] and args[0].dtype == dpnp.bool:
         pytest.skip("dpctl-2030")
+    elif (
+        umath == "tan"
+        and dpnp.issubdtype(args[0].dtype, dpnp.complexfloating)
+        and not (vmi._is_available() and has_support_aspect64())
+    ):
+        pytest.skip("dpctl-2031")
     elif umath in ["divmod", "frexp"]:
         pytest.skip("Not implemented umath")
     elif umath == "modf":
