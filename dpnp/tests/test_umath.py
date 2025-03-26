@@ -20,6 +20,7 @@ from .helper import (
     get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
+    is_cuda_device,
     is_gpu_device,
 )
 
@@ -108,8 +109,11 @@ def test_umaths(test_cases):
         pytest.skip("dpctl-1652")
     elif umath in ["divmod", "frexp"]:
         pytest.skip("Not implemented umath")
-    elif umath == "modf" and args[0].dtype == dpnp.float16:
-        pytest.skip("dpnp.modf is not supported with dpnp.float16")
+    elif umath == "modf":
+        if args[0].dtype == dpnp.float16:
+            pytest.skip("dpnp.modf is not supported with dpnp.float16")
+        elif is_cuda_device():
+            pytest.skip("dpnp.modf is not supported on CUDA device")
 
     expected = getattr(numpy, umath)(*args)
     result = getattr(dpnp, umath)(*iargs)
