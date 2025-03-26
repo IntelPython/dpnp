@@ -38,7 +38,6 @@ it contains:
 """
 
 
-import functools
 import math
 import operator
 import warnings
@@ -102,7 +101,6 @@ __all__ = [
     "broadcast_shapes",
     "broadcast_to",
     "can_cast",
-    "common_type",
     "column_stack",
     "concat",
     "concatenate",
@@ -1310,63 +1308,6 @@ def can_cast(from_, to, casting="safe"):
         else dpnp.dtype(from_)
     )
     return dpt.can_cast(dtype_from, to, casting=casting)
-
-
-def common_type(*arrays):
-    """
-    Return a scalar type which is common to the input arrays.
-
-    The return type will always be an inexact (i.e. floating point or complex)
-    scalar type, even if all the arrays are integer arrays.
-    If one of the inputs is an integer array, the minimum precision type
-    that is returned is the default floating point data type for the device
-    where the input arrays are allocated.
-
-    For full documentation refer to :obj:`numpy.common_type`.
-
-    Parameters
-    ----------
-    arrays: {dpnp.ndarray, usm_ndarray}
-        Input arrays.
-
-    Returns
-    -------
-    out: data type
-        Data type object.
-
-    Examples
-    --------
-    >>> import dpnp as np
-    >>> np.common_type(np.arange(2, dtype=np.float32))
-    numpy.float32
-    >>> np.common_type(np.arange(2, dtype=np.float32), np.arange(2))
-    numpy.float64 # may vary
-    >>> np.common_type(np.arange(4), np.array([45, 6.j]), np.array([45.0]))
-    numpy.complex128 # may vary
-
-    """
-
-    if len(arrays) == 0:
-        return (
-            dpnp.float16
-            if dpctl.select_default_device().has_aspect_fp16
-            else dpnp.float32
-        )
-
-    dpnp.check_supported_arrays_type(*arrays)
-
-    _, exec_q = get_usm_allocations(arrays)
-    default_float_dtype = dpnp.default_float_type(sycl_queue=exec_q)
-    dtypes = []
-    for a in arrays:
-        if not dpnp.issubdtype(a.dtype, dpnp.number):
-            raise TypeError("can't get common type for non-numeric array")
-        if dpnp.issubdtype(a.dtype, dpnp.integer):
-            dtypes.append(default_float_dtype)
-        else:
-            dtypes.append(a.dtype)
-
-    return functools.reduce(numpy.promote_types, dtypes).type
 
 
 def column_stack(tup):
