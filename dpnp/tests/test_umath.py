@@ -20,21 +20,18 @@ from .helper import (
     get_float_dtypes,
     has_support_aspect16,
     has_support_aspect64,
+    is_gpu_device,
 )
 
 # full list of umaths
 umaths = [i for i in dir(numpy) if isinstance(getattr(numpy, i), numpy.ufunc)]
 
-types = {
-    "d": numpy.float64,
-    "f": numpy.float32,
-    "l": numpy.int64,
-    "i": numpy.int32,
-}
-
-supported_types = "fli"
+supported_types = "?bBhHiIlLkK"
+if has_support_aspect16():
+    supported_types += "e"
+supported_types += "fF"
 if has_support_aspect64():
-    supported_types += "d"
+    supported_types += "dD"
 
 
 def check_types(args_str):
@@ -55,7 +52,7 @@ def shaped_arange(shape, xp=numpy, dtype=numpy.float32):
 def get_args(args_str, sh, xp=numpy):
     args = []
     for s in args_str:
-        args.append(shaped_arange(shape=sh, xp=xp, dtype=types[s]))
+        args.append(shaped_arange(shape=sh, xp=xp, dtype=numpy.dtype(s)))
     return tuple(args)
 
 
@@ -75,6 +72,7 @@ def get_id(val):
     return val.__str__()
 
 
+@pytest.mark.filterwarnings("ignore:overflow encountered:RuntimeWarning")
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 @pytest.mark.parametrize("test_cases", test_cases, ids=get_id)
 def test_umaths(test_cases):
@@ -91,7 +89,7 @@ def test_umaths(test_cases):
     iargs = get_args(args_str, sh, xp=dpnp)
 
     if umath == "reciprocal":
-        if args[0].dtype in [numpy.int32, numpy.int64]:
+        if numpy.issubdtype(args[0].dtype, numpy.integer):
             pytest.skip(
                 "For integer input array, numpy.reciprocal returns zero."
             )
@@ -102,11 +100,21 @@ def test_umaths(test_cases):
             and numpy.dtype("l") != numpy.int64
         ):
             pytest.skip("numpy.ldexp doesn't have a loop for the input types")
+    elif (
+        umath == "floor_divide"
+        and args[0].dtype in [dpnp.float16, dpnp.float32]
+        and is_gpu_device()
+    ):
+        pytest.skip("dpctl-1652")
+    elif umath in ["divmod", "frexp"]:
+        pytest.skip("Not implemented umath")
+    elif umath == "modf" and args[0].dtype == dpnp.float16:
+        pytest.skip("dpnp.modf is not supported with dpnp.float16")
 
     expected = getattr(numpy, umath)(*args)
     result = getattr(dpnp, umath)(*iargs)
-
-    assert_allclose(result, expected, rtol=1e-6)
+    for x, y in zip(result, expected):
+        assert_dtype_allclose(x, y)
 
 
 class TestArctan2:
