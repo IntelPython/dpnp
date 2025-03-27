@@ -929,13 +929,13 @@ class TestRfft:
 
     @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     def test_float16(self):
-        a = numpy.ones(10, dtype=numpy.float16)
+        a = numpy.arange(10, dtype=numpy.float16)
         ia = dpnp.array(a)
 
-        result = numpy.fft.rfft(a)
-        expected = dpnp.fft.rfft(ia)
+        expected = numpy.fft.rfft(a)
+        result = dpnp.fft.rfft(ia)
         # check_only_type_kind=True since Intel NumPy returns complex128
-        assert_dtype_allclose(expected, result, check_only_type_kind=True)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_rfft_error(self, xp):
