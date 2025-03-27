@@ -15,7 +15,12 @@ import dpnp
 from dpnp.dpnp_array import dpnp_array
 from dpnp.random import RandomState
 
-from .helper import assert_dtype_allclose, get_array, is_cpu_device
+from .helper import (
+    assert_dtype_allclose,
+    get_array,
+    is_cpu_device,
+    is_gpu_device,
+)
 
 # aspects of default device:
 _def_device = dpctl.SyclQueue().sycl_device
@@ -688,7 +693,7 @@ class TestSeed:
         ],
     )
     def test_array_range(self, seed):
-        if not is_cpu_device():
+        if is_gpu_device():
             pytest.skip("seed as a scalar is only supported on GPU")
 
         size = 15
