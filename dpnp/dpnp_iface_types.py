@@ -176,6 +176,10 @@ def common_type(*arrays):
     out: data type
         Data type object.
 
+    See Also
+    --------
+    :obj:`dpnp.dtype` : Create a data type object.
+
     Examples
     --------
     >>> import dpnp as np
