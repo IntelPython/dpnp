@@ -19,6 +19,7 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     has_support_aspect64,
+    is_win_platform,
     numpy_version,
 )
 from .third_party.cupy.testing import with_requires
@@ -197,6 +198,7 @@ class TestCorrelate:
     def setup_method(self):
         numpy.random.seed(0)
 
+    # @pytest.mark.skipif(is_win_platform(), reason="SAT-7784")
     @pytest.mark.parametrize(
         "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
     )
@@ -216,6 +218,7 @@ class TestCorrelate:
 
         assert_dtype_allclose(result, expected)
 
+    # @pytest.mark.skipif(is_win_platform(), reason="SAT-7784")
     @pytest.mark.parametrize("a_size", [1, 100, 10000])
     @pytest.mark.parametrize("v_size", [1, 100, 10000])
     @pytest.mark.parametrize("mode", ["full", "valid", "same"])
