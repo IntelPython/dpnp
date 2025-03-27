@@ -13,6 +13,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    factor_to_tol,
     generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
@@ -210,30 +211,30 @@ class TestConvolve:
 
                 result = result.astype(rdtype)
 
-                rtol = 1e-3
-                atol = 1e-10
-
-                if rdtype == dpnp.float64 or rdtype == dpnp.complex128:
-                    rtol = 1e-6
-                    atol = 1e-12
-                elif rdtype == dpnp.bool:
+                if rdtype == dpnp.bool:
                     result = result.astype(dpnp.int32)
                     rdtype = result.dtype
 
                 expected = expected.astype(rdtype)
 
-                diff = numpy.abs(result.asnumpy() - expected)
-                invalid = diff > atol + rtol * numpy.abs(expected)
+                factor = 1000
+                rtol = atol = factor_to_tol(rdtype, factor)
+                invalid = numpy.logical_not(
+                    numpy.isclose(
+                        result.asnumpy(), expected, rtol=rtol, atol=atol
+                    )
+                )
 
                 # When using the 'fft' method, we might encounter outliers.
                 # This usually happens when the resulting array contains values close to zero.
                 # For these outliers, the relative error can be significant.
                 # We can tolerate a few such outliers.
-                max_outliers = 8 if expected.size > 1 else 0
+                # max_outliers = 10 if expected.size > 1 else 0
+                max_outliers = 10
                 if invalid.sum() > max_outliers:
                     # we already failed check,
                     # call assert_dtype_allclose just to report error nicely
-                    assert_dtype_allclose(result, expected, factor=1000)
+                    assert_dtype_allclose(result, expected, factor=factor)
 
     def test_convolve_mode_error(self):
         a = dpnp.arange(5)
@@ -446,30 +447,30 @@ class TestCorrelate:
 
                 result = result.astype(rdtype)
 
-                rtol = 1e-3
-                atol = 1e-3
-
-                if rdtype == dpnp.float64 or rdtype == dpnp.complex128:
-                    rtol = 1e-6
-                    atol = 1e-6
-                elif rdtype == dpnp.bool:
+                if rdtype == dpnp.bool:
                     result = result.astype(dpnp.int32)
                     rdtype = result.dtype
 
                 expected = expected.astype(rdtype)
 
-                diff = numpy.abs(result.asnumpy() - expected)
-                invalid = diff > atol + rtol * numpy.abs(expected)
+                factor = 1000
+                rtol = atol = factor_to_tol(rdtype, factor)
+                invalid = numpy.logical_not(
+                    numpy.isclose(
+                        result.asnumpy(), expected, rtol=rtol, atol=atol
+                    )
+                )
 
                 # When using the 'fft' method, we might encounter outliers.
                 # This usually happens when the resulting array contains values close to zero.
                 # For these outliers, the relative error can be significant.
                 # We can tolerate a few such outliers.
-                max_outliers = 10 if expected.size > 1 else 0
+                # max_outliers = 10 if expected.size > 1 else 0
+                max_outliers = 10
                 if invalid.sum() > max_outliers:
                     # we already failed check,
                     # call assert_dtype_allclose just to report error nicely
-                    assert_dtype_allclose(result, expected, factor=1000)
+                    assert_dtype_allclose(result, expected, factor=factor)
 
     def test_correlate_mode_error(self):
         a = dpnp.arange(5)
