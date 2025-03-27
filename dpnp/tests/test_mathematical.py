@@ -2231,6 +2231,7 @@ class TestRoundingFuncs:
     )
     def test_out(self, func, dt):
         a = generate_random_numpy_array(10, dt)
+        # TODO: use dt_out = dt when dpctl#2030 is fixed
         dt_out = numpy.int8 if dt == dpnp.bool else dt
         out = numpy.empty(a.shape, dtype=dt_out)
         ia, iout = dpnp.array(a), dpnp.array(out)

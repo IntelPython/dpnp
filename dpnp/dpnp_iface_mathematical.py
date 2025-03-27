@@ -63,6 +63,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
     DPNPAngle,
     DPNPBinaryFunc,
+    DPNPFix,
     DPNPImag,
     DPNPReal,
     DPNPRound,
@@ -1755,12 +1756,6 @@ out : dpnp.ndarray
     Otherwise the result is stored there and the return value `out` is
     a reference to that array.
 
-Limitations
------------
-Parameters `where` and `subok` are supported with their default values.
-Keyword argument `kwargs` is currently unsupported.
-Otherwise ``NotImplementedError`` exception will be raised.
-
 See Also
 --------
 :obj:`dpnp.round` : Round to given number of decimals.
@@ -1781,7 +1776,7 @@ array(3.)
 array([ 2.,  2., -2., -2.])
 """
 
-fix = DPNPUnaryFunc(
+fix = DPNPFix(
     "fix",
     ufi._fix_result_type,
     ufi._fix,
@@ -1933,8 +1928,10 @@ See Also
 
 Notes
 -----
-Some spreadsheet programs calculate the "floor-towards-zero", in other words floor(-2.5) == -2.
-DPNP instead uses the definition of floor where floor(-2.5) == -3.
+Some spreadsheet programs calculate the "floor-towards-zero", where
+``floor(-2.5) == -2``. DPNP instead uses the definition of :obj:`dpnp.floor`
+where ``floor(-2.5) == -3``. The "floor-towards-zero" function is called
+:obj:`dpnp.fix` in DPNP.
 
 Examples
 --------
