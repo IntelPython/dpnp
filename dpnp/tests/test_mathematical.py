@@ -2264,9 +2264,8 @@ class TestRoundingFuncs:
                 # NumPy allows "same_kind" casting, dpnp does not
                 assert_raises(ValueError, getattr(dpnp, func), a, out=out)
         else:
-            numpy_error = numpy._core._exceptions._UFuncOutputCastingError
             assert_raises(
-                (ValueError, numpy_error), getattr(xp, func), a, out=out
+                (ValueError, TypeError), getattr(xp, func), a, out=out
             )
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
