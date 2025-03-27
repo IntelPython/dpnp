@@ -230,7 +230,7 @@ class TestConvolve:
                 # For these outliers, the relative error can be significant.
                 # We can tolerate a few such outliers.
                 # max_outliers = 10 if expected.size > 1 else 0
-                max_outliers = 10
+                max_outliers = 10 if expected.size > 1 else 0
                 if invalid.sum() > max_outliers:
                     # we already failed check,
                     # call assert_dtype_allclose just to report error nicely
@@ -466,7 +466,7 @@ class TestCorrelate:
                 # For these outliers, the relative error can be significant.
                 # We can tolerate a few such outliers.
                 # max_outliers = 10 if expected.size > 1 else 0
-                max_outliers = 10
+                max_outliers = 10 if expected.size > 1 else 0
                 if invalid.sum() > max_outliers:
                     # we already failed check,
                     # call assert_dtype_allclose just to report error nicely
