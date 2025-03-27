@@ -43,7 +43,12 @@ struct FixFunctor
 
     resT operator()(const argT &x) const
     {
-        return (x >= 0.0) ? sycl::floor(x) : sycl::ceil(x);
+        if constexpr (std::is_integral_v<argT>) {
+            return x;
+        }
+        else {
+            return (x >= 0.0) ? sycl::floor(x) : sycl::ceil(x);
+        }
     }
 };
 } // namespace dpnp::kernels::fix

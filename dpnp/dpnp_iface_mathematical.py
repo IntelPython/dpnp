@@ -1728,14 +1728,14 @@ _FIX_DOCSTRING = """
 Round to nearest integer towards zero.
 
 Round an array of floats element-wise to nearest integer towards zero.
-The rounded values are returned as floats.
+The rounded values have the same data-type as the input.
 
 For full documentation refer to :obj:`numpy.fix`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    An array of floats to be rounded.
+    Input array, expected to have a real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1749,12 +1749,11 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array with the rounded values and with the same dimensions as the input.
-    The returned array will have a floating point data type that input can cast
-    to it safely considering device capabilities.
-    If `out` is ``None`` then a float array is returned with the rounded values.
-    Otherwise the result is stored there and the return value `out` is
-    a reference to that array.
+    An array with the same dimensions and data-type as the input.
+    If second argument is not supplied then a new array is returned
+    with the rounded values.
+    If a second argument is supplied the result is stored there.
+    The return value `out` is then a reference to that array.
 
 Limitations
 -----------
