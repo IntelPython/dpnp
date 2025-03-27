@@ -1750,10 +1750,10 @@ Returns
 -------
 out : dpnp.ndarray
     An array with the same dimensions and data-type as the input.
-    If second argument is not supplied then a new array is returned
+    If `out` is ``None`` then a new array is returned
     with the rounded values.
-    If a second argument is supplied the result is stored there.
-    The return value `out` is then a reference to that array.
+    Otherwise the result is stored there and the return value `out` is
+    a reference to that array.
 
 Limitations
 -----------
