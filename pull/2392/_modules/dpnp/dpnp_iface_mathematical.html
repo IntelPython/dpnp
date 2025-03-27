@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+48.g1937399ff82 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+52.gade019f37d2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=81e8d2d3"></script>
+      <script src="../../_static/documentation_options.js?v=d3eab6a3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1843,14 +1843,14 @@
 <span class="s2">Round to nearest integer towards zero.</span>
 
 <span class="s2">Round an array of floats element-wise to nearest integer towards zero.</span>
-<span class="s2">The rounded values are returned as floats.</span>
+<span class="s2">The rounded values have the same data-type as the input.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.fix`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    An array of floats to be rounded.</span>
+<span class="s2">    Input array, expected to have a real-valued data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1864,12 +1864,11 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array with the rounded values and with the same dimensions as the input.</span>
-<span class="s2">    The returned array will have a floating point data type that input can cast</span>
-<span class="s2">    to it safely considering device capabilities.</span>
-<span class="s2">    If `out` is ``None`` then a float array is returned with the rounded values.</span>
-<span class="s2">    Otherwise the result is stored there and the return value `out` is</span>
-<span class="s2">    a reference to that array.</span>
+<span class="s2">    An array with the same dimensions and data-type as the input.</span>
+<span class="s2">    If second argument is not supplied then a new array is returned</span>
+<span class="s2">    with the rounded values.</span>
+<span class="s2">    If a second argument is supplied the result is stored there.</span>
+<span class="s2">    The return value `out` is then a reference to that array.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
