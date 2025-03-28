@@ -14,23 +14,33 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    numpy_version,
 )
+from .third_party.cupy import testing
 
 
 def _make_array_Hermitian(a, n):
     """
-    This function makes necessary changes of the input array of
-    `dpnp.fft.irfft` and `dpnp.fft.hfft` functions to make sure the
-    given array is Hermitian.
-
+    For `dpnp.fft.irfft` and `dpnp.fft.hfft`, the input array should be Hermitian.
+    If it is not, the behavior is undefined. This function makes necessary changes
+    to make sure the given array is Hermitian.
     """
 
     a[0] = a[0].real
-    if n in [None, 18]:
-        # f_ny is Nyquist mode (n//2+1 mode) which is n//2 element
-        f_ny = -1 if n is None else n // 2
-        a[f_ny] = a[f_ny].real
-        a[f_ny:] = 0  # no data needed after Nyquist mode
+    if n is None:
+        # last element is Nyquist mode
+        a[-1] = a[-1].real
+    elif n % 2 == 0:
+        # Nyquist mode (n//2+1 mode) is n//2-th element
+        f_ny = n // 2
+        if a.shape[0] > f_ny:
+            a[f_ny] = a[f_ny].real
+            a[f_ny + 1 :] = 0  # no data needed after Nyquist mode
+    else:
+        # No Nyquist mode
+        f_ny = n // 2
+        if a.shape[0] > f_ny:
+            a[f_ny + 1 :] = 0  # no data needed for the second half
 
     return a
 
@@ -40,26 +50,18 @@ class TestFft:
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
-        x = generate_random_numpy_array(11, dtype, low=-1, high=1)
-        a = numpy.sin(x)  # a.dtype is float16 if x.dtype is bool
+        a = generate_random_numpy_array(11, dtype)
         ia = dpnp.array(a)
 
-        factor = 140 if dtype == dpnp.bool else 8
         result = dpnp.fft.fft(ia, n=n, norm=norm)
         expected = numpy.fft.fft(a, n=n, norm=norm)
-        # flag is needed for Intel NumPy 1.26.4 since it returns complex128
-        dt_list = [dpnp.bool, dpnp.int8, dpnp.uint8]
-        flag = True if dtype in dt_list else False
-        assert_dtype_allclose(
-            result, expected, factor=factor, check_only_type_kind=flag
-        )
+        flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
         # inverse FFT
         result = dpnp.fft.ifft(result, n=n, norm=norm)
         expected = numpy.fft.ifft(expected, n=n, norm=norm)
-        assert_dtype_allclose(
-            result, expected, factor=factor, check_only_type_kind=flag
-        )
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
@@ -99,13 +101,11 @@ class TestFft:
 
     @pytest.mark.parametrize("n", [None, 5, 20])
     def test_usm_ndarray(self, n):
-        x = dpt.linspace(-1, 1, 11)
-        a_usm = dpt.sin(x) + 1j * dpt.cos(x)
-        a = dpt.asnumpy(a_usm)
+        a = generate_random_numpy_array(11, dtype=numpy.complex64)
+        a_usm = dpt.asarray(a)
 
         expected = numpy.fft.fft(a, n=n)
         out = dpt.empty(expected.shape, dtype=a_usm.dtype)
-
         result = dpnp.fft.fft(a_usm, n=n, out=out)
         assert out is result.get_array()
         assert_dtype_allclose(result, expected)
@@ -120,14 +120,12 @@ class TestFft:
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_out(self, dtype, n, norm):
-        x = dpnp.linspace(-1, 1, 11)
-        x = dpnp.sin(x) + 1j * dpnp.cos(x)
-        ia = dpnp.asarray(x, dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array(11, dtype=dtype)
+        ia = dpnp.array(a)
 
+        # FFT
         expected = numpy.fft.fft(a, n=n, norm=norm)
         out = dpnp.empty(expected.shape, dtype=a.dtype)
-
         result = dpnp.fft.fft(ia, n=n, norm=norm, out=out)
         assert out is result
         assert_dtype_allclose(result, expected)
@@ -279,7 +277,7 @@ class TestFft:
     def test_error(self, xp):
         # 0-D input
         a = xp.array(3)
-        # dpnp and Intel® NumPy raise ValueError
+        # dpnp and Intel NumPy raise ValueError
         # stock NumPy raises IndexError
         assert_raises((ValueError, IndexError), xp.fft.fft, a)
 
@@ -287,7 +285,7 @@ class TestFft:
         a = xp.ones((4, 3))
         if xp == dpnp:
             # dpnp and stock NumPy raise TypeError
-            # Intel® NumPy raises SystemError for Python 3.10 and 3.11
+            # Intel NumPy raises SystemError for Python 3.10 and 3.11
             # and no error for Python 3.9
             assert_raises(TypeError, xp.fft.fft, a, n=5.0)
 
@@ -317,14 +315,14 @@ class TestFft:
         out = dpnp.empty((10,), dtype=dpnp.float32)
         assert_raises(TypeError, dpnp.fft.fft, a, out=out)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_bool=True)
-    )
-    def test_negative_stride(self, dtype):
-        ia = dpnp.arange(10, dtype=dtype)
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("stride", [2, 3, -1, -3])
+    def test_strided(self, dtype, stride):
+        a = generate_random_numpy_array(20, dtype=dtype)
+        ia = dpnp.array(a)
 
-        result = dpnp.fft.fft(ia[::-1])
-        expected = numpy.fft.fft(ia.asnumpy()[::-1])
+        result = dpnp.fft.fft(ia[::stride])
+        expected = numpy.fft.fft(a[::stride])
         assert_dtype_allclose(result, expected)
 
 
@@ -426,7 +424,7 @@ class TestFftn:
         ia = dpnp.array(a)
 
         result = dpnp.fft.fftn(ia, axes=axes)
-        # Intel® NumPy ignores repeated axes, handle it one by one
+        # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = a
         for ii in axes:
             expected = numpy.fft.fft(expected, axis=ii)
@@ -445,7 +443,7 @@ class TestFftn:
         ia = dpnp.array(a)
 
         result = dpnp.fft.fftn(ia, s=s, axes=axes)
-        # Intel® NumPy ignores repeated axes, handle it one by one
+        # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = a
         for jj, ii in zip(s[::-1], axes[::-1]):
             expected = numpy.fft.fft(expected, n=jj, axis=ii)
@@ -463,7 +461,7 @@ class TestFftn:
         a = generate_random_numpy_array((2, 3, 4, 5), dtype=numpy.complex64)
         ia = dpnp.array(a)
 
-        # Intel® NumPy ignores repeated axes, handle it one by one
+        # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = a
         for jj, ii in zip(s[::-1], axes[::-1]):
             expected = numpy.fft.fft(expected, n=jj, axis=ii)
@@ -509,21 +507,21 @@ class TestFftn:
 
         # axes is None
         # For 0-D array, stock Numpy and dpnp return input array
-        # while Intel® NumPy return a complex zero
+        # while Intel NumPy return a complex zero
         result = dpnp.fft.fftn(a)
         expected = a.asnumpy()
         assert_dtype_allclose(result, expected)
 
         # axes=()
         # For 0-D array with axes=(), stock Numpy and dpnp return input array
-        # Intel® NumPy does not support empty axes and raises an Error
+        # Intel NumPy does not support empty axes and raises an Error
         result = dpnp.fft.fftn(a, axes=())
         expected = a.asnumpy()
         assert_dtype_allclose(result, expected)
 
         # axes=(0,)
         # For 0-D array with non-empty axes, stock Numpy and dpnp raise
-        # IndexError, while Intel® NumPy raises ZeroDivisionError
+        # IndexError, while Intel NumPy raises ZeroDivisionError
         assert_raises(IndexError, dpnp.fft.fftn, a, axes=(0,))
 
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
@@ -531,7 +529,7 @@ class TestFftn:
         a = dpnp.ones((2, 3, 4), dtype=dtype)
 
         # For axes=(), stock Numpy and dpnp return input array
-        # Intel® NumPy does not support empty axes and raises an Error
+        # Intel NumPy does not support empty axes and raises an Error
         result = dpnp.fft.fftn(a, axes=())
         expected = a.asnumpy()
         assert_dtype_allclose(result, expected)
@@ -541,7 +539,7 @@ class TestFftn:
         # s is not int
         a = xp.ones((4, 3))
         # dpnp and stock NumPy raise TypeError
-        # Intel® NumPy raises ValueError
+        # Intel NumPy raises ValueError
         assert_raises(
             (TypeError, ValueError), xp.fft.fftn, a, s=(5.0,), axes=(0,)
         )
@@ -555,7 +553,7 @@ class TestFftn:
         # axes should be given if s is not None
         # dpnp raises ValueError
         # stock NumPy will raise an Error in future versions
-        # Intel® NumPy raises TypeError for a different reason:
+        # Intel NumPy raises TypeError for a different reason:
         # when given, axes and shape arguments have to be of the same length
         if xp == dpnp:
             assert_raises(ValueError, xp.fft.fftn, a, s=(5,))
@@ -566,10 +564,11 @@ class TestFftn:
 
 class TestFftshift:
     @pytest.mark.parametrize("func", ["fftshift", "ifftshift"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("axes", [None, 1, (0, 1)])
-    def test_basic(self, func, axes):
-        ia = dpnp.arange(12).reshape(3, 4)
-        a = ia.asnumpy()
+    def test_basic(self, func, dtype, axes):
+        a = generate_random_numpy_array((3, 4), dtype=dtype)
+        ia = dpnp.array(a)
 
         expected = getattr(dpnp.fft, func)(ia, axes=axes)
         result = getattr(numpy.fft, func)(a, axes=axes)
@@ -581,8 +580,7 @@ class TestHfft:
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
-        x = generate_random_numpy_array(11, dtype, low=-1, high=1)
-        a = numpy.sin(x)
+        a = generate_random_numpy_array(11, dtype)
         if numpy.issubdtype(dtype, numpy.complexfloating):
             a = _make_array_Hermitian(a, n)
         ia = dpnp.array(a)
@@ -599,22 +597,21 @@ class TestHfft:
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_inverse(self, dtype, n, norm):
-        x = generate_random_numpy_array(11, dtype, low=-1, high=1)
-        a = numpy.sin(x)  # a.dtype is float16 if x.dtype is bool
+        a = generate_random_numpy_array(11, dtype)
         ia = dpnp.array(a)
 
-        factor = 140 if dtype == dpnp.bool else 8
         result = dpnp.fft.ihfft(ia, n=n, norm=norm)
         expected = numpy.fft.ihfft(a, n=n, norm=norm)
-        # check_only_type_kind=True since Intel NumPy always returns complex128
-        assert_dtype_allclose(
-            result, expected, factor=factor, check_only_type_kind=True
-        )
+        flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
-    def test_error(self):
-        a = dpnp.ones(11)
-        # incorrect norm
-        assert_raises(ValueError, dpnp.fft.ihfft, a, norm="backwards")
+    @pytest.mark.parametrize("dtype", get_complex_dtypes())
+    def test_error(self, dtype):
+        a = generate_random_numpy_array(11, dtype)
+        ia = dpnp.array(a)
+
+        assert_raises(TypeError, dpnp.fft.ihfft, ia)
+        assert_raises(TypeError, numpy.fft.ihfft, a)
 
 
 class TestIrfft:
@@ -622,8 +619,7 @@ class TestIrfft:
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_basic(self, dtype, n, norm):
-        x = generate_random_numpy_array(11, dtype, low=-1, high=1)
-        a = numpy.sin(x)
+        a = generate_random_numpy_array(11)
         if numpy.issubdtype(dtype, numpy.complexfloating):
             a = _make_array_Hermitian(a, n)
         ia = dpnp.array(a)
@@ -640,10 +636,12 @@ class TestIrfft:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_2d_array(self, dtype, n, axis, norm, order):
-        # TODO: resolve gh-2377 and use the following line
-        # a = generate_random_numpy_array((3, 4), dtype=dtype, order=order)
-        a = numpy.arange(12, dtype=dtype).reshape(3, 4, order=order)
+        a = generate_random_numpy_array((3, 4), dtype=dtype, order=order)
         ia = dpnp.array(a)
+        # For dpnp, each 1-D array of input should be Hermitian
+        ia = dpnp.moveaxis(ia, axis, 0)
+        ia = _make_array_Hermitian(ia, n)
+        ia = dpnp.moveaxis(ia, 0, axis)
 
         result = dpnp.fft.irfft(ia, n=n, axis=axis, norm=norm)
         expected = numpy.fft.irfft(a, n=n, axis=axis, norm=norm)
@@ -656,42 +654,24 @@ class TestIrfft:
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_3d_array(self, dtype, n, axis, norm, order):
         a = generate_random_numpy_array((4, 5, 6), dtype, order)
-        # each 1-D array of input should be Hermitian
-        if axis == 0:
-            a[0].imag = 0
-            if n is None:
-                # for axis=0 and n=8, Nyquist mode is not present
-                f_ny = -1  # Nyquist mode
-                a[-1].imag = 0
-        elif axis == 1:
-            a[:, 0, :].imag = 0
-            if n in [None, 8]:
-                f_ny = -1  # Nyquist mode
-                a[:, f_ny, :].imag = 0
-                a[:, f_ny:, :] = 0  # no data needed after Nyquist mode
-        elif axis == 2:
-            a[..., 0].imag = 0
-            if n in [None, 8]:
-                f_ny = -1 if n is None else n // 2  # Nyquist mode
-                a[..., f_ny].imag = 0
-                a[..., f_ny:] = 0  # no data needed after Nyquist mode
-
         ia = dpnp.array(a)
+        # For dpnp, each 1-D array of input should be Hermitian
+        ia = dpnp.moveaxis(ia, axis, 0)
+        ia = _make_array_Hermitian(ia, n)
+        ia = dpnp.moveaxis(ia, 0, axis)
 
         result = dpnp.fft.irfft(ia, n=n, axis=axis, norm=norm)
         expected = numpy.fft.irfft(a, n=n, axis=axis, norm=norm)
         assert_dtype_allclose(result, expected, factor=16)
 
-    @pytest.mark.parametrize("n", [None, 5, 18])
+    @pytest.mark.parametrize("n", [None, 5, 17, 18])
     def test_usm_ndarray(self, n):
-        x = dpt.linspace(-1, 1, 11)
-        x = dpt.sin(x) + 1j * dpt.cos(x)
-        a_usm = _make_array_Hermitian(x, n)
-        a = dpt.asnumpy(a_usm)
+        a = generate_random_numpy_array(11, dtype=numpy.complex64)
+        a_usm = dpt.asarray(a)
+        a_usm = _make_array_Hermitian(a_usm, n)
 
         expected = numpy.fft.irfft(a, n=n)
         out = dpt.empty(expected.shape, dtype=a_usm.real.dtype)
-
         result = dpnp.fft.irfft(a_usm, n=n, out=out)
         assert out is result.get_array()
         assert_dtype_allclose(result, expected)
@@ -700,18 +680,15 @@ class TestIrfft:
     @pytest.mark.parametrize("n", [None, 5, 18])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_out(self, dtype, n, norm):
-        x = dpnp.linspace(-1, 1, 11)
-        x = dpnp.sin(x) + 1j * dpnp.cos(x)
-        x = _make_array_Hermitian(x, n)
-        ia = dpnp.array(x, dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array(11, dtype=dtype)
+        ia = dpnp.array(a)
+        ia = _make_array_Hermitian(ia, n)
 
         expected = numpy.fft.irfft(a, n=n, norm=norm)
         out = dpnp.empty(expected.shape, dtype=a.real.dtype)
-
         result = dpnp.fft.irfft(ia, n=n, norm=norm, out=out)
         assert out is result
-        assert_dtype_allclose(result, expected)
+        assert_dtype_allclose(result, expected, factor=24)
 
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     @pytest.mark.parametrize("n", [None, 5, 8])
@@ -719,10 +696,11 @@ class TestIrfft:
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_2d_array_out(self, dtype, n, axis, norm, order):
-        # TODO: resolve gh-2377 and use the following line
-        # a = generate_random_numpy_array((3, 4), dtype=dtype, order=order)
-        a = numpy.arange(12, dtype=dtype).reshape(3, 4, order=order)
+        a = generate_random_numpy_array((3, 4), dtype=dtype, order=order)
         ia = dpnp.array(a)
+        ia = dpnp.moveaxis(ia, axis, 0)
+        ia = _make_array_Hermitian(ia, n)
+        ia = dpnp.moveaxis(ia, 0, axis)
 
         expected = numpy.fft.irfft(a, n=n, axis=axis, norm=norm)
         out = dpnp.empty(expected.shape, dtype=expected.dtype)
@@ -735,6 +713,11 @@ class TestIrfft:
         a = dpnp.ones((10,), dtype=dpnp.complex64)
         out = dpnp.empty((18,), dtype=dpnp.complex64)
         assert_raises(TypeError, dpnp.fft.irfft, a, out=out)
+
+    def test_error(self):
+        a = dpnp.ones(11)
+        # incorrect norm
+        assert_raises(ValueError, dpnp.fft.hfft, a, norm="backwards")
 
 
 class TestRfft:
@@ -780,9 +763,8 @@ class TestRfft:
 
     @pytest.mark.parametrize("n", [None, 5, 20])
     def test_usm_ndarray(self, n):
-        x = dpt.linspace(-1, 1, 11)
-        a_usm = dpt.sin(x)
-        a = dpt.asnumpy(a_usm)
+        a = generate_random_numpy_array(11)
+        a_usm = dpt.asarray(a)
 
         expected = numpy.fft.rfft(a, n=n)
         out_dt = map_dtype_to_device(dpnp.complex128, a_usm.sycl_device)
@@ -796,14 +778,11 @@ class TestRfft:
     @pytest.mark.parametrize("n", [None, 5, 20])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     def test_out(self, dtype, n, norm):
-        x = dpnp.linspace(-1, 1, 11)
-        x = dpnp.sin(x) + 1j * dpnp.cos(x)
-        ia = dpnp.asarray(x, dtype=dtype)
-        a = dpnp.asnumpy(ia)
+        a = generate_random_numpy_array(11, dtype=dtype)
+        ia = dpnp.array(a)
 
         expected = numpy.fft.rfft(a, n=n, norm=norm)
         out = dpnp.empty(expected.shape, dtype=expected.dtype)
-
         result = dpnp.fft.rfft(ia, n=n, norm=norm, out=out)
         assert out is result
         assert_dtype_allclose(result, expected)
@@ -824,14 +803,12 @@ class TestRfft:
         assert out is result
         assert_dtype_allclose(result, expected)
 
+    @testing.with_requires("numpy>=2.0.0")
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     def test_error(self, xp):
         a = xp.ones((4, 3), dtype=xp.complex64)
         # invalid dtype of input array for r2c FFT
-        if xp == dpnp:
-            # stock NumPy-1.26 ignores imaginary part
-            # Intel® NumPy, dpnp, stock NumPy-2.0 raise TypeError
-            assert_raises(TypeError, xp.fft.rfft, a)
+        assert_raises(TypeError, xp.fft.rfft, a)
 
     def test_validate_out(self):
         # Invalid shape for r2c FFT
@@ -933,7 +910,7 @@ class TestRfftn:
         ia = dpnp.array(a)
 
         result = dpnp.fft.rfftn(ia, axes=axes)
-        # Intel® NumPy ignores repeated axes, handle it one by one
+        # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = numpy.fft.rfft(a, axis=axes[-1])
         # need to pass shape for c2c FFT since expected and a
         # do not have the same shape after calling rfft
@@ -958,7 +935,7 @@ class TestRfftn:
         ia = dpnp.array(a)
 
         result = dpnp.fft.rfftn(ia, s=s, axes=axes)
-        # Intel® NumPy ignores repeated axes, handle it one by one
+        # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = numpy.fft.rfft(a, n=s[-1], axis=axes[-1])
         for jj, ii in zip(s[-2::-1], axes[-2::-1]):
             expected = numpy.fft.fft(expected, n=jj, axis=ii)
@@ -976,7 +953,7 @@ class TestRfftn:
         a = generate_random_numpy_array((2, 3, 4, 5), dtype=numpy.float32)
         ia = dpnp.array(a)
 
-        # Intel® NumPy ignores repeated axes, handle it one by one
+        # Intel NumPy ignores repeated axes (mkl_fft-gh-104), handle it one by one
         expected = numpy.fft.rfft(a, n=s[-1], axis=axes[-1])
         for jj, ii in zip(s[-2::-1], axes[-2::-1]):
             expected = numpy.fft.fft(expected, n=jj, axis=ii)
@@ -1006,5 +983,5 @@ class TestRfftn:
 
         result = dpnp.fft.irfftn(ia)
         expected = numpy.fft.irfftn(a)
-        # check_only_type_kind=True since Intel NumPy returns float64
-        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+        flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
