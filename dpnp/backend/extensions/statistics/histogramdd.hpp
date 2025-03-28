@@ -31,9 +31,7 @@
 #include "dpctl4pybind11.hpp"
 #include "ext/dispatch_table.hpp"
 
-namespace statistics
-{
-namespace histogram
+namespace statistics::histogram
 {
 struct Histogramdd
 {
@@ -63,5 +61,4 @@ struct Histogramdd
 };
 
 void populate_histogramdd(py::module_ m);
-} // namespace histogram
-} // namespace statistics
+} // namespace statistics::histogram

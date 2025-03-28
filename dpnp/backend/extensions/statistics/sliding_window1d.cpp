@@ -43,10 +43,7 @@ using ext::validation::check_num_dims;
 using ext::validation::common_checks;
 using ext::validation::name_of;
 
-namespace statistics
-{
-
-namespace sliding_window1d
+namespace statistics::sliding_window1d
 {
 
 void validate(const usm_ndarray &a,
@@ -90,5 +87,4 @@ void validate(const usm_ndarray &a,
     }
 }
 
-} // namespace sliding_window1d
-} // namespace statistics
+} // namespace statistics::sliding_window1d

@@ -40,10 +40,7 @@ using ext::common::AtomicOp;
 using ext::common::IsNan;
 using ext::common::Less;
 
-namespace statistics
-{
-
-namespace histogram
+namespace statistics::histogram
 {
 
 template <typename T, int Dims>
@@ -370,5 +367,4 @@ uint32_t get_local_hist_copies_count(uint32_t loc_mem_size_in_items,
                                      uint32_t local_size,
                                      uint32_t hist_size_in_items);
 
-} // namespace histogram
-} // namespace statistics
+} // namespace statistics::histogram
