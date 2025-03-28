@@ -140,9 +140,6 @@ class TestConvolve:
             dpnp_kwargs["method"] = method
         return dpnp_kwargs, numpy_kwargs
 
-    def setup_method(self):
-        numpy.random.seed(0)
-
     @pytest.mark.parametrize(
         "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
     )
@@ -171,10 +168,10 @@ class TestConvolve:
         if dtype in [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16]:
             pytest.skip("avoid overflow.")
         an = generate_random_numpy_array(
-            a_size, dtype, low=-3, high=3, probability=0.9
+            a_size, dtype, low=-3, high=3, probability=0.9, seed_value=0
         )
         vn = generate_random_numpy_array(
-            v_size, dtype, low=-3, high=3, probability=0.9
+            v_size, dtype, low=-3, high=3, probability=0.9, seed_value=1
         )
 
         ad = dpnp.array(an)
@@ -282,8 +279,12 @@ class TestConvolve:
 
     @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
     def test_convolve_different_sizes(self, size):
-        a = generate_random_numpy_array(size, dtype=numpy.float32, low=0, high=1)
-        v = generate_random_numpy_array(size // 2, dtype=numpy.float32, low=0, high=1)
+        a = generate_random_numpy_array(
+            size, dtype=numpy.float32, low=0, high=1, seed_value=0
+        )
+        v = generate_random_numpy_array(
+            size // 2, dtype=numpy.float32, low=0, high=1, seed_value=1
+        )
 
         ad = dpnp.array(a)
         vd = dpnp.array(v)
@@ -375,9 +376,6 @@ class TestCorrelate:
             dpnp_kwargs["method"] = method
         return dpnp_kwargs, numpy_kwargs
 
-    def setup_method(self):
-        numpy.random.seed(0)
-
     @pytest.mark.parametrize(
         "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
     )
@@ -406,10 +404,10 @@ class TestCorrelate:
         if dtype in [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16]:
             pytest.skip("avoid overflow.")
         an = generate_random_numpy_array(
-            a_size, dtype, low=-3, high=3, probability=0.9
+            a_size, dtype, low=-3, high=3, probability=0.9, seed_value=0
         )
         vn = generate_random_numpy_array(
-            v_size, dtype, low=-3, high=3, probability=0.9
+            v_size, dtype, low=-3, high=3, probability=0.9, seed_value=1
         )
 
         ad = dpnp.array(an)
@@ -505,8 +503,12 @@ class TestCorrelate:
 
     @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
     def test_correlate_different_sizes(self, size):
-        a = numpy.random.rand(size).astype(numpy.float32)
-        v = numpy.random.rand(size // 2).astype(numpy.float32)
+        a = generate_random_numpy_array(
+            size, dtype=numpy.float32, low=0, high=1, seed_value=0
+        )
+        v = generate_random_numpy_array(
+            size // 2, dtype=numpy.float32, low=0, high=1, seed_value=1
+        )
 
         ad = dpnp.array(a)
         vd = dpnp.array(v)
