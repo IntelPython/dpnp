@@ -2270,6 +2270,7 @@ class TestRoundingFuncs:
         assert result is iout
         assert_array_equal(result, expected)
 
+    @testing.with_requires("numpy>=2.1.0")
     @pytest.mark.parametrize(
         "dt", get_all_dtypes(no_none=True, no_complex=True)
     )

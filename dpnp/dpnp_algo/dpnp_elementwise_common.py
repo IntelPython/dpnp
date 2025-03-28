@@ -537,6 +537,7 @@ class DPNPFix(DPNPUnaryFunc):
         elif out is not None and not dpnp.is_supported_array_type(out):
             pass  # pass to raise error in main implementation
         elif out is not None and out.dtype != x.dtype:
+            # passing will raise an error but with incorrect needed dtype
             raise ValueError(
                 f"Output array of type {x.dtype} is needed, got {out.dtype}"
             )
