@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.18.0dev0+65.g3be0562ce0f documentation</title>
+  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.18.0dev0+66.g4aa69d34507 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=aa90fd42"></script>
+      <script src="../../_static/documentation_options.js?v=3583a28d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -146,9 +146,8 @@ distributions.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First 1-D array.</p></li>
-<li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second 1-D array. The length of <cite>v</cite> must be less than or equal to
-the length of <cite>a</cite>.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First input array.</p></li>
+<li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second input array.</p></li>
 <li><p><strong>mode</strong> (<em>{'full'</em><em>, </em><em>'valid'</em><em>, </em><em>'same'}</em><em>, </em><em>optional</em>) -- <ul>
 <li><p>'full': This returns the convolution
 at each point of overlap, with an output shape of (N+M-1,). At
