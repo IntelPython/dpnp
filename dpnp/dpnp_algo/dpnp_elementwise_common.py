@@ -513,7 +513,7 @@ class DPNPAngle(DPNPUnaryFunc):
 
 
 class DPNPFix(DPNPUnaryFunc):
-    """Class that implements dpnp.real unary element-wise functions."""
+    """Class that implements dpnp.fix unary element-wise functions."""
 
     def __init__(
         self,
@@ -534,14 +534,16 @@ class DPNPFix(DPNPUnaryFunc):
             pass  # pass to raise error in main implementation
         elif dpnp.issubdtype(x.dtype, dpnp.inexact):
             pass  # for inexact types, pass to calculate in the backend
-        elif out is not None and (
-            not dpnp.is_supported_array_type(out) or out.dtype != x.dtype
-        ):
+        elif out is not None and not dpnp.is_supported_array_type(out):
             pass  # pass to raise error in main implementation
+        elif out is not None and out.dtype != x.dtype:
+            raise ValueError(
+                f"Output array of type {x.dtype} is needed, got {out.dtype}"
+            )
         else:
             # for exact types, return the input
             if out is None:
-                return dpnp.asarray(x, copy=True)
+                return dpnp.copy(x, order=order)
 
             if isinstance(out, dpt.usm_ndarray):
                 out = dpnp_array._create_from_usm_ndarray(out)

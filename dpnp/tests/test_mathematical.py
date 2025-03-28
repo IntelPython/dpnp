@@ -2227,19 +2227,37 @@ class TestRoundingFuncs:
 
     @testing.with_requires("numpy>=2.1.0")
     @pytest.mark.parametrize(
-        "dt", get_all_dtypes(no_none=True, no_complex=True)
+        "dt_in", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_out(self, func, dt):
-        a = generate_random_numpy_array(10, dt)
-        # TODO: use dt_out = dt when dpctl#2030 is fixed
-        dt_out = numpy.int8 if dt == dpnp.bool else dt
+    @pytest.mark.parametrize(
+        "dt_out", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_out(self, func, dt_in, dt_out):
+        a = generate_random_numpy_array(10, dt_in)
         out = numpy.empty(a.shape, dtype=dt_out)
         ia, iout = dpnp.array(a), dpnp.array(out)
 
-        expected = getattr(numpy, func)(a, out=out)
-        result = getattr(dpnp, func)(ia, out=iout)
-        assert result is iout
-        assert_array_equal(result, expected)
+        if dt_in != dt_out:
+            if numpy.can_cast(dt_in, dt_out, casting="same_kind"):
+                # NumPy allows "same_kind" casting, dpnp does not
+                if func != "fix" and dt_in == dpnp.bool and dt_out == dpnp.int8:
+                    # TODO: get rid of w/a when dpctl#2030 is fixed
+                    pass
+                else:
+                    assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
+            else:
+                assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
+                assert_raises(TypeError, getattr(numpy, func), a, out=out)
+        else:
+            if func != "fix" and dt_in == dpnp.bool:
+                # TODO: get rid of w/a when dpctl#2030 is fixed
+                out = out.astype(numpy.int8)
+                iout = iout.astype(dpnp.int8)
+
+            expected = getattr(numpy, func)(a, out=out)
+            result = getattr(dpnp, func)(ia, out=iout)
+            assert result is iout
+            assert_array_equal(result, expected)
 
     @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     def test_out_float16(self, func):
@@ -2252,22 +2270,22 @@ class TestRoundingFuncs:
         assert result is iout
         assert_array_equal(result, expected)
 
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
-        "dt_out", get_all_dtypes(no_none=True, no_complex=True)[:-1]
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_invalid_dtype(self, func, xp, dt_out):
-        dt_in = get_all_dtypes(no_none=True, no_complex=True)[-1]
-        a = xp.arange(10, dtype=dt_in)
-        out = xp.empty(10, dtype=dt_out)
-        if dt_out == numpy.float32 and dt_in == numpy.float64:
-            if xp == dpnp:
-                # NumPy allows "same_kind" casting, dpnp does not
-                assert_raises(ValueError, getattr(dpnp, func), a, out=out)
-        else:
-            assert_raises(
-                (ValueError, TypeError), getattr(xp, func), a, out=out
-            )
+    def test_out_usm_ndarray(self, func, dt):
+        a = generate_random_numpy_array(10, dt)
+        out = numpy.empty(a.shape, dtype=dt)
+        ia, usm_out = dpnp.array(a), dpt.asarray(out)
+
+        if func != "fix" and dt == dpnp.bool:
+            # TODO: get rid of w/a when dpctl#2030 is fixed
+            out = out.astype(numpy.int8)
+            usm_out = dpt.asarray(usm_out, dtype=dpnp.int8)
+
+        expected = getattr(numpy, func)(a, out=out)
+        result = getattr(dpnp, func)(ia, out=usm_out)
+        assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
@@ -2278,8 +2296,14 @@ class TestRoundingFuncs:
         out = xp.empty(shape, dtype=xp.float32)
         assert_raises(ValueError, getattr(xp, func), a, out=out)
 
-    def test_scalar(self, func):
+    def test_error(self, func):
+        # scalar, unsupported input
         assert_raises(TypeError, getattr(dpnp, func), -3.4)
+
+        # unsupported out
+        a = dpnp.array([1, 2, 3])
+        out = numpy.empty_like(3, dtype=a.dtype)
+        assert_raises(TypeError, getattr(dpnp, func), a, out=out)
 
 
 class TestHypot:
