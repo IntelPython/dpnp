@@ -2286,6 +2286,7 @@ class TestRoundingFuncs:
 
         expected = getattr(numpy, func)(a, out=out)
         result = getattr(dpnp, func)(ia, out=usm_out)
+        assert result.get_array() is usm_out
         assert_array_equal(result, expected)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])
