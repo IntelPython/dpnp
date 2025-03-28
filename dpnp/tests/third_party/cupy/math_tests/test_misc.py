@@ -531,7 +531,6 @@ class TestMisc:
         }
     )
 )
-@pytest.mark.skip("convolve() is not implemented yet")
 class TestConvolveShapeCombination:
 
     @testing.for_all_dtypes(no_float16=True)
@@ -542,7 +541,6 @@ class TestConvolveShapeCombination:
         return xp.convolve(a, b, mode=self.mode)
 
 
-@pytest.mark.skip("convolve() is not implemented yet")
 @pytest.mark.parametrize("mode", ["valid", "same", "full"])
 class TestConvolve:
 
@@ -561,21 +559,20 @@ class TestConvolve:
         return xp.convolve(a[200::], b[10::70], mode=mode)
 
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
-    @testing.numpy_cupy_allclose(rtol=1e-2)
+    @testing.numpy_cupy_allclose(rtol=1e-2, type_check=has_support_aspect64())
     def test_convolve_diff_types(self, xp, dtype1, dtype2, mode):
         a = testing.shaped_random((200,), xp, dtype1)
         b = testing.shaped_random((100,), xp, dtype2)
         return xp.convolve(a, b, mode=mode)
 
 
-@pytest.mark.skip("convolve() is not implemented yet")
 @testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
 class TestConvolveInvalid:
 
     @testing.for_all_dtypes()
     def test_convolve_empty(self, dtype):
         for xp in (numpy, cupy):
-            a = xp.zeros((0,), dtype)
+            a = xp.zeros((0,), dtype=dtype)
             with pytest.raises(ValueError):
                 xp.convolve(a, a, mode=self.mode)
 
