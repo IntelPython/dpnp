@@ -48,7 +48,7 @@ jobs:
 
       - name: Merge conda env files
         run: |
-          conda-merge ${{ env.build-with-oneapi-env }} ${{ env.dpctl-pkg-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
+          conda-merge ${{ env.dpctl-pkg-env }} ${{ env.oneapi-pkgs-env }} ${{ env.build-with-oneapi-env }} > ${{ env.environment-file }}
           cat ${{ env.environment-file }}
 
       - name: Upload artifact
