@@ -35,7 +35,7 @@
 
 namespace type_utils = dpctl::tensor::type_utils;
 
-namespace statistics::common
+namespace ext::common
 {
 
 template <typename N, typename D>
@@ -185,4 +185,6 @@ sycl::nd_range<1>
 // headers of dpctl.
 pybind11::dtype dtype_from_typenum(int dst_typenum);
 
-} // namespace statistics::common
+} // namespace ext::common
+
+#include "ext/details/common_internal.hpp"

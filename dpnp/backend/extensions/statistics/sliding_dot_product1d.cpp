@@ -34,7 +34,7 @@
 #include "dpctl4pybind11.hpp"
 #include "utils/type_dispatch.hpp"
 
-#include "common.hpp"
+#include "ext/common.hpp"
 #include "sliding_dot_product1d.hpp"
 #include "sliding_window1d.hpp"
 
@@ -44,7 +44,7 @@ namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 
 using namespace statistics::sliding_window1d;
-using namespace statistics::common;
+using namespace ext::common;
 
 namespace
 {

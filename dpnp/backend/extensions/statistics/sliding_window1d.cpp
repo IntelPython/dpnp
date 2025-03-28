@@ -30,22 +30,20 @@
 #include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
+#include "ext/validation_utils.hpp"
 #include "sliding_window1d.hpp"
-#include "validation_utils.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 using dpctl::tensor::usm_ndarray;
 using dpctl_td_ns::typenum_t;
 
-namespace statistics
-{
-using validation::array_names;
-using validation::array_ptr;
-using validation::check_num_dims;
-using validation::common_checks;
-using validation::name_of;
+using ext::validation::array_names;
+using ext::validation::array_ptr;
+using ext::validation::check_num_dims;
+using ext::validation::common_checks;
+using ext::validation::name_of;
 
-namespace sliding_window1d
+namespace statistics::sliding_window1d
 {
 
 void validate(const usm_ndarray &a,
@@ -89,5 +87,4 @@ void validate(const usm_ndarray &a,
     }
 }
 
-} // namespace sliding_window1d
-} // namespace statistics
+} // namespace statistics::sliding_window1d

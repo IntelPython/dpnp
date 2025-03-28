@@ -28,12 +28,10 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "dispatch_table.hpp"
 #include "dpctl4pybind11.hpp"
+#include "ext/dispatch_table.hpp"
 
-namespace statistics
-{
-namespace histogram
+namespace statistics::histogram
 {
 struct Histogramdd
 {
@@ -49,7 +47,7 @@ struct Histogramdd
                                 const size_t,
                                 const std::vector<sycl::event> &);
 
-    common::DispatchTable2<FnT> dispatch_table;
+    ext::common::DispatchTable2<FnT> dispatch_table;
 
     Histogramdd();
 
@@ -63,5 +61,4 @@ struct Histogramdd
 };
 
 void populate_histogramdd(py::module_ m);
-} // namespace histogram
-} // namespace statistics
+} // namespace statistics::histogram

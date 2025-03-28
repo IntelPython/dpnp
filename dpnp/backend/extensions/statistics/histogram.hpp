@@ -28,8 +28,8 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "dispatch_table.hpp"
 #include "dpctl4pybind11.hpp"
+#include "ext/dispatch_table.hpp"
 
 namespace statistics::histogram
 {
@@ -44,7 +44,7 @@ struct Histogram
                                 const size_t,
                                 const std::vector<sycl::event> &);
 
-    common::DispatchTable2<FnT> dispatch_table;
+    ext::common::DispatchTable2<FnT> dispatch_table;
 
     Histogram();
 
