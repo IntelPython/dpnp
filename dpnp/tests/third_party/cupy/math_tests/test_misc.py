@@ -531,7 +531,6 @@ class TestMisc:
         }
     )
 )
-# @pytest.mark.skip("convolve() is not implemented yet")
 class TestConvolveShapeCombination:
 
     @testing.for_all_dtypes(no_float16=True)
@@ -542,7 +541,6 @@ class TestConvolveShapeCombination:
         return xp.convolve(a, b, mode=self.mode)
 
 
-# @pytest.mark.skip("convolve() is not implemented yet")
 @pytest.mark.parametrize("mode", ["valid", "same", "full"])
 class TestConvolve:
 

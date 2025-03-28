@@ -282,8 +282,8 @@ class TestConvolve:
 
     @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
     def test_convolve_different_sizes(self, size):
-        a = numpy.random.rand(size).astype(numpy.float32)
-        v = numpy.random.rand(size // 2).astype(numpy.float32)
+        a = generate_random_numpy_array(size, dtype=numpy.float32, low=0, high=1)
+        v = generate_random_numpy_array(size // 2, dtype=numpy.float32, low=0, high=1)
 
         ad = dpnp.array(a)
         vd = dpnp.array(v)

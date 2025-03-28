@@ -418,18 +418,19 @@ def convolve(a, v, mode="full", method="auto"):
 
         Note: Use of the FFT convolution on input containing NAN or INF
         will lead to the entire output being NAN or INF.
-        Use method='direct' when your input contains NAN or INF values.
+        Use ``method='direct'`` when your input contains NAN or INF values.
 
         Default: ``'auto'``.
 
     Returns
     -------
-    out : ndarray
+    out : dpnp.ndarray
         Discrete, linear convolution of `a` and `v`.
 
     See Also
     --------
     :obj:`dpnp.correlate` : Cross-correlation of two 1-dimensional sequences.
+
     Notes
     -----
     The discrete convolution operation is defined as
@@ -471,6 +472,7 @@ def convolve(a, v, mode="full", method="auto"):
 
     >>> np.convolve(a, v, 'valid')
     array([2.5], dtype=float32)
+
     """
 
     dpnp.check_supported_arrays_type(a, v)
