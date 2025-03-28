@@ -72,6 +72,7 @@ def assert_sycl_queue_equal(result, expected):
         pytest.param("hamming", [10], {}),
         pytest.param("hanning", [10], {}),
         pytest.param("identity", [4], {}),
+        pytest.param("kaiser", [10], {"beta": 14}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {"base": [10]}),
