@@ -958,6 +958,9 @@ def atleast_1d(*arys):
     dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
         if ary.ndim == 0:
+            # Scalars cannot be empty
+            # Scalars always have a size of 1, so
+            # reshape(1) is guaranteed to succeed
             result = ary.reshape(1)
         else:
             result = ary

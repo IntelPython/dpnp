@@ -392,10 +392,9 @@ def convolve(a, v, mode="full", method="auto"):
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray}
-        First 1-D array.
+        First input array.
     v : {dpnp.ndarray, usm_ndarray}
-        Second 1-D array. The length of `v` must be less than or equal to
-        the length of `a`.
+        Second input array.
     mode : {'full', 'valid', 'same'}, optional
         - 'full': This returns the convolution
           at each point of overlap, with an output shape of (N+M-1,). At
@@ -475,7 +474,7 @@ def convolve(a, v, mode="full", method="auto"):
 
     """
 
-    dpnp.check_supported_arrays_type(a, v)
+    a, v = dpnp.atleast_1d(a, v)
 
     if a.size == 0 or v.size == 0:
         raise ValueError(
@@ -487,11 +486,6 @@ def convolve(a, v, mode="full", method="auto"):
             f"Only 1-dimensional arrays are supported. "
             f"Received shapes: a.shape={a.shape}, v.shape={v.shape}"
         )
-
-    if a.ndim == 0:
-        a = dpnp.reshape(a, (1,))
-    if v.ndim == 0:
-        v = dpnp.reshape(v, (1,))
 
     device = a.sycl_device
     rdtype = result_type_for_device([a.dtype, v.dtype], device)
