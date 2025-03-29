@@ -36,30 +36,6 @@ from .helper import (
 from .third_party.cupy import testing
 
 
-def _get_output_data_type(dtype):
-    """Return a data type specified by input `dtype` and device capabilities."""
-    dtype_float16 = any(
-        dpnp.issubdtype(dtype, t) for t in (dpnp.bool, dpnp.int8, dpnp.uint8)
-    )
-    dtype_float32 = any(
-        dpnp.issubdtype(dtype, t) for t in (dpnp.int16, dpnp.uint16)
-    )
-    if dtype_float16:
-        out_dtype = dpnp.float16 if has_support_aspect16() else dpnp.float32
-    elif dtype_float32:
-        out_dtype = dpnp.float32
-    elif dpnp.issubdtype(dtype, dpnp.complexfloating):
-        out_dtype = dpnp.complex64
-        if has_support_aspect64() and dtype != dpnp.complex64:
-            out_dtype = dpnp.complex128
-    else:
-        out_dtype = dpnp.float32
-        if has_support_aspect64() and dtype != dpnp.float32:
-            out_dtype = dpnp.float64
-
-    return out_dtype
-
-
 @pytest.mark.parametrize("deg", [True, False])
 class TestAngle:
     def test_angle_bool(self, deg):
@@ -772,68 +748,6 @@ class TestEdiff1d:
         # another `to_end` sycl queue
         to_end = dpnp.array([15, 20], sycl_queue=dpctl.SyclQueue())
         assert_raises(ExecutionPlacementError, dpnp.ediff1d, ia, to_end=to_end)
-
-
-class TestFix:
-    @pytest.mark.parametrize(
-        "dt", get_all_dtypes(no_none=True, no_complex=True)
-    )
-    def test_basic(self, dt):
-        a = get_abs_array([[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], dt)
-        ia = dpnp.array(a)
-
-        result = dpnp.fix(ia)
-        expected = numpy.fix(a)
-        assert_array_equal(result, expected)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("dt", get_complex_dtypes())
-    def test_complex(self, xp, dt):
-        a = xp.array([1.1, -1.1], dtype=dt)
-        with pytest.raises((ValueError, TypeError)):
-            xp.fix(a)
-
-    @pytest.mark.parametrize(
-        "a_dt", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-    )
-    def test_out(self, a_dt):
-        a = get_abs_array(
-            [[1.0, 1.1, 1.5, 1.8], [-1.0, -1.1, -1.5, -1.8]], a_dt
-        )
-        ia = dpnp.array(a)
-
-        out_dt = _get_output_data_type(a.dtype)
-        out = numpy.zeros_like(a, dtype=out_dt)
-        iout = dpnp.array(out)
-
-        result = dpnp.fix(ia, out=iout)
-        expected = numpy.fix(a, out=out)
-        assert_array_equal(result, expected)
-
-    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
-    @pytest.mark.parametrize("dt", [bool, numpy.float16])
-    def test_out_float16(self, dt):
-        a = numpy.array(
-            [[1.0, 1.1], [1.5, 1.8], [-1.0, -1.1], [-1.5, -1.8]], dtype=dt
-        )
-        out = numpy.zeros_like(a, dtype=numpy.float16)
-        ia, iout = dpnp.array(a), dpnp.array(out)
-
-        result = dpnp.fix(ia, out=iout)
-        expected = numpy.fix(a, out=out)
-        assert_array_equal(result, expected)
-
-    @pytest.mark.parametrize("xp", [numpy, dpnp])
-    @pytest.mark.parametrize("dt", [bool] + get_integer_dtypes())
-    def test_out_invalid_dtype(self, xp, dt):
-        a = xp.array([[1.5, 1.8], [-1.0, -1.1]])
-        out = xp.zeros_like(a, dtype=dt)
-
-        with pytest.raises((ValueError, TypeError)):
-            xp.fix(a, out=out)
-
-    def test_scalar(self):
-        assert_raises(TypeError, dpnp.fix, -3.4)
 
 
 class TestGradient:
@@ -2291,50 +2205,107 @@ class TestProjection:
         assert dpnp.allclose(result, expected)
 
 
-@pytest.mark.parametrize("func", ["ceil", "floor", "trunc"])
+@pytest.mark.parametrize("func", ["ceil", "floor", "trunc", "fix"])
 class TestRoundingFuncs:
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_none=True, no_complex=True)
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_out(self, func, dtype):
-        a = generate_random_numpy_array(10, dtype)
-        expected = getattr(numpy, func)(a)
-
+    def test_basic(self, func, dt):
+        a = generate_random_numpy_array((2, 4), dt)
         ia = dpnp.array(a)
-        out_dt = numpy.int8 if dtype == dpnp.bool else dtype
-        iout = dpnp.empty(expected.shape, dtype=out_dt)
-        result = getattr(dpnp, func)(ia, out=iout)
 
-        assert result is iout
-        # numpy.ceil, numpy.floor, numpy.trunc always return float dtype for
-        # NumPy < 2.1.0 while output has the dtype of input for NumPy >= 2.1.0
-        # (dpnp follows the latter behavior except for boolean dtype where it
-        # returns int8)
-        if numpy_version() < "2.1.0" or dtype == dpnp.bool:
-            check_type = False
-        else:
-            check_type = True
-        assert_dtype_allclose(result, expected, check_type=check_type)
+        result = getattr(dpnp, func)(ia)
+        expected = getattr(numpy, func)(a)
+        assert_array_equal(result, expected)
 
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
+    @pytest.mark.parametrize("dt", get_complex_dtypes())
+    def test_complex(self, func, xp, dt):
+        a = xp.array([1.1, -1.1], dtype=dt)
+        with pytest.raises((ValueError, TypeError)):
+            getattr(xp, func)(a)
+
+    @testing.with_requires("numpy>=2.1.0")
     @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_complex=True, no_none=True)[:-1]
+        "dt_in", get_all_dtypes(no_none=True, no_complex=True)
     )
-    def test_invalid_dtype(self, func, dtype):
-        dpnp_dtype = get_all_dtypes(no_complex=True, no_none=True)[-1]
-        ia = dpnp.arange(10, dtype=dpnp_dtype)
-        iout = dpnp.empty(10, dtype=dtype)
+    @pytest.mark.parametrize(
+        "dt_out", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_out(self, func, dt_in, dt_out):
+        a = generate_random_numpy_array(10, dt_in)
+        out = numpy.empty(a.shape, dtype=dt_out)
+        ia, iout = dpnp.array(a), dpnp.array(out)
 
-        with pytest.raises(ValueError):
-            getattr(dpnp, func)(ia, out=iout)
+        if dt_in != dt_out:
+            if numpy.can_cast(dt_in, dt_out, casting="same_kind"):
+                # NumPy allows "same_kind" casting, dpnp does not
+                if func != "fix" and dt_in == dpnp.bool and dt_out == dpnp.int8:
+                    # TODO: get rid of w/a when dpctl#2030 is fixed
+                    pass
+                else:
+                    assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
+            else:
+                assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
+                assert_raises(TypeError, getattr(numpy, func), a, out=out)
+        else:
+            if func != "fix" and dt_in == dpnp.bool:
+                # TODO: get rid of w/a when dpctl#2030 is fixed
+                out = out.astype(numpy.int8)
+                iout = iout.astype(dpnp.int8)
 
+            expected = getattr(numpy, func)(a, out=out)
+            result = getattr(dpnp, func)(ia, out=iout)
+            assert result is iout
+            assert_array_equal(result, expected)
+
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    def test_out_float16(self, func):
+        a = generate_random_numpy_array((4, 2), numpy.float16)
+        out = numpy.zeros_like(a, dtype=numpy.float16)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        result = getattr(dpnp, func)(ia, out=iout)
+        expected = getattr(numpy, func)(a, out=out)
+        assert result is iout
+        assert_array_equal(result, expected)
+
+    @testing.with_requires("numpy>=2.1.0")
+    @pytest.mark.parametrize(
+        "dt", get_all_dtypes(no_none=True, no_complex=True)
+    )
+    def test_out_usm_ndarray(self, func, dt):
+        a = generate_random_numpy_array(10, dt)
+        out = numpy.empty(a.shape, dtype=dt)
+        ia, usm_out = dpnp.array(a), dpt.asarray(out)
+
+        if func != "fix" and dt == dpnp.bool:
+            # TODO: get rid of w/a when dpctl#2030 is fixed
+            out = out.astype(numpy.int8)
+            usm_out = dpt.asarray(usm_out, dtype=dpnp.int8)
+
+        expected = getattr(numpy, func)(a, out=out)
+        result = getattr(dpnp, func)(ia, out=usm_out)
+        assert result.get_array() is usm_out
+        assert_array_equal(result, expected)
+
+    @pytest.mark.parametrize("xp", [numpy, dpnp])
     @pytest.mark.parametrize(
         "shape", [(0,), (15,), (2, 2)], ids=["(0,)", "(15,)", "(2, 2)"]
     )
-    def test_invalid_shape(self, func, shape):
-        ia = dpnp.arange(10, dtype=dpnp.float32)
-        iout = dpnp.empty(shape, dtype=dpnp.float32)
+    def test_invalid_shape(self, func, xp, shape):
+        a = xp.arange(10, dtype=xp.float32)
+        out = xp.empty(shape, dtype=xp.float32)
+        assert_raises(ValueError, getattr(xp, func), a, out=out)
 
-        assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
+    def test_error(self, func):
+        # scalar, unsupported input
+        assert_raises(TypeError, getattr(dpnp, func), -3.4)
+
+        # unsupported out
+        a = dpnp.array([1, 2, 3])
+        out = numpy.empty_like(3, dtype=a.dtype)
+        assert_raises(TypeError, getattr(dpnp, func), a, out=out)
 
 
 class TestHypot:
