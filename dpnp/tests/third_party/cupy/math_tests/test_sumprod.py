@@ -376,7 +376,7 @@ class TestCubReduction:
         return self._mitigate_cumprod(xp, dtype, result)
 
     def _mitigate_cumprod(self, xp, dtype, result):
-        # for testing cumprod against complex arrays, the gotcha is CuPy may
+        # for testing cumprod against complex arrays, the catch is CuPy may
         # produce only Inf at the position where NumPy starts to give NaN. So,
         # an error would be raised during assert_allclose where the positions
         # of NaNs are examined. Since this is both algorithm and architecture
