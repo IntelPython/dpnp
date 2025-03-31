@@ -131,38 +131,13 @@ std::pair<sycl::event, sycl::event>
               const dpctl::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends)
 {
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
+    auto [nelems, result_typeless_ptr, fn] =
+        window_fn<kaiser_fn_ptr_t>(exec_q, result, kaiser_dispatch_vector);
 
-    int nd = result.get_ndim();
-    if (nd != 1) {
-        throw py::value_error("Array should be 1d");
-    }
-
-    if (!dpctl::utils::queues_are_compatible(exec_q, {result.get_queue()})) {
-        throw py::value_error(
-            "Execution queue is not compatible with allocation queue.");
-    }
-
-    const bool is_result_c_contig = result.is_c_contiguous();
-    if (!is_result_c_contig) {
-        throw py::value_error("The result input array is not c-contiguous.");
-    }
-
-    size_t nelems = result.get_size();
     if (nelems == 0) {
         return std::make_pair(sycl::event{}, sycl::event{});
     }
 
-    int result_typenum = result.get_typenum();
-    auto array_types = dpctl_td_ns::usm_ndarray_types();
-    int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
-    auto fn = kaiser_dispatch_vector[result_type_id];
-
-    if (fn == nullptr) {
-        throw std::runtime_error("Type of given array is not supported");
-    }
-
-    char *result_typeless_ptr = result.get_data();
     sycl::event kaiser_ev =
         fn(exec_q, result_typeless_ptr, nelems, py_beta, depends);
     sycl::event args_ev =
