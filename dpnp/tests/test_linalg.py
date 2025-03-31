@@ -2315,11 +2315,10 @@ class TestNorm:
     )
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
     @pytest.mark.parametrize(
-        "shape_axis", [[(2, 0), None], [(2, 0), (0, 1)], [(0, 2), (0, 1)]]
+        "shape, axis", [[(2, 0), None], [(2, 0), (0, 1)], [(0, 2), (0, 1)]]
     )
     @pytest.mark.parametrize("ord", [None, "fro", "nuc", 1, 2, dpnp.inf])
-    def test_matrix_norm_empty(self, xp, dtype, shape_axis, ord):
-        shape, axis = shape_axis[0], shape_axis[1]
+    def test_matrix_norm_empty(self, xp, dtype, shape, axis, ord):
         x = xp.zeros(shape, dtype=dtype)
         assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), 0)
 
