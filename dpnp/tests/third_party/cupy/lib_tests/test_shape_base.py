@@ -110,6 +110,7 @@ def test_apply_along_axis_invalid_axis():
 
 
 class TestApplyOverAxes(unittest.TestCase):
+
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_simple(self, xp):
         a = xp.arange(24).reshape(2, 3, 4)
