@@ -169,7 +169,7 @@ $(function(){initNavTree('window_2common_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> window_ev;</div>
 <div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
 <div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span> </div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>std::pair&lt;sycl::event, sycl::event&gt;</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span><span class="keyword">inline</span> std::pair&lt;sycl::event, sycl::event&gt;</div>
 <div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    py_window(sycl::queue &amp;exec_q,</div>
 <div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>              <span class="keyword">const</span> dpctl::tensor::usm_ndarray &amp;result,</div>
 <div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>              <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;depends,</div>
@@ -214,18 +214,20 @@ $(function(){initNavTree('window_2common_8hpp_source.html',''); initResizable(tr
 <div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">return</span> std::make_pair(args_ev, window_ev);</div>
 <div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>}</div>
 <div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">template</span> &lt;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> fnT, <span class="keyword">typename</span> T&gt; <span class="keyword">typename</span> factoryT&gt;</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span><span class="keywordtype">void</span> init_window_dispatch_vectors(window_fn_ptr_t window_dispatch_vector[])</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>{</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    dpctl_td_ns::DispatchVectorBuilder&lt;window_fn_ptr_t, factoryT,</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>                                       dpctl_td_ns::num_types&gt;</div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>        contig;</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>    contig.populate_dispatch_vector(window_dispatch_vector);</div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>}</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>} <span class="comment">// namespace dpnp::extensions::window</span></div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> funcPtrT,</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>          <span class="keyword">template</span> &lt;<span class="keyword">typename</span> fnT, <span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>          <span class="keyword">typename</span> factoryT&gt;</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keywordtype">void</span> init_window_dispatch_vectors(funcPtrT window_dispatch_vector[])</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>{</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    dpctl_td_ns::DispatchVectorBuilder&lt;funcPtrT, factoryT,</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>                                       dpctl_td_ns::num_types&gt;</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>        contig;</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    contig.populate_dispatch_vector(window_dispatch_vector);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordflow">return</span>;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>}</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>} <span class="comment">// namespace dpnp::extensions::window</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
