@@ -2403,7 +2403,7 @@ class TestReduceHypot:
 
         assert_dtype_allclose(res, exp)
 
-    @pytest.mark.parametrize("in_dtype", get_integer_float_dtypes())
+    @pytest.mark.parametrize("in_dt", get_integer_float_dtypes())
     @pytest.mark.parametrize("dt", get_all_dtypes(no_bool=True))
     def test_dtype(self, in_dt, dt):
         a = dpnp.ones(99, dtype=in_dt)

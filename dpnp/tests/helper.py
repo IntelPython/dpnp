@@ -198,6 +198,8 @@ def get_all_dtypes(
     no_float16=True,
     no_complex=False,
     no_none=False,
+    xfail_dtypes=None,
+    exclude=None,
     no_unsigned=False,
     device=None,
 ):
@@ -225,6 +227,17 @@ def get_all_dtypes(
     if not no_none:
         dtypes.append(None)
 
+    def mark_xfail(dtype):
+        if xfail_dtypes is not None and dtype in xfail_dtypes:
+            return pytest.param(dtype, marks=pytest.mark.xfail)
+        return dtype
+
+    def not_excluded(dtype):
+        if exclude is None:
+            return True
+        return dtype not in exclude
+
+    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
 
 
