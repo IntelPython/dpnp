@@ -24,9 +24,12 @@
 //*****************************************************************************
 
 #include "kaiser.hpp"
+#include "common.hpp"
+
 #include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 #include "utils/type_utils.hpp"
+
 #include <sycl/sycl.hpp>
 
 /**
@@ -170,12 +173,8 @@ std::pair<sycl::event, sycl::event>
 
 void init_kaiser_dispatch_vectors()
 {
-    dpctl_td_ns::DispatchVectorBuilder<kaiser_fn_ptr_t, KaiserFactory,
-                                       dpctl_td_ns::num_types>
-        contig;
-    contig.populate_dispatch_vector(kaiser_dispatch_vector);
-
-    return;
+    init_window_dispatch_vectors<kaiser_fn_ptr_t, KaiserFactory>(
+        kaiser_dispatch_vector);
 }
 
 } // namespace dpnp::extensions::window

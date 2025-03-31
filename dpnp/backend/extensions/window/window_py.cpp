@@ -55,7 +55,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::BartlettFactory>(bartlett_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::BartlettFactory>(
+            bartlett_dispatch_vector);
 
         auto bartlett_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                   const event_vecT &depends = {}) {
@@ -70,7 +71,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::BlackmanFactory>(blackman_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::BlackmanFactory>(
+            blackman_dispatch_vector);
 
         auto blackman_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                   const event_vecT &depends = {}) {
@@ -85,7 +87,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::HammingFactory>(hamming_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::HammingFactory>(
+            hamming_dispatch_vector);
 
         auto hamming_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                  const event_vecT &depends = {}) {
@@ -100,7 +103,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::HanningFactory>(hanning_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::HanningFactory>(
+            hanning_dispatch_vector);
 
         auto hanning_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                  const event_vecT &depends = {}) {
