@@ -611,8 +611,9 @@ class TestHfft:
         # incorrect norm
         assert_raises(ValueError, dpnp.fft.hfft, a, norm="backwards")
 
+    @testing.with_requires("numpy>=2.0.0")
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
-    def test_error(self, dtype):
+    def test_complex_error(self, dtype):
         a = generate_random_numpy_array(11, dtype)
         ia = dpnp.array(a)
         assert_raises(TypeError, dpnp.fft.ihfft, ia)
