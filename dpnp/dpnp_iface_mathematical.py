@@ -1736,7 +1736,7 @@ For full documentation refer to :obj:`numpy.fix`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a boolean or real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.

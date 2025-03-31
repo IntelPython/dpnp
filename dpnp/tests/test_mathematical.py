@@ -2240,20 +2240,11 @@ class TestRoundingFuncs:
         if dt_in != dt_out:
             if numpy.can_cast(dt_in, dt_out, casting="same_kind"):
                 # NumPy allows "same_kind" casting, dpnp does not
-                if func != "fix" and dt_in == dpnp.bool and dt_out == dpnp.int8:
-                    # TODO: get rid of w/a when dpctl#2030 is fixed
-                    pass
-                else:
-                    assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
+                assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
             else:
                 assert_raises(ValueError, getattr(dpnp, func), ia, out=iout)
                 assert_raises(TypeError, getattr(numpy, func), a, out=out)
         else:
-            if func != "fix" and dt_in == dpnp.bool:
-                # TODO: get rid of w/a when dpctl#2030 is fixed
-                out = out.astype(numpy.int8)
-                iout = iout.astype(dpnp.int8)
-
             expected = getattr(numpy, func)(a, out=out)
             result = getattr(dpnp, func)(ia, out=iout)
             assert result is iout
@@ -2278,11 +2269,6 @@ class TestRoundingFuncs:
         a = generate_random_numpy_array(10, dt)
         out = numpy.empty(a.shape, dtype=dt)
         ia, usm_out = dpnp.array(a), dpt.asarray(out)
-
-        if func != "fix" and dt == dpnp.bool:
-            # TODO: get rid of w/a when dpctl#2030 is fixed
-            out = out.astype(numpy.int8)
-            usm_out = dpt.asarray(usm_out, dtype=dpnp.int8)
 
         expected = getattr(numpy, func)(a, out=out)
         result = getattr(dpnp, func)(ia, out=usm_out)
