@@ -40,7 +40,11 @@ import ctypes
 import numba
 from numba.extending import get_cython_function_address as nba_addr
 
-name_to_numba_signatures = {"cos": [(numba.types.float64)]}
+name_to_numba_signatures = {
+    "cos": [
+        (numba.types.float64),
+    ]
+}
 
 name_and_types_to_pointer = {
     ("cos", numba.types.float64): ctypes.CFUNCTYPE(
