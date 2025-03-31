@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+48.g59cde85e83c documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+61.g13838ea4505 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=6dd64af7"></script>
+      <script src="../../_static/documentation_options.js?v=dcbae995"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -148,6 +148,7 @@
     <span class="n">DPNPI0</span><span class="p">,</span>
     <span class="n">DPNPAngle</span><span class="p">,</span>
     <span class="n">DPNPBinaryFunc</span><span class="p">,</span>
+    <span class="n">DPNPFix</span><span class="p">,</span>
     <span class="n">DPNPImag</span><span class="p">,</span>
     <span class="n">DPNPReal</span><span class="p">,</span>
     <span class="n">DPNPRound</span><span class="p">,</span>
@@ -1843,14 +1844,14 @@
 <span class="s2">Round to nearest integer towards zero.</span>
 
 <span class="s2">Round an array of floats element-wise to nearest integer towards zero.</span>
-<span class="s2">The rounded values are returned as floats.</span>
+<span class="s2">The rounded values have the same data-type as the input.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.fix`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    An array of floats to be rounded.</span>
+<span class="s2">    Input array, expected to have a real-valued data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1864,18 +1865,11 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array with the rounded values and with the same dimensions as the input.</span>
-<span class="s2">    The returned array will have the default floating point data type for the</span>
-<span class="s2">    device where `a` is allocated.</span>
-<span class="s2">    If `out` is ``None`` then a float array is returned with the rounded values.</span>
+<span class="s2">    An array with the same dimensions and data-type as the input.</span>
+<span class="s2">    If `out` is ``None`` then a new array is returned</span>
+<span class="s2">    with the rounded values.</span>
 <span class="s2">    Otherwise the result is stored there and the return value `out` is</span>
 <span class="s2">    a reference to that array.</span>
-
-<span class="s2">Limitations</span>
-<span class="s2">-----------</span>
-<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
-<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
-<span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
@@ -1897,7 +1891,7 @@
 <span class="s2">array([ 2.,  2., -2., -2.])</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+<span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPFix</span><span class="p">(</span>
     <span class="s2">&quot;fix&quot;</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fix_result_type</span><span class="p">,</span>
     <span class="n">ufi</span><span class="o">.</span><span class="n">_fix</span><span class="p">,</span>
@@ -2049,8 +2043,10 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">Some spreadsheet programs calculate the &quot;floor-towards-zero&quot;, in other words floor(-2.5) == -2.</span>
-<span class="s2">DPNP instead uses the definition of floor where floor(-2.5) == -3.</span>
+<span class="s2">Some spreadsheet programs calculate the &quot;floor-towards-zero&quot;, where</span>
+<span class="s2">``floor(-2.5) == -2``. DPNP instead uses the definition of :obj:`dpnp.floor`</span>
+<span class="s2">where ``floor(-2.5) == -3``. The &quot;floor-towards-zero&quot; function is called</span>
+<span class="s2">:obj:`dpnp.fix` in DPNP.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
