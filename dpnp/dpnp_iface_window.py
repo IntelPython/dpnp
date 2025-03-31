@@ -72,18 +72,17 @@ def _call_window_kernel(
     exec_q = result.sycl_queue
     _manager = dpu.SequentialOrderManager[exec_q]
 
+    # there are no dependent events for window kernels
     if beta is None:
         ht_ev, win_ev = _window_kernel(
             exec_q,
             dpnp.get_usm_ndarray(result),
-            depends=_manager.submitted_events,
         )
     else:
         ht_ev, win_ev = _window_kernel(
             exec_q,
             beta,
             dpnp.get_usm_ndarray(result),
-            depends=_manager.submitted_events,
         )
 
     _manager.add_event_pair(ht_ev, win_ev)
