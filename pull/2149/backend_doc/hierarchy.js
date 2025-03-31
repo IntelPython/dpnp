@@ -3,14 +3,21 @@ var hierarchy =
     [ "statistics::sliding_window1d::_RegistryDataStorage< T, Size >", "classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html", [
       [ "statistics::sliding_window1d::RegistryData< T, Size >", "structstatistics_1_1sliding__window1d_1_1_registry_data.html", [
         [ "statistics::sliding_window1d::RegistryWindow< T, Size >", "structstatistics_1_1sliding__window1d_1_1_registry_window.html", null ]
-      ] ],
+      ] ]
+    ] ],
+    [ "statistics::sliding_window1d::_RegistryDataStorage< T, 1 >", "classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html", [
       [ "statistics::sliding_window1d::RegistryData< T, Size >", "structstatistics_1_1sliding__window1d_1_1_registry_data.html", null ]
     ] ],
-    [ "statistics::sliding_window1d::_RegistryDataStorage< T, 1 >", "classstatistics_1_1sliding__window1d_1_1___registry_data_storage.html", null ],
     [ "statistics::common::AtomicOp< T, Order, Scope >", "structstatistics_1_1common_1_1_atomic_op.html", null ],
     [ "backend_sycl", "classbackend__sycl.html", null ],
+    [ "dpnp::extensions::window::kernels::BartlettFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_factory.html", null ],
+    [ "dpnp::extensions::window::kernels::BartlettFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_bartlett_functor.html", null ],
     [ "statistics::histogram::Bincount", "structstatistics_1_1histogram_1_1_bincount.html", null ],
+    [ "dpnp::kernels::bitwise_count::BitwiseCountFunctor< argT, resT >", "structdpnp_1_1kernels_1_1bitwise__count_1_1_bitwise_count_functor.html", null ],
+    [ "dpnp::extensions::window::kernels::BlackmanFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_factory.html", null ],
+    [ "dpnp::extensions::window::kernels::BlackmanFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_blackman_functor.html", null ],
     [ "statistics::histogram::CachedData< T, Dims >", "structstatistics_1_1histogram_1_1_cached_data.html", null ],
+    [ "dpnp::extensions::indexing::kernels::ChooseFunctor< ProjectorT, IndOutIndexerT, ChoicesIndexerT, IndT, T >", "classdpnp_1_1extensions_1_1indexing_1_1kernels_1_1_choose_functor.html", null ],
     [ "std::conjunction", null, [
       [ "are_same< T, Ts >", "structare__same.html", null ]
     ] ],
@@ -44,7 +51,6 @@ var hierarchy =
     [ "dpnp::kernels::fmax::FmaxFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmax_1_1_fmax_functor.html", null ],
     [ "dpnp::kernels::fmin::FminFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmin_1_1_fmin_functor.html", null ],
     [ "dpnp::kernels::fmod::FmodFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1fmod_1_1_fmod_functor.html", null ],
-    [ "func_type_pair_t< FuncType, T >", "structfunc__type__pair__t.html", null ],
     [ "dpnp::kernels::gcd::GcdFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1gcd_1_1_gcd_functor.html", null ],
     [ "dpnp::extensions::blas::types::GemmBatchTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::blas::types::GemmTypePairSupportFactory< Tab, Tc >", "structdpnp_1_1extensions_1_1blas_1_1types_1_1_gemm_type_pair_support_factory.html", null ],
@@ -57,6 +63,10 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::GetrfTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrf_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::GetriBatchTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getri_batch_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::types::GetrsTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_getrs_type_pair_support_factory.html", null ],
+    [ "dpnp::extensions::window::kernels::HammingFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_factory.html", null ],
+    [ "dpnp::extensions::window::kernels::HammingFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hamming_functor.html", null ],
+    [ "dpnp::extensions::window::kernels::HanningFactory< fnT, T >", "structdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_factory.html", null ],
+    [ "dpnp::extensions::window::kernels::HanningFunctor< T >", "classdpnp_1_1extensions_1_1window_1_1kernels_1_1_hanning_functor.html", null ],
     [ "dpnp::kernels::heaviside::HeavisideFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1heaviside_1_1_heaviside_functor.html", null ],
     [ "dpnp::extensions::lapack::types::HeevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_heevd_type_pair_support_factory.html", null ],
     [ "statistics::histogram::HistGlobalMemory< T >", "structstatistics_1_1histogram_1_1_hist_global_memory.html", null ],
@@ -76,7 +86,10 @@ var hierarchy =
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],
     [ "statistics::common::Less< T >", "structstatistics_1_1common_1_1_less.html", null ],
     [ "dpnp::kernels::logaddexp2::Logaddexp2Functor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1logaddexp2_1_1_logaddexp2_functor.html", null ],
+    [ "dpnp::kernels::nan_to_num::NanToNumContigFunctor< T, scT, vec_sz, n_vecs, enable_sg_loadstore >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_contig_functor.html", null ],
+    [ "dpnp::kernels::nan_to_num::NanToNumFunctor< T, scT, InOutIndexerT >", "structdpnp_1_1kernels_1_1nan__to__num_1_1_nan_to_num_functor.html", null ],
     [ "statistics::histogram::NoWeights< T >", "structstatistics_1_1histogram_1_1_no_weights.html", null ],
+    [ "dpnp::extensions::indexing::strides_detail::NthStrideOffsetUnpacked", "structdpnp_1_1extensions_1_1indexing_1_1strides__detail_1_1_nth_stride_offset_unpacked.html", null ],
     [ "statistics::common::one_of< T, Rest >", "structstatistics_1_1common_1_1one__of.html", null ],
     [ "statistics::common::one_of< T, std::tuple< Top > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html", null ],
     [ "statistics::common::one_of< T, std::tuple< Top, Rest... > >", "structstatistics_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
@@ -87,7 +100,6 @@ var hierarchy =
     [ "dpnp::extensions::fft::PrecisionType< prec >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::DOUBLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_d_o_u_b_l_e_01_4.html", null ],
     [ "dpnp::extensions::fft::PrecisionType< mkl_dft::precision::SINGLE >", "structdpnp_1_1extensions_1_1fft_1_1_precision_type_3_01mkl__dft_1_1precision_1_1_s_i_n_g_l_e_01_4.html", null ],
-    [ "python_constants", "structpython__constants.html", null ],
     [ "dpnp::kernels::radians::RadiansFunctor< argT, resT >", "structdpnp_1_1kernels_1_1radians_1_1_radians_functor.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, dom, is_forward >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type.html", null ],
     [ "dpnp::extensions::fft::ScaleType< prec, mkl_dft::domain::COMPLEX, is_fwd >", "structdpnp_1_1extensions_1_1fft_1_1_scale_type_3_01prec_00_01mkl__dft_1_1domain_1_1_c_o_m_p_l_e_x_00_01is__fwd_01_4.html", null ],
@@ -98,10 +110,10 @@ var hierarchy =
     [ "statistics::sliding_window1d::sliding_window1d_small_kernel< WorkPI, T, SizeT, Op, Red >", "classstatistics_1_1sliding__window1d_1_1sliding__window1d__small__kernel.html", null ],
     [ "statistics::sliding_window1d::SlidingDotProduct1d", "structstatistics_1_1sliding__window1d_1_1_sliding_dot_product1d.html", null ],
     [ "dpnp::kernels::spacing::SpacingFunctor< argT, resT >", "structdpnp_1_1kernels_1_1spacing_1_1_spacing_functor.html", null ],
-    [ "statistics::sliding_window1d::Span< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_span.html", [
+    [ "statistics::sliding_window1d::Span< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_span.html", null ],
+    [ "statistics::sliding_window1d::Span< T, size_t >", "classstatistics_1_1sliding__window1d_1_1_span.html", [
       [ "statistics::sliding_window1d::PaddedSpan< T, SizeT >", "classstatistics_1_1sliding__window1d_1_1_padded_span.html", null ]
     ] ],
-    [ "statistics::sliding_window1d::Span< T, size_t >", "classstatistics_1_1sliding__window1d_1_1_span.html", null ],
     [ "dpnp::extensions::lapack::types::SyevdTypePairSupportFactory< T, RealT >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_syevd_type_pair_support_factory.html", null ],
     [ "statistics::common::TableBuilder< FnT, SupportedTypes, Func >", "structstatistics_1_1common_1_1_table_builder.html", null ],
     [ "statistics::common::TableBuilder2< FnT, SupportedTypes, Func >", "structstatistics_1_1common_1_1_table_builder2.html", null ],
@@ -110,8 +122,5 @@ var hierarchy =
     [ "dpnp::extensions::lapack::types::UngqrTypePairSupportFactory< T >", "structdpnp_1_1extensions_1_1lapack_1_1types_1_1_ungqr_type_pair_support_factory.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< T >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of.html", null ],
     [ "dpnp::extensions::lapack::helper::value_type_of< std::complex< T > >", "structdpnp_1_1extensions_1_1lapack_1_1helper_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ],
-    [ "statistics::histogram::Weights< T >", "structstatistics_1_1histogram_1_1_weights.html", null ],
-    [ "Ps", null, [
-      [ "func_type_map_factory_t< Ps >", "structfunc__type__map__factory__t.html", null ]
-    ] ]
+    [ "statistics::histogram::Weights< T >", "structstatistics_1_1histogram_1_1_weights.html", null ]
 ];

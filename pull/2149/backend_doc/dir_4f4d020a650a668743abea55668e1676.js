@@ -1,5 +1,6 @@
 var dir_4f4d020a650a668743abea55668e1676 =
 [
+    [ "bitwise_count.hpp", "extensions_2ufunc_2elementwise__functions_2bitwise__count_8hpp_source.html", null ],
     [ "common.hpp", "ufunc_2elementwise__functions_2common_8hpp_source.html", null ],
     [ "degrees.hpp", "extensions_2ufunc_2elementwise__functions_2degrees_8hpp_source.html", null ],
     [ "fabs.hpp", "extensions_2ufunc_2elementwise__functions_2fabs_8hpp_source.html", null ],
@@ -14,6 +15,7 @@ var dir_4f4d020a650a668743abea55668e1676 =
     [ "lcm.hpp", "extensions_2ufunc_2elementwise__functions_2lcm_8hpp_source.html", null ],
     [ "ldexp.hpp", "extensions_2ufunc_2elementwise__functions_2ldexp_8hpp_source.html", null ],
     [ "logaddexp2.hpp", "extensions_2ufunc_2elementwise__functions_2logaddexp2_8hpp_source.html", null ],
+    [ "nan_to_num.hpp", "extensions_2ufunc_2elementwise__functions_2nan__to__num_8hpp_source.html", null ],
     [ "populate.hpp", "populate_8hpp_source.html", null ],
     [ "radians.hpp", "extensions_2ufunc_2elementwise__functions_2radians_8hpp_source.html", null ],
     [ "sinc.hpp", "extensions_2ufunc_2elementwise__functions_2sinc_8hpp_source.html", null ],

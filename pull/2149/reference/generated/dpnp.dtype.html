@@ -15,21 +15,21 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dtype &mdash; Data Parallel Extension for NumPy 0.17.0dev3+23.g2e34ef7baf1 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=fa44fd50" />
+  <title>dpnp.dtype &mdash; Data Parallel Extension for NumPy 0.18.0dev0+59.gad036a07506 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=771ccdad"></script>
+      <script src="../../_static/documentation_options.js?v=b97a4df3"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
     <link rel="next" title="dpnp.finfo" href="dpnp.finfo.html" />
-    <link rel="prev" title="dpnp.result_type" href="dpnp.result_type.html" /> 
+    <link rel="prev" title="dpnp.common_type" href="dpnp.common_type.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -58,12 +58,13 @@
 <li class="toctree-l2"><a class="reference internal" href="../ndarray.html">Multi-Dimensional Array (ndarray)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../ufunc.html">Universal Functions (ufunc)</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../routines.html">Routines</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../creation.html">Array creation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../manipulation.html">Array manipulation routines</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../binary.html">Bit-wise operations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-creation.html">Array creation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../array-manipulation.html">Array manipulation routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../bitwise.html">Bit-wise operations</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="../dtype.html">Data type routines</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="dpnp.can_cast.html">dpnp.can_cast</a></li>
 <li class="toctree-l4"><a class="reference internal" href="dpnp.result_type.html">dpnp.result_type</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dpnp.common_type.html">dpnp.common_type</a></li>
 <li class="toctree-l4 current"><a class="reference internal" href="../dtype.html#creating-data-types">Creating data types</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dtype.html#data-type-information">Data type information</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../dtype.html#data-type-testing">Data type testing</a></li>
@@ -76,15 +77,18 @@
 <li class="toctree-l3"><a class="reference internal" href="../linalg.html">Linear algebra</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../logic.html">Logic functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../math.html">Mathematical functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../other.html">Miscellaneous routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../random.html">Random sampling (<code class="docutils literal notranslate"><span class="pre">dpnp.random</span></code>)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../sorting.html">Sorting, searching, and counting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../dtypes_table.html">Available array data types</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../comparison.html">Comparison Table NumPy/ DPNP/ CuPy</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../misc.html">Miscellaneous routines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../array_api.html">Array API standard compatibility</a></li>
 </ul>
 </li>
 </ul>
@@ -124,7 +128,7 @@
 <h1>dpnp.dtype<a class="headerlink" href="#dpnp-dtype" title="Link to this heading"></a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="dpnp.dtype">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy=False</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dtype" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">dtype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">align=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy=False</span></span></em><span class="optional">[</span>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em><span class="optional">]</span><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dtype" title="Link to this definition"></a></dt>
 <dd><p>Create a data type object.</p>
 <p>A numpy array is homogeneous, and contains elements described by a
 dtype object. A dtype object can be constructed from different
@@ -149,7 +153,7 @@ may just be a reference to a built-in data-type object.</p></li>
 </div>
 <p class="rubric">Examples</p>
 <p>Using array-scalar type:</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">dtype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int16</span><span class="p">)</span>
 <span class="go">dtype(&#39;int16&#39;)</span>
 </pre></div>
@@ -211,14 +215,14 @@ the offsets in bytes:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="dpnp.result_type.html" class="btn btn-neutral float-left" title="dpnp.result_type" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dpnp.common_type.html" class="btn btn-neutral float-left" title="dpnp.common_type" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="dpnp.finfo.html" class="btn btn-neutral float-right" title="dpnp.finfo" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2020-2024, Intel Corporation.</p>
+    <p>&#169; Copyright 2020-2025, Intel Corporation.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a

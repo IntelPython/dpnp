@@ -12,12 +12,10 @@ Truth value testing
 
    dpnp.all
    dpnp.any
-   dpnp.in1d
-   dpnp.isin
 
 
-Infinities and NaNs
--------------------
+Array contents
+--------------
 
 .. autosummary::
    :toctree: generated/
@@ -45,8 +43,8 @@ Array type testing
    dpnp.isscalar
 
 
-Logic operations
-----------------
+Logical operations
+------------------
 
 .. autosummary::
    :toctree: generated/
