@@ -148,6 +148,7 @@ constexpr T dispatch_erf_op(T elem)
                 }                                                              \
             };                                                                 \
             auto kernel_func = [&](sycl::handler &cgh) {                       \
+                cgh.depends_on(copy_strides_ev);                               \
                 cgh.parallel_for<class __name__##_strides_kernel<_DataType>>(  \
                     gws, kernel_parallel_for_func);                            \
             };                                                                 \

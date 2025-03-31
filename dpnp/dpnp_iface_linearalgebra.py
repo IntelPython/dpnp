@@ -418,7 +418,7 @@ def einsum(
     >>> a = np.ones(64000).reshape(20, 40, 80)
 
     Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th
-    Gen Intel\u00AE Core\u2122 i7 processor)
+    Gen Intel\u00ae Core\u2122 i7 processor)
 
     >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a, a, a, a, a)
 

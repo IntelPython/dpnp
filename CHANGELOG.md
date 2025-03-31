@@ -15,9 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+* Improved performance of `dpnp.nansum`, `dpnp.nanprod`, `dpnp.nancumsum`, and `dpnp.nancumprod` by reusing `dpnp.nan_to_num` function in implementation of the functions [#2339](https://github.com/IntelPython/dpnp/pull/2339)
 * Allowed input array of `uint64` dtype in `dpnp.bincount` [#2361](https://github.com/IntelPython/dpnp/pull/2361)
+* The vector norms `ord={None, 1, 2, inf}` and the matrix norms `ord={None, 1, 2, inf, "fro", "nuc"}` now consistently return zero for empty arrays, which are arrays with at least one axis of size zero. This change affects `dpnp.linalg.norm`, `dpnp.linalg.vector_norm`, and `dpnp.linalg.matrix_norm`. Previously, dpnp would either raise errors or return zero depending on the parameters provided [#2371](https://github.com/IntelPython/dpnp/pull/2371)
+* Extended `dpnp.fft.fftfreq` and `dpnp.fft.rfftfreq` functions to support `dtype` keyword per Python Array API spec 2024.12 [#2384](https://github.com/IntelPython/dpnp/pull/2384)
+* Updated `dpnp.fix` to return output with the same data-type of input [#2392](https://github.com/IntelPython/dpnp/pull/2392)
 
 ### Fixed
+
+* Resolved an issue with an incorrect result returned due to missing dependency from the strided kernel on a copy event in `dpnp.erf` [#2378](https://github.com/IntelPython/dpnp/pull/2378)
+* Updated `conda create` commands build and install instructions of `Quick start guide` to avoid a compilation error [#2395](https://github.com/IntelPython/dpnp/pull/2395)
 
 
 ## [0.17.0] - 02/26/2025

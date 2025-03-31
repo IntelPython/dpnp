@@ -14,6 +14,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    has_support_aspect16,
 )
 
 
@@ -411,22 +412,35 @@ class TestFft2:
         assert_raises(IndexError, xp.fft.fft2, a)
 
 
+@pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
 class TestFftfreq:
-    @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
     @pytest.mark.parametrize("n", [10, 20])
     @pytest.mark.parametrize("d", [0.5, 2])
     def test_fftfreq(self, func, n, d):
-        expected = getattr(dpnp.fft, func)(n, d)
-        result = getattr(numpy.fft, func)(n, d)
-        assert_dtype_allclose(expected, result)
+        result = getattr(dpnp.fft, func)(n, d)
+        expected = getattr(numpy.fft, func)(n, d)
+        assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize("func", ["fftfreq", "rfftfreq"])
+    @pytest.mark.parametrize("dt", [None] + get_float_dtypes())
+    def test_dtype(self, func, dt):
+        n = 15
+        result = getattr(dpnp.fft, func)(n, dtype=dt)
+        expected = getattr(numpy.fft, func)(n).astype(dt)
+        assert_dtype_allclose(result, expected)
+
     def test_error(self, func):
-        # n should be an integer
-        assert_raises(ValueError, getattr(dpnp.fft, func), 10.0)
+        func = getattr(dpnp.fft, func)
+        # n must be an integer
+        assert_raises(ValueError, func, 10.0)
 
-        # d should be an scalar
-        assert_raises(ValueError, getattr(dpnp.fft, func), 10, (2,))
+        # d must be an scalar
+        assert_raises(ValueError, func, 10, (2,))
+
+        # dtype must be None or a real-valued floating-point dtype
+        # which is passed as a keyword argument only
+        assert_raises(TypeError, func, 10, 2, None)
+        assert_raises(ValueError, func, 10, 2, dtype=dpnp.intp)
+        assert_raises(ValueError, func, 10, 2, dtype=dpnp.complex64)
 
 
 class TestFftn:
@@ -911,6 +925,16 @@ class TestRfft:
         result = dpnp.fft.rfft(a, n=n, axis=axis, norm=norm, out=out)
         assert out is result
         expected = numpy.fft.rfft(a_np, n=n, axis=axis, norm=norm)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    def test_float16(self):
+        a = numpy.arange(10, dtype=numpy.float16)
+        ia = dpnp.array(a)
+
+        expected = numpy.fft.rfft(a)
+        result = dpnp.fft.rfft(ia)
+        # check_only_type_kind=True since Intel NumPy returns complex128
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])

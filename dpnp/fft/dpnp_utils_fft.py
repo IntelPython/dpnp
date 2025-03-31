@@ -57,10 +57,7 @@ from ..dpnp_utils.dpnp_utils_linearalgebra import (
     _standardize_strides_to_nonzero,
 )
 
-__all__ = [
-    "dpnp_fft",
-    "dpnp_fftn",
-]
+__all__ = ["dpnp_fft", "dpnp_fftn", "dpnp_fillfreq", "swap_direction"]
 
 
 def _check_norm(norm):
@@ -583,7 +580,6 @@ def dpnp_fft(a, forward, real, n=None, axis=-1, norm=None, out=None):
     if n < 1:
         raise ValueError(f"Invalid number of FFT data points ({n}) specified")
 
-    _check_norm(norm)
     a = _truncate_or_pad(a, (n,), (axis,))
     _validate_out_keyword(a, out, (n,), (axis,), c2c, c2r, r2c)
     # if input array is copied, in-place FFT can be used
@@ -698,3 +694,32 @@ def dpnp_fftn(a, forward, real, s=None, axes=None, norm=None, out=None):
     return _complex_nd_fft(
         a, s, norm, out, forward, in_place, c2c, axes, a.ndim != len_axes
     )
+
+
+def dpnp_fillfreq(a, m, n, val):
+    """Fill an array with the sample frequencies"""
+
+    exec_q = a.sycl_queue
+    _manager = dpctl.utils.SequentialOrderManager[exec_q]
+
+    # it's assumed there are no dependent events to populate the array
+    ht_lin_ev, lin_ev = ti._linspace_step(0, 1, a[:m].get_array(), exec_q)
+    _manager.add_event_pair(ht_lin_ev, lin_ev)
+
+    ht_lin_ev, lin_ev = ti._linspace_step(m - n, 1, a[m:].get_array(), exec_q)
+    _manager.add_event_pair(ht_lin_ev, lin_ev)
+    return a * val
+
+
+def swap_direction(norm):
+    """Swap the direction of the FFT."""
+
+    _check_norm(norm)
+    _swap_direction_map = {
+        "backward": "forward",
+        None: "forward",
+        "ortho": "ortho",
+        "forward": "backward",
+    }
+
+    return _swap_direction_map[norm]

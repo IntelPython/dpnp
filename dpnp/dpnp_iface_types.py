@@ -32,16 +32,25 @@ Notes
 This module provides public type interface file for the library
 """
 
+import functools
+
+import dpctl
 import dpctl.tensor as dpt
 import numpy
 
+import dpnp
+
 from .dpnp_array import dpnp_array
+
+# pylint: disable=no-name-in-module
+from .dpnp_utils import get_usm_allocations
 
 __all__ = [
     "bool",
     "bool_",
     "byte",
     "cdouble",
+    "common_type",
     "complex128",
     "complex64",
     "complexfloating",
@@ -143,6 +152,67 @@ inf = numpy.inf
 nan = numpy.nan
 newaxis = None
 pi = numpy.pi
+
+
+def common_type(*arrays):
+    """
+    Return a scalar type which is common to the input arrays.
+
+    The return type will always be an inexact (i.e. floating point or complex)
+    scalar type, even if all the arrays are integer arrays.
+    If one of the inputs is an integer array, the minimum precision type
+    that is returned is the default floating point data type for the device
+    where the input arrays are allocated.
+
+    For full documentation refer to :obj:`numpy.common_type`.
+
+    Parameters
+    ----------
+    arrays: {dpnp.ndarray, usm_ndarray}
+        Input arrays.
+
+    Returns
+    -------
+    out: data type
+        Data type object.
+
+    See Also
+    --------
+    :obj:`dpnp.dtype` : Create a data type object.
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> np.common_type(np.arange(2, dtype=np.float32))
+    numpy.float32
+    >>> np.common_type(np.arange(2, dtype=np.float32), np.arange(2))
+    numpy.float64 # may vary
+    >>> np.common_type(np.arange(4), np.array([45, 6.j]), np.array([45.0]))
+    numpy.complex128 # may vary
+
+    """
+
+    if len(arrays) == 0:
+        return (
+            dpnp.float16
+            if dpctl.select_default_device().has_aspect_fp16
+            else dpnp.float32
+        )
+
+    dpnp.check_supported_arrays_type(*arrays)
+
+    _, exec_q = get_usm_allocations(arrays)
+    default_float_dtype = dpnp.default_float_type(sycl_queue=exec_q)
+    dtypes = []
+    for a in arrays:
+        if not dpnp.issubdtype(a.dtype, dpnp.number):
+            raise TypeError("can't get common type for non-numeric array")
+        if dpnp.issubdtype(a.dtype, dpnp.integer):
+            dtypes.append(default_float_dtype)
+        else:
+            dtypes.append(a.dtype)
+
+    return functools.reduce(numpy.promote_types, dtypes).type
 
 
 # pylint: disable=redefined-outer-name
