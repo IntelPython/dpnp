@@ -14,6 +14,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_dtypes,
+    has_support_aspect16,
 )
 
 
@@ -924,6 +925,16 @@ class TestRfft:
         result = dpnp.fft.rfft(a, n=n, axis=axis, norm=norm, out=out)
         assert out is result
         expected = numpy.fft.rfft(a_np, n=n, axis=axis, norm=norm)
+        assert_dtype_allclose(result, expected, check_only_type_kind=True)
+
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
+    def test_float16(self):
+        a = numpy.arange(10, dtype=numpy.float16)
+        ia = dpnp.array(a)
+
+        expected = numpy.fft.rfft(a)
+        result = dpnp.fft.rfft(ia)
+        # check_only_type_kind=True since Intel NumPy returns complex128
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
     @pytest.mark.parametrize("xp", [numpy, dpnp])

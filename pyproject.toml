@@ -5,8 +5,37 @@ target-version = ['py38', 'py39', 'py310']
 [tool.codespell]
 builtin = "clear,rare,informal,names"
 check-filenames = true
-ignore-words-list="amin,arange,elemt,fro,hist,ith,mone,nd,nin,sinc,vart"
+ignore-words-list = "amin,arange,elemt,fro,hist,ith,mone,nd,nin,sinc,vart"
 quiet-level = 3
+
+[tool.coverage.report]
+omit = [
+  "dpnp/tests/*",
+  "dpnp/_version.py"
+]
+
+[tool.coverage.run]
+branch = true
+omit = [
+  "dpnp/tests/*",
+  "dpnp/_version.py"
+]
+plugins = [
+  "Cython.Coverage"
+]
+source = [
+  "dpnp"
+]
+
+[tool.isort]
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 80
+multi_line_output = 3
+skip = ["dpnp/__init__.py"]
+split_on_trailing_comma = true
+use_parentheses = true
 
 [tool.pylint.basic]
 include-naming-hint = true
@@ -16,9 +45,9 @@ exclude-protected = ["_create_from_usm_ndarray"]
 
 [tool.pylint.design]
 max-args = 11
-max-positional-arguments = 9
-max-locals = 30
 max-branches = 16
+max-locals = 30
+max-positional-arguments = 9
 max-returns = 8
 
 [tool.pylint.format]
@@ -31,47 +60,22 @@ allow-wildcard-with-all = true
 [tool.pylint.miscellaneous]
 notes = ["FIXME", "XXX"]
 
-[tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-ensure_newline_before_comments = true
-line_length = 80
-split_on_trailing_comma = true
-skip = ["dpnp/__init__.py"]
-
-[tool.coverage.run]
-plugins = [
-    "Cython.Coverage"
-]
-branch = true
-source = [
-    "dpnp",
-]
-omit = [
-    "dpnp/tests/*",
-    "dpnp/_version.py",
-]
-
-[tool.coverage.report]
-omit = [
-    "dpnp/tests/*",
-    "dpnp/_version.py",
-]
-
 [tool.pytest.ini.options]
-minversion = "6.0"
-norecursedirs= [
-    ".*", "*.egg*", "build", "dist", "conda-recipe",
-]
 addopts = [
-    "--junitxml=junit.xml",
-    "--ignore setup.py",
-    "--ignore run_test.py",
-    "--cov-report term-missing",
-    "--tb native",
-    "--strict",
-    "--durations=20",
-    "-q -ra",
+  "--junitxml=junit.xml",
+  "--ignore setup.py",
+  "--ignore run_test.py",
+  "--cov-report term-missing",
+  "--tb native",
+  "--strict",
+  "--durations=20",
+  "-q -ra"
+]
+minversion = "6.0"
+norecursedirs = [
+  ".*",
+  "*.egg*",
+  "build",
+  "dist",
+  "conda-recipe"
 ]

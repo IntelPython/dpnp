@@ -41,6 +41,7 @@ __all__ = [
     "DPNPI0",
     "DPNPAngle",
     "DPNPBinaryFunc",
+    "DPNPFix",
     "DPNPImag",
     "DPNPReal",
     "DPNPRound",
@@ -509,6 +510,48 @@ class DPNPAngle(DPNPUnaryFunc):
         if deg is True:
             res *= 180 / dpnp.pi
         return res
+
+
+class DPNPFix(DPNPUnaryFunc):
+    """Class that implements dpnp.fix unary element-wise functions."""
+
+    def __init__(
+        self,
+        name,
+        result_type_resolver_fn,
+        unary_dp_impl_fn,
+        docs,
+    ):
+        super().__init__(
+            name,
+            result_type_resolver_fn,
+            unary_dp_impl_fn,
+            docs,
+        )
+
+    def __call__(self, x, out=None, order="K"):
+        if not dpnp.is_supported_array_type(x):
+            pass  # pass to raise error in main implementation
+        elif dpnp.issubdtype(x.dtype, dpnp.inexact):
+            pass  # for inexact types, pass to calculate in the backend
+        elif out is not None and not dpnp.is_supported_array_type(out):
+            pass  # pass to raise error in main implementation
+        elif out is not None and out.dtype != x.dtype:
+            # passing will raise an error but with incorrect needed dtype
+            raise ValueError(
+                f"Output array of type {x.dtype} is needed, got {out.dtype}"
+            )
+        else:
+            # for exact types, return the input
+            if out is None:
+                return dpnp.copy(x, order=order)
+
+            if isinstance(out, dpt.usm_ndarray):
+                out = dpnp_array._create_from_usm_ndarray(out)
+            out[...] = x
+            return out
+
+        return super().__call__(x, out=out, order=order)
 
 
 class DPNPI0(DPNPUnaryFunc):

@@ -50,14 +50,13 @@ typedef sycl::event (*dot_impl_fn_ptr_t)(sycl::queue &,
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 namespace py = pybind11;
 
-template <typename dispatchT>
 std::pair<sycl::event, sycl::event>
     dot_func(sycl::queue &exec_q,
              const dpctl::tensor::usm_ndarray &vectorX,
              const dpctl::tensor::usm_ndarray &vectorY,
              const dpctl::tensor::usm_ndarray &result,
              const std::vector<sycl::event> &depends,
-             const dispatchT &dot_dispatch_vector)
+             const dot_impl_fn_ptr_t *dot_dispatch_vector)
 {
     const int vectorX_nd = vectorX.get_ndim();
     const int vectorY_nd = vectorY.get_ndim();
@@ -166,12 +165,10 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, dot_ev);
 }
 
-template <typename dispatchT,
-          template <typename fnT, typename T>
-          typename factoryT>
-void init_dot_dispatch_vector(dispatchT dot_dispatch_vector[])
+template <template <typename fnT, typename T> typename factoryT>
+void init_dot_dispatch_vector(dot_impl_fn_ptr_t dot_dispatch_vector[])
 {
-    dpctl_td_ns::DispatchVectorBuilder<dispatchT, factoryT,
+    dpctl_td_ns::DispatchVectorBuilder<dot_impl_fn_ptr_t, factoryT,
                                        dpctl_td_ns::num_types>
         contig;
     contig.populate_dispatch_vector(dot_dispatch_vector);
