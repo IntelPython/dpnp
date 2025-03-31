@@ -605,11 +605,15 @@ class TestHfft:
         flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(result, expected, check_only_type_kind=True)
 
+    def test_error(self):
+        a = dpnp.ones(11)
+        # incorrect norm
+        assert_raises(ValueError, dpnp.fft.hfft, a, norm="backwards")
+
     @pytest.mark.parametrize("dtype", get_complex_dtypes())
     def test_error(self, dtype):
         a = generate_random_numpy_array(11, dtype)
         ia = dpnp.array(a)
-
         assert_raises(TypeError, dpnp.fft.ihfft, ia)
         assert_raises(TypeError, numpy.fft.ihfft, a)
 
@@ -713,11 +717,6 @@ class TestIrfft:
         a = dpnp.ones((10,), dtype=dpnp.complex64)
         out = dpnp.empty((18,), dtype=dpnp.complex64)
         assert_raises(TypeError, dpnp.fft.irfft, a, out=out)
-
-    def test_error(self):
-        a = dpnp.ones(11)
-        # incorrect norm
-        assert_raises(ValueError, dpnp.fft.hfft, a, norm="backwards")
 
 
 class TestRfft:
