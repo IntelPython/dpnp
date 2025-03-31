@@ -684,6 +684,7 @@ class TestNextafter:
         expected = numpy.nextafter(numpy.nan, a)
         assert_equal(result, expected)
 
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
     def test_f16_strides(self, val):
         a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
@@ -702,6 +703,7 @@ class TestNextafter:
         expected = numpy.nextafter(a[1:], -hinf)
         assert_equal(result, expected)
 
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
     def test_f16_array_inf(self, val):
         a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
@@ -716,6 +718,7 @@ class TestNextafter:
         expected = numpy.nextafter(-hinf, a)
         assert_equal(result, expected)
 
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     @pytest.mark.parametrize(
         "sign1, sign2",
         [
@@ -734,6 +737,7 @@ class TestNextafter:
         expected = numpy.nextafter(hinf1, hinf2)
         assert_equal(result, expected)
 
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     @pytest.mark.parametrize("val", [0x7C00, 0x8000], ids=["val1", "val2"])
     def test_f16_array_nan(self, val):
         a = numpy.arange(val, dtype=numpy.uint16).astype(numpy.float16)
@@ -748,6 +752,7 @@ class TestNextafter:
         expected = numpy.nextafter(nan, a)
         assert_equal(result, expected)
 
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     @pytest.mark.parametrize(
         "val1, val2",
         [
@@ -765,6 +770,7 @@ class TestNextafter:
         expected = numpy.nextafter(v1, v2)
         assert_equal(result, expected)
 
+    @pytest.mark.skipif(not has_support_aspect16(), reason="no fp16 support")
     @pytest.mark.parametrize(
         "val, scalar",
         [
