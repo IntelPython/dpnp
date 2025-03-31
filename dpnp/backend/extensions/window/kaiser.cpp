@@ -50,7 +50,7 @@ namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 typedef sycl::event (*kaiser_fn_ptr_t)(sycl::queue &,
                                        char *,
                                        const std::size_t,
-                                       const float,
+                                       const py::object &,
                                        const std::vector<sycl::event> &);
 
 static kaiser_fn_ptr_t kaiser_dispatch_vector[dpctl_td_ns::num_types];
@@ -61,10 +61,10 @@ class KaiserFunctor
 private:
     T *data = nullptr;
     const std::size_t N;
-    const float beta;
+    const T beta;
 
 public:
-    KaiserFunctor(T *data, const std::size_t N, const float beta)
+    KaiserFunctor(T *data, const std::size_t N, const T beta)
         : data(data), N(N), beta(beta)
     {
     }
@@ -89,12 +89,13 @@ template <typename T, template <typename> class Functor>
 sycl::event kaiser_impl(sycl::queue &q,
                         char *result,
                         const std::size_t nelems,
-                        const float beta,
+                        const py::object &py_beta,
                         const std::vector<sycl::event> &depends)
 {
     dpctl::tensor::type_utils::validate_type_for_device<T>(q);
 
     T *res = reinterpret_cast<T *>(result);
+    const T beta = py::cast<const T>(py_beta);
 
     sycl::event kaiser_ev = q.submit([&](sycl::handler &cgh) {
         cgh.depends_on(depends);
@@ -123,7 +124,7 @@ struct KaiserFactory
 
 std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
-              const float beta,
+              const py::object &py_beta,
               const dpctl::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends)
 {
@@ -160,7 +161,7 @@ std::pair<sycl::event, sycl::event>
 
     char *result_typeless_ptr = result.get_data();
     sycl::event kaiser_ev =
-        fn(exec_q, result_typeless_ptr, nelems, beta, depends);
+        fn(exec_q, result_typeless_ptr, nelems, py_beta, depends);
     sycl::event args_ev =
         dpctl::utils::keep_args_alive(exec_q, {result}, {kaiser_ev});
 

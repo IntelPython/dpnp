@@ -32,7 +32,7 @@ namespace dpnp::extensions::window
 {
 extern std::pair<sycl::event, sycl::event>
     py_kaiser(sycl::queue &exec_q,
-              const float beta,
+              const py::object &beta,
               const dpctl::tensor::usm_ndarray &result,
               const std::vector<sycl::event> &depends);
 
