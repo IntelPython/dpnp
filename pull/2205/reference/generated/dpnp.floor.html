@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.floor &mdash; Data Parallel Extension for NumPy 0.18.0dev0+66.g4aa69d34507 documentation</title>
+  <title>dpnp.floor &mdash; Data Parallel Extension for NumPy 0.18.0dev0+73.g0dcc525378c documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=3583a28d"></script>
+      <script src="../../_static/documentation_options.js?v=d803b05b"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -152,8 +152,10 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p>Some spreadsheet programs calculate the &quot;floor-towards-zero&quot;, in other words floor(-2.5) == -2.
-DPNP instead uses the definition of floor where floor(-2.5) == -3.</p>
+<p>Some spreadsheet programs calculate the &quot;floor-towards-zero&quot;, where
+<code class="docutils literal notranslate"><span class="pre">floor(-2.5)</span> <span class="pre">==</span> <span class="pre">-2</span></code>. DPNP instead uses the definition of <a class="reference internal" href="#dpnp.floor" title="dpnp.floor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.floor</span></code></a>
+where <code class="docutils literal notranslate"><span class="pre">floor(-2.5)</span> <span class="pre">==</span> <span class="pre">-3</span></code>. The &quot;floor-towards-zero&quot; function is called
+<a class="reference internal" href="dpnp.fix.html#dpnp.fix" title="dpnp.fix"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.fix</span></code></a> in DPNP.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">1.7</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.5</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">1.5</span><span class="p">,</span> <span class="mf">1.7</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">])</span>
