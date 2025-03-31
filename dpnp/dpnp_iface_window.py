@@ -520,7 +520,7 @@ def kaiser(M, beta, *, device=None, usm_type=None, sycl_queue=None):
     8.6   Similar to a Blackman
     ====  =======================
 
-    A beta value of 14 is probably a good starting point. Note that as beta
+    A beta value of ``14`` is probably a good starting point. Note that as beta
     gets large, the window narrows, and so the number of samples needs to be
     large enough to sample the increasingly narrow spike, otherwise NaNs will
     get returned.
