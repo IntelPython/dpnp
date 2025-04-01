@@ -54,6 +54,7 @@ var NAVTREEINDEX1 =
 "hypot_8hpp_source.html":[3,0,0,8,23],
 "in__place_8hpp_source.html":[3,0,0,3,2],
 "index.html":[],
+"kaiser_8hpp_source.html":[3,0,0,9,5],
 "kernels_2elementwise__functions_2bitwise__count_8hpp_source.html":[3,0,2,0,0],
 "kernels_2elementwise__functions_2degrees_8hpp_source.html":[3,0,2,0,1],
 "kernels_2elementwise__functions_2fabs_8hpp_source.html":[3,0,2,0,2],
