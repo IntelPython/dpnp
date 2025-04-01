@@ -1848,12 +1848,7 @@ class TestUnwrap:
         assert_array_equal(result, expected)
         assert_array_equal(result, isimple_seq)
 
-    @pytest.mark.parametrize(
-        "dt",
-        get_all_dtypes(
-            no_bool=True, no_none=True, no_complex=True, no_unsigned=True
-        ),
-    )
+    @pytest.mark.parametrize("dt", get_integer_float_dtypes(no_unsigned=True))
     def test_discont(self, dt):
         a = numpy.array([0, 8, 20, 25, 35, 50], dtype=dt)
         ia = dpnp.array(a)
