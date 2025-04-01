@@ -35,6 +35,7 @@
 #include "common.hpp"
 #include "hamming.hpp"
 #include "hanning.hpp"
+#include "kaiser.hpp"
 
 namespace window_ns = dpnp::extensions::window;
 namespace py = pybind11;
@@ -54,7 +55,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::BartlettFactory>(bartlett_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::BartlettFactory>(
+            bartlett_dispatch_vector);
 
         auto bartlett_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                   const event_vecT &depends = {}) {
@@ -69,7 +71,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::BlackmanFactory>(blackman_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::BlackmanFactory>(
+            blackman_dispatch_vector);
 
         auto blackman_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                   const event_vecT &depends = {}) {
@@ -84,7 +87,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::HammingFactory>(hamming_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::HammingFactory>(
+            hamming_dispatch_vector);
 
         auto hamming_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                  const event_vecT &depends = {}) {
@@ -99,7 +103,8 @@ PYBIND11_MODULE(_window_impl, m)
 
     {
         window_ns::init_window_dispatch_vectors<
-            window_ns::kernels::HanningFactory>(hanning_dispatch_vector);
+            window_ns::window_fn_ptr_t, window_ns::kernels::HanningFactory>(
+            hanning_dispatch_vector);
 
         auto hanning_pyapi = [&](sycl::queue &exec_q, const arrayT &result,
                                  const event_vecT &depends = {}) {
@@ -109,6 +114,14 @@ PYBIND11_MODULE(_window_impl, m)
 
         m.def("_hanning", hanning_pyapi, "Call Hanning kernel",
               py::arg("sycl_queue"), py::arg("result"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        window_ns::init_kaiser_dispatch_vectors();
+
+        m.def("_kaiser", window_ns::py_kaiser, "Call Kaiser kernel",
+              py::arg("sycl_queue"), py::arg("beta"), py::arg("result"),
               py::arg("depends") = py::list());
     }
 }
