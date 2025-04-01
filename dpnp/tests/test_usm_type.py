@@ -196,6 +196,7 @@ def test_array_creation_from_array(func, args, usm_type_x, usm_type_y):
         pytest.param("hamming", [10], {}),
         pytest.param("hanning", [10], {}),
         pytest.param("identity", [4], {}),
+        pytest.param("kaiser", [10], {"beta": 14}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {"base": [10]}),
@@ -651,6 +652,7 @@ def test_1in_1out(func, data, usm_type):
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
         pytest.param("cross", [1.0, 2.0, 3.0], [4.0, 5.0, 6.0]),
         pytest.param("digitize", [0.2, 6.4, 3.0], [0.0, 1.0, 2.5, 4.0]),
+        pytest.param("convolve", [1, 2, 3], [0, 1, 0.5]),
         pytest.param(
             "corrcoef",
             [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],

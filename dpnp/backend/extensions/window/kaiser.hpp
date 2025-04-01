@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024-2025, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -25,36 +25,17 @@
 
 #pragma once
 
-#include "ext/dispatch_table.hpp"
-#include <pybind11/pybind11.h>
+#include <dpctl4pybind11.hpp>
 #include <sycl/sycl.hpp>
 
-namespace statistics::sliding_window1d
+namespace dpnp::extensions::window
 {
-struct SlidingDotProduct1d
-{
-    using FnT = sycl::event (*)(sycl::queue &,
-                                const void *,
-                                const void *,
-                                void *,
-                                const size_t,
-                                const size_t,
-                                const size_t,
-                                const size_t,
-                                const std::vector<sycl::event> &);
+extern std::pair<sycl::event, sycl::event>
+    py_kaiser(sycl::queue &exec_q,
+              const py::object &beta,
+              const dpctl::tensor::usm_ndarray &result,
+              const std::vector<sycl::event> &depends);
 
-    ext::common::DispatchTable<FnT> dispatch_table;
+extern void init_kaiser_dispatch_vectors(void);
 
-    SlidingDotProduct1d();
-
-    std::tuple<sycl::event, sycl::event>
-        call(const dpctl::tensor::usm_ndarray &a,
-             const dpctl::tensor::usm_ndarray &v,
-             dpctl::tensor::usm_ndarray &output,
-             const size_t l_pad,
-             const size_t r_pad,
-             const std::vector<sycl::event> &depends);
-};
-
-void populate_sliding_dot_product1d(py::module_ m);
-} // namespace statistics::sliding_window1d
+} // namespace dpnp::extensions::window

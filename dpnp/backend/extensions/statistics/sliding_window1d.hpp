@@ -31,16 +31,14 @@
 
 #include <stdio.h>
 
-#include "common.hpp"
+#include "ext/common.hpp"
 
 using dpctl::tensor::usm_ndarray;
 
-namespace statistics
-{
-using common::Align;
-using common::CeilDiv;
+using ext::common::Align;
+using ext::common::CeilDiv;
 
-namespace sliding_window1d
+namespace statistics::sliding_window1d
 {
 
 template <typename T, uint32_t Size>
@@ -668,5 +666,4 @@ void validate(const usm_ndarray &a,
               const usm_ndarray &out,
               const size_t l_pad,
               const size_t r_pad);
-} // namespace sliding_window1d
-} // namespace statistics
+} // namespace statistics::sliding_window1d
