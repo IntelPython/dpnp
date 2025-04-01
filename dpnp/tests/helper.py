@@ -185,6 +185,19 @@ def generate_random_numpy_array(
     return a
 
 
+def factor_to_tol(dtype, factor):
+    """
+    Calculate the tolerance for comparing floating point and complex arrays.
+    The tolerance is based on the maximum resolution of the input dtype multiplied by the factor.
+    """
+
+    tol = 0
+    if numpy.issubdtype(dtype, numpy.inexact):
+        tol = numpy.finfo(dtype).resolution
+
+    return factor * tol
+
+
 def get_abs_array(data, dtype=None):
     if numpy.issubdtype(dtype, numpy.unsignedinteger):
         data = numpy.abs(data)

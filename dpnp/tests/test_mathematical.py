@@ -104,35 +104,6 @@ class TestConj:
         assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.usefixtures("allow_fall_back_on_numpy")
-class TestConvolve:
-    def test_object(self):
-        d = [1.0] * 100
-        k = [1.0] * 3
-        assert_array_equal(dpnp.convolve(d, k)[2:-2], dpnp.full(98, 3.0))
-
-    def test_no_overwrite(self):
-        d = dpnp.ones(100)
-        k = dpnp.ones(3)
-        dpnp.convolve(d, k)
-        assert_array_equal(d, dpnp.ones(100))
-        assert_array_equal(k, dpnp.ones(3))
-
-    def test_mode(self):
-        d = dpnp.ones(100)
-        k = dpnp.ones(3)
-        default_mode = dpnp.convolve(d, k)
-        full_mode = dpnp.convolve(d, k, mode="full")
-        assert_array_equal(full_mode, default_mode)
-        # integer mode
-        with assert_raises(ValueError):
-            dpnp.convolve(d, k, mode=-1)
-        assert_array_equal(dpnp.convolve(d, k, mode=2), full_mode)
-        # illegal arguments
-        with assert_raises(TypeError):
-            dpnp.convolve(d, k, mode=None)
-
-
 class TestClip:
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_bool=True, no_none=True, no_complex=True)
