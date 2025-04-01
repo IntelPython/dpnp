@@ -23,15 +23,15 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
-#include "common.hpp"
+#include "ext/common.hpp"
 #include "utils/type_dispatch.hpp"
 #include <pybind11/pybind11.h>
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
-namespace statistics::common
+namespace ext::common
 {
-size_t get_max_local_size(const sycl::device &device)
+inline size_t get_max_local_size(const sycl::device &device)
 {
     constexpr const int default_max_cpu_local_size = 256;
     constexpr const int default_max_gpu_local_size = 0;
@@ -40,9 +40,9 @@ size_t get_max_local_size(const sycl::device &device)
                               default_max_gpu_local_size);
 }
 
-size_t get_max_local_size(const sycl::device &device,
-                          int cpu_local_size_limit,
-                          int gpu_local_size_limit)
+inline size_t get_max_local_size(const sycl::device &device,
+                                 int cpu_local_size_limit,
+                                 int gpu_local_size_limit)
 {
     int max_work_group_size =
         device.get_info<sycl::info::device::max_work_group_size>();
@@ -56,7 +56,7 @@ size_t get_max_local_size(const sycl::device &device,
     return max_work_group_size;
 }
 
-sycl::nd_range<1>
+inline sycl::nd_range<1>
     make_ndrange(size_t global_size, size_t local_range, size_t work_per_item)
 {
     return make_ndrange(sycl::range<1>(global_size),
@@ -64,7 +64,7 @@ sycl::nd_range<1>
                         sycl::range<1>(work_per_item));
 }
 
-size_t get_local_mem_size_in_bytes(const sycl::device &device)
+inline size_t get_local_mem_size_in_bytes(const sycl::device &device)
 {
     // Reserving 1kb for runtime needs
     constexpr const size_t reserve = 1024;
@@ -72,14 +72,15 @@ size_t get_local_mem_size_in_bytes(const sycl::device &device)
     return get_local_mem_size_in_bytes(device, reserve);
 }
 
-size_t get_local_mem_size_in_bytes(const sycl::device &device, size_t reserve)
+inline size_t get_local_mem_size_in_bytes(const sycl::device &device,
+                                          size_t reserve)
 {
     size_t local_mem_size =
         device.get_info<sycl::info::device::local_mem_size>();
     return local_mem_size - reserve;
 }
 
-pybind11::dtype dtype_from_typenum(int dst_typenum)
+inline pybind11::dtype dtype_from_typenum(int dst_typenum)
 {
     dpctl_td_ns::typenum_t dst_typenum_t =
         static_cast<dpctl_td_ns::typenum_t>(dst_typenum);
@@ -117,4 +118,4 @@ pybind11::dtype dtype_from_typenum(int dst_typenum)
     }
 }
 
-} // namespace statistics::common
+} // namespace ext::common
