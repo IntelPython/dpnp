@@ -359,6 +359,14 @@ def is_cuda_device(device=None):
     return dev.backend == dpctl.backend_type.cuda
 
 
+def is_gpu_device(device=None):
+    """
+    Return True if a test is running on GPU device, False otherwise.
+    """
+    dev = dpctl.select_default_device() if device is None else device
+    return dev.has_aspect_gpu
+
+
 def is_win_platform():
     """
     Return True if a test is running on Windows OS, False otherwise.

@@ -928,8 +928,8 @@ def cov(
         Default: ``None``.
     dtype : {None, str, dtype object}, optional
         Data-type of the result. By default, the return data-type will have
-        at least floating point type based on the capabilities of the device on
-        which the input arrays reside.
+        the default floating point data-type of the device on which the input
+        arrays reside.
 
         Default: ``None``.
 

@@ -196,6 +196,7 @@ def test_array_creation_from_array(func, args, usm_type_x, usm_type_y):
         pytest.param("hamming", [10], {}),
         pytest.param("hanning", [10], {}),
         pytest.param("identity", [4], {}),
+        pytest.param("kaiser", [10], {"beta": 14}),
         pytest.param("linspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {}),
         pytest.param("logspace", [0, 4, 8], {"base": [10]}),

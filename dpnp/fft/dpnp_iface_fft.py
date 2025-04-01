@@ -38,11 +38,7 @@ it contains:
 
 import dpnp
 
-from .dpnp_utils_fft import (
-    dpnp_fft,
-    dpnp_fftn,
-    dpnp_fillfreq,
-)
+from .dpnp_utils_fft import dpnp_fft, dpnp_fftn, dpnp_fillfreq, swap_direction
 
 __all__ = [
     "fft",
@@ -64,24 +60,6 @@ __all__ = [
     "rfftfreq",
     "rfftn",
 ]
-
-
-_SWAP_DIRECTION_MAP = {
-    "backward": "forward",
-    None: "forward",
-    "ortho": "ortho",
-    "forward": "backward",
-}
-
-
-def _swap_direction(norm):
-    try:
-        return _SWAP_DIRECTION_MAP[norm]
-    except KeyError:
-        raise ValueError(
-            f'Invalid norm value {norm}; should be None, "backward", '
-            '"ortho" or "forward".'
-        ) from None
 
 
 def fft(a, n=None, axis=-1, norm=None, out=None):
@@ -644,7 +622,7 @@ def hfft(a, n=None, axis=-1, norm=None, out=None):
 
     """
 
-    new_norm = _swap_direction(norm)
+    new_norm = swap_direction(norm)
     return irfft(dpnp.conjugate(a), n=n, axis=axis, norm=new_norm, out=out)
 
 
@@ -1073,7 +1051,7 @@ def ihfft(a, n=None, axis=-1, norm=None, out=None):
 
     """
 
-    new_norm = _swap_direction(norm)
+    new_norm = swap_direction(norm)
     res = rfft(a, n=n, axis=axis, norm=new_norm, out=out)
     return dpnp.conjugate(res, out=out)
 

@@ -63,6 +63,7 @@ from .dpnp_algo.dpnp_elementwise_common import (
     DPNPI0,
     DPNPAngle,
     DPNPBinaryFunc,
+    DPNPFix,
     DPNPImag,
     DPNPReal,
     DPNPRound,
@@ -1709,14 +1710,14 @@ _FIX_DOCSTRING = """
 Round to nearest integer towards zero.
 
 Round an array of floats element-wise to nearest integer towards zero.
-The rounded values are returned as floats.
+The rounded values have the same data-type as the input.
 
 For full documentation refer to :obj:`numpy.fix`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    An array of floats to be rounded.
+    Input array, expected to have a real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1730,18 +1731,11 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array with the rounded values and with the same dimensions as the input.
-    The returned array will have the default floating point data type for the
-    device where `a` is allocated.
-    If `out` is ``None`` then a float array is returned with the rounded values.
+    An array with the same dimensions and data-type as the input.
+    If `out` is ``None`` then a new array is returned
+    with the rounded values.
     Otherwise the result is stored there and the return value `out` is
     a reference to that array.
-
-Limitations
------------
-Parameters `where` and `subok` are supported with their default values.
-Keyword argument `kwargs` is currently unsupported.
-Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
@@ -1763,7 +1757,7 @@ array(3.)
 array([ 2.,  2., -2., -2.])
 """
 
-fix = DPNPUnaryFunc(
+fix = DPNPFix(
     "fix",
     ufi._fix_result_type,
     ufi._fix,
@@ -1915,8 +1909,10 @@ See Also
 
 Notes
 -----
-Some spreadsheet programs calculate the "floor-towards-zero", in other words floor(-2.5) == -2.
-DPNP instead uses the definition of floor where floor(-2.5) == -3.
+Some spreadsheet programs calculate the "floor-towards-zero", where
+``floor(-2.5) == -2``. DPNP instead uses the definition of :obj:`dpnp.floor`
+where ``floor(-2.5) == -3``. The "floor-towards-zero" function is called
+:obj:`dpnp.fix` in DPNP.
 
 Examples
 --------
