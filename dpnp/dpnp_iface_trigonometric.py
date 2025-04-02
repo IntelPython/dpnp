@@ -960,15 +960,16 @@ def cumlogsumexp(
     )
 
 
-_DEG2RAD_DOCSTRING = """
-Convert angles from degrees to radians.
+_DEG2RAD_DOCSTRING = r"""
+Convert angles from degrees to radians for each element :math:`x_i` for input
+array `x`.
 
 For full documentation refer to :obj:`numpy.deg2rad`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Angles in degrees.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -982,8 +983,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    The corresponding angle in radians. The data type of the returned array is
-    determined by the Type Promotion Rules.
+    An array containing the element-wise angle in radians.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -999,7 +1001,9 @@ See Also
 
 Notes
 -----
-dpnp.deg2rad(x) is ``x * pi / 180``.
+The mathematical definition is
+
+.. math:: \operatorname{deg2rad}(x) = \frac{x * \pi}{180}
 
 Examples
 --------
@@ -1018,15 +1022,16 @@ deg2rad = DPNPUnaryFunc(
 )
 
 
-_DEGREES_DOCSTRING = """
-Convert angles from radians to degrees.
+_DEGREES_DOCSTRING = r"""
+Convert angles from degrees to radians for each element :math:`x_i` for input
+array `x`.
 
 For full documentation refer to :obj:`numpy.degrees`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array in radians.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1040,8 +1045,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    The corresponding degree values. The data type of the returned array is
-    determined by the Type Promotion Rules.
+    An array containing the element-wise angle in degrees.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1052,6 +1058,12 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.rad2deg` : Equivalent function.
+
+Notes
+-----
+The mathematical definition is
+
+.. math:: \operatorname{degrees}(x) = \frac{180 * x}{\pi}
 
 Examples
 --------
@@ -1811,15 +1823,16 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     )
 
 
-_RAD2DEG_DOCSTRING = """
-Convert angles from radians to degrees.
+_RAD2DEG_DOCSTRING = r"""
+Convert angles from degrees to radians for each element :math:`x_i` for input
+array `x`.
 
 For full documentation refer to :obj:`numpy.rad2deg`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Angle in radians.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1833,8 +1846,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    The corresponding angle in degrees. The data type of the returned array is
-    determined by the Type Promotion Rules.
+    An array containing the element-wise angle in degrees.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1850,7 +1864,9 @@ See Also
 
 Notes
 -----
-dpnp.rad2deg(x) is ``180 * x / pi``.
+The mathematical definition is
+
+.. math:: \operatorname{rad2deg}(x) = \frac{180 * x}{\pi}
 
 Examples
 --------
@@ -1869,15 +1885,16 @@ rad2deg = DPNPUnaryFunc(
 )
 
 
-_RADIANS_DOCSTRING = """
-Convert angles from degrees to radians.
+_RADIANS_DOCSTRING = r"""
+Convert angles from degrees to radians for each element :math:`x_i` for input
+array `x`.
 
 For full documentation refer to :obj:`numpy.radians`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array in degrees.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1891,8 +1908,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    The corresponding radian values. The data type of the returned array is
-    determined by the Type Promotion Rules.
+    An array containing the element-wise angle in radians.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1903,6 +1921,12 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.deg2rad` : Equivalent function.
+
+Notes
+-----
+The mathematical definition is
+
+.. math:: \operatorname{radians}(x) = \frac{x * \pi}{180}
 
 Examples
 --------
