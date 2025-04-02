@@ -878,7 +878,7 @@ def cumlogsumexp(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued floating-point data type.
+        Input array, expected to have a boolean or real-valued data type.
     axis : {None, int}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
