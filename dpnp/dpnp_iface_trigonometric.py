@@ -274,17 +274,17 @@ arccosh = acosh  # arccosh is an alias for acosh
 
 
 _ASIN_DOCSTRING = r"""
-Computes inverse sine for each element `x_i` for input array `x`.
+Computes inverse sine for each element :math:`x_i` for input array `x`.
 
-The inverse of :obj:`dpnp.sin`, so that if ``y = sin(x)`` then ``x = arcsin(y)``.
-Note that :obj:`dpnp.asin` is an alias of :obj:`dpnp.arcsin`.
+The inverse of :obj:`dpnp.sin`, so that if :math:`y = sin(x)` then
+:math:`x = asin(y)`. Note that :obj:`dpnp.arcsin` is an alias of :obj:`dpnp.asin`.
 
-For full documentation refer to :obj:`numpy.arcsin`.
+For full documentation refer to :obj:`numpy.asin`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -298,9 +298,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise inverse sine, in radians
-    and in the closed interval `[-\pi/2, \pi/2]`. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise inverse sine, in radians and in the
+    closed interval :math:`[-\pi/2, \pi/2]`. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -312,39 +312,41 @@ See Also
 --------
 :obj:`dpnp.sin` : Trigonometric sine, element-wise.
 :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
-:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
-:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
-:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
-:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.atan2` : Element-wise arc tangent of `x1/x2`
+    choosing the quadrant correctly.
+:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.
 
 Notes
 -----
-:obj:`dpnp.arcsin` is a multivalued function: for each `x` there are infinitely
-many numbers `z` such that ``sin(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
+:obj:`dpnp.asin` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`sin(z) = x`. The convention is to return the
+angle `z` whose the real part lies in the interval :math:`[-\pi/2, \pi/2]`.
 
-For real-valued input data types, :obj:`dpnp.arcsin` always returns real output.
-For each value that cannot be expressed as a real number or infinity, it yields
-``NaN``.
+For real-valued floating-point input data types, :obj:`dpnp.asin` always
+returns real output. For each value that cannot be expressed as a real number
+or infinity, it yields ``NaN``.
 
-For complex-valued input, :obj:`dpnp.arcsin` is a complex analytic function that
-has, by convention, the branch cuts `[-\infty, -1]` and `[1, \infty]` and is continuous
-from above on the former and from below on the latter.
+For complex floating-point input data types, :obj:`dpnp.asin` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on
+the former and from below on the latter.
 
-The inverse sine is also known as :math:`asin` or :math:`sin^{-1}`.
+The inverse sine is also known as :math:`sin^{-1}`.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.array([0, 1, -1])
->>> np.arcsin(x)
+>>> np.asin(x)
 array([0.0, 1.5707963267948966, -1.5707963267948966])
 
 """
 
-arcsin = DPNPUnaryFunc(
-    "arcsin",
+asin = DPNPUnaryFunc(
+    "asin",
     ti._asin_result_type,
     ti._asin,
     _ASIN_DOCSTRING,
@@ -352,21 +354,23 @@ arcsin = DPNPUnaryFunc(
     mkl_impl_fn="_asin",
 )
 
-asin = arcsin  # asin is an alias for arcsin
+arcsin = asin  # arcsin is an alias for asin
 
 
 _ASINH_DOCSTRING = r"""
-Computes inverse hyperbolic sine for each element `x_i` for input array `x`.
+Computes inverse hyperbolic sine for each element :math:`x_i` for input array
+`x`.
 
-The inverse of :obj:`dpnp.sinh`, so that if ``y = sinh(x)`` then ``x = arcsinh(y)``.
-Note that :obj:`dpnp.asinh` is an alias of :obj:`dpnp.arcsinh`.
+The inverse of :obj:`dpnp.sinh`, so that if :math:`y = sinh(x)` then
+:math:`x = asinh(y)`. Note that :obj:`dpnp.arcsinh` is an alias of
+:obj:`dpnp.asinh`.
 
-For full documentation refer to :obj:`numpy.arcsinh`.
+For full documentation refer to :obj:`numpy.asinh`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -380,9 +384,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise inverse hyperbolic sine.
-    The data type of the returned array is determined by
-    the Type Promotion Rules.
+    An array containing the element-wise inverse hyperbolic sine, in radians.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -393,38 +397,38 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
-:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
-:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
-:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
+:obj:`dpnp.atanh` : Hyperbolic inverse tangent, element-wise.
+:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.
+:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.
 
 Notes
 -----
-:obj:`dpnp.arcsinh` is a multivalued function: for each `x` there are infinitely
-many numbers `z` such that ``sin(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
+:obj:`dpnp.asinh` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`sin(z) = x`. The convention is to return the
+angle `z` whose the imaginary part lies in the interval :math:`[-\pi/2, \pi/2]`.
 
-For real-valued input data types, :obj:`dpnp.arcsinh` always returns real output.
-For each value that cannot be expressed as a real number or infinity, it yields
-``NaN``.
+For real-valued floating-point input data types, :obj:`dpnp.asinh` always
+returns real output. For each value that cannot be expressed as a real number
+or infinity, it yields ``NaN``.
 
-For complex-valued input, :obj:`dpnp.arcsinh` is a complex analytic function that
-has, by convention, the branch cuts `[1j, infj]` and `[`1j, -infj]` and is continuous
-from above on the former and from below on the latter.
+For complex floating-point input data types, :obj:`dpnp.asinh` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\inftyj, -j]` and :math:`[j, \inftyj)` and is continuous from the left
+on the former and from the right on the latter.
 
-The inverse hyperbolic sine is also known as :math:`asinh` or :math:`sinh^{-1}`.
-
+The inverse hyperbolic sine is also known as :math:`sinh^{-1}`.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.array([np.e, 10.0])
->>> np.arcsinh(x)
+>>> np.asinh(x)
 array([1.72538256, 2.99822295])
 
 """
 
-arcsinh = DPNPUnaryFunc(
-    "arcsinh",
+asinh = DPNPUnaryFunc(
+    "asinh",
     ti._asinh_result_type,
     ti._asinh,
     _ASINH_DOCSTRING,
@@ -432,7 +436,7 @@ arcsinh = DPNPUnaryFunc(
     mkl_impl_fn="_asinh",
 )
 
-asinh = arcsinh  # asinh is an alias for arcsinh
+arcsinh = asinh  # arcsinh is an alias for asinh
 
 
 _ATAN_DOCSTRING = r"""
