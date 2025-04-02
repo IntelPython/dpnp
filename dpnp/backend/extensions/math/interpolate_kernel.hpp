@@ -2,10 +2,6 @@
 
 #include <sycl/sycl.hpp>
 #include <vector>
-#include <cstddef>
-#include <type_traits>
-
-#include <sycl/sycl.hpp>
 
 #include "utils/type_utils.hpp"
 
@@ -13,16 +9,16 @@ namespace dpnp::extensions::math::kernels
 {
 
 using interpolate_fn_ptr_t = sycl::event (*)(sycl::queue &,
-                                             const void *,  // x
-                                             const void *,  // idx
-                                             const void *,  // xp
-                                             const void *,  // fp
-                                             void *,        // out
-                                             std::size_t,   // n
-                                             std::size_t,   // xp_size
+                                             const void *, // x
+                                             const void *, // idx
+                                             const void *, // xp
+                                             const void *, // fp
+                                             void *,       // out
+                                             std::size_t,  // n
+                                             std::size_t,  // xp_size
                                              const std::vector<sycl::event> &);
 
-template <typename T>
+template <typename TCoord, typename TValue>
 sycl::event interpolate_impl(sycl::queue &q,
                              const void *vx,
                              const void *vidx,
@@ -33,46 +29,132 @@ sycl::event interpolate_impl(sycl::queue &q,
                              std::size_t xp_size,
                              const std::vector<sycl::event> &depends)
 {
-    const T *x = static_cast<const T *>(vx);
+    const TCoord *x = static_cast<const TCoord *>(vx);
     const std::size_t *idx = static_cast<const std::size_t *>(vidx);
-    const T *xp = static_cast<const T *>(vxp);
-    const T *fp = static_cast<const T *>(vfp);
-    T *out = static_cast<T *>(vout);
+    const TCoord *xp = static_cast<const TCoord *>(vxp);
+    const TValue *fp = static_cast<const TValue *>(vfp);
+    TValue *out = static_cast<TValue *>(vout);
 
     return q.submit([&](sycl::handler &h) {
         h.depends_on(depends);
         h.parallel_for(sycl::range<1>(n), [=](sycl::id<1> i) {
-            T left = fp[0];
-            T right = fp[xp_size - 1];
+            TValue left = fp[0];
+            TValue right = fp[xp_size - 1];
+
+            TCoord x_val = x[i];
             std::size_t x_idx = idx[i] - 1;
 
-            if (sycl::isnan(x[i])) {
-                out[i] = x[i];
+            if (sycl::isnan(x_val)) {
+                out[i] = x_val;
             }
             else if (x_idx < 0) {
                 out[i] = left;
             }
-            else if (x[i] == xp[xp_size - 1]) {
+            else if (x_val == xp[xp_size - 1]) {
                 out[i] = right;
             }
             else if (x_idx >= xp_size - 1) {
                 out[i] = right;
             }
-            else if (x[i] == xp[x_idx]) {
+            else if (x_val == xp[x_idx]) {
                 out[i] = fp[x_idx];
             }
             else {
-                T slope = (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);
-                T res = slope * (x[i] - xp[x_idx]) + fp[x_idx];
+                TValue slope =
+                    (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);
+                TValue res = slope * (x_val - xp[x_idx]) + fp[x_idx];
 
                 if (sycl::isnan(res)) {
-                    res = slope * (x[i] - xp[x_idx + 1]) + fp[x_idx + 1];
+                    res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];
                     if (sycl::isnan(res) && (fp[x_idx] == fp[x_idx + 1])) {
                         res = fp[x_idx];
                     }
                 }
                 out[i] = res;
             }
+        });
+    });
+}
+
+template <typename TCoord, typename TValue>
+sycl::event interpolate_complex_impl(sycl::queue &q,
+                                     const void *vx,
+                                     const void *vidx,
+                                     const void *vxp,
+                                     const void *vfp,
+                                     void *vout,
+                                     std::size_t n,
+                                     std::size_t xp_size,
+                                     const std::vector<sycl::event> &depends)
+{
+    const TCoord *x = static_cast<const TCoord *>(vx);
+    const std::size_t *idx = static_cast<const std::size_t *>(vidx);
+    const TCoord *xp = static_cast<const TCoord *>(vxp);
+    const TValue *fp = static_cast<const TValue *>(vfp);
+    TValue *out = static_cast<TValue *>(vout);
+
+    using realT = typename TValue::value_type;
+
+    return q.submit([&](sycl::handler &h) {
+        h.depends_on(depends);
+        h.parallel_for(sycl::range<1>(n), [=](sycl::id<1> i) {
+            realT left_r = fp[0].real();
+            realT right_r = fp[xp_size - 1].real();
+            realT left_i = fp[0].imag();
+            realT right_i = fp[xp_size - 1].imag();
+
+            TCoord x_val = x[i];
+            std::size_t x_idx = idx[i] - 1;
+
+            realT res_r = 0.0;
+            realT res_i = 0.0;
+
+            if (sycl::isnan(x_val)) {
+                res_r = x_val;
+                res_i = 0.0;
+            }
+            else if (x_idx < 0) {
+                res_r = left_r;
+                res_i = left_i;
+            }
+            else if (x_val == xp[xp_size - 1]) {
+                res_r = right_r;
+                res_i = right_i;
+            }
+            else if (x_idx >= xp_size - 1) {
+                res_r = right_r;
+                res_i = right_i;
+            }
+            else if (x_val == xp[x_idx]) {
+                res_r = fp[x_idx].real();
+                res_i = fp[x_idx].imag();
+            }
+            else {
+                realT dx = xp[x_idx + 1] - xp[x_idx];
+
+                realT slope_r = (fp[x_idx + 1].real() - fp[x_idx].real()) / dx;
+                res_r = slope_r * (x_val - xp[x_idx]) + fp[x_idx].real();
+                if (sycl::isnan(res_r)) {
+                    res_r = slope_r * (x_val - xp[x_idx + 1]) +
+                            fp[x_idx + 1].real();
+                    if (sycl::isnan(res_r) &&
+                        fp[x_idx].real() == fp[x_idx + 1].real()) {
+                        res_r = fp[x_idx].real();
+                    }
+                }
+
+                realT slope_i = (fp[x_idx + 1].imag() - fp[x_idx].imag()) / dx;
+                res_i = slope_i * (x_val - xp[x_idx]) + fp[x_idx].imag();
+                if (sycl::isnan(res_i)) {
+                    res_i = slope_i * (x_val - xp[x_idx + 1]) +
+                            fp[x_idx + 1].imag();
+                    if (sycl::isnan(res_i) &&
+                        fp[x_idx].imag() == fp[x_idx + 1].imag()) {
+                        res_i = fp[x_idx].imag();
+                    }
+                }
+            }
+            out[i] = TValue(res_r, res_i);
         });
     });
 }

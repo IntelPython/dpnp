@@ -46,6 +46,7 @@ import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
+import dpnp.backend.extensions.math._math_impl as math_ext
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
@@ -53,8 +54,6 @@ from dpnp.dpnp_utils.dpnp_utils_common import (
     result_type_for_device,
     to_supported_dtypes,
 )
-
-import dpnp.backend.extensions.math._math_impl as math_ext
 
 from .dpnp_utils import get_usm_allocations
 from .dpnp_utils.dpnp_utils_reduction import dpnp_wrap_reduction_call
@@ -1161,19 +1160,22 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     dpnp.check_supported_arrays_type(x, xp, fp)
 
     if xp.ndim != 1 or fp.ndim != 1:
-        raise ValueError('xp and fp must be 1D arrays')
+        raise ValueError("xp and fp must be 1D arrays")
     if xp.size != fp.size:
-        raise ValueError('fp and xp are not of the same length')
+        raise ValueError("fp and xp are not of the same length")
     if xp.size == 0:
-        raise ValueError('array of sample points is empty')
+        raise ValueError("array of sample points is empty")
     if not x.flags.c_contiguous:
-        raise NotImplementedError('Non-C-contiguous x is currently not '
-                                  'supported')
+        raise NotImplementedError(
+            "Non-C-contiguous x is currently not supported"
+        )
     x_dtype = dpnp.common_type(x, xp)
     if not dpnp.can_cast(x_dtype, dpnp.default_float_type()):
-        raise TypeError('Cannot cast array data from'
-                        ' {} to {} according to the rule \'safe\''
-                        .format(x_dtype, dpnp.default_float_type()))
+        raise TypeError(
+            "Cannot cast array data from"
+            f" {x_dtype} to {dpnp.default_float_type()} "
+            "according to the rule 'safe'"
+        )
 
     if period is not None:
         # The handling of "period" below is modified from NumPy's
@@ -1193,20 +1195,20 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         asort_xp = dpnp.argsort(xp)
         xp = xp[asort_xp]
         fp = fp[asort_xp]
-        xp = dpnp.concatenate((xp[-1:]-period, xp, xp[0:1]+period))
+        xp = dpnp.concatenate((xp[-1:] - period, xp, xp[0:1] + period))
         fp = dpnp.concatenate((fp[-1:], fp, fp[0:1]))
         assert xp.flags.c_contiguous
         assert fp.flags.c_contiguous
 
     # NumPy always returns float64 or complex128, so we upcast all values
     # on the fly in the kernel
-    out_dtype = x_dtype
+    out_dtype = fp.dtype
     output = dpnp.empty(x.shape, dtype=out_dtype)
-    idx = dpnp.searchsorted(xp, x, side='right')
+    idx = dpnp.searchsorted(xp, x, side="right")
     left = fp[0] if left is None else dpnp.array(left, fp.dtype)
     right = fp[-1] if right is None else dpnp.array(right, fp.dtype)
 
-    idx = dpnp.array(idx, dtype='uint64')
+    idx = dpnp.array(idx, dtype="uint64")
 
     queue = x.sycl_queue
     _manager = dpu.SequentialOrderManager[queue]

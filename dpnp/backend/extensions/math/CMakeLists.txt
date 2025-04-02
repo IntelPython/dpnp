@@ -26,7 +26,6 @@
 
 set(python_module_name _math_impl)
 set(_module_src
-    ${CMAKE_CURRENT_SOURCE_DIR}/common.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/interpolate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/math_py.cpp
 )
