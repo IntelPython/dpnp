@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+65.g18e1a13ce95 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+66.g1fc43fd6a7e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=02b01759"></script>
+      <script src="../../_static/documentation_options.js?v=eb64e01a"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -194,17 +194,18 @@
 
 
 <span class="n">_ACOS_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes inverse cosine for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes inverse cosine for each element :math:`x_i` for input array `x`.</span>
 
-<span class="s2">The inverse of :obj:`dpnp.cos` so that, if ``y = cos(x)``, then ``x = arccos(y)``.</span>
-<span class="s2">Note that :obj:`dpnp.acos` is an alias of :obj:`dpnp.arccos`.</span>
+<span class="s2">The inverse of :obj:`dpnp.cos` so that, if :math:`y = cos(x)`, then</span>
+<span class="s2">:math:`x = acos(y)`. Note that :obj:`dpnp.arccos` is an alias of</span>
+<span class="s2">:obj:`dpnp.acos`.</span>
 
-<span class="s2">For full documentation refer to :obj:`numpy.arccos`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.acos`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -218,9 +219,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise inverse cosine, in radians</span>
-<span class="s2">    and in the closed interval `[-pi/2, pi/2]`. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise inverse cosine, in radians and in the</span>
+<span class="s2">    closed interval :math:`[0, pi]`. The data type of the returned array is</span>
+<span class="s2">    determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -237,31 +238,32 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">:obj:`dpnp.arccos` is a multivalued function: for each `x` there are infinitely</span>
-<span class="s2">many numbers `z` such that ``cos(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[0, pi]`.</span>
+<span class="s2">:obj:`dpnp.acos` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`cos(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose real part lies in :math:`[0, pi]`.</span>
 
-<span class="s2">For real-valued input data types, :obj:`dpnp.arccos` always returns real output.</span>
-<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``nan``.</span>
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.acos` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
 
-<span class="s2">For complex-valued input, :obj:`dpnp.arccos` is a complex analytic function that</span>
-<span class="s2">has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous</span>
-<span class="s2">from above on the former and from below on the latter.</span>
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.acos` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts :math:`[-inf, -1]`</span>
+<span class="s2">and :math:`[1, inf]` and is continuous from above on the former and from below</span>
+<span class="s2">on the latter.</span>
 
-<span class="s2">The inverse cos is also known as :math:`acos` or :math:`cos^{-1}`.</span>
+<span class="s2">The inverse cosine is also known as :math:`arccos` or :math:`cos^{-1}`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
 <span class="s2">&gt;&gt;&gt; x = np.array([1, -1])</span>
-<span class="s2">&gt;&gt;&gt; np.arccos(x)</span>
+<span class="s2">&gt;&gt;&gt; np.acos(x)</span>
 <span class="s2">array([0.0,  3.14159265])</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">arccos</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;arccos&quot;</span><span class="p">,</span>
+<span class="n">acos</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;acos&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acos</span><span class="p">,</span>
     <span class="n">_ACOS_DOCSTRING</span><span class="p">,</span>
@@ -269,7 +271,7 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acos&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">acos</span> <span class="o">=</span> <span class="n">arccos</span>  <span class="c1"># acos is an alias for arccos</span>
+<span class="n">arccos</span> <span class="o">=</span> <span class="n">acos</span>  <span class="c1"># arccos is an alias for acos</span>
 
 
 <span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
@@ -638,7 +640,7 @@
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
-<span class="s2">Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
@@ -1423,6 +1425,7 @@
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
@@ -1680,7 +1683,7 @@
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
-<span class="s2">Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
@@ -1757,7 +1760,7 @@
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
-<span class="s2">Keyword arguments `kwargs` are currently unsupported.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
@@ -2275,6 +2278,7 @@
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
+<span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
@@ -2333,6 +2337,7 @@
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
@@ -2391,6 +2396,7 @@
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
 <span class="s2">Parameters `where` and `subok` are supported with their default values.</span>
+<span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
 <span class="s2">See Also</span>
