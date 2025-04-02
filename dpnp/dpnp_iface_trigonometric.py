@@ -162,9 +162,9 @@ returns real output. For each value that cannot be expressed as a real number
 or infinity, it yields ``NaN``.
 
 For complex floating-point input data types, :obj:`dpnp.acos` is a complex
-analytic function that has, by convention, the branch cuts :math:`[-inf, -1]`
-and :math:`[1, inf]` and is continuous from above on the former and from below
-on the latter.
+analytic function that has, by convention, the branch cuts
+:math:`[-\infty, -1]` and :math:`[1, \infty]` and is continuous from above on
+the former and from below on the latter.
 
 The inverse cosine is also known as :math:`arccos` or :math:`cos^{-1}`.
 
@@ -215,7 +215,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise inverse hyperbolic cosine, in
-    radians and in the half-closed interval `[0, inf)`. The data type
+    radians and in the half-closed interval `[0, \infty)`. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -237,14 +237,14 @@ Notes
 -----
 :obj:`dpnp.arccosh` is a multivalued function: for each `x` there are infinitely
 many numbers `z` such that ``cosh(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[0, inf]`.
+angle `z` whose real part lies in `[0, \infty]`.
 
 For real-valued input data types, :obj:`dpnp.arccosh` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
 ``NaN``.
 
 For complex-valued input, :obj:`dpnp.arccosh` is a complex analytic function that
-has, by convention, the branch cuts `[-inf, 1]` and is continuous from above.
+has, by convention, the branch cuts `[-\infty, 1]` and is continuous from above.
 
 The inverse hyperbolic cos is also known as :math:`acosh` or :math:`cosh^{-1}`.
 
@@ -325,7 +325,7 @@ For each value that cannot be expressed as a real number or infinity, it yields
 ``NaN``.
 
 For complex-valued input, :obj:`dpnp.arcsin` is a complex analytic function that
-has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous
+has, by convention, the branch cuts `[-\infty, -1]` and `[1, \infty]` and is continuous
 from above on the former and from below on the latter.
 
 The inverse sine is also known as :math:`asin` or :math:`sin^{-1}`.
@@ -652,7 +652,7 @@ For each value that cannot be expressed as a real number or infinity, it yields
 ``NaN``.
 
 For complex-valued input, :obj:`dpnp.arctanh` is a complex analytic function that
-has, by convention, the branch cuts `[-1, -inf]` and `[1, inf]` and is is continuous
+has, by convention, the branch cuts `[-1, -\infty]` and `[1, \infty]` and is is continuous
 from above on the former and from below on the latter.
 
 The inverse hyperbolic tan is also known as :math:`atanh` or :math:`tanh^{-1}`.
