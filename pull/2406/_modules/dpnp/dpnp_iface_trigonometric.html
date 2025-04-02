@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+74.gf5b20c2d459 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+75.gb84cef7d2b6 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=591b9953"></script>
+      <script src="../../_static/documentation_options.js?v=e4eb5fc7"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -525,17 +525,18 @@
 
 
 <span class="n">_ATAN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes inverse tangent for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes inverse tangent for each element :math:`x_i` for input array `x`.</span>
 
-<span class="s2">The inverse of :obj:`dpnp.tan`, so that if ``y = tan(x)`` then ``x = arctan(y)``.</span>
-<span class="s2">Note that :obj:`dpnp.atan` is an alias of :obj:`dpnp.arctan`.</span>
+<span class="s2">The inverse of :obj:`dpnp.tan`, so that if :math:`y = tan(x)` then</span>
+<span class="s2">:math:`x = atan(y)`. Note that :obj:`dpnp.arctan` is an alias of</span>
+<span class="s2">:obj:`dpnp.atan`.</span>
 
-<span class="s2">For full documentation refer to :obj:`numpy.arctan`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.atan`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -549,9 +550,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise inverse tangent, in radians</span>
-<span class="s2">    and in the closed interval `[-\pi/2, \pi/2]`. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise inverse tangent, in radians and in the</span>
+<span class="s2">    closed interval :math:`[-\pi/2, \pi/2]`. The data type of the returned</span>
+<span class="s2">    array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -561,40 +562,42 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
+<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of `x1/x2`</span>
+<span class="s2">    choosing the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.angle` : Argument of complex values.</span>
 <span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
-<span class="s2">:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atanh` : Inverse hyperbolic tangent, element-wise.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">:obj:`dpnp.arctan` is a multivalued function: for each `x` there are infinitely</span>
-<span class="s2">many numbers `z` such that ``tan(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[-\pi/2, \pi/2]`.</span>
+<span class="s2">:obj:`dpnp.atan` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`tan(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the real part lies in the interval :math:`[-\pi/2, \pi/2]`.</span>
 
-<span class="s2">For real-valued input data types, :obj:`dpnp.arctan` always returns real output.</span>
-<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``NaN``.</span>
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.atan` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
 
-<span class="s2">For complex-valued input, :obj:`dpnp.arctan` is a complex analytic function that</span>
-<span class="s2">has, by convention, the branch cuts `[1j, infj]` and `[-1j, -infj]`  and is continuous</span>
-<span class="s2">from the left on the former and from the right on the latter.</span>
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.atan` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty j, -j)` and :math:`(j, \infty j)` and is continuous from the right</span>
+<span class="s2">on the former and from the left on the latter.</span>
 
-<span class="s2">The inverse tan is also known as :math:`atan` or :math:`tan^{-1}`.</span>
+<span class="s2">The inverse tangent is also known as :math:`tan^{-1}`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
 <span class="s2">&gt;&gt;&gt; x = np.array([0, 1])</span>
-<span class="s2">&gt;&gt;&gt; np.arctan(x)</span>
+<span class="s2">&gt;&gt;&gt; np.atan(x)</span>
 <span class="s2">array([0.0, 0.78539816])</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">arctan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;arctan&quot;</span><span class="p">,</span>
+<span class="n">atan</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;atan&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan</span><span class="p">,</span>
     <span class="n">_ATAN_DOCSTRING</span><span class="p">,</span>
@@ -602,32 +605,27 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">atan</span> <span class="o">=</span> <span class="n">arctan</span>  <span class="c1"># atan is an alias for arctan</span>
+<span class="n">arctan</span> <span class="o">=</span> <span class="n">atan</span>  <span class="c1"># arctan is an alias for atan</span>
 
 
 <span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element</span>
-<span class="s2">`x1_i` of the input array `x1` with the respective element `x2_i` of the</span>
-<span class="s2">input array `x2`. Each element-wise result is expressed in radians.</span>
+<span class="s2">Calculates the inverse tangent of the quotient :math:`x1_i/x2_i` for each</span>
+<span class="s2">element :math:`x1_i` of the input array `x1` with the respective element</span>
+<span class="s2">:math:`x2_i` of the input array `x2`.</span>
 
-<span class="s2">Note that :obj:`dpnp.atan2` is an alias of :obj:`dpnp.arctan2`.</span>
+<span class="s2">Note that :obj:`dpnp.arctan2` is an alias of :obj:`dpnp.atan2`.</span>
 <span class="s2">This function is not defined for complex-valued arguments; for the so-called</span>
 <span class="s2">argument of complex values, use :obj:`dpnp.angle`.</span>
 
-<span class="s2">For full documentation refer to :obj:`numpy.arctan2`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.atan2`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a real-valued floating-point</span>
-<span class="s2">    data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a real-valued floating-point data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a real-valued</span>
-<span class="s2">    floating-point data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -641,9 +639,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the inverse tangent of the quotient `x1`/`x2`.</span>
-<span class="s2">    The returned array must have a real-valued floating-point data type</span>
-<span class="s2">    determined by Type Promotion Rules.</span>
+<span class="s2">    An array containing the inverse tangent of the quotient :math:`x1/x2`, in</span>
+<span class="s2">    radians. The returned array must have a real-valued floating-point data</span>
+<span class="s2">    type determined by Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -653,35 +651,42 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.tan` : Compute tangent element-wise.</span>
 <span class="s2">:obj:`dpnp.angle` : Return the angle of the complex argument.</span>
-<span class="s2">:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atanh` : Inverse hyperbolic tangent, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
 <span class="s2">&gt;&gt;&gt; x1 = np.array([1., -1.])</span>
 <span class="s2">&gt;&gt;&gt; x2 = np.array([0., 0.])</span>
-<span class="s2">&gt;&gt;&gt; np.arctan2(x1, x2)</span>
+<span class="s2">&gt;&gt;&gt; np.atan2(x1, x2)</span>
 <span class="s2">array([1.57079633, -1.57079633])</span>
 
 <span class="s2">&gt;&gt;&gt; x1 = np.array([0., 0., np.inf])</span>
 <span class="s2">&gt;&gt;&gt; x2 = np.array([+0., -0., np.inf])</span>
-<span class="s2">&gt;&gt;&gt; np.arctan2(x1, x2)</span>
+<span class="s2">&gt;&gt;&gt; np.atan2(x1, x2)</span>
 <span class="s2">array([0.0 , 3.14159265, 0.78539816])</span>
 
 <span class="s2">&gt;&gt;&gt; x1 = np.array([-1, +1, +1, -1])</span>
 <span class="s2">&gt;&gt;&gt; x2 = np.array([-1, -1, +1, +1])</span>
-<span class="s2">&gt;&gt;&gt; np.arctan2(x1, x2) * 180 / np.pi</span>
+<span class="s2">&gt;&gt;&gt; np.atan2(x1, x2) * 180 / np.pi</span>
 <span class="s2">array([-135.,  -45.,   45.,  135.])</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">arctan2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;arctan2&quot;</span><span class="p">,</span>
+<span class="n">atan2</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;atan2&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atan2</span><span class="p">,</span>
     <span class="n">_ATAN2_DOCSTRING</span><span class="p">,</span>
@@ -689,21 +694,23 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atan2&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">atan2</span> <span class="o">=</span> <span class="n">arctan2</span>  <span class="c1"># atan2 is an alias for arctan2</span>
+<span class="n">arctan2</span> <span class="o">=</span> <span class="n">atan2</span>  <span class="c1"># arctan2 is an alias for atan2</span>
 
 
 <span class="n">_ATANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes hyperbolic inverse tangent for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
 
-<span class="s2">The inverse of :obj:`dpnp.tanh`, so that if ``y = tanh(x)`` then ``x = arctanh(y)``.</span>
-<span class="s2">Note that :obj:`dpnp.atanh` is an alias of :obj:`dpnp.arctanh`.</span>
+<span class="s2">The inverse of :obj:`dpnp.tanh`, so that if :math:`y = tanh(x)` then</span>
+<span class="s2">:math:`x = atanh(y)`. Note that :obj:`dpnp.arctanh` is an alias of</span>
+<span class="s2">:obj:`dpnp.atanh`.</span>
 
-<span class="s2">For full documentation refer to :obj:`numpy.arctanh`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.atanh`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -717,9 +724,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise hyperbolic inverse tangent.</span>
-<span class="s2">    The data type of the returned array is determined by</span>
-<span class="s2">    the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise inverse hyperbolic tangent, in</span>
+<span class="s2">    radians. The data type of the returned array is determined by the Type</span>
+<span class="s2">    Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -730,37 +737,38 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
-<span class="s2">:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
-<span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">:obj:`dpnp.arctanh` is a multivalued function: for each `x` there are infinitely</span>
-<span class="s2">many numbers `z` such that ``tanh(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[-\pi/2, \pi/2]`.</span>
+<span class="s2">:obj:`dpnp.atanh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`tanh(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the imaginary part lies in the interval :math:`[-\pi/2, \pi/2]`.</span>
 
-<span class="s2">For real-valued input data types, :obj:`dpnp.arctanh` always returns real output.</span>
-<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``NaN``.</span>
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.atanh` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
 
-<span class="s2">For complex-valued input, :obj:`dpnp.arctanh` is a complex analytic function that</span>
-<span class="s2">has, by convention, the branch cuts `[-1, -\infty]` and `[1, \infty]` and is is continuous</span>
-<span class="s2">from above on the former and from below on the latter.</span>
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.atanh` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts</span>
+<span class="s2">:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on</span>
+<span class="s2">the former and from below on the latter.</span>
 
-<span class="s2">The inverse hyperbolic tan is also known as :math:`atanh` or :math:`tanh^{-1}`.</span>
+<span class="s2">The inverse hyperbolic tangent is also known as :math:`tanh^{-1}`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
 <span class="s2">&gt;&gt;&gt; x = np.array([0, -0.5])</span>
-<span class="s2">&gt;&gt;&gt; np.arctanh(x)</span>
+<span class="s2">&gt;&gt;&gt; np.atanh(x)</span>
 <span class="s2">array([0.0, -0.54930614])</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">arctanh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;arctanh&quot;</span><span class="p">,</span>
+<span class="n">atanh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;atanh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_atanh</span><span class="p">,</span>
     <span class="n">_ATANH_DOCSTRING</span><span class="p">,</span>
@@ -768,7 +776,7 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_atanh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">atanh</span> <span class="o">=</span> <span class="n">arctanh</span>  <span class="c1"># atanh is an alias for arctanh</span>
+<span class="n">arctanh</span> <span class="o">=</span> <span class="n">atanh</span>  <span class="c1"># arctanh is an alias for atanh</span>
 
 
 <span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
