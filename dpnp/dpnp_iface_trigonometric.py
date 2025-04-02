@@ -109,17 +109,18 @@ def _get_accumulation_res_dt(a, dtype):
 
 
 _ACOS_DOCSTRING = r"""
-Computes inverse cosine for each element `x_i` for input array `x`.
+Computes inverse cosine for each element :math:`x_i` for input array `x`.
 
-The inverse of :obj:`dpnp.cos` so that, if ``y = cos(x)``, then ``x = arccos(y)``.
-Note that :obj:`dpnp.acos` is an alias of :obj:`dpnp.arccos`.
+The inverse of :obj:`dpnp.cos` so that, if :math:`y = cos(x)`, then
+:math:`x = acos(y)`. Note that :obj:`dpnp.arccos` is an alias of
+:obj:`dpnp.acos`.
 
-For full documentation refer to :obj:`numpy.arccos`.
+For full documentation refer to :obj:`numpy.acos`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -133,9 +134,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise inverse cosine, in radians
-    and in the closed interval `[-pi/2, pi/2]`. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise inverse cosine, in radians and in the
+    closed interval :math:`[0, pi]`. The data type of the returned array is
+    determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -152,31 +153,32 @@ See Also
 
 Notes
 -----
-:obj:`dpnp.arccos` is a multivalued function: for each `x` there are infinitely
-many numbers `z` such that ``cos(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[0, pi]`.
+:obj:`dpnp.acos` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`cos(z) = x`. The convention is to return the
+angle `z` whose real part lies in :math:`[0, pi]`.
 
-For real-valued input data types, :obj:`dpnp.arccos` always returns real output.
-For each value that cannot be expressed as a real number or infinity, it yields
-``nan``.
+For real-valued floating-point input data types, :obj:`dpnp.acos` always
+returns real output. For each value that cannot be expressed as a real number
+or infinity, it yields ``NaN``.
 
-For complex-valued input, :obj:`dpnp.arccos` is a complex analytic function that
-has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous
-from above on the former and from below on the latter.
+For complex floating-point input data types, :obj:`dpnp.acos` is a complex
+analytic function that has, by convention, the branch cuts :math:`[-inf, -1]`
+and :math:`[1, inf]` and is continuous from above on the former and from below
+on the latter.
 
-The inverse cos is also known as :math:`acos` or :math:`cos^{-1}`.
+The inverse cosine is also known as :math:`arccos` or :math:`cos^{-1}`.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.array([1, -1])
->>> np.arccos(x)
+>>> np.acos(x)
 array([0.0,  3.14159265])
 
 """
 
-arccos = DPNPUnaryFunc(
-    "arccos",
+acos = DPNPUnaryFunc(
+    "acos",
     ti._acos_result_type,
     ti._acos,
     _ACOS_DOCSTRING,
@@ -184,7 +186,7 @@ arccos = DPNPUnaryFunc(
     mkl_impl_fn="_acos",
 )
 
-acos = arccos  # acos is an alias for arccos
+arccos = acos  # arccos is an alias for acos
 
 
 _ACOSH_DOCSTRING = r"""
@@ -553,7 +555,7 @@ out : dpnp.ndarray
 Limitations
 -----------
 Parameters `where` and `subok` are supported with their default values.
-Keyword arguments `kwargs` are currently unsupported.
+Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
@@ -1335,6 +1337,7 @@ out : dpnp.ndarray
 Limitations
 -----------
 Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
@@ -1592,7 +1595,7 @@ out : dpnp.ndarray
 Limitations
 -----------
 Parameters `where` and `subok` are supported with their default values.
-Keyword arguments `kwargs` are currently unsupported.
+Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
@@ -1669,7 +1672,7 @@ out : dpnp.ndarray
 Limitations
 -----------
 Parameters `where` and `subok` are supported with their default values.
-Keyword arguments `kwargs` are currently unsupported.
+Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
@@ -2181,6 +2184,7 @@ out : dpnp.ndarray
 
 Limitations
 -----------
+Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
@@ -2239,6 +2243,7 @@ out : dpnp.ndarray
 Limitations
 -----------
 Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
@@ -2297,6 +2302,7 @@ out : dpnp.ndarray
 Limitations
 -----------
 Parameters `where` and `subok` are supported with their default values.
+Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
