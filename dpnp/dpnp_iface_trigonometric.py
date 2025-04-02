@@ -1092,14 +1092,14 @@ degrees = DPNPUnaryFunc(
 
 
 _EXP_DOCSTRING = """
-Computes the exponent for each element `x_i` of input array `x`.
+Computes the exponential for each element :math:`x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.exp`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1113,9 +1113,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise exponent of `x`.
-    The data type of the returned array is determined by
-    the Type Promotion Rules.
+    An array containing the element-wise exponential of `x`.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1125,8 +1125,8 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.expm1` : Calculate ``exp(x) - 1`` for all elements in the array.
-:obj:`dpnp.exp2` : Calculate `2**x` for all elements in the array.
+:obj:`dpnp.expm1` : Calculate :math:`e^x - 1`, element-wise.
+:obj:`dpnp.exp2` : Calculate :math:`2^x`, element-wise.
 
 Examples
 --------
@@ -1148,7 +1148,8 @@ exp = DPNPUnaryFunc(
 
 
 _EXP2_DOCSTRING = """
-Computes the base-2 exponent for each element `x_i` for input array `x`.
+Computes the base-2 exponential for each element :math:`x_i` for input array
+`x`.
 
 For full documentation refer to :obj:`numpy.exp2`.
 
@@ -1169,9 +1170,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise base-2 exponents.
-    The data type of the returned array is determined by
-    the Type Promotion Rules.
+    An array containing the element-wise base-2 exponentials.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1181,9 +1182,10 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.exp` : Calculate exponent for all elements in the array.
-:obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
-:obj:`dpnp.power` : First array elements raised to powers from second array, element-wise.
+:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.
+:obj:`dpnp.expm1` : Calculate :math:`e^x - 1`, element-wise.
+:obj:`dpnp.power` : Exponentiation by raising the first array to the power of
+    the second array, element-wise.
 
 Examples
 --------
@@ -1204,17 +1206,16 @@ exp2 = DPNPUnaryFunc(
 )
 
 
-_EXPM1_DOCSTRING = """
-Computes the exponent minus 1 for each element `x_i` of input array `x`.
-
-This function calculates `exp(x) - 1.0` more accurately for small values of `x`.
+_EXPM1_DOCSTRING = r"""
+Computes the exponential minus 1 for each element :math:`x_i` of input array
+`x`.
 
 For full documentation refer to :obj:`numpy.expm1`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1228,9 +1229,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise `exp(x) - 1` results.
-    The data type of the returned array is determined by the Type
-    Promotion Rules.
+    An array containing containing the evaluated result for each element in `x`.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
@@ -1240,9 +1241,15 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.exp` : Calculate exponents for all elements in the array.
-:obj:`dpnp.exp2` : Calculate `2**x` for all elements in the array.
-:obj:`dpnp.log1p` : Calculate ``log(1 + x)``, the inverse of :obj:`dpnp.expm1`.
+:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.
+:obj:`dpnp.exp2` : Calculate :math:`2^x`, element-wise.
+:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise,
+    the inverse of :obj:`dpnp.expm1`.
+
+Notes
+-----
+This function provides greater precision than :math:`e^x - 1` for small values
+of `x`.
 
 Examples
 --------
