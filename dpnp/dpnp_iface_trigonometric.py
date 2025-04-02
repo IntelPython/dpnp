@@ -135,7 +135,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise inverse cosine, in radians and in the
-    closed interval :math:`[0, pi]`. The data type of the returned array is
+    closed interval :math:`[0, \pi]`. The data type of the returned array is
     determined by the Type Promotion Rules.
 
 Limitations
@@ -155,7 +155,7 @@ Notes
 -----
 :obj:`dpnp.acos` is a multivalued function: for each `x` there are infinitely
 many numbers `z` such that :math:`cos(z) = x`. The convention is to return the
-angle `z` whose real part lies in :math:`[0, pi]`.
+angle `z` whose real part lies in :math:`[0, \pi]`.
 
 For real-valued floating-point input data types, :obj:`dpnp.acos` always
 returns real output. For each value that cannot be expressed as a real number
@@ -295,7 +295,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise inverse sine, in radians
-    and in the closed interval `[-pi/2, pi/2]`. The data type
+    and in the closed interval `[-\pi/2, \pi/2]`. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -318,7 +318,7 @@ Notes
 -----
 :obj:`dpnp.arcsin` is a multivalued function: for each `x` there are infinitely
 many numbers `z` such that ``sin(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-pi/2, pi/2]`.
+angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arcsin` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
@@ -397,7 +397,7 @@ Notes
 -----
 :obj:`dpnp.arcsinh` is a multivalued function: for each `x` there are infinitely
 many numbers `z` such that ``sin(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-pi/2, pi/2]`.
+angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arcsinh` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
@@ -457,7 +457,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise inverse tangent, in radians
-    and in the closed interval `[-pi/2, pi/2]`. The data type
+    and in the closed interval `[-\pi/2, \pi/2]`. The data type
     of the returned array is determined by the Type Promotion Rules.
 
 Limitations
@@ -479,7 +479,7 @@ Notes
 -----
 :obj:`dpnp.arctan` is a multivalued function: for each `x` there are infinitely
 many numbers `z` such that ``tan(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-pi/2, pi/2]`.
+angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arctan` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
@@ -645,7 +645,7 @@ Notes
 -----
 :obj:`dpnp.arctanh` is a multivalued function: for each `x` there are infinitely
 many numbers `z` such that ``tanh(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-pi/2, pi/2]`.
+angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arctanh` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
