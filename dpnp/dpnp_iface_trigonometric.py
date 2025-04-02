@@ -241,7 +241,7 @@ angle `z` whose real part lies in `[0, inf]`.
 
 For real-valued input data types, :obj:`dpnp.arccosh` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
-``nan``.
+``NaN``.
 
 For complex-valued input, :obj:`dpnp.arccosh` is a complex analytic function that
 has, by convention, the branch cuts `[-inf, 1]` and is continuous from above.
@@ -322,7 +322,7 @@ angle `z` whose real part lies in `[-pi/2, pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arcsin` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
-``nan``.
+``NaN``.
 
 For complex-valued input, :obj:`dpnp.arcsin` is a complex analytic function that
 has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous
@@ -401,7 +401,7 @@ angle `z` whose real part lies in `[-pi/2, pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arcsinh` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
-``nan``.
+``NaN``.
 
 For complex-valued input, :obj:`dpnp.arcsinh` is a complex analytic function that
 has, by convention, the branch cuts `[1j, infj]` and `[`1j, -infj]` and is continuous
@@ -483,7 +483,7 @@ angle `z` whose real part lies in `[-pi/2, pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arctan` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
-``nan``.
+``NaN``.
 
 For complex-valued input, :obj:`dpnp.arctan` is a complex analytic function that
 has, by convention, the branch cuts `[1j, infj]` and `[-1j, -infj]`  and is continuous
@@ -649,7 +649,7 @@ angle `z` whose real part lies in `[-pi/2, pi/2]`.
 
 For real-valued input data types, :obj:`dpnp.arctanh` always returns real output.
 For each value that cannot be expressed as a real number or infinity, it yields
-``nan``.
+``NaN``.
 
 For complex-valued input, :obj:`dpnp.arctanh` is a complex analytic function that
 has, by convention, the branch cuts `[-1, -inf]` and `[1, inf]` and is is continuous

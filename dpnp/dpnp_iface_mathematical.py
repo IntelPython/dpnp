@@ -3495,7 +3495,7 @@ The ``**`` operator can be used as a shorthand for ``power`` on
 >>> a ** b
 array([ 0,  1,  8, 27, 16,  5])
 
-Negative values raised to a non-integral value will result in ``nan``.
+Negative values raised to a non-integral value will result in ``NaN``.
 
 >>> d = dp.array([-1.0, -4.0])
 >>> dp.power(d, 1.5)
