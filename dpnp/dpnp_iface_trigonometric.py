@@ -440,17 +440,18 @@ arcsinh = asinh  # arcsinh is an alias for asinh
 
 
 _ATAN_DOCSTRING = r"""
-Computes inverse tangent for each element `x_i` for input array `x`.
+Computes inverse tangent for each element :math:`x_i` for input array `x`.
 
-The inverse of :obj:`dpnp.tan`, so that if ``y = tan(x)`` then ``x = arctan(y)``.
-Note that :obj:`dpnp.atan` is an alias of :obj:`dpnp.arctan`.
+The inverse of :obj:`dpnp.tan`, so that if :math:`y = tan(x)` then
+:math:`x = atan(y)`. Note that :obj:`dpnp.arctan` is an alias of
+:obj:`dpnp.atan`.
 
-For full documentation refer to :obj:`numpy.arctan`.
+For full documentation refer to :obj:`numpy.atan`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -464,9 +465,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise inverse tangent, in radians
-    and in the closed interval `[-\pi/2, \pi/2]`. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise inverse tangent, in radians and in the
+    closed interval :math:`[-\pi/2, \pi/2]`. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -476,40 +477,42 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
+:obj:`dpnp.atan2` : Element-wise arc tangent of `x1/x2`
+    choosing the quadrant correctly.
 :obj:`dpnp.angle` : Argument of complex values.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
-:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
-:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
-:obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.
+:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.
+:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.
+:obj:`dpnp.atanh` : Inverse hyperbolic tangent, element-wise.
 
 Notes
 -----
-:obj:`dpnp.arctan` is a multivalued function: for each `x` there are infinitely
-many numbers `z` such that ``tan(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
+:obj:`dpnp.atan` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`tan(z) = x`. The convention is to return the
+angle `z` whose the real part lies in the interval :math:`[-\pi/2, \pi/2]`.
 
-For real-valued input data types, :obj:`dpnp.arctan` always returns real output.
-For each value that cannot be expressed as a real number or infinity, it yields
-``NaN``.
+For real-valued floating-point input data types, :obj:`dpnp.atan` always
+returns real output. For each value that cannot be expressed as a real number
+or infinity, it yields ``NaN``.
 
-For complex-valued input, :obj:`dpnp.arctan` is a complex analytic function that
-has, by convention, the branch cuts `[1j, infj]` and `[-1j, -infj]`  and is continuous
-from the left on the former and from the right on the latter.
+For complex floating-point input data types, :obj:`dpnp.atan` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\infty j, -j)` and :math:`(j, \infty j)` and is continuous from the right
+on the former and from the left on the latter.
 
-The inverse tan is also known as :math:`atan` or :math:`tan^{-1}`.
+The inverse tangent is also known as :math:`tan^{-1}`.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.array([0, 1])
->>> np.arctan(x)
+>>> np.atan(x)
 array([0.0, 0.78539816])
 
 """
 
-arctan = DPNPUnaryFunc(
-    "arctan",
+atan = DPNPUnaryFunc(
+    "atan",
     ti._atan_result_type,
     ti._atan,
     _ATAN_DOCSTRING,
@@ -517,32 +520,27 @@ arctan = DPNPUnaryFunc(
     mkl_impl_fn="_atan",
 )
 
-atan = arctan  # atan is an alias for arctan
+arctan = atan  # arctan is an alias for atan
 
 
 _ATAN2_DOCSTRING = """
-Calculates the inverse tangent of the quotient `x1_i/x2_i` for each element
-`x1_i` of the input array `x1` with the respective element `x2_i` of the
-input array `x2`. Each element-wise result is expressed in radians.
+Calculates the inverse tangent of the quotient :math:`x1_i/x2_i` for each
+element :math:`x1_i` of the input array `x1` with the respective element
+:math:`x2_i` of the input array `x2`.
 
-Note that :obj:`dpnp.atan2` is an alias of :obj:`dpnp.arctan2`.
+Note that :obj:`dpnp.arctan2` is an alias of :obj:`dpnp.atan2`.
 This function is not defined for complex-valued arguments; for the so-called
 argument of complex values, use :obj:`dpnp.angle`.
 
-For full documentation refer to :obj:`numpy.arctan2`.
+For full documentation refer to :obj:`numpy.atan2`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a real-valued floating-point
-    data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a real-valued floating-point data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued
-    floating-point data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a real-valued floating-point data
+    type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -556,9 +554,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the inverse tangent of the quotient `x1`/`x2`.
-    The returned array must have a real-valued floating-point data type
-    determined by Type Promotion Rules.
+    An array containing the inverse tangent of the quotient :math:`x1/x2`, in
+    radians. The returned array must have a real-valued floating-point data
+    type determined by Type Promotion Rules.
 
 Limitations
 -----------
@@ -568,35 +566,42 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.tan` : Compute tangent element-wise.
 :obj:`dpnp.angle` : Return the angle of the complex argument.
-:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
-:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
-:obj:`dpnp.arctanh` : Inverse hyperbolic tangent, element-wise.
+:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.
+:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.
+:obj:`dpnp.atanh` : Inverse hyperbolic tangent, element-wise.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
 
 Examples
 --------
 >>> import dpnp as np
 >>> x1 = np.array([1., -1.])
 >>> x2 = np.array([0., 0.])
->>> np.arctan2(x1, x2)
+>>> np.atan2(x1, x2)
 array([1.57079633, -1.57079633])
 
 >>> x1 = np.array([0., 0., np.inf])
 >>> x2 = np.array([+0., -0., np.inf])
->>> np.arctan2(x1, x2)
+>>> np.atan2(x1, x2)
 array([0.0 , 3.14159265, 0.78539816])
 
 >>> x1 = np.array([-1, +1, +1, -1])
 >>> x2 = np.array([-1, -1, +1, +1])
->>> np.arctan2(x1, x2) * 180 / np.pi
+>>> np.atan2(x1, x2) * 180 / np.pi
 array([-135.,  -45.,   45.,  135.])
 
 """
 
-arctan2 = DPNPBinaryFunc(
-    "arctan2",
+atan2 = DPNPBinaryFunc(
+    "atan2",
     ti._atan2_result_type,
     ti._atan2,
     _ATAN2_DOCSTRING,
@@ -604,21 +609,23 @@ arctan2 = DPNPBinaryFunc(
     mkl_impl_fn="_atan2",
 )
 
-atan2 = arctan2  # atan2 is an alias for arctan2
+arctan2 = atan2  # arctan2 is an alias for atan2
 
 
 _ATANH_DOCSTRING = r"""
-Computes hyperbolic inverse tangent for each element `x_i` for input array `x`.
+Computes hyperbolic inverse tangent for each element :math:`x_i` for input
+array `x`.
 
-The inverse of :obj:`dpnp.tanh`, so that if ``y = tanh(x)`` then ``x = arctanh(y)``.
-Note that :obj:`dpnp.atanh` is an alias of :obj:`dpnp.arctanh`.
+The inverse of :obj:`dpnp.tanh`, so that if :math:`y = tanh(x)` then
+:math:`x = atanh(y)`. Note that :obj:`dpnp.arctanh` is an alias of
+:obj:`dpnp.atanh`.
 
-For full documentation refer to :obj:`numpy.arctanh`.
+For full documentation refer to :obj:`numpy.atanh`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -632,9 +639,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise hyperbolic inverse tangent.
-    The data type of the returned array is determined by
-    the Type Promotion Rules.
+    An array containing the element-wise inverse hyperbolic tangent, in
+    radians. The data type of the returned array is determined by the Type
+    Promotion Rules.
 
 Limitations
 -----------
@@ -645,37 +652,38 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
-:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
-:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
-:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.
+:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.
+:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
 
 Notes
 -----
-:obj:`dpnp.arctanh` is a multivalued function: for each `x` there are infinitely
-many numbers `z` such that ``tanh(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[-\pi/2, \pi/2]`.
+:obj:`dpnp.atanh` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`tanh(z) = x`. The convention is to return the
+angle `z` whose the imaginary part lies in the interval :math:`[-\pi/2, \pi/2]`.
 
-For real-valued input data types, :obj:`dpnp.arctanh` always returns real output.
-For each value that cannot be expressed as a real number or infinity, it yields
-``NaN``.
+For real-valued floating-point input data types, :obj:`dpnp.atanh` always
+returns real output. For each value that cannot be expressed as a real number
+or infinity, it yields ``NaN``.
 
-For complex-valued input, :obj:`dpnp.arctanh` is a complex analytic function that
-has, by convention, the branch cuts `[-1, -\infty]` and `[1, \infty]` and is is continuous
-from above on the former and from below on the latter.
+For complex floating-point input data types, :obj:`dpnp.atanh` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on
+the former and from below on the latter.
 
-The inverse hyperbolic tan is also known as :math:`atanh` or :math:`tanh^{-1}`.
+The inverse hyperbolic tangent is also known as :math:`tanh^{-1}`.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.array([0, -0.5])
->>> np.arctanh(x)
+>>> np.atanh(x)
 array([0.0, -0.54930614])
 
 """
 
-arctanh = DPNPUnaryFunc(
-    "arctanh",
+atanh = DPNPUnaryFunc(
+    "atanh",
     ti._atanh_result_type,
     ti._atanh,
     _ATANH_DOCSTRING,
@@ -683,7 +691,7 @@ arctanh = DPNPUnaryFunc(
     mkl_impl_fn="_atanh",
 )
 
-atanh = arctanh  # atanh is an alias for arctanh
+arctanh = atanh  # arctanh is an alias for atanh
 
 
 _CBRT_DOCSTRING = """
