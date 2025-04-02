@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+75.gb84cef7d2b6 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g1e11eb5ebb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=e4eb5fc7"></script>
+      <script src="../../_static/documentation_options.js?v=be81d8fe"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -780,14 +780,14 @@
 
 
 <span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes positive cube-root for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes positive cube-root for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cbrt`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a real-valued data type.</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -802,8 +802,8 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise positive cube-root.</span>
-<span class="s2">    The data type of the returned array is determined by</span>
-<span class="s2">    the Type Promotion Rules.</span>
+<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
+<span class="s2">    Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -835,14 +835,14 @@
 
 
 <span class="n">_COS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes cosine for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes cosine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cos`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -856,8 +856,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise cosine. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise cosine. The data type of the returned</span>
+<span class="s2">    array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -867,7 +867,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
 <span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
@@ -891,15 +891,19 @@
 <span class="p">)</span>
 
 
-<span class="n">_COSH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes hyperbolic cosine for each element `x_i` for input array `x`.</span>
+<span class="n">_COSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes hyperbolic cosine for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">The mathematical definition of the hyperbolic cosine is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{cosh}</span><span class="s2">(x) = \frac{e^x + e^{-x}}</span><span class="si">{2}</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cosh`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -913,8 +917,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise hyperbolic cosine. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise hyperbolic cosine. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -924,7 +928,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.</span>
+<span class="s2">:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
 <span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
@@ -2165,7 +2169,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a real floating-point data type.</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional:</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
