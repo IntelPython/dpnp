@@ -1200,7 +1200,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     # NumPy always returns float64 or complex128, so we upcast all values
     # on the fly in the kernel
-    out_dtype = 'f8'
+    out_dtype = x_dtype
     output = dpnp.empty(x.shape, dtype=out_dtype)
     idx = dpnp.searchsorted(xp, x, side='right')
     left = fp[0] if left is None else dpnp.array(left, fp.dtype)
@@ -1210,15 +1210,15 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     queue = x.sycl_queue
     _manager = dpu.SequentialOrderManager[queue]
-    mem_ev, ht_ev = math_ext.interpolate(
+    mem_ev, ht_ev = math_ext._interpolate(
         x.get_array(),
         idx.get_array(),
         xp.get_array(),
         fp.get_array(),
-        xp.size,
         # left,
         # right,
         output.get_array(),
+        queue,
         depends=_manager.submitted_events,
     )
     _manager.add_event_pair(mem_ev, ht_ev)

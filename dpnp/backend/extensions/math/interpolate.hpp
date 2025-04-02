@@ -25,42 +25,11 @@
 
 #pragma once
 
-#include <sycl/sycl.hpp>
+#include <pybind11/pybind11.h>
 
-#include "dispatch_table.hpp"
+namespace py = pybind11;
 
-namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
-
-namespace math
+namespace dpnp::extensions::math
 {
-namespace interpolate
-{
-struct Interpolate
-{
-    using FnT = sycl::event (*)(sycl::queue &,
-                                const void *,
-                                const void *,
-                                const void *,
-                                const void *,
-                                void *,
-                                const size_t,
-                                const size_t,
-                                const std::vector<sycl::event> &);
-
-    common::DispatchTable2<FnT> dispatch_table;
-
-    Interpolate();
-
-    std::tuple<sycl::event, sycl::event>
-        call(const dpctl::tensor::usm_ndarray &x,
-             const dpctl::tensor::usm_ndarray &idx,
-             const dpctl::tensor::usm_ndarray &xp,
-             const dpctl::tensor::usm_ndarray &fp,
-             const size_t xp_size,
-             dpctl::tensor::usm_ndarray &output,
-             const std::vector<sycl::event> &depends);
-};
-
-void populate_interpolate(py::module_ m);
-} // namespace interpolate
-} // namespace math
+void init_interpolate(py::module_ m);
+} // namespace dpnp::extensions::math

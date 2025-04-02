@@ -33,5 +33,5 @@
 
 PYBIND11_MODULE(_math_impl, m)
 {
-    math::interpolate::populate_interpolate(m);
+    dpnp::extensions::math::init_interpolate(m);
 }

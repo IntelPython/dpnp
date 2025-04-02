@@ -47,6 +47,10 @@ class TestCanCast(unittest.TestCase):
         return ret
 
 
+<<<<<<< HEAD
+=======
+# @pytest.mark.skip("dpnp.common_type() is not implemented yet")
+>>>>>>> e8871f0d797 (Second impl with dispatch_vector[only floating])
 class TestCommonType(unittest.TestCase):
 
     @testing.numpy_cupy_equal()
