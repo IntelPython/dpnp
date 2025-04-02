@@ -702,7 +702,7 @@ For full documentation refer to :obj:`numpy.cbrt`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real floating-point data type.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2075,7 +2075,7 @@ Computes the reciprocal square-root for each element `x_i` for input array `x`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real floating-point data type.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional:
     Output array to populate.
     Array must have the correct shape and the expected data type.

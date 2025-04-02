@@ -800,10 +800,10 @@ For full documentation refer to :obj:`numpy.copysign`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a real floating-point data type.
+    First input array, expected to have a real-valued floating-point data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real floating-point data
+    Second input array, also expected to have a real-valued floating-point data
     type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
     If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
