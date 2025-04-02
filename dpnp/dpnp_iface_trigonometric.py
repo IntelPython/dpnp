@@ -163,7 +163,7 @@ or infinity, it yields ``NaN``.
 
 For complex floating-point input data types, :obj:`dpnp.acos` is a complex
 analytic function that has, by convention, the branch cuts
-:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on
+:math:`(-\infty, -1)` and :math:`(1, \infty)` and is continuous from above on
 the former and from below on the latter.
 
 The inverse cosine is also known as :math:`cos^{-1}`.
@@ -247,7 +247,7 @@ returns real output. For each value that cannot be expressed as a real number
 or infinity, it yields ``NaN``.
 
 For complex floating-point input data types, :obj:`dpnp.acosh` is a complex
-analytic function that has, by convention, the branch cuts :math:`(-\infty, 1]`
+analytic function that has, by convention, the branch cuts :math:`(-\infty, 1)`
 and is continuous from above on it.
 
 The inverse hyperbolic cosine is also known as :math:`cosh^{-1}`.
@@ -331,7 +331,7 @@ or infinity, it yields ``NaN``.
 
 For complex floating-point input data types, :obj:`dpnp.asin` is a complex
 analytic function that has, by convention, the branch cuts
-:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on
+:math:`(-\infty, -1)` and :math:`(1, \infty)` and is continuous from above on
 the former and from below on the latter.
 
 The inverse sine is also known as :math:`sin^{-1}`.
@@ -413,7 +413,7 @@ or infinity, it yields ``NaN``.
 
 For complex floating-point input data types, :obj:`dpnp.asinh` is a complex
 analytic function that has, by convention, the branch cuts
-:math:`(-\inftyj, -j]` and :math:`[j, \inftyj)` and is continuous from the left
+:math:`(-\infty j, -j)` and :math:`(j, \infty j)` and is continuous from the left
 on the former and from the right on the latter.
 
 The inverse hyperbolic sine is also known as :math:`sinh^{-1}`.
