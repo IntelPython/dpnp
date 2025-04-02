@@ -23,6 +23,7 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <complex>
 #include <vector>
 
 #include <pybind11/pybind11.h>
@@ -43,6 +44,21 @@ namespace dpnp::extensions::ufunc
 namespace impl
 {
 
+template <typename T>
+struct value_type_of
+{
+    using type = T;
+};
+
+template <typename T>
+struct value_type_of<std::complex<T>>
+{
+    using type = T;
+};
+
+template <typename T>
+using value_type_of_t = typename value_type_of<T>::type;
+
 typedef sycl::event (*interpolate_fn_ptr_t)(sycl::queue &,
                                             const void *, // x
                                             const void *, // idx
@@ -53,8 +69,34 @@ typedef sycl::event (*interpolate_fn_ptr_t)(sycl::queue &,
                                             std::size_t,  // xp_size
                                             const std::vector<sycl::event> &);
 
-interpolate_fn_ptr_t interpolate_dispatch_table[td_ns::num_types]
-                                               [td_ns::num_types];
+template <typename T>
+sycl::event interpolate_call(sycl::queue &exec_q,
+                             const void *vx,
+                             const void *vidx,
+                             const void *vxp,
+                             const void *vfp,
+                             void *vout,
+                             std::size_t n,
+                             std::size_t xp_size,
+                             const std::vector<sycl::event> &depends)
+{
+    using dpctl::tensor::type_utils::is_complex_v;
+    using TCoord = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
+
+    const TCoord *x = static_cast<const TCoord *>(vx);
+    const std::size_t *idx = static_cast<const std::size_t *>(vidx);
+    const TCoord *xp = static_cast<const TCoord *>(vxp);
+    const T *fp = static_cast<const T *>(vfp);
+    T *out = static_cast<T *>(vout);
+
+    using dpnp::kernels::interpolate::interpolate_impl;
+    sycl::event interpolate_ev = interpolate_impl<TCoord, T>(
+        exec_q, x, idx, xp, fp, out, n, xp_size, depends);
+
+    return interpolate_ev;
+}
+
+interpolate_fn_ptr_t interpolate_dispatch_vector[td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     py_interpolate(const dpctl::tensor::usm_ndarray &x,
@@ -72,7 +114,7 @@ std::pair<sycl::event, sycl::event>
     int xp_type_id = array_types.typenum_to_lookup_id(xp_typenum);
     int fp_type_id = array_types.typenum_to_lookup_id(fp_typenum);
 
-    auto fn = interpolate_dispatch_table[xp_type_id][fp_type_id];
+    auto fn = interpolate_dispatch_vector[fp_type_id];
     if (!fn) {
         throw py::type_error("Unsupported dtype.");
     }
@@ -89,43 +131,54 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(keep, ev);
 }
 
-template <typename fnT, typename TCoord, typename TValue>
+/**
+ * @brief A factory to define pairs of supported types for which
+ * interpolate function is available.
+ *
+ * @tparam T Type of input vector `a` and of result vector `y`.
+ */
+template <typename T>
+struct InterpolateOutputType
+{
+    using value_type = typename std::disjunction<
+        td_ns::TypeMapResultEntry<T, sycl::half>,
+        td_ns::TypeMapResultEntry<T, float>,
+        td_ns::TypeMapResultEntry<T, double>,
+        td_ns::TypeMapResultEntry<T, std::complex<float>>,
+        td_ns::TypeMapResultEntry<T, std::complex<double>>,
+        td_ns::DefaultResultEntry<void>>::result_type;
+};
+
+template <typename fnT, typename T>
 struct InterpolateFactory
 {
     fnT get()
     {
-        if constexpr (std::is_floating_point_v<TCoord> &&
-                      std::is_floating_point_v<TValue>)
+        if constexpr (std::is_same_v<
+                          typename InterpolateOutputType<T>::value_type, void>)
         {
-            return dpnp::kernels::interpolate::interpolate_impl<TCoord, TValue>;
-        }
-        else if constexpr (std::is_floating_point_v<TCoord> &&
-                           (std::is_same_v<TValue, std::complex<float>> ||
-                            std::is_same_v<TValue, std::complex<double>>))
-        {
-            return dpnp::kernels::interpolate::interpolate_complex_impl<TCoord,
-                                                                        TValue>;
+            return nullptr;
         }
         else {
-            return nullptr;
+            return interpolate_call<T>;
         }
     }
 };
 
-void init_interpolate_dispatch_table()
+void init_interpolate_dispatch_vectors()
 {
     using namespace td_ns;
 
-    DispatchTableBuilder<interpolate_fn_ptr_t, InterpolateFactory, num_types>
+    DispatchVectorBuilder<interpolate_fn_ptr_t, InterpolateFactory, num_types>
         dtb_interpolate;
-    dtb_interpolate.populate_dispatch_table(interpolate_dispatch_table);
+    dtb_interpolate.populate_dispatch_vector(interpolate_dispatch_vector);
 }
 
 } // namespace impl
 
 void init_interpolate(py::module_ m)
 {
-    impl::init_interpolate_dispatch_table();
+    impl::init_interpolate_dispatch_vectors();
 
     using impl::py_interpolate;
     m.def("_interpolate", &py_interpolate, "", py::arg("x"), py::arg("idx"),
