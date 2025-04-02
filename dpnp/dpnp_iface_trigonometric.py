@@ -155,7 +155,7 @@ Notes
 -----
 :obj:`dpnp.acos` is a multivalued function: for each `x` there are infinitely
 many numbers `z` such that :math:`cos(z) = x`. The convention is to return the
-angle `z` whose real part lies in :math:`[0, \pi]`.
+angle `z` whose the real part lies in the interval :math:`[0, \pi]`.
 
 For real-valued floating-point input data types, :obj:`dpnp.acos` always
 returns real output. For each value that cannot be expressed as a real number
@@ -163,7 +163,7 @@ or infinity, it yields ``NaN``.
 
 For complex floating-point input data types, :obj:`dpnp.acos` is a complex
 analytic function that has, by convention, the branch cuts
-:math:`[-\infty, -1]` and :math:`[1, \infty]` and is continuous from above on
+:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on
 the former and from below on the latter.
 
 The inverse cosine is also known as :math:`arccos` or :math:`cos^{-1}`.
@@ -190,17 +190,19 @@ arccos = acos  # arccos is an alias for acos
 
 
 _ACOSH_DOCSTRING = r"""
-Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.
+Computes inverse hyperbolic cosine for each element :math:`x_i` for input array
+`x`.
 
-The inverse of :obj:`dpnp.cosh` so that, if ``y = cosh(x)``, then ``x = arccosh(y)``.
-Note that :obj:`dpnp.acosh` is an alias of :obj:`dpnp.arccosh`.
+The inverse of :obj:`dpnp.cosh` so that, if :math:`y = cosh(x)`, then
+:math:`x = acosh(y)`. Note that :obj:`dpnp.arccosh` is an alias of
+:obj:`dpnp.acosh`.
 
-For full documentation refer to :obj:`numpy.arccosh`.
+For full documentation refer to :obj:`numpy.acosh`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -214,9 +216,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise inverse hyperbolic cosine, in
-    radians and in the half-closed interval `[0, \infty)`. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise inverse hyperbolic cosine, in radians
+    and in the half-closed interval :math:`[0, \infty)`. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -235,30 +237,33 @@ See Also
 
 Notes
 -----
-:obj:`dpnp.arccosh` is a multivalued function: for each `x` there are infinitely
-many numbers `z` such that ``cosh(z) = x``. The convention is to return the
-angle `z` whose real part lies in `[0, \infty]`.
+:obj:`dpnp.acosh` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`cosh(z) = x`. The convention is to return the
+angle `z` whose the real part lies in the interval :math:`[0, \infty)` and the
+imaginary part in the interval :math:`[-\pi, \pi]`.
 
-For real-valued input data types, :obj:`dpnp.arccosh` always returns real output.
-For each value that cannot be expressed as a real number or infinity, it yields
-``NaN``.
+For real-valued floating-point input data types, :obj:`dpnp.acosh` always
+returns real output. For each value that cannot be expressed as a real number
+or infinity, it yields ``NaN``.
 
-For complex-valued input, :obj:`dpnp.arccosh` is a complex analytic function that
-has, by convention, the branch cuts `[-\infty, 1]` and is continuous from above.
+For complex floating-point input data types, :obj:`dpnp.acosh` is a complex
+analytic function that has, by convention, the branch cuts :math:`(-\infty, 1]`
+and is continuous from above on it.
 
-The inverse hyperbolic cos is also known as :math:`acosh` or :math:`cosh^{-1}`.
+The inverse hyperbolic cosine is also known as :math:`arccosh` or
+:math:`cosh^{-1}`.
 
 Examples
 --------
 >>> import dpnp as np
 >>> x = np.array([1.0, np.e, 10.0])
->>> np.arccosh(x)
+>>> np.acosh(x)
 array([0.0, 1.65745445, 2.99322285])
 
 """
 
-arccosh = DPNPUnaryFunc(
-    "arccosh",
+acosh = DPNPUnaryFunc(
+    "acosh",
     ti._acosh_result_type,
     ti._acosh,
     _ACOSH_DOCSTRING,
@@ -266,7 +271,7 @@ arccosh = DPNPUnaryFunc(
     mkl_impl_fn="_acosh",
 )
 
-acosh = arccosh  # acosh is an alias for arccosh
+arccosh = acosh  # arccosh is an alias for acosh
 
 
 _ASIN_DOCSTRING = r"""
