@@ -147,9 +147,9 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
-:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
-:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
-:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
+:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.
+:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.
 
 Notes
 -----
@@ -166,7 +166,7 @@ analytic function that has, by convention, the branch cuts
 :math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on
 the former and from below on the latter.
 
-The inverse cosine is also known as :math:`arccos` or :math:`cos^{-1}`.
+The inverse cosine is also known as :math:`cos^{-1}`.
 
 Examples
 --------
@@ -229,11 +229,11 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
-:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.
 :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
-:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
+:obj:`dpnp.atanh` : Hyperbolic inverse tangent, element-wise.
 :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
-:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.
 
 Notes
 -----
@@ -250,8 +250,7 @@ For complex floating-point input data types, :obj:`dpnp.acosh` is a complex
 analytic function that has, by convention, the branch cuts :math:`(-\infty, 1]`
 and is continuous from above on it.
 
-The inverse hyperbolic cosine is also known as :math:`arccosh` or
-:math:`cosh^{-1}`.
+The inverse hyperbolic cosine is also known as :math:`cosh^{-1}`.
 
 Examples
 --------
