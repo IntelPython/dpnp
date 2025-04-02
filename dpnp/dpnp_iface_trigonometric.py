@@ -123,9 +123,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -170,6 +172,7 @@ Examples
 >>> x = np.array([1, -1])
 >>> np.arccos(x)
 array([0.0,  3.14159265])
+
 """
 
 arccos = DPNPUnaryFunc(
@@ -199,9 +202,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -247,6 +252,7 @@ Examples
 >>> x = np.array([1.0, np.e, 10.0])
 >>> np.arccosh(x)
 array([0.0, 1.65745445, 2.99322285])
+
 """
 
 arccosh = DPNPUnaryFunc(
@@ -276,9 +282,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -326,6 +334,7 @@ Examples
 >>> x = np.array([0, 1, -1])
 >>> np.arcsin(x)
 array([0.0, 1.5707963267948966, -1.5707963267948966])
+
 """
 
 arcsin = DPNPUnaryFunc(
@@ -355,9 +364,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -403,6 +414,7 @@ Examples
 >>> x = np.array([np.e, 10.0])
 >>> np.arcsinh(x)
 array([1.72538256, 2.99822295])
+
 """
 
 arcsinh = DPNPUnaryFunc(
@@ -432,9 +444,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -481,6 +495,7 @@ Examples
 >>> x = np.array([0, 1])
 >>> np.arctan(x)
 array([0.0, 0.78539816])
+
 """
 
 arctan = DPNPUnaryFunc(
@@ -521,9 +536,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -565,6 +582,7 @@ array([0.0 , 3.14159265, 0.78539816])
 >>> x2 = np.array([-1, -1, +1, +1])
 >>> np.arctan2(x1, x2) * 180 / np.pi
 array([-135.,  -45.,   45.,  135.])
+
 """
 
 arctan2 = DPNPBinaryFunc(
@@ -594,9 +612,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -641,6 +661,7 @@ Examples
 >>> x = np.array([0, -0.5])
 >>> np.arctanh(x)
 array([0.0, -0.54930614])
+
 """
 
 arctanh = DPNPUnaryFunc(
@@ -667,9 +688,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -695,6 +718,7 @@ Examples
 >>> x = np.array([1, 8, 27])
 >>> np.cbrt(x)
 array([1., 2., 3.])
+
 """
 
 cbrt = DPNPUnaryFunc(
@@ -719,9 +743,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -749,6 +775,7 @@ Examples
 >>> x = np.array([0, np.pi/2, np.pi])
 >>> np.cos(x)
 array([ 1.000000e+00, -4.371139e-08, -1.000000e+00])
+
 """
 
 cos = DPNPUnaryFunc(
@@ -773,9 +800,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -804,6 +833,7 @@ Examples
 >>> x = np.array([0, np.pi/2, np.pi])
 >>> np.cosh(x)
 array([1.0, 2.5091786, 11.591953])
+
 """
 
 cosh = DPNPUnaryFunc(
@@ -831,6 +861,7 @@ def cumlogsumexp(
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
+
         Default: ``None``.
     dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
@@ -847,16 +878,20 @@ def cumlogsumexp(
         If the data type (either specified or resolved) differs from the data
         type of `x`, the input array elements are cast to the specified data
         type before computing the result.
+
         Default: ``None``.
     include_initial : {None, bool}, optional
-        A boolean indicating whether to include the initial value (i.e., the
-        additive identity, zero) as the first value along the provided axis in
-        the output.
+        A boolean indicating whether to include the initial value (negative
+        infinity) as the first value along the provided axis in the output.
+        With ``include_initial=True`` the shape of the output is different than
+        the shape of the input.
+
         Default: ``False``.
     out : {None, dpnp.ndarray, usm_ndarray}, optional
         The array into which the result is written. The data type of `out` must
         match the expected shape and the expected data type of the result or
         (if provided) `dtype`. If ``None`` then a new array is returned.
+
         Default: ``None``.
 
     Returns
@@ -915,9 +950,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -948,6 +985,7 @@ Examples
 >>> x = np.array(180)
 >>> np.deg2rad(x)
 array(3.14159265)
+
 """
 
 deg2rad = DPNPUnaryFunc(
@@ -970,9 +1008,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1006,6 +1046,7 @@ array([  0.,  30.,  60.,  90., 120., 150., 180., 210., 240., 270., 300.,
 >>> r = np.degrees(rad, out)
 >>> np.all(r == out)
 array(True)
+
 """
 
 degrees = DPNPUnaryFunc(
@@ -1028,9 +1069,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1057,6 +1100,7 @@ Examples
 >>> x = np.arange(3.)
 >>> np.exp(x)
 array([1.0, 2.718281828, 7.389056099])
+
 """
 
 exp = DPNPUnaryFunc(
@@ -1081,9 +1125,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1111,6 +1157,7 @@ Examples
 >>> x = np.arange(3.)
 >>> np.exp2(x)
 array([1., 2., 4.])
+
 """
 
 exp2 = DPNPUnaryFunc(
@@ -1137,9 +1184,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1173,6 +1222,7 @@ array(1.00000000005e-10)
 
 >>> np.exp(np.array(1e-10)) - 1
 array(1.000000082740371e-10)
+
 """
 
 expm1 = DPNPUnaryFunc(
@@ -1204,9 +1254,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1241,6 +1293,7 @@ Example showing broadcast of scalar argument:
 array([[ 5.,  5.,  5.],
        [ 5.,  5.,  5.],
        [ 5.,  5.,  5.]])
+
 """
 
 hypot = DPNPBinaryFunc(
@@ -1265,9 +1318,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1296,6 +1351,7 @@ Examples
 >>> x = np.array([1, np.e, np.e**2, 0])
 >>> np.log(x)
 array([  0.,   1.,   2., -inf])
+
 """
 
 log = DPNPUnaryFunc(
@@ -1320,9 +1376,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1353,6 +1411,7 @@ array([-inf, 0.0, 0.30102999566])
 
 >>> np.log10(np.array([1e-15, -3.]))
 array([-15.,  nan])
+
 """
 
 log10 = DPNPUnaryFunc(
@@ -1380,9 +1439,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1416,6 +1477,7 @@ array(1e-99)
 
 >>> np.log(array(1 + 1e-99))
 array(0.0)
+
 """
 
 log1p = DPNPUnaryFunc(
@@ -1440,9 +1502,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1474,6 +1538,7 @@ array([-inf, 0.0, 1.0, 4.0])
 >>> xi = np.array([0+1.j, 1, 2+0.j, 4.j])
 >>> np.log2(xi)
 array([ 0.+2.26618007j,  0.+0.j        ,  1.+0.j        ,  2.+2.26618007j])
+
 """
 
 log2 = DPNPUnaryFunc(
@@ -1511,9 +1576,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1547,6 +1614,7 @@ Examples
 array(-113.87649168)
 >>> np.exp(prob12)
 array(3.5e-50)
+
 """
 
 logaddexp = DPNPBinaryFunc(
@@ -1585,9 +1653,11 @@ x2 : {dpnp.ndarray, usm_ndarray, scalar}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1618,6 +1688,7 @@ Examples
 (array(-166.09640474), array(-164.77447665), array(-164.28904982))
 >>> 2**prob12
 array(3.5e-50)
+
 """
 
 logaddexp2 = DPNPBinaryFunc(
@@ -1641,6 +1712,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
+
         Default: ``None``.
     dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
@@ -1657,6 +1729,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         If the data type (either specified or resolved) differs from the data
         type of `x`, the input array elements are cast to the specified data
         type before computing the result.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
@@ -1668,6 +1741,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         The array into which the result is written. The data type of `out` must
         match the expected shape and the expected data type of the result or
         (if provided) `dtype`. If ``None`` then a new array is returned.
+
         Default: ``None``.
 
     Returns
@@ -1726,9 +1800,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1759,6 +1835,7 @@ Examples
 >>> x = np.array(np.pi / 2)
 >>> np.rad2deg(x)
 array(90.)
+
 """
 
 rad2deg = DPNPUnaryFunc(
@@ -1781,9 +1858,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1818,6 +1897,7 @@ array([0.        , 0.52359878, 1.04719755, 1.57079633, 2.0943951 ,
 >>> ret = np.radians(deg, out)
 >>> ret is out
 True
+
 """
 
 radians = DPNPUnaryFunc(
@@ -1840,9 +1920,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -1868,6 +1950,7 @@ Examples
 >>> x = np.array([1, 2., 3.33])
 >>> np.reciprocal(x)
 array([1.0, 0.5, 0.3003003])
+
 """
 
 reciprocal = DPNPUnaryFunc(
@@ -1891,6 +1974,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
         result is computed over the entire array.
+
         Default: ``None``.
     dtype : {None, str, dtype object}, optional
         Data type of the returned array. If ``None``, the default data type is
@@ -1907,6 +1991,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         If the data type (either specified or resolved) differs from the data
         type of `x`, the input array elements are cast to the specified data
         type before computing the result.
+
         Default: ``None``.
     keepdims : {None, bool}, optional
         If ``True``, the reduced axes (dimensions) are included in the result
@@ -1918,6 +2003,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         The array into which the result is written. The data type of `out` must
         match the expected shape and the expected data type of the result or
         (if provided) `dtype`. If ``None`` then a new array is returned.
+
         Default: ``None``.
 
     Returns
@@ -1970,6 +2056,7 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional:
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is `None`.
@@ -1999,6 +2086,7 @@ Examples
 >>> x = np.array([1, 8, 27])
 >>> np.rsqrt(x)
 array([1.        , 0.35355338, 0.19245009])
+
 """
 
 rsqrt = DPNPUnaryFunc(
@@ -2021,9 +2109,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2051,6 +2141,7 @@ Examples
 >>> x = np.array([0, np.pi/2, np.pi])
 >>> np.sin(x)
 array([ 0.000000e+00,  1.000000e+00, -8.742278e-08])
+
 """
 
 sin = DPNPUnaryFunc(
@@ -2075,9 +2166,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2104,6 +2197,7 @@ Examples
 >>> x = np.array([0, np.pi/2, np.pi])
 >>> np.sinh(x)
 array([0.0, 2.3012989, 11.548739])
+
 """
 
 sinh = DPNPUnaryFunc(
@@ -2128,9 +2222,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2160,6 +2256,7 @@ array([1., 2., 3.])
 >>> x2 = np.array([4, -1, np.inf])
 >>> np.sqrt(x2)
 array([ 2., nan, inf])
+
 """
 
 sqrt = DPNPUnaryFunc(
@@ -2184,9 +2281,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2215,6 +2314,7 @@ Examples
 >>> x = np.array([-1j, 1])
 >>> np.square(x)
 array([-1.+0.j,  1.+0.j])
+
 """
 
 square = DPNPUnaryFunc(
@@ -2239,9 +2339,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2269,6 +2371,7 @@ Examples
 >>> x = np.array([-np.pi, np.pi/2, np.pi])
 >>> np.tan(x)
 array([1.22460635e-16, 1.63317787e+16, -1.22460635e-16])
+
 """
 
 tan = DPNPUnaryFunc(
@@ -2293,9 +2396,11 @@ x : {dpnp.ndarray, usm_ndarray}
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
+
     Default: ``None``.
 order : {None, "C", "F", "A", "K"}, optional
     Memory layout of the newly output array, if parameter `out` is ``None``.
+
     Default: ``"K"``.
 
 Returns
@@ -2323,6 +2428,7 @@ Examples
 >>> x = np.array([0, -np.pi, np.pi/2, np.pi])
 >>> np.tanh(x)
 array([0.0, -0.996272, 0.917152, 0.996272])
+
 """
 
 tanh = DPNPUnaryFunc(
@@ -2359,6 +2465,7 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
         alias for ``period / 2``. Values below ``period / 2`` are treated as if
         they were ``period / 2``. To have an effect different from the default,
         `discont` should be larger than ``period / 2``.
+
         Default: ``None``.
     axis : int, optional
         Axis along which unwrap will operate, default is the last axis.

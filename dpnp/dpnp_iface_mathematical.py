@@ -1251,10 +1251,11 @@ def cumulative_prod(
         be cast if necessary.
 
         Default: ``None``.
-    include_initial : bool, optional
-        Boolean indicating whether to include the initial value (ones) as
-        the first value in the output. With ``include_initial=True``
-        the shape of the output is different than the shape of the input.
+    include_initial : {None, bool}, optional
+        A boolean indicating whether to include the initial value (one) as
+        the first value along the provided axis in the output. With
+        ``include_initial=True`` the shape of the output is different than
+        the shape of the input.
 
         Default: ``False``.
 
@@ -1340,10 +1341,11 @@ def cumulative_sum(
         be cast if necessary.
 
         Default: ``None``.
-    include_initial : bool, optional
-        Boolean indicating whether to include the initial value (ones) as
-        the first value in the output. With ``include_initial=True``
-        the shape of the output is different than the shape of the input.
+    include_initial : {None, bool}, optional
+        A boolean indicating whether to include the initial value (zero) as
+        the first value along the provided axis in the output. With
+        ``include_initial=True`` the shape of the output is different than
+        the shape of the input.
 
         Default: ``False``.
 
