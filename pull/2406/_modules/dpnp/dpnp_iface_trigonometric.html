@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+66.g1fc43fd6a7e documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+69.g21492262c40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=eb64e01a"></script>
+      <script src="../../_static/documentation_options.js?v=0c2fa37d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -220,7 +220,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise inverse cosine, in radians and in the</span>
-<span class="s2">    closed interval :math:`[0, pi]`. The data type of the returned array is</span>
+<span class="s2">    closed interval :math:`[0, \pi]`. The data type of the returned array is</span>
 <span class="s2">    determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
@@ -240,7 +240,7 @@
 <span class="s2">-----</span>
 <span class="s2">:obj:`dpnp.acos` is a multivalued function: for each `x` there are infinitely</span>
 <span class="s2">many numbers `z` such that :math:`cos(z) = x`. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in :math:`[0, pi]`.</span>
+<span class="s2">angle `z` whose real part lies in :math:`[0, \pi]`.</span>
 
 <span class="s2">For real-valued floating-point input data types, :obj:`dpnp.acos` always</span>
 <span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
@@ -326,7 +326,7 @@
 
 <span class="s2">For real-valued input data types, :obj:`dpnp.arccosh` always returns real output.</span>
 <span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``nan``.</span>
+<span class="s2">``NaN``.</span>
 
 <span class="s2">For complex-valued input, :obj:`dpnp.arccosh` is a complex analytic function that</span>
 <span class="s2">has, by convention, the branch cuts `[-inf, 1]` and is continuous from above.</span>
@@ -380,7 +380,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise inverse sine, in radians</span>
-<span class="s2">    and in the closed interval `[-pi/2, pi/2]`. The data type</span>
+<span class="s2">    and in the closed interval `[-\pi/2, \pi/2]`. The data type</span>
 <span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
@@ -403,11 +403,11 @@
 <span class="s2">-----</span>
 <span class="s2">:obj:`dpnp.arcsin` is a multivalued function: for each `x` there are infinitely</span>
 <span class="s2">many numbers `z` such that ``sin(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+<span class="s2">angle `z` whose real part lies in `[-\pi/2, \pi/2]`.</span>
 
 <span class="s2">For real-valued input data types, :obj:`dpnp.arcsin` always returns real output.</span>
 <span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``nan``.</span>
+<span class="s2">``NaN``.</span>
 
 <span class="s2">For complex-valued input, :obj:`dpnp.arcsin` is a complex analytic function that</span>
 <span class="s2">has, by convention, the branch cuts `[-inf, -1]` and `[1, inf]` and is continuous</span>
@@ -482,11 +482,11 @@
 <span class="s2">-----</span>
 <span class="s2">:obj:`dpnp.arcsinh` is a multivalued function: for each `x` there are infinitely</span>
 <span class="s2">many numbers `z` such that ``sin(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+<span class="s2">angle `z` whose real part lies in `[-\pi/2, \pi/2]`.</span>
 
 <span class="s2">For real-valued input data types, :obj:`dpnp.arcsinh` always returns real output.</span>
 <span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``nan``.</span>
+<span class="s2">``NaN``.</span>
 
 <span class="s2">For complex-valued input, :obj:`dpnp.arcsinh` is a complex analytic function that</span>
 <span class="s2">has, by convention, the branch cuts `[1j, infj]` and `[`1j, -infj]` and is continuous</span>
@@ -542,7 +542,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise inverse tangent, in radians</span>
-<span class="s2">    and in the closed interval `[-pi/2, pi/2]`. The data type</span>
+<span class="s2">    and in the closed interval `[-\pi/2, \pi/2]`. The data type</span>
 <span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
@@ -564,11 +564,11 @@
 <span class="s2">-----</span>
 <span class="s2">:obj:`dpnp.arctan` is a multivalued function: for each `x` there are infinitely</span>
 <span class="s2">many numbers `z` such that ``tan(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+<span class="s2">angle `z` whose real part lies in `[-\pi/2, \pi/2]`.</span>
 
 <span class="s2">For real-valued input data types, :obj:`dpnp.arctan` always returns real output.</span>
 <span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``nan``.</span>
+<span class="s2">``NaN``.</span>
 
 <span class="s2">For complex-valued input, :obj:`dpnp.arctan` is a complex analytic function that</span>
 <span class="s2">has, by convention, the branch cuts `[1j, infj]` and `[-1j, -infj]`  and is continuous</span>
@@ -730,11 +730,11 @@
 <span class="s2">-----</span>
 <span class="s2">:obj:`dpnp.arctanh` is a multivalued function: for each `x` there are infinitely</span>
 <span class="s2">many numbers `z` such that ``tanh(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[-pi/2, pi/2]`.</span>
+<span class="s2">angle `z` whose real part lies in `[-\pi/2, \pi/2]`.</span>
 
 <span class="s2">For real-valued input data types, :obj:`dpnp.arctanh` always returns real output.</span>
 <span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``nan``.</span>
+<span class="s2">``NaN``.</span>
 
 <span class="s2">For complex-valued input, :obj:`dpnp.arctanh` is a complex analytic function that</span>
 <span class="s2">has, by convention, the branch cuts `[-1, -inf]` and `[1, inf]` and is is continuous</span>

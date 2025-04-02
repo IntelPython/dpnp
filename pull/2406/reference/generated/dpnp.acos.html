@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.acos &mdash; Data Parallel Extension for NumPy 0.18.0dev0+66.g1fc43fd6a7e documentation</title>
+  <title>dpnp.acos &mdash; Data Parallel Extension for NumPy 0.18.0dev0+69.g21492262c40 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=eb64e01a"></script>
+      <script src="../../_static/documentation_options.js?v=0c2fa37d"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -132,7 +132,7 @@ Array must have the correct shape and the expected data type.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>out</strong> -- An array containing the element-wise inverse cosine, in radians and in the
-closed interval <span class="math notranslate nohighlight">\([0, pi]\)</span>. The data type of the returned array is
+closed interval <span class="math notranslate nohighlight">\([0, \pi]\)</span>. The data type of the returned array is
 determined by the Type Promotion Rules.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -159,7 +159,7 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 <p class="rubric">Notes</p>
 <p><a class="reference internal" href="#dpnp.acos" title="dpnp.acos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.acos</span></code></a> is a multivalued function: for each <cite>x</cite> there are infinitely
 many numbers <cite>z</cite> such that <span class="math notranslate nohighlight">\(cos(z) = x\)</span>. The convention is to return the
-angle <cite>z</cite> whose real part lies in <span class="math notranslate nohighlight">\([0, pi]\)</span>.</p>
+angle <cite>z</cite> whose real part lies in <span class="math notranslate nohighlight">\([0, \pi]\)</span>.</p>
 <p>For real-valued floating-point input data types, <a class="reference internal" href="#dpnp.acos" title="dpnp.acos"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.acos</span></code></a> always
 returns real output. For each value that cannot be expressed as a real number
 or infinity, it yields <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
