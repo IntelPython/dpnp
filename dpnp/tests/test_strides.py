@@ -13,6 +13,7 @@ from .helper import (
     get_complex_dtypes,
     get_float_complex_dtypes,
     get_integer_dtypes,
+    get_integer_float_dtypes,
     numpy_version,
 )
 
@@ -90,9 +91,7 @@ def test_1arg_support_complex(func, dtype, stride):
         "unwrap",
     ],
 )
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_1arg(func, dtype, stride):
     x = generate_random_numpy_array(10, dtype=dtype)
@@ -112,9 +111,7 @@ def test_1arg(func, dtype, stride):
 
 
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_rsqrt(dtype, stride):
     x = generate_random_numpy_array(10, dtype=dtype)
@@ -125,9 +122,7 @@ def test_rsqrt(dtype, stride):
     assert_dtype_allclose(result, expected)
 
 
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_logsumexp(dtype, stride):
     x = generate_random_numpy_array(10, dtype=dtype)
@@ -141,9 +136,7 @@ def test_logsumexp(dtype, stride):
     assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_cumlogsumexp(dtype, stride):
     x = generate_random_numpy_array(10, dtype=dtype)
@@ -157,9 +150,7 @@ def test_cumlogsumexp(dtype, stride):
     assert_dtype_allclose(result, expected, check_only_type_kind=flag)
 
 
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("stride", [2, -1, -3])
 def test_reduce_hypot(dtype, stride):
     x = generate_random_numpy_array(10, dtype=dtype)
@@ -175,12 +166,8 @@ def test_reduce_hypot(dtype, stride):
 
 @pytest.mark.parametrize(
     "dtype",
-    get_all_dtypes(
-        no_none=True,
-        no_bool=True,
-        no_complex=True,
-        no_unsigned=True,
-        xfail_dtypes=[dpnp.int8, dpnp.int16],
+    get_integer_float_dtypes(
+        no_unsigned=True, xfail_dtypes=[dpnp.int8, dpnp.int16]
     ),
 )
 def test_erf(dtype):
@@ -235,9 +222,7 @@ def test_angle(dtype, stride):
         "subtract",
     ],
 )
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.usefixtures("suppress_divide_invalid_numpy_warnings")
 def test_2args(func, dtype):
     # Integers to negative integer powers are not allowed
@@ -269,9 +254,7 @@ def test_bitwise(func, dtype):
     assert_array_equal(result, expected, strict=True)
 
 
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 def test_copysign(dtype):
     a = generate_random_numpy_array((3, 3), dtype=dtype)
     ia = dpnp.array(a)
@@ -283,9 +266,7 @@ def test_copysign(dtype):
 
 
 @pytest.mark.parametrize("func", ["fmod", "true_divide", "remainder"])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_complex=True))
 def test_division(func, dtype):
     a = generate_random_numpy_array((3, 3), dtype=dtype)
     ia = dpnp.array(a)
@@ -298,9 +279,7 @@ def test_division(func, dtype):
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_2args_out(func, dtype):
     shape = (5, 3, 2)
     out = numpy.empty(shape, dtype=dtype)[::3]
@@ -319,9 +298,7 @@ def test_2args_out(func, dtype):
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_2args_in_out(func, dtype):
     sh = (3, 4, 2)
     out = numpy.empty(sh, dtype=dtype)[::2]
@@ -341,9 +318,7 @@ def test_2args_in_out(func, dtype):
 
 
 @pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 @pytest.mark.skip("dpctl doesn't support type mismatch of out array")
 def test_2args_in_out_diff_out_dtype(func, dtype):
     sh = (3, 3, 2)
@@ -366,9 +341,7 @@ def test_2args_in_out_diff_out_dtype(func, dtype):
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_2args_in_overlap(func, dtype):
     size = 5
     # Integers to negative integer powers are not allowed
@@ -386,9 +359,7 @@ def test_2args_in_overlap(func, dtype):
 
 @pytest.mark.usefixtures("suppress_invalid_numpy_warnings")
 @pytest.mark.parametrize("func", ["add", "multiply", "power", "subtract"])
-@pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
-)
+@pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True, no_bool=True))
 def test_2args_in_out_overlap(func, dtype):
     a = generate_random_numpy_array((4, 3, 2), dtype=dtype)
     b = numpy.full(a[::2].shape, fill_value=0.7, dtype=dtype)

@@ -13,6 +13,7 @@ import dpnp
 
 from .helper import (
     assert_dtype_allclose,
+    factor_to_tol,
     generate_random_numpy_array,
     get_all_dtypes,
     get_complex_dtypes,
@@ -127,6 +128,187 @@ class TestAverage:
             dpnp.average(a, axis=0, weights=w)
 
 
+class TestConvolve:
+    @staticmethod
+    def _get_kwargs(mode=None, method=None):
+        dpnp_kwargs = {}
+        numpy_kwargs = {}
+        if mode is not None:
+            dpnp_kwargs["mode"] = mode
+            numpy_kwargs["mode"] = mode
+        if method is not None:
+            dpnp_kwargs["method"] = method
+        return dpnp_kwargs, numpy_kwargs
+
+    @pytest.mark.parametrize(
+        "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
+    )
+    @pytest.mark.parametrize("mode", [None, "full", "valid", "same"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
+    @pytest.mark.parametrize("method", [None, "auto", "direct", "fft"])
+    def test_convolve(self, a, v, mode, dtype, method):
+        an = numpy.array(a, dtype=dtype)
+        vn = numpy.array(v, dtype=dtype)
+        ad = dpnp.array(an)
+        vd = dpnp.array(vn)
+
+        dpnp_kwargs, numpy_kwargs = self._get_kwargs(mode, method)
+
+        expected = numpy.convolve(an, vn, **numpy_kwargs)
+        result = dpnp.convolve(ad, vd, **dpnp_kwargs)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("a_size", [1, 100, 10000])
+    @pytest.mark.parametrize("v_size", [1, 100, 10000])
+    @pytest.mark.parametrize("mode", ["full", "valid", "same"])
+    @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("method", ["auto", "direct", "fft"])
+    def test_convolve_random(self, a_size, v_size, mode, dtype, method):
+        if dtype in [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16]:
+            pytest.skip("avoid overflow.")
+        an = generate_random_numpy_array(
+            a_size, dtype, low=-3, high=3, probability=0.9, seed_value=0
+        )
+        vn = generate_random_numpy_array(
+            v_size, dtype, low=-3, high=3, probability=0.9, seed_value=1
+        )
+
+        ad = dpnp.array(an)
+        vd = dpnp.array(vn)
+
+        dpnp_kwargs, numpy_kwargs = self._get_kwargs(mode, method)
+
+        result = dpnp.convolve(ad, vd, **dpnp_kwargs)
+        expected = numpy.convolve(an, vn, **numpy_kwargs)
+
+        if method != "fft" and (
+            dpnp.issubdtype(dtype, dpnp.integer) or dtype == dpnp.bool
+        ):
+            # For 'direct' and 'auto' methods, we expect exact results for integer types
+            assert_array_equal(result, expected)
+        else:
+            if method == "direct":
+                # For 'direct' method we can use standard validation
+                # acceptable error depends on the kernel size
+                # while error grows linearly with the kernel size,
+                # this empirically found formula provides a good balance
+                # the resulting factor is 40 for kernel size = 1,
+                # 400 for kernel size = 100 and 4000 for kernel size = 10000
+                factor = int(40 * (min(a_size, v_size) ** 0.5))
+                assert_dtype_allclose(result, expected, factor=factor)
+            else:
+                rdtype = result.dtype
+                if dpnp.issubdtype(rdtype, dpnp.integer):
+                    # 'fft' do its calculations in float
+                    # and 'auto' could use fft
+                    # also assert_dtype_allclose for integer types is
+                    # always check for exact match
+                    rdtype = dpnp.default_float_type(ad.device)
+
+                result = result.astype(rdtype)
+
+                if rdtype == dpnp.bool:
+                    result = result.astype(dpnp.int32)
+                    rdtype = result.dtype
+
+                expected = expected.astype(rdtype)
+
+                factor = 1000
+                rtol = atol = factor_to_tol(rdtype, factor)
+                invalid = numpy.logical_not(
+                    numpy.isclose(
+                        result.asnumpy(), expected, rtol=rtol, atol=atol
+                    )
+                )
+
+                # When using the 'fft' method, we might encounter outliers.
+                # This usually happens when the resulting array contains values close to zero.
+                # For these outliers, the relative error can be significant.
+                # We can tolerate a few such outliers.
+                # max_outliers = 10 if expected.size > 1 else 0
+                max_outliers = 10 if expected.size > 1 else 0
+                if invalid.sum() > max_outliers:
+                    # we already failed check,
+                    # call assert_dtype_allclose just to report error nicely
+                    assert_dtype_allclose(result, expected, factor=factor)
+
+    def test_convolve_mode_error(self):
+        a = dpnp.arange(5)
+        v = dpnp.arange(3)
+
+        # invalid mode
+        with pytest.raises(ValueError):
+            dpnp.convolve(a, v, mode="unknown")
+
+    @pytest.mark.parametrize("a, v", [([], [1]), ([1], []), ([], [])])
+    def test_convolve_empty(self, a, v):
+        a = dpnp.asarray(a)
+        v = dpnp.asarray(v)
+
+        with pytest.raises(ValueError):
+            dpnp.convolve(a, v)
+
+    @pytest.mark.parametrize("a, v", [([1], 2), (3, [4]), (5, 6)])
+    def test_convolve_scalar(self, a, v):
+        an = numpy.asarray(a, dtype=numpy.float32)
+        vn = numpy.asarray(v, dtype=numpy.float32)
+
+        ad = dpnp.asarray(a, dtype=numpy.float32)
+        vd = dpnp.asarray(v, dtype=numpy.float32)
+
+        expected = numpy.convolve(an, vn)
+        result = dpnp.convolve(ad, vd)
+
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "a, v",
+        [
+            ([[1, 2], [2, 3]], [1]),
+            ([1], [[1, 2], [2, 3]]),
+            ([[1, 2], [2, 3]], [[1, 2], [2, 3]]),
+        ],
+    )
+    def test_convolve_shape_error(self, a, v):
+        a = dpnp.asarray(a)
+        v = dpnp.asarray(v)
+
+        with pytest.raises(ValueError):
+            dpnp.convolve(a, v)
+
+    @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
+    def test_convolve_different_sizes(self, size):
+        a = generate_random_numpy_array(
+            size, dtype=numpy.float32, low=0, high=1, seed_value=0
+        )
+        v = generate_random_numpy_array(
+            size // 2, dtype=numpy.float32, low=0, high=1, seed_value=1
+        )
+
+        ad = dpnp.array(a)
+        vd = dpnp.array(v)
+
+        expected = numpy.convolve(a, v)
+        result = dpnp.convolve(ad, vd, method="direct")
+
+        assert_dtype_allclose(result, expected, factor=20)
+
+    def test_convolve_another_sycl_queue(self):
+        a = dpnp.arange(5, sycl_queue=dpctl.SyclQueue())
+        v = dpnp.arange(3, sycl_queue=dpctl.SyclQueue())
+
+        with pytest.raises(ValueError):
+            dpnp.convolve(a, v)
+
+    def test_convolve_unkown_method(self):
+        a = dpnp.arange(5)
+        v = dpnp.arange(3)
+
+        with pytest.raises(ValueError):
+            dpnp.convolve(a, v, method="unknown")
+
+
 class TestCorrcoef:
     @pytest.mark.usefixtures(
         "suppress_divide_invalid_numpy_warnings",
@@ -194,9 +376,6 @@ class TestCorrelate:
             dpnp_kwargs["method"] = method
         return dpnp_kwargs, numpy_kwargs
 
-    def setup_method(self):
-        numpy.random.seed(0)
-
     @pytest.mark.parametrize(
         "a, v", [([1], [1, 2, 3]), ([1, 2, 3], [1]), ([1, 2, 3], [1, 2])]
     )
@@ -222,13 +401,13 @@ class TestCorrelate:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize("method", ["auto", "direct", "fft"])
     def test_correlate_random(self, a_size, v_size, mode, dtype, method):
-        if dtype in [numpy.int8, numpy.uint8]:
+        if dtype in [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16]:
             pytest.skip("avoid overflow.")
         an = generate_random_numpy_array(
-            a_size, dtype, low=-3, high=3, probability=0.9
+            a_size, dtype, low=-3, high=3, probability=0.9, seed_value=0
         )
         vn = generate_random_numpy_array(
-            v_size, dtype, low=-3, high=3, probability=0.9
+            v_size, dtype, low=-3, high=3, probability=0.9, seed_value=1
         )
 
         ad = dpnp.array(an)
@@ -239,17 +418,12 @@ class TestCorrelate:
         result = dpnp.correlate(ad, vd, **dpnp_kwargs)
         expected = numpy.correlate(an, vn, **numpy_kwargs)
 
-        rdtype = result.dtype
-        if dpnp.issubdtype(rdtype, dpnp.integer):
-            rdtype = dpnp.default_float_type(ad.device)
-
         if method != "fft" and (
             dpnp.issubdtype(dtype, dpnp.integer) or dtype == dpnp.bool
         ):
             # For 'direct' and 'auto' methods, we expect exact results for integer types
             assert_array_equal(result, expected)
         else:
-            result = result.astype(rdtype)
             if method == "direct":
                 expected = numpy.correlate(an, vn, **numpy_kwargs)
                 # For 'direct' method we can use standard validation
@@ -261,28 +435,40 @@ class TestCorrelate:
                 factor = int(40 * (min(a_size, v_size) ** 0.5))
                 assert_dtype_allclose(result, expected, factor=factor)
             else:
-                rtol = 1e-3
-                atol = 1e-3
+                rdtype = result.dtype
+                if dpnp.issubdtype(rdtype, dpnp.integer):
+                    # 'fft' do its calculations in float
+                    # and 'auto' could use fft
+                    # also assert_dtype_allclose for integer types is
+                    # always check for exact match
+                    rdtype = dpnp.default_float_type(ad.device)
 
-                if rdtype == dpnp.float64 or rdtype == dpnp.complex128:
-                    rtol = 1e-6
-                    atol = 1e-6
-                elif rdtype == dpnp.bool:
+                result = result.astype(rdtype)
+
+                if rdtype == dpnp.bool:
                     result = result.astype(dpnp.int32)
                     rdtype = result.dtype
 
                 expected = expected.astype(rdtype)
 
-                diff = numpy.abs(result.asnumpy() - expected)
-                invalid = diff > atol + rtol * numpy.abs(expected)
+                factor = 1000
+                rtol = atol = factor_to_tol(rdtype, factor)
+                invalid = numpy.logical_not(
+                    numpy.isclose(
+                        result.asnumpy(), expected, rtol=rtol, atol=atol
+                    )
+                )
 
                 # When using the 'fft' method, we might encounter outliers.
                 # This usually happens when the resulting array contains values close to zero.
                 # For these outliers, the relative error can be significant.
                 # We can tolerate a few such outliers.
+                # max_outliers = 10 if expected.size > 1 else 0
                 max_outliers = 10 if expected.size > 1 else 0
                 if invalid.sum() > max_outliers:
-                    assert_dtype_allclose(result, expected, factor=1000)
+                    # we already failed check,
+                    # call assert_dtype_allclose just to report error nicely
+                    assert_dtype_allclose(result, expected, factor=factor)
 
     def test_correlate_mode_error(self):
         a = dpnp.arange(5)
@@ -317,8 +503,12 @@ class TestCorrelate:
 
     @pytest.mark.parametrize("size", [2, 10**1, 10**2, 10**3, 10**4, 10**5])
     def test_correlate_different_sizes(self, size):
-        a = numpy.random.rand(size).astype(numpy.float32)
-        v = numpy.random.rand(size // 2).astype(numpy.float32)
+        a = generate_random_numpy_array(
+            size, dtype=numpy.float32, low=0, high=1, seed_value=0
+        )
+        v = generate_random_numpy_array(
+            size // 2, dtype=numpy.float32, low=0, high=1, seed_value=1
+        )
 
         ad = dpnp.array(a)
         vd = dpnp.array(v)
