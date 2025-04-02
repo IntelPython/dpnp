@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+70.g5c34cf15ade documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+71.g0d2b25ef5f3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c4ad4096"></script>
+      <script src="../../_static/documentation_options.js?v=6221be80"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -240,7 +240,7 @@
 <span class="s2">-----</span>
 <span class="s2">:obj:`dpnp.acos` is a multivalued function: for each `x` there are infinitely</span>
 <span class="s2">many numbers `z` such that :math:`cos(z) = x`. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in :math:`[0, \pi]`.</span>
+<span class="s2">angle `z` whose the real part lies in the interval :math:`[0, \pi]`.</span>
 
 <span class="s2">For real-valued floating-point input data types, :obj:`dpnp.acos` always</span>
 <span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
@@ -248,7 +248,7 @@
 
 <span class="s2">For complex floating-point input data types, :obj:`dpnp.acos` is a complex</span>
 <span class="s2">analytic function that has, by convention, the branch cuts</span>
-<span class="s2">:math:`[-\infty, -1]` and :math:`[1, \infty]` and is continuous from above on</span>
+<span class="s2">:math:`(-\infty, -1]` and :math:`[1, \infty)` and is continuous from above on</span>
 <span class="s2">the former and from below on the latter.</span>
 
 <span class="s2">The inverse cosine is also known as :math:`arccos` or :math:`cos^{-1}`.</span>
@@ -275,17 +275,19 @@
 
 
 <span class="n">_ACOSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes inverse hyperbolic cosine for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes inverse hyperbolic cosine for each element :math:`x_i` for input array</span>
+<span class="s2">`x`.</span>
 
-<span class="s2">The inverse of :obj:`dpnp.cosh` so that, if ``y = cosh(x)``, then ``x = arccosh(y)``.</span>
-<span class="s2">Note that :obj:`dpnp.acosh` is an alias of :obj:`dpnp.arccosh`.</span>
+<span class="s2">The inverse of :obj:`dpnp.cosh` so that, if :math:`y = cosh(x)`, then</span>
+<span class="s2">:math:`x = acosh(y)`. Note that :obj:`dpnp.arccosh` is an alias of</span>
+<span class="s2">:obj:`dpnp.acosh`.</span>
 
-<span class="s2">For full documentation refer to :obj:`numpy.arccosh`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.acosh`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -299,9 +301,9 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise inverse hyperbolic cosine, in</span>
-<span class="s2">    radians and in the half-closed interval `[0, \infty)`. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise inverse hyperbolic cosine, in radians</span>
+<span class="s2">    and in the half-closed interval :math:`[0, \infty)`. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -320,30 +322,33 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">:obj:`dpnp.arccosh` is a multivalued function: for each `x` there are infinitely</span>
-<span class="s2">many numbers `z` such that ``cosh(z) = x``. The convention is to return the</span>
-<span class="s2">angle `z` whose real part lies in `[0, \infty]`.</span>
+<span class="s2">:obj:`dpnp.acosh` is a multivalued function: for each `x` there are infinitely</span>
+<span class="s2">many numbers `z` such that :math:`cosh(z) = x`. The convention is to return the</span>
+<span class="s2">angle `z` whose the real part lies in the interval :math:`[0, \infty)` and the</span>
+<span class="s2">imaginary part in the interval :math:`[-\pi, \pi]`.</span>
 
-<span class="s2">For real-valued input data types, :obj:`dpnp.arccosh` always returns real output.</span>
-<span class="s2">For each value that cannot be expressed as a real number or infinity, it yields</span>
-<span class="s2">``NaN``.</span>
+<span class="s2">For real-valued floating-point input data types, :obj:`dpnp.acosh` always</span>
+<span class="s2">returns real output. For each value that cannot be expressed as a real number</span>
+<span class="s2">or infinity, it yields ``NaN``.</span>
 
-<span class="s2">For complex-valued input, :obj:`dpnp.arccosh` is a complex analytic function that</span>
-<span class="s2">has, by convention, the branch cuts `[-\infty, 1]` and is continuous from above.</span>
+<span class="s2">For complex floating-point input data types, :obj:`dpnp.acosh` is a complex</span>
+<span class="s2">analytic function that has, by convention, the branch cuts :math:`(-\infty, 1]`</span>
+<span class="s2">and is continuous from above on it.</span>
 
-<span class="s2">The inverse hyperbolic cos is also known as :math:`acosh` or :math:`cosh^{-1}`.</span>
+<span class="s2">The inverse hyperbolic cosine is also known as :math:`arccosh` or</span>
+<span class="s2">:math:`cosh^{-1}`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
 <span class="s2">&gt;&gt;&gt; x = np.array([1.0, np.e, 10.0])</span>
-<span class="s2">&gt;&gt;&gt; np.arccosh(x)</span>
+<span class="s2">&gt;&gt;&gt; np.acosh(x)</span>
 <span class="s2">array([0.0, 1.65745445, 2.99322285])</span>
 
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">arccosh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;arccosh&quot;</span><span class="p">,</span>
+<span class="n">acosh</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+    <span class="s2">&quot;acosh&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_acosh</span><span class="p">,</span>
     <span class="n">_ACOSH_DOCSTRING</span><span class="p">,</span>
@@ -351,7 +356,7 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_acosh&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">acosh</span> <span class="o">=</span> <span class="n">arccosh</span>  <span class="c1"># acosh is an alias for arccosh</span>
+<span class="n">arccosh</span> <span class="o">=</span> <span class="n">acosh</span>  <span class="c1"># arccosh is an alias for acosh</span>
 
 
 <span class="n">_ASIN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>

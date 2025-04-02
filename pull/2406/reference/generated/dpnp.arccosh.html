@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.arccosh &mdash; Data Parallel Extension for NumPy 0.18.0dev0+70.g5c34cf15ade documentation</title>
+  <title>dpnp.arccosh &mdash; Data Parallel Extension for NumPy 0.18.0dev0+71.g0d2b25ef5f3 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c4ad4096"></script>
+      <script src="../../_static/documentation_options.js?v=6221be80"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -112,14 +112,16 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.arccosh">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">arccosh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.arccosh" title="Link to this definition"></a></dt>
-<dd><p>Computes inverse hyperbolic cosine for each element <cite>x_i</cite> for input array <cite>x</cite>.</p>
-<p>The inverse of <a class="reference internal" href="dpnp.cosh.html#dpnp.cosh" title="dpnp.cosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cosh</span></code></a> so that, if <code class="docutils literal notranslate"><span class="pre">y</span> <span class="pre">=</span> <span class="pre">cosh(x)</span></code>, then <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">=</span> <span class="pre">arccosh(y)</span></code>.
-Note that <a class="reference internal" href="dpnp.acosh.html#dpnp.acosh" title="dpnp.acosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.acosh</span></code></a> is an alias of <a class="reference internal" href="#dpnp.arccosh" title="dpnp.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arccosh</span></code></a>.</p>
-<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.arccosh.html#numpy.arccosh" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.arccosh</span></code></a>.</p>
+<dd><p>Computes inverse hyperbolic cosine for each element <span class="math notranslate nohighlight">\(x_i\)</span> for input array
+<cite>x</cite>.</p>
+<p>The inverse of <a class="reference internal" href="dpnp.cosh.html#dpnp.cosh" title="dpnp.cosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.cosh</span></code></a> so that, if <span class="math notranslate nohighlight">\(y = cosh(x)\)</span>, then
+<span class="math notranslate nohighlight">\(x = acosh(y)\)</span>. Note that <a class="reference internal" href="#dpnp.arccosh" title="dpnp.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arccosh</span></code></a> is an alias of
+<a class="reference internal" href="dpnp.acosh.html#dpnp.acosh" title="dpnp.acosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.acosh</span></code></a>.</p>
+<p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.acosh.html#numpy.acosh" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.acosh</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have numeric data type.</p></li>
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have a floating-point data type.</p></li>
 <li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array to populate.
 Array must have the correct shape and the expected data type.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -130,9 +132,9 @@ Array must have the correct shape and the expected data type.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array containing the element-wise inverse hyperbolic cosine, in
-radians and in the half-closed interval <cite>[0, infty)</cite>. The data type
-of the returned array is determined by the Type Promotion Rules.</p>
+<dd class="field-even"><p><strong>out</strong> -- An array containing the element-wise inverse hyperbolic cosine, in radians
+and in the half-closed interval <span class="math notranslate nohighlight">\([0, \infty)\)</span>. The data type of the
+returned array is determined by the Type Promotion Rules.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
@@ -160,19 +162,22 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p><a class="reference internal" href="#dpnp.arccosh" title="dpnp.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arccosh</span></code></a> is a multivalued function: for each <cite>x</cite> there are infinitely
-many numbers <cite>z</cite> such that <code class="docutils literal notranslate"><span class="pre">cosh(z)</span> <span class="pre">=</span> <span class="pre">x</span></code>. The convention is to return the
-angle <cite>z</cite> whose real part lies in <cite>[0, infty]</cite>.</p>
-<p>For real-valued input data types, <a class="reference internal" href="#dpnp.arccosh" title="dpnp.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arccosh</span></code></a> always returns real output.
-For each value that cannot be expressed as a real number or infinity, it yields
-<code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
-<p>For complex-valued input, <a class="reference internal" href="#dpnp.arccosh" title="dpnp.arccosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arccosh</span></code></a> is a complex analytic function that
-has, by convention, the branch cuts <cite>[-infty, 1]</cite> and is continuous from above.</p>
-<p>The inverse hyperbolic cos is also known as <span class="math notranslate nohighlight">\(acosh\)</span> or <span class="math notranslate nohighlight">\(cosh^{-1}\)</span>.</p>
+<p><a class="reference internal" href="dpnp.acosh.html#dpnp.acosh" title="dpnp.acosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.acosh</span></code></a> is a multivalued function: for each <cite>x</cite> there are infinitely
+many numbers <cite>z</cite> such that <span class="math notranslate nohighlight">\(cosh(z) = x\)</span>. The convention is to return the
+angle <cite>z</cite> whose the real part lies in the interval <span class="math notranslate nohighlight">\([0, \infty)\)</span> and the
+imaginary part in the interval <span class="math notranslate nohighlight">\([-\pi, \pi]\)</span>.</p>
+<p>For real-valued floating-point input data types, <a class="reference internal" href="dpnp.acosh.html#dpnp.acosh" title="dpnp.acosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.acosh</span></code></a> always
+returns real output. For each value that cannot be expressed as a real number
+or infinity, it yields <code class="docutils literal notranslate"><span class="pre">NaN</span></code>.</p>
+<p>For complex floating-point input data types, <a class="reference internal" href="dpnp.acosh.html#dpnp.acosh" title="dpnp.acosh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.acosh</span></code></a> is a complex
+analytic function that has, by convention, the branch cuts <span class="math notranslate nohighlight">\((-\infty, 1]\)</span>
+and is continuous from above on it.</p>
+<p>The inverse hyperbolic cosine is also known as <span class="math notranslate nohighlight">\(arccosh\)</span> or
+<span class="math notranslate nohighlight">\(cosh^{-1}\)</span>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">e</span><span class="p">,</span> <span class="mf">10.0</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">arccosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">acosh</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="go">array([0.0, 1.65745445, 2.99322285])</span>
 </pre></div>
 </div>
