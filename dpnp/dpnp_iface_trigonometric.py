@@ -750,14 +750,14 @@ cbrt = DPNPUnaryFunc(
 
 
 _COS_DOCSTRING = """
-Computes cosine for each element `x_i` for input array `x`.
+Computes cosine for each element :math:`x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cos`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -771,8 +771,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise cosine. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise cosine. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -782,7 +782,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arccos` : Trigonometric inverse cosine, element-wise.
+:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.
 :obj:`dpnp.sin` : Trigonometric sine, element-wise.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
 :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
@@ -806,15 +806,19 @@ cos = DPNPUnaryFunc(
 )
 
 
-_COSH_DOCSTRING = """
-Computes hyperbolic cosine for each element `x_i` for input array `x`.
+_COSH_DOCSTRING = r"""
+Computes hyperbolic cosine for each element :math:`x_i` for input array `x`.
+
+The mathematical definition of the hyperbolic cosine is
+
+.. math:: \operatorname{cosh}(x) = \frac{e^x + e^{-x}}{2}
 
 For full documentation refer to :obj:`numpy.cosh`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -828,8 +832,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise hyperbolic cosine. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise hyperbolic cosine. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -839,7 +843,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arccosh` : Hyperbolic inverse cosine, element-wise.
+:obj:`dpnp.acosh` : Hyperbolic inverse cosine, element-wise.
 :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
 :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
 :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
