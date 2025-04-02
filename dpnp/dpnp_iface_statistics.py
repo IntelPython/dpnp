@@ -46,10 +46,10 @@ import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index
 
 import dpnp
-import dpnp.backend.extensions.math._math_impl as math_ext
 
 # pylint: disable=no-name-in-module
 import dpnp.backend.extensions.statistics._statistics_impl as statistics_ext
+import dpnp.backend.extensions.ufunc._ufunc_impl as ufi
 from dpnp.dpnp_utils.dpnp_utils_common import (
     result_type_for_device,
     to_supported_dtypes,
@@ -1212,7 +1212,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     queue = x.sycl_queue
     _manager = dpu.SequentialOrderManager[queue]
-    mem_ev, ht_ev = math_ext._interpolate(
+    mem_ev, ht_ev = ufi._interpolate(
         x.get_array(),
         idx.get_array(),
         xp.get_array(),

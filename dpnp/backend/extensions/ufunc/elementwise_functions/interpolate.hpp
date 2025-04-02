@@ -1,5 +1,5 @@
 //*****************************************************************************
-// Copyright (c) 2024, Intel Corporation
+// Copyright (c) 2025, Intel Corporation
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -22,16 +22,14 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
-//
-// This file defines functions of dpnp.backend._math_impl extensions
-//
-//*****************************************************************************
+
+#pragma once
 
 #include <pybind11/pybind11.h>
 
-#include "interpolate.hpp"
+namespace py = pybind11;
 
-PYBIND11_MODULE(_math_impl, m)
+namespace dpnp::extensions::ufunc
 {
-    dpnp::extensions::math::init_interpolate(m);
-}
+void init_interpolate(py::module_ m);
+} // namespace dpnp::extensions::ufunc

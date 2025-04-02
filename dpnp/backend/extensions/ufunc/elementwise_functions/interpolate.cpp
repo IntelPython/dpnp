@@ -32,17 +32,29 @@
 #include "dpctl4pybind11.hpp"
 #include "utils/type_dispatch.hpp"
 
-#include "interpolate.hpp"
-#include "interpolate_kernel.hpp"
-
-namespace dpnp::extensions::math
-{
+#include "kernels/elementwise_functions/interpolate.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
-static kernels::interpolate_fn_ptr_t
-    interpolate_dispatch_table[td_ns::num_types][td_ns::num_types];
+namespace dpnp::extensions::ufunc
+{
+
+namespace impl
+{
+
+typedef sycl::event (*interpolate_fn_ptr_t)(sycl::queue &,
+                                            const void *, // x
+                                            const void *, // idx
+                                            const void *, // xp
+                                            const void *, // fp
+                                            void *,       // out
+                                            std::size_t,  // n
+                                            std::size_t,  // xp_size
+                                            const std::vector<sycl::event> &);
+
+interpolate_fn_ptr_t interpolate_dispatch_table[td_ns::num_types]
+                                               [td_ns::num_types];
 
 std::pair<sycl::event, sycl::event>
     py_interpolate(const dpctl::tensor::usm_ndarray &x,
@@ -85,13 +97,14 @@ struct InterpolateFactory
         if constexpr (std::is_floating_point_v<TCoord> &&
                       std::is_floating_point_v<TValue>)
         {
-            return kernels::interpolate_impl<TCoord, TValue>;
+            return dpnp::kernels::interpolate::interpolate_impl<TCoord, TValue>;
         }
         else if constexpr (std::is_floating_point_v<TCoord> &&
                            (std::is_same_v<TValue, std::complex<float>> ||
                             std::is_same_v<TValue, std::complex<double>>))
         {
-            return kernels::interpolate_complex_impl<TCoord, TValue>;
+            return dpnp::kernels::interpolate::interpolate_complex_impl<TCoord,
+                                                                        TValue>;
         }
         else {
             return nullptr;
@@ -102,20 +115,22 @@ struct InterpolateFactory
 void init_interpolate_dispatch_table()
 {
     using namespace td_ns;
-    using kernels::interpolate_fn_ptr_t;
 
     DispatchTableBuilder<interpolate_fn_ptr_t, InterpolateFactory, num_types>
         dtb_interpolate;
     dtb_interpolate.populate_dispatch_table(interpolate_dispatch_table);
 }
 
+} // namespace impl
+
 void init_interpolate(py::module_ m)
 {
-    dpnp::extensions::math::init_interpolate_dispatch_table();
+    impl::init_interpolate_dispatch_table();
 
+    using impl::py_interpolate;
     m.def("_interpolate", &py_interpolate, "", py::arg("x"), py::arg("idx"),
           py::arg("xp"), py::arg("fp"), py::arg("out"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 }
 
-} // namespace dpnp::extensions::math
+} // namespace dpnp::extensions::ufunc

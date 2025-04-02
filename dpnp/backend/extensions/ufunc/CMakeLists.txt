@@ -36,6 +36,7 @@ set(_elementwise_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/gcd.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/heaviside.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/i0.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/interpolate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/lcm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/ldexp.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/elementwise_functions/logaddexp2.cpp

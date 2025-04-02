@@ -5,18 +5,8 @@
 
 #include "utils/type_utils.hpp"
 
-namespace dpnp::extensions::math::kernels
+namespace dpnp::kernels::interpolate
 {
-
-using interpolate_fn_ptr_t = sycl::event (*)(sycl::queue &,
-                                             const void *, // x
-                                             const void *, // idx
-                                             const void *, // xp
-                                             const void *, // fp
-                                             void *,       // out
-                                             std::size_t,  // n
-                                             std::size_t,  // xp_size
-                                             const std::vector<sycl::event> &);
 
 template <typename TCoord, typename TValue>
 sycl::event interpolate_impl(sycl::queue &q,
@@ -159,4 +149,4 @@ sycl::event interpolate_complex_impl(sycl::queue &q,
     });
 }
 
-} // namespace dpnp::extensions::math::kernels
+} // namespace dpnp::kernels::interpolate
