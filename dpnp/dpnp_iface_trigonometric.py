@@ -695,14 +695,14 @@ arctanh = atanh  # arctanh is an alias for atanh
 
 
 _CBRT_DOCSTRING = """
-Computes positive cube-root for each element `x_i` for input array `x`.
+Computes positive cube-root for each element :math:`x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cbrt`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a real floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -717,8 +717,8 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise positive cube-root.
-    The data type of the returned array is determined by
-    the Type Promotion Rules.
+    The data type of the returned array is determined by the Type Promotion
+    Rules.
 
 Limitations
 -----------
