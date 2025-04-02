@@ -878,7 +878,7 @@ def cumlogsumexp(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued data type.
+        Input array, expected to have a real-valued floating-point data type.
     axis : {None, int}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
@@ -1266,10 +1266,10 @@ For full documentation refer to :obj:`numpy.hypot`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a real-valued data type.
+    First input array, expected to have a real-valued floating-point data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued data type.
+    Second input array, also expected to have a real-valued floating-point data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
     If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
     (which becomes the shape of the output).
@@ -1730,7 +1730,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued data type.
+        Input array, expected to have a real-valued floating-point data type.
     axis : {None, int or tuple of ints}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
@@ -1992,7 +1992,7 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued data type.
+        Input array, expected to have a real-valued floating-point data type.
     axis : {None, int or tuple of ints}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the

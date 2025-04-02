@@ -372,7 +372,7 @@ Returns
 out : dpnp.ndarray
     An array containing the element-wise absolute values.
     For complex input, the absolute value is its magnitude.
-    If `x` has a real-valued data type, the returned array has the
+    If `x` has a real-valued floating-point data type, the returned array has the
     same data type as `x`. If `x` has a complex floating-point data type,
     the returned array has a real-valued floating-point data type whose
     precision matches the precision of `x`.
@@ -611,7 +611,7 @@ For full documentation refer to :obj:`numpy.ceil`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1719,7 +1719,7 @@ For full documentation refer to :obj:`numpy.fix`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1880,7 +1880,7 @@ For full documentation refer to :obj:`numpy.floor`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2197,10 +2197,10 @@ For full documentation refer to :obj:`numpy.fmod`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a real-valued data type.
+    First input array, expected to have a real-valued floating-point data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued data type.
+    Second input array, also expected to have a real-valued floating-point data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
     If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
     (which becomes the shape of the output).
@@ -2654,7 +2654,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise imaginary component of input.
-    If the input is a real-valued data type, the returned array has
+    If the input is a real-valued floating-point data type, the returned array has
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
@@ -3693,7 +3693,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise real component of input.
-    If the input is a real-valued data type, the returned array has
+    If the input is a real-valued floating-point data type, the returned array has
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
@@ -3804,10 +3804,10 @@ For full documentation refer to :obj:`numpy.remainder`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a real-valued data type.
+    First input array, expected to have a real-valued floating-point data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued data type.
+    Second input array, also expected to have a real-valued floating-point data type.
     Both inputs `x1` and `x2` can not be scalars at the same time.
     If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
     (which becomes the shape of the output).
@@ -4553,7 +4553,7 @@ signed number `x` is discarded.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
