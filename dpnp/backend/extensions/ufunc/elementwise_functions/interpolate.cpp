@@ -26,11 +26,12 @@
 #include <complex>
 #include <vector>
 
+#include "dpctl4pybind11.hpp"
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 // dpctl tensor headers
-#include "dpctl4pybind11.hpp"
+#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
 
 #include "kernels/elementwise_functions/interpolate.hpp"
@@ -107,16 +108,48 @@ std::pair<sycl::event, sycl::event>
                    sycl::queue &exec_q,
                    const std::vector<sycl::event> &depends)
 {
+    int x_typenum = x.get_typenum();
     int xp_typenum = xp.get_typenum();
     int fp_typenum = fp.get_typenum();
+    int out_typenum = out.get_typenum();
 
     auto array_types = td_ns::usm_ndarray_types();
+    int x_type_id = array_types.typenum_to_lookup_id(x_typenum);
     int xp_type_id = array_types.typenum_to_lookup_id(xp_typenum);
     int fp_type_id = array_types.typenum_to_lookup_id(fp_typenum);
+    int out_type_id = array_types.typenum_to_lookup_id(out_typenum);
+
+    if (x_type_id != xp_type_id) {
+        throw py::value_error("x and xp must have the same dtype");
+    }
+    if (fp_type_id != out_type_id) {
+        throw py::value_error("fp and out must have the same dtype");
+    }
 
     auto fn = interpolate_dispatch_vector[fp_type_id];
     if (!fn) {
-        throw py::type_error("Unsupported dtype.");
+        throw py::type_error("Unsupported dtype");
+    }
+
+    if (!dpctl::utils::queues_are_compatible(exec_q, {x, idx, xp, fp, out})) {
+        throw py::value_error(
+            "Execution queue is not compatible with allocation queues");
+    }
+
+    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
+
+    if (x.get_ndim() != 1 || xp.get_ndim() != 1 || fp.get_ndim() != 1 ||
+        idx.get_ndim() != 1 || out.get_ndim() != 1)
+    {
+        throw py::value_error("All arrays must be one-dimensional");
+    }
+
+    if (xp.get_size() != fp.get_size()) {
+        throw py::value_error("xp and fp must have the same size");
+    }
+
+    if (x.get_size() != out.get_size() || x.get_size() != idx.get_size()) {
+        throw py::value_error("x, idx, and out must have the same size");
     }
 
     std::size_t n = x.get_size();
