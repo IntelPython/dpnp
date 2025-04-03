@@ -366,6 +366,7 @@ def test_1in_1out(func, data, device):
         pytest.param("arctan2", [-1, +1, +1, -1], [-1, -1, +1, +1]),
         pytest.param("compress", [0, 1, 1, 0], [0, 1, 2, 3]),
         pytest.param("copysign", [0.0, 1.0, 2.0], [-1.0, 0.0, 1.0]),
+        pytest.param("convolve", [1, 2, 3], [4, 5, 6]),
         pytest.param(
             "corrcoef",
             [[0.1, 0.2, 0.3], [0.4, 0.5, 0.6]],

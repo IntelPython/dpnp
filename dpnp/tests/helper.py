@@ -185,6 +185,19 @@ def generate_random_numpy_array(
     return a
 
 
+def factor_to_tol(dtype, factor):
+    """
+    Calculate the tolerance for comparing floating point and complex arrays.
+    The tolerance is based on the maximum resolution of the input dtype multiplied by the factor.
+    """
+
+    tol = 0
+    if numpy.issubdtype(dtype, numpy.inexact):
+        tol = numpy.finfo(dtype).resolution
+
+    return factor * tol
+
+
 def get_abs_array(data, dtype=None):
     if numpy.issubdtype(dtype, numpy.unsignedinteger):
         data = numpy.abs(data)
@@ -309,6 +322,36 @@ def get_integer_dtypes(all_int_types=False, no_unsigned=False):
         if not no_unsigned:
             dtypes += [dpnp.uint8, dpnp.uint16, dpnp.uint32, dpnp.uint64]
 
+    return dtypes
+
+
+def get_integer_float_dtypes(
+    all_int_types=False,
+    no_unsigned=False,
+    no_float16=True,
+    device=None,
+    xfail_dtypes=None,
+    exclude=None,
+):
+    """
+    Build a list of integer and float types supported by DPNP.
+    """
+    dtypes = get_integer_dtypes(
+        all_int_types=all_int_types, no_unsigned=no_unsigned
+    )
+    dtypes += get_float_dtypes(no_float16=no_float16, device=device)
+
+    def mark_xfail(dtype):
+        if xfail_dtypes is not None and dtype in xfail_dtypes:
+            return pytest.param(dtype, marks=pytest.mark.xfail)
+        return dtype
+
+    def not_excluded(dtype):
+        if exclude is None:
+            return True
+        return dtype not in exclude
+
+    dtypes = [mark_xfail(dtype) for dtype in dtypes if not_excluded(dtype)]
     return dtypes
 
 

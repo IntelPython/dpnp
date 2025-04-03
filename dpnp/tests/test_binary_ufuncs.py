@@ -20,6 +20,7 @@ from .helper import (
     get_float_complex_dtypes,
     get_float_dtypes,
     get_integer_dtypes,
+    get_integer_float_dtypes,
     has_support_aspect16,
     numpy_version,
 )
@@ -141,7 +142,7 @@ class TestAdd:
 @pytest.mark.parametrize("func", ["fmax", "fmin", "maximum", "minimum"])
 class TestBoundFuncs:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_none=True))
-    def test_out(self, func, dtype):
+    def test_basic(self, func, dtype):
         a = generate_random_numpy_array(10, dtype)
         b = generate_random_numpy_array(10, dtype)
         expected = getattr(numpy, func)(a, b)
@@ -278,7 +279,7 @@ class TestDivide:
 
 @pytest.mark.parametrize("func", ["floor_divide", "remainder"])
 class TestFloorDivideRemainder:
-    ALL_DTYPES = get_all_dtypes(no_none=True, no_bool=True, no_complex=True)
+    ALL_DTYPES = get_integer_float_dtypes()
 
     def do_inplace_op(self, base, other, func):
         if func == "floor_divide":
