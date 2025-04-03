@@ -753,7 +753,7 @@ cbrt = DPNPUnaryFunc(
 
 
 _COS_DOCSTRING = """
-Computes cosine for each element :math:`x_i` for input array `x`.
+Computes the cosine for each element :math:`x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cos`.
 
@@ -810,7 +810,7 @@ cos = DPNPUnaryFunc(
 
 
 _COSH_DOCSTRING = r"""
-Computes hyperbolic cosine for each element :math:`x_i` for input array `x`.
+Computes the hyperbolic cosine for each element :math:`x_i` for input array `x`.
 
 The mathematical definition of the hyperbolic cosine is
 
@@ -2248,14 +2248,14 @@ rsqrt = DPNPUnaryFunc(
 
 
 _SIN_DOCSTRING = """
-Computes sine for each element `x_i` of input array `x`.
+Computes the sine for each element :math:`x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.sin`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2269,8 +2269,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise sine. The data type of the
-    returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise sine. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2280,7 +2280,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.
+:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.
 :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
 :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
@@ -2304,15 +2304,19 @@ sin = DPNPUnaryFunc(
 )
 
 
-_SINH_DOCSTRING = """
-Computes hyperbolic sine for each element `x_i` for input array `x`.
+_SINH_DOCSTRING = r"""
+Computes the hyperbolic sine for each element :math:`x_i` for input array `x`.
+
+The mathematical definition of the hyperbolic sine is
+
+.. math:: \operatorname{sinh}(x) = \frac{e^x - e^{-x}}{2}
 
 For full documentation refer to :obj:`numpy.sinh`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2326,8 +2330,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise hyperbolic sine. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise hyperbolic sine. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2337,7 +2341,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.
+:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.
 :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
 :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
 :obj:`dpnp.sin` : Trigonometric sine, element-wise.
