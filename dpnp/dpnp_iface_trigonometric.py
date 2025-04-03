@@ -774,8 +774,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise cosine. The data type of the returned
-    array is determined by the Type Promotion Rules.
+    An array containing the element-wise cosine, in radians. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2269,8 +2269,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise sine. The data type of the returned
-    array is determined by the Type Promotion Rules.
+    An array containing the element-wise sine, in radians. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2441,14 +2441,14 @@ sqrt = DPNPUnaryFunc(
 
 
 _SQUARE_DOCSTRING = r"""
-Squares each element `x_i` of input array `x`.
+Squares each element :math:`x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.square`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array.
+    Input array, expected to have a boolean or numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2462,8 +2462,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise squares of `x`. The data type of
-    the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise squares of `x`. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2473,11 +2473,11 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp..linalg.matrix_power` : Raise a square matrix
-                                    to the (integer) power `n`.
+:obj:`dpnp..linalg.matrix_power` : Raise a square matrix to the (integer)
+    power `n`.
 :obj:`dpnp.sqrt` : Calculate :math:`\sqrt{x}`, element-wise.
-:obj:`dpnp.power` : First array elements raised to powers
-                    from second array, element-wise.
+:obj:`dpnp.power` : Exponentiation by raising the first array to the power of
+    the second array, element-wise.
 
 Examples
 --------
@@ -2499,14 +2499,14 @@ square = DPNPUnaryFunc(
 
 
 _TAN_DOCSTRING = """
-Computes tangent for each element `x_i` for input array `x`.
+Computes the tangent for each element :math:`x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.tan`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2520,8 +2520,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise tangent. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise tangent, in radians. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2531,7 +2531,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.sin` : Trigonometric sine, element-wise.
 :obj:`dpnp.cos` : Trigonometric cosine, element-wise.
 :obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.
@@ -2555,15 +2555,21 @@ tan = DPNPUnaryFunc(
 )
 
 
-_TANH_DOCSTRING = """
-Computes hyperbolic tangent for each element `x_i` for input array `x`.
+_TANH_DOCSTRING = r"""
+Computes the hyperbolic tangent for each element :math:`x_i` for input array
+`x`.
+
+The mathematical definition of the hyperbolic tangent is
+
+.. math::
+    \operatorname{tanh}(x) = \frac{\operatorname{sinh}(x)}{\operatorname{cosh}(x)}
 
 For full documentation refer to :obj:`numpy.tanh`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2577,8 +2583,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise hyperbolic tangent. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise hyperbolic tangent. The data type of
+    the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2588,7 +2594,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.
+:obj:`dpnp.atanh` : Hyperbolic inverse tangent, element-wise.
 :obj:`dpnp.sinh` : Hyperbolic sine, element-wise.
 :obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
@@ -2617,8 +2623,9 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
     Unwrap by taking the complement of large deltas with respect to the period.
 
     This unwraps a signal `p` by changing elements which have an absolute
-    difference from their predecessor of more than ``max(discont, period / 2)``
-    to their `period`-complementary values.
+    difference from their predecessor of more than
+    :math:`\max(discont, \frac{period}{2})` to their `period`-complementary
+    values.
 
     For the default case where `period` is :math:`2\pi` and `discont` is
     :math:`\pi`, this unwraps a radian phase `p` such that adjacent differences
@@ -2633,16 +2640,19 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
         Input array.
     discont : {float, None}, optional
         Maximum discontinuity between values, default is ``None`` which is an
-        alias for ``period / 2``. Values below ``period / 2`` are treated as if
-        they were ``period / 2``. To have an effect different from the default,
-        `discont` should be larger than ``period / 2``.
+        alias for :math:`\frac{period}{2}`. Values below
+        :math:`\frac{period}{2}` are treated as if they were
+        :math:`\frac{period}{2}`. To have an effect different from the default,
+        `discont` should be larger than :math:`\frac{period}{2}`.
 
         Default: ``None``.
     axis : int, optional
         Axis along which unwrap will operate, default is the last axis.
+
         Default: ``-1``.
     period : float, optional
         Size of the range over which the input wraps.
+
         Default: ``2 * pi``.
 
     Returns
@@ -2657,9 +2667,9 @@ def unwrap(p, discont=None, axis=-1, *, period=2 * dpnp.pi):
 
     Notes
     -----
-    If the discontinuity in `p` is smaller than ``period / 2``, but larger than
-    `discont`, no unwrapping is done because taking the complement would only
-    make the discontinuity larger.
+    If the discontinuity in `p` is smaller than :math:`\frac{period}{2}`, but
+    larger than `discont`, no unwrapping is done because taking the complement
+    would only make the discontinuity larger.
 
     Examples
     --------
