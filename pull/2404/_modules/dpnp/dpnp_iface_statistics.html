@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.18.0dev0+63.g50303cc6459 documentation</title>
+  <title>dpnp.dpnp_iface_statistics &mdash; Data Parallel Extension for NumPy 0.18.0dev0+67.gee62f72ab34 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=051e7cd4"></script>
+      <script src="../../_static/documentation_options.js?v=780bf608"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -147,6 +147,7 @@
     <span class="s2">&quot;amax&quot;</span><span class="p">,</span>
     <span class="s2">&quot;amin&quot;</span><span class="p">,</span>
     <span class="s2">&quot;average&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;convolve&quot;</span><span class="p">,</span>
     <span class="s2">&quot;corrcoef&quot;</span><span class="p">,</span>
     <span class="s2">&quot;correlate&quot;</span><span class="p">,</span>
     <span class="s2">&quot;cov&quot;</span><span class="p">,</span>
@@ -448,6 +449,149 @@
             <span class="n">scl</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">broadcast_to</span><span class="p">(</span><span class="n">scl</span><span class="p">,</span> <span class="n">avg</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">avg</span><span class="p">,</span> <span class="n">scl</span>
     <span class="k">return</span> <span class="n">avg</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_convolve_impl</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">):</span>
+    <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span> <span class="o">=</span> <span class="n">_get_padding</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="n">_choose_conv_method</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;direct&quot;</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">_run_native_sliding_dot_product1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;fft&quot;</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">_convolve_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Unknown method: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">. Supported methods: auto, direct, fft&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">r</span>
+
+
+<div class="viewcode-block" id="convolve">
+<a class="viewcode-back" href="../../reference/generated/dpnp.convolve.html#dpnp.convolve">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;full&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the discrete, linear convolution of two one-dimensional sequences.</span>
+<span class="sd">    The convolution operator is often seen in signal processing, where it</span>
+<span class="sd">    models the effect of a linear time-invariant system on a signal [1]_. In</span>
+<span class="sd">    probability theory, the sum of two independent random variables is</span>
+<span class="sd">    distributed according to the convolution of their individual</span>
+<span class="sd">    distributions.</span>
+
+<span class="sd">    If `v` is longer than `a`, the arrays are swapped before computation.</span>
+
+<span class="sd">    For full documentation refer to :obj:`numpy.convolve`.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    a : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        First input array.</span>
+<span class="sd">    v : {dpnp.ndarray, usm_ndarray}</span>
+<span class="sd">        Second input array.</span>
+<span class="sd">    mode : {&#39;full&#39;, &#39;valid&#39;, &#39;same&#39;}, optional</span>
+<span class="sd">        - &#39;full&#39;: This returns the convolution</span>
+<span class="sd">          at each point of overlap, with an output shape of (N+M-1,). At</span>
+<span class="sd">          the end-points of the convolution, the signals do not overlap</span>
+<span class="sd">          completely, and boundary effects may be seen.</span>
+<span class="sd">        - &#39;same&#39;: Mode &#39;same&#39; returns output of length ``max(M, N)``. Boundary</span>
+<span class="sd">          effects are still visible.</span>
+<span class="sd">        - &#39;valid&#39;: Mode &#39;valid&#39; returns output of length</span>
+<span class="sd">          ``max(M, N) - min(M, N) + 1``. The convolution product is only given</span>
+<span class="sd">          for points where the signals overlap completely. Values outside</span>
+<span class="sd">          the signal boundary have no effect.</span>
+
+<span class="sd">          Default: ``&#39;full&#39;``.</span>
+<span class="sd">    method : {&#39;auto&#39;, &#39;direct&#39;, &#39;fft&#39;}, optional</span>
+<span class="sd">        - &#39;direct&#39;: The convolution is determined directly from sums.</span>
+<span class="sd">        - &#39;fft&#39;: The Fourier Transform is used to perform the calculations.</span>
+<span class="sd">         This method is faster for long sequences but can have accuracy issues.</span>
+<span class="sd">        - &#39;auto&#39;: Automatically chooses direct or Fourier method based on</span>
+<span class="sd">         an estimate of which is faster.</span>
+
+<span class="sd">        Note: Use of the FFT convolution on input containing NAN or INF</span>
+<span class="sd">        will lead to the entire output being NAN or INF.</span>
+<span class="sd">        Use ``method=&#39;direct&#39;`` when your input contains NAN or INF values.</span>
+
+<span class="sd">        Default: ``&#39;auto&#39;``.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    out : dpnp.ndarray</span>
+<span class="sd">        Discrete, linear convolution of `a` and `v`.</span>
+
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.correlate` : Cross-correlation of two 1-dimensional sequences.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    The discrete convolution operation is defined as</span>
+
+<span class="sd">    .. math:: (a * v)_n = \sum_{m = -\infty}^{\infty} a_m v_{n - m}</span>
+
+<span class="sd">    It can be shown that a convolution :math:`x(t) * y(t)` in time/space</span>
+<span class="sd">    is equivalent to the multiplication :math:`X(f) Y(f)` in the Fourier</span>
+<span class="sd">    domain, after appropriate padding (padding is necessary to prevent</span>
+<span class="sd">    circular convolution). Since multiplication is more efficient (faster)</span>
+<span class="sd">    than convolution, the function implements two approaches - direct and fft</span>
+<span class="sd">    which are regulated by the keyword `method`.</span>
+
+<span class="sd">    References</span>
+<span class="sd">    ----------</span>
+<span class="sd">    .. [1] Wikipedia, &quot;Convolution&quot;,</span>
+<span class="sd">        https://en.wikipedia.org/wiki/Convolution</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    Note how the convolution operator flips the second array</span>
+<span class="sd">    before &quot;sliding&quot; the two across one another:</span>
+
+<span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
+<span class="sd">    &gt;&gt;&gt; a = np.array([1, 2, 3], dtype=np.float32)</span>
+<span class="sd">    &gt;&gt;&gt; v = np.array([0, 1, 0.5], dtype=np.float32)</span>
+<span class="sd">    &gt;&gt;&gt; np.convolve(a, v)</span>
+<span class="sd">    array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)</span>
+
+<span class="sd">    Only return the middle values of the convolution.</span>
+<span class="sd">    Contains boundary effects, where zeros are taken</span>
+<span class="sd">    into account:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.convolve(a, v, &#39;same&#39;)</span>
+<span class="sd">    array([1. , 2.5, 4. ], dtype=float32)</span>
+
+<span class="sd">    The two arrays are of the same length, so there</span>
+<span class="sd">    is only one position where they completely overlap:</span>
+
+<span class="sd">    &gt;&gt;&gt; np.convolve(a, v, &#39;valid&#39;)</span>
+<span class="sd">    array([2.5], dtype=float32)</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Array arguments cannot be empty. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Received sizes: a.size=</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">, v.size=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">size</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">or</span> <span class="n">v</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Only 1-dimensional arrays are supported. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Received shapes: a.shape=</span><span class="si">{</span><span class="n">a</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, v.shape=</span><span class="si">{</span><span class="n">v</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">device</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">sycl_device</span>
+    <span class="n">rdtype</span> <span class="o">=</span> <span class="n">result_type_for_device</span><span class="p">([</span><span class="n">a</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">dtype</span><span class="p">],</span> <span class="n">device</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span>
+
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_convolve_impl</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">rdtype</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="s2">&quot;C&quot;</span><span class="p">)</span></div>
 
 
 
@@ -813,17 +957,7 @@
         <span class="n">revert</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="n">a</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">v</span><span class="p">,</span> <span class="n">a</span>
 
-    <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span> <span class="o">=</span> <span class="n">_get_padding</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">mode</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
-        <span class="n">method</span> <span class="o">=</span> <span class="n">_choose_conv_method</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;direct&quot;</span><span class="p">:</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">_run_native_sliding_dot_product1d</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;fft&quot;</span><span class="p">:</span>
-        <span class="n">r</span> <span class="o">=</span> <span class="n">_convolve_fft</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">l_pad</span><span class="p">,</span> <span class="n">r_pad</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unknown method: </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">_convolve_impl</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">mode</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">rdtype</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">revert</span><span class="p">:</span>
         <span class="n">r</span> <span class="o">=</span> <span class="n">r</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>

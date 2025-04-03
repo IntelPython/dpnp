@@ -15,16 +15,17 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.18.0dev0+63.g50303cc6459 documentation</title>
+  <title>dpnp.convolve &mdash; Data Parallel Extension for NumPy 0.18.0dev0+67.gee62f72ab34 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=051e7cd4"></script>
+      <script src="../../_static/documentation_options.js?v=780bf608"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -133,13 +134,108 @@
 <h1>dpnp.convolve<a class="headerlink" href="#dpnp-convolve" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.convolve">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">convolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_mathematical.html#convolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.convolve" title="Link to this definition"></a></dt>
-<dd><p>Returns the discrete, linear convolution of two one-dimensional sequences.</p>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">convolve</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'full'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_statistics.html#convolve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.convolve" title="Link to this definition"></a></dt>
+<dd><p>Returns the discrete, linear convolution of two one-dimensional sequences.
+The convolution operator is often seen in signal processing, where it
+models the effect of a linear time-invariant system on a signal <a class="footnote-reference brackets" href="#id2" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. In
+probability theory, the sum of two independent random variables is
+distributed according to the convolution of their individual
+distributions.</p>
+<p>If <cite>v</cite> is longer than <cite>a</cite>, the arrays are swapped before computation.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.convolve.html#numpy.convolve" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.convolve</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- First input array.</p></li>
+<li><p><strong>v</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Second input array.</p></li>
+<li><p><strong>mode</strong> (<em>{'full'</em><em>, </em><em>'valid'</em><em>, </em><em>'same'}</em><em>, </em><em>optional</em>) -- <ul>
+<li><p>'full': This returns the convolution
+at each point of overlap, with an output shape of (N+M-1,). At
+the end-points of the convolution, the signals do not overlap
+completely, and boundary effects may be seen.</p></li>
+<li><p>'same': Mode 'same' returns output of length <code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span></code>. Boundary
+effects are still visible.</p></li>
+<li><p>'valid': Mode 'valid' returns output of length
+<code class="docutils literal notranslate"><span class="pre">max(M,</span> <span class="pre">N)</span> <span class="pre">-</span> <span class="pre">min(M,</span> <span class="pre">N)</span> <span class="pre">+</span> <span class="pre">1</span></code>. The convolution product is only given
+for points where the signals overlap completely. Values outside
+the signal boundary have no effect.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'full'</span></code>.</p>
+</li>
+</ul>
+</p></li>
+<li><p><strong>method</strong> (<em>{'auto'</em><em>, </em><em>'direct'</em><em>, </em><em>'fft'}</em><em>, </em><em>optional</em>) -- <ul>
+<li><p>'direct': The convolution is determined directly from sums.</p></li>
+<li><p>'fft': The Fourier Transform is used to perform the calculations.</p></li>
+</ul>
+<blockquote>
+<div><p>This method is faster for long sequences but can have accuracy issues.</p>
+</div></blockquote>
+<ul>
+<li><p>'auto': Automatically chooses direct or Fourier method based on</p></li>
+</ul>
+<blockquote>
+<div><p>an estimate of which is faster.</p>
+</div></blockquote>
+<p>Note: Use of the FFT convolution on input containing NAN or INF
+will lead to the entire output being NAN or INF.
+Use <code class="docutils literal notranslate"><span class="pre">method='direct'</span></code> when your input contains NAN or INF values.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">'auto'</span></code>.</p>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>out</strong> -- Discrete, linear convolution of <cite>a</cite> and <cite>v</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dpnp.ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.correlate.html#dpnp.correlate" title="dpnp.correlate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.correlate</span></code></a></dt><dd><p>Cross-correlation of two 1-dimensional sequences.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The discrete convolution operation is defined as</p>
+<div class="math notranslate nohighlight">
+\[(a * v)_n = \sum_{m = -\infty}^{\infty} a_m v_{n - m}\]</div>
+<p>It can be shown that a convolution <span class="math notranslate nohighlight">\(x(t) * y(t)\)</span> in time/space
+is equivalent to the multiplication <span class="math notranslate nohighlight">\(X(f) Y(f)\)</span> in the Fourier
+domain, after appropriate padding (padding is necessary to prevent
+circular convolution). Since multiplication is more efficient (faster)
+than convolution, the function implements two approaches - direct and fft
+which are regulated by the keyword <cite>method</cite>.</p>
+<p class="rubric">References</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="id2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Wikipedia, &quot;Convolution&quot;,
+<a class="reference external" href="https://en.wikipedia.org/wiki/Convolution">https://en.wikipedia.org/wiki/Convolution</a></p>
+</aside>
+</aside>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ca</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">convolve</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">])</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">ca</span><span class="p">)</span>
-<span class="go">[0. , 1. , 2.5, 4. , 1.5]</span>
+<p>Note how the convolution operator flips the second array
+before &quot;sliding&quot; the two across one another:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="go">array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)</span>
+</pre></div>
+</div>
+<p>Only return the middle values of the convolution.
+Contains boundary effects, where zeros are taken
+into account:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="s1">&#39;same&#39;</span><span class="p">)</span>
+<span class="go">array([1. , 2.5, 4. ], dtype=float32)</span>
+</pre></div>
+</div>
+<p>The two arrays are of the same length, so there
+is only one position where they completely overlap:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="s1">&#39;valid&#39;</span><span class="p">)</span>
+<span class="go">array([2.5], dtype=float32)</span>
 </pre></div>
 </div>
 </dd></dl>
