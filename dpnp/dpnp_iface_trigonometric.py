@@ -1355,15 +1355,15 @@ hypot = DPNPBinaryFunc(
 )
 
 
-_LOG_DOCSTRING = """
-Computes the natural logarithm for each element `x_i` of input array `x`.
+_LOG_DOCSTRING = r"""
+Computes the natural logarithm for each element :math:`x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.log`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1377,9 +1377,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise natural logarithm values.
-    The data type of the returned array is determined by the Type
-    Promotion Rules.
+    An array containing the element-wise natural logarithm values. The data
+    type of the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1389,11 +1388,27 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.log10` : Return the base 10 logarithm of the input array,
-                    element-wise.
-:obj:`dpnp.log2` : Base-2 logarithm of x.
-:obj:`dpnp.log1p` : Return the natural logarithm of one plus
-                    the input array, element-wise.
+:obj:`dpnp.log10` : Calculate :math:`\log_{10}(x)`, element-wise.
+:obj:`dpnp.log2` : Calculate :math:`\log_2(x)`, element-wise.
+:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise.
+
+Notes
+-----
+:obj:`dpnp.log` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`e^z = x`. The convention is to return the `z`
+whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.
+
+For real-valued floating-point input data types, :obj:`dpnp.log` always returns
+real output. For each value that cannot be expressed as a real number or
+nfinity, it yields ``NaN``.
+
+For complex floating-point input data types, :obj:`dpnp.log` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\infty, 0)` and is continuous from above on it.
+
+In the cases where the input has a negative real part and a very small negative
+complex part (approaching 0), the result is so close to :math:`-\pi` that it
+evaluates to exactly :math:`-\pi`.
 
 Examples
 --------
@@ -1414,15 +1429,15 @@ log = DPNPUnaryFunc(
 )
 
 
-_LOG10_DOCSTRING = """
-Computes the base-10 logarithm for each element `x_i` of input array `x`.
+_LOG10_DOCSTRING = r"""
+Computes the base-10 logarithm for each element :math:`x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.log10`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1436,9 +1451,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise base-10 logarithm of `x`.
-    The data type of the returned array is determined by the
-    Type Promotion Rules.
+    An array containing the element-wise base-10 logarithm of `x`. The data
+    type of the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1448,9 +1462,27 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.log` : Natural logarithm, element-wise.
-:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.
-:obj:`dpnp.log1p` : Return the natural logarithm of one plus the input array, element-wise.
+:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.
+:obj:`dpnp.log2` : Calculate :math:`\log_2(x)`, element-wise.
+:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise.
+
+Notes
+-----
+:obj:`dpnp.log10` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`10^z = x`. The convention is to return the `z`
+whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.
+
+For real-valued floating-point input data types, :obj:`dpnp.log10` always
+returns real output. For each value that cannot be expressed as a real number
+or nfinity, it yields ``NaN``.
+
+For complex floating-point input data types, :obj:`dpnp.log10` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\infty, 0)` and is continuous from above on it.
+
+In the cases where the input has a negative real part and a very small negative
+complex part (approaching 0), the result is so close to :math:`-\pi` that it
+evaluates to exactly :math:`-\pi`.
 
 Examples
 --------
@@ -1474,18 +1506,16 @@ log10 = DPNPUnaryFunc(
 )
 
 
-_LOG1P_DOCSTRING = """
-Computes the natural logarithm of (1 + `x`) for each element `x_i` of input
-array `x`.
-
-This function calculates `log(1 + x)` more accurately for small values of `x`.
+_LOG1P_DOCSTRING = r"""
+Computes the natural logarithm of (1 + `x`) for each element :math:`x_i` of
+input array `x`.
 
 For full documentation refer to :obj:`numpy.log1p`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1499,8 +1529,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise `log(1 + x)` results. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise :math:`\log(1 + x)` results. The data
+    type of the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1510,10 +1540,29 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.expm1` : ``exp(x) - 1``, the inverse of :obj:`dpnp.log1p`.
-:obj:`dpnp.log` : Natural logarithm, element-wise.
-:obj:`dpnp.log10` : Return the base 10 logarithm of the input array, element-wise.
-:obj:`dpnp.log2` : Return the base-2 logarithm of the input array, element-wise.
+:obj:`dpnp.expm1` : Calculate :math:`e^x - 1`, element-wise,
+    the inverse of :obj:`dpnp.log1p`.
+:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.
+:obj:`dpnp.log10` : Calculate :math:`\log_{10}(x)`, element-wise.
+:obj:`dpnp.log2` : Calculate :math:`\log_2(x)`, element-wise.
+
+Notes
+-----
+For real-valued floating-point input data types, :obj:`dpnp.log1p` provides
+greater precision than :math:`\log(1 + x)` for `x` so small that
+:math:`1 + x == 1`.
+
+:obj:`dpnp.log1p` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`e^z = 1 + x`. The convention is to return the
+`z` whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.
+
+For real-valued floating-point input data types, :obj:`dpnp.log1p` always
+returns real output. For each value that cannot be expressed as a real number
+or nfinity, it yields ``NaN``.
+
+For complex floating-point input data types, :obj:`dpnp.log1p` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\infty, 0)` and is continuous from above on it.
 
 Examples
 --------
@@ -1540,15 +1589,15 @@ log1p = DPNPUnaryFunc(
 )
 
 
-_LOG2_DOCSTRING = """
-Computes the base-2 logarithm for each element `x_i` of input array `x`.
+_LOG2_DOCSTRING = r"""
+Computes the base-2 logarithm for each element :math:`x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.log2`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1562,9 +1611,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise base-2 logarithm of `x`.
-    The data type of the returned array is determined by the
-    Type Promotion Rules.
+    An array containing the element-wise base-2 logarithm of `x`. The data type
+    of the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1574,9 +1622,27 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.log` : Natural logarithm, element-wise.
-:obj:`dpnp.log10` : Return the base 10 logarithm of the input array, element-wise.
-:obj:`dpnp.log1p` : Return the natural logarithm of one plus the input array, element-wise.
+:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.
+:obj:`dpnp.log10` : Calculate :math:`\log_{10}(x)`, element-wise.
+:obj:`dpnp.log1p` : Calculate :math:`\log(1 + x)`, element-wise.
+
+Notes
+-----
+:obj:`dpnp.log2` is a multivalued function: for each `x` there are infinitely
+many numbers `z` such that :math:`2^z = x`. The convention is to return the `z`
+whose the imaginary part lies in the interval :math:`[-\pi, \pi]`.
+
+For real-valued floating-point input data types, :obj:`dpnp.log2` always
+returns real output. For each value that cannot be expressed as a real number
+or nfinity, it yields ``NaN``.
+
+For complex floating-point input data types, :obj:`dpnp.log2` is a complex
+analytic function that has, by convention, the branch cuts
+:math:`(-\infty, 0)` and is continuous from above on it.
+
+In the cases where the input has a negative real part and a very small negative
+complex part (approaching 0), the result is so close to :math:`-\pi` that it
+evaluates to exactly :math:`-\pi`.
 
 Examples
 --------
