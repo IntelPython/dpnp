@@ -878,7 +878,8 @@ def cumlogsumexp(
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a boolean or real-valued data type.
+        Input array, expected to have a boolean or real-valued floating-point
+        data type.
     axis : {None, int}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
@@ -924,14 +925,14 @@ def cumlogsumexp(
         has the data type as described in the `dtype` parameter description
         above.
 
-    Note
-    ----
-    This function is equivalent of `numpy.logaddexp.accumulate`.
-
     See Also
     --------
     :obj:`dpnp.logsumexp` : Logarithm of the sum of elements of the inputs,
                             element-wise.
+
+    Note
+    ----
+    This function is equivalent of `numpy.logaddexp.accumulate`.
 
     Examples
     --------
@@ -1667,13 +1668,10 @@ log2 = DPNPUnaryFunc(
 )
 
 
-_LOGADDEXP_DOCSTRING = """
-Calculates the natural logarithm of the sum of exponents for each element `x1_i`
-of the input array `x1` with the respective element `x2_i` of the input
-array `x2`.
-
-This function calculates `log(exp(x1) + exp(x2))` more accurately for small
-values of `x`.
+_LOGADDEXP_DOCSTRING = r"""
+Calculates the natural logarithm of the sum of exponentiations
+:math:`\log(e^{x1} + e^{x2})` for each element :math:`x1_i` of the input array
+`x1` with the respective element :math:`x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.logaddexp`.
 
@@ -1682,13 +1680,9 @@ Parameters
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have a real-valued floating-point
     data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued
-    floating-point data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a real-valued floating-point data
+    type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1702,8 +1696,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise results. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise results. The data type of the returned
+    array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1713,12 +1707,23 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.log` : Natural logarithm, element-wise.
-:obj:`dpnp.exp` : Exponential, element-wise.
-:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiation of inputs in
-                        base-2, element-wise.
-:obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the
-                        input array.
+:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.
+:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.
+:obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^{x1} + 2^{x2})`, element-wise.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the
+    input array.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+This function is useful in statistics where the calculated probabilities of
+events may be so small as to exceed the range of normal floating-point numbers.
+In such cases the natural logarithm of the calculated probability is stored.
+This function allows adding probabilities stored in such a fashion.
 
 Examples
 --------
@@ -1741,16 +1746,10 @@ logaddexp = DPNPBinaryFunc(
 )
 
 
-_LOGADDEXP2_DOCSTRING = """
-Calculates the logarithm of the sum of exponents in base-2 for each element
-`x1_i` of the input array `x1` with the respective element `x2_i` of the input
-array `x2`.
-
-This function calculates `log2(2**x1 + 2**x2)`. It is useful in machine
-learning when the calculated probabilities of events may be so small as
-to exceed the range of normal floating point numbers. In such cases the base-2
-logarithm of the calculated probability can be used instead. This function
-allows adding probabilities stored in such a fashion.
+_LOGADDEXP2_DOCSTRING = r"""
+Calculates the base-2 logarithm of the sum of exponentiations
+:math:`\log_2(2^{x1} + 2^{x2})` for each element :math:`x1_i` of the input
+array `x1` with the respective element :math:`x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.logaddexp2`.
 
@@ -1759,13 +1758,9 @@ Parameters
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have a real-valued floating-point
     data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued
-    floating-point data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a real-valued floating-point data
+    type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1790,9 +1785,22 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiation of
-                       inputs, element-wise.
-:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiation of the inputs.
+:obj:`dpnp.logaddexp`: Calculate :math:`\log(e^{x1} + e^{x2})`, element-wise.
+:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the
+    input array.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+This function is useful in machine learning when the calculated probabilities
+of events may be so small as to exceed the range of normal floating-point
+numbers. In such cases the base-2 logarithm of the calculated probability can
+be used instead. This function allows adding probabilities stored in such a
+fashion.
 
 Examples
 --------
@@ -1816,14 +1824,15 @@ logaddexp2 = DPNPBinaryFunc(
 
 
 def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
-    """
-    Calculates the logarithm of the sum of exponents of elements in
+    r"""
+    Calculates the natural logarithm of the sum of exponentials of elements in
     the input array.
 
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued floating-point data type.
+        Input array, expected to have a boolean or real-valued floating-point
+        data type.
     axis : {None, int or tuple of ints}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
@@ -1868,18 +1877,20 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         has the data type as described in the `dtype` parameter description
         above.
 
+    See Also
+    --------
+    :obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.
+    :obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.
+    :obj:`dpnp.logaddexp`: Calculate :math:`\log(e^{x1} + e^{x2})`,
+        element-wise.
+    :obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^{x1} + 2^{x2})`,
+        element-wise.
+    :obj:`dpnp.cumlogsumexp` : Cumulative the natural logarithm of the sum of
+        elements in the input array.
+
     Note
     ----
     This function is equivalent of `numpy.logaddexp.reduce`.
-
-    See Also
-    --------
-    :obj:`dpnp.log` : Natural logarithm, element-wise.
-    :obj:`dpnp.exp` : Exponential, element-wise.
-    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of
-                            the inputs, element-wise.
-    :obj:`dpnp.logaddexp2` : Logarithm of the sum of exponents of
-                             the inputs in base-2, element-wise.
 
     Examples
     --------
