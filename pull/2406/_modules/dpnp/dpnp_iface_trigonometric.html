@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+85.g692aa441c86 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+86.gb6945261d09 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ab623fc2"></script>
+      <script src="../../_static/documentation_options.js?v=4162d8e5"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -965,7 +965,8 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array, expected to have a boolean or real-valued data type.</span>
+<span class="sd">        Input array, expected to have a boolean or real-valued floating-point</span>
+<span class="sd">        data type.</span>
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        Axis or axes along which values must be computed. If a tuple of unique</span>
 <span class="sd">        integers, values are computed over multiple axes. If ``None``, the</span>
@@ -1755,13 +1756,10 @@
 <span class="p">)</span>
 
 
-<span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the natural logarithm of the sum of exponents for each element `x1_i`</span>
-<span class="s2">of the input array `x1` with the respective element `x2_i` of the input</span>
-<span class="s2">array `x2`.</span>
-
-<span class="s2">This function calculates `log(exp(x1) + exp(x2))` more accurately for small</span>
-<span class="s2">values of `x`.</span>
+<span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the natural logarithm of the sum of exponentiations</span>
+<span class="s2">:math:`\log(e^x1 + e^x2)` for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logaddexp`.</span>
 
@@ -1770,13 +1768,9 @@
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have a real-valued floating-point</span>
 <span class="s2">    data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a real-valued</span>
-<span class="s2">    floating-point data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1790,8 +1784,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise results. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise results. The data type of the returned</span>
+<span class="s2">    array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -1801,12 +1795,24 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.log` : Natural logarithm, element-wise.</span>
-<span class="s2">:obj:`dpnp.exp` : Exponential, element-wise.</span>
-<span class="s2">:obj:`dpnp.logaddexp2`: Logarithm of the sum of exponentiation of inputs in</span>
-<span class="s2">                        base-2, element-wise.</span>
-<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponents of elements in the</span>
-<span class="s2">                        input array.</span>
+<span class="s2">:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^x1 + 2^x2)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the</span>
+<span class="s2">    input array.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+<span class="s2">This function is equivalent to :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
+
+<span class="s2">This function is useful in statistics where the calculated probabilities of</span>
+<span class="s2">events may be so small as to exceed the range of normal floating-point numbers.</span>
+<span class="s2">In such cases the natural logarithm of the calculated probability is stored.</span>
+<span class="s2">This function allows adding probabilities stored in such a fashion.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1829,16 +1835,10 @@
 <span class="p">)</span>
 
 
-<span class="n">_LOGADDEXP2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the logarithm of the sum of exponents in base-2 for each element</span>
-<span class="s2">`x1_i` of the input array `x1` with the respective element `x2_i` of the input</span>
-<span class="s2">array `x2`.</span>
-
-<span class="s2">This function calculates `log2(2**x1 + 2**x2)`. It is useful in machine</span>
-<span class="s2">learning when the calculated probabilities of events may be so small as</span>
-<span class="s2">to exceed the range of normal floating point numbers. In such cases the base-2</span>
-<span class="s2">logarithm of the calculated probability can be used instead. This function</span>
-<span class="s2">allows adding probabilities stored in such a fashion.</span>
+<span class="n">_LOGADDEXP2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the base-2 logarithm of the sum of exponentiations</span>
+<span class="s2">:math:`\log_2(e^x1 + e^x2)` for each element :math:`x1_i` of the input array</span>
+<span class="s2">`x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logaddexp2`.</span>
 
@@ -1847,13 +1847,9 @@
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have a real-valued floating-point</span>
 <span class="s2">    data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a real-valued</span>
-<span class="s2">    floating-point data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1878,9 +1874,23 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.logaddexp`: Natural logarithm of the sum of exponentiation of</span>
-<span class="s2">                       inputs, element-wise.</span>
-<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentiation of the inputs.</span>
+<span class="s2">:obj:`dpnp.logaddexp`: Calculate :math:`\log(2^x1 + 2^x2)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the</span>
+<span class="s2">    input array.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+<span class="s2">This function is equivalent to :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
+
+<span class="s2">This function is useful in machine learning when the calculated probabilities</span>
+<span class="s2">of events may be so small as to exceed the range of normal floating-point</span>
+<span class="s2">numbers. In such cases the base-2 logarithm of the calculated probability can</span>
+<span class="s2">be used instead. This function allows adding probabilities stored in such a</span>
+<span class="s2">fashion.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1906,14 +1916,15 @@
 <div class="viewcode-block" id="logsumexp">
 <a class="viewcode-back" href="../../reference/generated/dpnp.logsumexp.html#dpnp.logsumexp">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">logsumexp</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Calculates the logarithm of the sum of exponents of elements in</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the natural logarithm of the sum of exponentials of elements in</span>
 <span class="sd">    the input array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array, expected to have a real-valued floating-point data type.</span>
+<span class="sd">        Input array, expected to have a boolean or real-valued floating-point</span>
+<span class="sd">        data type.</span>
 <span class="sd">    axis : {None, int or tuple of ints}, optional</span>
 <span class="sd">        Axis or axes along which values must be computed. If a tuple of unique</span>
 <span class="sd">        integers, values are computed over multiple axes. If ``None``, the</span>
@@ -1964,12 +1975,12 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.log` : Natural logarithm, element-wise.</span>
-<span class="sd">    :obj:`dpnp.exp` : Exponential, element-wise.</span>
-<span class="sd">    :obj:`dpnp.logaddexp` : Logarithm of the sum of exponents of</span>
-<span class="sd">                            the inputs, element-wise.</span>
-<span class="sd">    :obj:`dpnp.logaddexp2` : Logarithm of the sum of exponents of</span>
-<span class="sd">                             the inputs in base-2, element-wise.</span>
+<span class="sd">    :obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp`: Calculate :math:`\log(2^x1 + 2^x2)`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^x1 + 2^x2)`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.cumlogsumexp` : Cumulative the natural logarithm of the sum of</span>
+<span class="sd">        elements in the input array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
