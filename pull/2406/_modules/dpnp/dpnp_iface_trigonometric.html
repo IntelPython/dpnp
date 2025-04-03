@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+87.g4ad04bc2e28 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+88.g42d13c79900 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=009de82c"></script>
+      <script src="../../_static/documentation_options.js?v=feca3898"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -2200,14 +2200,15 @@
 <div class="viewcode-block" id="reduce_hypot">
 <a class="viewcode-back" href="../../reference/generated/dpnp.reduce_hypot.html#dpnp.reduce_hypot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">reduce_hypot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the square root of the sum of squares of elements in</span>
 <span class="sd">    the input array.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array, expected to have a real-valued floating-point data type.</span>
+<span class="sd">        Input array, expected to have a boolean or real-valued floating-point</span>
+<span class="sd">        data type.</span>
 <span class="sd">    axis : {None, int or tuple of ints}, optional</span>
 <span class="sd">        Axis or axes along which values must be computed. If a tuple of unique</span>
 <span class="sd">        integers, values are computed over multiple axes. If ``None``, the</span>
@@ -2252,14 +2253,13 @@
 <span class="sd">        has the data type as described in the `dtype` parameter description</span>
 <span class="sd">        above.</span>
 
+<span class="sd">    See Also</span>
+<span class="sd">    --------</span>
+<span class="sd">    :obj:`dpnp.hypot` : Calculates :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
+
 <span class="sd">    Note</span>
 <span class="sd">    ----</span>
 <span class="sd">    This function is equivalent of `numpy.hypot.reduce`.</span>
-
-<span class="sd">    See Also</span>
-<span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.hypot` : Given the &quot;legs&quot; of a right triangle, return its</span>
-<span class="sd">                        hypotenuse.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
