@@ -1,4 +1,5 @@
 import dpctl
+import dpctl.utils as du
 import numpy
 import pytest
 from numpy.testing import (
@@ -21,6 +22,7 @@ from .helper import (
     get_integer_dtypes,
     get_integer_float_dtypes,
     has_support_aspect64,
+    is_win_platform,
     numpy_version,
 )
 
@@ -100,6 +102,17 @@ class TestDigitize:
         bins = bins.astype(dtype)
         x_dp = dpnp.array(x)
         bins_dp = dpnp.array(bins)
+
+        # SAT-7822: w/a to avoid crash on Windows (observing on LNL)
+        # TODO: remove the w/a once resolved
+        if x_dp.size == 0 and is_win_platform():
+            device_mask = (
+                du.intel_device_info(x_dp.sycl_device).get("device_id", 0)
+                & 0xFF00
+            )
+            # upper byte of device_id for LNL architecture
+            if device_mask in [0x6400]:
+                pytest.skip("SAT-7822: crash on LNL Windows")
 
         result = dpnp.digitize(x_dp, bins_dp)
         expected = numpy.digitize(x, bins)
