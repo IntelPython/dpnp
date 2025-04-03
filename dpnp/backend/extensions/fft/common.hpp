@@ -63,10 +63,7 @@ public:
         queue_ptr_ = std::make_unique<sycl::queue>(q);
     }
 
-    descr_type &get_descriptor()
-    {
-        return descr_;
-    }
+    descr_type &get_descriptor() { return descr_; }
 
     const sycl::queue &get_queue() const
     {

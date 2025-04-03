@@ -50,7 +50,7 @@ ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_partition_t)(c_dpctl.DPCTLSyclQueu
                                                            const c_dpctl.DPCTLEventVectorRef)
 
 
-cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
+cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind="introselect", order=None):
     cdef shape_type_c shape1 = arr.shape
 
     cdef size_t kth_ = kth if kth >= 0 else (arr.ndim + kth)

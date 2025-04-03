@@ -35,7 +35,6 @@ This module contains different helpers and utilities
 import dpctl
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 import dpnp.config as config
@@ -46,17 +45,12 @@ cimport cpython
 cimport cython
 cimport numpy
 from libcpp cimport bool as cpp_bool
-from libcpp.complex cimport complex as cpp_complex
 
 from dpnp.dpnp_algo.dpnp_algo cimport (
     dpnp_DPNPFuncType_to_dtype,
     dpnp_dtype_to_DPNPFuncType,
-    get_dpnp_function_ptr,
 )
 
-"""
-Python import functions
-"""
 __all__ = [
     "call_origin",
     "checker_throw_type_error",
@@ -78,12 +72,9 @@ cdef ERROR_PREFIX = "DPNP error:"
 def convert_item(item):
     if getattr(item, "__sycl_usm_array_interface__", False):
         item_converted = dpnp.asnumpy(item)
-    elif getattr(item, "__array_interface__", False):  # detect if it is a container (TODO any better way?)
-        mod_name = getattr(item, "__module__", 'none')
-        if (mod_name != 'numpy'):
-            item_converted = dpnp.asnumpy(item)
-        else:
-            item_converted = item
+    elif getattr(item, "__array_interface__", False):
+        mod_name = getattr(item, "__module__", "none")
+        item_converted = dpnp.asnumpy(item)
     elif isinstance(item, list):
         item_converted = convert_list_args(item)
     elif isinstance(item, tuple):
@@ -266,7 +257,7 @@ def map_dtype_to_device(dtype, device):
     """
 
     dtype = dpnp.dtype(dtype)
-    if not hasattr(dtype, 'char'):
+    if not hasattr(dtype, "char"):
         raise TypeError(f"Invalid type of input dtype={dtype}")
     elif not isinstance(device, dpctl.SyclDevice):
         raise TypeError(f"Invalid type of input device={device}")
@@ -540,7 +531,7 @@ cdef class dpnp_descriptor:
     @property
     def offset(self):
         if self.is_valid:
-            return self.descriptor.get('offset', 0)
+            return self.descriptor.get("offset", 0)
         return 0
 
     @property

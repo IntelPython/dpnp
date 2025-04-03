@@ -41,10 +41,7 @@ struct RadiansFunctor
     // do both argT and resT support subgroup store/load operation
     using supports_sg_loadstore = typename std::true_type;
 
-    resT operator()(const argT &x) const
-    {
-        return sycl::radians(x);
-    }
+    resT operator()(const argT &x) const { return sycl::radians(x); }
 
     template <int vec_sz>
     sycl::vec<resT, vec_sz> operator()(const sycl::vec<argT, vec_sz> &x) const

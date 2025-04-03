@@ -56,10 +56,7 @@ struct BincountEdges
     {
     }
 
-    boundsT get_bounds() const
-    {
-        return {min, max};
-    }
+    boundsT get_bounds() const { return {min, max}; }
 
     template <int _Dims, typename dT>
     size_t get_bin(const sycl::nd_item<_Dims> &,

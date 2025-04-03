@@ -73,22 +73,22 @@ cdef DPNPFuncType dpnp_dtype_to_DPNPFuncType(dtype):
         kind = chr(kind)
     itemsize = dpnp.dtype(dtype).itemsize
 
-    if dt_c == 'd':
+    if dt_c == "d":
         return DPNP_FT_DOUBLE
-    elif dt_c == 'f':
+    elif dt_c == "f":
         return DPNP_FT_FLOAT
-    elif kind == 'i':
+    elif kind == "i":
         if itemsize == 8:
             return DPNP_FT_LONG
         elif itemsize == 4:
             return DPNP_FT_INT
         else:
             utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
-    elif dt_c == 'F':
+    elif dt_c == "F":
         return DPNP_FT_CMPLX64
-    elif dt_c == 'D':
+    elif dt_c == "D":
         return DPNP_FT_CMPLX128
-    elif dt_c == '?':
+    elif dt_c == "?":
         return DPNP_FT_BOOL
     else:
         utils.checker_throw_type_error("dpnp_dtype_to_DPNPFuncType", dtype)
@@ -156,9 +156,9 @@ cdef utils.dpnp_descriptor call_fptr_1in_1out_strides(DPNPFuncName fptr_name,
                                                 sycl_queue=x1_obj.sycl_queue)
     else:
         if out.dtype != result_type:
-            utils.checker_throw_value_error(func_name, 'out.dtype', out.dtype, result_type)
+            utils.checker_throw_value_error(func_name, "out.dtype", out.dtype, result_type)
         if out.shape != result_shape:
-            utils.checker_throw_value_error(func_name, 'out.shape', out.shape, result_shape)
+            utils.checker_throw_value_error(func_name, "out.shape", out.shape, result_shape)
 
         result = out
 

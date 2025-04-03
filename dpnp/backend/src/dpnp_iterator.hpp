@@ -69,15 +69,9 @@ public:
 
     DPNP_USM_iterator() = delete;
 
-    inline reference operator*() const
-    {
-        return *ptr();
-    }
+    inline reference operator*() const { return *ptr(); }
 
-    inline pointer operator->() const
-    {
-        return ptr();
-    }
+    inline pointer operator->() const { return ptr(); }
 
     /// prefix increment
     inline DPNP_USM_iterator &operator++()
@@ -116,10 +110,7 @@ public:
     // TODO need more operators
 
     // Random access iterator requirements
-    inline reference operator[](size_type __n) const
-    {
-        return *ptr(__n);
-    }
+    inline reference operator[](size_type __n) const { return *ptr(__n); }
 
     inline difference_type operator-(const DPNP_USM_iterator &__rhs) const
     {
@@ -151,10 +142,7 @@ public:
     }
 
 private:
-    inline pointer ptr() const
-    {
-        return ptr(iter_id);
-    }
+    inline pointer ptr() const { return ptr(iter_id); }
 
     inline pointer ptr(size_type iteration_id) const
     {
@@ -275,16 +263,10 @@ public:
 
     DPNPC_id() = delete;
 
-    ~DPNPC_id()
-    {
-        free_memory();
-    }
+    ~DPNPC_id() { free_memory(); }
 
     /// this function return number of elements in output
-    inline size_type get_output_size() const
-    {
-        return output_size;
-    }
+    inline size_type get_output_size() const { return output_size; }
 
     inline void broadcast_to_shape(const size_type *__shape,
                                    const size_type __shape_size)
@@ -371,10 +353,7 @@ public:
      *
      * @param [in]  __axis    Axis in a shape of input array.
      */
-    inline void set_axis(shape_elem_type __axis)
-    {
-        set_axes({__axis});
-    }
+    inline void set_axis(shape_elem_type __axis) { set_axes({__axis}); }
 
     inline void set_axes(const shape_elem_type *__axes, const size_t axes_ndim)
     {
@@ -617,10 +596,7 @@ private:
     }
 
     /// this function is designed for SYCL environment execution
-    size_type get_iteration_size() const
-    {
-        return iteration_size;
-    }
+    size_type get_iteration_size() const { return iteration_size; }
 
     void free_axes_memory()
     {
