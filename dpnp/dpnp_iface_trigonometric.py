@@ -694,8 +694,8 @@ atanh = DPNPUnaryFunc(
 arctanh = atanh  # arctanh is an alias for atanh
 
 
-_CBRT_DOCSTRING = """
-Computes positive cube-root for each element :math:`x_i` for input array `x`.
+_CBRT_DOCSTRING = r"""
+Computes the cube-root for each element :math:`x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.cbrt`.
 
@@ -716,9 +716,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise positive cube-root.
-    The data type of the returned array is determined by the Type Promotion
-    Rules.
+    An array containing the element-wise cube-root. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -728,7 +727,11 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.
+:obj:`dpnp.sqrt` : Calculate :math:`\sqrt{x}`, element-wise.
+
+Notes
+-----
+This function is equivalent to :math:`\sqrt[3]{x}`, element-wise.
 
 Examples
 --------
@@ -2047,15 +2050,15 @@ radians = DPNPUnaryFunc(
 )
 
 
-_RECIPROCAL_DOCSTRING = """
-Computes the reciprocal square-root for each element `x_i` for input array `x`.
+_RECIPROCAL_DOCSTRING = r"""
+Computes the reciprocal for each element :math:`x_i` for input array `x`.
 
 For full documentation refer to :obj:`numpy.reciprocal`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued floating-point data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2069,9 +2072,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise reciprocals.
-    The returned array has a floating-point data type determined
-    by the Type Promotion Rules.
+    An array containing the element-wise reciprocals. The returned array has
+    a floating-point data type determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2081,7 +2083,11 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.
+:obj:`dpnp.rsqrt` : Calculate :math:`\frac{1}{\sqrt{x}}`, element-wise.
+
+Notes
+-----
+This function is equivalent to :math:`\frac{1}{x}`, element-wise.
 
 Examples
 --------
@@ -2185,8 +2191,9 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
     )
 
 
-_RSQRT_DOCSTRING = """
-Computes the reciprocal square-root for each element `x_i` for input array `x`.
+_RSQRT_DOCSTRING = r"""
+Computes the reciprocal square-root for each element :math:`x_i` for input
+array `x`.
 
 Parameters
 ----------
@@ -2204,7 +2211,7 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise reciprocal square-root.
+    An array containing the element-wise reciprocal square-roots.
     The returned array has a floating-point data type determined by
     the Type Promotion Rules.
 
@@ -2216,8 +2223,12 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.
-:obj:`dpnp.reciprocal` : Return the reciprocal of an array, element-wise.
+:obj:`dpnp.sqrt` : Calculate :math:`\sqrt{x}`, element-wise.
+:obj:`dpnp.reciprocal` : Calculate :math:`\frac{1}{x}`, element-wise.
+
+Notes
+-----
+This function is equivalent to :math:`\frac{1}{\sqrt{x}}`, element-wise.
 
 Examples
 --------
@@ -2350,15 +2361,16 @@ sinh = DPNPUnaryFunc(
 )
 
 
-_SQRT_DOCSTRING = """
-Computes the positive square-root for each element `x_i` of input array `x`.
+_SQRT_DOCSTRING = r"""
+Computes the principal square-root for each element :math:`x_i` of input array
+`x`.
 
 For full documentation refer to :obj:`numpy.sqrt`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2372,9 +2384,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise positive square-roots of `x`. The
-    data type of the returned array is determined by the Type Promotion
-    Rules.
+    An array containing the element-wise principal square-roots of `x`. The
+    data type of the returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -2384,8 +2395,23 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.cbrt` : Return the cube-root of an array, element-wise.
-:obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.
+:obj:`dpnp.cbrt` : Calculate :math:`\sqrt[3]{x}`, element-wise.
+:obj:`dpnp.rsqrt` : Calculate :math:`\frac{1}{\sqrt{x}}`, element-wise.
+
+Notes
+-----
+This function is equivalent to :math:`\sqrt{x}`, element-wise.
+
+By convention, the branch cut of the square root is the negative real axis
+:math:`(-\infty, 0)`.
+
+The square root is a continuous function from above the branch cut, taking into
+account the sign of the imaginary component.
+
+Accordingly, for complex arguments, the function returns the square root in the
+range of the right half-plane, including the imaginary axis (i.e., the plane
+defined by :math:`[0, +\infty)` along the real axis and
+:math:`(-\infty, +\infty)` along the imaginary axis).
 
 Examples
 --------
@@ -2410,7 +2436,7 @@ sqrt = DPNPUnaryFunc(
 )
 
 
-_SQUARE_DOCSTRING = """
+_SQUARE_DOCSTRING = r"""
 Squares each element `x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.square`.
@@ -2445,8 +2471,7 @@ See Also
 --------
 :obj:`dpnp..linalg.matrix_power` : Raise a square matrix
                                     to the (integer) power `n`.
-:obj:`dpnp.sqrt` : Return the positive square-root of an array,
-                    element-wise.
+:obj:`dpnp.sqrt` : Calculate :math:`\sqrt{x}`, element-wise.
 :obj:`dpnp.power` : First array elements raised to powers
                     from second array, element-wise.
 
