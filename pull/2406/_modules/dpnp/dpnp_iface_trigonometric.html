@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+86.gb6945261d09 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+86.g3d04ef3b420 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=4162d8e5"></script>
+      <script src="../../_static/documentation_options.js?v=0b0d3eb8"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1012,14 +1012,14 @@
 <span class="sd">        has the data type as described in the `dtype` parameter description</span>
 <span class="sd">        above.</span>
 
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    This function is equivalent of `numpy.logaddexp.accumulate`.</span>
-
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.logsumexp` : Logarithm of the sum of elements of the inputs,</span>
 <span class="sd">                            element-wise.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is equivalent of `numpy.logaddexp.accumulate`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1758,8 +1758,8 @@
 
 <span class="n">_LOGADDEXP_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the natural logarithm of the sum of exponentiations</span>
-<span class="s2">:math:`\log(e^x1 + e^x2)` for each element :math:`x1_i` of the input array `x1`</span>
-<span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
+<span class="s2">:math:`\log(e^</span><span class="si">{x1}</span><span class="s2"> + e^</span><span class="si">{x2}</span><span class="s2">)` for each element :math:`x1_i` of the input array</span>
+<span class="s2">`x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logaddexp`.</span>
 
@@ -1797,7 +1797,7 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
 <span class="s2">:obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
-<span class="s2">:obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^x1 + 2^x2)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^</span><span class="si">{x1}</span><span class="s2"> + 2^</span><span class="si">{x2}</span><span class="s2">)`, element-wise.</span>
 <span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the</span>
 <span class="s2">    input array.</span>
 
@@ -1807,7 +1807,6 @@
 
 <span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
 <span class="s2">(which becomes the shape of the output).</span>
-<span class="s2">This function is equivalent to :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
 
 <span class="s2">This function is useful in statistics where the calculated probabilities of</span>
 <span class="s2">events may be so small as to exceed the range of normal floating-point numbers.</span>
@@ -1837,8 +1836,8 @@
 
 <span class="n">_LOGADDEXP2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the base-2 logarithm of the sum of exponentiations</span>
-<span class="s2">:math:`\log_2(e^x1 + e^x2)` for each element :math:`x1_i` of the input array</span>
-<span class="s2">`x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
+<span class="s2">:math:`\log_2(2^</span><span class="si">{x1}</span><span class="s2"> + 2^</span><span class="si">{x2}</span><span class="s2">)` for each element :math:`x1_i` of the input</span>
+<span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logaddexp2`.</span>
 
@@ -1874,7 +1873,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.logaddexp`: Calculate :math:`\log(2^x1 + 2^x2)`, element-wise.</span>
+<span class="s2">:obj:`dpnp.logaddexp`: Calculate :math:`\log(e^</span><span class="si">{x1}</span><span class="s2"> + e^</span><span class="si">{x2}</span><span class="s2">)`, element-wise.</span>
 <span class="s2">:obj:`dpnp.logsumexp` : Logarithm of the sum of exponentials of elements in the</span>
 <span class="s2">    input array.</span>
 
@@ -1884,7 +1883,6 @@
 
 <span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
 <span class="s2">(which becomes the shape of the output).</span>
-<span class="s2">This function is equivalent to :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
 
 <span class="s2">This function is useful in machine learning when the calculated probabilities</span>
 <span class="s2">of events may be so small as to exceed the range of normal floating-point</span>
@@ -1969,18 +1967,20 @@
 <span class="sd">        has the data type as described in the `dtype` parameter description</span>
 <span class="sd">        above.</span>
 
-<span class="sd">    Note</span>
-<span class="sd">    ----</span>
-<span class="sd">    This function is equivalent of `numpy.logaddexp.reduce`.</span>
-
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.log` : Calculate :math:`\log(x)`, element-wise.</span>
 <span class="sd">    :obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.</span>
-<span class="sd">    :obj:`dpnp.logaddexp`: Calculate :math:`\log(2^x1 + 2^x2)`, element-wise.</span>
-<span class="sd">    :obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^x1 + 2^x2)`, element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp`: Calculate :math:`\log(e^{x1} + e^{x2})`,</span>
+<span class="sd">        element-wise.</span>
+<span class="sd">    :obj:`dpnp.logaddexp2`: Calculate :math:`\log_2(2^{x1} + 2^{x2})`,</span>
+<span class="sd">        element-wise.</span>
 <span class="sd">    :obj:`dpnp.cumlogsumexp` : Cumulative the natural logarithm of the sum of</span>
 <span class="sd">        elements in the input array.</span>
+
+<span class="sd">    Note</span>
+<span class="sd">    ----</span>
+<span class="sd">    This function is equivalent of `numpy.logaddexp.reduce`.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
