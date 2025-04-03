@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+89.g4e5a1aa208e documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+90.g34409df9230 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=30976537"></script>
+      <script src="../../_static/documentation_options.js?v=94ce88bf"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -859,8 +859,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise cosine. The data type of the returned</span>
-<span class="s2">    array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise cosine, in radians. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2363,8 +2363,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise sine. The data type of the returned</span>
-<span class="s2">    array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise sine, in radians. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2535,14 +2535,14 @@
 
 
 <span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Squares each element `x_i` of input array `x`.</span>
+<span class="s2">Squares each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.square`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array.</span>
+<span class="s2">    Input array, expected to have a boolean or numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2556,8 +2556,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise squares of `x`. The data type of</span>
-<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise squares of `x`. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2567,11 +2567,11 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp..linalg.matrix_power` : Raise a square matrix</span>
-<span class="s2">                                    to the (integer) power `n`.</span>
+<span class="s2">:obj:`dpnp..linalg.matrix_power` : Raise a square matrix to the (integer)</span>
+<span class="s2">    power `n`.</span>
 <span class="s2">:obj:`dpnp.sqrt` : Calculate :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
-<span class="s2">:obj:`dpnp.power` : First array elements raised to powers</span>
-<span class="s2">                    from second array, element-wise.</span>
+<span class="s2">:obj:`dpnp.power` : Exponentiation by raising the first array to the power of</span>
+<span class="s2">    the second array, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2593,14 +2593,14 @@
 
 
 <span class="n">_TAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes tangent for each element `x_i` for input array `x`.</span>
+<span class="s2">Computes the tangent for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.tan`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2614,8 +2614,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise tangent. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise tangent, in radians. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2625,7 +2625,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
 <span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
@@ -2649,15 +2649,21 @@
 <span class="p">)</span>
 
 
-<span class="n">_TANH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes hyperbolic tangent for each element `x_i` for input array `x`.</span>
+<span class="n">_TANH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the hyperbolic tangent for each element :math:`x_i` for input array</span>
+<span class="s2">`x`.</span>
+
+<span class="s2">The mathematical definition of the hyperbolic tangent is</span>
+
+<span class="s2">.. math::</span>
+<span class="s2">    \operatorname</span><span class="si">{tanh}</span><span class="s2">(x) = \frac{\operatorname</span><span class="si">{sinh}</span><span class="s2">(x)}{\operatorname</span><span class="si">{cosh}</span><span class="s2">(x)}</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.tanh`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2671,8 +2677,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise hyperbolic tangent. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise hyperbolic tangent. The data type of</span>
+<span class="s2">    the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2682,7 +2688,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arctanh` : Hyperbolic inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.atanh` : Hyperbolic inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
 <span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
@@ -2713,8 +2719,9 @@
 <span class="sd">    Unwrap by taking the complement of large deltas with respect to the period.</span>
 
 <span class="sd">    This unwraps a signal `p` by changing elements which have an absolute</span>
-<span class="sd">    difference from their predecessor of more than ``max(discont, period / 2)``</span>
-<span class="sd">    to their `period`-complementary values.</span>
+<span class="sd">    difference from their predecessor of more than</span>
+<span class="sd">    :math:`\max(discont, \frac{period}{2})` to their `period`-complementary</span>
+<span class="sd">    values.</span>
 
 <span class="sd">    For the default case where `period` is :math:`2\pi` and `discont` is</span>
 <span class="sd">    :math:`\pi`, this unwraps a radian phase `p` such that adjacent differences</span>
@@ -2729,16 +2736,19 @@
 <span class="sd">        Input array.</span>
 <span class="sd">    discont : {float, None}, optional</span>
 <span class="sd">        Maximum discontinuity between values, default is ``None`` which is an</span>
-<span class="sd">        alias for ``period / 2``. Values below ``period / 2`` are treated as if</span>
-<span class="sd">        they were ``period / 2``. To have an effect different from the default,</span>
-<span class="sd">        `discont` should be larger than ``period / 2``.</span>
+<span class="sd">        alias for :math:`\frac{period}{2}`. Values below</span>
+<span class="sd">        :math:`\frac{period}{2}` are treated as if they were</span>
+<span class="sd">        :math:`\frac{period}{2}`. To have an effect different from the default,</span>
+<span class="sd">        `discont` should be larger than :math:`\frac{period}{2}`.</span>
 
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    axis : int, optional</span>
 <span class="sd">        Axis along which unwrap will operate, default is the last axis.</span>
+
 <span class="sd">        Default: ``-1``.</span>
 <span class="sd">    period : float, optional</span>
 <span class="sd">        Size of the range over which the input wraps.</span>
+
 <span class="sd">        Default: ``2 * pi``.</span>
 
 <span class="sd">    Returns</span>
@@ -2753,9 +2763,9 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    If the discontinuity in `p` is smaller than ``period / 2``, but larger than</span>
-<span class="sd">    `discont`, no unwrapping is done because taking the complement would only</span>
-<span class="sd">    make the discontinuity larger.</span>
+<span class="sd">    If the discontinuity in `p` is smaller than :math:`\frac{period}{2}`, but</span>
+<span class="sd">    larger than `discont`, no unwrapping is done because taking the complement</span>
+<span class="sd">    would only make the discontinuity larger.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
