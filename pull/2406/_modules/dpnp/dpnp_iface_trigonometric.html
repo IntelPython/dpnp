@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+86.g3d04ef3b420 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+87.g4ad04bc2e28 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0b0d3eb8"></script>
+      <script src="../../_static/documentation_options.js?v=009de82c"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -779,8 +779,8 @@
 <span class="n">arctanh</span> <span class="o">=</span> <span class="n">atanh</span>  <span class="c1"># arctanh is an alias for atanh</span>
 
 
-<span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes positive cube-root for each element :math:`x_i` for input array `x`.</span>
+<span class="n">_CBRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the cube-root for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cbrt`.</span>
 
@@ -801,9 +801,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise positive cube-root.</span>
-<span class="s2">    The data type of the returned array is determined by the Type Promotion</span>
-<span class="s2">    Rules.</span>
+<span class="s2">    An array containing the element-wise cube-root. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -813,7 +812,11 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.</span>
+<span class="s2">:obj:`dpnp.sqrt` : Calculate :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\sqrt[3]</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2138,15 +2141,15 @@
 <span class="p">)</span>
 
 
-<span class="n">_RECIPROCAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the reciprocal square-root for each element `x_i` for input array `x`.</span>
+<span class="n">_RECIPROCAL_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the reciprocal for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.reciprocal`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2160,9 +2163,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise reciprocals.</span>
-<span class="s2">    The returned array has a floating-point data type determined</span>
-<span class="s2">    by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise reciprocals. The returned array has</span>
+<span class="s2">    a floating-point data type determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2172,7 +2174,11 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.</span>
+<span class="s2">:obj:`dpnp.rsqrt` : Calculate :math:`\frac</span><span class="si">{1}</span><span class="s2">{\sqrt</span><span class="si">{x}</span><span class="s2">}`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\frac</span><span class="si">{1}{x}</span><span class="s2">`, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2279,8 +2285,9 @@
 
 
 
-<span class="n">_RSQRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the reciprocal square-root for each element `x_i` for input array `x`.</span>
+<span class="n">_RSQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the reciprocal square-root for each element :math:`x_i` for input</span>
+<span class="s2">array `x`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
@@ -2298,7 +2305,7 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise reciprocal square-root.</span>
+<span class="s2">    An array containing the element-wise reciprocal square-roots.</span>
 <span class="s2">    The returned array has a floating-point data type determined by</span>
 <span class="s2">    the Type Promotion Rules.</span>
 
@@ -2310,8 +2317,12 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.sqrt` : Return the positive square-root of an array, element-wise.</span>
-<span class="s2">:obj:`dpnp.reciprocal` : Return the reciprocal of an array, element-wise.</span>
+<span class="s2">:obj:`dpnp.sqrt` : Calculate :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+<span class="s2">:obj:`dpnp.reciprocal` : Calculate :math:`\frac</span><span class="si">{1}{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\frac</span><span class="si">{1}</span><span class="s2">{\sqrt</span><span class="si">{x}</span><span class="s2">}`, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2444,15 +2455,16 @@
 <span class="p">)</span>
 
 
-<span class="n">_SQRT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the positive square-root for each element `x_i` of input array `x`.</span>
+<span class="n">_SQRT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the principal square-root for each element :math:`x_i` of input array</span>
+<span class="s2">`x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sqrt`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2466,9 +2478,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise positive square-roots of `x`. The</span>
-<span class="s2">    data type of the returned array is determined by the Type Promotion</span>
-<span class="s2">    Rules.</span>
+<span class="s2">    An array containing the element-wise principal square-roots of `x`. The</span>
+<span class="s2">    data type of the returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2478,8 +2489,23 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.cbrt` : Return the cube-root of an array, element-wise.</span>
-<span class="s2">:obj:`dpnp.rsqrt` : Return the reciprocal square-root of an array, element-wise.</span>
+<span class="s2">:obj:`dpnp.cbrt` : Calculate :math:`\sqrt[3]</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+<span class="s2">:obj:`dpnp.rsqrt` : Calculate :math:`\frac</span><span class="si">{1}</span><span class="s2">{\sqrt</span><span class="si">{x}</span><span class="s2">}`, element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">This function is equivalent to :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
+
+<span class="s2">By convention, the branch cut of the square root is the negative real axis</span>
+<span class="s2">:math:`(-\infty, 0)`.</span>
+
+<span class="s2">The square root is a continuous function from above the branch cut, taking into</span>
+<span class="s2">account the sign of the imaginary component.</span>
+
+<span class="s2">Accordingly, for complex arguments, the function returns the square root in the</span>
+<span class="s2">range of the right half-plane, including the imaginary axis (i.e., the plane</span>
+<span class="s2">defined by :math:`[0, +\infty)` along the real axis and</span>
+<span class="s2">:math:`(-\infty, +\infty)` along the imaginary axis).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2504,7 +2530,7 @@
 <span class="p">)</span>
 
 
-<span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_SQUARE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Squares each element `x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.square`.</span>
@@ -2539,8 +2565,7 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp..linalg.matrix_power` : Raise a square matrix</span>
 <span class="s2">                                    to the (integer) power `n`.</span>
-<span class="s2">:obj:`dpnp.sqrt` : Return the positive square-root of an array,</span>
-<span class="s2">                    element-wise.</span>
+<span class="s2">:obj:`dpnp.sqrt` : Calculate :math:`\sqrt</span><span class="si">{x}</span><span class="s2">`, element-wise.</span>
 <span class="s2">:obj:`dpnp.power` : First array elements raised to powers</span>
 <span class="s2">                    from second array, element-wise.</span>
 
