@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+83.gf08ff5cf859 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+84.gb2b58670206 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=f0e1bf6a"></script>
+      <script src="../../_static/documentation_options.js?v=7ddedb01"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1364,9 +1364,10 @@
 <span class="p">)</span>
 
 
-<span class="n">_HYPOT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the hypotenuse for a right triangle with &quot;legs&quot; `x1_i` and `x2_i` of</span>
-<span class="s2">input arrays `x1` and `x2`.</span>
+<span class="n">_HYPOT_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the square root of the sum of squares for each element :math:`x1_i` of</span>
+<span class="s2">the input array `x1` with the respective element :math:`x2_i` of the input</span>
+<span class="s2">array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.hypot`.</span>
 
@@ -1374,12 +1375,9 @@
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have a real-valued floating-point data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a real-valued floating-point data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1393,8 +1391,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise hypotenuse. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise hypotenuse. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -1404,7 +1402,17 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.reduce_hypot` : The square root of the sum of squares of elements in the input array.</span>
+<span class="s2">:obj:`dpnp.reduce_hypot` : The square root of the sum of squares of elements</span>
+<span class="s2">    in the input array.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">This function is equivalent to :math:`\sqrt{x1^2 + x2^2}`, element-wise.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
