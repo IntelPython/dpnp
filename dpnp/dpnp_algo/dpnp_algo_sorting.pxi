@@ -40,34 +40,44 @@ __all__ += [
 ]
 
 
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_partition_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                           void * ,
-                                                           void * ,
-                                                           void * ,
-                                                           const size_t,
-                                                           const shape_elem_type * ,
-                                                           const size_t,
-                                                           const c_dpctl.DPCTLEventVectorRef)
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_dpnp_partition_t)(
+    c_dpctl.DPCTLSyclQueueRef,
+    void * ,
+    void * ,
+    void * ,
+    const size_t,
+    const shape_elem_type * ,
+    const size_t,
+    const c_dpctl.DPCTLEventVectorRef
+)
 
 
-cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, axis=-1, kind='introselect', order=None):
+cpdef utils.dpnp_descriptor dpnp_partition(
+    utils.dpnp_descriptor arr, int kth, axis=-1, kind="introselect", order=None
+):
     cdef shape_type_c shape1 = arr.shape
 
     cdef size_t kth_ = kth if kth >= 0 else (arr.ndim + kth)
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(arr.dtype)
 
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_PARTITION_EXT, param1_type, param1_type)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(
+        DPNP_FN_PARTITION_EXT, param1_type, param1_type
+    )
 
-    cdef utils.dpnp_descriptor arr2 = dpnp.get_dpnp_descriptor(arr.get_pyobj().copy(), copy_when_nondefault_queue=False)
+    cdef utils.dpnp_descriptor arr2 = dpnp.get_dpnp_descriptor(
+        arr.get_pyobj().copy(), copy_when_nondefault_queue=False
+    )
 
     arr_obj = arr.get_array()
 
-    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(arr.shape,
-                                                                       kernel_data.return_type,
-                                                                       None,
-                                                                       device=arr_obj.sycl_device,
-                                                                       usm_type=arr_obj.usm_type,
-                                                                       sycl_queue=arr_obj.sycl_queue)
+    cdef utils.dpnp_descriptor result = utils.create_output_descriptor(
+        arr.shape,
+        kernel_data.return_type,
+        None,
+        device=arr_obj.sycl_device,
+        usm_type=arr_obj.usm_type,
+        sycl_queue=arr_obj.sycl_queue
+    )
 
     result_sycl_queue = result.get_array().sycl_queue
 
@@ -85,7 +95,8 @@ cpdef utils.dpnp_descriptor dpnp_partition(utils.dpnp_descriptor arr, int kth, a
                                                     arr.ndim,
                                                     NULL)  # dep_events_ref
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    with nogil:
+        c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return result

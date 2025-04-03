@@ -35,7 +35,6 @@ This module contains different helpers and utilities
 import dpctl
 import dpctl.utils as dpu
 import numpy
-from dpctl.tensor._numpy_helper import AxisError
 
 import dpnp
 import dpnp.config as config
@@ -46,17 +45,12 @@ cimport cpython
 cimport cython
 cimport numpy
 from libcpp cimport bool as cpp_bool
-from libcpp.complex cimport complex as cpp_complex
 
 from dpnp.dpnp_algo.dpnp_algo cimport (
     dpnp_DPNPFuncType_to_dtype,
     dpnp_dtype_to_DPNPFuncType,
-    get_dpnp_function_ptr,
 )
 
-"""
-Python import functions
-"""
 __all__ = [
     "call_origin",
     "checker_throw_type_error",
@@ -78,12 +72,8 @@ cdef ERROR_PREFIX = "DPNP error:"
 def convert_item(item):
     if getattr(item, "__sycl_usm_array_interface__", False):
         item_converted = dpnp.asnumpy(item)
-    elif getattr(item, "__array_interface__", False):  # detect if it is a container (TODO any better way?)
-        mod_name = getattr(item, "__module__", 'none')
-        if (mod_name != 'numpy'):
-            item_converted = dpnp.asnumpy(item)
-        else:
-            item_converted = item
+    elif getattr(item, "__array_interface__", False):
+        item_converted = dpnp.asnumpy(item)
     elif isinstance(item, list):
         item_converted = convert_list_args(item)
     elif isinstance(item, tuple):
@@ -121,15 +111,20 @@ def call_origin(function, *args, **kwargs):
 
     allow_fallback = kwargs.pop("allow_fallback", False)
 
-    if not allow_fallback and config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ == 1:
-        raise NotImplementedError(f"Requested function={function.__name__} with args={args} and kwargs={kwargs} "
-                                   "isn't currently supported and would fall back on NumPy implementation. "
-                                   "Define environment variable `DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` to `0` "
-                                   "if the fall back is required to be supported without raising an exception.")
+    if (
+        not allow_fallback
+        and config.__DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK__ == 1
+    ):
+        raise NotImplementedError(
+            f"Requested function={function.__name__} with args={args} and "
+            f"kwargs={kwargs} isn't currently supported and would fall back on "
+            "NumPy implementation. Define environment variable "
+            "`DPNP_RAISE_EXCEPION_ON_NUMPY_FALLBACK` to `0` if the fall back "
+            "is required to be supported without raising an exception."
+        )
 
     dpnp_inplace = kwargs.pop("dpnp_inplace", False)
     sycl_queue = kwargs.pop("sycl_queue", None)
-    # print(f"DPNP call_origin(): Fallback called. \n\t function={function}, \n\t args={args}, \n\t kwargs={kwargs}, \n\t dpnp_inplace={dpnp_inplace}")
 
     kwargs_out = kwargs.get("out", None)
     alloc_queues = [sycl_queue] if sycl_queue else []
@@ -159,10 +154,8 @@ def call_origin(function, *args, **kwargs):
     exec_q = dpu.get_execution_queue(alloc_queues)
     if exec_q is None:
         exec_q = dpnp.get_normalized_queue_device(sycl_queue=sycl_queue)
-    # print(f"DPNP call_origin(): backend called. \n\t function={function}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     # TODO need to put array memory into NumPy call
     result_origin = function(*args_new, **kwargs_new)
-    # print(f"DPNP call_origin(): result from backend. \n\t result_origin={result_origin}, \n\t args_new={args_new}, \n\t kwargs_new={kwargs_new}, \n\t dpnp_inplace={dpnp_inplace}")
     result = result_origin
     if dpnp_inplace:
         # enough to modify only first argument in place
@@ -176,13 +169,18 @@ def call_origin(function, *args, **kwargs):
 
     elif isinstance(result, numpy.ndarray):
         if kwargs_out is None:
-            # use dtype from input arguments if present or from the result otherwise
+            # use dtype from input arguments if present or
+            # from the result otherwise
             result_dtype = kwargs.get("dtype", None) or result_origin.dtype
 
             if exec_q is not None:
-                result_dtype = map_dtype_to_device(result_origin.dtype, exec_q.sycl_device)
+                result_dtype = map_dtype_to_device(
+                    result_origin.dtype, exec_q.sycl_device
+                )
 
-            result = dpnp_container.empty(result_origin.shape, dtype=result_dtype, sycl_queue=exec_q)
+            result = dpnp_container.empty(
+                result_origin.shape, dtype=result_dtype, sycl_queue=exec_q
+            )
         else:
             result = kwargs_out
 
@@ -195,10 +193,14 @@ def call_origin(function, *args, **kwargs):
             res = res_origin
             if isinstance(res_origin, numpy.ndarray):
                 if exec_q is not None:
-                    result_dtype = map_dtype_to_device(res_origin.dtype, exec_q.sycl_device)
+                    result_dtype = map_dtype_to_device(
+                        res_origin.dtype, exec_q.sycl_device
+                    )
                 else:
                     result_dtype = res_origin.d_type
-                res = dpnp_container.empty(res_origin.shape, dtype=result_dtype, sycl_queue=exec_q)
+                res = dpnp_container.empty(
+                    res_origin.shape, dtype=result_dtype, sycl_queue=exec_q
+                    )
                 copy_from_origin(res, res_origin)
             result_list.append(res)
 
@@ -231,7 +233,9 @@ def _get_coerced_usm_type(objects):
 
 
 def _get_common_allocation_queue(objects):
-    queues_in_use = [obj.sycl_queue for obj in objects if hasattr(obj, "sycl_queue")]
+    queues_in_use = [
+        obj.sycl_queue for obj in objects if hasattr(obj, "sycl_queue")
+    ]
     if len(queues_in_use) == 0:
         return None
     elif len(queues_in_use) == 1:
@@ -239,25 +243,32 @@ def _get_common_allocation_queue(objects):
 
     common_queue = dpu.get_execution_queue(queues_in_use)
     if common_queue is None:
-        raise ValueError("Input arrays must be allocated on the same SYCL queue")
+        raise ValueError(
+            "Input arrays must be allocated on the same SYCL queue"
+        )
     return common_queue
 
 
 def get_usm_allocations(objects):
     """
     Given a list of objects returns a tuple of USM type and SYCL queue
-    which can be used for a memory allocation and to follow compute follows data paradigm,
-    or returns `(None, None)` if the default USM type and SYCL queue can be used.
-    An exception will be raised, if the paradigm is broken for the given list of objects.
+    which can be used for a memory allocation and to follow compute follows
+    data paradigm, or returns `(None, None)` if the default USM type and
+    SYCL queue can be used. An exception will be raised, if the paradigm is
+    broken for the given list of objects.
 
     """
 
     if not isinstance(objects, (list, tuple)):
-        raise TypeError("Expected a list or a tuple, got {}".format(type(objects)))
+        raise TypeError(
+            "Expected a list or a tuple, got {}".format(type(objects))
+        )
 
     if len(objects) == 0:
         return (None, None)
-    return (_get_coerced_usm_type(objects), _get_common_allocation_queue(objects))
+    return (
+        _get_coerced_usm_type(objects), _get_common_allocation_queue(objects)
+    )
 
 
 def map_dtype_to_device(dtype, device):
@@ -266,7 +277,7 @@ def map_dtype_to_device(dtype, device):
     """
 
     dtype = dpnp.dtype(dtype)
-    if not hasattr(dtype, 'char'):
+    if not hasattr(dtype, "char"):
         raise TypeError(f"Invalid type of input dtype={dtype}")
     elif not isinstance(device, dpctl.SyclDevice):
         raise TypeError(f"Invalid type of input device={device}")
@@ -305,13 +316,17 @@ def map_dtype_to_device(dtype, device):
 
 
 cpdef checker_throw_type_error(function_name, given_type):
-    raise TypeError(f"{ERROR_PREFIX} in function {function_name}() type '{given_type}' is not supported")
+    raise TypeError(
+        f"{ERROR_PREFIX} in function {function_name}() type "
+        "'{given_type}' is not supported"
+    )
 
 
 cpdef checker_throw_value_error(function_name, param_name, param, expected):
-    # import sys
-    # sys.tracebacklimit = 0
-    err_msg = f"{ERROR_PREFIX} in function {function_name}() parameter '{param_name}'"
+    err_msg = (
+        f"{ERROR_PREFIX} in function {function_name}() "
+        f"parameter '{param_name}'"
+    )
     err_msg += f" expected `{expected}`, but '{param}' provided"
     raise ValueError(err_msg)
 
@@ -358,7 +373,6 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
     cdef dpnp_descriptor result_desc
 
     if requested_out is None:
-        result = None
         if sycl_queue is not None:
             device = None
         result_dtype = dpnp_DPNPFuncType_to_dtype(< size_t > c_type)
@@ -371,7 +385,10 @@ cdef dpnp_descriptor create_output_descriptor(shape_type_c output_shape,
     else:
         """ Based on 'out' parameter """
         if (output_shape != requested_out.shape):
-            checker_throw_value_error("create_output_descriptor", "out.shape", requested_out.shape, output_shape)
+            checker_throw_value_error(
+                "create_output_descriptor", "out.shape",
+                requested_out.shape, output_shape
+            )
 
         if isinstance(requested_out, dpnp_descriptor):
             result_desc = requested_out
@@ -396,12 +413,16 @@ cpdef inline tuple _object_to_tuple(object obj):
     if dpnp.isscalar(obj):
         return (obj, )
 
-    raise ValueError("DPNP object_to_tuple(): 'obj' should be 'None', collections.abc.Sequence, or 'int'")
+    raise ValueError(
+        "DPNP object_to_tuple(): 'obj' should be 'None', "
+        "collections.abc.Sequence, or 'int'"
+    )
 
 
 cpdef cpp_bool use_origin_backend(input1=None, size_t compute_size=0):
     """
-    This function needs to redirect particular computation cases to original backend
+    This function needs to redirect particular computation cases to
+    original backend
     Parameters:
         input1: One of the input parameter of the API function
         compute_size: Some amount of total compute size of the task
@@ -430,21 +451,30 @@ cdef shape_type_c strides_to_vector(object strides, object shape) except *:
 
 
 cdef tuple get_common_usm_allocation(dpnp_descriptor x1, dpnp_descriptor x2):
-    """Get common USM allocation in the form of (sycl_device, usm_type, sycl_queue)."""
+    """
+    Get common USM allocation in the form of
+    (sycl_device, usm_type, sycl_queue).
+    """
     array1_obj = x1.get_array()
     array2_obj = x2.get_array()
 
-    common_usm_type = dpctl.utils.get_coerced_usm_type((array1_obj.usm_type, array2_obj.usm_type))
+    common_usm_type = dpctl.utils.get_coerced_usm_type(
+        (array1_obj.usm_type, array2_obj.usm_type)
+    )
     if common_usm_type is None:
         raise ValueError(
-            "could not recognize common USM type for inputs of USM types {} and {}"
-            "".format(array1_obj.usm_type, array2_obj.usm_type))
+            "could not recognize common USM type for inputs of USM types "
+            "{} and {}".format(array1_obj.usm_type, array2_obj.usm_type)
+        )
 
-    common_sycl_queue = dpu.get_execution_queue((array1_obj.sycl_queue, array2_obj.sycl_queue))
+    common_sycl_queue = dpu.get_execution_queue(
+        (array1_obj.sycl_queue, array2_obj.sycl_queue)
+    )
     if common_sycl_queue is None:
         raise ValueError(
-            "could not recognize common SYCL queue for inputs in SYCL queues {} and {}"
-            "".format(array1_obj.sycl_queue, array2_obj.sycl_queue))
+            "could not recognize common SYCL queue for inputs in SYCL queues "
+            "{} and {}".format(array1_obj.sycl_queue, array2_obj.sycl_queue)
+        )
 
     return (common_sycl_queue.sycl_device, common_usm_type, common_sycl_queue)
 
@@ -453,7 +483,8 @@ cdef (DPNPFuncType, void *) get_ret_type_and_func(DPNPFuncData kernel_data,
                                                   cpp_bool has_aspect_fp64):
     """
     This function is responsible for determining the appropriate return type
-    and function pointer based on the capability of the allocated result array device.
+    and function pointer based on the capability of the allocated result
+    array device.
     """
     return_type = kernel_data.return_type
     func = kernel_data.ptr
@@ -474,7 +505,7 @@ cdef class dpnp_descriptor:
         self.dpnp_descriptor_data_size = 0
         self.dpnp_descriptor_is_scalar = True
 
-        """ Acquire DPCTL data container storage """
+        # Acquire DPCTL data container storage
         self.descriptor = getattr(obj, "__sycl_usm_array_interface__", None)
         if self.descriptor is None:
 
@@ -488,16 +519,20 @@ cdef class dpnp_descriptor:
 
         self.origin_pyobj = obj
 
-        """ array size calculation """
+        # array size calculation
         cdef Py_ssize_t shape_it = 0
         self.dpnp_descriptor_data_size = 1
         for shape_it in self.shape:
-            # TODO need to use common procedure from utils to calculate array size by shape
+            # TODO need to use common procedure from utils
+            # to calculate array size by shape
             if shape_it < 0:
-                raise ValueError(f"{ERROR_PREFIX} dpnp_descriptor::__init__() invalid value {shape_it} in 'shape'")
+                raise ValueError(
+                    f"{ERROR_PREFIX} dpnp_descriptor::__init__() invalid "
+                    f"value {shape_it} in 'shape'"
+                )
             self.dpnp_descriptor_data_size *= shape_it
 
-        """ set scalar property """
+        # set scalar property
         self.dpnp_descriptor_is_scalar = False
 
     @property
@@ -540,7 +575,7 @@ cdef class dpnp_descriptor:
     @property
     def offset(self):
         if self.is_valid:
-            return self.descriptor.get('offset', 0)
+            return self.descriptor.get("offset", 0)
         return 0
 
     @property
@@ -562,7 +597,6 @@ cdef class dpnp_descriptor:
 
     @property
     def __array_interface__(self):
-        # print(f"====dpnp_descriptor::__array_interface__====self.descriptor={ < size_t > self.descriptor}")
         if self.descriptor is None:
             return None
 
@@ -588,8 +622,9 @@ cdef class dpnp_descriptor:
             return self.origin_pyobj.get_array()
 
         raise TypeError(
-            "expected either dpctl.tensor.usm_ndarray or dpnp.dpnp_array.dpnp_array, got {}"
-            "".format(type(self.origin_pyobj)))
+            "expected either dpctl.tensor.usm_ndarray or "
+            "dpnp.dpnp_array.dpnp_array, got {}".format(type(self.origin_pyobj))
+        )
 
     cdef void * get_data(self):
         cdef Py_ssize_t item_size = 0

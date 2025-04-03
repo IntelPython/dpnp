@@ -39,7 +39,11 @@ __all__ += [
     "dpnp_putmask",
 ]
 
-cpdef dpnp_putmask(utils.dpnp_descriptor arr, utils.dpnp_descriptor mask, utils.dpnp_descriptor values):
+cpdef dpnp_putmask(
+    utils.dpnp_descriptor arr,
+    utils.dpnp_descriptor mask,
+    utils.dpnp_descriptor values,
+):
     cdef int values_size = values.size
 
     mask_flatiter = mask.get_pyobj().flat

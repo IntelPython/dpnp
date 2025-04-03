@@ -40,9 +40,11 @@ __all__ += [
 ]
 
 
-ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(c_dpctl.DPCTLSyclQueueRef,
-                                                     void * , void * , void * , size_t,
-                                                     const c_dpctl.DPCTLEventVectorRef)
+ctypedef c_dpctl.DPCTLSyclEventRef(*fptr_1in_2out_t)(
+    c_dpctl.DPCTLSyclQueueRef,
+    void * , void * , void * , size_t,
+    const c_dpctl.DPCTLEventVectorRef
+)
 
 
 cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
@@ -50,24 +52,30 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
     cdef DPNPFuncType param1_type = dpnp_dtype_to_DPNPFuncType(x1.dtype)
 
     """ get the FPTR data structure """
-    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(DPNP_FN_MODF_EXT, param1_type, DPNP_FT_NONE)
+    cdef DPNPFuncData kernel_data = get_dpnp_function_ptr(
+        DPNP_FN_MODF_EXT, param1_type, DPNP_FT_NONE
+    )
 
     x1_obj = x1.get_array()
 
     # create result array with type given by FPTR data
     cdef shape_type_c result_shape = x1.shape
-    cdef utils.dpnp_descriptor result1 = utils.create_output_descriptor(result_shape,
-                                                                        kernel_data.return_type,
-                                                                        None,
-                                                                        device=x1_obj.sycl_device,
-                                                                        usm_type=x1_obj.usm_type,
-                                                                        sycl_queue=x1_obj.sycl_queue)
-    cdef utils.dpnp_descriptor result2 = utils.create_output_descriptor(result_shape,
-                                                                        kernel_data.return_type,
-                                                                        None,
-                                                                        device=x1_obj.sycl_device,
-                                                                        usm_type=x1_obj.usm_type,
-                                                                        sycl_queue=x1_obj.sycl_queue)
+    cdef utils.dpnp_descriptor result1 = utils.create_output_descriptor(
+        result_shape,
+        kernel_data.return_type,
+        None,
+        device=x1_obj.sycl_device,
+        usm_type=x1_obj.usm_type,
+        sycl_queue=x1_obj.sycl_queue
+    )
+    cdef utils.dpnp_descriptor result2 = utils.create_output_descriptor(
+        result_shape,
+        kernel_data.return_type,
+        None,
+        device=x1_obj.sycl_device,
+        usm_type=x1_obj.usm_type,
+        sycl_queue=x1_obj.sycl_queue
+    )
 
     _, _, result_sycl_queue = utils.get_common_usm_allocation(result1, result2)
 
@@ -83,7 +91,8 @@ cpdef tuple dpnp_modf(utils.dpnp_descriptor x1):
                                                     x1.size,
                                                     NULL)  # dep_events_ref
 
-    with nogil: c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
+    with nogil:
+        c_dpctl.DPCTLEvent_WaitAndThrow(event_ref)
     c_dpctl.DPCTLEvent_Delete(event_ref)
 
     return (result1.get_pyobj(), result2.get_pyobj())

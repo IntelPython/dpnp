@@ -17,3 +17,5 @@ c106d91b866f4acd30226b68519b12a73a881490
 
 # Add pygrep-hooks to pre-commit config
 e62718415aa3660da5f607e352c991a063a54219
+
+# Add cython-lint to pre-commit config
