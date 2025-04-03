@@ -2107,14 +2107,15 @@ reciprocal = DPNPUnaryFunc(
 
 
 def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
-    """
+    r"""
     Calculates the square root of the sum of squares of elements in
     the input array.
 
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have a real-valued floating-point data type.
+        Input array, expected to have a boolean or real-valued floating-point
+        data type.
     axis : {None, int or tuple of ints}, optional
         Axis or axes along which values must be computed. If a tuple of unique
         integers, values are computed over multiple axes. If ``None``, the
@@ -2159,14 +2160,13 @@ def reduce_hypot(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
         has the data type as described in the `dtype` parameter description
         above.
 
+    See Also
+    --------
+    :obj:`dpnp.hypot` : Calculates :math:`\sqrt{x1^2 + x2^2}`, element-wise.
+
     Note
     ----
     This function is equivalent of `numpy.hypot.reduce`.
-
-    See Also
-    --------
-    :obj:`dpnp.hypot` : Given the "legs" of a right triangle, return its
-                        hypotenuse.
 
     Examples
     --------
