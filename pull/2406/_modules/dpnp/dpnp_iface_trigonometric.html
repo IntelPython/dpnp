@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+88.g42d13c79900 documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+89.g4e5a1aa208e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=feca3898"></script>
+      <script src="../../_static/documentation_options.js?v=30976537"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -838,7 +838,7 @@
 
 
 <span class="n">_COS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes cosine for each element :math:`x_i` for input array `x`.</span>
+<span class="s2">Computes the cosine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.cos`.</span>
 
@@ -895,7 +895,7 @@
 
 
 <span class="n">_COSH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes hyperbolic cosine for each element :math:`x_i` for input array `x`.</span>
+<span class="s2">Computes the hyperbolic cosine for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">The mathematical definition of the hyperbolic cosine is</span>
 
@@ -2342,14 +2342,14 @@
 
 
 <span class="n">_SIN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes sine for each element `x_i` of input array `x`.</span>
+<span class="s2">Computes the sine for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sin`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2363,8 +2363,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise sine. The data type of the</span>
-<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise sine. The data type of the returned</span>
+<span class="s2">    array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2374,7 +2374,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arcsin` : Trigonometric inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.asin` : Trigonometric inverse sine, element-wise.</span>
 <span class="s2">:obj:`dpnp.cos` : Trigonometric cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.sinh` : Hyperbolic sine, element-wise.</span>
@@ -2398,15 +2398,19 @@
 <span class="p">)</span>
 
 
-<span class="n">_SINH_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes hyperbolic sine for each element `x_i` for input array `x`.</span>
+<span class="n">_SINH_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the hyperbolic sine for each element :math:`x_i` for input array `x`.</span>
+
+<span class="s2">The mathematical definition of the hyperbolic sine is</span>
+
+<span class="s2">.. math:: \operatorname</span><span class="si">{sinh}</span><span class="s2">(x) = \frac{e^x - e^{-x}}</span><span class="si">{2}</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sinh`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2420,8 +2424,8 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    An array containing the element-wise hyperbolic sine. The data type</span>
-<span class="s2">    of the returned array is determined by the Type Promotion Rules.</span>
+<span class="s2">    An array containing the element-wise hyperbolic sine. The data type of the</span>
+<span class="s2">    returned array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -2431,7 +2435,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arcsinh` : Hyperbolic inverse sine, element-wise.</span>
+<span class="s2">:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.</span>
 <span class="s2">:obj:`dpnp.cosh` : Hyperbolic cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.tanh` : Hyperbolic tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.sin` : Trigonometric sine, element-wise.</span>
