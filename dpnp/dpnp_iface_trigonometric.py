@@ -1276,9 +1276,10 @@ expm1 = DPNPUnaryFunc(
 )
 
 
-_HYPOT_DOCSTRING = """
-Calculates the hypotenuse for a right triangle with "legs" `x1_i` and `x2_i` of
-input arrays `x1` and `x2`.
+_HYPOT_DOCSTRING = r"""
+Computes the square root of the sum of squares for each element :math:`x1_i` of
+the input array `x1` with the respective element :math:`x2_i` of the input
+array `x2`.
 
 For full documentation refer to :obj:`numpy.hypot`.
 
@@ -1286,12 +1287,9 @@ Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have a real-valued floating-point data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued floating-point data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a real-valued floating-point data
+    type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1305,8 +1303,8 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the element-wise hypotenuse. The data type
-    of the returned array is determined by the Type Promotion Rules.
+    An array containing the element-wise hypotenuse. The data type of the
+    returned array is determined by the Type Promotion Rules.
 
 Limitations
 -----------
@@ -1316,7 +1314,17 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.reduce_hypot` : The square root of the sum of squares of elements in the input array.
+:obj:`dpnp.reduce_hypot` : The square root of the sum of squares of elements
+    in the input array.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+This function is equivalent to :math:`\sqrt{x1^2 + x2^2}`, element-wise.
 
 Examples
 --------
