@@ -611,7 +611,7 @@ For full documentation refer to :obj:`numpy.ceil`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a boolean or real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -790,6 +790,7 @@ conjugate = DPNPUnaryFunc(
 )
 
 conj = conjugate
+
 
 _COPYSIGN_DOCSTRING = """
 Composes a floating-point value with the magnitude of `x1_i` and the sign of
@@ -1717,7 +1718,7 @@ For full documentation refer to :obj:`numpy.fix`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a boolean or real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1878,7 +1879,7 @@ For full documentation refer to :obj:`numpy.floor`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a boolean or real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -4551,7 +4552,7 @@ signed number `x` is discarded.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued data type.
+    Input array, expected to have a boolean or real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
