@@ -1188,8 +1188,7 @@ See Also
 --------
 :obj:`dpnp.exp` : Calculate :math:`e^x`, element-wise.
 :obj:`dpnp.expm1` : Calculate :math:`e^x - 1`, element-wise.
-:obj:`dpnp.power` : Exponentiation by raising the first array to the power of
-    the second array, element-wise.
+:obj:`dpnp.power` : Calculate :math:`{x1}^{x2}`, element-wise.
 
 Examples
 --------
@@ -2476,8 +2475,7 @@ See Also
 :obj:`dpnp..linalg.matrix_power` : Raise a square matrix to the (integer)
     power `n`.
 :obj:`dpnp.sqrt` : Calculate :math:`\sqrt{x}`, element-wise.
-:obj:`dpnp.power` : Exponentiation by raising the first array to the power of
-    the second array, element-wise.
+:obj:`dpnp.power` : Calculate :math:`{x1}^{x2}`, element-wise.
 
 Examples
 --------
