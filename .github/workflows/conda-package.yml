@@ -82,6 +82,9 @@ jobs:
           environment-file: ${{ env.build-conda-pkg-env }}
           activate-environment: ${{ env.build-env-name }}
 
+      - name: List installed packages
+        run: mamba list
+
       - name: Store conda paths as envs
         shell: bash -el {0}
         run: |
