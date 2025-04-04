@@ -609,14 +609,22 @@ class TestArrayInvalidValueAdvGetitem:
     },
     {"shape": (2, 3, 4), "indexes": (slice(None), []), "value": 1},
     {"shape": (2, 3, 4), "indexes": ([], []), "value": 1},
-    # {'shape': (2, 3, 4), 'indexes': numpy.array([], dtype=numpy.bool_),
-    #  'value': 1},  #dpctl-1913
-    # {'shape': (2, 3, 4),
-    #  'indexes': (slice(None), numpy.array([], dtype=numpy.bool_)),
-    #  'value': 1},  #dpctl-1913
-    # {'shape': (2, 3, 4), 'indexes': numpy.array([[], []], dtype=numpy.bool_),
-    #  'value': numpy.random.uniform(size=(4,))},  #dpctl-1913
-    # {'shape': (2, 3, 4), 'indexes': numpy.empty((0, 0, 4), bool), 'value': 1},  #dpctl-1913
+    {
+        "shape": (2, 3, 4),
+        "indexes": numpy.array([], dtype=numpy.bool_),
+        "value": 1,
+    },
+    {
+        "shape": (2, 3, 4),
+        "indexes": (slice(None), numpy.array([], dtype=numpy.bool_)),
+        "value": 1,
+    },
+    {
+        "shape": (2, 3, 4),
+        "indexes": numpy.array([[], []], dtype=numpy.bool_),
+        "value": numpy.random.uniform(size=(4,)),
+    },
+    {"shape": (2, 3, 4), "indexes": numpy.empty((0, 0, 4), bool), "value": 1},
     # multiple masks
     {"shape": (2, 3, 4), "indexes": (True, [True, False]), "value": 1},
     {"shape": (2, 3, 4), "indexes": (False, [True, False]), "value": 1},
