@@ -1034,7 +1034,7 @@ def dpnp_einsum(
             )
             arrays.append(operands[id])
     result_dtype = dpnp.result_type(*arrays) if dtype is None else dtype
-    if order in "aA":
+    if order is not None and order in "aA":
         order = "F" if all(arr.flags.fnc for arr in arrays) else "C"
 
     input_subscripts = [

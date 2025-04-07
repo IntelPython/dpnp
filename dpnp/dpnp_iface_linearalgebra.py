@@ -215,12 +215,13 @@ def einsum(
         If provided, forces the calculation to use the data type specified.
 
         Default: ``None``.
-    order : {"C", "F", "A", "K"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Controls the memory layout of the output. ``"C"`` means it should be
         C-contiguous. ``"F"`` means it should be F-contiguous, ``"A"`` means
         it should be ``"F"`` if the inputs are all ``"F"``, ``"C"`` otherwise.
         ``"K"`` means it should be as close to the layout as the inputs as
-        is possible, including arbitrarily permuted axes.
+        is possible, including arbitrarily permuted axes. ``order=None`` is
+        equivalent to ``order="K"``.
 
         Default: ``"K"``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
