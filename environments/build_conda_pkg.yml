@@ -3,5 +3,4 @@ channels:
   - conda-forge
 dependencies:
   - python=3.12 # conda-build does not support python 3.13
-  - conda-build=25.3.2
-  - libxml2=2.13.7 # libs dependency issue in 2.14.0
+  - conda-build=25.3.1
