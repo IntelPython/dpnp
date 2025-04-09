@@ -195,9 +195,9 @@ def allclose(a, b, rtol=1.0e-5, atol=1.0e-8, equal_nan=False):
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray, scalar}
-        First input array, expected to have numeric data type.
+        First input array, expected to have a numeric data type.
     b : {dpnp.ndarray, usm_ndarray, scalar}
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a numeric data type.
     rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional
         The relative tolerance parameter.
 
@@ -552,9 +552,9 @@ For full documentation refer to :obj:`numpy.equal`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array have the correct shape and the expected data type.
@@ -632,9 +632,9 @@ For full documentation refer to :obj:`numpy.greater`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -706,9 +706,9 @@ For full documentation refer to :obj:`numpy.greater_equal`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -790,9 +790,9 @@ def isclose(a, b, rtol=1e-05, atol=1e-08, equal_nan=False):
     Parameters
     ----------
     a : {dpnp.ndarray, usm_ndarray, scalar}
-        First input array, expected to have numeric data type.
+        First input array, expected to have a numeric data type.
     b : {dpnp.ndarray, usm_ndarray, scalar}
-        Second input array, also expected to have numeric data type.
+        Second input array, also expected to have a numeric data type.
     rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional
         The relative tolerance parameter.
 
@@ -992,7 +992,7 @@ For full documentation refer to :obj:`numpy.isfinite`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1124,7 +1124,7 @@ For full documentation refer to :obj:`numpy.isinf`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1182,7 +1182,7 @@ For full documentation refer to :obj:`numpy.isnan`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1517,9 +1517,9 @@ For full documentation refer to :obj:`numpy.less`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1591,9 +1591,9 @@ For full documentation refer to :obj:`numpy.less_equal`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1664,9 +1664,9 @@ For full documentation refer to :obj:`numpy.logical_and`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1739,7 +1739,7 @@ For full documentation refer to :obj:`numpy.logical_not`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1803,9 +1803,9 @@ For full documentation refer to :obj:`numpy.logical_or`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1879,9 +1879,9 @@ For full documentation refer to :obj:`numpy.logical_xor`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1953,9 +1953,9 @@ For full documentation refer to :obj:`numpy.not_equal`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.

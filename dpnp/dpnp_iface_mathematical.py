@@ -356,7 +356,7 @@ For full documentation refer to :obj:`numpy.abs`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -426,9 +426,9 @@ For full documentation refer to :obj:`numpy.add`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -573,7 +573,7 @@ def around(x, /, decimals=0, out=None):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     decimals : int, optional
         Number of decimal places to round to. If `decimals` is negative, it
         specifies the number of positions to the left of the decimal point.
@@ -758,7 +758,7 @@ For full documentation refer to :obj:`numpy.conj`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2050,9 +2050,9 @@ For full documentation refer to :obj:`numpy.fmax`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2141,9 +2141,9 @@ For full documentation refer to :obj:`numpy.fmin`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2688,7 +2688,7 @@ For full documentation refer to :obj:`numpy.imag`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2888,9 +2888,9 @@ For full documentation refer to :obj:`numpy.maximum`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2977,9 +2977,9 @@ For full documentation refer to :obj:`numpy.minimum`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3097,9 +3097,9 @@ For full documentation refer to :obj:`numpy.multiply`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a boolean or numeric data type.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a boolean or numeric data type.
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.

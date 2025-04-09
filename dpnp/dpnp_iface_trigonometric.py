@@ -2447,7 +2447,7 @@ For full documentation refer to :obj:`numpy.square`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a boolean or numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
