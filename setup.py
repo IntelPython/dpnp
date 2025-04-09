@@ -84,5 +84,5 @@ setup(
     },
     include_package_data=False,
     python_requires=">=3.9,<3.14",
-    install_requires=["dpctl >= 0.19.0dev0", "numpy"],
+    install_requires=["dpctl >= 0.20.0dev0", "numpy"],
 )
