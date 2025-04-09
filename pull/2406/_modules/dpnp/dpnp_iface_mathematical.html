@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+97.g3a0b2093796 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+100.geb221d5e240 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=cbdb427f"></script>
+      <script src="../../_static/documentation_options.js?v=c01cf802"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -441,7 +441,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -511,9 +511,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a boolean or numeric data type.</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -660,7 +660,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array, expected to have numeric data type.</span>
+<span class="sd">        Input array, expected to have a numeric data type.</span>
 <span class="sd">    decimals : int, optional</span>
 <span class="sd">        Number of decimal places to round to. If `decimals` is negative, it</span>
 <span class="sd">        specifies the number of positions to the left of the decimal point.</span>
@@ -849,7 +849,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2162,9 +2162,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a boolean or numeric data type.</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2253,9 +2253,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a boolean or numeric data type.</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2803,7 +2803,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3003,9 +3003,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a boolean or numeric data type.</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3092,9 +3092,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a boolean or numeric data type.</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3215,9 +3215,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a boolean or numeric data type.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a boolean or numeric data type.</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
