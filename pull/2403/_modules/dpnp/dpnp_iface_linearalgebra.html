@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev0+75.g25166462837 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2346af276e4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=68cbafdd"></script>
+      <script src="../../_static/documentation_options.js?v=732c8b59"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -305,12 +305,13 @@
 <span class="sd">        If provided, forces the calculation to use the data type specified.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Controls the memory layout of the output. ``&quot;C&quot;`` means it should be</span>
 <span class="sd">        C-contiguous. ``&quot;F&quot;`` means it should be F-contiguous, ``&quot;A&quot;`` means</span>
 <span class="sd">        it should be ``&quot;F&quot;`` if the inputs are all ``&quot;F&quot;``, ``&quot;C&quot;`` otherwise.</span>
 <span class="sd">        ``&quot;K&quot;`` means it should be as close to the layout as the inputs as</span>
-<span class="sd">        is possible, including arbitrarily permuted axes.</span>
+<span class="sd">        is possible, including arbitrarily permuted axes. ``order=None`` is</span>
+<span class="sd">        equivalent to ``order=&quot;K&quot;``.</span>
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
