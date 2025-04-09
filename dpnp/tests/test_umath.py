@@ -108,8 +108,6 @@ def test_umaths(test_cases):
         and is_gpu_device()
     ):
         pytest.skip("dpctl-1652")
-    elif umath in ["ceil", "floor", "trunc"] and args[0].dtype == dpnp.bool:
-        pytest.skip("dpctl-2030")
     elif (
         umath == "tan"
         and dpnp.issubdtype(args[0].dtype, dpnp.complexfloating)
