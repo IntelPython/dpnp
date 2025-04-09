@@ -1647,6 +1647,10 @@ class TestEinsum:
             assert tmp.flags.c_contiguous is False
             assert tmp.flags.f_contiguous is False
 
+            tmp = dpnp.einsum("...ft,mf->...mt", a, b, order=None, optimize=opt)
+            assert tmp.flags.c_contiguous is False
+            assert tmp.flags.f_contiguous is False
+
             tmp = dpnp.einsum("...ft,mf->...mt", a, b, optimize=opt)
             assert tmp.flags.c_contiguous is False
             assert tmp.flags.f_contiguous is False
