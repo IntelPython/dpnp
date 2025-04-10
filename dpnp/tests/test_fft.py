@@ -829,11 +829,10 @@ class TestRfft:
 
 
 class TestRfft2:
-    # TODO: add other axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
-    @pytest.mark.parametrize("axes", [(0, 1)])  # (1, 2),(0, 2),(2, 1),(2, 0)
+    @pytest.mark.parametrize("axes", [(0, 1), (1, 2), (0, 2), (2, 1), (2, 0)])
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
     def test_basic(self, dtype, axes, norm, order):
@@ -888,12 +887,11 @@ class TestRfft2:
 
 
 class TestRfftn:
-    # TODO: add additional axes when mkl_fft gh-119 is addressed
     @pytest.mark.parametrize(
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     @pytest.mark.parametrize(
-        "axes", [(0, 1, 2), (-2, -4, -1, -3)]  # (-1, -4, -2)
+        "axes", [(0, 1, 2), (-2, -4, -1, -3), (-1, -4, -2)]
     )
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])
@@ -993,6 +991,9 @@ class TestRfftn:
         assert_dtype_allclose(result, expected)
 
         result = dpnp.fft.irfftn(ia)
+        expected = numpy.fft.irfftn(a)
+        flag = True if numpy_version() < "2.0.0" else False
+        assert_dtype_allclose(result, expected, check_only_type_kind=flag)
         expected = numpy.fft.irfftn(a)
         flag = True if numpy_version() < "2.0.0" else False
         assert_dtype_allclose(result, expected, check_only_type_kind=flag)
