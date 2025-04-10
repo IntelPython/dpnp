@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+100.geb221d5e240 documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+105.g3d1bec9becb documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c01cf802"></script>
+      <script src="../../_static/documentation_options.js?v=31086715"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -436,7 +436,7 @@
 <span class="n">_ABS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Calculates the absolute value for each element :math:`x_i` of input array `x`.</span>
 
-<span class="s2">For full documentation refer to :obj:`numpy.abs`.</span>
+<span class="s2">For full documentation refer to :obj:`numpy.absolute`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
@@ -457,8 +457,8 @@
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise absolute values.</span>
 <span class="s2">    For complex input, the absolute value is its magnitude.</span>
-<span class="s2">    If `x` has a real-valued floating-point data type, the returned array has</span>
-<span class="s2">    the same data type as `x`. If `x` has a complex floating-point data type,</span>
+<span class="s2">    If `x` has a real-valued data type, the returned array has the</span>
+<span class="s2">    same data type as `x`. If `x` has a complex floating-point data type,</span>
 <span class="s2">    the returned array has a real-valued floating-point data type whose</span>
 <span class="s2">    precision matches the precision of `x`.</span>
 
@@ -474,7 +474,7 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">``dpnp.absolute`` is a shorthand for this function.</span>
+<span class="s2">``dpnp.absolute`` is an equivalent function.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -582,7 +582,7 @@
 <span class="p">)</span>
 
 
-<span class="n">_ANGLE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
+<span class="n">_ANGLE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the phase angle (also called the argument) of each element :math:`x_i`</span>
 <span class="s2">for input array `x`.</span>
 
@@ -615,13 +615,13 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns</span>
-<span class="s2">the value ``0``.</span>
+<span class="s2">Although the angle of the complex number ``0`` is undefined, ``dpnp.angle(0)``</span>
+<span class="s2">returns the value ``0``.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant</span>
-<span class="s2">    correctly.</span>
+<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}</span><span class="s2">/</span><span class="si">{x2}</span><span class="s2">` choosing</span>
+<span class="s2">    the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.abs` : Calculate the absolute value element-wise.</span>
 <span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
@@ -892,6 +892,7 @@
 <span class="p">)</span>
 
 <span class="n">conjugate</span> <span class="o">=</span> <span class="n">conj</span>
+
 
 <span class="n">_COPYSIGN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Composes a floating-point value with the magnitude of :math:`x1_i` and the sign</span>
@@ -1847,7 +1848,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
+<span class="s2">    Input array, expected to have a boolean or real-valued data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2818,7 +2819,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise imaginary component of input.</span>
-<span class="s2">    If the input is a real-valued floating-point data type, the returned array has</span>
+<span class="s2">    If the input is a real-valued data type, the returned array has</span>
 <span class="s2">    the same data type. If the input is a complex floating-point</span>
 <span class="s2">    data type, the returned array has a floating-point data type</span>
 <span class="s2">    with the same floating-point precision as complex input.</span>
@@ -3888,7 +3889,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3903,7 +3904,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise real component of input.</span>
-<span class="s2">    If the input is a real-valued floating-point data type, the returned array has</span>
+<span class="s2">    If the input is a real-valued data type, the returned array has</span>
 <span class="s2">    the same data type. If the input is a complex floating-point</span>
 <span class="s2">    data type, the returned array has a floating-point data type</span>
 <span class="s2">    with the same floating-point precision as complex input.</span>
@@ -4232,7 +4233,7 @@
 <span class="s2">    \frac</span><span class="si">{x_i}</span><span class="s2">{|x_i|} &amp; \textrm</span><span class="si">{otherwise}</span>
 <span class="s2">    \end</span><span class="si">{cases}</span>
 
-<span class="s2">    where :math:`|x_i|` is the absolute value of :math:`x_i`.</span>
+<span class="s2">where :math:`|x_i|` is the absolute value of :math:`x_i`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sign`.</span>
 
@@ -4293,8 +4294,8 @@
 <span class="s2">input array `x`.</span>
 
 <span class="s2">The sign bit of a real-valued floating-point number :math:`x_i` is set whenever</span>
-<span class="s2">:math:`x_i` is either ``-0``, less than zero, or a signed ``NaN`` (i.e., a NaN</span>
-<span class="s2">value whose sign bit is ``1``).</span>
+<span class="s2">:math:`x_i` is either ``-0``, less than zero, or a signed ``NaN``</span>
+<span class="s2">(i.e., a ``NaN`` value whose sign bit is ``1``).</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.signbit`.</span>
 
