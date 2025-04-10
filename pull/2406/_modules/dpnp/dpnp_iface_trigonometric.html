@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+105.g3d1bec9becb documentation</title>
+  <title>dpnp.dpnp_iface_trigonometric &mdash; Data Parallel Extension for NumPy 0.18.0dev0+106.gabe144a5eca documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=31086715"></script>
+      <script src="../../_static/documentation_options.js?v=cfb66b50"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -400,7 +400,7 @@
 <span class="s2">:obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.</span>
 <span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
 <span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
-<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}</span><span class="s2">/</span><span class="si">{x2}</span><span class="s2">`</span>
+<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">`</span>
 <span class="s2">    choosing the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.</span>
 
@@ -562,7 +562,7 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}</span><span class="s2">/</span><span class="si">{x2}</span><span class="s2">`</span>
+<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">`</span>
 <span class="s2">    choosing the quadrant correctly.</span>
 <span class="s2">:obj:`dpnp.angle` : Argument of complex values.</span>
 <span class="s2">:obj:`dpnp.tan` : Trigonometric tangent, element-wise.</span>
@@ -608,9 +608,9 @@
 <span class="n">arctan</span> <span class="o">=</span> <span class="n">atan</span>  <span class="c1"># arctan is an alias for atan</span>
 
 
-<span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the inverse tangent of the quotient :math:`x1_i/x2_i` for each</span>
-<span class="s2">element :math:`x1_i` of the input array `x1` with the respective element</span>
+<span class="n">_ATAN2_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the inverse tangent of the quotient :math:`\frac</span><span class="si">{x1_i}{x2_i}</span><span class="s2">` for</span>
+<span class="s2">each element :math:`x1_i` of the input array `x1` with the respective element</span>
 <span class="s2">:math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">Note that :obj:`dpnp.arctan2` is an alias of :obj:`dpnp.atan2`.</span>
@@ -640,7 +640,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the inverse tangent of the quotient</span>
-<span class="s2">    :math:`</span><span class="se">\f</span><span class="s2">rac</span><span class="si">{x1}</span><span class="s2">/</span><span class="si">{x2}</span><span class="s2">`, in radians. The returned array must have a</span>
+<span class="s2">    :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">`, in radians. The returned array must have a</span>
 <span class="s2">    real-valued floating-point data type determined by Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
