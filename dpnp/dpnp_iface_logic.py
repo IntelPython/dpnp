@@ -985,7 +985,7 @@ def iscomplexobj(x):
 
 
 _ISFINITE_DOCSTRING = """
-Test each element :math:`x_i` of input array `x` if finite.
+Test each element :math:`x_i` of the input array `x` to determine if finite.
 
 For full documentation refer to :obj:`numpy.isfinite`.
 

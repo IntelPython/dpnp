@@ -351,7 +351,7 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element :math:`x_i` of input array `x`.
 
-For full documentation refer to :obj:`numpy.abs`.
+For full documentation refer to :obj:`numpy.absolute`.
 
 Parameters
 ----------
@@ -372,8 +372,8 @@ Returns
 out : dpnp.ndarray
     An array containing the element-wise absolute values.
     For complex input, the absolute value is its magnitude.
-    If `x` has a real-valued floating-point data type, the returned array has
-    the same data type as `x`. If `x` has a complex floating-point data type,
+    If `x` has a real-valued data type, the returned array has the
+    same data type as `x`. If `x` has a complex floating-point data type,
     the returned array has a real-valued floating-point data type whose
     precision matches the precision of `x`.
 
@@ -389,7 +389,7 @@ See Also
 
 Notes
 -----
-``dpnp.absolute`` is a shorthand for this function.
+``dpnp.absolute`` is an equivalent function.
 
 Examples
 --------
@@ -497,7 +497,7 @@ add = DPNPBinaryFunc(
 )
 
 
-_ANGLE_DOCSTRING = """
+_ANGLE_DOCSTRING = r"""
 Computes the phase angle (also called the argument) of each element :math:`x_i`
 for input array `x`.
 
@@ -530,13 +530,13 @@ out : dpnp.ndarray
 
 Notes
 -----
-Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns
-the value ``0``.
+Although the angle of the complex number ``0`` is undefined, ``dpnp.angle(0)``
+returns the value ``0``.
 
 See Also
 --------
-:obj:`dpnp.atan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant
-    correctly.
+:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}/{x2}` choosing
+    the quadrant correctly.
 :obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.abs` : Calculate the absolute value element-wise.
 :obj:`dpnp.real` : Return the real part of the complex argument.
@@ -2703,7 +2703,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise imaginary component of input.
-    If the input is a real-valued floating-point data type, the returned array has
+    If the input is a real-valued data type, the returned array has
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
@@ -3764,7 +3764,7 @@ For full documentation refer to :obj:`numpy.real`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3779,7 +3779,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise real component of input.
-    If the input is a real-valued floating-point data type, the returned array has
+    If the input is a real-valued data type, the returned array has
     the same data type. If the input is a complex floating-point
     data type, the returned array has a floating-point data type
     with the same floating-point precision as complex input.
@@ -4105,7 +4105,7 @@ The sign function (also known as the **signum function**) of a number
     \frac{x_i}{|x_i|} & \textrm{otherwise}
     \end{cases}
 
-    where :math:`|x_i|` is the absolute value of :math:`x_i`.
+where :math:`|x_i|` is the absolute value of :math:`x_i`.
 
 For full documentation refer to :obj:`numpy.sign`.
 
@@ -4166,8 +4166,8 @@ Determines whether the sign bit is set for each element :math:`x_i` of the
 input array `x`.
 
 The sign bit of a real-valued floating-point number :math:`x_i` is set whenever
-:math:`x_i` is either ``-0``, less than zero, or a signed ``NaN`` (i.e., a NaN
-value whose sign bit is ``1``).
+:math:`x_i` is either ``-0``, less than zero, or a signed ``NaN``
+(i.e., a ``NaN`` value whose sign bit is ``1``).
 
 For full documentation refer to :obj:`numpy.signbit`.
 

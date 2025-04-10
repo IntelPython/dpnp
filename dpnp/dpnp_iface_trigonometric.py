@@ -315,7 +315,7 @@ See Also
 :obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
 :obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
-:obj:`dpnp.atan2` : Element-wise arc tangent of `x1/x2`
+:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}/{x2}`
     choosing the quadrant correctly.
 :obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.
 
@@ -477,7 +477,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.atan2` : Element-wise arc tangent of `x1/x2`
+:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}/{x2}`
     choosing the quadrant correctly.
 :obj:`dpnp.angle` : Argument of complex values.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
@@ -554,9 +554,9 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    An array containing the inverse tangent of the quotient :math:`x1/x2`, in
-    radians. The returned array must have a real-valued floating-point data
-    type determined by Type Promotion Rules.
+    An array containing the inverse tangent of the quotient
+    :math:`\frac{x1}/{x2}`, in radians. The returned array must have a
+    real-valued floating-point data type determined by Type Promotion Rules.
 
 Limitations
 -----------
@@ -1027,7 +1027,7 @@ deg2rad = DPNPUnaryFunc(
 
 
 _DEGREES_DOCSTRING = r"""
-Convert angles from degrees to radians for each element :math:`x_i` for input
+Convert angles from radian to degrees for each element :math:`x_i` for input
 array `x`.
 
 For full documentation refer to :obj:`numpy.degrees`.
@@ -1210,8 +1210,8 @@ exp2 = DPNPUnaryFunc(
 
 
 _EXPM1_DOCSTRING = r"""
-Computes the exponential minus 1 for each element :math:`x_i` of input array
-`x`.
+Computes the exponential minus ``1`` for each element :math:`x_i` of input
+array `x`.
 
 For full documentation refer to :obj:`numpy.expm1`.
 
@@ -1918,7 +1918,7 @@ def logsumexp(x, /, *, axis=None, dtype=None, keepdims=False, out=None):
 
 
 _RAD2DEG_DOCSTRING = r"""
-Convert angles from degrees to radians for each element :math:`x_i` for input
+Convert angles from radians to degrees for each element :math:`x_i` for input
 array `x`.
 
 For full documentation refer to :obj:`numpy.rad2deg`.
@@ -2472,7 +2472,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp..linalg.matrix_power` : Raise a square matrix to the (integer)
+:obj:`dpnp.linalg.matrix_power` : Raise a square matrix to the (integer)
     power `n`.
 :obj:`dpnp.sqrt` : Calculate :math:`\sqrt{x}`, element-wise.
 :obj:`dpnp.power` : Calculate :math:`{x1}^{x2}`, element-wise.

@@ -617,7 +617,7 @@ def inner(a, b):
 
     See Also
     --------
-    :obj:`dpnp.einsum` : Einstein summation convention..
+    :obj:`dpnp.einsum` : Einstein summation convention.
     :obj:`dpnp.dot` : Generalized matrix product,
                       using second last dimension of `b`.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
@@ -998,7 +998,7 @@ def matvec(
 
     See Also
     --------
-    :obj:`dpnp.vecdot` : Vector-vector product..
+    :obj:`dpnp.vecdot` : Vector-vector product.
     :obj:`dpnp.vecmat` : Vector-matrix product.
     :obj:`dpnp.matmul` : Matrix-matrix product.
     :obj:`dpnp.einsum` : Einstein summation convention.
@@ -1502,7 +1502,7 @@ def vecmat(
 
     See Also
     --------
-    :obj:`dpnp.vecdot` : Vector-vector product..
+    :obj:`dpnp.vecdot` : Vector-vector product.
     :obj:`dpnp.matvec` : Matrix-vector product.
     :obj:`dpnp.matmul` : Matrix-matrix product.
     :obj:`dpnp.einsum` : Einstein summation convention.
