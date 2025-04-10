@@ -802,6 +802,7 @@ conj = DPNPUnaryFunc(
 
 conjugate = conj
 
+
 _COPYSIGN_DOCSTRING = """
 Composes a floating-point value with the magnitude of :math:`x1_i` and the sign
 of :math:`x2_i` for each element of the input array `x1`.
@@ -1735,7 +1736,7 @@ For full documentation refer to :obj:`numpy.fix`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a real-valued floating-point data type.
+    Input array, expected to have a boolean or real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.

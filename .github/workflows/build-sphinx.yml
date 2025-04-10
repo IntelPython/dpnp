@@ -42,6 +42,7 @@ jobs:
       oneapi-pkgs-env: ''
       # Enable env when it's required to use only conda packages without OneAPI installation
       # oneapi-pkgs-env: '${{ github.workspace }}/environments/oneapi_pkgs.yml'
+      dpctl-pkg-txt: 'environments/dpctl_pkg.txt'
 
     steps:
       - name: Cancel Previous Runs
@@ -149,7 +150,7 @@ jobs:
       - name: Install dpctl
         if: env.oneapi-pkgs-env == ''
         run: |
-          pip install -i https://pypi.anaconda.org/dppy/label/dev/simple dpctl==0.20.0dev0
+          pip install -r ${{ env.dpctl-pkg-txt }}
 
       - name: Conda info
         run: |
