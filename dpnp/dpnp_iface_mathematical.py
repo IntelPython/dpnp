@@ -2806,11 +2806,15 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         raise NotImplementedError(
             "Non-C-contiguous x is currently not supported"
         )
+    _, exec_q = get_usm_allocations([x, xp, fp])
+
     x_dtype = dpnp.common_type(x, xp)
-    if not dpnp.can_cast(x_dtype, dpnp.default_float_type()):
+    x_float_type = dpnp.default_float_type(exec_q)
+
+    if not dpnp.can_cast(x_dtype, x_float_type):
         raise TypeError(
             "Cannot cast array data from"
-            f" {x_dtype} to {dpnp.default_float_type()} "
+            f" {x_dtype} to {x_float_type} "
             "according to the rule 'safe'"
         )
 
@@ -2823,8 +2827,8 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         left = None
         right = None
 
-        x = x.astype(dpnp.default_float_type())
-        xp = xp.astype(dpnp.default_float_type())
+        x = x.astype(x_float_type)
+        xp = xp.astype(x_float_type)
 
         # normalizing periodic boundaries
         x %= period
@@ -2849,10 +2853,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         dpnp.array(right, fp.dtype).get_array() if right is not None else None
     )
 
-    idx = dpnp.array(idx, dtype="uint64")
-
-    queue = x.sycl_queue
-    _manager = dpu.SequentialOrderManager[queue]
+    _manager = dpu.SequentialOrderManager[exec_q]
     mem_ev, ht_ev = ufi._interpolate(
         x.get_array(),
         idx.get_array(),
@@ -2861,7 +2862,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         left_usm,
         right_usm,
         output.get_array(),
-        queue,
+        exec_q,
         depends=_manager.submitted_events,
     )
     _manager.add_event_pair(mem_ev, ht_ev)
