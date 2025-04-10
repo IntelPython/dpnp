@@ -2842,8 +2842,12 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     out_dtype = fp.dtype
     output = dpnp.empty(x.shape, dtype=out_dtype)
     idx = dpnp.searchsorted(xp, x, side="right")
-    left = fp[0] if left is None else dpnp.array(left, fp.dtype)
-    right = fp[-1] if right is None else dpnp.array(right, fp.dtype)
+    left_usm = (
+        dpnp.array(left, fp.dtype).get_array() if left is not None else None
+    )
+    right_usm = (
+        dpnp.array(right, fp.dtype).get_array() if right is not None else None
+    )
 
     idx = dpnp.array(idx, dtype="uint64")
 
@@ -2854,8 +2858,8 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         idx.get_array(),
         xp.get_array(),
         fp.get_array(),
-        # left,
-        # right,
+        left_usm,
+        right_usm,
         output.get_array(),
         queue,
         depends=_manager.submitted_events,

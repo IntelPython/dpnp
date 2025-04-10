@@ -65,6 +65,8 @@ typedef sycl::event (*interpolate_fn_ptr_t)(sycl::queue &,
                                             const void *, // idx
                                             const void *, // xp
                                             const void *, // fp
+                                            const void *, // left
+                                            const void *, // right
                                             void *,       // out
                                             std::size_t,  // n
                                             std::size_t,  // xp_size
@@ -76,6 +78,8 @@ sycl::event interpolate_call(sycl::queue &exec_q,
                              const void *vidx,
                              const void *vxp,
                              const void *vfp,
+                             const void *vleft,
+                             const void *vright,
                              void *vout,
                              std::size_t n,
                              std::size_t xp_size,
@@ -88,11 +92,13 @@ sycl::event interpolate_call(sycl::queue &exec_q,
     const std::size_t *idx = static_cast<const std::size_t *>(vidx);
     const TCoord *xp = static_cast<const TCoord *>(vxp);
     const T *fp = static_cast<const T *>(vfp);
+    const T *left = static_cast<const T *>(vleft);
+    const T *right = static_cast<const T *>(vright);
     T *out = static_cast<T *>(vout);
 
     using dpnp::kernels::interpolate::interpolate_impl;
     sycl::event interpolate_ev = interpolate_impl<TCoord, T>(
-        exec_q, x, idx, xp, fp, out, n, xp_size, depends);
+        exec_q, x, idx, xp, fp, left, right, out, n, xp_size, depends);
 
     return interpolate_ev;
 }
@@ -104,6 +110,8 @@ std::pair<sycl::event, sycl::event>
                    const dpctl::tensor::usm_ndarray &idx,
                    const dpctl::tensor::usm_ndarray &xp,
                    const dpctl::tensor::usm_ndarray &fp,
+                   std::optional<const dpctl::tensor::usm_ndarray> &left,
+                   std::optional<const dpctl::tensor::usm_ndarray> &right,
                    dpctl::tensor::usm_ndarray &out,
                    sycl::queue &exec_q,
                    const std::vector<sycl::event> &depends)
@@ -155,13 +163,34 @@ std::pair<sycl::event, sycl::event>
     std::size_t n = x.get_size();
     std::size_t xp_size = xp.get_size();
 
-    sycl::event ev = fn(exec_q, x.get_data(), idx.get_data(), xp.get_data(),
-                        fp.get_data(), out.get_data(), n, xp_size, depends);
+    void *left_ptr = left.has_value() ? left.value().get_data() : nullptr;
 
-    sycl::event keep =
-        dpctl::utils::keep_args_alive(exec_q, {x, idx, xp, fp, out}, {ev});
+    void *right_ptr = right.has_value() ? right.value().get_data() : nullptr;
 
-    return std::make_pair(keep, ev);
+    sycl::event ev =
+        fn(exec_q, x.get_data(), idx.get_data(), xp.get_data(), fp.get_data(),
+           left_ptr, right_ptr, out.get_data(), n, xp_size, depends);
+
+    sycl::event args_ev;
+
+    if (left.has_value() && right.has_value()) {
+        args_ev = dpctl::utils::keep_args_alive(
+            exec_q, {x, idx, xp, fp, out, left.value(), right.value()}, {ev});
+    }
+    else if (left.has_value()) {
+        args_ev = dpctl::utils::keep_args_alive(
+            exec_q, {x, idx, xp, fp, out, left.value()}, {ev});
+    }
+    else if (right.has_value()) {
+        args_ev = dpctl::utils::keep_args_alive(
+            exec_q, {x, idx, xp, fp, out, right.value()}, {ev});
+    }
+    else {
+        args_ev =
+            dpctl::utils::keep_args_alive(exec_q, {x, idx, xp, fp, out}, {ev});
+    }
+
+    return std::make_pair(args_ev, ev);
 }
 
 /**
@@ -215,7 +244,8 @@ void init_interpolate(py::module_ m)
 
     using impl::py_interpolate;
     m.def("_interpolate", &py_interpolate, "", py::arg("x"), py::arg("idx"),
-          py::arg("xp"), py::arg("fp"), py::arg("out"), py::arg("sycl_queue"),
+          py::arg("xp"), py::arg("fp"), py::arg("left"), py::arg("right"),
+          py::arg("out"), py::arg("sycl_queue"),
           py::arg("depends") = py::list());
 }
 

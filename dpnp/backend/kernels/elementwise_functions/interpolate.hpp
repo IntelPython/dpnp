@@ -38,6 +38,8 @@ sycl::event interpolate_impl(sycl::queue &q,
                              const std::size_t *idx,
                              const TCoord *xp,
                              const TValue *fp,
+                             const TValue *left,
+                             const TValue *right,
                              TValue *out,
                              const std::size_t n,
                              const std::size_t xp_size,
@@ -46,8 +48,8 @@ sycl::event interpolate_impl(sycl::queue &q,
     return q.submit([&](sycl::handler &h) {
         h.depends_on(depends);
         h.parallel_for(sycl::range<1>(n), [=](sycl::id<1> i) {
-            TValue left = fp[0];
-            TValue right = fp[xp_size - 1];
+            TValue left_val = left ? *left : fp[0];
+            TValue right_val = right ? *right : fp[xp_size - 1];
 
             TCoord x_val = x[i];
             std::size_t x_idx = idx[i] - 1;
@@ -56,13 +58,13 @@ sycl::event interpolate_impl(sycl::queue &q,
                 out[i] = x_val;
             }
             else if (x_idx < 0) {
-                out[i] = left;
+                out[i] = left_val;
             }
             else if (x_val == xp[xp_size - 1]) {
-                out[i] = right;
+                out[i] = right_val;
             }
             else if (x_idx >= xp_size - 1) {
-                out[i] = right;
+                out[i] = right_val;
             }
             else if (x_val == xp[x_idx]) {
                 out[i] = fp[x_idx];
