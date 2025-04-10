@@ -535,7 +535,7 @@ returns the value ``0``.
 
 See Also
 --------
-:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}/{x2}` choosing
+:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}{x2}` choosing
     the quadrant correctly.
 :obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
 :obj:`dpnp.abs` : Calculate the absolute value element-wise.

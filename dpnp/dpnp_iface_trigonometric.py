@@ -315,7 +315,7 @@ See Also
 :obj:`dpnp.acos` : Trigonometric inverse cosine, element-wise.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
 :obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
-:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}/{x2}`
+:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}{x2}`
     choosing the quadrant correctly.
 :obj:`dpnp.asinh` : Hyperbolic inverse sine, element-wise.
 
@@ -477,7 +477,7 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}/{x2}`
+:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}{x2}`
     choosing the quadrant correctly.
 :obj:`dpnp.angle` : Argument of complex values.
 :obj:`dpnp.tan` : Trigonometric tangent, element-wise.
@@ -523,9 +523,9 @@ atan = DPNPUnaryFunc(
 arctan = atan  # arctan is an alias for atan
 
 
-_ATAN2_DOCSTRING = """
-Calculates the inverse tangent of the quotient :math:`x1_i/x2_i` for each
-element :math:`x1_i` of the input array `x1` with the respective element
+_ATAN2_DOCSTRING = r"""
+Calculates the inverse tangent of the quotient :math:`\frac{x1_i}{x2_i}` for
+each element :math:`x1_i` of the input array `x1` with the respective element
 :math:`x2_i` of the input array `x2`.
 
 Note that :obj:`dpnp.arctan2` is an alias of :obj:`dpnp.atan2`.
@@ -555,7 +555,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the inverse tangent of the quotient
-    :math:`\frac{x1}/{x2}`, in radians. The returned array must have a
+    :math:`\frac{x1}{x2}`, in radians. The returned array must have a
     real-valued floating-point data type determined by Type Promotion Rules.
 
 Limitations
