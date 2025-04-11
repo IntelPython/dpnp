@@ -111,8 +111,9 @@ __all__ = [
     "gcd",
     "gradient",
     "heaviside",
-    "imag",
     "i0",
+    "imag",
+    "interp",
     "lcm",
     "ldexp",
     "maximum",
@@ -2688,6 +2689,185 @@ imag = DPNPImag(
     ti._imag,
     _IMAG_DOCSTRING,
 )
+
+
+def interp(x, xp, fp, left=None, right=None, period=None):
+    """
+    One-dimensional linear interpolation.
+
+    Returns the one-dimensional piecewise linear interpolant to a function
+    with given discrete data points (`xp`, `fp`), evaluated at `x`.
+
+    For full documentation refer to :obj:`numpy.interp`.
+
+    Parameters
+    ----------
+    x : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. The x-coordinates at which to evaluate
+        the interpolated values.
+
+    xp : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. The x-coordinates of the data points,
+        must be increasing if argument `period` is not specified.
+        Otherwise, `xp` is internally sorted after normalizing
+        the periodic boundaries with ``xp = xp % period``.
+
+    fp : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. The y-coordinates of the data points,
+        same length as `xp`.
+
+    left : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+        Value to return for `x < xp[0]`.
+
+        Default: ``fp[0]``.
+
+    right : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+        Value to return for `x > xp[-1]`.
+
+        Default: ``fp[-1]``.
+
+    period : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+        A period for the x-coordinates. This parameter allows the proper
+        interpolation of angular x-coordinates. Parameters `left` and `right`
+        are ignored if `period` is specified.
+
+        Default: ``None``.
+
+    Returns
+    -------
+    y : {dpnp.ndarray, usm_ndarray}
+        The interpolated values, same shape as `x`.
+
+
+    Warnings
+    --------
+    The x-coordinate sequence is expected to be increasing, but this is not
+    explicitly enforced.  However, if the sequence `xp` is non-increasing,
+    interpolation results are meaningless.
+
+    Note that, since NaN is unsortable, `xp` also cannot contain NaNs.
+
+    A simple check for `xp` being strictly increasing is::
+
+        import dpnp as np
+        np.all(np.diff(xp) > 0)
+
+    Examples
+    --------
+    >>> import dpnp as np
+    >>> xp = np.array([1, 2, 3])
+    >>> fp = np.array([3 ,2 ,0])
+    >>> x = np.array([2.5])
+    >>> np.interp(x, xp, fp)
+    array([1.])
+    >>> x = np.array([0, 1, 1.5, 2.72, 3.14])
+    >>> np.interp(x, xp, fp)
+    array([3.  , 3.  , 2.5 , 0.56, 0.  ])
+    >>> x = np.array([3.14])
+    >>> UNDEF = -99.0
+    >>> np.interp(x, xp, fp, right=UNDEF)
+    array([-99.])
+
+    Interpolation with periodic x-coordinates:
+
+    >>> x = np.array([-180, -170, -185, 185, -10, -5, 0, 365])
+    >>> xp = np.array([190, -190, 350, -350])
+    >>> fp = np.array([5, 10, 3, 4])
+    >>> np.interp(x, xp, fp, period=360)
+    array([7.5 , 5.  , 8.75, 6.25, 3.  , 3.25, 3.5 , 3.75])
+
+    Complex interpolation:
+
+    >>> x = np.array([1.5, 4.0])
+    >>> xp = np.array([2,3,5])
+    >>> fp = np.array([1.0j, 0, 2+3j])
+    >>> np.interp(x, xp, fp)
+    array([0.+1.j , 1.+1.5j])
+
+    """
+
+    dpnp.check_supported_arrays_type(x, xp, fp)
+
+    if xp.ndim != 1 or fp.ndim != 1:
+        raise ValueError("xp and fp must be 1D arrays")
+    if xp.size != fp.size:
+        raise ValueError("fp and xp are not of the same length")
+    if xp.size == 0:
+        raise ValueError("array of sample points is empty")
+
+    usm_type, exec_q = get_usm_allocations([x, xp, fp])
+
+    x_dtype = dpnp.common_type(x, xp)
+    x_float_type = dpnp.default_float_type(exec_q)
+
+    if not dpnp.can_cast(x_dtype, x_float_type):
+        raise TypeError(
+            "Cannot cast array data from"
+            f" {x_dtype} to {x_float_type} "
+            "according to the rule 'safe'"
+        )
+
+    x = dpnp.asarray(x, dtype=x_float_type, order="C")
+    xp = dpnp.asarray(xp, dtype=x_float_type, order="C")
+
+    out_dtype = dpnp.common_type(x, xp, fp)
+
+    fp = dpnp.asarray(fp, dtype=out_dtype, order="C")
+
+    if period is not None:
+        if dpnp.is_supported_array_type(period):
+            if dpu.get_execution_queue([exec_q, period.sycl_queue]) is None:
+                raise ValueError(
+                    "input arrays and period must be allocated "
+                    "on the same SYCL queue"
+                )
+        else:
+            period = dpnp.asarray(period, sycl_queue=exec_q, usm_type=usm_type)
+
+        if period == 0:
+            raise ValueError("period must be a non-zero value")
+        period = dpnp.abs(period)
+        left = None
+        right = None
+
+        x = x.astype(x_float_type)
+        xp = xp.astype(x_float_type)
+
+        # normalizing periodic boundaries
+        x %= period
+        xp %= period
+        asort_xp = dpnp.argsort(xp)
+        xp = xp[asort_xp]
+        fp = fp[asort_xp]
+        xp = dpnp.concatenate((xp[-1:] - period, xp, xp[0:1] + period))
+        fp = dpnp.concatenate((fp[-1:], fp, fp[0:1]))
+        assert xp.flags.c_contiguous
+        assert fp.flags.c_contiguous
+
+    output = dpnp.empty(x.shape, dtype=out_dtype)
+    idx = dpnp.searchsorted(xp, x, side="right")
+    left_usm = (
+        dpnp.array(left, fp.dtype).get_array() if left is not None else None
+    )
+    right_usm = (
+        dpnp.array(right, fp.dtype).get_array() if right is not None else None
+    )
+
+    _manager = dpu.SequentialOrderManager[exec_q]
+    mem_ev, ht_ev = ufi._interpolate(
+        x.get_array(),
+        idx.get_array(),
+        xp.get_array(),
+        fp.get_array(),
+        left_usm,
+        right_usm,
+        output.get_array(),
+        exec_q,
+        depends=_manager.submitted_events,
+    )
+    _manager.add_event_pair(mem_ev, ht_ev)
+
+    return output
 
 
 _LCM_DOCSTRING = """

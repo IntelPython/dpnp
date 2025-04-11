@@ -367,7 +367,6 @@ class TestMisc:
         assert x.dtype == out.dtype
         return out
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -378,7 +377,6 @@ class TestMisc:
         fy = xp.sin(fx).astype(dtype_y)
         return xp.interp(x, fx, fy)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -389,7 +387,6 @@ class TestMisc:
         fy = xp.sin(fx).astype(dtype_y)
         return xp.interp(x, fx, fy, period=5)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -402,7 +399,6 @@ class TestMisc:
         right = 20
         return xp.interp(x, fx, fy, left, right)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -415,7 +411,6 @@ class TestMisc:
         fy[0] = fy[2] = fy[-1] = numpy.nan
         return xp.interp(x, fx, fy)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -428,7 +423,6 @@ class TestMisc:
         fx[-1] = numpy.nan  # x and fx must remain sorted (NaNs are the last)
         return xp.interp(x, fx, fy)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -441,7 +435,6 @@ class TestMisc:
         x[-1] = numpy.nan  # x and fx must remain sorted (NaNs are the last)
         return xp.interp(x, fx, fy)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -454,7 +447,6 @@ class TestMisc:
         fy[0] = fy[2] = fy[-1] = numpy.inf
         return xp.interp(x, fx, fy)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -467,7 +459,6 @@ class TestMisc:
         fx[-1] = numpy.inf  # x and fx must remain sorted
         return xp.interp(x, fx, fy)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
@@ -480,7 +471,6 @@ class TestMisc:
         x[-1] = numpy.inf  # x and fx must remain sorted
         return xp.interp(x, fx, fy)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.for_all_dtypes(name="dtype_x", no_bool=True, no_complex=True)
     @testing.for_all_dtypes(name="dtype_y", no_bool=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
@@ -493,7 +483,6 @@ class TestMisc:
         right = 20
         return xp.interp(x, fx, fy, left, right)
 
-    @pytest.mark.skip("interp() is not supported yet")
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_float_dtypes(name="dtype_x")
     @testing.for_dtypes("efdFD", name="dtype_y")
