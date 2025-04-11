@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.18.0dev0+76.g4c66b58e195 documentation</title>
+  <title>dpnp.dpnp_iface_bitwise &mdash; Data Parallel Extension for NumPy 0.18.0dev0+77.gbbe197a66e7 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=a06071ca"></script>
+      <script src="../../_static/documentation_options.js?v=c9544471"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -218,21 +218,17 @@
 
 <span class="n">_BITWISE_AND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the bitwise AND of the underlying binary representation of each</span>
-<span class="s2">element `x1_i` of the input array `x1` with the respective element `x2_i`</span>
-<span class="s2">of the input array `x2`.</span>
+<span class="s2">element :math:`x1_i` of the input array `x1` with the respective element</span>
+<span class="s2">:math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.bitwise_and`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have integer or boolean data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have an integer or boolean data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have integer or boolean data</span>
-<span class="s2">    type. Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have an integer or boolean data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -262,6 +258,13 @@
 <span class="s2">:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
 <span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
 <span class="s2">                          as a string.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -294,6 +297,7 @@
 <span class="s2">&#39;1100&#39;</span>
 <span class="s2">&gt;&gt;&gt; np.bitwise_and(np.array([14, 3]), 13)</span>
 <span class="s2">array([12,  1])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">bitwise_and</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -313,7 +317,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have integer or boolean data type.</span>
+<span class="s2">    Input array, expected to have an integer data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -360,21 +364,17 @@
 
 <span class="n">_BITWISE_OR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the bitwise OR of the underlying binary representation of each</span>
-<span class="s2">element `x1_i` of the input array `x1` with the respective element `x2_i`</span>
-<span class="s2">of the input array `x2`.</span>
+<span class="s2">element :math:`x1_i` of the input array `x1` with the respective element</span>
+<span class="s2">:math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.bitwise_or`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have integer or boolean data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have an integer or boolean data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have integer or boolean data</span>
-<span class="s2">    type. Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have an integer or boolean data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -405,6 +405,13 @@
 <span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
 <span class="s2">                          as a string.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -427,6 +434,7 @@
 <span class="s2">array(29)</span>
 <span class="s2">&gt;&gt;&gt; np.binary_repr(29)</span>
 <span class="s2">&#39;11101&#39;</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">bitwise_or</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -440,21 +448,17 @@
 
 <span class="n">_BITWISE_XOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
 <span class="s2">Computes the bitwise XOR of the underlying binary representation of each</span>
-<span class="s2">element `x1_i` of the input array `x1` with the respective element `x2_i`</span>
-<span class="s2">of the input array `x2`.</span>
+<span class="s2">element :math:`x1_i` of the input array `x1` with the respective element</span>
+<span class="s2">:math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.bitwise_xor`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have integer or boolean data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have an integer or boolean data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have integer or boolean data</span>
-<span class="s2">    type. Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have an integer or boolean data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -485,6 +489,13 @@
 <span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
 <span class="s2">                          as a string.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -511,6 +522,7 @@
 <span class="s2">array(28)</span>
 <span class="s2">&gt;&gt;&gt; np.binary_repr(28)</span>
 <span class="s2">&#39;11100&#39;</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">bitwise_xor</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -523,7 +535,7 @@
 
 
 <span class="n">_INVERT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Inverts (flips) each bit for each element `x_i` of the input array `x`.</span>
+<span class="s2">Inverts (flips) each bit for each element :math:`x_i` of the input array `x`.</span>
 
 <span class="s2">Note that :obj:`dpnp.bitwise_invert` is an alias of :obj:`dpnp.invert`.</span>
 
@@ -532,7 +544,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have integer or boolean data type.</span>
+<span class="s2">    Input array, expected to have an integer or boolean data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -602,9 +614,9 @@
 <span class="n">bitwise_invert</span> <span class="o">=</span> <span class="n">invert</span>  <span class="c1"># bitwise_invert is an alias for invert</span>
 
 <span class="n">_LEFT_SHIFT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Shifts the bits of each element `x1_i` of the input array x1 to the left by</span>
-<span class="s2">appending `x2_i` (i.e., the respective element in the input array `x2`) zeros to</span>
-<span class="s2">the right of `x1_i`.</span>
+<span class="s2">Shifts the bits of each element :math:`x1_i` of the input array `x1` to the</span>
+<span class="s2">left by appending :math:`x2_i` (i.e., the respective element in the input array</span>
+<span class="s2">`x2`) zeros to the right of :math:`x1_i`.</span>
 
 <span class="s2">Note that :obj:`dpnp.bitwise_left_shift` is an alias of :obj:`dpnp.left_shift`.</span>
 
@@ -613,14 +625,10 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have integer data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have an integer data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have integer data type.</span>
+<span class="s2">    Second input array, also expected to have an integer data type.</span>
 <span class="s2">    Each element must be greater than or equal to ``0``.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -648,6 +656,13 @@
 <span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
 <span class="s2">                          as a string.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -668,6 +683,7 @@
 <span class="s2">array(20)</span>
 <span class="s2">&gt;&gt;&gt; np.binary_repr(20)</span>
 <span class="s2">&#39;10100&#39;</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">left_shift</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -682,8 +698,8 @@
 
 
 <span class="n">_RIGHT_SHIFT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Shifts the bits of each element `x1_i` of the input array `x1` to the right</span>
-<span class="s2">according to the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Shifts the bits of each element :math:`x1_i` of the input array `x1` to the</span>
+<span class="s2">right according to the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">Note that :obj:`dpnp.bitwise_right_shift` is an alias of :obj:`dpnp.right_shift`.</span>
 
@@ -692,14 +708,10 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have integer data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have an integer data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have integer data type.</span>
+<span class="s2">    Second input array, also expected to have an integer data type.</span>
 <span class="s2">    Each element must be greater than or equal to ``0``.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -728,6 +740,13 @@
 <span class="s2">:obj:`dpnp.binary_repr` : Return the binary representation of the input number</span>
 <span class="s2">                          as a string.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -748,6 +767,7 @@
 <span class="s2">array(5)</span>
 <span class="s2">&gt;&gt;&gt; np.binary_repr(5)</span>
 <span class="s2">&#39;101&#39;</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">right_shift</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
