@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.17.0dev5+25.g0f4fd881005 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0881b8c0"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -122,10 +122,12 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># pylint: disable=no-name-in-module</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">map_dtype_to_device</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_einsum</span><span class="w"> </span><span class="kn">import</span> <span class="n">dpnp_einsum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">.dpnp_utils.dpnp_utils_linearalgebra</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">dpnp_dot</span><span class="p">,</span>
@@ -151,6 +153,35 @@
 <span class="p">]</span>
 
 
+<span class="c1"># TODO: implement a specific scalar-array kernel</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">outer_calc</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Call multiply function for special cases of scalar-array dots.</span>
+
+<span class="sd">    if `sc` is an scalar and `a` is an array of type float32, we have</span>
+<span class="sd">    dpnp.multiply(a, sc).dtype == dpnp.float32 and</span>
+<span class="sd">    numpy.multiply(a, sc).dtype == dpnp.float32.</span>
+
+<span class="sd">    However, for scalar-array dots such as dot function we have</span>
+<span class="sd">    dpnp.dot(a, sc).dtype == dpnp.float32 while</span>
+<span class="sd">    numpy.dot(a, sc).dtype == dpnp.float64.</span>
+
+<span class="sd">    We need to adjust the behavior of the multiply function when it is</span>
+<span class="sd">    being used for special cases of scalar-array dots.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">sc</span><span class="p">,</span> <span class="n">arr</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="k">else</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span>
+    <span class="n">sc_dtype</span> <span class="o">=</span> <span class="n">map_dtype_to_device</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">sc</span><span class="p">),</span> <span class="n">arr</span><span class="o">.</span><span class="n">sycl_device</span><span class="p">)</span>
+    <span class="n">res_dtype</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">result_type</span><span class="p">(</span><span class="n">sc_dtype</span><span class="p">,</span> <span class="n">arr</span><span class="p">)</span>
+    <span class="n">multiply_func</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">outer</span> <span class="k">if</span> <span class="n">outer_calc</span> <span class="k">else</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span>
+    <span class="k">if</span> <span class="n">out</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">out</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">multiply_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">multiply_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">res_dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">get_result_array</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">out</span><span class="p">,</span> <span class="n">casting</span><span class="o">=</span><span class="s2">&quot;no&quot;</span><span class="p">)</span>
+
+
 <div class="viewcode-block" id="dot">
 <a class="viewcode-back" href="../../reference/generated/dpnp.dot.html#dpnp.dot">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -172,6 +203,8 @@
 <span class="sd">        the same shape and data type as the expected output and should be</span>
 <span class="sd">        C-contiguous. If these conditions are not met, an exception is</span>
 <span class="sd">        raised, instead of attempting to be flexible.</span>
+
+<span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -226,8 +259,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Only C-contiguous array is acceptable.&quot;</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
@@ -282,15 +314,20 @@
 <span class="sd">        These are the arrays for the operation.</span>
 <span class="sd">    out : {dpnp.ndarrays, usm_ndarray, None}, optional</span>
 <span class="sd">        If provided, the calculation is done into this array.</span>
-<span class="sd">    dtype : {dtype, None}, optional</span>
-<span class="sd">        If provided, forces the calculation to use the data type specified.</span>
+
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
+<span class="sd">        If provided, forces the calculation to use the data type specified.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Controls the memory layout of the output. ``&quot;C&quot;`` means it should be</span>
 <span class="sd">        C-contiguous. ``&quot;F&quot;`` means it should be F-contiguous, ``&quot;A&quot;`` means</span>
 <span class="sd">        it should be ``&quot;F&quot;`` if the inputs are all ``&quot;F&quot;``, ``&quot;C&quot;`` otherwise.</span>
 <span class="sd">        ``&quot;K&quot;`` means it should be as close to the layout as the inputs as</span>
-<span class="sd">        is possible, including arbitrarily permuted axes.</span>
+<span class="sd">        is possible, including arbitrarily permuted axes. ``order=None`` is</span>
+<span class="sd">        equivalent to ``order=&quot;K&quot;``.</span>
+
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
 <span class="sd">        Controls what kind of data casting may occur. Setting this to</span>
@@ -308,12 +345,14 @@
 <span class="sd">        ``&quot;same_kind&quot;``. This is to prevent errors that may occur when data</span>
 <span class="sd">        needs to be converted to `float64`, but the device does not support it.</span>
 <span class="sd">        In such cases, the data is instead converted to `float32`.</span>
+
 <span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
 <span class="sd">    optimize : {False, True, &quot;greedy&quot;, &quot;optimal&quot;}, optional</span>
 <span class="sd">        Controls if intermediate optimization should occur. No optimization</span>
 <span class="sd">        will occur if ``False`` and ``True`` will default to the ``&quot;greedy&quot;``</span>
 <span class="sd">        algorithm. Also accepts an explicit contraction list from the</span>
 <span class="sd">        :obj:`dpnp.einsum_path` function.</span>
+
 <span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    Returns</span>
@@ -334,15 +373,15 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.arange(25).reshape(5,5)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(25).reshape(5, 5)</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(5)</span>
-<span class="sd">    &gt;&gt;&gt; c = np.arange(6).reshape(2,3)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.arange(6).reshape(2, 3)</span>
 
 <span class="sd">    Trace of a matrix:</span>
 
 <span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ii&quot;, a)</span>
 <span class="sd">    array(60)</span>
-<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0,0])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0, 0])</span>
 <span class="sd">    array(60)</span>
 <span class="sd">    &gt;&gt;&gt; np.trace(a)</span>
 <span class="sd">    array(60)</span>
@@ -398,14 +437,14 @@
 <span class="sd">    array(30)</span>
 <span class="sd">    &gt;&gt;&gt; np.einsum(b, [0], b, [0])</span>
 <span class="sd">    array(30)</span>
-<span class="sd">    &gt;&gt;&gt; np.inner(b,b)</span>
+<span class="sd">    &gt;&gt;&gt; np.inner(b, b)</span>
 <span class="sd">    array(30)</span>
 
 <span class="sd">    Matrix vector multiplication:</span>
 
 <span class="sd">    &gt;&gt;&gt; np.einsum(&quot;ij,j&quot;, a, b)</span>
 <span class="sd">    array([ 30,  80, 130, 180, 230])</span>
-<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0,1], b, [1])</span>
+<span class="sd">    &gt;&gt;&gt; np.einsum(a, [0, 1], b, [1])</span>
 <span class="sd">    array([ 30,  80, 130, 180, 230])</span>
 <span class="sd">    &gt;&gt;&gt; np.dot(a, b)</span>
 <span class="sd">    array([ 30,  80, 130, 180, 230])</span>
@@ -485,24 +524,28 @@
 <span class="sd">    &gt;&gt;&gt; a = np.ones(64000).reshape(20, 40, 80)</span>
 
 <span class="sd">    Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th</span>
-<span class="sd">    Gen Intel\u00AE Core\u2122 i7 processor)</span>
+<span class="sd">    Gen Intel\u00ae Core\u2122 i7 processor)</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a, a, a, a, a)</span>
 
 <span class="sd">    Sub-optimal `einsum`: 32.9 ms ± 5.1 ms per loop</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(</span>
+<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;optimal&quot;</span>
+<span class="sd">    )</span>
 
 <span class="sd">    Greedy `einsum`: 28.6 ms ± 4.8 ms per loop</span>
 
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;greedy&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(</span>
+<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;greedy&quot;</span>
+<span class="sd">    )</span>
 
 <span class="sd">    Optimal `einsum`: 26.9 ms ± 6.3 ms per loop</span>
 
 <span class="sd">    &gt;&gt;&gt; path = np.einsum_path(</span>
-<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=&quot;optimal&quot;</span>
+<span class="sd">        &quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=&quot;optimal&quot;</span>
 <span class="sd">    )[0]</span>
-<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a,a,a,a,a, optimize=path)</span>
+<span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;, a, a, a, a, a, optimize=path)</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -587,10 +630,9 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    We can begin with a chain dot example. In this case, it is optimal to</span>
-<span class="sd">    contract the ``b`` and ``c`` tensors first as represented by the first</span>
-<span class="sd">    element of the path ``(1, 2)``. The resulting tensor is added to the end</span>
-<span class="sd">    of the contraction and the remaining contraction ``(0, 1)`` is then</span>
-<span class="sd">    completed.</span>
+<span class="sd">    contract the `b` and `c` tensors first as represented by the first element</span>
+<span class="sd">    of the path ``(1, 2)``. The resulting tensor is added to the end of the</span>
+<span class="sd">    contraction and the remaining contraction ``(0, 1)`` is then completed.</span>
 
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
 <span class="sd">    &gt;&gt;&gt; np.random.seed(123)</span>
@@ -686,7 +728,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention..</span>
+<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
 <span class="sd">    :obj:`dpnp.dot` : Generalized matrix product,</span>
 <span class="sd">                      using second last dimension of `b`.</span>
 <span class="sd">    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.</span>
@@ -703,7 +745,7 @@
 
 <span class="sd">    # Some multidimensional examples</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(24).reshape((2,3,4))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(24).reshape((2, 3, 4))</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(4)</span>
 <span class="sd">    &gt;&gt;&gt; c = np.inner(a, b)</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
@@ -712,8 +754,8 @@
 <span class="sd">    array([[ 14,  38,  62],</span>
 <span class="sd">           [86, 110, 134]])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(2).reshape((1,1,2))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(6).reshape((3,2))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(2).reshape((1, 1, 2))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(6).reshape((3, 2))</span>
 <span class="sd">    &gt;&gt;&gt; c = np.inner(a, b)</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
 <span class="sd">    (1, 1, 3)</span>
@@ -731,8 +773,7 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="c1"># TODO: use specific scalar-vector kernel</span>
@@ -789,19 +830,19 @@
 <span class="sd">    &gt;&gt;&gt; np.kron(b, a)</span>
 <span class="sd">    array([  5,  50, 500, ...,   7,  70, 700])</span>
 
-<span class="sd">    &gt;&gt;&gt; np.kron(np.eye(2), np.ones((2,2)))</span>
+<span class="sd">    &gt;&gt;&gt; np.kron(np.eye(2), np.ones((2, 2)))</span>
 <span class="sd">    array([[1.,  1.,  0.,  0.],</span>
 <span class="sd">           [1.,  1.,  0.,  0.],</span>
 <span class="sd">           [0.,  0.,  1.,  1.],</span>
 <span class="sd">           [0.,  0.,  1.,  1.]])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(100).reshape((2,5,2,5))</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(24).reshape((2,3,4))</span>
-<span class="sd">    &gt;&gt;&gt; c = np.kron(a,b)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(100).reshape((2, 5, 2, 5))</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24).reshape((2, 3, 4))</span>
+<span class="sd">    &gt;&gt;&gt; c = np.kron(a, b)</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
 <span class="sd">    (2, 10, 6, 20)</span>
-<span class="sd">    &gt;&gt;&gt; I = (1,3,0,2)</span>
-<span class="sd">    &gt;&gt;&gt; J = (0,2,1)</span>
+<span class="sd">    &gt;&gt;&gt; I = (1, 3, 0, 2)</span>
+<span class="sd">    &gt;&gt;&gt; J = (0, 2, 1)</span>
 <span class="sd">    &gt;&gt;&gt; J1 = (0,) + J             # extend to ndim=4</span>
 <span class="sd">    &gt;&gt;&gt; S1 = (1,) + b.shape</span>
 <span class="sd">    &gt;&gt;&gt; K = tuple(np.array(I) * np.array(S1) + np.array(J1))</span>
@@ -813,8 +854,7 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">)</span> <span class="ow">or</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="n">a_ndim</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span>
     <span class="n">b_ndim</span> <span class="o">=</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span>
@@ -859,7 +899,7 @@
 <span class="sd">        (of the calculated values) will be cast if necessary.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
 <span class="sd">        array will have data type that is determined by considering</span>
 <span class="sd">        Promotion Type Rule and device capabilities.</span>
@@ -869,7 +909,7 @@
 <span class="sd">        Controls what kind of data casting may occur.</span>
 
 <span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
@@ -958,7 +998,7 @@
 
 <span class="sd">    &gt;&gt;&gt; a = np.arange(2 * 2 * 4).reshape((2, 2, 4))</span>
 <span class="sd">    &gt;&gt;&gt; b = np.arange(2 * 2 * 4).reshape((2, 4, 2))</span>
-<span class="sd">    &gt;&gt;&gt; np.matmul(a,b).shape</span>
+<span class="sd">    &gt;&gt;&gt; np.matmul(a, b).shape</span>
 <span class="sd">    (2, 2, 2)</span>
 <span class="sd">    &gt;&gt;&gt; np.matmul(a, b)[0, 1, 1]</span>
 <span class="sd">    array(98)</span>
@@ -1042,7 +1082,7 @@
 <span class="sd">        If not provided or ``None``, a freshly-allocated array is used.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
 <span class="sd">        array will have data type that is determined by considering</span>
 <span class="sd">        Promotion Type Rule and device capabilities.</span>
@@ -1052,7 +1092,7 @@
 <span class="sd">        Controls what kind of data casting may occur.</span>
 
 <span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
@@ -1078,7 +1118,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product..</span>
+<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product.</span>
 <span class="sd">    :obj:`dpnp.vecmat` : Vector-matrix product.</span>
 <span class="sd">    :obj:`dpnp.matmul` : Matrix-matrix product.</span>
 <span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
@@ -1137,6 +1177,7 @@
 <span class="sd">        Second input vector. Input is flattened if not already 1-dimensional.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        A location where the result is stored.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1191,16 +1232,15 @@
 
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">scalar_type</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">all_scalars</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">a</span><span class="p">):</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">a</span>
         <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">b</span><span class="p">)[</span><span class="kc">None</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">outer_calc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
         <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)[:,</span> <span class="kc">None</span><span class="p">]</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">,</span> <span class="n">outer_calc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">x1</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="n">x2</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">b</span><span class="p">),</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="o">.</span><span class="n">outer</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">result</span></div>
 
 
 
@@ -1274,9 +1314,9 @@
 <span class="sd">    &gt;&gt;&gt; np.tensordot(a, b, 1)</span>
 <span class="sd">    array([14, 32, 50])</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3,4,5)</span>
-<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4,3,2)</span>
-<span class="sd">    &gt;&gt;&gt; c = np.tensordot(a,b, axes=([1,0],[0,1]))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(60.).reshape(3, 4, 5)</span>
+<span class="sd">    &gt;&gt;&gt; b = np.arange(24.).reshape(4, 3, 2)</span>
+<span class="sd">    &gt;&gt;&gt; c = np.tensordot(a, b, axes=([1, 0], [0, 1]))</span>
 <span class="sd">    &gt;&gt;&gt; c.shape</span>
 <span class="sd">    (5, 2)</span>
 <span class="sd">    &gt;&gt;&gt; c</span>
@@ -1288,12 +1328,12 @@
 
 <span class="sd">    A slower but equivalent way of computing the same...</span>
 
-<span class="sd">    &gt;&gt;&gt; d = np.zeros((5,2))</span>
+<span class="sd">    &gt;&gt;&gt; d = np.zeros((5, 2))</span>
 <span class="sd">    &gt;&gt;&gt; for i in range(5):</span>
 <span class="sd">    ...   for j in range(2):</span>
 <span class="sd">    ...     for k in range(3):</span>
 <span class="sd">    ...       for n in range(4):</span>
-<span class="sd">    ...         d[i,j] += a[k,n,i] * b[n,k,j]</span>
+<span class="sd">    ...         d[i, j] += a[k, n, i] * b[n, k, j]</span>
 <span class="sd">    &gt;&gt;&gt; c == d</span>
 <span class="sd">    array([[ True,  True],</span>
 <span class="sd">           [ True,  True],</span>
@@ -1310,8 +1350,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                 <span class="s2">&quot;One of the inputs is scalar, axes should be zero.&quot;</span>
             <span class="p">)</span>
-        <span class="c1"># TODO: use specific scalar-vector kernel</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">_call_multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dpnp_tensordot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">axes</span><span class="p">)</span></div>
 
@@ -1377,13 +1416,13 @@
         <span class="k">if</span> <span class="n">b</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The second array should be of size one.&quot;</span><span class="p">)</span>
         <span class="n">a_conj</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">_call_multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">isscalar</span><span class="p">(</span><span class="n">b</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The first array should be of size one.&quot;</span><span class="p">)</span>
         <span class="n">a_conj</span> <span class="o">=</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">conj</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">dpnp</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">dpnp</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">_call_multiply</span><span class="p">(</span><span class="n">a_conj</span><span class="p">,</span> <span class="n">b</span><span class="p">))</span>
 
     <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">dpnp_dot</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">conjugate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -1440,11 +1479,11 @@
 <span class="sd">        Controls what kind of data casting may occur.</span>
 
 <span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type to use in computing the vector dot product. By default, the</span>
 <span class="sd">        returned array will have data type that is determined by considering</span>
 <span class="sd">        Promotion Type Rule and device capabilities.</span>
@@ -1561,7 +1600,7 @@
 <span class="sd">        If not provided or ``None``, a freshly-allocated array is used.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Type to use in computing the matrix product. By default, the returned</span>
 <span class="sd">        array will have data type that is determined by considering</span>
 <span class="sd">        Promotion Type Rule and device capabilities.</span>
@@ -1571,7 +1610,7 @@
 <span class="sd">        Controls what kind of data casting may occur.</span>
 
 <span class="sd">        Default: ``&quot;same_kind&quot;``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;, None}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Memory layout of the newly output array, if parameter `out` is ``None``.</span>
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
@@ -1597,7 +1636,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product..</span>
+<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product.</span>
 <span class="sd">    :obj:`dpnp.matvec` : Matrix-vector product.</span>
 <span class="sd">    :obj:`dpnp.matmul` : Matrix-matrix product.</span>
 <span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>

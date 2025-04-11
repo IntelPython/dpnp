@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.binary_repr &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
+  <title>dpnp.binary_repr &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=902c1fd5"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -79,6 +79,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -124,7 +125,7 @@
 <h1>dpnp.binary_repr<a class="headerlink" href="#dpnp-binary-repr" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.binary_repr">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">binary_repr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.binary_repr" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">binary_repr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_bitwise.html#binary_repr"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.binary_repr" title="Link to this definition"></a></dt>
 <dd><p>Return the binary representation of the input number as a string.</p>
 <p>For negative numbers, if <cite>width</cite> is not given, a minus sign is added to the
 front. If <cite>width</cite> is given, the two's complement of the number is returned,
@@ -137,12 +138,13 @@ represent every integer in the range <span class="math notranslate nohighlight">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>num</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) -- Only an integer decimal number can be used.</p></li>
-<li><p><strong>width</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- The length of the returned string if <cite>num</cite> is positive, or the length
+<li><p><strong>width</strong> (<em>{None</em><em>, </em><em>int}</em><em>, </em><em>optional</em>) -- <p>The length of the returned string if <cite>num</cite> is positive, or the length
 of the two's complement if <cite>num</cite> is negative, provided that <cite>width</cite> is
 at least a sufficient number of bits for <cite>num</cite> to be represented in the
 designated form. If the <cite>width</cite> value is insufficient, an error is
-raised.
-Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+raised.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dot &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
+  <title>dpnp.dot &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=902c1fd5"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -82,6 +82,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -127,7 +128,7 @@
 <h1>dpnp.dot<a class="headerlink" href="#dpnp-dot" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.dot">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.dot" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_linearalgebra.html#dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.dot" title="Link to this definition"></a></dt>
 <dd><p>Dot product of <cite>a</cite> and <cite>b</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.dot.html#numpy.dot" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.dot</span></code></a>.</p>
 <dl class="field-list simple">
@@ -137,10 +138,12 @@
 at the same time.</p></li>
 <li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array. Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars
 at the same time.</p></li>
-<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- Alternative output array in which to place the result. It must have
+<li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Alternative output array in which to place the result. It must have
 the same shape and data type as the expected output and should be
 C-contiguous. If these conditions are not met, an exception is
-raised, instead of attempting to be flexible.</p></li>
+raised, instead of attempting to be flexible.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>

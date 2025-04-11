@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.array_equiv &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
+  <title>dpnp.array_equiv &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=902c1fd5"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -80,6 +80,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -125,7 +126,7 @@
 <h1>dpnp.array_equiv<a class="headerlink" href="#dpnp-array-equiv" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.array_equiv">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">array_equiv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.array_equiv" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">array_equiv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">a2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#array_equiv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.array_equiv" title="Link to this definition"></a></dt>
 <dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if input arrays are shape consistent and all elements
 equal.</p>
 <p>Shape consistent means they are either the same shape, or one input array
@@ -134,20 +135,20 @@ can be broadcasted to create the same shape as the other one.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array.
-Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>a2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array.
-Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
+<li><p><strong>a1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array.</p></li>
+<li><p><strong>a2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>out</strong> -- An array with a data type of <cite>bool</cite>.
-<code class="docutils literal notranslate"><span class="pre">True</span></code> if equivalent, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+<dd class="field-even"><p><strong>out</strong> -- A 0-d array with <code class="docutils literal notranslate"><span class="pre">True</span></code> value if the arrays are equivalent, <code class="docutils literal notranslate"><span class="pre">False</span></code>
+otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>At least one of <cite>x1</cite> or <cite>x2</cite> must be an array.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>

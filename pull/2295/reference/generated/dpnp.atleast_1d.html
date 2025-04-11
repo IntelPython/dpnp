@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.atleast_1d &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
+  <title>dpnp.atleast_1d &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=902c1fd5"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,6 +85,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -130,7 +131,7 @@
 <h1>dpnp.atleast_1d<a class="headerlink" href="#dpnp-atleast-1d" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.atleast_1d">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">atleast_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arys</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.atleast_1d" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">atleast_1d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arys</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#atleast_1d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.atleast_1d" title="Link to this definition"></a></dt>
 <dd><p>Convert inputs to arrays with at least one dimension.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.atleast_1d.html#numpy.atleast_1d" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.atleast_1d</span></code></a>.</p>
 <dl class="field-list simple">
@@ -167,7 +168,7 @@ Copies are made only if necessary.</p>
 <span class="go">[array([1.]), array([3, 4])]</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">9.0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mf">9.0</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 <span class="go">array([[0., 1., 2.],</span>
 <span class="go">       [3., 4., 5.],</span>

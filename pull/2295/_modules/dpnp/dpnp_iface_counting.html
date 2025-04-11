@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.17.0dev5+25.g0f4fd881005 documentation</title>
+  <title>dpnp.dpnp_iface_counting &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0881b8c0"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -145,16 +145,19 @@
 <span class="sd">        Axis or tuple of axes along which to count non-zeros.</span>
 <span class="sd">        Default value means that non-zeros will be counted along a flattened</span>
 <span class="sd">        version of `a`.</span>
+
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    keepdims : bool, optional</span>
+<span class="sd">    keepdims : {None, bool}, optional</span>
 <span class="sd">        If this is set to ``True``, the axes that are counted are left in the</span>
 <span class="sd">        result as dimensions with size one. With this option, the result will</span>
 <span class="sd">        broadcast correctly against the input array.</span>
+
 <span class="sd">        Default: ``False``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        The array into which the result is written. The data type of `out` must</span>
 <span class="sd">        match the expected shape and the expected data type of the result.</span>
 <span class="sd">        If ``None`` then a new array is returned.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>

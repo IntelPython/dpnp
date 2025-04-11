@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.isclose &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
+  <title>dpnp.isclose &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=902c1fd5"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -80,6 +80,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -125,7 +126,7 @@
 <h1>dpnp.isclose<a class="headerlink" href="#dpnp-isclose" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.isclose">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">isclose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.isclose" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">isclose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rtol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">atol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-08</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equal_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_logic.html#isclose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.isclose" title="Link to this definition"></a></dt>
 <dd><p>Returns a boolean array where two arrays are element-wise equal within
 a tolerance.</p>
 <p>The tolerance values are positive, typically very small numbers. The
@@ -139,17 +140,18 @@ place and of the same sign in both arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, expected to have numeric data type.
-Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have numeric data type.
-Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>rtol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- The relative tolerance parameter.
-Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code>.</p></li>
-<li><p><strong>atol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- The absolute tolerance parameter.
-Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code>.</p></li>
-<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) -- Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
-be considered equal to <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>b</cite> in the output array.
-Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, expected to have a numeric data type.</p></li>
+<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have a numeric data type.</p></li>
+<li><p><strong>rtol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The relative tolerance parameter.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code>.</p>
+</p></li>
+<li><p><strong>atol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The absolute tolerance parameter.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">1e-08</span></code>.</p>
+</p></li>
+<li><p><strong>equal_nan</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) -- <p>Whether to compare <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> as equal. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>a</cite> will
+be considered equal to <code class="docutils literal notranslate"><span class="pre">NaNs</span></code> in <cite>b</cite> in the output array.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -157,7 +159,7 @@ Default: <code class="docutils literal notranslate"><span class="pre">False</spa
 tolerance.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>dpnp.ndarray</p>
+<dd class="field-odd"><p>dpnp.ndarray of bool dtype</p>
 </dd>
 </dl>
 <div class="admonition seealso">
@@ -167,6 +169,8 @@ tolerance.</p>
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>At least one of <cite>x1</cite> or <cite>x2</cite> must be an array.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">1e10</span><span class="p">,</span> <span class="mf">1e-7</span><span class="p">])</span>

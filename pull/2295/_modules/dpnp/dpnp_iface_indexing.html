@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.17.0dev5+25.g0f4fd881005 documentation</title>
+  <title>dpnp.dpnp_iface_indexing &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=0881b8c0"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -288,6 +288,7 @@
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
@@ -455,10 +456,12 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        Axis along which to extract slices. If ``None``, works over the</span>
 <span class="sd">        flattened array.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        If provided, the result will be placed in this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -554,21 +557,28 @@
 <span class="sd">        The size, along each dimension, of the arrays for which the returned</span>
 <span class="sd">        indices can be used.</span>
 <span class="sd">    ndim : int, optional</span>
-<span class="sd">        The number of dimensions. Default: ``2``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        The number of dimensions.</span>
+
+<span class="sd">        Default: ``2``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -719,13 +729,19 @@
 <span class="sd">        Array from which the diagonals are taken.</span>
 <span class="sd">    offset : int, optional</span>
 <span class="sd">        Offset of the diagonal from the main diagonal. Can be positive or</span>
-<span class="sd">        negative. Defaults to main diagonal (``0``).</span>
+<span class="sd">        negative. Defaults to main diagonal.</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    axis1 : int, optional</span>
 <span class="sd">        Axis to be used as the first axis of the 2-D sub-arrays from which</span>
-<span class="sd">        the diagonals should be taken. Defaults to first axis (``0``).</span>
+<span class="sd">        the diagonals should be taken. Defaults to first axis.</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    axis2 : int, optional</span>
 <span class="sd">        Axis to be used as the second axis of the 2-D sub-arrays from</span>
-<span class="sd">        which the diagonals should be taken. Defaults to second axis (``1``).</span>
+<span class="sd">        which the diagonals should be taken. Defaults to second axis.</span>
+
+<span class="sd">        Default: ``1``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -748,7 +764,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape(2,2)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(4).reshape(2, 2)</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[0, 1],</span>
 <span class="sd">           [2, 3]])</span>
@@ -759,7 +775,7 @@
 
 <span class="sd">    A 3-D example:</span>
 
-<span class="sd">    &gt;&gt;&gt; a = np.arange(8).reshape(2,2,2)</span>
+<span class="sd">    &gt;&gt;&gt; a = np.arange(8).reshape(2, 2, 2)</span>
 <span class="sd">    &gt;&gt;&gt; a</span>
 <span class="sd">    array([[[0, 1],</span>
 <span class="sd">            [2, 3]],</span>
@@ -964,7 +980,9 @@
 <span class="sd">        diagonal entries.</span>
 <span class="sd">    wrap : bool</span>
 <span class="sd">        It enables the diagonal &quot;wrapped&quot; after N columns. This affects only</span>
-<span class="sd">        tall matrices. Default: ``False``.</span>
+<span class="sd">        tall matrices.</span>
+
+<span class="sd">        Default: ``False``.</span>
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
@@ -1158,25 +1176,34 @@
 <span class="sd">    ----------</span>
 <span class="sd">    dimensions : sequence of ints</span>
 <span class="sd">        The shape of the grid.</span>
-<span class="sd">    dtype : {None, dtype}, optional</span>
+<span class="sd">    dtype : {None, str, dtype object}, optional</span>
 <span class="sd">        Data type of the result.</span>
+
+<span class="sd">        Default: ``int``.</span>
 <span class="sd">    sparse : {None, boolean}, optional</span>
 <span class="sd">        Return a sparse representation of the grid instead of a dense</span>
-<span class="sd">        representation. Default is ``False``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        representation.</span>
+
+<span class="sd">        Default is ``False``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1324,8 +1351,8 @@
 <span class="sd">    N dimensions.</span>
 
 <span class="sd">    Using :obj:`dpnp.ix_` one can quickly construct index arrays that will</span>
-<span class="sd">    index the cross product. ``a[dpnp.ix_([1,3],[2,5])]`` returns the array</span>
-<span class="sd">    ``[[a[1,2] a[1,5]], [a[3,2] a[3,5]]]``.</span>
+<span class="sd">    index the cross product. ``a[dpnp.ix_([1, 3],[2, 5])]`` returns the array</span>
+<span class="sd">    ``[[a[1, 2] a[1, 5]], [a[3, 2] a[3, 5]]]``.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
@@ -1428,21 +1455,28 @@
 <span class="sd">    k : scalar</span>
 <span class="sd">        An optional argument which is passed through to `mask_func`. Functions</span>
 <span class="sd">        like :obj:`dpnp.triu`, :obj:`dpnp.tril` take a second argument that is</span>
-<span class="sd">        interpreted as an offset. Default: ``0``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        interpreted as an offset.</span>
+
+<span class="sd">        Default: ``0``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -1762,6 +1796,7 @@
 <span class="sd">    axis : {None, int}, optional</span>
 <span class="sd">        The axis along which the values will be placed. If `a` is 1-D array,</span>
 <span class="sd">        this argument is optional.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    mode : {&#39;wrap&#39;, &#39;clip&#39;}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will behave.</span>
@@ -1989,10 +2024,12 @@
 
 <span class="sd">        In ``&quot;clip&quot;`` mode, a negative index which would normally wrap will</span>
 <span class="sd">        clip to 0 instead.</span>
+
 <span class="sd">        Default: ``&quot;raise&quot;``.</span>
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Determines whether the multi-index should be viewed as indexing in</span>
 <span class="sd">        row-major (C-style) or column-major (Fortran-style) order.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 
 <span class="sd">    Returns</span>
@@ -2096,7 +2133,9 @@
 <span class="sd">        to be of the same length as `condlist`.</span>
 <span class="sd">    default : {scalar, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="sd">        The element inserted in `output` when all conditions evaluate to</span>
-<span class="sd">        ``False``. Default: ``0``.</span>
+<span class="sd">        ``False``.</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2127,9 +2166,9 @@
 
 <span class="sd">    &gt;&gt;&gt; x = np.arange(6)</span>
 <span class="sd">    &gt;&gt;&gt; condlist = [x&lt;3, x&gt;3]</span>
-<span class="sd">    &gt;&gt;&gt; choicelist = [x, x**2]</span>
+<span class="sd">    &gt;&gt;&gt; choicelist = [-x, x**2]</span>
 <span class="sd">    &gt;&gt;&gt; np.select(condlist, choicelist, 42)</span>
-<span class="sd">    array([ 0,  1,  2, 42, 16, 25])</span>
+<span class="sd">    array([ 0, -1, -2, 42, 16, 25])</span>
 
 <span class="sd">    When multiple conditions are satisfied, the first one encountered in</span>
 <span class="sd">    `condlist` is used.</span>
@@ -2221,10 +2260,12 @@
 <span class="sd">    axis : {None, int, bool, 0-d array of integer dtype}, optional</span>
 <span class="sd">        The axis over which to select values. By default, the flattened</span>
 <span class="sd">        input array is used.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    out : {None, dpnp.ndarray, usm_ndarray}, optional (Ni..., Nj..., Nk...)</span>
 <span class="sd">        If provided, the result will be placed in this array. It should</span>
 <span class="sd">        be of the appropriate shape and dtype.</span>
+
 <span class="sd">        Default: ``None``.</span>
 <span class="sd">    mode : {&quot;wrap&quot;, &quot;clip&quot;}, optional</span>
 <span class="sd">        Specifies how out-of-bounds indices will be handled. Possible values</span>
@@ -2451,25 +2492,34 @@
 <span class="sd">        The row dimension of the arrays for which the returned</span>
 <span class="sd">        indices will be valid.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see :obj:`dpnp.tril` for details). Default: ``0``.</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.tril` for details).</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    m : {None, int}, optional</span>
 <span class="sd">        The column dimension of the arrays for which the returned</span>
 <span class="sd">        arrays will be valid.</span>
-<span class="sd">        By default `m` is taken equal to `n`. Default: ``None``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        By default `m` is taken equal to `n`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``&quot;device&quot;``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2567,7 +2617,9 @@
 <span class="sd">        The indices will be valid for square arrays whose dimensions are</span>
 <span class="sd">        the same as arr.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see :obj:`dpnp.tril` for details). Default: ``0``.</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.tril` for details).</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2655,25 +2707,34 @@
 <span class="sd">        The size of the arrays for which the returned indices will</span>
 <span class="sd">        be valid.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see :obj:`dpnp.triu` for details). Default: ``0``.</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.triu` for details).</span>
+
+<span class="sd">        Default: ``0``.</span>
 <span class="sd">    m : int, optional</span>
 <span class="sd">        The column dimension of the arrays for which the returned</span>
 <span class="sd">        arrays will be valid.</span>
-<span class="sd">        By default `m` is taken equal to `n`. Default: ``None``.</span>
-<span class="sd">    device : {None, string, SyclDevice, SyclQueue}, optional</span>
+<span class="sd">        By default `m` is taken equal to `n`.</span>
+
+<span class="sd">        Default: ``None``.</span>
+<span class="sd">    device : {None, string, SyclDevice, SyclQueue, Device}, optional</span>
 <span class="sd">        An array API concept of device where the output array is created.</span>
-<span class="sd">        The `device` can be ``None`` (the default), an OneAPI filter selector</span>
-<span class="sd">        string, an instance of :class:`dpctl.SyclDevice` corresponding to</span>
-<span class="sd">        a non-partitioned SYCL device, an instance of :class:`dpctl.SyclQueue`,</span>
-<span class="sd">        or a `Device` object returned by</span>
-<span class="sd">        :obj:`dpnp.dpnp_array.dpnp_array.device` property.</span>
+<span class="sd">        `device` can be ``None``, a oneAPI filter selector string, an instance</span>
+<span class="sd">        of :class:`dpctl.SyclDevice` corresponding to a non-partitioned SYCL</span>
+<span class="sd">        device, an instance of :class:`dpctl.SyclQueue`, or a</span>
+<span class="sd">        :class:`dpctl.tensor.Device` object returned by</span>
+<span class="sd">        :attr:`dpnp.ndarray.device`.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    usm_type : {&quot;device&quot;, &quot;shared&quot;, &quot;host&quot;}, optional</span>
 <span class="sd">        The type of SYCL USM allocation for the output array.</span>
+
+<span class="sd">        Default: ``None``.</span>
 <span class="sd">    sycl_queue : {None, SyclQueue}, optional</span>
 <span class="sd">        A SYCL queue to use for output array allocation and copying. The</span>
 <span class="sd">        `sycl_queue` can be passed as ``None`` (the default), which means</span>
 <span class="sd">        to get the SYCL queue from `device` keyword if present or to use</span>
 <span class="sd">        a default queue.</span>
+
 <span class="sd">        Default: ``None``.</span>
 
 <span class="sd">    Returns</span>
@@ -2773,7 +2834,9 @@
 <span class="sd">        The indices will be valid for square arrays whose dimensions are</span>
 <span class="sd">        the same as arr.</span>
 <span class="sd">    k : int, optional</span>
-<span class="sd">        Diagonal offset (see :obj:`dpnp.triu` for details). Default: ``0``.</span>
+<span class="sd">        Diagonal offset (see :obj:`dpnp.triu` for details).</span>
+
+<span class="sd">        Default: ``0``.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -2859,6 +2922,7 @@
 <span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;}, optional</span>
 <span class="sd">        Determines whether the indices should be viewed as indexing in</span>
 <span class="sd">        row-major (C-style) or column-major (Fortran-style) order.</span>
+
 <span class="sd">        Default: ``&quot;C&quot;``.</span>
 
 <span class="sd">    Returns</span>

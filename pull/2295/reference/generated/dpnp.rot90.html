@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.rot90 &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
+  <title>dpnp.rot90 &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=902c1fd5"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -85,6 +85,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -130,7 +131,7 @@
 <h1>dpnp.rot90<a class="headerlink" href="#dpnp-rot90" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.rot90">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">rot90</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.rot90" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">rot90</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_manipulation.html#rot90"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.rot90" title="Link to this definition"></a></dt>
 <dd><p>Rotate an array by 90 degrees in the plane specified by axes.</p>
 <p>Rotation direction is from the first towards the second axis.
 This means for a 2D array with the default <cite>k</cite> and <cite>axes</cite>, the
@@ -168,10 +169,10 @@ Axes must be different.</p>
 </dl>
 </div>
 <p class="rubric">Notes</p>
-<p><code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=1,</span> <span class="pre">axes=(1,0))</span></code> is the reverse of
-<code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=1,</span> <span class="pre">axes=(0,1))</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=1,</span> <span class="pre">axes=(1,0))</span></code> is equivalent to
-<code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=-1,</span> <span class="pre">axes=(0,1))</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=1,</span> <span class="pre">axes=(1,</span> <span class="pre">0))</span></code> is the reverse of
+<code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=1,</span> <span class="pre">axes=(0,</span> <span class="pre">1))</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=1,</span> <span class="pre">axes=(1,</span> <span class="pre">0))</span></code> is equivalent to
+<code class="docutils literal notranslate"><span class="pre">rot90(m,</span> <span class="pre">k=-1,</span> <span class="pre">axes=(0,</span> <span class="pre">1))</span></code>.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">]])</span>

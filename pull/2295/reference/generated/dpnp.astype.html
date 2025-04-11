@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.astype &mdash; Data Parallel Extension for NumPy 0.17.0dev6+22.gfee87895323 documentation</title>
+  <title>dpnp.astype &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g2d965bc687e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=902c1fd5"></script>
+      <script src="../../_static/documentation_options.js?v=2f319089"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -80,6 +80,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../set.html">Set routines</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../sort.html">Sorting, searching, and counting</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../statistics.html">Statistics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../window.html">Window functions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../special.html">Special Functions</a></li>
@@ -125,52 +126,81 @@
 <h1>dpnp.astype<a class="headerlink" href="#dpnp-astype" title="Link to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.astype">
-<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.astype" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">astype</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em>, <em class="sig-param"><span class="positional-only-separator o"><abbr title="Positional-only parameter separator (PEP 570)"><span class="pre">/</span></abbr></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">casting</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'unsafe'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/dpnp/dpnp_iface_arraycreation.html#astype"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpnp.astype" title="Link to this definition"></a></dt>
 <dd><p>Copy the array with data type casting.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array data type casting.</p></li>
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Array data type casting.</p></li>
 <li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>dtype object}</em>) -- Target data type.</p></li>
-<li><p><strong>order</strong> (<em>{'C'</em><em>, </em><em>'F'</em><em>, </em><em>'A'</em><em>, </em><em>'K'}</em>) -- Row-major (C-style) or column-major (Fortran-style) order.
-When <cite>order</cite> is <code class="docutils literal notranslate"><span class="pre">A</span></code>, it uses <code class="docutils literal notranslate"><span class="pre">F</span></code> if <cite>a</cite> is column-major and uses
-<code class="docutils literal notranslate"><span class="pre">C</span></code> otherwise. And when <cite>order</cite> is <code class="docutils literal notranslate"><span class="pre">K</span></code>, it keeps strides as closely
-as possible.</p></li>
-<li><p><strong>copy</strong> (<em>{bool}</em><em>, </em><em>optional</em>) -- If it is <code class="docutils literal notranslate"><span class="pre">False</span></code> and no cast happens, then this method returns
-the array itself. Otherwise, a copy is returned.</p></li>
-<li><p><strong>casting</strong> (<em>{'no'</em><em>, </em><em>'equiv'</em><em>, </em><em>'safe'</em><em>, </em><em>'same_kind'</em><em>, </em><em>'unsafe'}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur. Defaults to <code class="docutils literal notranslate"><span class="pre">unsafe</span></code>
+<li><p><strong>order</strong> (<em>{None</em><em>, </em><em>&quot;C&quot;</em><em>, </em><em>&quot;F&quot;</em><em>, </em><em>&quot;A&quot;</em><em>, </em><em>&quot;K&quot;}</em><em>, </em><em>optional</em>) -- <p>Row-major (C-style) or column-major (Fortran-style) order.
+When <cite>order</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>, it uses <code class="docutils literal notranslate"><span class="pre">&quot;F&quot;</span></code> if <cite>a</cite> is column-major and
+uses <code class="docutils literal notranslate"><span class="pre">&quot;C&quot;</span></code> otherwise. And when <cite>order</cite> is <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>, it keeps strides
+as closely as possible.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;K&quot;</span></code>.</p>
+</p></li>
+<li><p><strong>casting</strong> (<em>{&quot;no&quot;</em><em>, </em><em>&quot;equiv&quot;</em><em>, </em><em>&quot;safe&quot;</em><em>, </em><em>&quot;same_kind&quot;</em><em>, </em><em>&quot;unsafe&quot;}</em><em>, </em><em>optional</em>) -- <p>Controls what kind of data casting may occur. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;unsafe&quot;</span></code>
 for backwards compatibility.</p>
 <blockquote>
 <div><ul>
-<li><p>'no' means the data types should not be cast at all.</p></li>
-<li><p>'equiv' means only byte-order changes are allowed.</p></li>
-<li><p>'safe' means only casts which can preserve values are allowed.</p></li>
-<li><p>'same_kind' means only safe casts or casts within a kind, like
+<li><p>&quot;no&quot; means the data types should not be cast at all.</p></li>
+<li><p>&quot;equiv&quot; means only byte-order changes are allowed.</p></li>
+<li><p>&quot;safe&quot; means only casts which can preserve values are allowed.</p></li>
+<li><p>&quot;same_kind&quot; means only safe casts or casts within a kind, like
 float64 to float32, are allowed.</p></li>
-<li><p>'unsafe' means any data conversions may be done.</p></li>
+<li><p>&quot;unsafe&quot; means any data conversions may be done.</p></li>
 </ul>
 </div></blockquote>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;unsafe&quot;</span></code>.</p>
 </p></li>
-<li><p><strong>copy</strong> -- By default, <code class="docutils literal notranslate"><span class="pre">astype</span></code> always returns a newly allocated array. If this
-is set to <code class="docutils literal notranslate"><span class="pre">False</span></code>, and the <cite>dtype</cite>, <cite>order</cite>, and <cite>subok</cite> requirements
-are satisfied, the input array is returned instead of a copy.</p></li>
-<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue}</em><em>, </em><em>optional</em>) -- An array API concept of device where the output array is created.
-The <cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code> (the default), an OneAPI filter selector
-string, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.19.0dev0+525.ga34686f979)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to
-a non-partitioned SYCL device, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.19.0dev0+525.ga34686f979)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>,
-or a <cite>Device</cite> object returned by
-<a class="reference internal" href="dpnp.dpnp_array.dpnp_array.device.html#dpnp.dpnp_array.dpnp_array.device" title="dpnp.dpnp_array.dpnp_array.device"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.dpnp_array.dpnp_array.device</span></code></a> property. Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>copy</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Specifies whether to copy an array when the specified dtype matches the
+data type of the input array <code class="docutils literal notranslate"><span class="pre">x</span></code>. If <code class="docutils literal notranslate"><span class="pre">True</span></code>, a newly allocated
+array must always be returned. If <code class="docutils literal notranslate"><span class="pre">False</span></code> and the specified dtype
+matches the data type of the input array, the input array must be
+returned; otherwise, a newly allocated array must be returned.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</p></li>
+<li><p><strong>device</strong> (<em>{None</em><em>, </em><em>string</em><em>, </em><em>SyclDevice</em><em>, </em><em>SyclQueue</em><em>, </em><em>Device}</em><em>, </em><em>optional</em>) -- <p>An array API concept of device where the output array is created.
+<cite>device</cite> can be <code class="docutils literal notranslate"><span class="pre">None</span></code>, a oneAPI filter selector string, an instance
+of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclDevice.html#dpctl.SyclDevice" title="(in Data Parallel Control (dpctl) v0.20.0dev0+139.gf3b70eda45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclDevice</span></code></a> corresponding to a non-partitioned SYCL
+device, an instance of <a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/generated/dpctl.SyclQueue.html#dpctl.SyclQueue" title="(in Data Parallel Control (dpctl) v0.20.0dev0+139.gf3b70eda45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.SyclQueue</span></code></a>, or a
+<a class="reference external" href="https://intelpython.github.io/dpctl/latest/api_reference/dpctl/tensor.utility_functions.html#dpctl.tensor.Device" title="(in Data Parallel Control (dpctl) v0.20.0dev0+139.gf3b70eda45)"><code class="xref py py-class docutils literal notranslate"><span class="pre">dpctl.tensor.Device</span></code></a> object returned by
+<a class="reference internal" href="dpnp.ndarray.device.html#dpnp.ndarray.device" title="dpnp.ndarray.device"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dpnp.ndarray.device</span></code></a>.
+If the value is <code class="docutils literal notranslate"><span class="pre">None</span></code>, returned array is created on the same device
+as <cite>x</cite>.</p>
+<p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>arr_t</strong> -- Unless <cite>copy</cite> is <code class="docutils literal notranslate"><span class="pre">False</span></code> and the other conditions for returning
-the input array are satisfied, <cite>arr_t</cite> is a new array of the same shape
-as the input array, with dtype, order given by dtype, order.</p>
+<dd class="field-even"><p><strong>out</strong> -- An array having the specified data type.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dpnp.ndarray</p>
 </dd>
 </dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="dpnp.ndarray.astype.html#dpnp.ndarray.astype" title="dpnp.ndarray.astype"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.ndarray.astype</span></code></a></dt><dd><p>Equivalent method.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]);</span> <span class="n">x</span>
+<span class="go">array([1, 2, 3])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="go">array([1., 2., 3.], dtype=float32)</span>
+</pre></div>
+</div>
+<p>Non-copy case:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="ow">is</span> <span class="n">x</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
