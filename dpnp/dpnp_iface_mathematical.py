@@ -2806,7 +2806,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         raise NotImplementedError(
             "Non-C-contiguous x is currently not supported"
         )
-    _, exec_q = get_usm_allocations([x, xp, fp])
+    usm_type, exec_q = get_usm_allocations([x, xp, fp])
 
     x_dtype = dpnp.common_type(x, xp)
     x_float_type = dpnp.default_float_type(exec_q)
@@ -2827,6 +2827,15 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     if period is not None:
         # The handling of "period" below is modified from NumPy's
+
+        if dpnp.is_supported_array_type(period):
+            if dpu.get_execution_queue([exec_q, period.sycl_queue]) is None:
+                raise ValueError(
+                    "input arrays and period must be allocated "
+                    "on the same SYCL queue"
+                )
+        else:
+            period = dpnp.asarray(period, sycl_queue=exec_q, usm_type=usm_type)
 
         if period == 0:
             raise ValueError("period must be a non-zero value")
