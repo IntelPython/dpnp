@@ -126,7 +126,8 @@ def test_sum_out(dtype, axis):
     expected = numpy.sum(a_np, axis=axis)
     res = dpnp.empty(expected.shape, dtype=dtype)
     a.sum(axis=axis, out=res)
-    assert_array_equal(expected, res)
+    # NumPy result is without out keyword, dtype may differ
+    assert_array_equal(res, expected, strict=False)
 
 
 @pytest.mark.usefixtures("suppress_complex_warning")

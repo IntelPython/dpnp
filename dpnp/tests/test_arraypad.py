@@ -42,7 +42,6 @@ class TestPad:
         result = dpnp.pad(a_dp, (25, 20), mode=mode)
         if mode == "empty":
             # omit uninitialized "empty" boundary from the comparison
-            assert result.shape == expected.shape
             assert_equal(result[25:-20], expected[25:-20])
         else:
             assert_array_equal(result, expected)
@@ -70,7 +69,6 @@ class TestPad:
         result = dpnp.pad(a_dp, (2, 3), mode=mode)
         if mode == "empty":
             # omit uninitialized "empty" boundary from the comparison
-            assert result.shape == expected.shape
             assert_equal(result[2:-3, 2:-3], expected[2:-3, 2:-3])
         else:
             assert_array_equal(result, expected)
@@ -287,10 +285,10 @@ class TestPad:
         """Ensure that end values are exact."""
         a_dp = dpnp.ones(10).reshape(2, 5)
         a = dpnp.pad(a_dp, (223, 123), mode="linear_ramp")
-        assert_equal(a[:, 0], 0.0)
-        assert_equal(a[:, -1], 0.0)
-        assert_equal(a[0, :], 0.0)
-        assert_equal(a[-1, :], 0.0)
+        assert_equal(a[:, 0], 0.0, strict=False)
+        assert_equal(a[:, -1], 0.0, strict=False)
+        assert_equal(a[0, :], 0.0, strict=False)
+        assert_equal(a[-1, :], 0.0, strict=False)
 
     @pytest.mark.parametrize(
         "dtype", [numpy.uint32, numpy.uint64] + get_all_dtypes(no_none=True)
@@ -426,7 +424,6 @@ class TestPad:
         expected = numpy.pad(a_np, [(2, 3), (3, 1)], "empty")
         result = dpnp.pad(a_dp, [(2, 3), (3, 1)], "empty")
         # omit uninitialized "empty" boundary from the comparison
-        assert result.shape == expected.shape
         assert_equal(result[2:-3, 3:-1], expected[2:-3, 3:-1])
 
     # Check how padding behaves on arrays with an empty dimension.
