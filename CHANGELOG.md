@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.18.0] - MM/DD/2025
 
+This release achieves 100% compliance with Python Array API specification (revision [2024.12](https://data-apis.org/array-api/2024.12/)).
+
 ### Added
 
 * Added implementation of `dpnp.hamming` [#2341](https://github.com/IntelPython/dpnp/pull/2341), [#2357](https://github.com/IntelPython/dpnp/pull/2357)
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Extended `dpnp.fft.fftfreq` and `dpnp.fft.rfftfreq` functions to support `dtype` keyword per Python Array API spec 2024.12 [#2384](https://github.com/IntelPython/dpnp/pull/2384)
 * Updated `dpnp.fix` to return output with the same data-type of input [#2392](https://github.com/IntelPython/dpnp/pull/2392)
 * Updated `dpnp.einsum` to add support for `order=None` [#2411](https://github.com/IntelPython/dpnp/pull/2411)
+* Updated Python Array API specification version supported to `2024.12`
 
 ### Fixed
 

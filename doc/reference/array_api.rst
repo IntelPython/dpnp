@@ -8,7 +8,7 @@ Array API standard compatibility
 
 DPNP's main namespace as well as the :mod:`dpnp.fft` and :mod:`dpnp.linalg`
 namespaces are compatible with the
-`2023.12 version <https://data-apis.org/array-api/2023.12/index.html>`__
+`2024.12 version <https://data-apis.org/array-api/2024.12/index.html>`__
 of the Python array API standard.
 
 Inspection

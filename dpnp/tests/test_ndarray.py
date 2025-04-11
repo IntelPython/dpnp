@@ -162,18 +162,20 @@ class TestArrayNamespace:
         xp = a.__array_namespace__()
         assert xp is dpnp
 
-    @pytest.mark.parametrize("api_version", [None, "2023.12"])
+    @pytest.mark.parametrize("api_version", [None, "2024.12"])
     def test_api_version(self, api_version):
         a = dpnp.arange(2)
         xp = a.__array_namespace__(api_version=api_version)
         assert xp is dpnp
 
-    @pytest.mark.parametrize("api_version", ["2021.12", "2022.12", "2024.12"])
+    @pytest.mark.parametrize(
+        "api_version", ["2021.12", "2022.12", "2023.12", "2025.12"]
+    )
     def test_unsupported_api_version(self, api_version):
         a = dpnp.arange(2)
         assert_raises_regex(
             ValueError,
-            "Only 2023.12 is supported",
+            "Only 2024.12 is supported",
             a.__array_namespace__,
             api_version=api_version,
         )
