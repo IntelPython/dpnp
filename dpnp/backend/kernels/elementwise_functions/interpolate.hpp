@@ -61,7 +61,7 @@ sycl::event interpolate_impl(sycl::queue &q,
                 out[i] = left_val;
             }
             else if (x_val == xp[xp_size - 1]) {
-                out[i] = right_val;
+                out[i] = fp[xp_size - 1];
             }
             else if (x_idx >= static_cast<std::int64_t>(xp_size - 1)) {
                 out[i] = right_val;
