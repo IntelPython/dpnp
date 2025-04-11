@@ -349,14 +349,14 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
 
 
 _ABS_DOCSTRING = """
-Calculates the absolute value for each element `x_i` of input array `x`.
+Calculates the absolute value for each element :math:`x_i` of input array `x`.
 
 For full documentation refer to :obj:`numpy.absolute`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -389,21 +389,22 @@ See Also
 
 Notes
 -----
-``dpnp.abs`` is a shorthand for this function.
+``dpnp.absolute`` is an equivalent function.
 
 Examples
 --------
 >>> import dpnp as np
 >>> a = np.array([-1.2, 1.2])
->>> np.absolute(a)
+>>> np.abs(a)
 array([1.2, 1.2])
 
 >>> a = np.array(1.2 + 1j)
->>> np.absolute(a)
+>>> np.abs(a)
 array(1.5620499351813308)
+
 """
 
-absolute = DPNPUnaryFunc(
+abs = DPNPUnaryFunc(
     "abs",
     ti._abs_result_type,
     ti._abs,
@@ -413,25 +414,21 @@ absolute = DPNPUnaryFunc(
 )
 
 
-abs = absolute
+absolute = abs
 
 
 _ADD_DOCSTRING = """
-Calculates the sum for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2`.
+Calculates the sum for each element :math:`x1_i` of the input array `x1` with
+the respective element :math:`x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.add`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -456,7 +453,12 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
-Equivalent to `x1` + `x2` in terms of array broadcasting.
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+Equivalent to :math:`x1 + x2` in terms of array broadcasting.
 
 Examples
 --------
@@ -480,6 +482,7 @@ The ``+`` operator can be used as a shorthand for ``add`` on
 array([[  0.,   2.,   4.],
        [  3.,   5.,   7.],
        [  6.,   8.,  10.]])
+
 """
 
 
@@ -494,16 +497,16 @@ add = DPNPBinaryFunc(
 )
 
 
-_ANGLE_DOCSTRING = """
-Computes the phase angle (also called the argument) of each element `x_i` for
-input array `x`.
+_ANGLE_DOCSTRING = r"""
+Computes the phase angle (also called the argument) of each element :math:`x_i`
+for input array `x`.
 
 For full documentation refer to :obj:`numpy.angle`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have a complex-valued floating-point data type.
+    Input array, expected to have a complex floating-point data type.
 deg : bool, optional
     Return angle in degrees if ``True``, radians if ``False``.
 
@@ -527,17 +530,19 @@ out : dpnp.ndarray
 
 Notes
 -----
-Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.
+Although the angle of the complex number ``0`` is undefined, ``dpnp.angle(0)``
+returns the value ``0``.
 
 See Also
 --------
-:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.
-:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.
-:obj:`dpnp.absolute` : Calculate the absolute value element-wise.
+:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac{x1}{x2}` choosing
+    the quadrant correctly.
+:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.
+:obj:`dpnp.abs` : Calculate the absolute value element-wise.
 :obj:`dpnp.real` : Return the real part of the complex argument.
 :obj:`dpnp.imag` : Return the imaginary part of the complex argument.
 :obj:`dpnp.real_if_close` : Return the real part of the input is complex
-                            with all imaginary parts close to zero.
+    with all imaginary parts close to zero.
 
 Examples
 --------
@@ -548,6 +553,7 @@ array([0.        , 1.57079633, 0.78539816]) # may vary
 
 >>> np.angle(a, deg=True) # in degrees
 array([ 0., 90., 45.])
+
 """
 
 angle = DPNPAngle(
@@ -567,7 +573,7 @@ def around(x, /, decimals=0, out=None):
     Parameters
     ----------
     x : {dpnp.ndarray, usm_ndarray}
-        Input array, expected to have numeric data type.
+        Input array, expected to have a numeric data type.
     decimals : int, optional
         Number of decimal places to round to. If `decimals` is negative, it
         specifies the number of positions to the left of the decimal point.
@@ -604,7 +610,10 @@ def around(x, /, decimals=0, out=None):
 
 
 _CEIL_DOCSTRING = """
-Returns the ceiling for each element `x_i` for input array `x`.
+Returns the ceiling for each element :math:`x_i` for input array `x`.
+Rounds each element :math:`x_i` of the input array `x` to the smallest (i.e.,
+closest to ``-infinity``) integer-valued number that is not less than
+:math:`x_i`.
 
 For full documentation refer to :obj:`numpy.ceil`.
 
@@ -646,6 +655,7 @@ Examples
 >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
 >>> np.ceil(a)
 array([-1.0, -1.0, -0.0, 1.0, 2.0, 2.0, 2.0])
+
 """
 
 ceil = DPNPUnaryFunc(
@@ -740,14 +750,15 @@ def clip(a, /, min=None, max=None, *, out=None, order="K", **kwargs):
 
 
 _CONJ_DOCSTRING = """
-Computes conjugate of each element `x_i` for input array `x`.
+Returns the complex conjugate for each element :math:`x_i` of the input array
+`x`.
 
 For full documentation refer to :obj:`numpy.conj`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -771,16 +782,16 @@ Otherwise ``NotImplementedError`` exception will be raised.
 Examples
 --------
 >>> import dpnp as np
->>> np.conjugate(np.array(1+2j))
+>>> np.conj(np.array(1+2j))
 (1-2j)
 
 >>> x = np.eye(2) + 1j * np.eye(2)
->>> np.conjugate(x)
+>>> np.conj(x)
 array([[ 1.-1.j,  0.-0.j],
        [ 0.-0.j,  1.-1.j]])
 """
 
-conjugate = DPNPUnaryFunc(
+conj = DPNPUnaryFunc(
     "conj",
     ti._conj_result_type,
     ti._conj,
@@ -789,26 +800,22 @@ conjugate = DPNPUnaryFunc(
     mkl_impl_fn="_conj",
 )
 
-conj = conjugate
+conjugate = conj
 
 
 _COPYSIGN_DOCSTRING = """
-Composes a floating-point value with the magnitude of `x1_i` and the sign of
-`x2_i` for each element of input arrays `x1` and `x2`.
+Composes a floating-point value with the magnitude of :math:`x1_i` and the sign
+of :math:`x2_i` for each element of the input array `x1`.
 
 For full documentation refer to :obj:`numpy.copysign`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a real floating-point data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a real-valued floating-point data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real floating-point data
+    Second input array, also expected to have a real-valued floating-point data
     type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -835,6 +842,13 @@ See Also
 --------
 :obj:`dpnp.negative` : Return the numerical negative of each element of `x`.
 :obj:`dpnp.positive` : Return the numerical positive of each element of `x`.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
 
 Examples
 --------
@@ -1252,10 +1266,11 @@ def cumulative_prod(
         be cast if necessary.
 
         Default: ``None``.
-    include_initial : bool, optional
-        Boolean indicating whether to include the initial value (ones) as
-        the first value in the output. With ``include_initial=True``
-        the shape of the output is different than the shape of the input.
+    include_initial : {None, bool}, optional
+        A boolean indicating whether to include the initial value (one) as
+        the first value along the provided axis in the output. With
+        ``include_initial=True`` the shape of the output is different than
+        the shape of the input.
 
         Default: ``False``.
 
@@ -1341,10 +1356,11 @@ def cumulative_sum(
         be cast if necessary.
 
         Default: ``None``.
-    include_initial : bool, optional
-        Boolean indicating whether to include the initial value (ones) as
-        the first value in the output. With ``include_initial=True``
-        the shape of the output is different than the shape of the input.
+    include_initial : {None, bool}, optional
+        A boolean indicating whether to include the initial value (zero) as
+        the first value along the provided axis in the output. With
+        ``include_initial=True`` the shape of the output is different than
+        the shape of the input.
 
         Default: ``False``.
 
@@ -1475,22 +1491,18 @@ def diff(a, n=1, axis=-1, prepend=None, append=None):
     return dpnp_array._create_from_usm_ndarray(usm_res)
 
 
-_DIVIDE_DOCSTRING = """
-Calculates the ratio for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2`.
+_DIVIDE_DOCSTRING = r"""
+Calculates the ratio for each element :math:`x1_i` of the input array `x1` with
+the respective element :math:`x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.divide`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a floating-point data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1515,10 +1527,14 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
-Equivalent to `x1` / `x2` in terms of array-broadcasting.
+At least one of `x1` or `x2` must be an array.
 
-The ``true_divide(x1, x2)`` function is an alias for
-``divide(x1, x2)``.
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+Equivalent to :math:`\frac{x1}{x2}` in terms of array-broadcasting.
+
+The ``true_divide(x1, x2)`` function is an alias for ``divide(x1, x2)``.
 
 Examples
 --------
@@ -1542,6 +1558,7 @@ The ``/`` operator can be used as a shorthand for ``divide`` on
 array([[0. , 0.5, 1. ],
        [1.5, 2. , 2.5],
        [3. , 3.5, 4. ]])
+
 """
 
 divide = DPNPBinaryFunc(
@@ -1695,6 +1712,7 @@ Examples
 >>> a = np.array([-1.2, 1.2])
 >>> np.fabs(a)
 array([1.2, 1.2])
+
 """
 
 fabs = DPNPUnaryFunc(
@@ -1756,6 +1774,7 @@ array(3.)
 >>> a = np.array([2.1, 2.9, -2.1, -2.9])
 >>> np.fix(a)
 array([ 2.,  2., -2., -2.])
+
 """
 
 fix = DPNPFix(
@@ -1767,8 +1786,9 @@ fix = DPNPFix(
 
 
 _FLOAT_POWER_DOCSTRING = """
-Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
-`x1` with the respective element `x2_i` of the input array `x2`.
+Calculates :math:`x1_i` raised to :math:`x2_i` for each element :math:`x1_i` of
+the input array `x1` with the respective element :math:`x2_i` of the input
+array `x2`.
 
 This differs from the power function in that boolean, integers, and float16 are
 promoted to floats with a minimum precision of float32 so that the result is
@@ -1784,13 +1804,9 @@ For full documentation refer to :obj:`numpy.float_power`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have floating-point data types.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to floating-point data types.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to a numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -1816,6 +1832,13 @@ Otherwise ``NotImplementedError`` exception will be raised.
 See Also
 --------
 :obj:`dpnp.power` : Power function that preserves type.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
 
 Examples
 --------
@@ -1856,6 +1879,7 @@ To get complex results, give the argument one of complex dtype, i.e.
 
 >>> np.float_power(x3, 1.5, dtype=np.complex64)
 array([1.1924881e-08-1.j, 9.5399045e-08-8.j], dtype=complex64)
+
 """
 
 float_power = DPNPBinaryFunc(
@@ -1870,9 +1894,9 @@ float_power = DPNPBinaryFunc(
 
 
 _FLOOR_DOCSTRING = """
-Returns the floor for each element `x_i` for input array `x`.
+Returns the floor for each element :math:`x_i` for input array `x`.
 
-The floor of `x_i` is the largest integer `n`, such that `n <= x_i`.
+The floor of :math:`x_i` is the largest integer `n`, such that `n <= x_i`.
 
 For full documentation refer to :obj:`numpy.floor`.
 
@@ -1921,6 +1945,7 @@ Examples
 >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
 >>> np.floor(a)
 array([-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0])
+
 """
 
 floor = DPNPUnaryFunc(
@@ -1934,22 +1959,19 @@ floor = DPNPUnaryFunc(
 
 
 _FLOOR_DIVIDE_DOCSTRING = """
-Calculates the ratio for each element `x1_i` of the input array `x1` with
-the respective element `x2_i` of the input array `x2` to the greatest
-integer-value number that is not greater than the division result.
+Rounds the result of dividing each element :math:`x1_i` of the input array `x1`
+by the respective element :math:`x2_i` of the input array `x2` to the greatest
+(i.e., closest to ``+infinity``) integer-value number that is not greater than
+the division result.
 
 For full documentation refer to :obj:`numpy.floor_divide`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a real-valued data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a real-valued data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -1980,6 +2002,13 @@ See Also
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
 :obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as np
@@ -1995,6 +2024,7 @@ The ``//`` operator can be used as a shorthand for ``floor_divide`` on
 >>> x1 = np.array([1., 2., 3., 4.])
 >>> x1 // 2.5
 array([0., 0., 1., 1.])
+
 """
 
 floor_divide = DPNPBinaryFunc(
@@ -2010,7 +2040,7 @@ _FMAX_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise maxima.
 
-If one of the elements being compared is a NaN, then the non-NaN element is
+If one of the elements being compared is a ``NaN``, then the non-NaN element is
 returned. If both elements are NaNs then the first is returned. The latter
 distinction is important for complex NaNs, which are defined as at least one of
 the real or imaginary parts being a NaN. The net effect is that NaNs are
@@ -2021,13 +2051,9 @@ For full documentation refer to :obj:`numpy.fmax`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2062,6 +2088,11 @@ See Also
 
 Notes
 -----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 ``fmax(x1, x2)`` is equivalent to ``dpnp.where(x1 >= x2, x1, x2)`` when neither
 `x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
@@ -2083,6 +2114,7 @@ array([[1. , 2. ],
 >>> x2 = np.array([0, np.nan, np.nan])
 >>> np.fmax(x1, x2)
 array([ 0.,  0., nan])
+
 """
 
 fmax = DPNPBinaryFunc(
@@ -2099,7 +2131,7 @@ _FMIN_DOCSTRING = """
 Compares two input arrays `x1` and `x2` and returns a new array containing the
 element-wise minima.
 
-If one of the elements being compared is a NaN, then the non-NaN element is
+If one of the elements being compared is a ``NaN``, then the non-NaN element is
 returned. If both elements are NaNs then the first is returned. The latter
 distinction is important for complex NaNs, which are defined as at least one of
 the real or imaginary parts being a NaN. The net effect is that NaNs are
@@ -2110,13 +2142,9 @@ For full documentation refer to :obj:`numpy.fmin`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2151,6 +2179,11 @@ See Also
 
 Notes
 -----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 ``fmin(x1, x2)`` is equivalent to ``dpnp.where(x1 <= x2, x1, x2)`` when neither
 `x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.
 
@@ -2172,6 +2205,7 @@ array([[0.5, 0. ],
 >>> x2 = np.array([0, np.nan, np.nan])
 >>> np.fmin(x1, x2)
 array([ 0.,  0., nan])
+
 """
 
 fmin = DPNPBinaryFunc(
@@ -2185,8 +2219,8 @@ fmin = DPNPBinaryFunc(
 
 
 _FMOD_DOCSTRING = """
-Calculates the remainder of division for each element `x1_i` of the input array
-`x1` with the respective element `x2_i` of the input array `x2`.
+Calculates the remainder of division for each element :math:`x1_i` of the input array
+`x1` with the respective element :math:`x2_i` of the input array `x2`.
 
 This function is equivalent to the Matlab(TM) ``rem`` function and should not
 be confused with the Python modulus operator ``x1 % x2``.
@@ -2196,13 +2230,10 @@ For full documentation refer to :obj:`numpy.fmod`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have a real-valued data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a boolean or real-valued data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have a real-valued data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a boolean or real-valued data
+    type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2230,6 +2261,13 @@ See Also
 :obj:`dpnp.remainder` : Equivalent to the Python ``%`` operator.
 :obj:`dpnp.divide` : Standard division.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as np
@@ -2250,6 +2288,7 @@ array([[-3, -2],
 array([[-1,  0],
        [-1,  0],
        [ 1,  0]])
+
 """
 
 fmod = DPNPBinaryFunc(
@@ -2261,8 +2300,8 @@ fmod = DPNPBinaryFunc(
     mkl_impl_fn="_fmod",
 )
 
-_GCD_DOCSTRING = """
-Returns the greatest common divisor of ``|x1|`` and ``|x2|``.
+_GCD_DOCSTRING = r"""
+Returns the greatest common divisor of :math:`\abs{x1}` and :math:`\abs{x2}`.
 
 For full documentation refer to :obj:`numpy.gcd`.
 
@@ -2270,12 +2309,8 @@ Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have an integer data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2301,6 +2336,13 @@ See Also
 --------
 :obj:`dpnp.lcm` : The lowest common multiple.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as np
@@ -2308,6 +2350,7 @@ Examples
 array(4)
 >>> np.gcd(np.arange(6), 20)
 array([20,  1,  2,  1,  4,  5])
+
 """
 
 gcd = DPNPBinaryFunc(
@@ -2538,13 +2581,10 @@ where `x2` is often taken to be 0.5, but 0 and 1 are also sometimes used.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    Input values.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    Input values, expected to have a real-valued floating-point data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    The value of the function when `x1` is ``0``.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    The value of the function when `x1` is ``0``, also expected to have a
+    real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2566,6 +2606,13 @@ Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as np
@@ -2574,6 +2621,7 @@ Examples
 array([0. , 0.5, 1. ])
 >>> np.heaviside(a, 1)
 array([0., 1., 1.])
+
 """
 
 heaviside = DPNPBinaryFunc(
@@ -2594,7 +2642,8 @@ For full documentation refer to :obj:`numpy.i0`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Argument of the Bessel function, expected to have floating-point data type.
+    Argument of the Bessel function, expected to have a real-valued
+    floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2620,6 +2669,7 @@ Examples
 array(1.)
 >>> np.i0(np.array([0, 1, 2, 3]))
 array([1.        , 1.26606588, 2.2795853 , 4.88079259])
+
 """
 
 i0 = DPNPI0(
@@ -2631,14 +2681,15 @@ i0 = DPNPI0(
 
 
 _IMAG_DOCSTRING = """
-Computes imaginary part of each element `x_i` for input array `x`.
+Returns the imaginary component of a complex number for each element :math:`x_i`
+of the input array `x`.
 
 For full documentation refer to :obj:`numpy.imag`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2680,6 +2731,7 @@ array([1. +8.j, 3.+10.j, 5.+12.j])
 
 >>> np.imag(np.array(1 + 1j))
 array(1.)
+
 """
 
 imag = DPNPImag(
@@ -2690,8 +2742,8 @@ imag = DPNPImag(
 )
 
 
-_LCM_DOCSTRING = """
-Returns the lowest common multiple of ``|x1|`` and ``|x2|``.
+_LCM_DOCSTRING = r"""
+Returns the lowest common multiple of :math:`\abs{x1}` and :math:`\abs{x2}`.
 
 For full documentation refer to :obj:`numpy.lcm`.
 
@@ -2699,12 +2751,8 @@ Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have an integer data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have an integer data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2730,6 +2778,13 @@ See Also
 --------
 :obj:`dpnp.gcd` : The greatest common divisor.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as np
@@ -2737,6 +2792,7 @@ Examples
 array(60)
 >>> np.lcm(np.arange(6), 20)
 array([ 0, 20, 20, 60, 20, 20])
+
 """
 
 lcm = DPNPBinaryFunc(
@@ -2749,23 +2805,20 @@ lcm = DPNPBinaryFunc(
 
 
 _LDEXP_DOCSTRING = """
-Returns x1 * 2**x2, element-wise.
+Returns :math:`x1 * 2^{x2}`, element-wise.
 
-The mantissas `x1` and exponents of two `x2` are used to construct floating point
-numbers ``x1 * 2**x2``.
+The mantissas `x1` and exponents of two `x2` are used to construct
+floating-point numbers :math:`x1 * 2^{x2}`.
 
 For full documentation refer to :obj:`numpy.ldexp`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    Array of multipliers, expected to have floating-point data types.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    Array of multipliers, expected to have a real-valued floating-point data
+    type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Array of exponents of two, expected to have an integer data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -2779,7 +2832,7 @@ order : {None, "C", "F", "A", "K"}, optional
 Returns
 -------
 out : dpnp.ndarray
-    The result of ``x1 * 2**x2``.
+    The result of :math:`x1 * 2^{x2}`.
 
 Limitations
 -----------
@@ -2789,20 +2842,27 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 See Also
 --------
-:obj:`dpnp.frexp` : Return (y1, y2) from ``x = y1 * 2**y2``, inverse to :obj:`dpnp.ldexp`.
+:obj:`dpnp.frexp` : Return (y1, y2) from :math:`x = y1 * 2^{y2}`,
+    inverse to :obj:`dpnp.ldexp`.
 
 Notes
 -----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Complex dtypes are not supported, they will raise a ``TypeError``.
 
 :obj:`dpnp.ldexp` is useful as the inverse of :obj:`dpnp.frexp`, if used by
-itself it is more clear to simply use the expression ``x1 * 2**x2``.
+itself it is more clear to simply use the expression :math:`x1 * 2^{x2}`.
 
 Examples
 --------
 >>> import dpnp as np
 >>> np.ldexp(5, np.arange(4))
 array([ 5., 10., 20., 40.])
+
 """
 
 ldexp = DPNPBinaryFunc(
@@ -2815,26 +2875,23 @@ ldexp = DPNPBinaryFunc(
 
 
 _MAXIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns a new array containing the
-element-wise maxima.
+Computes the maximum value for each element :math:`x1_i` of the input array `x1`
+relative to the respective element :math:`x2_i` of the input array `x2`.
 
-If one of the elements being compared is a NaN, then that element is returned.
-If both elements are NaNs then the first is returned. The latter distinction is
-important for complex NaNs, which are defined as at least one of the real or
-imaginary parts being a NaN. The net effect is that NaNs are propagated.
+If one of the elements being compared is a ``NaN``, then that element is
+returned. If both elements are NaNs then the first is returned. The latter
+distinction is important for complex NaNs, which are defined as at least one of
+the real or imaginary parts being a ``NaN``. The net effect is that NaNs are
+propagated.
 
 For full documentation refer to :obj:`numpy.maximum`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2867,6 +2924,13 @@ See Also
 :obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.
 :obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as np
@@ -2888,6 +2952,7 @@ array([nan, nan, nan])
 
 >>> np.maximum(np.array(np.inf), 1)
 array(inf)
+
 """
 
 maximum = DPNPBinaryFunc(
@@ -2899,26 +2964,23 @@ maximum = DPNPBinaryFunc(
 
 
 _MINIMUM_DOCSTRING = """
-Compares two input arrays `x1` and `x2` and returns a new array containing the
-element-wise minima.
+Computes the minimum value for each element :math:`x1_i` of the input array `x1`
+relative to the respective element :math:`x2_i` of the input array `x2`.
 
-If one of the elements being compared is a NaN, then that element is returned.
-If both elements are NaNs then the first is returned. The latter distinction is
-important for complex NaNs, which are defined as at least one of the real or
-imaginary parts being a NaN. The net effect is that NaNs are propagated.
+If one of the elements being compared is a ``NaN``, then that element is
+returned. If both elements are NaNs then the first is returned. The latter
+distinction is important for complex NaNs, which are defined as at least one of
+the real or imaginary parts being a ``NaN``. The net effect is that NaNs are
+propagated.
 
 For full documentation refer to :obj:`numpy.minimum`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).s
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -2950,6 +3012,13 @@ See Also
 :obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.
 :obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.
 :obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.
+
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
 
 Examples
 --------
@@ -3021,21 +3090,17 @@ def modf(x1, **kwargs):
 
 
 _MULTIPLY_DOCSTRING = """
-Calculates the product for each element `x1_i` of the input array `x1` with the
-respective element `x2_i` of the input array `x2`.
+Calculates the product for each element :math:`x1_i` of the input array `x1`
+with the respective element :math:`x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.multiply`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, may have any data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3060,7 +3125,12 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
-Equivalent to `x1` * `x2` in terms of array broadcasting.
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+Equivalent to :math:`x1 * x2` in terms of array broadcasting.
 
 Examples
 --------
@@ -3083,6 +3153,7 @@ The ``*`` operator can be used as a shorthand for ``multiply`` on
 array([[  0.,   1.,   4.],
        [  0.,   4.,  10.],
        [  0.,   7.,  16.]])
+
 """
 
 multiply = DPNPBinaryFunc(
@@ -3237,14 +3308,15 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
 
 
 _NEGATIVE_DOCSTRING = """
-Computes the numerical negative for each element `x_i` of input array `x`.
+Computes the numerical negative of each element :math:`x_i` (i.e.,
+:math:`y_i = -x_i`) of the input array `x`.
 
 For full documentation refer to :obj:`numpy.negative`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3283,6 +3355,7 @@ The ``-`` operator can be used as a shorthand for ``negative`` on
 >>> x = np.array([1., -1.])
 >>> -x
 array([-1.,  1.])
+
 """
 
 negative = DPNPUnaryFunc(
@@ -3302,13 +3375,11 @@ For full documentation refer to :obj:`numpy.nextafter`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    Values to find the next representable value of.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    Values to find the next representable value of, expected to have a
+    real-valued floating-point data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    The direction where to look for the next representable value of `x1`.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    The direction where to look for the next representable value of `x1`,
+    also expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -3331,6 +3402,13 @@ Parameters `where` and `subok` are supported with their default values.
 Keyword argument `kwargs` is currently unsupported.
 Otherwise ``NotImplementedError`` exception will be raised.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as np
@@ -3344,6 +3422,7 @@ array(True)
 >>> c = np.array([eps + 1, 2 - eps])
 >>> np.nextafter(a, b) == c
 array([ True,  True])
+
 """
 
 nextafter = DPNPBinaryFunc(
@@ -3357,14 +3436,15 @@ nextafter = DPNPBinaryFunc(
 
 
 _POSITIVE_DOCSTRING = """
-Computes the numerical positive for each element `x_i` of input array `x`.
+Computes the numerical positive of each element :math:`x_i` (i.e.,
+:math:`y_i = +x_i`) of the input array `x`.
 
 For full documentation refer to :obj:`numpy.positive`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3407,6 +3487,7 @@ The ``+`` operator can be used as a shorthand for ``positive`` on
 >>> x = np.array([1., -1.])
 >>> +x
 array([ 1., -1.])
+
 """
 
 positive = DPNPUnaryFunc(
@@ -3419,8 +3500,9 @@ positive = DPNPUnaryFunc(
 
 
 _POWER_DOCSTRING = """
-Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array
-`x1` with the respective element `x2_i` of the input array `x2`.
+Calculates :math:`x1_i` raised to :math:`x2_i` for each element :math:`x1_i` of
+the input array `x1` with the respective element :math:`x2_i` of the input
+array `x2`.
 
 Note that :obj:`dpnp.pow` is an alias of :obj:`dpnp.power`.
 
@@ -3429,13 +3511,9 @@ For full documentation refer to :obj:`numpy.power`.
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate. Array must have the correct shape and
     the expected data type.
@@ -3466,6 +3544,13 @@ See Also
 :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 :obj:`dpnp.float_power` : Power function that promotes integers to floats.
 
+Notes
+-----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Examples
 --------
 >>> import dpnp as dp
@@ -3494,11 +3579,12 @@ The ``**`` operator can be used as a shorthand for ``power`` on
 >>> a ** b
 array([ 0,  1,  8, 27, 16,  5])
 
-Negative values raised to a non-integral value will result in ``nan``.
+Negative values raised to a non-integral value will result in ``NaN``.
 
 >>> d = dp.array([-1.0, -4.0])
 >>> dp.power(d, 1.5)
 array([nan, nan])
+
 """
 
 power = DPNPBinaryFunc(
@@ -3619,12 +3705,12 @@ def prod(
 
 
 _PROJ_DOCSTRING = """
-Computes projection of each element `x_i` for input array `x`.
+Computes the complex projection of each element :math:`x_i` for input array `x`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a complex floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3659,6 +3745,7 @@ array([ 1. +0.j, -2.3+0.j,  2.1-1.7.j])
 
 >>> np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))
 array([inf+0.j, inf-0.j, inf-0.j])
+
 """
 
 proj = DPNPUnaryFunc(
@@ -3670,14 +3757,15 @@ proj = DPNPUnaryFunc(
 
 
 _REAL_DOCSTRING = """
-Computes real part of each element `x_i` for input array `x`.
+Returns the real component of a complex number for each element :math:`x_i` of
+the input array `x`.
 
 For full documentation refer to :obj:`numpy.real`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, may have any data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3718,6 +3806,7 @@ array([9.+2.j, 9.+4.j, 9.+6.j])
 array([9.+2.j, 8.+4.j, 7.+6.j])
 >>> np.real(np.array(1 + 1j))
 array(1.)
+
 """
 
 real = DPNPReal(
@@ -3793,8 +3882,8 @@ def real_if_close(a, tol=100):
 
 
 _REMAINDER_DOCSTRING = """
-Calculates the remainder of division for each element `x1_i` of the input array
-`x1` with the respective element `x2_i` of the input array `x2`.
+Calculates the remainder of division for each element :math:`x1_i` of the input
+array `x1` with the respective element :math:`x2_i` of the input array `x2`.
 
 This function is equivalent to the Python modulus operator.
 
@@ -3804,12 +3893,8 @@ Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
     First input array, expected to have a real-valued data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
     Second input array, also expected to have a real-valued data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3824,7 +3909,7 @@ Returns
 -------
 out : dpnp.ndarray
     An array containing the element-wise remainders. Each remainder has the
-    same sign as respective element `x2_i`. The data type of the returned
+    same sign as respective element :math:`x2_i`. The data type of the returned
     array is determined by the Type Promotion Rules.
 
 Limitations
@@ -3838,13 +3923,20 @@ See Also
 :obj:`dpnp.fmod` : Calculate the element-wise remainder of division.
 :obj:`dpnp.divide` : Standard division.
 :obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.
-:obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.
+:obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the
+    division of the inputs.
 :obj:`dpnp.mod` : Calculate the element-wise remainder of division.
 
 Notes
 -----
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
 Returns ``0`` when `x2` is ``0`` and both `x1` and `x2` are (arrays of)
 integers.
+
 :obj:`dpnp.mod` is an alias of :obj:`dpnp.remainder`.
 
 Examples
@@ -3862,6 +3954,7 @@ The ``%`` operator can be used as a shorthand for ``remainder`` on
 >>> x1 = np.arange(7)
 >>> x1 % 5
 array([0, 1, 2, 3, 4, 0, 1])
+
 """
 
 remainder = DPNPBinaryFunc(
@@ -3876,18 +3969,18 @@ mod = remainder
 
 
 _RINT_DOCSTRING = """
-Rounds each element `x_i` of the input array `x` to
-the nearest integer-valued number.
+Rounds each element :math:`x_i` of the input array `x` to the nearest
+integer-valued number.
 
-When two integers are equally close to `x_i`, the result is the nearest even
-integer to `x_i`.
+When two integers are equally close to :math:`x_i`, the result is the nearest
+even integer to :math:`x_i`.
 
 For full documentation refer to :obj:`numpy.rint`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -3923,6 +4016,7 @@ Examples
 >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
 >>> np.rint(a)
 array([-2., -2., -0.,  0.,  2.,  2.,  2.])
+
 """
 
 
@@ -3937,18 +4031,18 @@ rint = DPNPUnaryFunc(
 
 
 _ROUND_DOCSTRING = """
-Rounds each element `x_i` of the input array `x` to
-the nearest integer-valued number.
+Rounds each element :math:`x_i` of the input array `x` to the nearest
+integer-valued number.
 
-When two integers are equally close to `x_i`, the result is the nearest even
-integer to `x_i`.
+When two integers are equally close to :math:`x_i`, the result is the nearest
+even integer to :math:`x_i`.
 
 For full documentation refer to :obj:`numpy.round`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a numeric data type.
 decimals : int, optional
     Number of decimal places to round to (default: 0). If decimals is negative,
     it specifies the number of positions to the left of the decimal point.
@@ -3986,6 +4080,7 @@ array([0.,  2.,  2.,  4.,  4.])
 array([ 1,  2,  3, 11])
 >>> np.round(np.array([1, 2, 3, 11]), decimals=-1)
 array([ 0,  0,  0, 10])
+
 """
 
 round = DPNPRound(
@@ -3998,19 +4093,27 @@ round = DPNPRound(
 )
 
 
-_SIGN_DOCSTRING = """
-Computes an indication of the sign of each element `x_i` of input array `x`
-using the signum function.
+_SIGN_DOCSTRING = r"""
+Returns an indication of the sign of a number for each element :math:`x_i` of
+the input array `x`.
 
-The signum function returns `-1` if `x_i` is less than `0`,
-`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.
+The sign function (also known as the **signum function**) of a number
+:math:`x_i` is defined as
+
+.. math::
+    \operatorname{sign}(x_i) = \begin{cases}
+    0 & \textrm{if } x_i = 0 \\
+    \frac{x_i}{|x_i|} & \textrm{otherwise}
+    \end{cases}
+
+where :math:`|x_i|` is the absolute value of :math:`x_i`.
 
 For full documentation refer to :obj:`numpy.sign`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -4047,6 +4150,7 @@ array([-1.0, 1.0])
 array(0)
 >>> np.sign(np.array(5-2j))
 array([1+0j])
+
 """
 
 sign = DPNPUnaryFunc(
@@ -4059,15 +4163,19 @@ sign = DPNPUnaryFunc(
 
 
 _SIGNBIT_DOCSTRING = """
-Computes an indication of whether the sign bit of each element `x_i` of
-input array `x` is set.
+Determines whether the sign bit is set for each element :math:`x_i` of the
+input array `x`.
+
+The sign bit of a real-valued floating-point number :math:`x_i` is set whenever
+:math:`x_i` is either ``-0``, less than zero, or a signed ``NaN``
+(i.e., a ``NaN`` value whose sign bit is ``1``).
 
 For full documentation refer to :obj:`numpy.signbit`.
 
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have numeric data type.
+    Input array, expected to have a real-valued floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -4102,6 +4210,7 @@ array([True])
 
 >>> np.signbit(np.array([1, -2.3, 2.1]))
 array([False,  True, False])
+
 """
 
 signbit = DPNPUnaryFunc(
@@ -4124,7 +4233,7 @@ For full documentation refer to :obj:`numpy.sinc`.
 Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
-    Input array, expected to have floating-point data type.
+    Input array, expected to have a floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -4167,6 +4276,7 @@ Examples
             0.        ,  0.08504448,  0.12613779,  0.11643488,  0.06682066,
             0.        , -0.05846808, -0.08903844, -0.08409186, -0.04923628,
             0.        ])
+
 """
 
 sinc = DPNPSinc(
@@ -4186,7 +4296,7 @@ Parameters
 ----------
 x : {dpnp.ndarray, usm_ndarray}
     The array of values to find the spacing of, expected to have a real-valued
-    data type.
+    floating-point data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -4225,6 +4335,7 @@ Examples
 >>> b = np.spacing(a)
 >>> b == np.finfo(b.dtype).eps
 array(True)
+
 """
 
 spacing = DPNPUnaryFunc(
@@ -4236,21 +4347,17 @@ spacing = DPNPUnaryFunc(
 
 
 _SUBTRACT_DOCSTRING = """
-Calculates the difference between each element `x1_i` of the input
-array `x1` and the respective element `x2_i` of the input array `x2`.
+Calculates the difference for each element :math:`x1_i` of the input array `x1`
+with the respective element :math:`x2_i` of the input array `x2`.
 
 For full documentation refer to :obj:`numpy.subtract`.
 
 Parameters
 ----------
 x1 : {dpnp.ndarray, usm_ndarray, scalar}
-    First input array, expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
+    First input array, expected to have a numeric data type.
 x2 : {dpnp.ndarray, usm_ndarray, scalar}
-    Second input array, also expected to have numeric data type.
-    Both inputs `x1` and `x2` can not be scalars at the same time.
-    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
-    (which becomes the shape of the output).
+    Second input array, also expected to have a numeric data type.
 out : {None, dpnp.ndarray, usm_ndarray}, optional
     Output array to populate.
     Array must have the correct shape and the expected data type.
@@ -4275,7 +4382,12 @@ Otherwise ``NotImplementedError`` exception will be raised.
 
 Notes
 -----
-Equivalent to `x1` - `x2` in terms of array broadcasting.
+At least one of `x1` or `x2` must be an array.
+
+If ``x1.shape != x2.shape``, they must be broadcastable to a common shape
+(which becomes the shape of the output).
+
+Equivalent to :math:`x1 - x2` in terms of array broadcasting.
 
 Examples
 --------
@@ -4297,6 +4409,7 @@ The ``-`` operator can be used as a shorthand for ``subtract`` on
 array([[ 0.,  0.,  0.],
        [ 3.,  3.,  3.],
        [ 6.,  6.,  6.]])
+
 """
 
 subtract = DPNPBinaryFunc(
@@ -4543,7 +4656,7 @@ true_divide = divide
 
 
 _TRUNC_DOCSTRING = """
-Returns the truncated value for each element `x_i` for input array `x`.
+Returns the truncated value for each element :math:`x_i` for input array `x`.
 
 The truncated value of the scalar `x` is the nearest integer i which is
 closer to zero than `x` is. In short, the fractional part of the
@@ -4588,6 +4701,7 @@ Examples
 >>> a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])
 >>> np.trunc(a)
 array([-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0])
+
 """
 
 trunc = DPNPUnaryFunc(
