@@ -35,7 +35,7 @@ struct IsNan
 template <typename TCoord, typename TValue>
 sycl::event interpolate_impl(sycl::queue &q,
                              const TCoord *x,
-                             const std::size_t *idx,
+                             const std::int64_t *idx,
                              const TCoord *xp,
                              const TValue *fp,
                              const TValue *left,
@@ -52,7 +52,7 @@ sycl::event interpolate_impl(sycl::queue &q,
             TValue right_val = right ? *right : fp[xp_size - 1];
 
             TCoord x_val = x[i];
-            std::size_t x_idx = idx[i] - 1;
+            std::int64_t x_idx = idx[i] - 1;
 
             if (IsNan<TCoord>::isnan(x_val)) {
                 out[i] = x_val;
@@ -63,11 +63,8 @@ sycl::event interpolate_impl(sycl::queue &q,
             else if (x_val == xp[xp_size - 1]) {
                 out[i] = right_val;
             }
-            else if (x_idx >= xp_size - 1) {
+            else if (x_idx >= static_cast<std::int64_t>(xp_size - 1)) {
                 out[i] = right_val;
-            }
-            else if (x_val == xp[x_idx]) {
-                out[i] = fp[x_idx];
             }
             else {
                 TValue slope =

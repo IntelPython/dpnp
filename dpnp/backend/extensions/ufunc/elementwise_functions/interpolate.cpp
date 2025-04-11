@@ -89,7 +89,7 @@ sycl::event interpolate_call(sycl::queue &exec_q,
     using TCoord = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const TCoord *x = static_cast<const TCoord *>(vx);
-    const std::size_t *idx = static_cast<const std::size_t *>(vidx);
+    const std::int64_t *idx = static_cast<const std::int64_t *>(vidx);
     const TCoord *xp = static_cast<const TCoord *>(vxp);
     const T *fp = static_cast<const T *>(vfp);
     const T *left = static_cast<const T *>(vleft);
