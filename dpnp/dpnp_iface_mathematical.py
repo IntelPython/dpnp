@@ -2818,6 +2818,13 @@ def interp(x, xp, fp, left=None, right=None, period=None):
             "according to the rule 'safe'"
         )
 
+    x = dpnp.asarray(x, dtype=x_float_type, order="C")
+    xp = dpnp.asarray(xp, dtype=x_float_type, order="C")
+
+    out_dtype = dpnp.common_type(x, xp, fp)
+
+    fp = dpnp.asarray(fp, dtype=out_dtype, order="C")
+
     if period is not None:
         # The handling of "period" below is modified from NumPy's
 
@@ -2841,9 +2848,6 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         assert xp.flags.c_contiguous
         assert fp.flags.c_contiguous
 
-    # NumPy always returns float64 or complex128, so we upcast all values
-    # on the fly in the kernel
-    out_dtype = fp.dtype
     output = dpnp.empty(x.shape, dtype=out_dtype)
     idx = dpnp.searchsorted(xp, x, side="right")
     left_usm = (
