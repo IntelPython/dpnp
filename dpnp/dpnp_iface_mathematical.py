@@ -2692,50 +2692,51 @@ imag = DPNPImag(
 
 def interp(x, xp, fp, left=None, right=None, period=None):
     """
-    One-dimensional linear interpolation for monotonically increasing sample points.
+    One-dimensional linear interpolation.
 
     Returns the one-dimensional piecewise linear interpolant to a function
     with given discrete data points (`xp`, `fp`), evaluated at `x`.
 
+    For full documentation refer to :obj:`numpy.interp`.
+
     Parameters
     ----------
-    x : array_like
-        The x-coordinates at which to evaluate the interpolated values.
+    x : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. The x-coordinates at which to evaluate
+        the interpolated values.
 
-    xp : 1-D sequence of floats
-        The x-coordinates of the data points, must be increasing if argument
-        `period` is not specified. Otherwise, `xp` is internally sorted after
-        normalizing the periodic boundaries with ``xp = xp % period``.
+    xp : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. The x-coordinates of the data points,
+        must be increasing if argument `period` is not specified.
+        Otherwise, `xp` is internally sorted after normalizing
+        the periodic boundaries with ``xp = xp % period``.
 
-    fp : 1-D sequence of float or complex
-        The y-coordinates of the data points, same length as `xp`.
+    fp : {dpnp.ndarray, usm_ndarray}
+        Input 1-D array. The y-coordinates of the data points,
+        same length as `xp`.
 
-    left : optional float or complex corresponding to fp
-        Value to return for `x < xp[0]`, default is `fp[0]`.
+    left : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+        Value to return for `x < xp[0]`.
 
-    right : optional float or complex corresponding to fp
-        Value to return for `x > xp[-1]`, default is `fp[-1]`.
+        Default: ``fp[0]``.
 
-    period : None or float, optional
+    right : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
+        Value to return for `x > xp[-1]`.
+
+        Default: ``fp[-1]``.
+
+    period : {None, scalar, dpnp.ndarray, usm_ndarray}, optional
         A period for the x-coordinates. This parameter allows the proper
         interpolation of angular x-coordinates. Parameters `left` and `right`
         are ignored if `period` is specified.
 
+        Default: ``None``.
+
     Returns
     -------
-    y : float or complex (corresponding to fp) or ndarray
+    y : {dpnp.ndarray, usm_ndarray}
         The interpolated values, same shape as `x`.
 
-    Raises
-    ------
-    ValueError
-        If `xp` and `fp` have different length
-        If `xp` or `fp` are not 1-D sequences
-        If `period == 0`
-
-    See Also
-    --------
-    scipy.interpolate
 
     Warnings
     --------
@@ -2747,6 +2748,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     A simple check for `xp` being strictly increasing is::
 
+        import dpnp as np
         np.all(np.diff(xp) > 0)
 
     Examples
@@ -2755,40 +2757,29 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     >>> xp = np.array([1, 2, 3])
     >>> fp = np.array([3 ,2 ,0])
     >>> x = np.array([2.5])
-    >>> np.interp(2.5, xp, fp)
-    1.0
-    >>> np.interp([0, 1, 1.5, 2.72, 3.14], xp, fp)
+    >>> np.interp(x, xp, fp)
+    array([1.])
+    >>> x = np.array([0, 1, 1.5, 2.72, 3.14])
+    >>> np.interp(x, xp, fp)
     array([3.  , 3.  , 2.5 , 0.56, 0.  ])
+    >>> x = np.array([3.14])
     >>> UNDEF = -99.0
-    >>> np.interp(3.14, xp, fp, right=UNDEF)
-    -99.0
-
-    Plot an interpolant to the sine function:
-
-    >>> x = np.linspace(0, 2*np.pi, 10)
-    >>> y = np.sin(x)
-    >>> xvals = np.linspace(0, 2*np.pi, 50)
-    >>> yinterp = np.interp(xvals, x, y)
-    >>> import matplotlib.pyplot as plt
-    >>> plt.plot(x, y, 'o')
-    [<matplotlib.lines.Line2D object at 0x...>]
-    >>> plt.plot(xvals, yinterp, '-x')
-    [<matplotlib.lines.Line2D object at 0x...>]
-    >>> plt.show()
+    >>> np.interp(x, xp, fp, right=UNDEF)
+    array([-99.])
 
     Interpolation with periodic x-coordinates:
 
-    >>> x = [-180, -170, -185, 185, -10, -5, 0, 365]
-    >>> xp = [190, -190, 350, -350]
-    >>> fp = [5, 10, 3, 4]
+    >>> x = np.array([-180, -170, -185, 185, -10, -5, 0, 365])
+    >>> xp = np.array([190, -190, 350, -350])
+    >>> fp = np.array([5, 10, 3, 4])
     >>> np.interp(x, xp, fp, period=360)
     array([7.5 , 5.  , 8.75, 6.25, 3.  , 3.25, 3.5 , 3.75])
 
     Complex interpolation:
 
-    >>> x = [1.5, 4.0]
-    >>> xp = [2,3,5]
-    >>> fp = [1.0j, 0, 2+3j]
+    >>> x = np.array([1.5, 4.0])
+    >>> xp = np.array([2,3,5])
+    >>> fp = np.array([1.0j, 0, 2+3j])
     >>> np.interp(x, xp, fp)
     array([0.+1.j , 1.+1.5j])
 
@@ -2802,10 +2793,7 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         raise ValueError("fp and xp are not of the same length")
     if xp.size == 0:
         raise ValueError("array of sample points is empty")
-    if not x.flags.c_contiguous:
-        raise NotImplementedError(
-            "Non-C-contiguous x is currently not supported"
-        )
+
     usm_type, exec_q = get_usm_allocations([x, xp, fp])
 
     x_dtype = dpnp.common_type(x, xp)
@@ -2826,8 +2814,6 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     fp = dpnp.asarray(fp, dtype=out_dtype, order="C")
 
     if period is not None:
-        # The handling of "period" below is modified from NumPy's
-
         if dpnp.is_supported_array_type(period):
             if dpu.get_execution_queue([exec_q, period.sycl_queue]) is None:
                 raise ValueError(
