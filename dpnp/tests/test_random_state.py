@@ -4,7 +4,6 @@ import dpctl
 import numpy
 import pytest
 from numpy.testing import (
-    assert_allclose,
     assert_array_almost_equal,
     assert_array_equal,
     assert_equal,
@@ -209,8 +208,7 @@ class TestNormal:
             loc=get_array(numpy, loc), scale=get_array(numpy, scale), size=size
         )
 
-        precision = dpnp.finfo(get_default_floating()).precision
-        assert_array_almost_equal(data, expected, decimal=precision)
+        assert_dtype_allclose(data, expected)
 
         # check if compute follows data isn't broken
         assert_cfd(data, sycl_queue)
@@ -1068,8 +1066,7 @@ class TestUniform:
             low=get_array(numpy, low), high=get_array(numpy, high), size=size
         )
 
-        precision = dpnp.finfo(get_default_floating()).precision
-        assert_array_almost_equal(data, expected, decimal=precision)
+        assert_dtype_allclose(data, expected)
 
         # check if compute follows data isn't broken
         assert_cfd(data, sycl_queue)

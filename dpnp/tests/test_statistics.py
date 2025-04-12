@@ -542,7 +542,7 @@ class TestCov:
 
         expected = numpy.cov(a.T)
         result = dpnp.cov(ia.T)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dt", get_complex_dtypes())
     def test_complex(self, dt):
@@ -551,11 +551,11 @@ class TestCov:
 
         expected = numpy.cov(a)
         result = dpnp.cov(ia)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         expected = numpy.cov(a, aweights=numpy.ones(3))
         result = dpnp.cov(ia, aweights=dpnp.ones(3))
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "dt", get_all_dtypes(no_none=True, no_complex=True)
@@ -568,7 +568,7 @@ class TestCov:
 
         expected = numpy.cov(a, y)
         result = dpnp.cov(ia, iy)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @pytest.mark.parametrize("sh", [None, (0, 2), (2, 0)])
@@ -578,7 +578,7 @@ class TestCov:
 
         expected = numpy.cov(a)
         result = dpnp.cov(ia)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     def test_wrong_ddof(self):
@@ -587,7 +587,7 @@ class TestCov:
 
         expected = numpy.cov(a.T, ddof=5)
         result = dpnp.cov(ia.T, ddof=5)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dt", get_float_dtypes())
     @pytest.mark.parametrize("rowvar", [True, False])
@@ -598,11 +598,11 @@ class TestCov:
 
         expected = numpy.cov(a, rowvar=rowvar)
         result = dpnp.cov(ia, rowvar=rowvar)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         expected = numpy.cov(a, y, rowvar=rowvar)
         result = dpnp.cov(ia, iy, rowvar=rowvar)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     def test_1D_variance(self):
         a = numpy.array([0.3942, 0.5969, 0.7730, 0.9918, 0.7964])
@@ -610,7 +610,7 @@ class TestCov:
 
         expected = numpy.cov(a, ddof=1)
         result = dpnp.cov(ia, ddof=1)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("freq_data", [[1, 4, 1], [1, 1, 1]])
     def test_fweights(self, freq_data):
@@ -620,14 +620,14 @@ class TestCov:
 
         expected = numpy.cov(a, fweights=freq)
         result = dpnp.cov(ia, fweights=ifreq)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         a = numpy.array([[0, 2], [1, 1], [2, 0]])
         ia = dpnp.array(a)
 
         expected = numpy.cov(a.T, fweights=freq)
         result = dpnp.cov(ia.T, fweights=ifreq)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     def test_float_fweights(self, xp):
@@ -655,11 +655,11 @@ class TestCov:
 
         expected = numpy.cov(a.T, aweights=weights)
         result = dpnp.cov(ia.T, aweights=iweights)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         expected = numpy.cov(a.T, aweights=3.0 * weights)
         result = dpnp.cov(ia.T, aweights=3.0 * iweights)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("xp", [dpnp, numpy])
     @pytest.mark.parametrize("sh", [(2, 3), 2])
@@ -686,7 +686,7 @@ class TestCov:
         # unit weights
         expected = numpy.cov(a, fweights=freq, aweights=weights)
         result = dpnp.cov(ia, fweights=ifreq, aweights=iweights)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         a = numpy.array([[0, 2], [1, 1], [2, 0]])
         ia = dpnp.array(a)
@@ -694,7 +694,7 @@ class TestCov:
         # unit weights
         expected = numpy.cov(a.T, fweights=freq, aweights=weights)
         result = dpnp.cov(ia.T, fweights=ifreq, aweights=iweights)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         freq = numpy.ones(3, dtype=numpy.int_)
         ifreq = dpnp.array(freq)
@@ -702,7 +702,7 @@ class TestCov:
         # unit frequencies and weights
         expected = numpy.cov(a.T, fweights=freq, aweights=weights)
         result = dpnp.cov(ia.T, fweights=ifreq, aweights=iweights)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         weights = numpy.array([1.0, 4.0, 1.0])
         iweights = dpnp.array(weights)
@@ -710,11 +710,11 @@ class TestCov:
         # unit frequencies
         expected = numpy.cov(a.T, fweights=freq, aweights=weights)
         result = dpnp.cov(ia.T, fweights=ifreq, aweights=iweights)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
         expected = numpy.cov(a.T, fweights=freq, aweights=3.0 * weights)
         result = dpnp.cov(ia.T, fweights=ifreq, aweights=3.0 * iweights)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dt", get_float_complex_dtypes())
     def test_dtype(self, dt):
@@ -763,7 +763,7 @@ class TestCov:
 
         expected = numpy.cov(a.T)
         result = dpnp.cov(ia.T)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     # numpy 2.2 properly transposes 2d array when rowvar=False
     @with_requires("numpy>=2.2")
@@ -892,7 +892,7 @@ class TestMean:
 
         result = dpnp.mean(ia, axis=axis)
         expected = numpy.mean(a, axis=axis)
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     def test_mean_scalar(self):
         ia = dpnp.array(5)
@@ -900,7 +900,7 @@ class TestMean:
 
         result = ia.mean()
         expected = a.mean()
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
     def test_mean_NotImplemented(self):
         ia = dpnp.arange(5)

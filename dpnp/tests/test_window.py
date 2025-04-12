@@ -1,6 +1,6 @@
 import numpy
 import pytest
-from numpy.testing import assert_allclose, assert_raises
+from numpy.testing import assert_raises
 
 import dpnp
 
@@ -70,7 +70,7 @@ class TestKaiser:
             M = M.asnumpy()
         expected = numpy.kaiser(M, 14)
 
-        assert_allclose(result, expected, rtol=1e-6, atol=1e-6)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.filterwarnings("ignore::RuntimeWarning")
     @pytest.mark.parametrize(
@@ -97,7 +97,7 @@ class TestKaiser:
             beta = beta.asnumpy()
         expected = numpy.kaiser(4, beta)
 
-        assert_allclose(result, expected, rtol=1e-6)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "beta",

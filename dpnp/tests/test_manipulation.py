@@ -106,7 +106,7 @@ class TestAppend:
 
         expected = numpy.append(a, b)
         result = dpnp.append(ia, ib)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "arr",
@@ -124,7 +124,7 @@ class TestAppend:
 
         expected = numpy.append(a, value)
         result = dpnp.append(ia, value)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "arr",
@@ -544,13 +544,13 @@ class TestDelete:
     def test_boolean_obj(self, flag):
         expected = numpy.delete(numpy.ones(1), numpy.array([flag]))
         result = dpnp.delete(dpnp.ones(1), dpnp.array([flag]))
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
         expected = numpy.delete(
             numpy.ones((3, 1)), numpy.array([flag]), axis=-1
         )
         result = dpnp.delete(dpnp.ones((3, 1)), dpnp.array([flag]), axis=-1)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
 
 class TestDsplit:
@@ -841,7 +841,7 @@ class TestRepeat:
 
         expected = numpy.repeat(a, 2)
         result = dpnp.repeat(ia, 2)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "repeats", [2, (2, 2, 2, 2, 2)], ids=["scalar", "tuple"]
@@ -903,12 +903,12 @@ class TestRepeat:
         reps = 0
         expected = numpy.repeat(a, reps, axis=1)
         result = dpnp.repeat(ia, reps, axis=1)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
         reps = (0, 0)
         expected = numpy.repeat(a, reps, axis=1)
         result = dpnp.repeat(ia, reps, axis=1)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     def test_strides_0(self):
         reps = 2
@@ -1273,9 +1273,13 @@ class TestRot90:
     def test_axes(self):
         a = numpy.ones((50, 40, 3))
         ia = dpnp.array(a)
-        assert_equal(dpnp.rot90(ia), numpy.rot90(a))
-        assert_equal(dpnp.rot90(ia, axes=(0, 2)), dpnp.rot90(ia, axes=(0, -1)))
-        assert_equal(dpnp.rot90(ia, axes=(1, 2)), dpnp.rot90(ia, axes=(-2, -1)))
+        assert_dtype_allclose(dpnp.rot90(ia), numpy.rot90(a))
+        assert_dtype_allclose(
+            dpnp.rot90(ia, axes=(0, 2)), dpnp.rot90(ia, axes=(0, -1))
+        )
+        assert_dtype_allclose(
+            dpnp.rot90(ia, axes=(1, 2)), dpnp.rot90(ia, axes=(-2, -1))
+        )
 
     @pytest.mark.parametrize(
         "axes", [(1, 2), [1, 2], numpy.array([1, 2]), dpnp.array([1, 2])]
@@ -1283,7 +1287,7 @@ class TestRot90:
     def test_axes_type(self, axes):
         a = numpy.ones((50, 40, 3))
         ia = dpnp.array(a)
-        assert_equal(
+        assert_dtype_allclose(
             dpnp.rot90(ia, axes=axes),
             numpy.rot90(a, axes=get_array(numpy, axes)),
         )
@@ -1379,24 +1383,26 @@ class TestTranspose:
 
         expected = na.transpose(*axes)
         result = da.transpose(*axes)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
         # ndarray
         expected = na.transpose(*axes)
         result = da.transpose(*axes)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("shape", [(10,), (2, 4), (5, 3, 7), (3, 8, 4, 1)])
     def test_none_axes(self, shape):
         na = numpy.ones(shape)
         da = dpnp.ones(shape)
 
-        assert_array_equal(numpy.transpose(na), dpnp.transpose(da))
-        assert_array_equal(numpy.transpose(na, None), dpnp.transpose(da, None))
+        assert_dtype_allclose(dpnp.transpose(da), numpy.transpose(na))
+        assert_dtype_allclose(
+            dpnp.transpose(da, None), numpy.transpose(na, None)
+        )
 
         # ndarray
-        assert_array_equal(na.transpose(), da.transpose())
-        assert_array_equal(na.transpose(None), da.transpose(None))
+        assert_dtype_allclose(da.transpose(), na.transpose())
+        assert_dtype_allclose(da.transpose(None), na.transpose(None))
 
     def test_ndarray_axes_n_int(self):
         na = numpy.ones((1, 2, 3))
@@ -1404,7 +1410,7 @@ class TestTranspose:
 
         expected = na.transpose(1, 0, 2)
         result = da.transpose(1, 0, 2)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     def test_alias(self):
         a = dpnp.arange(15).reshape(5, 3)
@@ -1485,7 +1491,7 @@ class TestTrimZeros:
 
         result = dpnp.trim_zeros(ia)
         expected = numpy.trim_zeros(a)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "a", [numpy.array([0, 2**62, 0]), numpy.array([0, 2**63, 0])]
@@ -1495,7 +1501,7 @@ class TestTrimZeros:
 
         result = dpnp.trim_zeros(ia)
         expected = numpy.trim_zeros(a)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @testing.with_requires("numpy>=2.2")
     @pytest.mark.parametrize("xp", [numpy, dpnp])
@@ -1557,7 +1563,7 @@ class TestUnique:
 
         result = dpnp.unique(ia)
         expected = numpy.unique(a)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "return_kwds",
@@ -1579,7 +1585,7 @@ class TestUnique:
         result = dpnp.unique(ia, **return_kwds)
         expected = numpy.unique(a, **return_kwds)
         for idx, (iv, v) in enumerate(zip(result, expected)):
-            assert_array_equal(iv, v)
+            assert_dtype_allclose(iv, v)
             if idx > 0:  # skip values and check only indices
                 assert iv.dtype == v.dtype
 
@@ -1604,7 +1610,7 @@ class TestUnique:
         result = dpnp.unique(ia, **return_kwds)
         expected = numpy.unique(a, **return_kwds)
         for iv, v in zip(result, expected):
-            assert_array_equal(iv, v)
+            assert_dtype_allclose(iv, v)
 
     @pytest.mark.parametrize(
         "return_kwds",
@@ -1635,7 +1641,7 @@ class TestUnique:
         result = dpnp.unique(ia, **return_kwds)
         expected = numpy.unique(a, **return_kwds)
         for iv, v in zip(result, expected):
-            assert_array_equal(iv, v)
+            assert_dtype_allclose(iv, v)
 
     @pytest.mark.parametrize(
         "return_kwds",
@@ -1736,7 +1742,7 @@ class TestUnique:
 
         result = dpnp.unique(ia, axis=0)
         expected = numpy.unique(a, axis=0)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [0, -1])
     def test_1d_axis(self, axis):
@@ -1827,7 +1833,7 @@ class TestUnique:
 
         result = dpnp.unique(ia, **eq_nan_kwd)
         expected = numpy.unique(a, **eq_nan_kwd)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dt", get_float_complex_dtypes())
     @pytest.mark.parametrize(
@@ -1893,7 +1899,7 @@ class TestUnique:
         result = getattr(dpnp, func)(ia)
         expected = getattr(numpy, func)(a)
         for iv, v in zip(result, expected):
-            assert_array_equal(iv, v)
+            assert_dtype_allclose(iv, v)
 
 
 class TestVsplit:

@@ -1,9 +1,10 @@
 import math
 
 import numpy
-from numpy.testing import assert_allclose
 
 import dpnp
+
+from .helper import assert_dtype_allclose
 
 
 def test_erf():
@@ -16,7 +17,7 @@ def test_erf():
 
     result = dpnp.erf(ia)
 
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)
 
 
 def test_erf_fallback():
@@ -29,4 +30,4 @@ def test_erf_fallback():
 
     result = dpnp.erf(dpa)
 
-    assert_allclose(result, expected)
+    assert_dtype_allclose(result, expected)

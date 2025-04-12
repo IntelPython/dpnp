@@ -3,7 +3,7 @@ import numpy
 import pytest
 from dpctl.tensor._numpy_helper import AxisError
 from dpctl.utils import ExecutionPlacementError
-from numpy.testing import assert_allclose, assert_array_equal, assert_raises
+from numpy.testing import assert_allclose, assert_raises
 
 import dpnp
 from dpnp.dpnp_utils import map_dtype_to_device
@@ -1206,7 +1206,7 @@ class TestMatmul:
 
         result = dpnp.linalg.matmul(ia, ib)
         expected = numpy.linalg.matmul(a, b)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     @pytest.mark.parametrize(

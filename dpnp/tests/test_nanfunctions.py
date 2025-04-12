@@ -5,9 +5,7 @@ import pytest
 from dpctl.utils import ExecutionPlacementError
 from numpy.testing import (
     assert_allclose,
-    assert_almost_equal,
     assert_array_equal,
-    assert_equal,
     assert_raises,
     assert_raises_regex,
 )
@@ -121,7 +119,7 @@ class TestNanCumSumProd:
 
         result = getattr(dpnp, func)(ia, axis=axis)
         expected = getattr(numpy, func)(a, axis=axis)
-        assert_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [None, 0, 1])
     def test_keepdims(self, func, axis):
@@ -130,7 +128,7 @@ class TestNanCumSumProd:
 
         result = getattr(dpnp, func)(ia, axis=axis, out=None)
         expected = getattr(numpy, func)(a, axis=axis, out=None)
-        assert_equal(result, expected)
+        assert_dtype_allclose(result, expected)
         assert result.ndim == expected.ndim
 
     @pytest.mark.parametrize("axis", [None] + list(range(4)))
@@ -143,7 +141,7 @@ class TestNanCumSumProd:
 
         result = getattr(dpnp, func)(ia, axis=axis)
         expected = getattr(numpy, func)(a, axis=axis)
-        assert_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("axis", [-2, -1, 0, 1, None])
     @pytest.mark.parametrize("dtype", get_float_dtypes())
@@ -191,7 +189,7 @@ class TestNanCumSumProd:
 
         result = getattr(dpnp, func)(ia, axis=axis, out=iout)
         expected = getattr(numpy, func)(a, axis=axis, out=out)
-        assert_almost_equal(result, expected)
+        assert_dtype_allclose(result, expected)
         assert result is iout
 
 
@@ -584,7 +582,7 @@ class TestNanProdSum:
 
         result = getattr(dpnp, func)(ia[::stride])
         expected = getattr(numpy, func)(a[::stride])
-        assert_allclose(result, expected)
+        assert_dtype_allclose(result, expected)
 
 
 @pytest.mark.parametrize("func", ["nanstd", "nanvar"])

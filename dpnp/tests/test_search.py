@@ -6,6 +6,7 @@ from numpy.testing import assert_array_equal, assert_equal, assert_raises
 import dpnp
 
 from .helper import (
+    assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
 )
@@ -243,11 +244,11 @@ class TestWhere:
 
         expected = numpy.where(c[:, numpy.newaxis], a, b)
         result = dpnp.where(ic[:, dpnp.newaxis], ia, ib)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
         expected = numpy.where(c, a.T, b.T)
         result = dpnp.where(ic, ia.T, ib.T)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     def test_dtype_mix(self):
         a = numpy.uint32(1)
@@ -278,7 +279,7 @@ class TestWhere:
 
         expected = numpy.where(c, a, b)
         result = dpnp.where(ic, ia, ib)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
         b = b.astype(numpy.int64)
         ib = dpnp.array(b)
@@ -336,7 +337,7 @@ class TestWhere:
 
         result = dpnp.where(icond, ix, iy, out=iout)
         expected = numpy.where(cond, x, y)
-        assert_array_equal(result, expected)
+        assert_dtype_allclose(result, expected)
 
     @pytest.mark.parametrize("order", ["C", "F", "A", "K", None])
     def test_order(self, order):
