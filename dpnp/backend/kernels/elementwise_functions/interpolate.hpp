@@ -3,35 +3,15 @@
 #include <sycl/sycl.hpp>
 #include <vector>
 
+#include "ext/common.hpp"
 #include "utils/type_utils.hpp"
 
 namespace type_utils = dpctl::tensor::type_utils;
 
+using ext::common::IsNan;
+
 namespace dpnp::kernels::interpolate
 {
-
-template <typename T>
-struct IsNan
-{
-    static bool isnan(const T &v)
-    {
-        if constexpr (type_utils::is_complex_v<T>) {
-            using vT = typename T::value_type;
-
-            const vT real1 = std::real(v);
-            const vT imag1 = std::imag(v);
-
-            return IsNan<vT>::isnan(real1) || IsNan<vT>::isnan(imag1);
-        }
-        else if constexpr (std::is_floating_point_v<T> ||
-                           std::is_same_v<T, sycl::half>) {
-            return sycl::isnan(v);
-        }
-
-        return false;
-    }
-};
-
 template <typename TCoord, typename TValue>
 sycl::event interpolate_impl(sycl::queue &q,
                              const TCoord *x,
@@ -74,7 +54,8 @@ sycl::event interpolate_impl(sycl::queue &q,
                 if (IsNan<TValue>::isnan(res)) {
                     res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];
                     if (IsNan<TValue>::isnan(res) &&
-                        (fp[x_idx] == fp[x_idx + 1])) {
+                        (fp[x_idx] == fp[x_idx + 1]))
+                    {
                         res = fp[x_idx];
                     }
                 }
