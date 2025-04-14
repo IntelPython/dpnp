@@ -22,7 +22,7 @@ from .third_party.cupy import testing
 
 class TestAsType:
     @pytest.mark.usefixtures("suppress_complex_warning")
-    @pytest.mark.parametrize("res_dtype", get_all_dtypes(no_none=True))
+    @pytest.mark.parametrize("res_dtype", get_all_dtypes())
     @pytest.mark.parametrize("arr_dtype", get_all_dtypes(no_none=True))
     @pytest.mark.parametrize(
         "arr",
@@ -377,7 +377,7 @@ def test_print_dpnp_zero_shape():
 @pytest.mark.parametrize("func", [bool, float, int, complex])
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    "dtype", get_all_dtypes(no_float16=False, no_complex=True)
 )
 def test_scalar_type_casting(func, shape, dtype):
     a = numpy.full(shape, 5, dtype=dtype)
@@ -393,7 +393,7 @@ def test_scalar_type_casting(func, shape, dtype):
 )
 @pytest.mark.parametrize("shape", [tuple(), (1,), (1, 1), (1, 1, 1)])
 @pytest.mark.parametrize(
-    "dtype", get_all_dtypes(no_none=True, no_float16=False, no_complex=True)
+    "dtype", get_all_dtypes(no_float16=False, no_complex=True)
 )
 def test_scalar_type_casting_by_method(method, shape, dtype):
     a = numpy.full(shape, 4.7, dtype=dtype)
