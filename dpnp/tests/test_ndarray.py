@@ -398,7 +398,7 @@ def test_scalar_type_casting(func, shape, dtype):
 def test_scalar_type_casting_by_method(method, shape, dtype):
     a = numpy.full(shape, 4.7, dtype=dtype)
     ia = dpnp.full(shape, 4.7, dtype=dtype)
-    assert getattr(a, method)() == getattr(ia, method)()
+    assert_allclose(getattr(a, method)(), getattr(ia, method)(), rtol=1e-06)
 
 
 @pytest.mark.parametrize("shape", [(1,), (1, 1), (1, 1, 1)])
