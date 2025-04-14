@@ -349,6 +349,36 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
     return arg, usm_type
 
 
+def _validate_interp_param(param, name, exec_q, usm_type):
+    """
+    Validate and convert optional parameters for interpolation.
+
+    Returns a USM array or None if the input is None.
+    """
+    if param is None:
+        return None
+
+    if dpnp.is_supported_array_type(param):
+        if param.ndim != 0:
+            raise ValueError(
+                f"a {name} value must be 0-dimensional, "
+                f"but got {param.ndim}-dim"
+            )
+        if dpu.get_execution_queue([exec_q, param.sycl_queue]) is None:
+            raise ValueError(
+                "input arrays and {name} must be on the same SYCL queue"
+            )
+        return param.get_array()
+
+    if dpnp.isscalar(param):
+        return dpt.asarray(param, sycl_queue=exec_q, usm_type=usm_type)
+
+    raise TypeError(
+        f"a {name} value must be a scalar or 0-d supported array, "
+        f"but got {type(param)}"
+    )
+
+
 _ABS_DOCSTRING = """
 Calculates the absolute value for each element :math:`x_i` of input array `x`.
 
@@ -2867,18 +2897,12 @@ def interp(x, xp, fp, left=None, right=None, period=None):
     fp = dpnp.asarray(fp, dtype=out_dtype, order="C")
 
     if period is not None:
-        if dpnp.is_supported_array_type(period):
-            if dpu.get_execution_queue([exec_q, period.sycl_queue]) is None:
-                raise ValueError(
-                    "input arrays and period must be allocated "
-                    "on the same SYCL queue"
-                )
-        else:
-            period = dpnp.asarray(period, sycl_queue=exec_q, usm_type=usm_type)
-
+        period = _validate_interp_param(period, "period", exec_q, usm_type)
         if period == 0:
             raise ValueError("period must be a non-zero value")
         period = dpnp.abs(period)
+
+        # left/right are ignored when period is specified
         left = None
         right = None
 
@@ -2895,12 +2919,8 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     output = dpnp.empty(x.shape, dtype=out_dtype)
     idx = dpnp.searchsorted(xp, x, side="right")
-    left_usm = (
-        dpnp.array(left, fp.dtype).get_array() if left is not None else None
-    )
-    right_usm = (
-        dpnp.array(right, fp.dtype).get_array() if right is not None else None
-    )
+    left_usm = _validate_interp_param(left, "left", exec_q, usm_type)
+    right_usm = _validate_interp_param(right, "right", exec_q, usm_type)
 
     _manager = dpu.SequentialOrderManager[exec_q]
     mem_ev, ht_ev = ufi._interpolate(
