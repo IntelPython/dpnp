@@ -457,7 +457,7 @@ def einsum(
     )
 
 
-def einsum_path(*operands, optimize="greedy", einsum_call=False):
+def einsum_path(*operands, optimize="greedy"):
     """
     einsum_path(subscripts, *operands, optimize="greedy")
 
@@ -483,7 +483,7 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
         * if a list is given that starts with ``einsum_path``, uses this as the
           contraction path
         * if ``False`` or ``None`` no optimization is taken
-        * if ``True`` defaults to the "greedy" algorithm
+        * if ``True`` defaults to the ``"greedy"`` algorithm
         * ``"optimal"`` is an algorithm that combinatorially explores all
           possible ways of contracting the listed tensors and chooses the
           least costly path. Scales exponentially with the number of terms
@@ -586,7 +586,7 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
     return numpy.einsum_path(
         *operands,
         optimize=optimize,
-        einsum_call=einsum_call,
+        einsum_call=False,
     )
 
 
