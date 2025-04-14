@@ -36,8 +36,14 @@
 
 #include "kernels/elementwise_functions/interpolate.hpp"
 
+#include "ext/validation_utils.hpp"
+
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+
+using ext::validation::array_names;
+using ext::validation::array_ptr;
+using ext::validation::common_checks;
 
 namespace dpnp::extensions::ufunc
 {
@@ -105,27 +111,22 @@ sycl::event interpolate_call(sycl::queue &exec_q,
 
 interpolate_fn_ptr_t interpolate_dispatch_vector[td_ns::num_types];
 
-std::pair<sycl::event, sycl::event>
-    py_interpolate(const dpctl::tensor::usm_ndarray &x,
-                   const dpctl::tensor::usm_ndarray &idx,
-                   const dpctl::tensor::usm_ndarray &xp,
-                   const dpctl::tensor::usm_ndarray &fp,
-                   std::optional<const dpctl::tensor::usm_ndarray> &left,
-                   std::optional<const dpctl::tensor::usm_ndarray> &right,
-                   dpctl::tensor::usm_ndarray &out,
-                   sycl::queue &exec_q,
-                   const std::vector<sycl::event> &depends)
+void common_interpolate_checks(
+    const dpctl::tensor::usm_ndarray &x,
+    const dpctl::tensor::usm_ndarray &idx,
+    const dpctl::tensor::usm_ndarray &xp,
+    const dpctl::tensor::usm_ndarray &fp,
+    const dpctl::tensor::usm_ndarray &out,
+    const std::optional<const dpctl::tensor::usm_ndarray> &left,
+    const std::optional<const dpctl::tensor::usm_ndarray> &right)
 {
-    int x_typenum = x.get_typenum();
-    int xp_typenum = xp.get_typenum();
-    int fp_typenum = fp.get_typenum();
-    int out_typenum = out.get_typenum();
+    array_names names = {{&x, "x"}, {&xp, "xp"}, {&fp, "fp"}, {&out, "out"}};
 
     auto array_types = td_ns::usm_ndarray_types();
-    int x_type_id = array_types.typenum_to_lookup_id(x_typenum);
-    int xp_type_id = array_types.typenum_to_lookup_id(xp_typenum);
-    int fp_type_id = array_types.typenum_to_lookup_id(fp_typenum);
-    int out_type_id = array_types.typenum_to_lookup_id(out_typenum);
+    int x_type_id = array_types.typenum_to_lookup_id(x.get_typenum());
+    int xp_type_id = array_types.typenum_to_lookup_id(xp.get_typenum());
+    int fp_type_id = array_types.typenum_to_lookup_id(fp.get_typenum());
+    int out_type_id = array_types.typenum_to_lookup_id(out.get_typenum());
 
     if (x_type_id != xp_type_id) {
         throw py::value_error("x and xp must have the same dtype");
@@ -134,17 +135,37 @@ std::pair<sycl::event, sycl::event>
         throw py::value_error("fp and out must have the same dtype");
     }
 
-    auto fn = interpolate_dispatch_vector[fp_type_id];
-    if (!fn) {
-        throw py::type_error("Unsupported dtype");
+    if (left) {
+        const auto &l = left.value();
+        names.insert({&l, "left"});
+        if (l.get_ndim() != 0) {
+            throw py::value_error("left must be a zero-dimensional array");
+        }
+
+        int left_type_id = array_types.typenum_to_lookup_id(l.get_typenum());
+        if (left_type_id != fp_type_id) {
+            throw py::value_error(
+                "left must have the same dtype as fp and out");
+        }
     }
 
-    if (!dpctl::utils::queues_are_compatible(exec_q, {x, idx, xp, fp, out})) {
-        throw py::value_error(
-            "Execution queue is not compatible with allocation queues");
+    if (right) {
+        const auto &r = right.value();
+        names.insert({&r, "right"});
+        if (r.get_ndim() != 0) {
+            throw py::value_error("right must be a zero-dimensional array");
+        }
+
+        int right_type_id = array_types.typenum_to_lookup_id(r.get_typenum());
+        if (right_type_id != fp_type_id) {
+            throw py::value_error(
+                "right must have the same dtype as fp and out");
+        }
     }
 
-    dpctl::tensor::validation::CheckWritable::throw_if_not_writable(out);
+    common_checks({&x, &xp, &fp, left ? &left.value() : nullptr,
+                   right ? &right.value() : nullptr},
+                  {&out}, names);
 
     if (x.get_ndim() != 1 || xp.get_ndim() != 1 || fp.get_ndim() != 1 ||
         idx.get_ndim() != 1 || out.get_ndim() != 1)
@@ -159,13 +180,40 @@ std::pair<sycl::event, sycl::event>
     if (x.get_size() != out.get_size() || x.get_size() != idx.get_size()) {
         throw py::value_error("x, idx, and out must have the same size");
     }
+}
+
+std::pair<sycl::event, sycl::event>
+    py_interpolate(const dpctl::tensor::usm_ndarray &x,
+                   const dpctl::tensor::usm_ndarray &idx,
+                   const dpctl::tensor::usm_ndarray &xp,
+                   const dpctl::tensor::usm_ndarray &fp,
+                   std::optional<const dpctl::tensor::usm_ndarray> &left,
+                   std::optional<const dpctl::tensor::usm_ndarray> &right,
+                   dpctl::tensor::usm_ndarray &out,
+                   sycl::queue &exec_q,
+                   const std::vector<sycl::event> &depends)
+{
+    if (x.get_size() == 0) {
+        return {sycl::event(), sycl::event()};
+    }
+
+    common_interpolate_checks(x, idx, xp, fp, out, left, right);
+
+    int out_typenum = out.get_typenum();
+
+    auto array_types = td_ns::usm_ndarray_types();
+    int out_type_id = array_types.typenum_to_lookup_id(out_typenum);
+
+    auto fn = interpolate_dispatch_vector[out_type_id];
+    if (!fn) {
+        throw py::type_error("Unsupported dtype");
+    }
 
     std::size_t n = x.get_size();
     std::size_t xp_size = xp.get_size();
 
-    void *left_ptr = left.has_value() ? left.value().get_data() : nullptr;
-
-    void *right_ptr = right.has_value() ? right.value().get_data() : nullptr;
+    void *left_ptr = left ? left.value().get_data() : nullptr;
+    void *right_ptr = right ? right.value().get_data() : nullptr;
 
     sycl::event ev =
         fn(exec_q, x.get_data(), idx.get_data(), xp.get_data(), fp.get_data(),
@@ -173,15 +221,15 @@ std::pair<sycl::event, sycl::event>
 
     sycl::event args_ev;
 
-    if (left.has_value() && right.has_value()) {
+    if (left && right) {
         args_ev = dpctl::utils::keep_args_alive(
             exec_q, {x, idx, xp, fp, out, left.value(), right.value()}, {ev});
     }
-    else if (left.has_value()) {
+    else if (left) {
         args_ev = dpctl::utils::keep_args_alive(
             exec_q, {x, idx, xp, fp, out, left.value()}, {ev});
     }
-    else if (right.has_value()) {
+    else if (right) {
         args_ev = dpctl::utils::keep_args_alive(
             exec_q, {x, idx, xp, fp, out, right.value()}, {ev});
     }
