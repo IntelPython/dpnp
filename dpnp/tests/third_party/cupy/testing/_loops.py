@@ -251,7 +251,7 @@ def _make_positive_masks(impl, args, kw, name, sp_name, scipy_name):
     assert error is None
     if not isinstance(result, (tuple, list)):
         result = (result,)
-    return [r >= 0 for r in result]
+    return [cupy.asnumpy(r) >= 0 for r in result]
 
 
 def _contains_signed_and_unsigned(kw):
@@ -307,12 +307,9 @@ def _make_decorator(
         @_wraps_partial_xp(impl, name, sp_name, scipy_name)
         def test_func(*args, **kw):
             # Run cupy and numpy
-            (
-                cupy_result,
-                cupy_error,
-                numpy_result,
-                numpy_error,
-            ) = _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
+            (cupy_result, cupy_error, numpy_result, numpy_error) = (
+                _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
+            )
             assert cupy_result is not None or cupy_error is not None
             assert numpy_result is not None or numpy_error is not None
 
@@ -411,8 +408,8 @@ numpy: {}""".format(
                     if cupy_r.shape == ():
                         skip = (mask == 0).all()
                     else:
-                        cupy_r = cupy_r[mask]
-                        numpy_r = numpy_r[mask.asnumpy()]
+                        cupy_r = cupy_r[mask].asnumpy()
+                        numpy_r = numpy_r[mask]
 
                 if not skip:
                     check_func(cupy_r, numpy_r)
@@ -446,7 +443,7 @@ def _convert_output_to_ndarray(c_out, n_out, sp_name, check_sparse_format):
         assert scipy.sparse.issparse(n_out)
         if check_sparse_format:
             assert c_out.format == n_out.format
-        return c_out.A, n_out.A
+        return c_out.toarray(), n_out.toarray()
     if isinstance(c_out, cupy.ndarray) and isinstance(
         n_out, (numpy.ndarray, numpy.generic)
     ):
@@ -455,7 +452,6 @@ def _convert_output_to_ndarray(c_out, n_out, sp_name, check_sparse_format):
     if (
         hasattr(cupy, "poly1d")
         and isinstance(c_out, cupy.poly1d)
-        and hasattr(numpy, "poly1d")
         and isinstance(n_out, numpy.poly1d)
     ):
         # poly1d output case.
@@ -463,9 +459,6 @@ def _convert_output_to_ndarray(c_out, n_out, sp_name, check_sparse_format):
         return c_out.coeffs, n_out.coeffs
     if isinstance(c_out, numpy.generic) and isinstance(n_out, numpy.generic):
         # numpy scalar output case.
-        return c_out, n_out
-    if isinstance(c_out, numpy.ndarray) and isinstance(n_out, numpy.ndarray):
-        # fallback on numpy output case.
         return c_out, n_out
     if numpy.isscalar(c_out) and numpy.isscalar(n_out):
         # python scalar output case.
@@ -594,7 +587,9 @@ def numpy_cupy_allclose(
 
     def check_func(c, n):
         rtol1, atol1 = _resolve_tolerance(type_check, c, rtol, atol)
-        _array.assert_allclose(c, n, rtol1, atol1, err_msg, verbose)
+        _array.assert_allclose(
+            c, n, rtol1, atol1, err_msg=err_msg, verbose=verbose
+        )
 
     return _make_decorator(
         check_func,
@@ -795,7 +790,9 @@ def numpy_cupy_array_equal(
     """
 
     def check_func(x, y):
-        _array.assert_array_equal(x, y, err_msg, verbose, strides_check)
+        _array.assert_array_equal(
+            x, y, err_msg, verbose, strides_check=strides_check
+        )
 
     return _make_decorator(
         check_func, name, type_check, False, accept_error, sp_name, scipy_name
@@ -905,12 +902,9 @@ def numpy_cupy_equal(name="xp", sp_name=None, scipy_name=None):
         @_wraps_partial_xp(impl, name, sp_name, scipy_name)
         def test_func(*args, **kw):
             # Run cupy and numpy
-            (
-                cupy_result,
-                cupy_error,
-                numpy_result,
-                numpy_error,
-            ) = _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
+            (cupy_result, cupy_error, numpy_result, numpy_error) = (
+                _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
+            )
 
             if cupy_error or numpy_error:
                 _check_cupy_numpy_error(
@@ -964,12 +958,9 @@ def numpy_cupy_raises(
         @_wraps_partial_xp(impl, name, sp_name, scipy_name)
         def test_func(*args, **kw):
             # Run cupy and numpy
-            (
-                cupy_result,
-                cupy_error,
-                numpy_result,
-                numpy_error,
-            ) = _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
+            (cupy_result, cupy_error, numpy_result, numpy_error) = (
+                _call_func_numpy_cupy(impl, args, kw, name, sp_name, scipy_name)
+            )
 
             _check_cupy_numpy_error(
                 cupy_error, numpy_error, accept_error=accept_error
