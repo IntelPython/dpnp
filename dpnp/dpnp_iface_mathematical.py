@@ -2882,9 +2882,6 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         left = None
         right = None
 
-        x = x.astype(x_float_type)
-        xp = xp.astype(x_float_type)
-
         # normalizing periodic boundaries
         x %= period
         xp %= period
