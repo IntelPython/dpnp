@@ -15,16 +15,17 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.logical_xor &mdash; Data Parallel Extension for NumPy 0.18.0dev0+96.g2b650822dbe documentation</title>
+  <title>dpnp.logical_xor &mdash; Data Parallel Extension for NumPy 0.18.0dev1+22.g29a6c4be380 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ba7c08d4"></script>
+      <script src="../../_static/documentation_options.js?v=01142806"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -111,18 +112,14 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.logical_xor">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">logical_xor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">where</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subok</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.logical_xor" title="Link to this definition"></a></dt>
-<dd><p>Computes the logical XOR for each element <cite>x1_i</cite> of the input array <cite>x1</cite>
-with the respective element <cite>x2_i</cite> of the input array <cite>x2</cite>.</p>
+<dd><p>Computes the logical XOR for each element <span class="math notranslate nohighlight">\(x1_i\)</span> of the input array <cite>x1</cite>
+with the respective element <span class="math notranslate nohighlight">\(x2_i\)</span> of the input array <cite>x2</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.logical_xor.html#numpy.logical_xor" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.logical_xor</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array.
-Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array.
-Both inputs <cite>x1</cite> and <cite>x2</cite> can not be scalars at the same time.
-If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape
-(which becomes the shape of the output).</p></li>
+<li><p><strong>x1</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, may have any data type.</p></li>
+<li><p><strong>x2</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also may have any data type.</p></li>
 <li><p><strong>out</strong> (<em>{None</em><em>, </em><em>dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em><em>, </em><em>optional</em>) -- <p>Output array to populate.
 Array must have the correct shape and the expected data type.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
@@ -155,6 +152,10 @@ Otherwise <code class="docutils literal notranslate"><span class="pre">NotImplem
 </dd>
 </dl>
 </div>
+<p class="rubric">Notes</p>
+<p>At least one of <cite>x1</cite> or <cite>x2</cite> must be an array.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">x1.shape</span> <span class="pre">!=</span> <span class="pre">x2.shape</span></code>, they must be broadcastable to a common shape
+(which becomes the shape of the output).</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">dpnp</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>

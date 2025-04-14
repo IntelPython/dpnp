@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev0+96.g2b650822dbe documentation</title>
+  <title>dpnp.dpnp_iface_mathematical &mdash; Data Parallel Extension for NumPy 0.18.0dev1+22.g29a6c4be380 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ba7c08d4"></script>
+      <script src="../../_static/documentation_options.js?v=01142806"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -435,14 +435,14 @@
 
 
 <span class="n">_ABS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the absolute value for each element `x_i` of input array `x`.</span>
+<span class="s2">Calculates the absolute value for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.absolute`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -475,21 +475,22 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">``dpnp.abs`` is a shorthand for this function.</span>
+<span class="s2">``dpnp.absolute`` is an equivalent function.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
 <span class="s2">&gt;&gt;&gt; a = np.array([-1.2, 1.2])</span>
-<span class="s2">&gt;&gt;&gt; np.absolute(a)</span>
+<span class="s2">&gt;&gt;&gt; np.abs(a)</span>
 <span class="s2">array([1.2, 1.2])</span>
 
 <span class="s2">&gt;&gt;&gt; a = np.array(1.2 + 1j)</span>
-<span class="s2">&gt;&gt;&gt; np.absolute(a)</span>
+<span class="s2">&gt;&gt;&gt; np.abs(a)</span>
 <span class="s2">array(1.5620499351813308)</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">absolute</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+<span class="nb">abs</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_abs</span><span class="p">,</span>
@@ -499,25 +500,21 @@
 <span class="p">)</span>
 
 
-<span class="nb">abs</span> <span class="o">=</span> <span class="n">absolute</span>
+<span class="n">absolute</span> <span class="o">=</span> <span class="nb">abs</span>
 
 
 <span class="n">_ADD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the sum for each element `x1_i` of the input array `x1` with</span>
-<span class="s2">the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the sum for each element :math:`x1_i` of the input array `x1` with</span>
+<span class="s2">the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.add`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -542,7 +539,12 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">Equivalent to `x1` + `x2` in terms of array broadcasting.</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">Equivalent to :math:`x1 + x2` in terms of array broadcasting.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -566,6 +568,7 @@
 <span class="s2">array([[  0.,   2.,   4.],</span>
 <span class="s2">       [  3.,   5.,   7.],</span>
 <span class="s2">       [  6.,   8.,  10.]])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 
@@ -580,16 +583,16 @@
 <span class="p">)</span>
 
 
-<span class="n">_ANGLE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the phase angle (also called the argument) of each element `x_i` for</span>
-<span class="s2">input array `x`.</span>
+<span class="n">_ANGLE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Computes the phase angle (also called the argument) of each element :math:`x_i`</span>
+<span class="s2">for input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.angle`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have a complex-valued floating-point data type.</span>
+<span class="s2">    Input array, expected to have a complex floating-point data type.</span>
 <span class="s2">deg : bool, optional</span>
 <span class="s2">    Return angle in degrees if ``True``, radians if ``False``.</span>
 
@@ -613,17 +616,19 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">Although the angle of the complex number 0 is undefined, `dpnp.angle(0)` returns the value 0.</span>
+<span class="s2">Although the angle of the complex number ``0`` is undefined, ``dpnp.angle(0)``</span>
+<span class="s2">returns the value ``0``.</span>
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.arctan2` : Element-wise arc tangent of `x1/x2` choosing the quadrant correctly.</span>
-<span class="s2">:obj:`dpnp.arctan` : Trigonometric inverse tangent, element-wise.</span>
-<span class="s2">:obj:`dpnp.absolute` : Calculate the absolute value element-wise.</span>
+<span class="s2">:obj:`dpnp.atan2` : Element-wise arc tangent of :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">` choosing</span>
+<span class="s2">    the quadrant correctly.</span>
+<span class="s2">:obj:`dpnp.atan` : Trigonometric inverse tangent, element-wise.</span>
+<span class="s2">:obj:`dpnp.abs` : Calculate the absolute value element-wise.</span>
 <span class="s2">:obj:`dpnp.real` : Return the real part of the complex argument.</span>
 <span class="s2">:obj:`dpnp.imag` : Return the imaginary part of the complex argument.</span>
 <span class="s2">:obj:`dpnp.real_if_close` : Return the real part of the input is complex</span>
-<span class="s2">                            with all imaginary parts close to zero.</span>
+<span class="s2">    with all imaginary parts close to zero.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -634,6 +639,7 @@
 
 <span class="s2">&gt;&gt;&gt; np.angle(a, deg=True) # in degrees</span>
 <span class="s2">array([ 0., 90., 45.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">angle</span> <span class="o">=</span> <span class="n">DPNPAngle</span><span class="p">(</span>
@@ -655,7 +661,7 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="sd">        Input array, expected to have numeric data type.</span>
+<span class="sd">        Input array, expected to have a numeric data type.</span>
 <span class="sd">    decimals : int, optional</span>
 <span class="sd">        Number of decimal places to round to. If `decimals` is negative, it</span>
 <span class="sd">        specifies the number of positions to the left of the decimal point.</span>
@@ -693,7 +699,10 @@
 
 
 <span class="n">_CEIL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Returns the ceiling for each element `x_i` for input array `x`.</span>
+<span class="s2">Returns the ceiling for each element :math:`x_i` for input array `x`.</span>
+<span class="s2">Rounds each element :math:`x_i` of the input array `x` to the smallest (i.e.,</span>
+<span class="s2">closest to ``-infinity``) integer-valued number that is not less than</span>
+<span class="s2">:math:`x_i`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.ceil`.</span>
 
@@ -735,6 +744,7 @@
 <span class="s2">&gt;&gt;&gt; a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])</span>
 <span class="s2">&gt;&gt;&gt; np.ceil(a)</span>
 <span class="s2">array([-1.0, -1.0, -0.0, 1.0, 2.0, 2.0, 2.0])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">ceil</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -832,14 +842,15 @@
 
 
 <span class="n">_CONJ_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes conjugate of each element `x_i` for input array `x`.</span>
+<span class="s2">Returns the complex conjugate for each element :math:`x_i` of the input array</span>
+<span class="s2">`x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.conj`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -863,16 +874,16 @@
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
-<span class="s2">&gt;&gt;&gt; np.conjugate(np.array(1+2j))</span>
+<span class="s2">&gt;&gt;&gt; np.conj(np.array(1+2j))</span>
 <span class="s2">(1-2j)</span>
 
 <span class="s2">&gt;&gt;&gt; x = np.eye(2) + 1j * np.eye(2)</span>
-<span class="s2">&gt;&gt;&gt; np.conjugate(x)</span>
+<span class="s2">&gt;&gt;&gt; np.conj(x)</span>
 <span class="s2">array([[ 1.-1.j,  0.-0.j],</span>
 <span class="s2">       [ 0.-0.j,  1.-1.j]])</span>
 <span class="s2">&quot;&quot;&quot;</span>
 
-<span class="n">conjugate</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
+<span class="n">conj</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
     <span class="s2">&quot;conj&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_conj</span><span class="p">,</span>
@@ -881,26 +892,22 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_conj&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">conj</span> <span class="o">=</span> <span class="n">conjugate</span>
+<span class="n">conjugate</span> <span class="o">=</span> <span class="n">conj</span>
 
 
 <span class="n">_COPYSIGN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Composes a floating-point value with the magnitude of `x1_i` and the sign of</span>
-<span class="s2">`x2_i` for each element of input arrays `x1` and `x2`.</span>
+<span class="s2">Composes a floating-point value with the magnitude of :math:`x1_i` and the sign</span>
+<span class="s2">of :math:`x2_i` for each element of the input array `x1`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.copysign`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a real floating-point data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a real-valued floating-point data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a real floating-point data</span>
+<span class="s2">    Second input array, also expected to have a real-valued floating-point data</span>
 <span class="s2">    type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -927,6 +934,13 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.negative` : Return the numerical negative of each element of `x`.</span>
 <span class="s2">:obj:`dpnp.positive` : Return the numerical positive of each element of `x`.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1355,10 +1369,11 @@
 <span class="sd">        be cast if necessary.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    include_initial : bool, optional</span>
-<span class="sd">        Boolean indicating whether to include the initial value (ones) as</span>
-<span class="sd">        the first value in the output. With ``include_initial=True``</span>
-<span class="sd">        the shape of the output is different than the shape of the input.</span>
+<span class="sd">    include_initial : {None, bool}, optional</span>
+<span class="sd">        A boolean indicating whether to include the initial value (one) as</span>
+<span class="sd">        the first value along the provided axis in the output. With</span>
+<span class="sd">        ``include_initial=True`` the shape of the output is different than</span>
+<span class="sd">        the shape of the input.</span>
 
 <span class="sd">        Default: ``False``.</span>
 
@@ -1447,10 +1462,11 @@
 <span class="sd">        be cast if necessary.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    include_initial : bool, optional</span>
-<span class="sd">        Boolean indicating whether to include the initial value (ones) as</span>
-<span class="sd">        the first value in the output. With ``include_initial=True``</span>
-<span class="sd">        the shape of the output is different than the shape of the input.</span>
+<span class="sd">    include_initial : {None, bool}, optional</span>
+<span class="sd">        A boolean indicating whether to include the initial value (zero) as</span>
+<span class="sd">        the first value along the provided axis in the output. With</span>
+<span class="sd">        ``include_initial=True`` the shape of the output is different than</span>
+<span class="sd">        the shape of the input.</span>
 
 <span class="sd">        Default: ``False``.</span>
 
@@ -1585,22 +1601,18 @@
 
 
 
-<span class="n">_DIVIDE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the ratio for each element `x1_i` of the input array `x1` with</span>
-<span class="s2">the respective element `x2_i` of the input array `x2`.</span>
+<span class="n">_DIVIDE_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Calculates the ratio for each element :math:`x1_i` of the input array `x1` with</span>
+<span class="s2">the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.divide`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a floating-point data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1625,10 +1637,14 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">Equivalent to `x1` / `x2` in terms of array-broadcasting.</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
 
-<span class="s2">The ``true_divide(x1, x2)`` function is an alias for</span>
-<span class="s2">``divide(x1, x2)``.</span>
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">Equivalent to :math:`\frac</span><span class="si">{x1}{x2}</span><span class="s2">` in terms of array-broadcasting.</span>
+
+<span class="s2">The ``true_divide(x1, x2)`` function is an alias for ``divide(x1, x2)``.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1652,6 +1668,7 @@
 <span class="s2">array([[0. , 0.5, 1. ],</span>
 <span class="s2">       [1.5, 2. , 2.5],</span>
 <span class="s2">       [3. , 3.5, 4. ]])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">divide</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -1808,6 +1825,7 @@
 <span class="s2">&gt;&gt;&gt; a = np.array([-1.2, 1.2])</span>
 <span class="s2">&gt;&gt;&gt; np.fabs(a)</span>
 <span class="s2">array([1.2, 1.2])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">fabs</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -1869,6 +1887,7 @@
 <span class="s2">&gt;&gt;&gt; a = np.array([2.1, 2.9, -2.1, -2.9])</span>
 <span class="s2">&gt;&gt;&gt; np.fix(a)</span>
 <span class="s2">array([ 2.,  2., -2., -2.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">fix</span> <span class="o">=</span> <span class="n">DPNPFix</span><span class="p">(</span>
@@ -1880,8 +1899,9 @@
 
 
 <span class="n">_FLOAT_POWER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array</span>
-<span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates :math:`x1_i` raised to :math:`x2_i` for each element :math:`x1_i` of</span>
+<span class="s2">the input array `x1` with the respective element :math:`x2_i` of the input</span>
+<span class="s2">array `x2`.</span>
 
 <span class="s2">This differs from the power function in that boolean, integers, and float16 are</span>
 <span class="s2">promoted to floats with a minimum precision of float32 so that the result is</span>
@@ -1897,13 +1917,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have floating-point data types.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to floating-point data types.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to a numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -1929,6 +1945,13 @@
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.power` : Power function that preserves type.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1969,6 +1992,7 @@
 
 <span class="s2">&gt;&gt;&gt; np.float_power(x3, 1.5, dtype=np.complex64)</span>
 <span class="s2">array([1.1924881e-08-1.j, 9.5399045e-08-8.j], dtype=complex64)</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">float_power</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -1983,9 +2007,9 @@
 
 
 <span class="n">_FLOOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Returns the floor for each element `x_i` for input array `x`.</span>
+<span class="s2">Returns the floor for each element :math:`x_i` for input array `x`.</span>
 
-<span class="s2">The floor of `x_i` is the largest integer `n`, such that `n &lt;= x_i`.</span>
+<span class="s2">The floor of :math:`x_i` is the largest integer `n`, such that `n &lt;= x_i`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.floor`.</span>
 
@@ -2034,6 +2058,7 @@
 <span class="s2">&gt;&gt;&gt; a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])</span>
 <span class="s2">&gt;&gt;&gt; np.floor(a)</span>
 <span class="s2">array([-2.0, -2.0, -1.0, 0.0, 1.0, 1.0, 2.0])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">floor</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -2047,22 +2072,19 @@
 
 
 <span class="n">_FLOOR_DIVIDE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the ratio for each element `x1_i` of the input array `x1` with</span>
-<span class="s2">the respective element `x2_i` of the input array `x2` to the greatest</span>
-<span class="s2">integer-value number that is not greater than the division result.</span>
+<span class="s2">Rounds the result of dividing each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">by the respective element :math:`x2_i` of the input array `x2` to the greatest</span>
+<span class="s2">(i.e., closest to ``+infinity``) integer-value number that is not greater than</span>
+<span class="s2">the division result.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.floor_divide`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a real-valued data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a real-valued data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2093,6 +2115,13 @@
 <span class="s2">:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.</span>
 <span class="s2">:obj:`dpnp.ceil` : Round a number to the nearest integer toward infinity.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -2108,6 +2137,7 @@
 <span class="s2">&gt;&gt;&gt; x1 = np.array([1., 2., 3., 4.])</span>
 <span class="s2">&gt;&gt;&gt; x1 // 2.5</span>
 <span class="s2">array([0., 0., 1., 1.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">floor_divide</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -2123,7 +2153,7 @@
 <span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
 <span class="s2">element-wise maxima.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then the non-NaN element is</span>
+<span class="s2">If one of the elements being compared is a ``NaN``, then the non-NaN element is</span>
 <span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
 <span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
 <span class="s2">the real or imaginary parts being a NaN. The net effect is that NaNs are</span>
@@ -2134,13 +2164,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2175,6 +2201,11 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">``fmax(x1, x2)`` is equivalent to ``dpnp.where(x1 &gt;= x2, x1, x2)`` when neither</span>
 <span class="s2">`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.</span>
 
@@ -2196,6 +2227,7 @@
 <span class="s2">&gt;&gt;&gt; x2 = np.array([0, np.nan, np.nan])</span>
 <span class="s2">&gt;&gt;&gt; np.fmax(x1, x2)</span>
 <span class="s2">array([ 0.,  0., nan])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">fmax</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -2212,7 +2244,7 @@
 <span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
 <span class="s2">element-wise minima.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then the non-NaN element is</span>
+<span class="s2">If one of the elements being compared is a ``NaN``, then the non-NaN element is</span>
 <span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
 <span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
 <span class="s2">the real or imaginary parts being a NaN. The net effect is that NaNs are</span>
@@ -2223,13 +2255,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2264,6 +2292,11 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">``fmin(x1, x2)`` is equivalent to ``dpnp.where(x1 &lt;= x2, x1, x2)`` when neither</span>
 <span class="s2">`x1` nor `x2` are NaNs, but it is faster and does proper broadcasting.</span>
 
@@ -2285,6 +2318,7 @@
 <span class="s2">&gt;&gt;&gt; x2 = np.array([0, np.nan, np.nan])</span>
 <span class="s2">&gt;&gt;&gt; np.fmin(x1, x2)</span>
 <span class="s2">array([ 0.,  0., nan])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">fmin</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -2298,8 +2332,8 @@
 
 
 <span class="n">_FMOD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the remainder of division for each element `x1_i` of the input array</span>
-<span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the remainder of division for each element :math:`x1_i` of the input array</span>
+<span class="s2">`x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">This function is equivalent to the Matlab(TM) ``rem`` function and should not</span>
 <span class="s2">be confused with the Python modulus operator ``x1 </span><span class="si">% x</span><span class="s2">2``.</span>
@@ -2309,13 +2343,10 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have a real-valued data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a boolean or real-valued data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have a real-valued data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a boolean or real-valued data</span>
+<span class="s2">    type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2343,6 +2374,13 @@
 <span class="s2">:obj:`dpnp.remainder` : Equivalent to the Python ``%`` operator.</span>
 <span class="s2">:obj:`dpnp.divide` : Standard division.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -2363,6 +2401,7 @@
 <span class="s2">array([[-1,  0],</span>
 <span class="s2">       [-1,  0],</span>
 <span class="s2">       [ 1,  0]])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">fmod</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -2374,8 +2413,8 @@
     <span class="n">mkl_impl_fn</span><span class="o">=</span><span class="s2">&quot;_fmod&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">_GCD_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Returns the greatest common divisor of ``|x1|`` and ``|x2|``.</span>
+<span class="n">_GCD_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Returns the greatest common divisor of :math:`\abs</span><span class="si">{x1}</span><span class="s2">` and :math:`\abs</span><span class="si">{x2}</span><span class="s2">`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.gcd`.</span>
 
@@ -2383,12 +2422,8 @@
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have an integer data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2414,6 +2449,13 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.lcm` : The lowest common multiple.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -2421,6 +2463,7 @@
 <span class="s2">array(4)</span>
 <span class="s2">&gt;&gt;&gt; np.gcd(np.arange(6), 20)</span>
 <span class="s2">array([20,  1,  2,  1,  4,  5])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">gcd</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -2654,13 +2697,10 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Input values.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    Input values, expected to have a real-valued floating-point data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    The value of the function when `x1` is ``0``.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    The value of the function when `x1` is ``0``, also expected to have a</span>
+<span class="s2">    real-valued floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2682,6 +2722,13 @@
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -2690,6 +2737,7 @@
 <span class="s2">array([0. , 0.5, 1. ])</span>
 <span class="s2">&gt;&gt;&gt; np.heaviside(a, 1)</span>
 <span class="s2">array([0., 1., 1.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">heaviside</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -2710,7 +2758,8 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Argument of the Bessel function, expected to have floating-point data type.</span>
+<span class="s2">    Argument of the Bessel function, expected to have a real-valued</span>
+<span class="s2">    floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2736,6 +2785,7 @@
 <span class="s2">array(1.)</span>
 <span class="s2">&gt;&gt;&gt; np.i0(np.array([0, 1, 2, 3]))</span>
 <span class="s2">array([1.        , 1.26606588, 2.2795853 , 4.88079259])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">i0</span> <span class="o">=</span> <span class="n">DPNPI0</span><span class="p">(</span>
@@ -2747,14 +2797,15 @@
 
 
 <span class="n">_IMAG_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes imaginary part of each element `x_i` for input array `x`.</span>
+<span class="s2">Returns the imaginary component of a complex number for each element :math:`x_i`</span>
+<span class="s2">of the input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.imag`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2796,6 +2847,7 @@
 
 <span class="s2">&gt;&gt;&gt; np.imag(np.array(1 + 1j))</span>
 <span class="s2">array(1.)</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">imag</span> <span class="o">=</span> <span class="n">DPNPImag</span><span class="p">(</span>
@@ -2988,8 +3040,8 @@
 
 
 
-<span class="n">_LCM_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Returns the lowest common multiple of ``|x1|`` and ``|x2|``.</span>
+<span class="n">_LCM_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Returns the lowest common multiple of :math:`\abs</span><span class="si">{x1}</span><span class="s2">` and :math:`\abs</span><span class="si">{x2}</span><span class="s2">`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.lcm`.</span>
 
@@ -2997,12 +3049,8 @@
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have an integer data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have an integer data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3028,6 +3076,13 @@
 <span class="s2">--------</span>
 <span class="s2">:obj:`dpnp.gcd` : The greatest common divisor.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -3035,6 +3090,7 @@
 <span class="s2">array(60)</span>
 <span class="s2">&gt;&gt;&gt; np.lcm(np.arange(6), 20)</span>
 <span class="s2">array([ 0, 20, 20, 60, 20, 20])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">lcm</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -3047,23 +3103,20 @@
 
 
 <span class="n">_LDEXP_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Returns x1 * 2**x2, element-wise.</span>
+<span class="s2">Returns :math:`x1 * 2^</span><span class="si">{x2}</span><span class="s2">`, element-wise.</span>
 
-<span class="s2">The mantissas `x1` and exponents of two `x2` are used to construct floating point</span>
-<span class="s2">numbers ``x1 * 2**x2``.</span>
+<span class="s2">The mantissas `x1` and exponents of two `x2` are used to construct</span>
+<span class="s2">floating-point numbers :math:`x1 * 2^</span><span class="si">{x2}</span><span class="s2">`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.ldexp`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Array of multipliers, expected to have floating-point data types.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    Array of multipliers, expected to have a real-valued floating-point data</span>
+<span class="s2">    type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Array of exponents of two, expected to have an integer data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -3077,7 +3130,7 @@
 <span class="s2">Returns</span>
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
-<span class="s2">    The result of ``x1 * 2**x2``.</span>
+<span class="s2">    The result of :math:`x1 * 2^</span><span class="si">{x2}</span><span class="s2">`.</span>
 
 <span class="s2">Limitations</span>
 <span class="s2">-----------</span>
@@ -3087,20 +3140,27 @@
 
 <span class="s2">See Also</span>
 <span class="s2">--------</span>
-<span class="s2">:obj:`dpnp.frexp` : Return (y1, y2) from ``x = y1 * 2**y2``, inverse to :obj:`dpnp.ldexp`.</span>
+<span class="s2">:obj:`dpnp.frexp` : Return (y1, y2) from :math:`x = y1 * 2^</span><span class="si">{y2}</span><span class="s2">`,</span>
+<span class="s2">    inverse to :obj:`dpnp.ldexp`.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Complex dtypes are not supported, they will raise a ``TypeError``.</span>
 
 <span class="s2">:obj:`dpnp.ldexp` is useful as the inverse of :obj:`dpnp.frexp`, if used by</span>
-<span class="s2">itself it is more clear to simply use the expression ``x1 * 2**x2``.</span>
+<span class="s2">itself it is more clear to simply use the expression :math:`x1 * 2^</span><span class="si">{x2}</span><span class="s2">`.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
 <span class="s2">&gt;&gt;&gt; np.ldexp(5, np.arange(4))</span>
 <span class="s2">array([ 5., 10., 20., 40.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">ldexp</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -3113,26 +3173,23 @@
 
 
 <span class="n">_MAXIMUM_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
-<span class="s2">element-wise maxima.</span>
+<span class="s2">Computes the maximum value for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">relative to the respective element :math:`x2_i` of the input array `x2`.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then that element is returned.</span>
-<span class="s2">If both elements are NaNs then the first is returned. The latter distinction is</span>
-<span class="s2">important for complex NaNs, which are defined as at least one of the real or</span>
-<span class="s2">imaginary parts being a NaN. The net effect is that NaNs are propagated.</span>
+<span class="s2">If one of the elements being compared is a ``NaN``, then that element is</span>
+<span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
+<span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
+<span class="s2">the real or imaginary parts being a ``NaN``. The net effect is that NaNs are</span>
+<span class="s2">propagated.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.maximum`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3165,6 +3222,13 @@
 <span class="s2">:obj:`dpnp.min` : The minimum value of an array along a given axis, propagates NaNs.</span>
 <span class="s2">:obj:`dpnp.nanmin` : The minimum value of an array along a given axis, ignores NaNs.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -3186,6 +3250,7 @@
 
 <span class="s2">&gt;&gt;&gt; np.maximum(np.array(np.inf), 1)</span>
 <span class="s2">array(inf)</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">maximum</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -3197,26 +3262,23 @@
 
 
 <span class="n">_MINIMUM_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Compares two input arrays `x1` and `x2` and returns a new array containing the</span>
-<span class="s2">element-wise minima.</span>
+<span class="s2">Computes the minimum value for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">relative to the respective element :math:`x2_i` of the input array `x2`.</span>
 
-<span class="s2">If one of the elements being compared is a NaN, then that element is returned.</span>
-<span class="s2">If both elements are NaNs then the first is returned. The latter distinction is</span>
-<span class="s2">important for complex NaNs, which are defined as at least one of the real or</span>
-<span class="s2">imaginary parts being a NaN. The net effect is that NaNs are propagated.</span>
+<span class="s2">If one of the elements being compared is a ``NaN``, then that element is</span>
+<span class="s2">returned. If both elements are NaNs then the first is returned. The latter</span>
+<span class="s2">distinction is important for complex NaNs, which are defined as at least one of</span>
+<span class="s2">the real or imaginary parts being a ``NaN``. The net effect is that NaNs are</span>
+<span class="s2">propagated.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.minimum`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).s</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3248,6 +3310,13 @@
 <span class="s2">:obj:`dpnp.fmax` : Element-wise maximum of two arrays, ignores NaNs.</span>
 <span class="s2">:obj:`dpnp.max` : The maximum value of an array along a given axis, propagates NaNs.</span>
 <span class="s2">:obj:`dpnp.nanmax` : The maximum value of an array along a given axis, ignores NaNs.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -3322,21 +3391,17 @@
 
 
 <span class="n">_MULTIPLY_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the product for each element `x1_i` of the input array `x1` with the</span>
-<span class="s2">respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the product for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.multiply`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3361,7 +3426,12 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">Equivalent to `x1` * `x2` in terms of array broadcasting.</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">Equivalent to :math:`x1 * x2` in terms of array broadcasting.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -3384,6 +3454,7 @@
 <span class="s2">array([[  0.,   1.,   4.],</span>
 <span class="s2">       [  0.,   4.,  10.],</span>
 <span class="s2">       [  0.,   7.,  16.]])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">multiply</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -3541,14 +3612,15 @@
 
 
 <span class="n">_NEGATIVE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the numerical negative for each element `x_i` of input array `x`.</span>
+<span class="s2">Computes the numerical negative of each element :math:`x_i` (i.e.,</span>
+<span class="s2">:math:`y_i = -x_i`) of the input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.negative`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3587,6 +3659,7 @@
 <span class="s2">&gt;&gt;&gt; x = np.array([1., -1.])</span>
 <span class="s2">&gt;&gt;&gt; -x</span>
 <span class="s2">array([-1.,  1.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">negative</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -3606,13 +3679,11 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Values to find the next representable value of.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    Values to find the next representable value of, expected to have a</span>
+<span class="s2">    real-valued floating-point data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    The direction where to look for the next representable value of `x1`.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    The direction where to look for the next representable value of `x1`,</span>
+<span class="s2">    also expected to have a real-valued floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -3635,6 +3706,13 @@
 <span class="s2">Keyword argument `kwargs` is currently unsupported.</span>
 <span class="s2">Otherwise ``NotImplementedError`` exception will be raised.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -3648,6 +3726,7 @@
 <span class="s2">&gt;&gt;&gt; c = np.array([eps + 1, 2 - eps])</span>
 <span class="s2">&gt;&gt;&gt; np.nextafter(a, b) == c</span>
 <span class="s2">array([ True,  True])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">nextafter</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -3661,14 +3740,15 @@
 
 
 <span class="n">_POSITIVE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the numerical positive for each element `x_i` of input array `x`.</span>
+<span class="s2">Computes the numerical positive of each element :math:`x_i` (i.e.,</span>
+<span class="s2">:math:`y_i = +x_i`) of the input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.positive`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3711,6 +3791,7 @@
 <span class="s2">&gt;&gt;&gt; x = np.array([1., -1.])</span>
 <span class="s2">&gt;&gt;&gt; +x</span>
 <span class="s2">array([ 1., -1.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">positive</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -3723,8 +3804,9 @@
 
 
 <span class="n">_POWER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates `x1_i` raised to `x2_i` for each element `x1_i` of the input array</span>
-<span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates :math:`x1_i` raised to :math:`x2_i` for each element :math:`x1_i` of</span>
+<span class="s2">the input array `x1` with the respective element :math:`x2_i` of the input</span>
+<span class="s2">array `x2`.</span>
 
 <span class="s2">Note that :obj:`dpnp.pow` is an alias of :obj:`dpnp.power`.</span>
 
@@ -3733,13 +3815,9 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate. Array must have the correct shape and</span>
 <span class="s2">    the expected data type.</span>
@@ -3770,6 +3848,13 @@
 <span class="s2">:obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
 <span class="s2">:obj:`dpnp.float_power` : Power function that promotes integers to floats.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as dp</span>
@@ -3798,11 +3883,12 @@
 <span class="s2">&gt;&gt;&gt; a ** b</span>
 <span class="s2">array([ 0,  1,  8, 27, 16,  5])</span>
 
-<span class="s2">Negative values raised to a non-integral value will result in ``nan``.</span>
+<span class="s2">Negative values raised to a non-integral value will result in ``NaN``.</span>
 
 <span class="s2">&gt;&gt;&gt; d = dp.array([-1.0, -4.0])</span>
 <span class="s2">&gt;&gt;&gt; dp.power(d, 1.5)</span>
 <span class="s2">array([nan, nan])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">power</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -3926,12 +4012,12 @@
 
 
 <span class="n">_PROJ_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes projection of each element `x_i` for input array `x`.</span>
+<span class="s2">Computes the complex projection of each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a complex floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -3966,6 +4052,7 @@
 
 <span class="s2">&gt;&gt;&gt; np.proj(np.array([complex(1,np.inf), complex(1,-np.inf), complex(np.inf,-1),]))</span>
 <span class="s2">array([inf+0.j, inf-0.j, inf-0.j])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">proj</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -3977,14 +4064,15 @@
 
 
 <span class="n">_REAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes real part of each element `x_i` for input array `x`.</span>
+<span class="s2">Returns the real component of a complex number for each element :math:`x_i` of</span>
+<span class="s2">the input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.real`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4025,6 +4113,7 @@
 <span class="s2">array([9.+2.j, 8.+4.j, 7.+6.j])</span>
 <span class="s2">&gt;&gt;&gt; np.real(np.array(1 + 1j))</span>
 <span class="s2">array(1.)</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">real</span> <span class="o">=</span> <span class="n">DPNPReal</span><span class="p">(</span>
@@ -4103,8 +4192,8 @@
 
 
 <span class="n">_REMAINDER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the remainder of division for each element `x1_i` of the input array</span>
-<span class="s2">`x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the remainder of division for each element :math:`x1_i` of the input</span>
+<span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">This function is equivalent to the Python modulus operator.</span>
 
@@ -4114,12 +4203,8 @@
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    First input array, expected to have a real-valued data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="s2">    Second input array, also expected to have a real-valued data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4134,7 +4219,7 @@
 <span class="s2">-------</span>
 <span class="s2">out : dpnp.ndarray</span>
 <span class="s2">    An array containing the element-wise remainders. Each remainder has the</span>
-<span class="s2">    same sign as respective element `x2_i`. The data type of the returned</span>
+<span class="s2">    same sign as respective element :math:`x2_i`. The data type of the returned</span>
 <span class="s2">    array is determined by the Type Promotion Rules.</span>
 
 <span class="s2">Limitations</span>
@@ -4148,13 +4233,20 @@
 <span class="s2">:obj:`dpnp.fmod` : Calculate the element-wise remainder of division.</span>
 <span class="s2">:obj:`dpnp.divide` : Standard division.</span>
 <span class="s2">:obj:`dpnp.floor` : Round a number to the nearest integer toward minus infinity.</span>
-<span class="s2">:obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the division of the inputs.</span>
+<span class="s2">:obj:`dpnp.floor_divide` : Compute the largest integer smaller or equal to the</span>
+<span class="s2">    division of the inputs.</span>
 <span class="s2">:obj:`dpnp.mod` : Calculate the element-wise remainder of division.</span>
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Returns ``0`` when `x2` is ``0`` and both `x1` and `x2` are (arrays of)</span>
 <span class="s2">integers.</span>
+
 <span class="s2">:obj:`dpnp.mod` is an alias of :obj:`dpnp.remainder`.</span>
 
 <span class="s2">Examples</span>
@@ -4172,6 +4264,7 @@
 <span class="s2">&gt;&gt;&gt; x1 = np.arange(7)</span>
 <span class="s2">&gt;&gt;&gt; x1 % 5</span>
 <span class="s2">array([0, 1, 2, 3, 4, 0, 1])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">remainder</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -4186,18 +4279,18 @@
 
 
 <span class="n">_RINT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Rounds each element `x_i` of the input array `x` to</span>
-<span class="s2">the nearest integer-valued number.</span>
+<span class="s2">Rounds each element :math:`x_i` of the input array `x` to the nearest</span>
+<span class="s2">integer-valued number.</span>
 
-<span class="s2">When two integers are equally close to `x_i`, the result is the nearest even</span>
-<span class="s2">integer to `x_i`.</span>
+<span class="s2">When two integers are equally close to :math:`x_i`, the result is the nearest</span>
+<span class="s2">even integer to :math:`x_i`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.rint`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4233,6 +4326,7 @@
 <span class="s2">&gt;&gt;&gt; a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])</span>
 <span class="s2">&gt;&gt;&gt; np.rint(a)</span>
 <span class="s2">array([-2., -2., -0.,  0.,  2.,  2.,  2.])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 
@@ -4247,18 +4341,18 @@
 
 
 <span class="n">_ROUND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Rounds each element `x_i` of the input array `x` to</span>
-<span class="s2">the nearest integer-valued number.</span>
+<span class="s2">Rounds each element :math:`x_i` of the input array `x` to the nearest</span>
+<span class="s2">integer-valued number.</span>
 
-<span class="s2">When two integers are equally close to `x_i`, the result is the nearest even</span>
-<span class="s2">integer to `x_i`.</span>
+<span class="s2">When two integers are equally close to :math:`x_i`, the result is the nearest</span>
+<span class="s2">even integer to :math:`x_i`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.round`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a numeric data type.</span>
 <span class="s2">decimals : int, optional</span>
 <span class="s2">    Number of decimal places to round to (default: 0). If decimals is negative,</span>
 <span class="s2">    it specifies the number of positions to the left of the decimal point.</span>
@@ -4296,6 +4390,7 @@
 <span class="s2">array([ 1,  2,  3, 11])</span>
 <span class="s2">&gt;&gt;&gt; np.round(np.array([1, 2, 3, 11]), decimals=-1)</span>
 <span class="s2">array([ 0,  0,  0, 10])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="nb">round</span> <span class="o">=</span> <span class="n">DPNPRound</span><span class="p">(</span>
@@ -4308,19 +4403,27 @@
 <span class="p">)</span>
 
 
-<span class="n">_SIGN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes an indication of the sign of each element `x_i` of input array `x`</span>
-<span class="s2">using the signum function.</span>
+<span class="n">_SIGN_DOCSTRING</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">Returns an indication of the sign of a number for each element :math:`x_i` of</span>
+<span class="s2">the input array `x`.</span>
 
-<span class="s2">The signum function returns `-1` if `x_i` is less than `0`,</span>
-<span class="s2">`0` if `x_i` is equal to `0`, and `1` if `x_i` is greater than `0`.</span>
+<span class="s2">The sign function (also known as the **signum function**) of a number</span>
+<span class="s2">:math:`x_i` is defined as</span>
+
+<span class="s2">.. math::</span>
+<span class="s2">    \operatorname</span><span class="si">{sign}</span><span class="s2">(x_i) = \begin</span><span class="si">{cases}</span>
+<span class="s2">    0 &amp; \textrm{if } x_i = 0 \\</span>
+<span class="s2">    \frac</span><span class="si">{x_i}</span><span class="s2">{|x_i|} &amp; \textrm</span><span class="si">{otherwise}</span>
+<span class="s2">    \end</span><span class="si">{cases}</span>
+
+<span class="s2">where :math:`|x_i|` is the absolute value of :math:`x_i`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.sign`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4357,6 +4460,7 @@
 <span class="s2">array(0)</span>
 <span class="s2">&gt;&gt;&gt; np.sign(np.array(5-2j))</span>
 <span class="s2">array([1+0j])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">sign</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -4369,15 +4473,19 @@
 
 
 <span class="n">_SIGNBIT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes an indication of whether the sign bit of each element `x_i` of</span>
-<span class="s2">input array `x` is set.</span>
+<span class="s2">Determines whether the sign bit is set for each element :math:`x_i` of the</span>
+<span class="s2">input array `x`.</span>
+
+<span class="s2">The sign bit of a real-valued floating-point number :math:`x_i` is set whenever</span>
+<span class="s2">:math:`x_i` is either ``-0``, less than zero, or a signed ``NaN``</span>
+<span class="s2">(i.e., a ``NaN`` value whose sign bit is ``1``).</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.signbit`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, expected to have a real-valued floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4412,6 +4520,7 @@
 
 <span class="s2">&gt;&gt;&gt; np.signbit(np.array([1, -2.3, 2.1]))</span>
 <span class="s2">array([False,  True, False])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">signbit</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -4434,7 +4543,7 @@
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have floating-point data type.</span>
+<span class="s2">    Input array, expected to have a floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4477,6 +4586,7 @@
 <span class="s2">            0.        ,  0.08504448,  0.12613779,  0.11643488,  0.06682066,</span>
 <span class="s2">            0.        , -0.05846808, -0.08903844, -0.08409186, -0.04923628,</span>
 <span class="s2">            0.        ])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">sinc</span> <span class="o">=</span> <span class="n">DPNPSinc</span><span class="p">(</span>
@@ -4496,7 +4606,7 @@
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
 <span class="s2">    The array of values to find the spacing of, expected to have a real-valued</span>
-<span class="s2">    data type.</span>
+<span class="s2">    floating-point data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4535,6 +4645,7 @@
 <span class="s2">&gt;&gt;&gt; b = np.spacing(a)</span>
 <span class="s2">&gt;&gt;&gt; b == np.finfo(b.dtype).eps</span>
 <span class="s2">array(True)</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">spacing</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>
@@ -4546,21 +4657,17 @@
 
 
 <span class="n">_SUBTRACT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates the difference between each element `x1_i` of the input</span>
-<span class="s2">array `x1` and the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates the difference for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.subtract`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, expected to have a numeric data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also expected to have a numeric data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -4585,7 +4692,12 @@
 
 <span class="s2">Notes</span>
 <span class="s2">-----</span>
-<span class="s2">Equivalent to `x1` - `x2` in terms of array broadcasting.</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
+<span class="s2">Equivalent to :math:`x1 - x2` in terms of array broadcasting.</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -4607,6 +4719,7 @@
 <span class="s2">array([[ 0.,  0.,  0.],</span>
 <span class="s2">       [ 3.,  3.,  3.],</span>
 <span class="s2">       [ 6.,  6.,  6.]])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">subtract</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
@@ -4859,7 +4972,7 @@
 
 
 <span class="n">_TRUNC_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Returns the truncated value for each element `x_i` for input array `x`.</span>
+<span class="s2">Returns the truncated value for each element :math:`x_i` for input array `x`.</span>
 
 <span class="s2">The truncated value of the scalar `x` is the nearest integer i which is</span>
 <span class="s2">closer to zero than `x` is. In short, the fractional part of the</span>
@@ -4904,6 +5017,7 @@
 <span class="s2">&gt;&gt;&gt; a = np.array([-1.7, -1.5, -0.2, 0.2, 1.5, 1.7, 2.0])</span>
 <span class="s2">&gt;&gt;&gt; np.trunc(a)</span>
 <span class="s2">array([-1.0, -1.0, -0.0, 0.0, 1.0, 1.0, 2.0])</span>
+
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">trunc</span> <span class="o">=</span> <span class="n">DPNPUnaryFunc</span><span class="p">(</span>

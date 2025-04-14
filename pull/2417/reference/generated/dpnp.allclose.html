@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.18.0dev0+96.g2b650822dbe documentation</title>
+  <title>dpnp.allclose &mdash; Data Parallel Extension for NumPy 0.18.0dev1+22.g29a6c4be380 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=ba7c08d4"></script>
+      <script src="../../_static/documentation_options.js?v=01142806"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -139,10 +139,8 @@ place and of the same sign in both arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, expected to have numeric data type.
-Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
-<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have numeric data type.
-Both inputs <cite>a</cite> and <cite>b</cite> can not be scalars at the same time.</p></li>
+<li><p><strong>a</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- First input array, expected to have a numeric data type.</p></li>
+<li><p><strong>b</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em>) -- Second input array, also expected to have a numeric data type.</p></li>
 <li><p><strong>rtol</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray</em><em>, </em><em>scalar}</em><em>, </em><em>optional</em>) -- <p>The relative tolerance parameter.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">1e-05</span></code>.</p>
 </p></li>
@@ -177,6 +175,7 @@ given tolerance; with <code class="docutils literal notranslate"><span class="pr
 </dl>
 </div>
 <p class="rubric">Notes</p>
+<p>At least one of <cite>x1</cite> or <cite>x2</cite> must be an array.</p>
 <p>The comparison of <cite>a</cite> and <cite>b</cite> uses standard broadcasting, which means that
 <cite>a</cite> and <cite>b</cite> need not have the same shape in order for
 <code class="docutils literal notranslate"><span class="pre">dpnp.allclose(a,</span> <span class="pre">b)</span></code> to evaluate to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
