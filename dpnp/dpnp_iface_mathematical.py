@@ -349,7 +349,7 @@ def _process_ediff1d_args(arg, arg_name, ary_dtype, ary_sycl_queue, usm_type):
     return arg, usm_type
 
 
-def _validate_interp_param(param, name, exec_q, usm_type):
+def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
     """
     Validate and convert optional parameters for interpolation.
 
@@ -371,7 +371,9 @@ def _validate_interp_param(param, name, exec_q, usm_type):
         return param.get_array()
 
     if dpnp.isscalar(param):
-        return dpt.asarray(param, sycl_queue=exec_q, usm_type=usm_type)
+        return dpt.asarray(
+            param, dtype=dtype, sycl_queue=exec_q, usm_type=usm_type
+        )
 
     raise TypeError(
         f"a {name} value must be a scalar or 0-d supported array, "
@@ -2919,8 +2921,10 @@ def interp(x, xp, fp, left=None, right=None, period=None):
 
     output = dpnp.empty(x.shape, dtype=out_dtype)
     idx = dpnp.searchsorted(xp, x, side="right")
-    left_usm = _validate_interp_param(left, "left", exec_q, usm_type)
-    right_usm = _validate_interp_param(right, "right", exec_q, usm_type)
+    left_usm = _validate_interp_param(left, "left", exec_q, usm_type, fp.dtype)
+    right_usm = _validate_interp_param(
+        right, "right", exec_q, usm_type, fp.dtype
+    )
 
     _manager = dpu.SequentialOrderManager[exec_q]
     mem_ev, ht_ev = ufi._interpolate(

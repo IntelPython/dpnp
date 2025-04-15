@@ -1270,6 +1270,9 @@ class TestInterp:
         fp = dpnp.array([0.0, 1.0])
         assert_raises(ValueError, dpnp.interp, x, xp, fp, period=0)
 
+        # period is not scalar or 0-dim
+        assert_raises(TypeError, dpnp.interp, x, xp, fp, period=[180])
+
         # period has a different SYCL queue
         q1 = dpctl.SyclQueue()
         q2 = dpctl.SyclQueue()
@@ -1279,6 +1282,19 @@ class TestInterp:
         fp = dpnp.array([0.0, 1.0], sycl_queue=q1)
         period = dpnp.array([180], sycl_queue=q2)
         assert_raises(ValueError, dpnp.interp, x, xp, fp, period=period)
+
+        # left is not scalar or 0-dim
+        left = dpnp.array([1.0])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp, left=left)
+
+        # left is 1-d array
+        left = dpnp.array([1.0])
+        assert_raises(ValueError, dpnp.interp, x, xp, fp, left=left)
+
+        # left has a different SYCL queue
+        left = dpnp.array(1.0, sycl_queue=q2)
+        if q1 != q2:
+            assert_raises(ValueError, dpnp.interp, x, xp, fp, left=left)
 
 
 @pytest.mark.parametrize(
