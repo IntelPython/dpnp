@@ -368,6 +368,8 @@ def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
             raise ValueError(
                 "input arrays and {name} must be on the same SYCL queue"
             )
+        if dtype is not None:
+            param = param.astype(dtype)
         return param.get_array()
 
     if dpnp.isscalar(param):
@@ -2919,7 +2921,9 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         assert xp.flags.c_contiguous
         assert fp.flags.c_contiguous
 
-    output = dpnp.empty(x.shape, dtype=out_dtype)
+    output = dpnp.empty(
+        x.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
+    )
     idx = dpnp.searchsorted(xp, x, side="right")
     left_usm = _validate_interp_param(left, "left", exec_q, usm_type, fp.dtype)
     right_usm = _validate_interp_param(
