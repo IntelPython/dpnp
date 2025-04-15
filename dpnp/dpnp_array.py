@@ -126,7 +126,7 @@ class dpnp_array:
         Raises
         ------
         ValueError
-            If the array is of dimension less than 2.
+            If the array is of dimension less than ``2``.
 
         Examples
         --------
@@ -217,6 +217,7 @@ class dpnp_array:
             Request namespace compliant with given version of array API. If
             ``None``, namespace for the most recent supported version is
             returned.
+
             Default: ``None``.
 
         Returns
@@ -273,12 +274,14 @@ class dpnp_array:
         stream : {:class:`dpctl.SyclQueue`, None}, optional
             Execution queue to synchronize with. If ``None``, synchronization
             is not performed.
+
             Default: ``None``.
         max_version {tuple of ints, None}, optional
             The maximum DLPack version the consumer (caller of ``__dlpack__``)
             supports. As ``__dlpack__`` may not always return a DLPack capsule
             with version `max_version`, the consumer must verify the version
             even if this argument is passed.
+
             Default: ``None``.
         dl_device {tuple, None}, optional:
             The device the returned DLPack capsule will be placed on. The
@@ -286,6 +289,7 @@ class dpnp_array:
             ``__dlpack_device__`` method, an integer enumerator representing
             the device type followed by an integer representing the index of
             the device.
+
             Default: ``None``.
         copy {bool, None}, optional:
             Boolean indicating whether or not to copy the input.
@@ -655,7 +659,7 @@ class dpnp_array:
 
     def all(self, axis=None, out=None, keepdims=False, *, where=True):
         """
-        Returns True if all elements evaluate to True.
+        Returns ``True`` if all elements evaluate to ``True.``
 
         Refer to :obj:`dpnp.all` for full documentation.
 
@@ -671,7 +675,7 @@ class dpnp_array:
 
     def any(self, axis=None, out=None, keepdims=False, *, where=True):
         """
-        Returns True if any of the elements of `a` evaluate to True.
+        Returns ``True`` if any of the elements of `a` evaluate to ``True``.
 
         Refer to :obj:`dpnp.any` for full documentation.
 
@@ -721,22 +725,26 @@ class dpnp_array:
             Axis along which to sort. If ``None``, the array is flattened
             before sorting. The default is ``-1``, which sorts along the last
             axis.
+
             Default: ``-1``.
         kind : {None, "stable", "mergesort", "radixsort"}, optional
             Sorting algorithm. The default is ``None``, which uses parallel
             merge-sort or parallel radix-sort algorithms depending on the array
             data type.
+
             Default: ``None``.
         descending : bool, optional
             Sort order. If ``True``, the array must be sorted in descending
             order (by value). If ``False``, the array must be sorted in
             ascending order (by value).
+
             Default: ``False``.
         stable : {None, bool}, optional
             Sort stability. If ``True``, the returned array will maintain the
             relative order of `a` values which compare as equal. The same
             behavior applies when set to ``False`` or ``None``.
             Internally, this option selects ``kind="stable"``.
+
             Default: ``None``.
 
         See Also
@@ -935,6 +943,7 @@ class dpnp_array:
         ----------
         order : {None, "C", "F", "A", "K"}, optional
             Memory layout of the newly output array.
+
             Default: ``"C"``.
         device : {None, string, SyclDevice, SyclQueue, Device}, optional
             An array API concept of device where the output array is created.
@@ -947,12 +956,14 @@ class dpnp_array:
             Default: ``None``.
         usm_type : {None, "device", "shared", "host"}, optional
             The type of SYCL USM allocation for the output array.
+
             Default: ``None``.
         sycl_queue : {None, SyclQueue}, optional
             A SYCL queue to use for output array allocation and copying. The
             `sycl_queue` can be passed as ``None`` (the default), which means
             to get the SYCL queue from `device` keyword if present or to use
             a default queue.
+
             Default: ``None``.
 
         Returns
@@ -1208,6 +1219,7 @@ class dpnp_array:
         array([1.+9.j, 3.+9.j, 5.+9.j])
 
         """
+
         if dpnp.issubdtype(self.dtype, dpnp.complexfloating):
             dpnp.copyto(self._array_obj.imag, value)
         else:
@@ -1673,22 +1685,26 @@ class dpnp_array:
         axis : int, optional
             Axis along which to sort. The default is ``-1``, which sorts along
             the last axis.
+
             Default: ``-1``.
         kind : {None, "stable", "mergesort", "radixsort"}, optional
             Sorting algorithm. The default is ``None``, which uses parallel
             merge-sort or parallel radix-sort algorithms depending on the array
             data type.
+
             Default: ``None``.
         descending : bool, optional
             Sort order. If ``True``, the array must be sorted in descending
             order (by value). If ``False``, the array must be sorted in
             ascending order (by value).
+
             Default: ``False``.
         stable : {None, bool}, optional
             Sort stability. If ``True``, the returned array will maintain the
             relative order of `a` values which compare as equal. The same
             behavior applies when set to ``False`` or ``None``.
             Internally, this option selects ``kind="stable"``.
+
             Default: ``None``.
 
         See Also
@@ -1851,6 +1867,7 @@ class dpnp_array:
         stream : {SyclQueue, None}, optional
             Execution queue to synchronize with. If ``None``, synchronization
             is not performed.
+
             Default: ``None``.
 
         Returns
