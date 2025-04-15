@@ -12,6 +12,7 @@ from .helper import (
     assert_dtype_allclose,
     generate_random_numpy_array,
     get_all_dtypes,
+    get_float_complex_dtypes,
     numpy_version,
 )
 from .third_party.cupy import testing
@@ -1059,17 +1060,19 @@ class TestMatmul:
     @pytest.mark.parametrize("dtype", _selected_dtypes)
     def test_out_order1(self, order1, order2, out_order, dtype):
         # test gemm with out keyword
-        a = generate_random_numpy_array((5, 4), dtype, low=-5, high=5)
-        b = generate_random_numpy_array((4, 7), dtype, low=-5, high=5)
-        a = numpy.array(a, order=order1)
-        b = numpy.array(b, order=order2)
+        a = generate_random_numpy_array(
+            (5, 4), dtype, order=order1, low=-5, high=5
+        )
+        b = generate_random_numpy_array(
+            (4, 7), dtype, order=order2, low=-5, high=5
+        )
         ia, ib = dpnp.array(a), dpnp.array(b)
 
-        iout = dpnp.empty((5, 7), dtype=dtype, order=out_order)
+        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
+        iout = dpnp.array(out)
         result = dpnp.matmul(ia, ib, out=iout)
         assert result is iout
 
-        out = numpy.empty((5, 7), dtype=dtype, order=out_order)
         expected = numpy.matmul(a, b, out=out)
         assert result.flags.c_contiguous == expected.flags.c_contiguous
         assert result.flags.f_contiguous == expected.flags.f_contiguous
@@ -1179,6 +1182,36 @@ class TestMatmul:
 
         iout = dpnp.empty(result.shape, dtype=dt_out)
         result = dpnp.matmul(ia, ib, out=iout)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize("dt", get_float_complex_dtypes())
+    def test_syrk(self, dt):
+        a = generate_random_numpy_array((6, 9), dtype=dt)
+        ia = dpnp.array(a)
+
+        result = dpnp.matmul(ia, ia.mT)
+        expected = numpy.matmul(a, a.T)
+        assert_dtype_allclose(result, expected)
+
+        iout = dpnp.empty(result.shape, dtype=dt)
+        result = dpnp.matmul(ia, ia.mT, out=iout)
+        assert_dtype_allclose(result, expected)
+
+    @pytest.mark.parametrize(
+        "order, out_order",
+        [("C", "C"), ("C", "F"), ("F", "C"), ("F", "F")],
+    )
+    def test_syrk_out_order(self, order, out_order):
+        # test syrk with out keyword
+        a = generate_random_numpy_array((5, 4), order=order, low=-5, high=5)
+        out = numpy.empty((5, 5), dtype=a.dtype, order=out_order)
+        ia, iout = dpnp.array(a), dpnp.array(out)
+
+        expected = numpy.matmul(a, a.T, out=out)
+        result = dpnp.matmul(ia, ia.mT, out=iout)
+        assert result is iout
+        assert result.flags.c_contiguous == expected.flags.c_contiguous
+        assert result.flags.f_contiguous == expected.flags.f_contiguous
         assert_dtype_allclose(result, expected)
 
     def test_bool(self):
