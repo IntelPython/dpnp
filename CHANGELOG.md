@@ -26,6 +26,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Updated `dpnp.fix` to return output with the same data-type of input [#2392](https://github.com/IntelPython/dpnp/pull/2392)
 * Updated `dpnp.einsum` to add support for `order=None` [#2411](https://github.com/IntelPython/dpnp/pull/2411)
 * Updated Python Array API specification version supported to `2024.12` [#2416](https://github.com/IntelPython/dpnp/pull/2416)
+* Removed `einsum_call` keyword from `dpnp.einsum_path` signature [#2421](https://github.com/IntelPython/dpnp/pull/2421)
 
 ### Fixed
 
