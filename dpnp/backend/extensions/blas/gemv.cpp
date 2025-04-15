@@ -118,8 +118,7 @@ static sycl::event gemv_impl(sycl::queue &exec_q,
             T(1),   // Scaling factor for the matrix-vector product.
             a,      // Pointer to the input matrix A.
             lda,    // Leading dimension of matrix A, which is the
-                    // stride between successive rows (for row major
-                    // layout).
+                    // stride between successive rows (for row major layout).
             x,      // Pointer to the input vector x.
             incx,   // The stride of vector x.
             T(0),   // Scaling factor for vector y.
@@ -190,6 +189,26 @@ std::pair<sycl::event, sycl::event>
     const py::ssize_t *a_shape = matrixA.get_shape_raw();
     const py::ssize_t *x_shape = vectorX.get_shape_raw();
     const py::ssize_t *y_shape = vectorY.get_shape_raw();
+    if (transpose) {
+        if (a_shape[0] != x_shape[0]) {
+            throw py::value_error("The number of rows in A must be equal to "
+                                  "the number of elements in X.");
+        }
+        if (a_shape[1] != y_shape[0]) {
+            throw py::value_error("The number of columns in A must be equal to "
+                                  "the number of elements in Y.");
+        }
+    }
+    else {
+        if (a_shape[1] != x_shape[0]) {
+            throw py::value_error("The number of columns in A must be equal to "
+                                  "the number of elements in X.");
+        }
+        if (a_shape[0] != y_shape[0]) {
+            throw py::value_error("The number of rows in A must be equal to "
+                                  "the number of elements in Y.");
+        }
+    }
 
     oneapi::mkl::transpose transA;
     std::size_t src_nelems;
@@ -243,27 +262,6 @@ std::pair<sycl::event, sycl::event>
     }
 #endif // USE_ONEMATH_CUBLAS
 
-    if (transpose) {
-        if (a_shape[0] != x_shape[0]) {
-            throw py::value_error("The number of rows in A must be equal to "
-                                  "the number of elements in X.");
-        }
-        if (a_shape[1] != y_shape[0]) {
-            throw py::value_error("The number of columns in A must be equal to "
-                                  "the number of elements in Y.");
-        }
-    }
-    else {
-        if (a_shape[1] != x_shape[0]) {
-            throw py::value_error("The number of columns in A must be equal to "
-                                  "the number of elements in X.");
-        }
-        if (a_shape[0] != y_shape[0]) {
-            throw py::value_error("The number of rows in A must be equal to "
-                                  "the number of elements in Y.");
-        }
-    }
-
     const std::int64_t lda = is_row_major ? n : m;
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(vectorY);
     dpctl::tensor::validation::AmpleMemory::throw_if_not_ample(vectorY,
@@ -287,7 +285,7 @@ std::pair<sycl::event, sycl::event>
             "Types of input arrays and result array are mismatched.");
     }
 
-    char *a_typeless_ptr = matrixA.get_data();
+    const char *a_typeless_ptr = matrixA.get_data();
     char *x_typeless_ptr = vectorX.get_data();
     char *y_typeless_ptr = vectorY.get_data();
 

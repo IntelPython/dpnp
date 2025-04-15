@@ -129,8 +129,7 @@ static sycl::event gemm_impl(sycl::queue &exec_q,
             Tab(1), // Scaling factor for the product of matrices A and B.
             a,      // Pointer to matrix A.
             lda,    // Leading dimension of matrix A, which is the
-                    // stride between successive rows (for row major
-                    // layout).
+                    // stride between successive rows (for row major layout).
             b,      // Pointer to matrix B.
             ldb,    // Leading dimension of matrix B, similar to lda.
             Tab(0), // Scaling factor for matrix C.
@@ -168,7 +167,8 @@ std::tuple<sycl::event, sycl::event, bool>
     const int resultC_nd = resultC.get_ndim();
 
     if ((matrixA_nd != 2) || (matrixB_nd != 2) || (resultC_nd != 2)) {
-        throw py::value_error("Input matrices must be two-dimensional.");
+        throw py::value_error(
+            "Input and output matrices must be two-dimensional.");
     }
 
     auto const &overlap = dpctl::tensor::overlap::MemoryOverlap();
@@ -286,6 +286,8 @@ std::tuple<sycl::event, sycl::event, bool>
         }
     }
     else {
+        // both A and B are f_contig so using column-major gemm and
+        // no transpose is needed
         transA = oneapi::mkl::transpose::N;
         transB = oneapi::mkl::transpose::N;
         lda = m;

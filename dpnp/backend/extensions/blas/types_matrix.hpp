@@ -186,4 +186,29 @@ struct GemvTypePairSupportFactory
         // fall-through
         dpctl_td_ns::NotDefinedEntry>::is_defined;
 };
+
+/**
+ * @brief A factory to define pairs of supported types for which
+ * MKL BLAS library provides support in oneapi::mkl::blas::syrk<T>
+ * function.
+ *
+ * @tparam T Type of input and output arrays.
+ */
+template <typename T>
+struct SyrkTypePairSupportFactory
+{
+    static constexpr bool is_defined = std::disjunction<
+        dpctl_td_ns::TypePairDefinedEntry<T, float, T, float>,
+        dpctl_td_ns::TypePairDefinedEntry<T, double, T, double>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<float>,
+                                          T,
+                                          std::complex<float>>,
+        dpctl_td_ns::TypePairDefinedEntry<T,
+                                          std::complex<double>,
+                                          T,
+                                          std::complex<double>>,
+        // fall-through
+        dpctl_td_ns::NotDefinedEntry>::is_defined;
+};
 } // namespace dpnp::extensions::blas::types

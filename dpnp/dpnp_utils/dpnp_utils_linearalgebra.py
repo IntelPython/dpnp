@@ -50,7 +50,30 @@ __all__ = [
 ]
 
 
-def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
+def _call_syrk(x1, x2):
+    """
+    Check to see if `syrk` can be called instead of `gemm`.
+
+    It is assumed that x1 and x2 are usm_ndarray objects. These arrays have
+    already been validated to be 2-dimensional and contiguous. Therefore, this
+    function only verifies the following: Both arrays reference the same
+    memory. The number of rows in x1 equals the number of columns in x2. If one
+    array is C-contiguous, the other must be F-contiguous.
+
+    """
+    call_syrk = False
+    if (
+        x1._pointer == x2._pointer
+        and x1.shape[0] == x2.shape[1]
+        and x1.flags.c_contiguous != x2.flags.c_contiguous
+        and x1.flags.f_contiguous != x2.flags.f_contiguous
+    ):
+        call_syrk = True
+
+    return call_syrk
+
+
+def _compute_res_dtype(*arrays, dtype=None, out=None, casting="no"):
     """
     Determines the output array data type.
     If `dtype` and `out` are ``None``, the output array data type of the
@@ -70,8 +93,6 @@ def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
         If not ``None``, data type of the output array.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
         Controls what kind of data casting may occur.
-    sycl_queue : {SyclQueue}
-        A SYCL queue to use for determining default floating point datat type.
 
     Returns
     -------
@@ -334,7 +355,7 @@ def _gemm_matmul(exec_q, x1, x2, res):
 def _gemm_special_case(x1, x2, res_dtype, call_flag):
     """
     `gemm` and `gemm_batch` support these special cases of data types
-    while `gemv` does not.
+    while `gemv` or `syrk` do not.
 
     """
 
@@ -765,9 +786,7 @@ def dpnp_dot(a, b, /, out=None, *, casting="same_kind", conjugate=False):
     _validate_out_array(out, exec_q)
 
     # Determine the appropriate data types
-    res_dtype = _compute_res_dtype(
-        a, b, out=out, casting=casting, sycl_queue=exec_q
-    )
+    res_dtype = _compute_res_dtype(a, b, out=out, casting=casting)
 
     result = _create_result_array(
         a, b, out, (), res_dtype, res_usm_type, exec_q
@@ -918,7 +937,7 @@ def dpnp_multiplication(
 
     # Determine the appropriate data types
     res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
+        x1, x2, dtype=dtype, out=out, casting=casting
     )
 
     call_flag = None
@@ -1062,7 +1081,6 @@ def dpnp_multiplication(
                         x_usm = dpnp.get_usm_ndarray(x2)
 
                     _manager = dpu.SequentialOrderManager[exec_q]
-
                     ht_ev, gemv_ev = bi._gemv(
                         exec_q,
                         a_usm,
@@ -1073,7 +1091,20 @@ def dpnp_multiplication(
                     )
                     _manager.add_event_pair(ht_ev, gemv_ev)
                 elif call_flag == "gemm":
-                    result = _gemm_matmul(exec_q, x1, x2, result)
+                    x1_usm = dpnp.get_usm_ndarray(x1)
+                    x2_usm = dpnp.get_usm_ndarray(x2)
+                    call_syrk = _call_syrk(x1_usm, x2_usm)
+                    if call_syrk:
+                        _manager = dpu.SequentialOrderManager[exec_q]
+                        ht_ev, gemv_ev = bi._syrk(
+                            exec_q,
+                            x1_usm,
+                            dpnp.get_usm_ndarray(result),
+                            depends=_manager.submitted_events,
+                        )
+                        _manager.add_event_pair(ht_ev, gemv_ev)
+                    else:
+                        result = _gemm_matmul(exec_q, x1_usm, x2_usm, result)
                 else:
                     assert call_flag == "gemm_batch"
                     result = _gemm_batch_matmul(exec_q, x1, x2, result)
@@ -1217,7 +1248,7 @@ def dpnp_vecdot(
         if axis is not None:
             raise TypeError("cannot specify both `axis` and `axes`.")
 
-        axes_x1, axes_x2, axes_res = _validate_axes(x1, x2, axes, "vecdot")
+        axes_x1, axes_x2, _ = _validate_axes(x1, x2, axes, "vecdot")
 
         # Move the axes that are going to be used in dot product,
         # to the end of "x1" and "x2"
@@ -1241,7 +1272,7 @@ def dpnp_vecdot(
 
     # Determine the appropriate data types
     res_dtype = _compute_res_dtype(
-        x1, x2, dtype=dtype, out=out, casting=casting, sycl_queue=exec_q
+        x1, x2, dtype=dtype, out=out, casting=casting
     )
 
     _, x1_is_1D, _ = _define_dim_flags(x1, axis=-1)
