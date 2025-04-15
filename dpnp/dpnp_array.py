@@ -24,6 +24,14 @@
 # THE POSSIBILITY OF SUCH DAMAGE.
 # *****************************************************************************
 
+"""
+TODO: add mdoule docstring
+
+"""
+
+# pylint: disable=invalid-name
+# pylint: disable=protected-access
+
 import dpctl.tensor as dpt
 import dpctl.tensor._type_utils as dtu
 from dpctl.tensor._numpy_helper import AxisError
@@ -36,8 +44,8 @@ def _get_unwrapped_index_key(key):
     """
     Get an unwrapped index key.
 
-    Return a key where each nested instance of DPNP array is unwrapped into USM ndarray
-    for further processing in DPCTL advanced indexing functions.
+    Return a key where each nested instance of DPNP array is unwrapped into
+    USM ndarray for further processing in DPCTL advanced indexing functions.
 
     """
 
@@ -52,15 +60,18 @@ def _get_unwrapped_index_key(key):
     return key
 
 
+# pylint: disable=too-many-public-methods
 class dpnp_array:
     """
-    Multi-dimensional array object.
+    An array object represents a multidimensional tensor of numeric elements
+    stored in a USM allocation on a SYCL device.
 
-    This is a wrapper around dpctl.tensor.usm_ndarray that provides
+    This is a wrapper around :class:`dpctl.tensor.usm_ndarray` that provides
     methods to be compliant with original NumPy.
 
     """
 
+    # pylint: disable=too-many-positional-arguments
     def __init__(
         self,
         shape,
@@ -104,15 +115,46 @@ class dpnp_array:
 
     @property
     def __sycl_usm_array_interface__(self):
+        """
+        Give ``__sycl_usm_array_interface__`` dictionary describing the array.
+
+        """
         return self._array_obj.__sycl_usm_array_interface__
 
     def get_array(self):
-        """Get usm_ndarray object."""
+        """Get :class:`dpctl.tensor.usm_ndarray` object."""
         return self._array_obj
 
     @property
     def T(self):
-        """View of the transposed array."""
+        """
+        View of the transposed array.
+
+        Same as ``self.transpose()``.
+
+        See Also
+        --------
+        :obj:`dpnp.transpose` : Equivalent function.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> a = np.array([[1, 2], [3, 4]])
+        >>> a
+        array([[1, 2],
+            [3, 4]])
+        >>> a.T
+        array([[1, 3],
+            [2, 4]])
+
+        >>> a = np.array([1, 2, 3, 4])
+        >>> a
+        array([1, 2, 3, 4])
+        >>> a.T
+        array([1, 2, 3, 4])
+
+        """
+
         return self.transpose()
 
     @property
@@ -159,38 +201,93 @@ class dpnp_array:
         return dpnp_array._create_from_usm_ndarray(self._array_obj.mT)
 
     @property
-    def sycl_queue(self):
-        return self._array_obj.sycl_queue
-
-    @property
-    def sycl_device(self):
-        return self._array_obj.sycl_device
-
-    @property
-    def sycl_context(self):
-        return self._array_obj.sycl_context
-
-    @property
     def device(self):
+        """
+        Return :class:`dpctl.tensor.Device` object representing residence of
+        the array data.
+
+        The ``Device`` object represents Array API notion of the device, and
+        contains :class:`dpctl.SyclQueue` associated with this array. Hence,
+        ``.device`` property provides information distinct from ``.sycl_device``
+        property.
+
+        Examples
+        --------
+        >>> import dpnp as np
+        >>> x = np.ones(10)
+        >>> x.device
+        Device(level_zero:gpu:0)
+
+        """
+
         return self._array_obj.device
 
     @property
+    def sycl_context(self):
+        """
+        Return :class:`dpctl.SyclContext` object to which USM data is bound.
+
+        """
+        return self._array_obj.sycl_context
+
+    @property
+    def sycl_device(self):
+        """
+        Return :class:`dpctl.SyclDevice` object on which USM data was
+        allocated.
+
+        """
+        return self._array_obj.sycl_device
+
+    @property
+    def sycl_queue(self):
+        """
+        Return :class:`dpctl.SyclQueue` object associated with USM data.
+
+        """
+        return self._array_obj.sycl_queue
+
+    @property
     def usm_type(self):
+        """
+        USM type of underlying memory. Possible values are:
+
+        * ``"device"``
+            USM-device allocation in device memory, only accessible to kernels
+            executed on the device
+        * ``"shared"``
+            USM-shared allocation in device memory, accessible both from the
+            device and from the host
+        * ``"host"``
+            USM-host allocation in host memory, accessible both from the device
+            and from the host
+
+        """
+
         return self._array_obj.usm_type
 
     def __abs__(self):
-        r"""Return ``\|self\|``."""
+        """Return :math:`|self|`."""
         return dpnp.abs(self)
 
     def __add__(self, other):
-        """Return ``self+value``."""
+        """Return :math:`self+value`."""
         return dpnp.add(self, other)
 
     def __and__(self, other):
-        """Return ``self&value``."""
+        """Return :math:`self&value`."""
         return dpnp.bitwise_and(self, other)
 
     def __array__(self, dtype=None, /, *, copy=None):
+        """
+        NumPy's array protocol method to disallow implicit conversion.
+
+        Without this definition, ``numpy.asarray(dpnp_arr)`` converts
+        :class:`dpnp.ndarray` instance into NumPy array with data type `object`
+        and every element being zero-dimensional :class:`dpnp.ndarray`.
+
+        """
+
         raise TypeError(
             "Implicit conversion to a NumPy array is not allowed. "
             "Please use `.asnumpy()` to construct a NumPy array explicitly."
@@ -199,13 +296,6 @@ class dpnp_array:
     # '__array_finalize__',
     # '__array_function__',
     # '__array_interface__',
-    # '__array_prepare__',
-    # '__array_priority__',
-    # '__array_struct__',
-
-    __array_ufunc__ = None
-
-    # '__array_wrap__',
 
     def __array_namespace__(self, /, *, api_version=None):
         """
@@ -233,6 +323,14 @@ class dpnp_array:
 
         return self._array_obj.__array_namespace__(api_version=api_version)
 
+    # '__array_prepare__',
+    # '__array_priority__',
+    # '__array_struct__',
+
+    __array_ufunc__ = None
+
+    # '__array_wrap__',
+
     def __bool__(self):
         """``True`` if self else ``False``."""
         return self._array_obj.__bool__()
@@ -241,6 +339,7 @@ class dpnp_array:
     # `__class_getitem__`,
 
     def __complex__(self):
+        """Convert a zero-dimensional array to a Python complex object."""
         return self._array_obj.__complex__()
 
     def __contains__(self, value, /):
@@ -249,7 +348,8 @@ class dpnp_array:
 
     def __copy__(self):
         """
-        Used if :func:`copy.copy` is called on an array. Returns a copy of the array.
+        Used if :func:`copy.copy` is called on an array. Returns a copy of the
+        array.
 
         Equivalent to ``a.copy(order="K")``.
 
@@ -261,7 +361,6 @@ class dpnp_array:
     # '__delitem__',
     # '__dir__',
     # '__divmod__',
-    # '__doc__',
 
     def __dlpack__(
         self, *, stream=None, max_version=None, dl_device=None, copy=None
@@ -340,27 +439,30 @@ class dpnp_array:
 
         return self._array_obj.__dlpack_device__()
 
+    # '__doc__',
+
     def __eq__(self, other):
-        """Return ``self==value``."""
+        """Return :math:`self==value`."""
         return dpnp.equal(self, other)
 
     def __float__(self):
+        """Convert a zero-dimensional array to a Python float object."""
         return self._array_obj.__float__()
 
     def __floordiv__(self, other):
-        """Return ``self//value``."""
+        """Return :math:`self//value`."""
         return dpnp.floor_divide(self, other)
 
     # '__format__',
 
     def __ge__(self, other):
-        """Return ``self>=value``."""
+        """Return :math:`self>=value`."""
         return dpnp.greater_equal(self, other)
 
     # '__getattribute__',
 
     def __getitem__(self, key):
-        """Return ``self[key]``."""
+        """Return :math:`self[key]`."""
         key = _get_unwrapped_index_key(key)
 
         item = self._array_obj.__getitem__(key)
@@ -369,41 +471,39 @@ class dpnp_array:
     # '__getstate__',
 
     def __gt__(self, other):
-        """Return ``self>value``."""
+        """Return :math:`self>value`."""
         return dpnp.greater(self, other)
 
     # '__hash__',
 
     def __iadd__(self, other):
-        """Return ``self+=value``."""
+        """Return :math:`self+=value`:math:."""
         dpnp.add(self, other, out=self)
         return self
 
     def __iand__(self, other):
-        """Return ``self&=value``."""
+        """Return :math:`self&=value`:math:."""
         dpnp.bitwise_and(self, other, out=self)
         return self
 
     def __ifloordiv__(self, other):
-        """Return ``self//=value``."""
+        """Return :math:`self//=value`."""
         dpnp.floor_divide(self, other, out=self)
         return self
 
     def __ilshift__(self, other):
-        """Return ``self<<=value``."""
+        """Return :math:`self<<=value`."""
         dpnp.left_shift(self, other, out=self)
         return self
 
     def __imatmul__(self, other):
-        """Return ``self@=value``."""
+        """Return :math:`self@=value`."""
 
-        """
-        Unlike `matmul(a, b, out=a)` we ensure that the result is not broadcast
-        if the result without `out` would have less dimensions than `a`.
-        Since the signature of matmul is '(n?,k),(k,m?)->(n?,m?)' this is the
-        case exactly when the second operand has both core dimensions.
-        We have to enforce this check by passing the correct `axes=`.
-        """
+        # Unlike `matmul(a, b, out=a)` we ensure that the result isn't broadcast
+        # if the result without `out` would have less dimensions than `a`.
+        # Since the signature of matmul is '(n?,k),(k,m?)->(n?,m?)' this is the
+        # case exactly when the second operand has both core dimensions.
+        # We have to enforce this check by passing the correct `axes=`.
         if self.ndim == 1:
             axes = [(-1,), (-2, -1), (-1,)]
         else:
@@ -411,130 +511,132 @@ class dpnp_array:
 
         try:
             dpnp.matmul(self, other, out=self, dtype=self.dtype, axes=axes)
-        except AxisError:
+        except AxisError as e:
             # AxisError should indicate that the axes argument didn't work out
             # which should mean the second operand not being 2 dimensional.
             raise ValueError(
                 "inplace matrix multiplication requires the first operand to "
                 "have at least one and the second at least two dimensions."
-            )
+            ) from e
         return self
 
     def __imod__(self, other):
-        """Return ``self%=value``."""
+        """Return :math:`self%=value`."""
         dpnp.remainder(self, other, out=self)
         return self
 
     def __imul__(self, other):
-        """Return ``self*=value``."""
+        """Return :math:`self*=value`."""
         dpnp.multiply(self, other, out=self)
         return self
 
     def __index__(self):
+        """Convert a zero-dimensional array to a Python int object."""
         return self._array_obj.__index__()
 
     # '__init__',
     # '__init_subclass__',
 
     def __int__(self):
+        """Convert a zero-dimensional array to a Python int object."""
         return self._array_obj.__int__()
 
     def __invert__(self):
-        """Return ``~self``."""
+        """Return :math:`~self`."""
         return dpnp.invert(self)
 
     def __ior__(self, other):
-        """Return ``self|=value``."""
+        """Return :math:`self|=value`."""
         dpnp.bitwise_or(self, other, out=self)
         return self
 
     def __ipow__(self, other):
-        """Return ``self**=value``."""
+        """Return :math:`self**=value`."""
         dpnp.power(self, other, out=self)
         return self
 
     def __irshift__(self, other):
-        """Return ``self>>=value``."""
+        """Return :math:`self>>=value`."""
         dpnp.right_shift(self, other, out=self)
         return self
 
     def __isub__(self, other):
-        """Return ``self-=value``."""
+        """Return :math:`self-=value`."""
         dpnp.subtract(self, other, out=self)
         return self
 
     def __iter__(self):
-        """Return ``iter(self)``."""
+        """Return :math:`iter(self)`."""
         if self.ndim == 0:
             raise TypeError("iteration over a 0-d array")
         return (self[i] for i in range(self.shape[0]))
 
     def __itruediv__(self, other):
-        """Return ``self/=value``."""
+        """Return :math:`self/=value`."""
         dpnp.true_divide(self, other, out=self)
         return self
 
     def __ixor__(self, other):
-        """Return ``self^=value``."""
+        """Return :math:`self^=value`."""
         dpnp.bitwise_xor(self, other, out=self)
         return self
 
     def __le__(self, other):
-        """Return ``self<=value``."""
+        """Return :math:`self<=value`."""
         return dpnp.less_equal(self, other)
 
     def __len__(self):
-        """Return ``len(self)``."""
+        """Return :math:`len(self)`."""
         return self._array_obj.__len__()
 
     def __lshift__(self, other):
-        """Return ``self<<value``."""
+        """Return :math:`self<<value`."""
         return dpnp.left_shift(self, other)
 
     def __lt__(self, other):
-        """Return ``self<value``."""
+        """Return :math:`self<value`."""
         return dpnp.less(self, other)
 
     def __matmul__(self, other):
-        """Return ``self@value``."""
+        """Return `:math:self@value`."""
         return dpnp.matmul(self, other)
 
     def __mod__(self, other):
-        """Return ``self%value``."""
+        """Return :math:`self%value`."""
         return dpnp.remainder(self, other)
 
     def __mul__(self, other):
-        """Return ``self*value``."""
+        """Return :math:`self*value`."""
         return dpnp.multiply(self, other)
 
     def __ne__(self, other):
-        """Return ``self!=value``."""
+        """Return :math:`self!=value`."""
         return dpnp.not_equal(self, other)
 
     def __neg__(self):
-        """Return ``-self``."""
+        """Return :math:`-self`."""
         return dpnp.negative(self)
 
     # '__new__',
 
     def __or__(self, other):
-        """Return ``self|value``."""
+        """Return :math:`self|value`."""
         return dpnp.bitwise_or(self, other)
 
     def __pos__(self):
-        """Return ``+self``."""
+        """Return :math:`+self`."""
         return dpnp.positive(self)
 
     def __pow__(self, other):
-        """Return ``self**value``."""
+        """Return :math:`self**value`."""
         return dpnp.power(self, other)
 
     def __radd__(self, other):
-        """Return ``value+self``."""
+        """Return :math:`value+self`."""
         return dpnp.add(other, self)
 
     def __rand__(self, other):
-        """Return ``value&self``."""
+        """Return :math:`value&self`."""
         return dpnp.bitwise_and(other, self)
 
     # '__rdivmod__',
@@ -542,55 +644,55 @@ class dpnp_array:
     # '__reduce_ex__',
 
     def __repr__(self):
-        """Return ``repr(self)``."""
+        """Return :math:`repr(self)`."""
         return dpt.usm_ndarray_repr(self._array_obj, prefix="array")
 
     def __rfloordiv__(self, other):
-        """Return ``value//self``."""
+        """Return :math:`value//self`."""
         return dpnp.floor_divide(self, other)
 
     def __rlshift__(self, other):
-        """Return ``value<<self``."""
+        """Return :math:`value<<self`."""
         return dpnp.left_shift(other, self)
 
     def __rmatmul__(self, other):
-        """Return ``value@self``."""
+        """Return :math:`value@self`."""
         return dpnp.matmul(other, self)
 
     def __rmod__(self, other):
-        """Return ``value%self``."""
+        """Return :math:`value%self`."""
         return dpnp.remainder(other, self)
 
     def __rmul__(self, other):
-        """Return ``value*self``."""
+        """Return :math:`value*self`."""
         return dpnp.multiply(other, self)
 
     def __ror__(self, other):
-        """Return ``value|self``."""
+        """Return :math:`value|self`."""
         return dpnp.bitwise_or(other, self)
 
     def __rpow__(self, other):
-        """Return ``value**self``."""
+        """Return :math:`value**self`."""
         return dpnp.power(other, self)
 
     def __rrshift__(self, other):
-        """Return ``value>>self``."""
+        """Return :math:`value>>self`."""
         return dpnp.right_shift(other, self)
 
     def __rshift__(self, other):
-        """Return ``self>>value``."""
+        """Return :math:`self>>value`."""
         return dpnp.right_shift(self, other)
 
     def __rsub__(self, other):
-        """Return ``value-self``."""
+        """Return :math:`value-self`."""
         return dpnp.subtract(other, self)
 
     def __rtruediv__(self, other):
-        """Return ``value/self``."""
+        """Return :math:`value/self`."""
         return dpnp.true_divide(other, self)
 
     def __rxor__(self, other):
-        """Return ``value^self``."""
+        """Return :math:`value^self`."""
         return dpnp.bitwise_xor(other, self)
 
     # '__setattr__',
@@ -610,17 +712,17 @@ class dpnp_array:
     __slots__ = ("_array_obj",)
 
     def __str__(self):
-        """Return ``str(self)``."""
+        """Return :math:`str(self)`."""
         return self._array_obj.__str__()
 
     def __sub__(self, other):
-        """Return ``self-value``."""
+        """Return :math:`self-value`."""
         return dpnp.subtract(self, other)
 
     # '__subclasshook__',
 
     def __truediv__(self, other):
-        """Return ``self/value``."""
+        """Return :math:`self/value`."""
         return dpnp.true_divide(self, other)
 
     @property
@@ -632,9 +734,9 @@ class dpnp_array:
         corresponding to the content of the object.
 
         This property is intended to speed-up conversion from
-        :class:`dpnp.ndarray` to :class:`dpctl.tensor.usm_ndarray` passed
-        into  `dpctl.tensor.asarray` function. The input object that implements
-        `__usm_ndarray__` protocol is recognized as owner of USM allocation
+        :class:`dpnp.ndarray` to :class:`dpctl.tensor.usm_ndarray` passed into
+        :func:`dpctl.tensor.asarray` function. The input object that implements
+        ``__usm_ndarray__`` protocol is recognized as owner of USM allocation
         that is managed by a smart pointer, and asynchronous deallocation
         will not involve GIL.
 
@@ -643,11 +745,17 @@ class dpnp_array:
         return self._array_obj
 
     def __xor__(self, other):
-        """Return ``self^value``."""
+        """Return :math:`self^value`."""
         return dpnp.bitwise_xor(self, other)
 
     @staticmethod
     def _create_from_usm_ndarray(usm_ary: dpt.usm_ndarray):
+        """
+        Return :class:`dpnp.ndarray` instance from USM allocation providing
+        by an instance of :class:`dpctl.tensor.usm_ndarray`.
+
+        """
+
         if not isinstance(usm_ary, dpt.usm_ndarray):
             raise TypeError(
                 f"Expected dpctl.tensor.usm_ndarray, got {type(usm_ary)}"
@@ -715,7 +823,8 @@ class dpnp_array:
         self, axis=-1, kind=None, order=None, *, descending=False, stable=None
     ):
         """
-        Return an ndarray of indices that sort the array along the specified axis.
+        Return an ndarray of indices that sort the array along the specified
+        axis.
 
         Refer to :obj:`dpnp.argsort` for full documentation.
 
@@ -829,8 +938,8 @@ class dpnp_array:
             Specifies whether to copy an array when the specified dtype matches
             the data type of that array. If ``True``, a newly allocated array
             must always be returned. If ``False`` and the specified dtype
-            matches the data type of that array, the self array must be returned;
-            otherwise, a newly allocated array must be returned.
+            matches the data type of that array, the self array must be
+            returned; otherwise, a newly allocated array must be returned.
 
             Default: ``True``.
         device : {None, string, SyclDevice, SyclQueue, Device}, optional
@@ -880,7 +989,8 @@ class dpnp_array:
 
     def choose(self, /, choices, out=None, mode="wrap"):
         """
-        Use an array as index array to construct a new array from a set of choices.
+        Use an array as index array to construct a new array from a set of
+        choices.
 
         Refer to :obj:`dpnp.choose` for full documentation.
 
@@ -915,10 +1025,7 @@ class dpnp_array:
 
         """
 
-        if not dpnp.issubdtype(self.dtype, dpnp.complexfloating):
-            return self
-        else:
-            return dpnp.conjugate(self)
+        return self.conjugate()
 
     def conjugate(self):
         """
@@ -930,8 +1037,7 @@ class dpnp_array:
 
         if not dpnp.issubdtype(self.dtype, dpnp.complexfloating):
             return self
-        else:
-            return dpnp.conjugate(self)
+        return dpnp.conjugate(self)
 
     def copy(self, order="C", device=None, usm_type=None, sycl_queue=None):
         """
@@ -1089,7 +1195,10 @@ class dpnp_array:
 
     @property
     def dtype(self):
-        """Returns NumPy's dtype corresponding to the type of the array elements."""
+        """
+        Returns NumPy's dtype corresponding to the type of the array elements.
+
+        """
 
         return self._array_obj.dtype
 
@@ -1122,6 +1231,7 @@ class dpnp_array:
         """
 
         # lazy import avoids circular imports
+        # pylint: disable=import-outside-toplevel
         from .dpnp_algo.dpnp_fill import dpnp_fill
 
         dpnp_fill(self, value)
@@ -1134,7 +1244,10 @@ class dpnp_array:
 
     @property
     def flat(self):
-        """Return a flat iterator, or set a flattened version of self to value."""
+        """
+        Return a flat iterator, or set a flattened version of self to value.
+
+        """
 
         return dpnp.flatiter(self)
 
@@ -1245,7 +1358,8 @@ class dpnp_array:
         Returns
         -------
         out : Standard Python scalar object
-            A copy of the specified element of the array as a suitable Python scalar.
+            A copy of the specified element of the array as a suitable Python
+            scalar.
 
         Examples
         --------
@@ -1537,7 +1651,8 @@ class dpnp_array:
         Notes
         -----
         Unlike the free function `dpnp.reshape`, this method on `ndarray` allows
-        the elements of the shape parameter to be passed in as separate arguments.
+        the elements of the shape parameter to be passed in as separate
+        arguments.
         For example, ``a.reshape(10, 11)`` is equivalent to
         ``a.reshape((10, 11))``.
 
@@ -1936,8 +2051,10 @@ class dpnp_array:
         See Also
         --------
         :obj:`dpnp.transpose` : Equivalent function.
-        :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array transposed.
-        :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without changing its data.
+        :obj:`dpnp.ndarray.ndarray.T` : Array property returning the array
+            transposed.
+        :obj:`dpnp.ndarray.reshape` : Give a new shape to an array without
+            changing its data.
 
         Examples
         --------
