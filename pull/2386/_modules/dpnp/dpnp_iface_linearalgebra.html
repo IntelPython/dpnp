@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev0+43.gfa085da0d2f documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev1+4.gb88a92beff4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=efe6fba6"></script>
+      <script src="../../_static/documentation_options.js?v=9aea9bd1"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -305,12 +305,13 @@
 <span class="sd">        If provided, forces the calculation to use the data type specified.</span>
 
 <span class="sd">        Default: ``None``.</span>
-<span class="sd">    order : {&quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
+<span class="sd">    order : {None, &quot;C&quot;, &quot;F&quot;, &quot;A&quot;, &quot;K&quot;}, optional</span>
 <span class="sd">        Controls the memory layout of the output. ``&quot;C&quot;`` means it should be</span>
 <span class="sd">        C-contiguous. ``&quot;F&quot;`` means it should be F-contiguous, ``&quot;A&quot;`` means</span>
 <span class="sd">        it should be ``&quot;F&quot;`` if the inputs are all ``&quot;F&quot;``, ``&quot;C&quot;`` otherwise.</span>
 <span class="sd">        ``&quot;K&quot;`` means it should be as close to the layout as the inputs as</span>
-<span class="sd">        is possible, including arbitrarily permuted axes.</span>
+<span class="sd">        is possible, including arbitrarily permuted axes. ``order=None`` is</span>
+<span class="sd">        equivalent to ``order=&quot;K&quot;``.</span>
 
 <span class="sd">        Default: ``&quot;K&quot;``.</span>
 <span class="sd">    casting : {&quot;no&quot;, &quot;equiv&quot;, &quot;safe&quot;, &quot;same_kind&quot;, &quot;unsafe&quot;}, optional</span>
@@ -508,7 +509,7 @@
 <span class="sd">    &gt;&gt;&gt; a = np.ones(64000).reshape(20, 40, 80)</span>
 
 <span class="sd">    Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th</span>
-<span class="sd">    Gen Intel\u00AE Core\u2122 i7 processor)</span>
+<span class="sd">    Gen Intel\u00ae Core\u2122 i7 processor)</span>
 
 <span class="sd">    &gt;&gt;&gt; %timeit np.einsum(&quot;ijk,ilm,njm,nlk,abc-&gt;&quot;,a, a, a, a, a)</span>
 
@@ -549,7 +550,7 @@
 
 <div class="viewcode-block" id="einsum_path">
 <a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;greedy&quot;</span><span class="p">,</span> <span class="n">einsum_call</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;greedy&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum_path(subscripts, *operands, optimize=&quot;greedy&quot;)</span>
 
@@ -575,7 +576,7 @@
 <span class="sd">        * if a list is given that starts with ``einsum_path``, uses this as the</span>
 <span class="sd">          contraction path</span>
 <span class="sd">        * if ``False`` or ``None`` no optimization is taken</span>
-<span class="sd">        * if ``True`` defaults to the &quot;greedy&quot; algorithm</span>
+<span class="sd">        * if ``True`` defaults to the ``&quot;greedy&quot;`` algorithm</span>
 <span class="sd">        * ``&quot;optimal&quot;`` is an algorithm that combinatorially explores all</span>
 <span class="sd">          possible ways of contracting the listed tensors and chooses the</span>
 <span class="sd">          least costly path. Scales exponentially with the number of terms</span>
@@ -678,7 +679,7 @@
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">(</span>
         <span class="o">*</span><span class="n">operands</span><span class="p">,</span>
         <span class="n">optimize</span><span class="o">=</span><span class="n">optimize</span><span class="p">,</span>
-        <span class="n">einsum_call</span><span class="o">=</span><span class="n">einsum_call</span><span class="p">,</span>
+        <span class="n">einsum_call</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
@@ -712,7 +713,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention..</span>
+<span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
 <span class="sd">    :obj:`dpnp.dot` : Generalized matrix product,</span>
 <span class="sd">                      using second last dimension of `b`.</span>
 <span class="sd">    :obj:`dpnp.tensordot` : Sum products over arbitrary axes.</span>
@@ -1102,7 +1103,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product..</span>
+<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product.</span>
 <span class="sd">    :obj:`dpnp.vecmat` : Vector-matrix product.</span>
 <span class="sd">    :obj:`dpnp.matmul` : Matrix-matrix product.</span>
 <span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>
@@ -1621,7 +1622,7 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product..</span>
+<span class="sd">    :obj:`dpnp.vecdot` : Vector-vector product.</span>
 <span class="sd">    :obj:`dpnp.matvec` : Matrix-vector product.</span>
 <span class="sd">    :obj:`dpnp.matmul` : Matrix-matrix product.</span>
 <span class="sd">    :obj:`dpnp.einsum` : Einstein summation convention.</span>

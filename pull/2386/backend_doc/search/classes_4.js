@@ -2,8 +2,8 @@ var searchData=
 [
   ['degreesfunctor_0',['DegreesFunctor',['../structdpnp_1_1kernels_1_1degrees_1_1_degrees_functor.html',1,'dpnp::kernels::degrees']]],
   ['descriptorwrapper_1',['DescriptorWrapper',['../classdpnp_1_1extensions_1_1fft_1_1_descriptor_wrapper.html',1,'dpnp::extensions::fft']]],
-  ['dispatchtable_2',['DispatchTable',['../classstatistics_1_1common_1_1_dispatch_table.html',1,'statistics::common']]],
-  ['dispatchtable2_3',['DispatchTable2',['../classstatistics_1_1common_1_1_dispatch_table2.html',1,'statistics::common']]],
+  ['dispatchtable_2',['DispatchTable',['../classext_1_1common_1_1_dispatch_table.html',1,'ext::common']]],
+  ['dispatchtable2_3',['DispatchTable2',['../classext_1_1common_1_1_dispatch_table2.html',1,'ext::common']]],
   ['dotccontigfactory_4',['DotcContigFactory',['../structdpnp_1_1extensions_1_1blas_1_1_dotc_contig_factory.html',1,'dpnp::extensions::blas']]],
   ['dotcontigfactory_5',['DotContigFactory',['../structdpnp_1_1extensions_1_1blas_1_1_dot_contig_factory.html',1,'dpnp::extensions::blas']]],
   ['dotctypepairsupportfactory_6',['DotcTypePairSupportFactory',['../structdpnp_1_1extensions_1_1blas_1_1types_1_1_dotc_type_pair_support_factory.html',1,'dpnp::extensions::blas::types']]],
