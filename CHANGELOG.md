@@ -16,6 +16,7 @@ This release achieves 100% compliance with Python Array API specification (revis
 * Added implementation of `dpnp.bartlett` [#2366](https://github.com/IntelPython/dpnp/pull/2366)
 * Added implementation of `dpnp.convolve` [#2205](https://github.com/IntelPython/dpnp/pull/2205)
 * Added implementation of `dpnp.kaiser` [#2387](https://github.com/IntelPython/dpnp/pull/2387)
+* Added a new backend routine for performing symmetric rank-k update which is used for a specialized matrix multiplication where the result is a symmetric matrix []()
 
 ### Changed
 

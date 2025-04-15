@@ -50,6 +50,29 @@ __all__ = [
 ]
 
 
+def _call_syrk(x1, x2):
+    """
+    Check to see if `syrk` can be called instead of `gemm`.
+
+    It is assumed that `x1` and `x2` are usm_ndarrays. It is already validated
+    that input arrays here are 2-d and contiguous. With this assumption, here
+    we only check if both arrays point to the same memory, the number of rows
+    in the first array is equal to the number of columns in the second array,
+    and if one array is c_contiguous the other one is f_contiguous.
+
+    """
+    call_syrk = False
+    if (
+        x1._pointer == x2._pointer
+        and x1.shape[0] == x2.shape[1]
+        and x1.flags.c_contiguous != x2.flags.c_contiguous
+        and x1.flags.f_contiguous != x2.flags.f_contiguous
+    ):
+        call_syrk = True
+
+    return call_syrk
+
+
 def _compute_res_dtype(*arrays, sycl_queue, dtype=None, out=None, casting="no"):
     """
     Determines the output array data type.
@@ -310,10 +333,11 @@ def _gemm_batch_matmul(exec_q, x1, x2, res):
 def _gemm_matmul(exec_q, x1, x2, res):
     _manager = dpu.SequentialOrderManager[exec_q]
 
+    # it is assumed that x1 and x2 are usm_ndarrays
     ht_ev, gemm_ev, row_major = bi._gemm(
         exec_q,
-        dpnp.get_usm_ndarray(x1),
-        dpnp.get_usm_ndarray(x2),
+        x1,
+        x2,
         dpnp.get_usm_ndarray(res),
         depends=_manager.submitted_events,
     )
@@ -334,7 +358,7 @@ def _gemm_matmul(exec_q, x1, x2, res):
 def _gemm_special_case(x1, x2, res_dtype, call_flag):
     """
     `gemm` and `gemm_batch` support these special cases of data types
-    while `gemv` does not.
+    while `gemv` or `syrk` do not.
 
     """
 
@@ -1062,7 +1086,6 @@ def dpnp_multiplication(
                         x_usm = dpnp.get_usm_ndarray(x2)
 
                     _manager = dpu.SequentialOrderManager[exec_q]
-
                     ht_ev, gemv_ev = bi._gemv(
                         exec_q,
                         a_usm,
@@ -1073,7 +1096,20 @@ def dpnp_multiplication(
                     )
                     _manager.add_event_pair(ht_ev, gemv_ev)
                 elif call_flag == "gemm":
-                    result = _gemm_matmul(exec_q, x1, x2, result)
+                    x1_usm = dpnp.get_usm_ndarray(x1)
+                    x2_usm = dpnp.get_usm_ndarray(x2)
+                    call_syrk = _call_syrk(x1_usm, x2_usm)
+                    if call_syrk:
+                        _manager = dpu.SequentialOrderManager[exec_q]
+                        ht_ev, gemv_ev = bi._syrk(
+                            exec_q,
+                            x1_usm,
+                            dpnp.get_usm_ndarray(result),
+                            depends=_manager.submitted_events,
+                        )
+                        _manager.add_event_pair(ht_ev, gemv_ev)
+                    else:
+                        result = _gemm_matmul(exec_q, x1_usm, x2_usm, result)
                 else:
                     assert call_flag == "gemm_batch"
                     result = _gemm_batch_matmul(exec_q, x1, x2, result)

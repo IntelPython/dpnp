@@ -36,6 +36,7 @@
 #include "dotu.hpp"
 #include "gemm.hpp"
 #include "gemv.hpp"
+#include "syrk.hpp"
 
 namespace blas_ns = dpnp::extensions::blas;
 namespace py = pybind11;
@@ -48,6 +49,7 @@ void init_dispatch_vectors_tables(void)
     blas_ns::init_gemm_batch_dispatch_table();
     blas_ns::init_gemm_dispatch_table();
     blas_ns::init_gemv_dispatch_vector();
+    blas_ns::init_syrk_dispatch_vector();
 }
 
 static dot_impl_fn_ptr_t dot_dispatch_vector[dpctl_td_ns::num_types];
@@ -138,6 +140,14 @@ PYBIND11_MODULE(_blas_impl, m)
               "the matrix-vector product with a general matrix.",
               py::arg("sycl_queue"), py::arg("matrixA"), py::arg("vectorX"),
               py::arg("vectorY"), py::arg("transpose"),
+              py::arg("depends") = py::list());
+    }
+
+    {
+        m.def("_syrk", &blas_ns::syrk,
+              "Call `syrk` from OneMKL BLAS library to compute "
+              "the matrix-vector product with a general matrix.",
+              py::arg("sycl_queue"), py::arg("matrixA"), py::arg("resultC"),
               py::arg("depends") = py::list());
     }
 
