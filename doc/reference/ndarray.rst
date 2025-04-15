@@ -66,7 +66,11 @@ of the array:
    dpnp.ndarray.size
    dpnp.ndarray.itemsize
    dpnp.ndarray.nbytes
-   dpnp.ndarray.base
+   dpnp.ndarray.device
+   dpnp.ndarray.sycl_context
+   dpnp.ndarray.sycl_device
+   dpnp.ndarray.sycl_queue
+   dpnp.ndarray.usm_type
 
 
 Data type
@@ -96,6 +100,17 @@ Other attributes
    dpnp.ndarray.real
    dpnp.ndarray.imag
    dpnp.ndarray.flat
+
+
+Special attributes
+------------------
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   dpnp.ndarray.__sycl_usm_array_interface__
+   dpnp.ndarray.__usm_ndarray__
 
 
 Array methods
@@ -145,6 +160,7 @@ Array conversion
    dpnp.ndarray.getfield
    dpnp.ndarray.setflags
    dpnp.ndarray.fill
+   dpnp.ndarray.get_array
 
 
 Shape manipulation
@@ -371,7 +387,10 @@ Basic customization:
 
    dpnp.ndarray.__new__
    dpnp.ndarray.__array__
+   dpnp.ndarray.__array_namespace__
    dpnp.ndarray.__array_wrap__
+   dpnp.ndarray.__dlpack__
+   dpnp.ndarray.__dlpack_device__
 
 Container customization: (see :ref:`Indexing <routines.indexing>`)
 
@@ -380,12 +399,13 @@ Container customization: (see :ref:`Indexing <routines.indexing>`)
    :nosignatures:
 
    dpnp.ndarray.__len__
+   dpnp.ndarray.__iter__
    dpnp.ndarray.__getitem__
    dpnp.ndarray.__setitem__
    dpnp.ndarray.__contains__
 
-Conversion; the operations :class:`int() <int>`,
-:class:`float() <float>` and :class:`complex() <complex>`.
+Conversion; the operations :class:`int() <int>`, :class:`float() <float>`,
+:class:`complex() <complex>` and :func:`operator.index() <index>`.
 They work only on arrays that have one element in them
 and return the appropriate scalar.
 
@@ -393,6 +413,7 @@ and return the appropriate scalar.
    :toctree: generated/
    :nosignatures:
 
+   dpnp.ndarray.__index__
    dpnp.ndarray.__int__
    dpnp.ndarray.__float__
    dpnp.ndarray.__complex__
