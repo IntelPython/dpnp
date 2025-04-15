@@ -1268,6 +1268,65 @@ def test_choose(usm_type_x, usm_type_ind):
     assert z.usm_type == du.get_coerced_usm_type([usm_type_x, usm_type_ind])
 
 
+class TestInterp:
+    @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+    @pytest.mark.parametrize("usm_type_xp", list_of_usm_types)
+    @pytest.mark.parametrize("usm_type_fp", list_of_usm_types)
+    def test_basic(self, usm_type_x, usm_type_xp, usm_type_fp):
+        x = dpnp.linspace(0.1, 9.9, 20, usm_type=usm_type_x)
+        xp = dpnp.linspace(0.0, 10.0, 5, usm_type=usm_type_xp)
+        fp = dpnp.array(xp * 2 + 1, usm_type=usm_type_fp)
+
+        result = dpnp.interp(x, xp, fp)
+
+        assert x.usm_type == usm_type_x
+        assert xp.usm_type == usm_type_xp
+        assert fp.usm_type == usm_type_fp
+        assert result.usm_type == du.get_coerced_usm_type(
+            [usm_type_x, usm_type_xp, usm_type_fp]
+        )
+
+    @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+    @pytest.mark.parametrize("usm_type_left", list_of_usm_types)
+    @pytest.mark.parametrize("usm_type_right", list_of_usm_types)
+    def test_left_right(self, usm_type_x, usm_type_left, usm_type_right):
+        x = dpnp.linspace(-1.0, 11.0, 5, usm_type=usm_type_x)
+        xp = dpnp.linspace(0.0, 10.0, 5, usm_type=usm_type_x)
+        fp = dpnp.array(xp * 2 + 1, usm_type=usm_type_x)
+
+        left = dpnp.array(-100, usm_type=usm_type_left)
+        right = dpnp.array(100, usm_type=usm_type_right)
+
+        result = dpnp.interp(x, xp, fp, left=left, right=right)
+
+        assert left.usm_type == usm_type_left
+        assert right.usm_type == usm_type_right
+        assert result.usm_type == du.get_coerced_usm_type(
+            [
+                x.usm_type,
+                xp.usm_type,
+                fp.usm_type,
+                left.usm_type,
+                right.usm_type,
+            ]
+        )
+
+    @pytest.mark.parametrize("usm_type_x", list_of_usm_types)
+    @pytest.mark.parametrize("usm_type_period", list_of_usm_types)
+    def test_period(self, usm_type_x, usm_type_period):
+        x = dpnp.linspace(0.1, 9.9, 20, usm_type=usm_type_x)
+        xp = dpnp.linspace(0.0, 10.0, 5, usm_type=usm_type_x)
+        fp = dpnp.array(xp * 2 + 1, usm_type=usm_type_x)
+        period = dpnp.array(10.0, usm_type=usm_type_period)
+
+        result = dpnp.interp(x, xp, fp, period=period)
+
+        assert period.usm_type == usm_type_period
+        assert result.usm_type == du.get_coerced_usm_type(
+            [x.usm_type, xp.usm_type, fp.usm_type, period.usm_type]
+        )
+
+
 @pytest.mark.parametrize("usm_type", list_of_usm_types)
 class TestLinAlgebra:
     @pytest.mark.parametrize(

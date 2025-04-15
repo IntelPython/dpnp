@@ -2921,13 +2921,17 @@ def interp(x, xp, fp, left=None, right=None, period=None):
         assert xp.flags.c_contiguous
         assert fp.flags.c_contiguous
 
-    output = dpnp.empty(
-        x.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
-    )
     idx = dpnp.searchsorted(xp, x, side="right")
     left_usm = _validate_interp_param(left, "left", exec_q, usm_type, fp.dtype)
     right_usm = _validate_interp_param(
         right, "right", exec_q, usm_type, fp.dtype
+    )
+
+    usm_type, exec_q = get_usm_allocations(
+        [x, xp, fp, period, left_usm, right_usm]
+    )
+    output = dpnp.empty(
+        x.shape, dtype=out_dtype, sycl_queue=exec_q, usm_type=usm_type
     )
 
     _manager = dpu.SequentialOrderManager[exec_q]
