@@ -62,6 +62,7 @@ __all__ = [
     "amax",
     "amin",
     "average",
+    "convolve",
     "corrcoef",
     "correlate",
     "cov",
@@ -355,6 +356,146 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
             scl = dpnp.broadcast_to(scl, avg.shape).copy()
         return avg, scl
     return avg
+
+
+def _convolve_impl(a, v, mode, method, rdtype):
+    l_pad, r_pad = _get_padding(a.size, v.size, mode)
+
+    if method == "auto":
+        method = _choose_conv_method(a, v, rdtype)
+
+    if method == "direct":
+        r = _run_native_sliding_dot_product1d(a, v[::-1], l_pad, r_pad, rdtype)
+    elif method == "fft":
+        r = _convolve_fft(a, v, l_pad, r_pad, rdtype)
+    else:
+        raise ValueError(
+            f"Unknown method: {method}. Supported methods: auto, direct, fft"
+        )
+
+    return r
+
+
+def convolve(a, v, mode="full", method="auto"):
+    r"""
+    Returns the discrete, linear convolution of two one-dimensional sequences.
+    The convolution operator is often seen in signal processing, where it
+    models the effect of a linear time-invariant system on a signal [1]_. In
+    probability theory, the sum of two independent random variables is
+    distributed according to the convolution of their individual
+    distributions.
+
+    If `v` is longer than `a`, the arrays are swapped before computation.
+
+    For full documentation refer to :obj:`numpy.convolve`.
+
+    Parameters
+    ----------
+    a : {dpnp.ndarray, usm_ndarray}
+        First input array.
+    v : {dpnp.ndarray, usm_ndarray}
+        Second input array.
+    mode : {'full', 'valid', 'same'}, optional
+        - 'full': This returns the convolution
+          at each point of overlap, with an output shape of (N+M-1,). At
+          the end-points of the convolution, the signals do not overlap
+          completely, and boundary effects may be seen.
+        - 'same': Mode 'same' returns output of length ``max(M, N)``. Boundary
+          effects are still visible.
+        - 'valid': Mode 'valid' returns output of length
+          ``max(M, N) - min(M, N) + 1``. The convolution product is only given
+          for points where the signals overlap completely. Values outside
+          the signal boundary have no effect.
+
+          Default: ``'full'``.
+    method : {'auto', 'direct', 'fft'}, optional
+        - 'direct': The convolution is determined directly from sums.
+        - 'fft': The Fourier Transform is used to perform the calculations.
+         This method is faster for long sequences but can have accuracy issues.
+        - 'auto': Automatically chooses direct or Fourier method based on
+         an estimate of which is faster.
+
+        Note: Use of the FFT convolution on input containing NAN or INF
+        will lead to the entire output being NAN or INF.
+        Use ``method='direct'`` when your input contains NAN or INF values.
+
+        Default: ``'auto'``.
+
+    Returns
+    -------
+    out : dpnp.ndarray
+        Discrete, linear convolution of `a` and `v`.
+
+    See Also
+    --------
+    :obj:`dpnp.correlate` : Cross-correlation of two 1-dimensional sequences.
+
+    Notes
+    -----
+    The discrete convolution operation is defined as
+
+    .. math:: (a * v)_n = \sum_{m = -\infty}^{\infty} a_m v_{n - m}
+
+    It can be shown that a convolution :math:`x(t) * y(t)` in time/space
+    is equivalent to the multiplication :math:`X(f) Y(f)` in the Fourier
+    domain, after appropriate padding (padding is necessary to prevent
+    circular convolution). Since multiplication is more efficient (faster)
+    than convolution, the function implements two approaches - direct and fft
+    which are regulated by the keyword `method`.
+
+    References
+    ----------
+    .. [1] Wikipedia, "Convolution",
+        https://en.wikipedia.org/wiki/Convolution
+
+    Examples
+    --------
+    Note how the convolution operator flips the second array
+    before "sliding" the two across one another:
+
+    >>> import dpnp as np
+    >>> a = np.array([1, 2, 3], dtype=np.float32)
+    >>> v = np.array([0, 1, 0.5], dtype=np.float32)
+    >>> np.convolve(a, v)
+    array([0. , 1. , 2.5, 4. , 1.5], dtype=float32)
+
+    Only return the middle values of the convolution.
+    Contains boundary effects, where zeros are taken
+    into account:
+
+    >>> np.convolve(a, v, 'same')
+    array([1. , 2.5, 4. ], dtype=float32)
+
+    The two arrays are of the same length, so there
+    is only one position where they completely overlap:
+
+    >>> np.convolve(a, v, 'valid')
+    array([2.5], dtype=float32)
+
+    """
+
+    a, v = dpnp.atleast_1d(a, v)
+
+    if a.size == 0 or v.size == 0:
+        raise ValueError(
+            f"Array arguments cannot be empty. "
+            f"Received sizes: a.size={a.size}, v.size={v.size}"
+        )
+    if a.ndim > 1 or v.ndim > 1:
+        raise ValueError(
+            f"Only 1-dimensional arrays are supported. "
+            f"Received shapes: a.shape={a.shape}, v.shape={v.shape}"
+        )
+
+    device = a.sycl_device
+    rdtype = result_type_for_device([a.dtype, v.dtype], device)
+
+    if v.size > a.size:
+        a, v = v, a
+
+    r = _convolve_impl(a, v, mode, method, rdtype)
+
+    return dpnp.asarray(r, dtype=rdtype, order="C")
 
 
 def corrcoef(x, y=None, rowvar=True, *, dtype=None):
@@ -714,17 +855,7 @@ def correlate(a, v, mode="valid", method="auto"):
         revert = True
         a, v = v, a
 
-    l_pad, r_pad = _get_padding(a.size, v.size, mode)
-
-    if method == "auto":
-        method = _choose_conv_method(a, v, rdtype)
-
-    if method == "direct":
-        r = _run_native_sliding_dot_product1d(a, v, l_pad, r_pad, rdtype)
-    elif method == "fft":
-        r = _convolve_fft(a, v[::-1], l_pad, r_pad, rdtype)
-    else:  # pragma: no cover
-        raise ValueError(f"Unknown method: {method}")
+    r = _convolve_impl(a, v[::-1], mode, method, rdtype)
 
     if revert:
         r = r[::-1]
@@ -797,8 +928,8 @@ def cov(
         Default: ``None``.
     dtype : {None, str, dtype object}, optional
         Data-type of the result. By default, the return data-type will have
-        at least floating point type based on the capabilities of the device on
-        which the input arrays reside.
+        the default floating point data-type of the device on which the input
+        arrays reside.
 
         Default: ``None``.
 

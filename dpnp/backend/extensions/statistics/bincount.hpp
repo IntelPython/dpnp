@@ -28,8 +28,8 @@
 #include <pybind11/pybind11.h>
 #include <sycl/sycl.hpp>
 
-#include "dispatch_table.hpp"
 #include "dpctl4pybind11.hpp"
+#include "ext/dispatch_table.hpp"
 
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
 
@@ -46,7 +46,7 @@ struct Bincount
                                 const size_t,
                                 const std::vector<sycl::event> &);
 
-    common::DispatchTable2<FnT> dispatch_table;
+    ext::common::DispatchTable2<FnT> dispatch_table;
 
     Bincount();
 

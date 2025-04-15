@@ -48,7 +48,7 @@ jobs:
 
       - name: Merge conda env files
         run: |
-          conda-merge ${{ env.build-with-oneapi-env }} ${{ env.dpctl-pkg-env }} ${{ env.oneapi-pkgs-env }} > ${{ env.environment-file }}
+          conda-merge ${{ env.dpctl-pkg-env }} ${{ env.oneapi-pkgs-env }} ${{ env.build-with-oneapi-env }} > ${{ env.environment-file }}
           cat ${{ env.environment-file }}
 
       - name: Upload artifact
@@ -229,7 +229,7 @@ jobs:
           python -c "import dpnp; print(dpnp.__version__)"
 
       - name: Run tests
-        if: env.rerun-tests-on-failure == 'true'
+        if: env.rerun-tests-on-failure != 'true'
         run: |
           python -m pytest -ra --pyargs dpnp.tests
         env:

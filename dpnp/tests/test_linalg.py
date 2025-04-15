@@ -22,6 +22,7 @@ from .helper import (
     get_all_dtypes,
     get_complex_dtypes,
     get_float_complex_dtypes,
+    get_integer_float_dtypes,
     has_support_aspect64,
     is_cpu_device,
     is_cuda_device,
@@ -1409,9 +1410,7 @@ class TestEinsum:
         result = dpnp.einsum("ijij->", tensor_dp)
         assert_dtype_allclose(result, expected)
 
-    @pytest.mark.parametrize(
-        "dtype", get_all_dtypes(no_bool=True, no_complex=True, no_none=True)
-    )
+    @pytest.mark.parametrize("dtype", get_integer_float_dtypes())
     def test_different_paths(self, dtype):
         # Simple test, designed to exercise most specialized code paths,
         # note the +0.5 for floats.  This makes sure we use a float value
@@ -1645,6 +1644,10 @@ class TestEinsum:
             assert tmp.flags.c_contiguous
 
             tmp = dpnp.einsum("...ft,mf->...mt", a, b, order="k", optimize=opt)
+            assert tmp.flags.c_contiguous is False
+            assert tmp.flags.f_contiguous is False
+
+            tmp = dpnp.einsum("...ft,mf->...mt", a, b, order=None, optimize=opt)
             assert tmp.flags.c_contiguous is False
             assert tmp.flags.f_contiguous is False
 
@@ -2315,11 +2318,10 @@ class TestNorm:
     )
     @pytest.mark.parametrize("dtype", [dpnp.float32, dpnp.int32])
     @pytest.mark.parametrize(
-        "shape_axis", [[(2, 0), None], [(2, 0), (0, 1)], [(0, 2), (0, 1)]]
+        "shape, axis", [[(2, 0), None], [(2, 0), (0, 1)], [(0, 2), (0, 1)]]
     )
     @pytest.mark.parametrize("ord", [None, "fro", "nuc", 1, 2, dpnp.inf])
-    def test_matrix_norm_empty(self, xp, dtype, shape_axis, ord):
-        shape, axis = shape_axis[0], shape_axis[1]
+    def test_matrix_norm_empty(self, xp, dtype, shape, axis, ord):
         x = xp.zeros(shape, dtype=dtype)
         assert_equal(xp.linalg.norm(x, axis=axis, ord=ord), 0)
 

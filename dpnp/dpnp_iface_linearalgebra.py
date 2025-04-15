@@ -215,12 +215,13 @@ def einsum(
         If provided, forces the calculation to use the data type specified.
 
         Default: ``None``.
-    order : {"C", "F", "A", "K"}, optional
+    order : {None, "C", "F", "A", "K"}, optional
         Controls the memory layout of the output. ``"C"`` means it should be
         C-contiguous. ``"F"`` means it should be F-contiguous, ``"A"`` means
         it should be ``"F"`` if the inputs are all ``"F"``, ``"C"`` otherwise.
         ``"K"`` means it should be as close to the layout as the inputs as
-        is possible, including arbitrarily permuted axes.
+        is possible, including arbitrarily permuted axes. ``order=None`` is
+        equivalent to ``order="K"``.
 
         Default: ``"K"``.
     casting : {"no", "equiv", "safe", "same_kind", "unsafe"}, optional
@@ -418,7 +419,7 @@ def einsum(
     >>> a = np.ones(64000).reshape(20, 40, 80)
 
     Basic `einsum`: 119 ms ± 26 ms per loop (evaluated on 12th
-    Gen Intel\u00AE Core\u2122 i7 processor)
+    Gen Intel\u00ae Core\u2122 i7 processor)
 
     >>> %timeit np.einsum("ijk,ilm,njm,nlk,abc->",a, a, a, a, a)
 
@@ -456,7 +457,7 @@ def einsum(
     )
 
 
-def einsum_path(*operands, optimize="greedy", einsum_call=False):
+def einsum_path(*operands, optimize="greedy"):
     """
     einsum_path(subscripts, *operands, optimize="greedy")
 
@@ -482,7 +483,7 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
         * if a list is given that starts with ``einsum_path``, uses this as the
           contraction path
         * if ``False`` or ``None`` no optimization is taken
-        * if ``True`` defaults to the "greedy" algorithm
+        * if ``True`` defaults to the ``"greedy"`` algorithm
         * ``"optimal"`` is an algorithm that combinatorially explores all
           possible ways of contracting the listed tensors and chooses the
           least costly path. Scales exponentially with the number of terms
@@ -585,7 +586,7 @@ def einsum_path(*operands, optimize="greedy", einsum_call=False):
     return numpy.einsum_path(
         *operands,
         optimize=optimize,
-        einsum_call=einsum_call,
+        einsum_call=False,
     )
 
 
@@ -616,7 +617,7 @@ def inner(a, b):
 
     See Also
     --------
-    :obj:`dpnp.einsum` : Einstein summation convention..
+    :obj:`dpnp.einsum` : Einstein summation convention.
     :obj:`dpnp.dot` : Generalized matrix product,
                       using second last dimension of `b`.
     :obj:`dpnp.tensordot` : Sum products over arbitrary axes.
@@ -997,7 +998,7 @@ def matvec(
 
     See Also
     --------
-    :obj:`dpnp.vecdot` : Vector-vector product..
+    :obj:`dpnp.vecdot` : Vector-vector product.
     :obj:`dpnp.vecmat` : Vector-matrix product.
     :obj:`dpnp.matmul` : Matrix-matrix product.
     :obj:`dpnp.einsum` : Einstein summation convention.
@@ -1501,7 +1502,7 @@ def vecmat(
 
     See Also
     --------
-    :obj:`dpnp.vecdot` : Vector-vector product..
+    :obj:`dpnp.vecdot` : Vector-vector product.
     :obj:`dpnp.matvec` : Matrix-vector product.
     :obj:`dpnp.matmul` : Matrix-matrix product.
     :obj:`dpnp.einsum` : Einstein summation convention.
