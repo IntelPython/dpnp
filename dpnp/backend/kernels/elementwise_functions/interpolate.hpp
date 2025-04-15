@@ -54,8 +54,7 @@ sycl::event interpolate_impl(sycl::queue &q,
                 if (IsNan<TValue>::isnan(res)) {
                     res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];
                     if (IsNan<TValue>::isnan(res) &&
-                        (fp[x_idx] == fp[x_idx + 1]))
-                    {
+                        (fp[x_idx] == fp[x_idx + 1])) {
                         res = fp[x_idx];
                     }
                 }
