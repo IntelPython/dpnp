@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev0+79.g921523c8426 documentation</title>
+  <title>dpnp.dpnp_iface_linearalgebra &mdash; Data Parallel Extension for NumPy 0.18.0dev1+5.gb06a6edb6ea documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=c11ed10b"></script>
+      <script src="../../_static/documentation_options.js?v=27d38e94"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -565,7 +565,7 @@
 
 <div class="viewcode-block" id="einsum_path">
 <a class="viewcode-back" href="../../reference/generated/dpnp.einsum_path.html#dpnp.einsum_path">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;greedy&quot;</span><span class="p">,</span> <span class="n">einsum_call</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">einsum_path</span><span class="p">(</span><span class="o">*</span><span class="n">operands</span><span class="p">,</span> <span class="n">optimize</span><span class="o">=</span><span class="s2">&quot;greedy&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    einsum_path(subscripts, *operands, optimize=&quot;greedy&quot;)</span>
 
@@ -591,7 +591,7 @@
 <span class="sd">        * if a list is given that starts with ``einsum_path``, uses this as the</span>
 <span class="sd">          contraction path</span>
 <span class="sd">        * if ``False`` or ``None`` no optimization is taken</span>
-<span class="sd">        * if ``True`` defaults to the &quot;greedy&quot; algorithm</span>
+<span class="sd">        * if ``True`` defaults to the ``&quot;greedy&quot;`` algorithm</span>
 <span class="sd">        * ``&quot;optimal&quot;`` is an algorithm that combinatorially explores all</span>
 <span class="sd">          possible ways of contracting the listed tensors and chooses the</span>
 <span class="sd">          least costly path. Scales exponentially with the number of terms</span>
@@ -694,7 +694,7 @@
     <span class="k">return</span> <span class="n">numpy</span><span class="o">.</span><span class="n">einsum_path</span><span class="p">(</span>
         <span class="o">*</span><span class="n">operands</span><span class="p">,</span>
         <span class="n">optimize</span><span class="o">=</span><span class="n">optimize</span><span class="p">,</span>
-        <span class="n">einsum_call</span><span class="o">=</span><span class="n">einsum_call</span><span class="p">,</span>
+        <span class="n">einsum_call</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span></div>
 
 
