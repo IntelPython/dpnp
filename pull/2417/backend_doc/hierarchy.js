@@ -81,7 +81,6 @@ var hierarchy =
     [ "ext::common::TableBuilder2< FnT, SupportedTypes, Func >::impl< _FnT, T1, T2 >", "structext_1_1common_1_1_table_builder2_1_1impl.html", null ],
     [ "ext::common::TableBuilder< FnT, SupportedTypes, Func >::impl< _FnT, T >", "structext_1_1common_1_1_table_builder_1_1impl.html", null ],
     [ "ext::common::int_pair_hash", "structext_1_1common_1_1int__pair__hash.html", null ],
-    [ "dpnp::kernels::interpolate::IsNan< T >", "structdpnp_1_1kernels_1_1interpolate_1_1_is_nan.html", null ],
     [ "ext::common::IsNan< T >", "structext_1_1common_1_1_is_nan.html", null ],
     [ "dpnp::kernels::lcm::LcmFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ],
     [ "dpnp::kernels::ldexp::LdexpFunctor< argT1, argT2, resT >", "structdpnp_1_1kernels_1_1ldexp_1_1_ldexp_functor.html", null ],

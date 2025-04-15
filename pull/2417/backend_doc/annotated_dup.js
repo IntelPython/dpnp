@@ -102,9 +102,6 @@ var annotated_dup =
         [ "i0", null, [
           [ "I0Functor", "structdpnp_1_1kernels_1_1i0_1_1_i0_functor.html", null ]
         ] ],
-        [ "interpolate", null, [
-          [ "IsNan", "structdpnp_1_1kernels_1_1interpolate_1_1_is_nan.html", null ]
-        ] ],
         [ "lcm", null, [
           [ "LcmFunctor", "structdpnp_1_1kernels_1_1lcm_1_1_lcm_functor.html", null ]
         ] ],
