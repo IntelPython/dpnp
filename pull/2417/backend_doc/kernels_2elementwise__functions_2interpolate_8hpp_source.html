@@ -156,18 +156,17 @@ $(function(){initNavTree('kernels_2elementwise__functions_2interpolate_8hpp_sour
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res)) {</div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>                    res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];</div>
 <div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                    <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res) &amp;&amp;</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                        (fp[x_idx] == fp[x_idx + 1]))</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                    {</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                        res = fp[x_idx];</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                    }</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                out[i] = res;</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            }</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        });</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    });</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>}</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>} <span class="comment">// namespace dpnp::kernels::interpolate</span></div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>                        (fp[x_idx] == fp[x_idx + 1])) {</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>                        res = fp[x_idx];</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>                    }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                }</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>                out[i] = res;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            }</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        });</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    });</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>}</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>} <span class="comment">// namespace dpnp::kernels::interpolate</span></div>
 <div class="ttc" id="astructext_1_1common_1_1_is_nan_html"><div class="ttname"><a href="structext_1_1common_1_1_is_nan.html">ext::common::IsNan</a></div><div class="ttdef"><b>Definition</b> <a href="common_2ext_2common_8hpp_source.html#l00088">common.hpp:89</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
