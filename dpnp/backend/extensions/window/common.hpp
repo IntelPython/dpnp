@@ -67,12 +67,11 @@ sycl::event window_impl(sycl::queue &q,
     return window_ev;
 }
 
-template <typename dispatchT>
-std::pair<sycl::event, sycl::event>
-    py_window(sycl::queue &exec_q,
+template <typename funcPtrT>
+std::tuple<size_t, char *, funcPtrT>
+    window_fn(sycl::queue &exec_q,
               const dpctl::tensor::usm_ndarray &result,
-              const std::vector<sycl::event> &depends,
-              const dispatchT &window_dispatch_vector)
+              const funcPtrT *window_dispatch_vector)
 {
     dpctl::tensor::validation::CheckWritable::throw_if_not_writable(result);
 
@@ -93,19 +92,35 @@ std::pair<sycl::event, sycl::event>
 
     size_t nelems = result.get_size();
     if (nelems == 0) {
-        return std::make_pair(sycl::event{}, sycl::event{});
+        return std::make_tuple(nelems, nullptr, nullptr);
     }
 
     int result_typenum = result.get_typenum();
     auto array_types = dpctl_td_ns::usm_ndarray_types();
     int result_type_id = array_types.typenum_to_lookup_id(result_typenum);
-    auto fn = window_dispatch_vector[result_type_id];
+    funcPtrT fn = window_dispatch_vector[result_type_id];
 
     if (fn == nullptr) {
         throw std::runtime_error("Type of given array is not supported");
     }
 
     char *result_typeless_ptr = result.get_data();
+    return std::make_tuple(nelems, result_typeless_ptr, fn);
+}
+
+inline std::pair<sycl::event, sycl::event>
+    py_window(sycl::queue &exec_q,
+              const dpctl::tensor::usm_ndarray &result,
+              const std::vector<sycl::event> &depends,
+              const window_fn_ptr_t *window_dispatch_vector)
+{
+    auto [nelems, result_typeless_ptr, fn] =
+        window_fn<window_fn_ptr_t>(exec_q, result, window_dispatch_vector);
+
+    if (nelems == 0) {
+        return std::make_pair(sycl::event{}, sycl::event{});
+    }
+
     sycl::event window_ev = fn(exec_q, result_typeless_ptr, nelems, depends);
     sycl::event args_ev =
         dpctl::utils::keep_args_alive(exec_q, {result}, {window_ev});
@@ -113,10 +128,12 @@ std::pair<sycl::event, sycl::event>
     return std::make_pair(args_ev, window_ev);
 }
 
-template <template <typename fnT, typename T> typename factoryT>
-void init_window_dispatch_vectors(window_fn_ptr_t window_dispatch_vector[])
+template <typename funcPtrT,
+          template <typename fnT, typename T>
+          typename factoryT>
+void init_window_dispatch_vectors(funcPtrT window_dispatch_vector[])
 {
-    dpctl_td_ns::DispatchVectorBuilder<window_fn_ptr_t, factoryT,
+    dpctl_td_ns::DispatchVectorBuilder<funcPtrT, factoryT,
                                        dpctl_td_ns::num_types>
         contig;
     contig.populate_dispatch_vector(window_dispatch_vector);

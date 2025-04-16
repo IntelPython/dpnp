@@ -82,6 +82,9 @@ jobs:
           environment-file: ${{ env.build-conda-pkg-env }}
           activate-environment: ${{ env.build-env-name }}
 
+      - name: List installed packages
+        run: mamba list
+
       - name: Store conda paths as envs
         shell: bash -el {0}
         run: |
@@ -93,22 +96,22 @@ jobs:
         continue-on-error: true
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2025.1a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2025.2a0'
 
       - name: ReBuild conda package
         if: steps.build_conda_pkg.outcome == 'failure'
         run: conda build --no-test --python ${{ matrix.python }} --numpy 2.0 ${{ env.channels-list }} conda-recipe
         env:
-          MAX_BUILD_CMPL_MKL_VERSION: '2025.1a0'
+          MAX_BUILD_CMPL_MKL_VERSION: '2025.2a0'
 
       - name: Upload artifact
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.CONDA_BLD }}${{ env.package-name }}-*.conda
 
       - name: Upload wheels artifact
-        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
           path: ${{ env.WHEELS_OUTPUT_FOLDER }}${{ env.package-name }}-*.whl
@@ -146,7 +149,7 @@ jobs:
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -278,7 +281,7 @@ jobs:
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
           path: ${{ env.pkg-path-in-channel }}
@@ -442,12 +445,12 @@ jobs:
           fetch-depth: ${{ env.fetch-depth }}
 
       - name: Download artifact
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ matrix.python }}
 
       - name: Download wheels artifact
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Wheels Python ${{ matrix.python }}
 
@@ -530,7 +533,7 @@ jobs:
           path: ${{ env.dpnp-repo-path }}
 
       - name: Download artifact
-        uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
+        uses: actions/download-artifact@95815c38cf2ff2164869cbab79da8d1f422bc89e # v4.2.1
         with:
           name: ${{ env.package-name }} ${{ runner.os }} Python ${{ env.python-ver }}
           path: ${{ env.pkg-path-in-channel }}
@@ -625,6 +628,7 @@ jobs:
           python -m pytest --json-report --json-report-file=${{ env.json-report-file }} --disable-deadline --skips-file ${{ env.array-api-skips-file }} array_api_tests || true
         env:
           ARRAY_API_TESTS_MODULE: 'dpnp'
+          ARRAY_API_TESTS_VERSION: '2024.12'
           SYCL_CACHE_PERSISTENT: 1
         working-directory: ${{ env.array-api-tests-path }}
 

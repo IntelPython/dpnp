@@ -944,7 +944,7 @@ def atleast_1d(*arys):
     >>> np.atleast_1d(x, y)
     [array([1.]), array([3, 4])]
 
-    >>> x = np.arange(9.0).reshape(3,3)
+    >>> x = np.arange(9.0).reshape(3, 3)
     >>> np.atleast_1d(x)
     array([[0., 1., 2.],
            [3., 4., 5.],
@@ -958,6 +958,9 @@ def atleast_1d(*arys):
     dpnp.check_supported_arrays_type(*arys)
     for ary in arys:
         if ary.ndim == 0:
+            # 0-d arrays cannot be empty
+            # 0-d arrays always have a size of 1, so
+            # reshape(1) is guaranteed to succeed
             result = ary.reshape(1)
         else:
             result = ary
@@ -3342,7 +3345,7 @@ def rollaxis(x, axis, start=0):
     Examples
     --------
     >>> import dpnp as np
-    >>> a = np.ones((3,4,5,6))
+    >>> a = np.ones((3, 4, 5, 6))
     >>> np.rollaxis(a, 3, 1).shape
     (3, 6, 4, 5)
     >>> np.rollaxis(a, 2).shape
@@ -3405,11 +3408,11 @@ def rot90(m, k=1, axes=(0, 1)):
 
     Notes
     -----
-    ``rot90(m, k=1, axes=(1,0))`` is the reverse of
-    ``rot90(m, k=1, axes=(0,1))``.
+    ``rot90(m, k=1, axes=(1, 0))`` is the reverse of
+    ``rot90(m, k=1, axes=(0, 1))``.
 
-    ``rot90(m, k=1, axes=(1,0))`` is equivalent to
-    ``rot90(m, k=-1, axes=(0,1))``.
+    ``rot90(m, k=1, axes=(1, 0))`` is equivalent to
+    ``rot90(m, k=-1, axes=(0, 1))``.
 
     Examples
     --------
@@ -3837,13 +3840,13 @@ def swapaxes(a, axis1, axis2):
            [2],
            [3]])
 
-    >>> x = np.array([[[0,1],[2,3]],[[4,5],[6,7]]])
+    >>> x = np.array([[[0, 1],[2, 3]],[[4, 5],[6, 7]]])
     >>> x
     array([[[0, 1],
             [2, 3]],
            [[4, 5],
             [6, 7]]])
-    >>> np.swapaxes(x,0,2)
+    >>> np.swapaxes(x, 0, 2)
     array([[[0, 4],
             [2, 6]],
            [[1, 5],

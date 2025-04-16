@@ -8,6 +8,7 @@ from .helper import (
     get_all_dtypes,
     get_float_complex_dtypes,
     get_float_dtypes,
+    get_integer_float_dtypes,
 )
 
 
@@ -83,7 +84,7 @@ class TestAllAny:
         check_raises(func, TypeError, [0, 1, 2, 3])
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 def test_allclose(dtype):
     a = numpy.random.rand(10)
     b = a + numpy.random.rand(10) * 1e-8
@@ -508,7 +509,7 @@ def test_infinity_sign_errors(func):
         getattr(dpnp, func)(x, out=out)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize(
     "rtol", [1e-05, dpnp.array(1e-05), dpnp.full(10, 1e-05)]
 )
@@ -549,7 +550,7 @@ def test_array_equiv(a, b):
     assert_equal(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 def test_array_equiv_dtype(dtype):
     a = numpy.array([1, 2], dtype=dtype)
     b = numpy.array([1, 2], dtype=dtype)
@@ -575,7 +576,7 @@ def test_array_equiv_scalar(a):
     assert_equal(result, expected)
 
 
-@pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True, no_complex=True))
+@pytest.mark.parametrize("dtype", get_integer_float_dtypes())
 @pytest.mark.parametrize("equal_nan", [True, False])
 def test_array_equal_dtype(dtype, equal_nan):
     a = numpy.array([1, 2], dtype=dtype)

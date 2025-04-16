@@ -17,11 +17,11 @@ class DuckUSMArray:
             shmem.copy_from_host(host_buffer.view(dtype="|u1"))
         self.arr = np.ndarray(shape, dtype=dtype, buffer=shmem)
 
-    def __getitem__(self, indx):
-        return self.arr[indx]
+    def __getitem__(self, index):
+        return self.arr[index]
 
-    def __setitem__(self, indx, val):
-        self.arr.__setitem__(indx, val)
+    def __setitem__(self, index, val):
+        self.arr.__setitem__(index, val)
 
     @property
     def __sycl_usm_array_interface__(self):

@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 import dpnp as cupy
-from dpnp.tests.helper import has_support_aspect64
+from dpnp.tests.helper import has_support_aspect16, has_support_aspect64
 from dpnp.tests.third_party.cupy import testing
 
 
@@ -47,13 +47,17 @@ class TestCanCast(unittest.TestCase):
         return ret
 
 
-@pytest.mark.skip("dpnp.common_type() is not implemented yet")
 class TestCommonType(unittest.TestCase):
 
     @testing.numpy_cupy_equal()
     def test_common_type_empty(self, xp):
         ret = xp.common_type()
         assert type(ret) is type
+        # NumPy always returns float16 for empty input,
+        # but dpnp returns float32 if the device does not support
+        # 16-bit precision floating point operations
+        if xp is numpy and not has_support_aspect16():
+            return xp.float32
         return ret
 
     @testing.for_all_dtypes(no_bool=True)
@@ -62,6 +66,11 @@ class TestCommonType(unittest.TestCase):
         array = _generate_type_routines_input(xp, dtype, "array")
         ret = xp.common_type(array)
         assert type(ret) is type
+        # NumPy promotes integer types to float64,
+        # but dpnp may return float32 if the device does not support
+        # 64-bit precision floating point operations.
+        if xp is numpy and not has_support_aspect64():
+            return xp.float32
         return ret
 
     @testing.for_all_dtypes_combination(
@@ -73,6 +82,8 @@ class TestCommonType(unittest.TestCase):
         array2 = _generate_type_routines_input(xp, dtype2, "array")
         ret = xp.common_type(array1, array2)
         assert type(ret) is type
+        if xp is numpy and not has_support_aspect64():
+            return xp.float32
         return ret
 
     @testing.for_all_dtypes()

@@ -62,8 +62,7 @@ PYBIND11_MODULE(_blas_impl, m)
     using event_vecT = std::vector<sycl::event>;
 
     {
-        dot_ns::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
-                                         blas_ns::DotContigFactory>(
+        dot_ns::init_dot_dispatch_vector<blas_ns::DotContigFactory>(
             dot_dispatch_vector);
 
         auto dot_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
@@ -81,8 +80,7 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        dot_ns::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
-                                         blas_ns::DotcContigFactory>(
+        dot_ns::init_dot_dispatch_vector<blas_ns::DotcContigFactory>(
             dotc_dispatch_vector);
 
         auto dotc_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,
@@ -101,8 +99,7 @@ PYBIND11_MODULE(_blas_impl, m)
     }
 
     {
-        dot_ns::init_dot_dispatch_vector<dot_impl_fn_ptr_t,
-                                         blas_ns::DotuContigFactory>(
+        dot_ns::init_dot_dispatch_vector<blas_ns::DotuContigFactory>(
             dotu_dispatch_vector);
 
         auto dotu_pyapi = [&](sycl::queue &exec_q, const arrayT &src1,

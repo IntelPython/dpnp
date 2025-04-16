@@ -4,8 +4,6 @@
 tests/test_arithmetic.py::TestArithmetic::test_modf_part1
 tests/test_arithmetic.py::TestArithmetic::test_modf_part2
 tests/test_sycl_queue.py::test_modf[cuda:gpu:0]
-tests/test_umath.py::test_umaths[('modf', 'f')]
-tests/test_umath.py::test_umaths[('modf', 'd')]
 tests/third_party/cupy/math_tests/test_arithmetic.py::TestArithmeticModf::test_modf
 
 # random
