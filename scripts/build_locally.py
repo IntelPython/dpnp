@@ -98,6 +98,9 @@ def run(
         if "DPL_ROOT" in os.environ:
             os.environ["DPL_ROOT_HINT"] = os.environ["DPL_ROOT"]
 
+    if not target.strip():
+        target = "intel"
+
     if target == "cuda":
         cmake_args += [
             "-DDPNP_TARGET_CUDA=ON",
@@ -106,8 +109,10 @@ def run(
         onemkl_interfaces = True
 
     if target_hip is not None:
-        if target_hip == "default":
-            raise ValueError("--target-hip requires an architecture")
+        if not target_hip.strip():
+            raise ValueError(
+                "--target-hip requires an architecture (e.g., gfx90a)"
+            )
         cmake_args += [
             f"-DHIP_TARGETS={target_hip}",
         ]
