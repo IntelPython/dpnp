@@ -144,10 +144,25 @@ And for AMD devices:
 
 .. code-block:: bash
 
-    python scripts/build_locally.py --target-hip=gfx90a
+    python scripts/build_locally.py --target-hip=<arch>
 
 Note that the *oneAPI for AMD GPUs* plugin requires the architecture be specified and only
 one architecture can be specified at a time.
+
+To determine the architecture code (``<arch>``) for your AMD GPU, run:
+
+.. code-block:: bash
+
+    rocminfo | grep 'Name: *gfx.*'
+
+This will print names like ``gfx90a``, ``gfx1030``, etc.
+You can then use one of them as the argument to ``--target-hip``.
+
+For example:
+
+.. code-block:: bash
+    python scripts/build_locally.py --target-hip=gfx90a
+
 
 It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
 architecture all at once:
