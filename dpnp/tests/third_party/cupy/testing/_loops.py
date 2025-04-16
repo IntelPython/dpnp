@@ -408,7 +408,9 @@ numpy: {}""".format(
                     if cupy_r.shape == ():
                         skip = (mask == 0).all()
                     else:
-                        cupy_r = cupy_r[mask].asnumpy()
+                        # mask is numpy.ndarray here which is not supported now
+                        # TODO remove asarray() once dpctl-2053 is addressed
+                        cupy_r = cupy_r[cupy.asarray(mask)].asnumpy()
                         numpy_r = numpy_r[mask]
 
                 if not skip:
