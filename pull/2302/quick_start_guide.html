@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.18.0dev0+45.g412f384522 documentation</title>
+  <title>Quick Start Guide &mdash; Data Parallel Extension for NumPy 0.18.0dev1+23.g0581e58ba2e documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=5e0df072"></script>
+      <script src="_static/documentation_options.js?v=80b7b989"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
@@ -160,12 +160,16 @@ conda<span class="w"> </span>activate<span class="w"> </span>build-env
 <code class="docutils literal notranslate"><span class="pre">setuptools</span></code> and <code class="docutils literal notranslate"><span class="pre">scikit-build</span></code>. You will need to create a local conda
 build environment by command below depending on hosting OS.</p>
 <p>On Linux:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_linux-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_linux-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>intel-gpu-ocl-icd-system<span class="w">     </span><span class="se">\</span>
+<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
 <p>On Windows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_win-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>build-env<span class="w"> </span>dpctl<span class="w"> </span>cython<span class="w"> </span>dpcpp_win-64<span class="w"> </span>mkl-devel-dpcpp<span class="w"> </span>tbb-devel<span class="w"> </span><span class="se">\</span>
+<span class="w">      </span>onedpl-devel<span class="w"> </span>cmake<span class="w"> </span>scikit-build<span class="w"> </span>ninja<span class="w"> </span>pytest<span class="w"> </span>intel-gpu-ocl-icd-system<span class="w">   </span><span class="se">\</span>
+<span class="w">      </span>-c<span class="w"> </span>dppy/label/dev<span class="w"> </span>-c<span class="w"> </span>https://software.repos.intel.com/python/conda/<span class="w"> </span>-c<span class="w"> </span>conda-forge
 conda<span class="w"> </span>activate<span class="w"> </span>build-env
 </pre></div>
 </div>
@@ -201,11 +205,18 @@ installation layout of compatible version. The following plugins from CodePlay a
 </pre></div>
 </div>
 <p>And for AMD devices:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target-hip<span class="o">=</span>gfx90a
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target-hip<span class="o">=</span>&lt;arch&gt;
 </pre></div>
 </div>
 <p>Note that the <em>oneAPI for AMD GPUs</em> plugin requires the architecture be specified and only
 one architecture can be specified at a time.</p>
+<p>To determine the architecture code (<code class="docutils literal notranslate"><span class="pre">&lt;arch&gt;</span></code>) for your AMD GPU, run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>rocminfo<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;Name: *gfx.*&#39;</span>
+</pre></div>
+</div>
+<p>This will print names like <code class="docutils literal notranslate"><span class="pre">gfx90a</span></code>, <code class="docutils literal notranslate"><span class="pre">gfx1030</span></code>, etc.
+You can then use one of them as the argument to <code class="docutils literal notranslate"><span class="pre">--target-hip</span></code>.</p>
+<p>For example:</p>
 <p>It is, however, possible to build for Intel devices, CUDA devices, and an AMD device
 architecture all at once:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/build_locally.py<span class="w"> </span>--target<span class="o">=</span>cuda<span class="w"> </span>--target-hip<span class="o">=</span>gfx90a

@@ -15,14 +15,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.cov &mdash; Data Parallel Extension for NumPy 0.18.0dev0+45.g412f384522 documentation</title>
+  <title>dpnp.cov &mdash; Data Parallel Extension for NumPy 0.18.0dev1+23.g0581e58ba2e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e0df072"></script>
+      <script src="../../_static/documentation_options.js?v=80b7b989"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -171,8 +171,8 @@ error when <code class="docutils literal notranslate"><span class="pre">aweights
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 <li><p><strong>dtype</strong> (<em>{None</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>dtype object}</em><em>, </em><em>optional</em>) -- <p>Data-type of the result. By default, the return data-type will have
-at least floating point type based on the capabilities of the device on
-which the input arrays reside.</p>
+the default floating point data-type of the device on which the input
+arrays reside.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </p></li>
 </ul>
@@ -215,7 +215,7 @@ as it should.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">T</span>
 </pre></div>
 </div>
-<p>Consider two variables, <span class="math notranslate nohighlight">\(x_0\)</span> and  <span class="math notranslate nohighlight">\(x_1\)</span>, which correlate
+<p>Consider two variables, <span class="math notranslate nohighlight">\(x_0\)</span> and <span class="math notranslate nohighlight">\(x_1\)</span>, which correlate
 perfectly, but in opposite directions:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span>
 <span class="go">array([[0, 1, 2],</span>
@@ -229,7 +229,7 @@ matrix shows this clearly:</p>
 <span class="go">       [-1.,  1.]])</span>
 </pre></div>
 </div>
-<p>Note that element <span class="math notranslate nohighlight">\(C_{0,1}\)</span>, which shows the correlation between
+<p>Note that element <span class="math notranslate nohighlight">\(C_{0, 1}\)</span>, which shows the correlation between
 <span class="math notranslate nohighlight">\(x_0\)</span> and <span class="math notranslate nohighlight">\(x_1\)</span>, is negative.</p>
 <p>Further, note how <cite>x</cite> and <cite>y</cite> are combined:</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">2.1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>  <span class="mf">4.3</span><span class="p">])</span>

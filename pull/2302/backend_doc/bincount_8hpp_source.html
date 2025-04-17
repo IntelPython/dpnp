@@ -27,7 +27,7 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.18.0dev0</span>
+   <div id="projectname">DPNP C++ backend kernel library<span id="projectnumber">&#160;0.18.0dev1</span>
    </div>
    <div id="projectbrief">Data Parallel Extension for NumPy*</div>
   </td>
@@ -130,8 +130,8 @@ $(function(){initNavTree('bincount_8hpp_source.html',''); initResizable(true); }
 <div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span><span class="preprocessor">#include &lt;pybind11/pybind11.h&gt;</span></div>
 <div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="preprocessor">#include &lt;sycl/sycl.hpp&gt;</span></div>
 <div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span> </div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;dispatch_table.hpp&quot;</span></div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;dpctl4pybind11.hpp&quot;</span></div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span><span class="preprocessor">#include &quot;dpctl4pybind11.hpp&quot;</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="preprocessor">#include &quot;ext/dispatch_table.hpp&quot;</span></div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span> </div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">namespace </span>dpctl_td_ns = dpctl::tensor::type_dispatch;</div>
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
@@ -149,7 +149,7 @@ $(function(){initNavTree('bincount_8hpp_source.html',''); initResizable(true); }
 <div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>                                <span class="keyword">const</span> size_t,</div>
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                                <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;);</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classstatistics_1_1common_1_1_dispatch_table2.html">common::DispatchTable2&lt;FnT&gt;</a> dispatch_table;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <a class="code hl_class" href="classext_1_1common_1_1_dispatch_table2.html">ext::common::DispatchTable2&lt;FnT&gt;</a> dispatch_table;</div>
 <div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
 <div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_struct" href="structstatistics_1_1histogram_1_1_bincount.html">Bincount</a>();</div>
 <div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
@@ -165,7 +165,7 @@ $(function(){initNavTree('bincount_8hpp_source.html',''); initResizable(true); }
 <div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span> </div>
 <div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span><span class="keywordtype">void</span> populate_bincount(py::module_ m);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>} <span class="comment">// namespace statistics::histogram</span></div>
-<div class="ttc" id="aclassstatistics_1_1common_1_1_dispatch_table2_html"><div class="ttname"><a href="classstatistics_1_1common_1_1_dispatch_table2.html">statistics::common::DispatchTable2</a></div><div class="ttdef"><b>Definition</b> <a href="dispatch__table_8hpp_source.html#l00223">dispatch_table.hpp:224</a></div></div>
+<div class="ttc" id="aclassext_1_1common_1_1_dispatch_table2_html"><div class="ttname"><a href="classext_1_1common_1_1_dispatch_table2.html">ext::common::DispatchTable2</a></div><div class="ttdef"><b>Definition</b> <a href="dispatch__table_8hpp_source.html#l00223">dispatch_table.hpp:224</a></div></div>
 <div class="ttc" id="astructstatistics_1_1histogram_1_1_bincount_html"><div class="ttname"><a href="structstatistics_1_1histogram_1_1_bincount.html">statistics::histogram::Bincount</a></div><div class="ttdef"><b>Definition</b> <a href="#l00038">bincount.hpp:39</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->

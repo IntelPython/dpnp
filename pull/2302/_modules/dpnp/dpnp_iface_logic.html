@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.18.0dev0+45.g412f384522 documentation</title>
+  <title>dpnp.dpnp_iface_logic &mdash; Data Parallel Extension for NumPy 0.18.0dev1+23.g0581e58ba2e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e0df072"></script>
+      <script src="../../_static/documentation_options.js?v=80b7b989"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -171,7 +171,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.all.html#dpnp.all">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Test whether all array elements along a given axis evaluate to True.</span>
+<span class="sd">    Test whether all array elements along a given axis evaluate to ``True``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.all`.</span>
 
@@ -216,9 +216,9 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.ndarray.all` : equivalent method</span>
+<span class="sd">    :obj:`dpnp.ndarray.all` : Equivalent method.</span>
 <span class="sd">    :obj:`dpnp.any` : Test whether any element along a given axis evaluates</span>
-<span class="sd">                      to True.</span>
+<span class="sd">        to ``True``.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -285,11 +285,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="sd">        First input array, expected to have numeric data type.</span>
-<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">        First input array, expected to have a numeric data type.</span>
 <span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="sd">        Second input array, also expected to have numeric data type.</span>
-<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">        Second input array, also expected to have a numeric data type.</span>
 <span class="sd">    rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
 <span class="sd">        The relative tolerance parameter.</span>
 
@@ -319,6 +317,8 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
+<span class="sd">    At least one of `x1` or `x2` must be an array.</span>
+
 <span class="sd">    The comparison of `a` and `b` uses standard broadcasting, which means that</span>
 <span class="sd">    `a` and `b` need not have the same shape in order for</span>
 <span class="sd">    ``dpnp.allclose(a, b)`` to evaluate to ``True``.</span>
@@ -354,7 +354,7 @@
 <a class="viewcode-back" href="../../reference/generated/dpnp.any.html#dpnp.any">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">any</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="o">/</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">where</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Test whether any array element along a given axis evaluates to True.</span>
+<span class="sd">    Test whether any array element along a given axis evaluates to ``True``.</span>
 
 <span class="sd">    For full documentation refer to :obj:`numpy.any`.</span>
 
@@ -399,9 +399,9 @@
 
 <span class="sd">    See Also</span>
 <span class="sd">    --------</span>
-<span class="sd">    :obj:`dpnp.ndarray.any` : equivalent method</span>
+<span class="sd">    :obj:`dpnp.ndarray.any` : Equivalent method.</span>
 <span class="sd">    :obj:`dpnp.all` : Test whether all elements along a given axis evaluate</span>
-<span class="sd">                      to True.</span>
+<span class="sd">        to ``True``.</span>
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
@@ -461,10 +461,8 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        First input array.</span>
-<span class="sd">        Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    a2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Second input array.</span>
-<span class="sd">        Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    equal_nan : bool, optional</span>
 <span class="sd">        Whether to compare ``NaNs`` as equal. If the dtype of `a1` and `a2` is</span>
 <span class="sd">        complex, values will be considered equal if either the real or the</span>
@@ -483,6 +481,10 @@
 <span class="sd">                          within a tolerance.</span>
 <span class="sd">    :obj:`dpnp.array_equiv`: Returns ``True`` if input arrays are shape</span>
 <span class="sd">                             consistent and all elements equal.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At least one of `x1` or `x2` must be an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -589,16 +591,18 @@
 <span class="sd">    ----------</span>
 <span class="sd">    a1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        First input array.</span>
-<span class="sd">        Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 <span class="sd">    a2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
 <span class="sd">        Second input array.</span>
-<span class="sd">        Both inputs `x1` and `x2` can not be scalars at the same time.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    out : dpnp.ndarray of bool dtype</span>
 <span class="sd">        A 0-d array with ``True`` value if the arrays are equivalent, ``False``</span>
 <span class="sd">        otherwise.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At least one of `x1` or `x2` must be an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -640,21 +644,17 @@
 
 
 <span class="n">_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates equality test results for each element `x1_i` of the input array `x1`</span>
-<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates equality test results for each element :math:`x1_i` of the input</span>
+<span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.equal`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array have the correct shape and the expected data type.</span>
@@ -682,6 +682,13 @@
 <span class="s2">:obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.greater` : Return the truth value of (x1 &gt; x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -716,21 +723,18 @@
 
 
 <span class="n">_GREATER_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the greater-than test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the greater-than test results for each element :math:`x1_i` of the</span>
+<span class="s2">input array `x1` with the respective element :math:`x2_i` of the input array</span>
+<span class="s2">`x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.greater`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -759,6 +763,13 @@
 <span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -786,21 +797,18 @@
 
 
 <span class="n">_GREATER_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the greater-than or equal-to test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the greater-than or equal-to test results for each element :math:`x1_i`</span>
+<span class="s2">of the input array `x1` with the respective element :math:`x2_i` of the input</span>
+<span class="s2">array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.greater_equal`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -830,6 +838,13 @@
 <span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -849,7 +864,7 @@
 <span class="s2">&quot;&quot;&quot;</span>
 
 <span class="n">greater_equal</span> <span class="o">=</span> <span class="n">DPNPBinaryFunc</span><span class="p">(</span>
-    <span class="s2">&quot;greater&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;greater_equal&quot;</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal_result_type</span><span class="p">,</span>
     <span class="n">ti</span><span class="o">.</span><span class="n">_greater_equal</span><span class="p">,</span>
     <span class="n">_GREATER_EQUAL_DOCSTRING</span><span class="p">,</span>
@@ -877,11 +892,9 @@
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
 <span class="sd">    a : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="sd">        First input array, expected to have numeric data type.</span>
-<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">        First input array, expected to have a numeric data type.</span>
 <span class="sd">    b : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="sd">        Second input array, also expected to have numeric data type.</span>
-<span class="sd">        Both inputs `a` and `b` can not be scalars at the same time.</span>
+<span class="sd">        Second input array, also expected to have a numeric data type.</span>
 <span class="sd">    rtol : {dpnp.ndarray, usm_ndarray, scalar}, optional</span>
 <span class="sd">        The relative tolerance parameter.</span>
 
@@ -906,6 +919,10 @@
 <span class="sd">    --------</span>
 <span class="sd">    :obj:`dpnp.allclose` : Returns ``True`` if two arrays are element-wise</span>
 <span class="sd">                           equal within a tolerance.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    At least one of `x1` or `x2` must be an array.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -1077,14 +1094,14 @@
 
 
 <span class="n">_ISFINITE_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Test if each element of input array is a finite number.</span>
+<span class="s2">Test each element :math:`x_i` of the input array `x` to determine if finite.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.isfinite`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1211,14 +1228,15 @@
 
 
 <span class="n">_ISINF_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Test if each element of input array is an infinity.</span>
+<span class="s2">Tests each element :math:`x_i` of the input array `x` to determine if equal to</span>
+<span class="s2">positive or negative infinity.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.isinf`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1268,14 +1286,15 @@
 
 
 <span class="n">_ISNAN_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Test if each element of an input array is a NaN.</span>
+<span class="s2">Tests each element :math:`x_i` of the input array `x` to determine whether the</span>
+<span class="s2">element is ``NaN``.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.isnan`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array, expected to have numeric data type.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1617,21 +1636,17 @@
 
 
 <span class="n">_LESS_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the less-than test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the less-than test results for each element :math:`x1_i` of the input</span>
+<span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.less`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1660,6 +1675,13 @@
 <span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -1687,21 +1709,18 @@
 
 
 <span class="n">_LESS_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the less-than or equal-to test results for each element `x1_i` of</span>
-<span class="s2">the input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the less-than or equal-to test results for each element :math:`x1_i`</span>
+<span class="s2">of the input array `x1` with the respective element :math:`x2_i` of the input</span>
+<span class="s2">array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.less_equal`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1730,6 +1749,13 @@
 <span class="s2">:obj:`dpnp.equal` : Return (x1 == x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.not_equal` : Return (x1 != x2) element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -1757,21 +1783,17 @@
 
 
 <span class="n">_LOGICAL_AND_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the logical AND for each element `x1_i` of the input array `x1` with</span>
-<span class="s2">the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the logical AND for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logical_and`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1798,6 +1820,13 @@
 <span class="s2">:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
 <span class="s2">:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
 <span class="s2">:obj:`dpnp.bitwise_and` : Compute the bit-wise AND of two arrays element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1830,14 +1859,14 @@
 
 
 <span class="n">_LOGICAL_NOT_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the logical NOT for each element `x_i` of input array `x`.</span>
+<span class="s2">Computes the logical NOT for each element :math:`x_i` of input array `x`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logical_not`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x : {dpnp.ndarray, usm_ndarray}</span>
-<span class="s2">    Input array.</span>
+<span class="s2">    Input array, may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1864,6 +1893,13 @@
 <span class="s2">:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
 <span class="s2">:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
 
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
+
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
 <span class="s2">&gt;&gt;&gt; import dpnp as np</span>
@@ -1886,21 +1922,17 @@
 
 
 <span class="n">_LOGICAL_OR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the logical OR for each element `x1_i` of the input array `x1`</span>
-<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the logical OR for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logical_or`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -1927,6 +1959,13 @@
 <span class="s2">:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
 <span class="s2">:obj:`dpnp.logical_xor` : Compute the truth value of x1 XOR x2, element-wise.</span>
 <span class="s2">:obj:`dpnp.bitwise_or` : Compute the bit-wise OR of two arrays element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -1959,21 +1998,17 @@
 
 
 <span class="n">_LOGICAL_XOR_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Computes the logical XOR for each element `x1_i` of the input array `x1`</span>
-<span class="s2">with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Computes the logical XOR for each element :math:`x1_i` of the input array `x1`</span>
+<span class="s2">with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.logical_xor`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2000,6 +2035,13 @@
 <span class="s2">:obj:`dpnp.logical_or` : Compute the truth value of x1 OR x2 element-wise.</span>
 <span class="s2">:obj:`dpnp.logical_not` : Compute the truth value of NOT x element-wise.</span>
 <span class="s2">:obj:`dpnp.bitwise_xor` : Compute the bit-wise XOR of two arrays element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>
@@ -2030,21 +2072,17 @@
 
 
 <span class="n">_NOT_EQUAL_DOCSTRING</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span>
-<span class="s2">Calculates inequality test results for each element `x1_i` of the</span>
-<span class="s2">input array `x1` with the respective element `x2_i` of the input array `x2`.</span>
+<span class="s2">Calculates inequality test results for each element :math:`x1_i` of the input</span>
+<span class="s2">array `x1` with the respective element :math:`x2_i` of the input array `x2`.</span>
 
 <span class="s2">For full documentation refer to :obj:`numpy.not_equal`.</span>
 
 <span class="s2">Parameters</span>
 <span class="s2">----------</span>
 <span class="s2">x1 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    First input array, expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
+<span class="s2">    First input array, may have any data type.</span>
 <span class="s2">x2 : {dpnp.ndarray, usm_ndarray, scalar}</span>
-<span class="s2">    Second input array, also expected to have numeric data type.</span>
-<span class="s2">    Both inputs `x1` and `x2` can not be scalars at the same time.</span>
-<span class="s2">    If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
-<span class="s2">    (which becomes the shape of the output).</span>
+<span class="s2">    Second input array, also may have any data type.</span>
 <span class="s2">out : {None, dpnp.ndarray, usm_ndarray}, optional</span>
 <span class="s2">    Output array to populate.</span>
 <span class="s2">    Array must have the correct shape and the expected data type.</span>
@@ -2072,6 +2110,13 @@
 <span class="s2">:obj:`dpnp.greater_equal` : Return the truth value of (x1 &gt;= x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.less` : Return the truth value of (x1 &lt; x2) element-wise.</span>
 <span class="s2">:obj:`dpnp.less_equal` : Return the truth value of (x1 =&lt; x2) element-wise.</span>
+
+<span class="s2">Notes</span>
+<span class="s2">-----</span>
+<span class="s2">At least one of `x1` or `x2` must be an array.</span>
+
+<span class="s2">If ``x1.shape != x2.shape``, they must be broadcastable to a common shape</span>
+<span class="s2">(which becomes the shape of the output).</span>
 
 <span class="s2">Examples</span>
 <span class="s2">--------</span>

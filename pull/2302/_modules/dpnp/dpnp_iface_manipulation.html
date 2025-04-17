@@ -14,14 +14,14 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.18.0dev0+45.g412f384522 documentation</title>
+  <title>dpnp.dpnp_iface_manipulation &mdash; Data Parallel Extension for NumPy 0.18.0dev1+23.g0581e58ba2e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e0df072"></script>
+      <script src="../../_static/documentation_options.js?v=80b7b989"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/js/theme.js"></script>
@@ -1043,7 +1043,7 @@
 <span class="sd">    &gt;&gt;&gt; np.atleast_1d(x, y)</span>
 <span class="sd">    [array([1.]), array([3, 4])]</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.arange(9.0).reshape(3,3)</span>
+<span class="sd">    &gt;&gt;&gt; x = np.arange(9.0).reshape(3, 3)</span>
 <span class="sd">    &gt;&gt;&gt; np.atleast_1d(x)</span>
 <span class="sd">    array([[0., 1., 2.],</span>
 <span class="sd">           [3., 4., 5.],</span>
@@ -1057,6 +1057,9 @@
     <span class="n">dpnp</span><span class="o">.</span><span class="n">check_supported_arrays_type</span><span class="p">(</span><span class="o">*</span><span class="n">arys</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">ary</span> <span class="ow">in</span> <span class="n">arys</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">ary</span><span class="o">.</span><span class="n">ndim</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># 0-d arrays cannot be empty</span>
+            <span class="c1"># 0-d arrays always have a size of 1, so</span>
+            <span class="c1"># reshape(1) is guaranteed to succeed</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">ary</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">ary</span>
@@ -3534,7 +3537,7 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; import dpnp as np</span>
-<span class="sd">    &gt;&gt;&gt; a = np.ones((3,4,5,6))</span>
+<span class="sd">    &gt;&gt;&gt; a = np.ones((3, 4, 5, 6))</span>
 <span class="sd">    &gt;&gt;&gt; np.rollaxis(a, 3, 1).shape</span>
 <span class="sd">    (3, 6, 4, 5)</span>
 <span class="sd">    &gt;&gt;&gt; np.rollaxis(a, 2).shape</span>
@@ -3600,11 +3603,11 @@
 
 <span class="sd">    Notes</span>
 <span class="sd">    -----</span>
-<span class="sd">    ``rot90(m, k=1, axes=(1,0))`` is the reverse of</span>
-<span class="sd">    ``rot90(m, k=1, axes=(0,1))``.</span>
+<span class="sd">    ``rot90(m, k=1, axes=(1, 0))`` is the reverse of</span>
+<span class="sd">    ``rot90(m, k=1, axes=(0, 1))``.</span>
 
-<span class="sd">    ``rot90(m, k=1, axes=(1,0))`` is equivalent to</span>
-<span class="sd">    ``rot90(m, k=-1, axes=(0,1))``.</span>
+<span class="sd">    ``rot90(m, k=1, axes=(1, 0))`` is equivalent to</span>
+<span class="sd">    ``rot90(m, k=-1, axes=(0, 1))``.</span>
 
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
@@ -4050,13 +4053,13 @@
 <span class="sd">           [2],</span>
 <span class="sd">           [3]])</span>
 
-<span class="sd">    &gt;&gt;&gt; x = np.array([[[0,1],[2,3]],[[4,5],[6,7]]])</span>
+<span class="sd">    &gt;&gt;&gt; x = np.array([[[0, 1],[2, 3]],[[4, 5],[6, 7]]])</span>
 <span class="sd">    &gt;&gt;&gt; x</span>
 <span class="sd">    array([[[0, 1],</span>
 <span class="sd">            [2, 3]],</span>
 <span class="sd">           [[4, 5],</span>
 <span class="sd">            [6, 7]]])</span>
-<span class="sd">    &gt;&gt;&gt; np.swapaxes(x,0,2)</span>
+<span class="sd">    &gt;&gt;&gt; np.swapaxes(x, 0, 2)</span>
 <span class="sd">    array([[[0, 4],</span>
 <span class="sd">            [2, 6]],</span>
 <span class="sd">           [[1, 5],</span>

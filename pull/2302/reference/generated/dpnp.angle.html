@@ -15,16 +15,17 @@
     </script>
     
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>dpnp.angle &mdash; Data Parallel Extension for NumPy 0.18.0dev0+45.g412f384522 documentation</title>
+  <title>dpnp.angle &mdash; Data Parallel Extension for NumPy 0.18.0dev1+23.g0581e58ba2e documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=5e0df072"></script>
+      <script src="../../_static/documentation_options.js?v=80b7b989"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -134,13 +135,13 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="dpnp.angle">
 <span class="sig-prename descclassname"><span class="pre">dpnp.</span></span><span class="sig-name descname"><span class="pre">angle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">deg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'K'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dpnp.angle" title="Link to this definition"></a></dt>
-<dd><p>Computes the phase angle (also called the argument) of each element <cite>x_i</cite> for
-input array <cite>x</cite>.</p>
+<dd><p>Computes the phase angle (also called the argument) of each element <span class="math notranslate nohighlight">\(x_i\)</span>
+for input array <cite>x</cite>.</p>
 <p>For full documentation refer to <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.angle.html#numpy.angle" title="(in NumPy v2.2)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numpy.angle</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have a complex-valued floating-point data type.</p></li>
+<li><p><strong>x</strong> (<em>{dpnp.ndarray</em><em>, </em><em>usm_ndarray}</em>) -- Input array, expected to have a complex floating-point data type.</p></li>
 <li><p><strong>deg</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>, </em><em>optional</em>) -- <p>Return angle in degrees if <code class="docutils literal notranslate"><span class="pre">True</span></code>, radians if <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 <p>Default: <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
 </p></li>
@@ -163,15 +164,16 @@ by the Type Promotion Rules.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Although the angle of the complex number 0 is undefined, <cite>dpnp.angle(0)</cite> returns the value 0.</p>
+<p>Although the angle of the complex number <code class="docutils literal notranslate"><span class="pre">0</span></code> is undefined, <code class="docutils literal notranslate"><span class="pre">dpnp.angle(0)</span></code>
+returns the value <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <dl class="simple">
-<dt><a class="reference internal" href="dpnp.arctan2.html#dpnp.arctan2" title="dpnp.arctan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arctan2</span></code></a></dt><dd><p>Element-wise arc tangent of <cite>x1/x2</cite> choosing the quadrant correctly.</p>
+<dt><a class="reference internal" href="dpnp.atan2.html#dpnp.atan2" title="dpnp.atan2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atan2</span></code></a></dt><dd><p>Element-wise arc tangent of <span class="math notranslate nohighlight">\(\frac{x1}{x2}\)</span> choosing the quadrant correctly.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.arctan.html#dpnp.arctan" title="dpnp.arctan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.arctan</span></code></a></dt><dd><p>Trigonometric inverse tangent, element-wise.</p>
+<dt><a class="reference internal" href="dpnp.atan.html#dpnp.atan" title="dpnp.atan"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.atan</span></code></a></dt><dd><p>Trigonometric inverse tangent, element-wise.</p>
 </dd>
-<dt><a class="reference internal" href="dpnp.absolute.html#dpnp.absolute" title="dpnp.absolute"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.absolute</span></code></a></dt><dd><p>Calculate the absolute value element-wise.</p>
+<dt><a class="reference internal" href="dpnp.abs.html#dpnp.abs" title="dpnp.abs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.abs</span></code></a></dt><dd><p>Calculate the absolute value element-wise.</p>
 </dd>
 <dt><a class="reference internal" href="dpnp.real.html#dpnp.real" title="dpnp.real"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dpnp.real</span></code></a></dt><dd><p>Return the real part of the complex argument.</p>
 </dd>
