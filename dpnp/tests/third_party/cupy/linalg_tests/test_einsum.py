@@ -373,6 +373,8 @@ class TestEinSumUnaryOperation:
     def test_einsum_unary_dtype(self, xp, dtype_a, dtype_out):
         if not numpy.can_cast(dtype_a, dtype_out):
             pytest.skip()
+        if cupy.issubdtype(dtype_a, cupy.unsignedinteger):
+            pytest.skip("dpctl-2055")
         a = testing.shaped_arange(self.shape_a, xp, dtype_a)
         return xp.einsum(self.subscripts, a, dtype=dtype_out)
 
