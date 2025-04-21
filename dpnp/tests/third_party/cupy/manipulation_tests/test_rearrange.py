@@ -26,7 +26,6 @@ from dpnp.tests.third_party.cupy import testing
     {"shape": (5, 2), "shift": (2, 1, 3), "axis": None},
 )
 class TestRoll(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_roll(self, xp, dtype):
@@ -44,7 +43,6 @@ class TestRoll(unittest.TestCase):
 
 
 class TestRollTypeError(unittest.TestCase):
-
     @pytest.mark.skip("castable string shift is not supported")
     @testing.with_requires("numpy>=2.1.2")
     def test_roll_invalid_shift_castable(self):
@@ -93,7 +91,6 @@ class TestRollValueError(unittest.TestCase):
 
 
 class TestFliplr(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_fliplr_2(self, xp, dtype):
@@ -115,7 +112,6 @@ class TestFliplr(unittest.TestCase):
 
 
 class TestFlipud(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_flipud_1(self, xp, dtype):
@@ -137,7 +133,6 @@ class TestFlipud(unittest.TestCase):
 
 
 class TestFlip(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_flip_1(self, xp, dtype):
@@ -221,7 +216,6 @@ class TestFlip(unittest.TestCase):
 
 
 class TestRot90(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_rot90_none(self, xp, dtype):

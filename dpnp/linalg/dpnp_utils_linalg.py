@@ -2342,14 +2342,12 @@ def dpnp_multi_dot(n, arrays, out=None):
 
     if not arrays[0].ndim in [1, 2]:
         raise LinAlgError(
-            f"{arrays[0].ndim}-dimensional array given. "
-            "First array must be 1-D or 2-D."
+            f"{arrays[0].ndim}-dimensional array given. First array must be 1-D or 2-D."
         )
 
     if not arrays[-1].ndim in [1, 2]:
         raise LinAlgError(
-            f"{arrays[-1].ndim}-dimensional array given. "
-            "Last array must be 1-D or 2-D."
+            f"{arrays[-1].ndim}-dimensional array given. Last array must be 1-D or 2-D."
         )
 
     for arr in arrays[1:-1]:

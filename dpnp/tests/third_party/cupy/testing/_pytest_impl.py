@@ -23,9 +23,7 @@ def check_available(feature):
             """\
 cupy.testing: {} is not available.
 
-Reason: {}: {}""".format(
-                feature, type(_error).__name__, _error
-            )
+Reason: {}: {}""".format(feature, type(_error).__name__, _error)
         )
 
 
@@ -40,9 +38,9 @@ if is_available():
 
         @pytest.fixture(autouse=True)
         def _cupy_testing_parameterize(self, _cupy_testing_param):
-            assert (
-                not self.__dict__
-            ), "There should not be another hack with instance attribute."
+            assert not self.__dict__, (
+                "There should not be another hack with instance attribute."
+            )
             self.__dict__.update(_cupy_testing_param)
 
 

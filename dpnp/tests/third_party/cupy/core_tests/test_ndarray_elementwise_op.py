@@ -10,7 +10,6 @@ pytest.skip("operator interface is not supported", allow_module_level=True)
 
 
 class TestArrayElementwiseOp:
-
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(rtol=1e-6, accept_error=TypeError)
     def check_array_scalar_op(
@@ -521,7 +520,6 @@ class TestArrayElementwiseOp:
 
 
 class TestArrayIntElementwiseOp:
-
     @testing.for_all_dtypes_combination(names=["x_type", "y_type"])
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def check_array_scalar_op(self, op, xp, x_type, y_type, swap=False):
@@ -743,7 +741,6 @@ class TestArrayIntElementwiseOp:
     ],
 )
 class TestArrayObjectComparison:
-
     @pytest.mark.parametrize("swap", [False, True])
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -794,7 +791,6 @@ class CustomInt(int):
     ],
 )
 class TestArrayObjectComparisonDifficult:
-
     # OK to raise TypeError.
     # If CuPy returns a result, it should match with NumPy's result.
 

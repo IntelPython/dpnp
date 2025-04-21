@@ -4,7 +4,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestArrayContiguity(unittest.TestCase):
-
     def test_is_contiguous(self):
         a = testing.shaped_arange((2, 3, 4))
         assert a.flags.c_contiguous is True

@@ -13,7 +13,6 @@ pytest.skip("get() method is not supported", allow_module_level=True)
 
 
 class TestArrayGet(unittest.TestCase):
-
     def setUp(self):
         self.stream = cuda.Stream.null
 
@@ -85,7 +84,6 @@ class TestArrayGet(unittest.TestCase):
 
 
 class TestArrayGetWithOut(unittest.TestCase):
-
     def setUp(self):
         self.stream = cuda.Stream.null
 

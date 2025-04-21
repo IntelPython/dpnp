@@ -152,8 +152,7 @@ def _choose_run(inds, chcs, q, usm_type, out=None, mode=0):
 
         if chcs[0].dtype != out.dtype:
             raise TypeError(
-                f"Output array of type {chcs[0].dtype} is needed, "
-                f"got {out.dtype}"
+                f"Output array of type {chcs[0].dtype} is needed, got {out.dtype}"
             )
 
         if dpu.get_execution_queue((q, out.sycl_queue)) is None:
@@ -315,7 +314,7 @@ def _take_index(x, inds, axis, q, usm_type, out=None, mode=0):
 
         if x.dtype != out.dtype:
             raise TypeError(
-                f"Output array of type {x.dtype} is needed, " f"got {out.dtype}"
+                f"Output array of type {x.dtype} is needed, got {out.dtype}"
             )
 
         if dpu.get_execution_queue((q, out.sycl_queue)) is None:

@@ -8,7 +8,6 @@ from dpnp.tests.third_party.cupy import testing
 
 @pytest.mark.parametrize("shape", [(2, 3), (), (4,)])
 class TestShape:
-
     def test_shape(self, shape):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(shape, xp)
@@ -21,7 +20,6 @@ class TestShape:
 
 
 class TestReshape:
-
     def test_reshape_strides(self):
         def func(xp):
             a = testing.shaped_arange((1, 1, 1, 2, 2), xp)
@@ -151,7 +149,6 @@ class TestReshape:
 
 
 class TestRavel:
-
     @testing.for_orders("CFA")
     # order = 'K' is not supported currently
     @testing.numpy_cupy_array_equal()
@@ -244,7 +241,6 @@ class TestRavel:
     ],
 )
 class TestReshapeOrder:
-
     def test_reshape_contiguity(self, order_init, order_reshape, shape_in_out):
         shape_init, shape_final = shape_in_out
 

@@ -11,7 +11,6 @@ pytest.skip("text functions are not supported yet", allow_module_level=True)
 
 
 class TestNpz(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_save_load(self, dtype):
         a = testing.shaped_arange((2, 3, 4), dtype=dtype)

@@ -1,0 +1,4 @@
+line-length = 80
+
+[lint.pycodestyle]
+max-line-length = 80

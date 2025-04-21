@@ -41,7 +41,6 @@ it contains:
 # pylint: disable=duplicate-code
 # pylint: disable=no-name-in-module
 
-
 import warnings
 
 import dpctl.tensor as dpt
@@ -3261,8 +3260,7 @@ def nan_to_num(x, copy=True, nan=0.0, posinf=None, neginf=None):
     # so additional check for bool is not needed.
     if not isinstance(nan, (int, float)):
         raise TypeError(
-            "nan must be a scalar of an integer, float, bool, "
-            f"but got {type(nan)}"
+            f"nan must be a scalar of an integer, float, bool, but got {type(nan)}"
         )
     x_type = x.dtype.type
 

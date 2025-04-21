@@ -34,7 +34,6 @@ def two_sample_Kolmogorov_Smirnov_test(observed1, observed2):
 
 
 class BaseGeneratorTestCase(unittest.TestCase):
-
     target_method = None
 
     def get_rng(self, xp, seed):
@@ -49,9 +48,9 @@ class BaseGeneratorTestCase(unittest.TestCase):
         self.rng = self.get_rng(cupy, self.__seed)
 
     def _get_generator_func(self, *args, **kwargs):
-        assert isinstance(
-            self.target_method, str
-        ), "generate_method must be overridden"
+        assert isinstance(self.target_method, str), (
+            "generate_method must be overridden"
+        )
         f = getattr(self.rng, self.target_method)
         return lambda: f(*args, **kwargs)
 
@@ -172,7 +171,6 @@ beta_params = [
 
 
 class Beta:
-
     target_method = "beta"
 
     def test_beta(self):
@@ -191,7 +189,6 @@ class Beta:
 
 
 class StandardExponential:
-
     target_method = "standard_exponential"
 
     def test_standard_exponential(self):
@@ -213,7 +210,6 @@ standard_gamma_params = [{"shape": 0.5}, {"shape": 1.0}, {"shape": 3.0}]
 
 
 class StandardGamma:
-
     target_method = "standard_gamma"
 
     def test_standard_gamma(self):
@@ -236,7 +232,6 @@ standard_normal_params = [
 
 
 class StandardNormal:
-
     target_method = "standard_normal"
 
     @testing.for_dtypes("fd")
@@ -249,7 +244,6 @@ exponential_params = [{"scale": 0.5}, {"scale": 1}, {"scale": 10}]
 
 
 class Exponential:
-
     target_method = "exponential"
 
     def test_exponential(self):
@@ -264,7 +258,6 @@ poisson_params = [{"lam": 1.0}, {"lam": 3.0}, {"lam": 10.0}]
 
 
 class Poisson:
-
     target_method = "poisson"
 
     def test_poisson(self):
@@ -292,7 +285,6 @@ gamma_params = [
 
 
 class Gamma:
-
     target_method = "gamma"
 
     def test_gamma_1(self):
@@ -320,7 +312,6 @@ binomial_params = [
 
 
 class Binomial:
-
     target_method = "binomial"
 
     def test_binomial(self):
@@ -340,7 +331,6 @@ geometric_params = [
 
 
 class Geometric:
-
     target_method = "geometric"
 
     def test_geometric(self):
@@ -366,7 +356,6 @@ hypergeometric_params = [
 
 
 class Hypergeometric:
-
     target_method = "hypergeometric"
 
     def test_hypergeometric(self):
@@ -403,7 +392,6 @@ power_params = [
 
 
 class Power:
-
     target_method = "power"
 
     def test_power(self):
@@ -428,7 +416,6 @@ logseries_params = [
 
 
 class Logseries:
-
     target_method = "logseries"
 
     def test_logseries(self):
@@ -453,7 +440,6 @@ chisquare_params = [
 
 
 class Chisquare:
-
     target_method = "chisquare"
 
     def test_chisquare(self):
@@ -478,7 +464,6 @@ f_params = [
 
 
 class F:
-
     target_method = "f"
 
     def test_f(self):

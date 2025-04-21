@@ -326,7 +326,6 @@ class TestFloorDivideRemainder:
 
     @pytest.mark.parametrize("dtype", ALL_DTYPES)
     def test_inplace_scalar(self, func, dtype):
-
         a = numpy.array(10, dtype=dtype)
         self.do_inplace_op(10, a, func)
 
@@ -850,7 +849,7 @@ class TestPower:
         a = numpy.arange(2 * size, dtype=dtype)
         ia = dpnp.array(a)
 
-        dpnp.power(ia[size::], ia[::2], out=ia[:size:]),
+        (dpnp.power(ia[size::], ia[::2], out=ia[:size:]),)
         numpy.power(a[size::], a[::2], out=a[:size:])
 
         assert_dtype_allclose(ia, a)

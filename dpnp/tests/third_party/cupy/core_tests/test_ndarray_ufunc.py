@@ -8,7 +8,6 @@ pytest.skip("UFunc interface is not supported", allow_module_level=True)
 
 
 class C(cupy.ndarray):
-
     def __new__(cls, *args, info=None, **kwargs):
         obj = super().__new__(cls, *args, **kwargs)
         obj.info = info
@@ -21,7 +20,6 @@ class C(cupy.ndarray):
 
 
 class TestArrayUfunc:
-
     @testing.for_all_dtypes()
     def test_unary_op(self, dtype):
         a = cupy.array(numpy.array([0, 1, 2]), dtype=dtype)

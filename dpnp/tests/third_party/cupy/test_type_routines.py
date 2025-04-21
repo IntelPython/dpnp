@@ -31,7 +31,6 @@ def _generate_type_routines_input(xp, dtype, obj_type):
     )
 )
 class TestCanCast(unittest.TestCase):
-
     @testing.for_all_dtypes_combination(names=("from_dtype", "to_dtype"))
     @testing.numpy_cupy_equal()
     def test_can_cast(self, xp, from_dtype, to_dtype):
@@ -48,7 +47,6 @@ class TestCanCast(unittest.TestCase):
 
 
 class TestCommonType(unittest.TestCase):
-
     @testing.numpy_cupy_equal()
     def test_common_type_empty(self, xp):
         ret = xp.common_type()
@@ -104,7 +102,6 @@ class TestCommonType(unittest.TestCase):
     )
 )
 class TestResultType(unittest.TestCase):
-
     @testing.for_all_dtypes_combination(names=("dtype1", "dtype2"))
     @testing.numpy_cupy_equal()
     def test_result_type(self, xp, dtype1, dtype2):

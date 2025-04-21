@@ -45,7 +45,6 @@ print(cupy.is_available())"""
 
 
 class TestImportError(unittest.TestCase):
-
     def test_import_error(self):
         returncode, stdoutdata, stderrdata = _run_script(
             """
@@ -67,7 +66,6 @@ except Exception as e:
 
 @pytest.mark.skip("dpnp.is_available() is not implemented")
 class TestAvailable(unittest.TestCase):
-
     def test_available(self):
         available = _test_cupy_available(self)
         assert available
@@ -75,7 +73,6 @@ class TestAvailable(unittest.TestCase):
 
 @pytest.mark.skip("dpnp.is_available() is not implemented")
 class TestNotAvailable(unittest.TestCase):
-
     def setUp(self):
         self.old = os.environ.get(visible)
 
@@ -102,7 +99,6 @@ class TestNotAvailable(unittest.TestCase):
 
 @pytest.mark.skip("No memory pool API is supported")
 class TestMemoryPool(unittest.TestCase):
-
     def test_get_default_memory_pool(self):
         p = cupy.get_default_memory_pool()
         assert isinstance(p, cupy.cuda.memory.MemoryPool)
@@ -114,7 +110,6 @@ class TestMemoryPool(unittest.TestCase):
 
 @pytest.mark.skip("dpnp.show_config() is not implemented")
 class TestShowConfig(unittest.TestCase):
-
     def test_show_config(self):
         with mock.patch("sys.stdout.write") as write_func:
             cupy.show_config()
@@ -131,7 +126,6 @@ class TestShowConfig(unittest.TestCase):
 
 
 class TestAliases(unittest.TestCase):
-
     def test_abs_is_absolute(self):
         for xp in (numpy, cupy):
             assert xp.abs is xp.absolute

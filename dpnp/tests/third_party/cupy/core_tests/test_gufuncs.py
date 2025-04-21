@@ -191,7 +191,6 @@ class TestGUFuncDtype:
 
 
 class TestGUFuncOrder:
-
     @pytest.mark.parametrize("order", ["C", "F", "K"])
     @testing.numpy_cupy_array_equal(strides_check=True)
     def test_order(self, xp, order):
@@ -285,7 +284,6 @@ class TestGUFuncSignatures:
 
     @pytest.mark.parametrize("sigs,", [("i",), ("",), ("iii->i",), ("ii->",)])
     def test_invalid_signatures(self, sigs):
-
         def default(x, y):
             return x + y
 
@@ -294,7 +292,6 @@ class TestGUFuncSignatures:
 
     @pytest.mark.parametrize("sig,", ["i->i", "id->i", ""])
     def test_invalid_lookup(self, sig):
-
         def default(x, y):
             return x + y
 

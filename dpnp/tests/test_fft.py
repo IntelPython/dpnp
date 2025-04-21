@@ -893,7 +893,8 @@ class TestRfftn:
         "dtype", get_all_dtypes(no_none=True, no_complex=True)
     )
     @pytest.mark.parametrize(
-        "axes", [(0, 1, 2), (-2, -4, -1, -3)]  # (-1, -4, -2)
+        "axes",
+        [(0, 1, 2), (-2, -4, -1, -3)],  # (-1, -4, -2)
     )
     @pytest.mark.parametrize("norm", [None, "backward", "forward", "ortho"])
     @pytest.mark.parametrize("order", ["C", "F"])

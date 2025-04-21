@@ -154,8 +154,7 @@ def _check_cupy_numpy_error(cupy_error, numpy_error, accept_error=False):
     ):
         if cupy_error.__class__ is not numpy_error.__class__:
             raise AssertionError(
-                "Both numpy and cupy were skipped but with different "
-                "exceptions."
+                "Both numpy and cupy were skipped but with different exceptions."
             )
         if cupy_error.args != numpy_error.args:
             raise AssertionError(
@@ -344,9 +343,7 @@ def _make_decorator(
                         raise AssertionError(
                             """ndarrays of different dtypes are returned.
 cupy: {}
-numpy: {}""".format(
-                                cupy_r.dtype, numpy_r.dtype
-                            )
+numpy: {}""".format(cupy_r.dtype, numpy_r.dtype)
                         )
 
             # Check contiguous

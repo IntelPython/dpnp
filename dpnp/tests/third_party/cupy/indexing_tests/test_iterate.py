@@ -14,7 +14,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestFlatiter(unittest.TestCase):
-
     @pytest.mark.skip("no base attribute")
     def test_base(self):
         for xp in (numpy, cupy):
@@ -71,7 +70,6 @@ class TestFlatiter(unittest.TestCase):
     # {"shape": (10,), "index": slice(None)},
 )
 class TestFlatiterSubscript(unittest.TestCase):
-
     @testing.for_CF_orders()
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -132,7 +130,6 @@ class TestFlatiterSubscript(unittest.TestCase):
 )
 @pytest.mark.skip("no exception raised")
 class TestFlatiterSubscriptIndexError(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_getitem(self, dtype):
         a = testing.shaped_arange(self.shape, cupy, dtype)

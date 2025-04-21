@@ -15,7 +15,6 @@ from dpnp.tests.third_party.cupy.testing import _condition
 )
 @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
 class TestPermutations(unittest.TestCase):
-
     def _xp_random(self, xp):
         if self.seed is None:
             return xp.random
@@ -90,7 +89,6 @@ class TestPermutations(unittest.TestCase):
 
 @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
 class TestShuffle(unittest.TestCase):
-
     # Test ranks
 
     @pytest.mark.skip("no proper validation yet")
@@ -156,7 +154,6 @@ class TestShuffle(unittest.TestCase):
 )
 @pytest.mark.skipif(not has_support_aspect64(), reason="fp64 is required")
 class TestPermutationSoundness(unittest.TestCase):
-
     def setUp(self):
         a = cupy.random.permutation(self.num)
         self.a = a.asnumpy()
@@ -180,7 +177,6 @@ class TestPermutationSoundness(unittest.TestCase):
     )
 )
 class TestPermutationRandomness(unittest.TestCase):
-
     num = 256
 
     def setUp(self):

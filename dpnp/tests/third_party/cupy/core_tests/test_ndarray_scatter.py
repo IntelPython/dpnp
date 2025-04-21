@@ -172,7 +172,6 @@ pytest.skip("scatter is not supported", allow_module_level=True)
     _ids=False,  # Do not generate ids from randomly generated params
 )
 class TestScatterParametrized:
-
     @testing.for_dtypes(
         [
             numpy.float32,
@@ -226,7 +225,6 @@ class TestScatterParametrized:
 
 
 class TestScatterAdd:
-
     @testing.for_dtypes(
         [
             numpy.float32,
@@ -327,7 +325,6 @@ class TestScatterAdd:
 
 
 class TestScatterMinMax:
-
     @testing.for_dtypes(
         [
             numpy.float32,

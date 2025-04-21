@@ -14,7 +14,6 @@ else:
 
 
 class TestCorrcoef(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_corrcoef(self, xp, dtype):
@@ -57,7 +56,6 @@ class TestCorrcoef(unittest.TestCase):
 
 
 class TestCov(unittest.TestCase):
-
     def generate_input(self, a_shape, y_shape, xp, dtype):
         a = testing.shaped_arange(a_shape, xp, dtype)
         y = None
@@ -191,7 +189,6 @@ class TestCov(unittest.TestCase):
     )
 )
 class TestCorrelateShapeCombination(unittest.TestCase):
-
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_correlate(self, xp, dtype):
@@ -202,7 +199,6 @@ class TestCorrelateShapeCombination(unittest.TestCase):
 
 @pytest.mark.parametrize("mode", ["valid", "full", "same"])
 class TestCorrelate:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_correlate_non_contiguous(self, xp, dtype, mode):
@@ -228,7 +224,6 @@ class TestCorrelate:
 @testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestCorrelateInvalid(unittest.TestCase):
-
     @testing.with_requires("numpy>=1.18")
     @testing.for_all_dtypes()
     def test_correlate_empty(self, dtype):

@@ -35,7 +35,6 @@ _noncontiguous_params = [
 
 
 class AbstractReductionTestBase:
-
     def get_sum_func(self):
         raise NotImplementedError()
 
@@ -52,7 +51,6 @@ class AbstractReductionTestBase:
 
 
 class SimpleReductionFunctionTestBase(AbstractReductionTestBase):
-
     def get_sum_func(self):
         return _core.create_reduction_func(
             "my_sum", ("b->b",), ("in0", "a + b", "out0 = a", None), 0
@@ -98,7 +96,6 @@ class TestSimpleReductionFunction(
 class TestSimpleReductionFunctionNonContiguous(
     SimpleReductionFunctionTestBase, unittest.TestCase
 ):
-
     def test_noncontiguous(self):
         self.check_int8_sum(self.shape, trans=self.trans, axis=self.axis)
 
@@ -111,7 +108,6 @@ class TestSimpleReductionFunctionNonContiguous(
     )
 )
 class TestSimpleReductionFunctionComplexWarning(unittest.TestCase):
-
     def setUp(self):
         self.accelerators = _core.get_reduction_accelerators()
         _core.set_reduction_accelerators(self.backend)
@@ -158,7 +154,6 @@ class TestSimpleReductionFunctionInvalidAxis:
 
 
 class ReductionKernelTestBase(AbstractReductionTestBase):
-
     def get_sum_func(self):
         return cupy.ReductionKernel(
             "T x", "T out", "x", "a + b", "out = a", "0", "my_sum"
@@ -166,7 +161,6 @@ class ReductionKernelTestBase(AbstractReductionTestBase):
 
 
 class TestReductionKernel(ReductionKernelTestBase, unittest.TestCase):
-
     def test_shape1(self):
         for i in range(1, 10):
             self.check_int8_sum((2**i,))
@@ -196,13 +190,11 @@ class TestReductionKernel(ReductionKernelTestBase, unittest.TestCase):
 class TestReductionKernelNonContiguous(
     ReductionKernelTestBase, unittest.TestCase
 ):
-
     def test_noncontiguous(self):
         self.check_int8_sum(self.shape, trans=self.trans, axis=self.axis)
 
 
 class TestReductionKernelInvalidArgument(unittest.TestCase):
-
     def test_invalid_kernel_name(self):
         with self.assertRaisesRegex(ValueError, "Invalid kernel name"):
             cupy.ReductionKernel(
@@ -211,7 +203,6 @@ class TestReductionKernelInvalidArgument(unittest.TestCase):
 
 
 class TestReductionKernelCachedCode:
-
     @pytest.fixture(autouse=True)
     def setUp(self):
         self.old_routine_accelerators = _acc.get_routine_accelerators()
@@ -251,7 +242,6 @@ class TestReductionKernelCachedCode:
 
 
 class TestLargeMultiDimReduction(ReductionKernelTestBase, unittest.TestCase):
-
     def test_large_dims_keep_kernels(self):
         # This test creates a CUDA_ERROR_LAUNCH_OUT_OF_RESOURCES
         # if the output array dims are not reduced

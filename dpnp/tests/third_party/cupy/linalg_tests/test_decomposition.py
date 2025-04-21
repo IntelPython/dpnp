@@ -26,8 +26,7 @@ def random_matrix(shape, dtype, scale, sym=False):
         high_s -= err
         if dtype.kind in "u":
             assert sym, (
-                "generating nonsymmetric matrix with uint cells is not"
-                " supported"
+                "generating nonsymmetric matrix with uint cells is not supported"
             )
             # (singular value of numpy.ones((m, n))) <= \sqrt{mn}
             high_s = bias = high_s / (1 + numpy.sqrt(m * n))
@@ -57,7 +56,6 @@ def stacked_identity(xp, batch_shape, n, dtype):
 
 
 class TestCholeskyDecomposition:
-
     @testing.numpy_cupy_allclose(atol=1e-3, type_check=has_support_aspect64())
     def check_L(self, array, xp):
         a = xp.asarray(array)
@@ -127,7 +125,6 @@ class TestCholeskyDecomposition:
 
 
 class TestCholeskyInvalid(unittest.TestCase):
-
     def check_L(self, array):
         for xp in (numpy, cupy):
             a = xp.asarray(array)
@@ -160,7 +157,6 @@ class TestCholeskyInvalid(unittest.TestCase):
     )
 )
 class TestQRDecomposition(unittest.TestCase):
-
     @testing.for_dtypes("fdFD")
     def check_mode(self, array, mode, dtype):
         a_cpu = numpy.asarray(array, dtype=dtype)
@@ -230,7 +226,6 @@ class TestQRDecomposition(unittest.TestCase):
 )
 @testing.fix_random()
 class TestSVD(unittest.TestCase):
-
     def setUp(self):
         self.seed = testing.generate_seed()
 

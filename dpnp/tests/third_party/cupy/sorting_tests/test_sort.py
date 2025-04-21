@@ -20,7 +20,6 @@ cupy.get_array_module = get_array_module
 
 
 class TestSort(unittest.TestCase):
-
     # Test ranks
 
     def test_sort_zero_dim(self):
@@ -215,7 +214,6 @@ class TestSort(unittest.TestCase):
 
 @pytest.mark.skip("lexsort() is not implemented yet")
 class TestLexsort(unittest.TestCase):
-
     # Test ranks
 
     # TODO(niboshi): Fix xfail
@@ -300,7 +298,6 @@ class TestLexsort(unittest.TestCase):
     )
 )
 class TestArgsort(unittest.TestCase):
-
     def argsort(self, a, axis=-1):
         if self.external:
             # Need to explicitly specify kind="stable"
@@ -420,7 +417,6 @@ class TestArgsort(unittest.TestCase):
 
 
 class TestSort_complex(unittest.TestCase):
-
     def test_sort_complex_zero_dim(self):
         for xp in (numpy, cupy):
             a = testing.shaped_random((), xp)
@@ -457,7 +453,6 @@ class TestSort_complex(unittest.TestCase):
 )
 @pytest.mark.usefixtures("allow_fall_back_on_numpy")
 class TestPartition(unittest.TestCase):
-
     def partition(self, a, kth, axis=-1):
         if self.external:
             xp = cupy.get_array_module(a)
@@ -609,7 +604,6 @@ class TestPartition(unittest.TestCase):
 )
 @pytest.mark.skip("not fully supported yet")
 class TestArgpartition(unittest.TestCase):
-
     def argpartition(self, a, kth, axis=-1):
         if self.external:
             xp = cupy.get_array_module(a)

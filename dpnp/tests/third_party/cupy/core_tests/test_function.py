@@ -25,7 +25,6 @@ def _compile_func(kernel_name, code):
 
 
 class TestFunction(unittest.TestCase):
-
     def test_python_scalar(self):
         code = """
 extern "C" __global__ void test_kernel(const double* a, double b, double* x) {
@@ -155,9 +154,7 @@ extern "C" __global__ void get_struct_layout(
     offsets[3] = (unsigned long long)&ptr->d;
     offsets[4] = (unsigned long long)&ptr->e;
 }}
-""".format(
-            struct_definition=struct_definition
-        )
+""".format(struct_definition=struct_definition)
 
         itemsize = cupy.ndarray(shape=(1,), dtype=numpy.uint64)
         sizes = cupy.ndarray(shape=(5,), dtype=numpy.uint64)
@@ -214,9 +211,7 @@ extern "C" __global__ void test_kernel(const double* a,
     sum += s.e[0] + s.e[1] + s.e[2];
     x[i] = a[i] + sum;
 }}
-""".format(
-            struct_definition=struct_definition
-        )
+""".format(struct_definition=struct_definition)
 
         a_cpu = numpy.arange(24, dtype=numpy.float64)
         a = cupy.array(a_cpu)

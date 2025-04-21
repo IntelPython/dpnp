@@ -11,7 +11,6 @@ from dpnp.tests.third_party.cupy.testing import _condition, _hypothesis
 
 
 class TestRandint(unittest.TestCase):
-
     def test_lo_hi_reversed(self):
         with self.assertRaises(ValueError):
             random.randint(100, 1)
@@ -41,7 +40,6 @@ class TestRandint(unittest.TestCase):
 
 @testing.fix_random()
 class TestRandint2(unittest.TestCase):
-
     @_condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.randint(0, 10, (2, 3)) for _ in range(20)]
@@ -105,7 +103,6 @@ class TestRandint2(unittest.TestCase):
 
 @pytest.mark.skip("high=(max+1) is not supported")
 class TestRandintDtype(unittest.TestCase):
-
     @testing.with_requires("numpy>=2.0")
     @testing.for_dtypes(
         [numpy.int8, numpy.uint8, numpy.int16, numpy.uint16, numpy.int32]
@@ -145,7 +142,6 @@ class TestRandintDtype(unittest.TestCase):
 
 
 class TestRandomIntegers(unittest.TestCase):
-
     def test_normal(self):
         with mock.patch("dpnp.random.RandomState.randint") as m:
             random.random_integers(3, 5)
@@ -170,7 +166,6 @@ class TestRandomIntegers(unittest.TestCase):
 
 @testing.fix_random()
 class TestRandomIntegers2(unittest.TestCase):
-
     @_condition.repeat(3, 10)
     def test_bound_1(self):
         vals = [random.random_integers(0, 10, (2, 3)) for _ in range(10)]
@@ -207,7 +202,6 @@ class TestRandomIntegers2(unittest.TestCase):
 
 @pytest.mark.skip("random.choice() is not supported yet")
 class TestChoice(unittest.TestCase):
-
     def setUp(self):
         self.rs_tmp = random._generator._random_states
         device_id = cuda.Device().id
@@ -252,7 +246,6 @@ class TestChoice(unittest.TestCase):
 
 
 class TestRandomSample(unittest.TestCase):
-
     def test_rand(self):
         with mock.patch("dpnp.random.RandomState.random_sample") as m:
             random.rand(1, 2, 3)
@@ -292,7 +285,6 @@ class TestRandomSample(unittest.TestCase):
 @testing.fix_random()
 @pytest.mark.skip("random.multinomial() is not fully supported")
 class TestMultinomial(unittest.TestCase):
-
     @_condition.repeat(3, 10)
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose(rtol=0.05)

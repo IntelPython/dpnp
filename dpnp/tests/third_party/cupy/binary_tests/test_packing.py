@@ -12,7 +12,6 @@ pytest.skip(
 
 
 class TestPacking(unittest.TestCase):
-
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal()
     def check_packbits(self, data, xp, dtype, bitorder="big"):

@@ -399,7 +399,6 @@ def find_nvcc_ver():
 
 # TODO(leofang): Further refactor the test suite to avoid using unittest?
 class _TestRawBase:
-
     _nvcc_ver = None
     _nvrtc_ver = None
 
@@ -1231,7 +1230,6 @@ void test_grid_sync(const float* x1, const float* x2, float* y, int n) {
 )
 @unittest.skipIf(cupy.cuda.runtime.is_hip, "Skip on HIP")
 class TestRawGridSync(unittest.TestCase):
-
     def test_grid_sync_rawkernel(self):
         n = self.n
         with use_temporary_cache_dir():
@@ -1309,7 +1307,6 @@ assert ker.enable_cooperative_groups
     cupy.cuda.runtime.is_hip, "HIP does not support enable_cooperative_groups"
 )
 class TestRawPicklable(unittest.TestCase):
-
     def setUp(self):
         self.temporary_dir_context = use_temporary_cache_dir()
         self.temp_dir = self.temporary_dir_context.__enter__()
@@ -1402,7 +1399,6 @@ __global__ void shift (T* a, int N) {
 @unittest.skipIf(cupy.cuda.runtime.is_hip, "Jitify does not support ROCm/HIP")
 @testing.slow
 class TestRawJitify(unittest.TestCase):
-
     def setUp(self):
         self.temporary_dir_context = use_temporary_cache_dir()
         self.temp_dir = self.temporary_dir_context.__enter__()

@@ -40,7 +40,6 @@ def perm(iterable):
     )
 )
 class TestArrayAdvancedIndexingGetitemPerm:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_adv_getitem(self, xp, dtype):
@@ -163,7 +162,6 @@ class TestArrayAdvancedIndexingGetitemPerm:
     _ids=False,  # Do not generate ids from randomly generated params
 )
 class TestArrayAdvancedIndexingGetitemParametrized:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_adv_getitem(self, xp, dtype):
@@ -205,7 +203,6 @@ class TestArrayAdvancedIndexingGetitemParametrized:
 )
 @testing.with_requires("numpy>=1.23")
 class TestArrayAdvancedIndexingGetitemParametrized2:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_adv_getitem(self, xp, dtype):
@@ -226,7 +223,6 @@ class TestArrayAdvancedIndexingGetitemParametrized2:
 @pytest.mark.skip("no support of a list in advanced indexing")
 @testing.with_requires("numpy>=1.24")
 class TestArrayAdvancedIndexingGetitemParametrizedValueError:
-
     @testing.for_all_dtypes()
     def test_adv_getitem(self, dtype):
         for xp in (numpy, cupy):
@@ -248,7 +244,6 @@ class TestArrayAdvancedIndexingGetitemParametrizedValueError:
     },
 )
 class TestArrayAdvancedIndexingGetitemParametrizedTransp:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_adv_getitem(self, xp, dtype):
@@ -266,7 +261,6 @@ class TestArrayAdvancedIndexingGetitemParametrizedTransp:
 
 
 class TestArrayAdvancedIndexingGetitemCupyIndices:
-
     shape = (2, 3, 4)
 
     def test_adv_getitem_cupy_indices1(self):
@@ -366,7 +360,6 @@ class TestArrayAdvancedIndexingGetitemCupyIndices:
     #     numpy.array([1], dtype=numpy.int8))},
 )
 class TestArrayAdvancedIndexingOverflow:
-
     def test_getitem(self):
         a = cupy.arange(numpy.prod(self.shape)).reshape(self.shape)
         indexes_gpu = []
@@ -427,7 +420,6 @@ class TestArrayAdvancedIndexingOverflow:
     },
 )
 class TestArrayInvalidIndexAdvGetitem:
-
     def test_invalid_adv_getitem(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp)
@@ -445,7 +437,6 @@ class TestArrayInvalidIndexAdvGetitem:
     _ids=False,  # Do not generate ids from randomly generated params
 )
 class TestArrayInvalidIndexAdvGetitem2:
-
     def test_invalid_adv_getitem(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp)
@@ -459,7 +450,6 @@ class TestArrayInvalidIndexAdvGetitem2:
 @pytest.mark.skip("no support of a list in advanced indexing")
 @testing.with_requires("numpy>=1.24")
 class TestArrayInvalidValueAdvGetitem:
-
     def test_invalid_adv_getitem(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp)
@@ -688,7 +678,6 @@ class TestArrayInvalidValueAdvGetitem:
     _ids=False,  # Do not generate ids from randomly generated params
 )
 class TestArrayAdvancedIndexingSetitemScalarValue:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_adv_setitem(self, xp, dtype):
@@ -726,7 +715,6 @@ class TestArrayAdvancedIndexingSetitemScalarValue:
 )
 @testing.with_requires("numpy>=1.23")
 class TestArrayAdvancedIndexingSetitemScalarValue2:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_adv_setitem(self, xp, dtype):
@@ -747,7 +735,6 @@ class TestArrayAdvancedIndexingSetitemScalarValue2:
     {"shape": (0,), "indexes": numpy.array([False, True, True]), "value": 1},
 )
 class TestArrayAdvancedIndexingSetitemScalarValueIndexError:
-
     def test_adv_setitem(self):
         for xp in (numpy, cupy):
             a = xp.zeros(self.shape)
@@ -764,7 +751,6 @@ class TestArrayAdvancedIndexingSetitemScalarValueIndexError:
 @pytest.mark.skip("no support of a list in advanced indexing")
 @testing.with_requires("numpy>=1.24")
 class TestArrayAdvancedIndexingSetitemScalarValueValueError2:
-
     @testing.for_all_dtypes()
     def test_adv_setitem(self, dtype):
         for xp in (numpy, cupy):
@@ -853,7 +839,6 @@ class TestArrayAdvancedIndexingSetitemScalarValueValueError2:
     _ids=False,  # Do not generate ids from randomly generated params
 )
 class TestArrayAdvancedIndexingVectorValue:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_adv_setitem(self, xp, dtype):
@@ -872,7 +857,6 @@ class TestArrayAdvancedIndexingVectorValue:
 
 
 class TestArrayAdvancedIndexingSetitemCupyIndices:
-
     shape = (2, 3)
 
     def test_cupy_indices_integer_array_1(self):
@@ -919,7 +903,6 @@ class TestArrayAdvancedIndexingSetitemCupyIndices:
 
 
 class TestArrayAdvancedIndexingSetitemDifferentDtypes:
-
     @testing.for_all_dtypes_combination(
         names=["src_dtype", "dst_dtype"], no_complex=True
     )
@@ -944,7 +927,6 @@ class TestArrayAdvancedIndexingSetitemDifferentDtypes:
 
 
 class TestArrayAdvancedIndexingSetitemTranspose:
-
     @pytest.mark.skip("due to dpctl-1912")
     @testing.numpy_cupy_array_equal()
     def test_adv_setitem_transp(self, xp):

@@ -12,7 +12,6 @@ pytest.skip("text functions are not supported yet", allow_module_level=True)
 
 
 class TestText(unittest.TestCase):
-
     def test_savetxt(self):
         tmp_cupy = tempfile.NamedTemporaryFile(delete=False)
         tmp_numpy = tempfile.NamedTemporaryFile(delete=False)

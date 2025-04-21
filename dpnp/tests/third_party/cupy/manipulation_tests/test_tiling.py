@@ -17,7 +17,6 @@ from dpnp.tests.third_party.cupy import testing
     {"repeats": [1, 2, 3], "axis": -2},
 )
 class TestRepeat(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_array_repeat(self, xp):
         x = testing.shaped_arange((2, 3, 4), xp)
@@ -25,7 +24,6 @@ class TestRepeat(unittest.TestCase):
 
 
 class TestRepeatRepeatsNdarray(unittest.TestCase):
-
     def test_func(self):
         a = testing.shaped_arange((2, 3, 4), cupy)
         repeats = cupy.array([2, 3], dtype=cupy.int32)
@@ -63,7 +61,6 @@ class TestRepeatListBroadcast(unittest.TestCase):
     {"repeats": [1, 2, 3, 4], "axis": 0},
 )
 class TestRepeat1D(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_array_repeat(self, xp):
         x = testing.shaped_arange((4,), xp)
@@ -92,7 +89,6 @@ class TestRepeat1DListBroadcast(unittest.TestCase):
     {"repeats": 2, "axis": 3},
 )
 class TestRepeatFailure(unittest.TestCase):
-
     def test_repeat_failure(self):
         for xp in (numpy, cupy):
             x = testing.shaped_arange((2, 3, 4), xp)
@@ -109,7 +105,6 @@ class TestRepeatFailure(unittest.TestCase):
     {"reps": (2, 3, 4, 5)},
 )
 class TestTile(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_array_tile(self, xp):
         x = testing.shaped_arange((2, 3, 4), xp)
@@ -121,7 +116,6 @@ class TestTile(unittest.TestCase):
     {"reps": (-1, -2)},
 )
 class TestTileFailure(unittest.TestCase):
-
     def test_tile_failure(self):
         for xp in (numpy, cupy):
             x = testing.shaped_arange((2, 3, 4), xp)

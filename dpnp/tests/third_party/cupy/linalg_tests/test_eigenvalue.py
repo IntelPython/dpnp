@@ -21,7 +21,6 @@ def _get_hermitian(xp, a, UPLO):
     )
 )
 class TestEigenvalue:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -173,7 +172,6 @@ class TestEigenvalue:
     ],
 )
 class TestEigenvalueEmpty:
-
     @testing.for_dtypes("ifdFD")
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_eigh(self, xp, dtype, shape, UPLO):
@@ -202,7 +200,6 @@ class TestEigenvalueEmpty:
     ],
 )
 class TestEigenvalueInvalid:
-
     def test_eigh_shape_error(self, UPLO, shape):
         for xp in (numpy, cupy):
             a = xp.zeros(shape)

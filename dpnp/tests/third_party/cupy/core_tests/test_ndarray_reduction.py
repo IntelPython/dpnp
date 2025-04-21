@@ -13,7 +13,6 @@ from dpnp.tests.third_party.cupy import testing
     )
 )
 class TestArrayReduction:
-
     @pytest.fixture(scope="class")
     def exclude_cutensor(self):
         pass
@@ -334,7 +333,6 @@ class TestArrayReduction:
     )
 )
 class TestArrayReductionZeroSize:
-
     @testing.numpy_cupy_allclose(
         contiguous_check=False, accept_error=ValueError
     )
@@ -377,7 +375,6 @@ class TestArrayReductionZeroSize:
 )
 @pytest.mark.skip("CUB reduction is not supported")
 class TestCubReduction:
-
     @pytest.fixture(autouse=True)
     def setUp(self):
         self.old_routine_accelerators = _acc.get_routine_accelerators()

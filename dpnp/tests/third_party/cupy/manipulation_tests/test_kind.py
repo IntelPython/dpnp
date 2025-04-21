@@ -8,7 +8,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestKind(unittest.TestCase):
-
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()

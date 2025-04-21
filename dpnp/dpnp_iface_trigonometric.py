@@ -40,7 +40,6 @@ it contains:
 # pylint: disable=protected-access
 # pylint: disable=no-name-in-module
 
-
 import dpctl.tensor as dpt
 import dpctl.tensor._tensor_elementwise_impl as ti
 import dpctl.tensor._type_utils as dtu

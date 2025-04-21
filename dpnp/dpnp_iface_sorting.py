@@ -37,7 +37,6 @@ it contains:
 
 """
 
-
 import dpctl.tensor as dpt
 import numpy
 from dpctl.tensor._numpy_helper import normalize_axis_index

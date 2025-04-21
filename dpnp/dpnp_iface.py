@@ -372,8 +372,7 @@ def check_supported_arrays_type(*arrays, scalar_type=False, all_scalars=False):
 
     if len(arrays) > 0 and not (all_scalars or any_is_array):
         raise TypeError(
-            "At least one input must be of supported array type, "
-            "but got all scalars."
+            "At least one input must be of supported array type, but got all scalars."
         )
     return True
 

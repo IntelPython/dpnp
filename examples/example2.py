@@ -35,7 +35,6 @@ over different types of input data
 
 """
 
-
 import time
 
 import numpy

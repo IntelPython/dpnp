@@ -18,7 +18,6 @@ pytest.skip("poly functions are not supported yet", allow_module_level=True)
     {"variable": "y"},
 )
 class TestPoly1dInit:
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_poly1d_numpy_array(self, xp, dtype):
@@ -112,7 +111,6 @@ class TestPoly1dInit:
 
 
 class TestPoly1d:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_poly1d_leading_zeros(self, xp, dtype):
@@ -250,7 +248,6 @@ class TestPoly1d:
 
 
 class TestPoly:
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose(rtol=1e-4)
     def test_poly_1d(self, xp, dtype):
@@ -312,7 +309,6 @@ class TestPoly:
     )
 )
 class TestPoly1dPow:
-
     @testing.with_requires("numpy>=1.20")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-1)
@@ -330,7 +326,6 @@ class TestPoly1dPow:
     )
 )
 class TestPoly1dPowInvalidValue:
-
     @testing.for_all_dtypes()
     def test_poly1d_pow(self, dtype):
         for xp in (numpy, cupy):
@@ -347,7 +342,6 @@ class TestPoly1dPowInvalidValue:
     )
 )
 class TestPoly1dPowInvalidType:
-
     @testing.for_all_dtypes()
     def test_poly1d_pow(self, dtype):
         for xp in (numpy, cupy):
@@ -357,7 +351,6 @@ class TestPoly1dPowInvalidType:
 
 
 class Poly1dTestBase:
-
     def _get_input(self, xp, in_type, dtype, *, size=10):
         if in_type in ("ndarray", "poly1d"):
             array = testing.shaped_arange((size,), xp, dtype)
@@ -388,7 +381,6 @@ class Poly1dTestBase:
     )
 )
 class TestPoly1dPolynomialArithmetic(Poly1dTestBase):
-
     @testing.with_requires("numpy>=1.20")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-4, accept_error=TypeError)
@@ -410,7 +402,6 @@ class TestPoly1dPolynomialArithmetic(Poly1dTestBase):
     )
 )
 class TestPoly1dMathArithmetic(Poly1dTestBase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
     def test_poly1d_arithmetic(self, xp, dtype):
@@ -430,7 +421,6 @@ class TestPoly1dMathArithmetic(Poly1dTestBase):
     )
 )
 class TestPoly1dRoutines(Poly1dTestBase):
-
     @testing.with_requires("numpy>=1.20")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-4, accept_error=TypeError)
@@ -442,7 +432,6 @@ class TestPoly1dRoutines(Poly1dTestBase):
 
 
 class TestPoly1dEquality:
-
     def make_poly1d1(self, xp, dtype):
         a1 = testing.shaped_arange((4,), xp, dtype)
         a2 = xp.zeros((4,), dtype)
@@ -492,7 +481,6 @@ class TestPoly1dEquality:
     )
 )
 class TestPolyArithmeticShapeCombination:
-
     @testing.with_requires("numpy>=1.20")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose(rtol=1e-5)
@@ -511,7 +499,6 @@ class TestPolyArithmeticShapeCombination:
     )
 )
 class TestPolyArithmeticDiffTypes:
-
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"])
     def test_polyroutine_diff_types_array(self, dtype1, dtype2):
         def f(xp):
@@ -561,7 +548,6 @@ class TestPolyArithmeticDiffTypes:
     )
 )
 class TestPolyfitParametersCombinations:
-
     def _full_fit(self, xp, dtype):
         x = testing.shaped_arange(self.shape1, xp, dtype)
         y = testing.shaped_arange(self.shape2, xp, dtype)
@@ -608,7 +594,6 @@ class TestPolyfitParametersCombinations:
     )
 )
 class TestPolyfitCovMode:
-
     def _cov_fit(self, xp, dtype):
         x = xp.array([0.008, 0.01, 0.015], dtype)
         y = testing.shaped_arange(self.shape, xp, dtype)
@@ -626,7 +611,6 @@ class TestPolyfitCovMode:
 
 
 class TestPolyfit:
-
     @testing.for_all_dtypes(no_float16=True)
     def test_polyfit_poor_fit(self, dtype):
         for xp in (numpy, cupy):
@@ -644,7 +628,6 @@ class TestPolyfit:
     )
 )
 class TestPolyfitInvalidShapes:
-
     @testing.for_all_dtypes(no_float16=True)
     def test_polyfit_x_invalid_shape(self, dtype):
         for xp in (numpy, cupy):
@@ -671,7 +654,6 @@ class TestPolyfitInvalidShapes:
 
 
 class TestPolyfitInvalid:
-
     @testing.for_all_dtypes(no_float16=True)
     def test_polyfit_neg_degree(self, dtype):
         for xp in (numpy, cupy):
@@ -720,7 +702,6 @@ class TestPolyfitInvalid:
 
 
 class TestPolyfitDiffTypes:
-
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True, full=True
     )
@@ -750,7 +731,6 @@ class TestPolyfitDiffTypes:
     )
 )
 class TestPolyval(Poly1dTestBase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-2, "default": 1e-3})
     def test_polyval(self, xp, dtype):
@@ -769,7 +749,6 @@ class TestPolyval(Poly1dTestBase):
     )
 )
 class TestPolyvalInvalidTypes(Poly1dTestBase):
-
     @testing.for_all_dtypes()
     def test_polyval(self, dtype):
         for xp in (numpy, cupy):
@@ -785,7 +764,6 @@ class TestPolyvalInvalidTypes(Poly1dTestBase):
     )
 )
 class TestPolyvalShapeCombination:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-2, "default": 1e-6})
     def test_polyval(self, xp, dtype):
@@ -796,7 +774,6 @@ class TestPolyvalShapeCombination:
 
 @testing.parameterize(*testing.product({"shape": [(), (0,), (3,), (5,)]}))
 class TestPolyvalInvalidShapeCombination:
-
     @testing.for_all_dtypes()
     def test_polyval(self, dtype):
         for xp in (numpy, cupy):
@@ -807,7 +784,6 @@ class TestPolyvalInvalidShapeCombination:
 
 
 class TestPolyvalDtypesCombination:
-
     @testing.for_all_dtypes_combination(names=["dtype1", "dtype2"], full=True)
     @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-2, "default": 1e-6})
     def test_polyval_diff_types_array_array(self, xp, dtype1, dtype2):
@@ -825,7 +801,6 @@ class TestPolyvalDtypesCombination:
 
 
 class TestPolyvalMultiDimensional:
-
     @testing.for_all_dtypes()
     def test_polyval_ndim_values(self, dtype):
         a = testing.shaped_arange((10,), cupy, dtype)
@@ -848,7 +823,6 @@ class TestPolyvalMultiDimensional:
     )
 )
 class TestPolyRoutinesNdim:
-
     @testing.for_all_dtypes()
     def test_polyroutine_ndim(self, dtype):
         for xp in (numpy, cupy):
@@ -871,7 +845,6 @@ class TestPolyRoutinesNdim:
     reason="syevj not available",
 )
 class TestRootsReal:
-
     @testing.for_signed_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_roots_array(self, xp, dtype):
@@ -895,7 +868,6 @@ class TestRootsReal:
     )
 )
 class TestRootsComplex:
-
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_roots_array(self, xp, dtype):
@@ -923,7 +895,6 @@ class TestRootsComplex:
     )
 )
 class TestRootsSpecialCases:
-
     @testing.for_all_dtypes(no_float16=True, no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_roots_array(self, xp, dtype):
@@ -938,7 +909,6 @@ class TestRootsSpecialCases:
 
 
 class TestRoots:
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_roots_zero_sized(self, xp, dtype):

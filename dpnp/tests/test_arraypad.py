@@ -111,10 +111,7 @@ class TestPad:
     @pytest.mark.parametrize("mode", _modes)
     def test_misshaped_pad_width2(self, mode):
         arr = dpnp.arange(30).reshape((6, 5))
-        match = (
-            "input operand has more dimensions than allowed by the axis "
-            "remapping"
-        )
+        match = "input operand has more dimensions than allowed by the axis remapping"
         with pytest.raises(ValueError, match=match):
             dpnp.pad(arr, (((3,), (4,), (5,)), ((0,), (1,), (2,))), mode)
 
@@ -448,10 +445,7 @@ class TestPad:
         [m for m in _modes if m not in {"constant", "empty"}],
     )
     def test_pad_empty_dim_invalid(self, mode):
-        match = (
-            "can't extend empty axis 0 using modes other than 'constant' "
-            "or 'empty'"
-        )
+        match = "can't extend empty axis 0 using modes other than 'constant' or 'empty'"
         with pytest.raises(ValueError, match=match):
             dpnp.pad(dpnp.array([]), 4, mode=mode)
         with pytest.raises(ValueError, match=match):

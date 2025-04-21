@@ -37,7 +37,6 @@ it contains:
 
 """
 
-
 import math
 import operator
 import warnings
@@ -155,8 +154,7 @@ def _check_stack_arrays(arrays):
 
     if not hasattr(arrays, "__getitem__"):
         raise TypeError(
-            'arrays to stack must be passed as a "sequence" type '
-            "such as list or tuple."
+            'arrays to stack must be passed as a "sequence" type such as list or tuple.'
         )
 
 
@@ -230,8 +228,7 @@ def _delete_without_slice(params, obj, axis, single_value):
         # optimization for a single value
         if obj < -n or obj >= n:
             raise IndexError(
-                f"index {obj} is out of bounds for axis {axis} with "
-                f"size {n}"
+                f"index {obj} is out of bounds for axis {axis} with size {n}"
             )
         if obj < 0:
             obj += n
@@ -1516,8 +1513,7 @@ def copyto(dst, src, casting="same_kind", where=True):
 
     if not dpnp.is_supported_array_type(dst):
         raise TypeError(
-            "Destination array must be any of supported type, "
-            f"but got {type(dst)}"
+            f"Destination array must be any of supported type, but got {type(dst)}"
         )
     if not dpnp.is_supported_array_type(src):
         python_sc = dpnp.isscalar(src) and not isinstance(src, numpy.generic)
@@ -1552,8 +1548,7 @@ def copyto(dst, src, casting="same_kind", where=True):
             )
         elif not dpnp.is_supported_array_type(where):
             raise TypeError(
-                "`where` array must be any of supported type, "
-                f"but got {type(where)}"
+                f"`where` array must be any of supported type, but got {type(where)}"
             )
         elif where.dtype != dpnp.bool:
             raise TypeError(
@@ -2340,14 +2335,12 @@ def insert(arr, obj, values, axis=None):
         if indices.dtype == dpnp.bool:
             if indices.ndim != 1:
                 raise ValueError(
-                    "boolean array argument obj to insert "
-                    "must be one dimensional"
+                    "boolean array argument obj to insert must be one dimensional"
                 )
             indices = dpnp.flatnonzero(indices)
         elif indices.ndim > 1:
             raise ValueError(
-                "index array argument `obj` to insert must be one-dimensional "
-                "or scalar"
+                "index array argument `obj` to insert must be one-dimensional or scalar"
             )
 
     if indices.size == 1:
@@ -2400,8 +2393,7 @@ def matrix_transpose(x, /):
     usm_x = dpnp.get_usm_ndarray(x)
     if usm_x.ndim < 2:
         raise ValueError(
-            "Input array must be at least 2-dimensional, "
-            f"but it is {usm_x.ndim}"
+            f"Input array must be at least 2-dimensional, but it is {usm_x.ndim}"
         )
 
     usm_res = dpt.matrix_transpose(usm_x)
@@ -3081,8 +3073,7 @@ def reshape(a, /, shape=None, order="C", *, newshape=None, copy=None):
     if newshape is not None:
         if shape is not None:
             raise TypeError(
-                "You cannot specify 'newshape' and 'shape' arguments "
-                "at the same time."
+                "You cannot specify 'newshape' and 'shape' arguments at the same time."
             )
         # Deprecated in dpnp 0.17.0
         warnings.warn(

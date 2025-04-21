@@ -39,7 +39,6 @@ def _calc_out_shape(shape, axis, keepdims):
     )
 )
 class TestAllAny:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_without_out(self, xp, dtype):
@@ -72,7 +71,6 @@ class TestAllAny:
     )
 )
 class TestAllAnyWithNaN:
-
     @testing.for_dtypes((*testing._loops._float_dtypes, numpy.bool_))
     @testing.numpy_cupy_array_equal()
     def test_without_out(self, xp, dtype):
@@ -101,7 +99,6 @@ class TestAllAnyWithNaN:
     )
 )
 class TestIn1DIsIn:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test(self, xp, dtype):
@@ -112,7 +109,6 @@ class TestIn1DIsIn:
 
 @pytest.mark.skip("setdiff1d() is not supported yet")
 class TestSetdiff1d:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_setdiff1d_same_arrays(self, xp, dtype):
@@ -171,7 +167,6 @@ class TestSetdiff1d:
 
 @pytest.mark.skip("setxor1d() is not supported yet")
 class TestSetxor1d:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_setxor1d_same_arrays(self, xp, dtype):
@@ -230,7 +225,6 @@ class TestSetxor1d:
 
 @pytest.mark.skip("intersect1d() is not supported yet")
 class TestIntersect1d:
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_one_dim_with_unique_values(self, xp, dtype):
@@ -269,7 +263,6 @@ class TestIntersect1d:
 
 @pytest.mark.skip("union1d() is not supported yet")
 class TestUnion1d:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_union1d(self, xp, dtype):

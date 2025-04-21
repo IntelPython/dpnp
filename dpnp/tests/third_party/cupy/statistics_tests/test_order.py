@@ -30,7 +30,6 @@ def for_all_methods(name="method"):
 @pytest.mark.skip("dpnp.quantile() is not implemented yet")
 @testing.with_requires("numpy>=1.22.0rc1")
 class TestQuantile:
-
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     def test_percentile_unexpected_method(self, dtype):
         for xp in (numpy, cupy):
@@ -81,7 +80,6 @@ class TestQuantile:
 @testing.with_requires("numpy>=2.0")
 @for_all_methods()
 class TestQuantileMethods:
-
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_percentile_defaults(self, xp, dtype, method):
@@ -261,7 +259,6 @@ class TestQuantileMethods:
 
 
 class TestOrder:
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose()
     def test_nanmax_all(self, xp, dtype):
@@ -419,7 +416,6 @@ class TestOrder:
     )
 )
 class TestPercentileMonotonic:
-
     @testing.with_requires("numpy>=1.22.0rc1")
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose()

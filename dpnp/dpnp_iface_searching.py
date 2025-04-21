@@ -57,8 +57,7 @@ def _get_search_res_dt(a, out):
     # numpy raises TypeError if "out" data type mismatch default index type
     if out is not None and not dpnp.can_cast(out.dtype, res_dt, casting="safe"):
         raise TypeError(
-            f"Cannot cast from {out.dtype} to {res_dt} "
-            "according to the rule safe."
+            f"Cannot cast from {out.dtype} to {res_dt} according to the rule safe."
         )
     return res_dt
 

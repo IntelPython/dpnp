@@ -10,7 +10,6 @@ pytest.skip("text formatting is not supported yet", allow_module_level=True)
 
 
 class TestFormatting(unittest.TestCase):
-
     def test_array_repr(self):
         a = testing.shaped_arange((2, 3, 4), cupy)
         b = testing.shaped_arange((2, 3, 4), numpy)

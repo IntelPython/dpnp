@@ -40,7 +40,6 @@ class DLDummy:
 
 @pytest.mark.skip("toDlpack() and fromDlpack() are not supported")
 class TestDLPackConversion:
-
     @pytest.mark.filterwarnings("ignore::DeprecationWarning")
     @testing.for_all_dtypes(no_bool=False)
     def test_conversion(self, dtype):
@@ -52,7 +51,6 @@ class TestDLPackConversion:
 
 
 class TestNewDLPackConversion:
-
     @pytest.fixture(
         autouse=True, params=["device"]
     )  # "managed" is not supported
@@ -219,7 +217,6 @@ class TestNewDLPackConversion:
 
 
 class TestDLTensorMemory:
-
     @pytest.fixture
     def pool(self):
         pass

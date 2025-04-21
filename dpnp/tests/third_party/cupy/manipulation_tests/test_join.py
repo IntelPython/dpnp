@@ -12,7 +12,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestJoin:
-
     @testing.for_all_dtypes(name="dtype1")
     @testing.for_all_dtypes(name="dtype2")
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())

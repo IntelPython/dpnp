@@ -33,7 +33,6 @@ def skip_int_equality_before_numpy_1_20(names=("dtype",)):
 
 
 class TestRanges(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_arange(self, xp, dtype):
@@ -334,7 +333,6 @@ class TestRanges(unittest.TestCase):
     )
 )
 class TestMeshgrid(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_meshgrid0(self, dtype):
         out = cupy.meshgrid(
@@ -371,7 +369,6 @@ class TestMeshgrid(unittest.TestCase):
 
 
 class TestMgrid(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_mgrid0(self, xp):
         return xp.mgrid[0:]
@@ -404,7 +401,6 @@ class TestMgrid(unittest.TestCase):
 
 
 class TestOgrid(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_ogrid0(self, xp):
         return xp.ogrid[0:]

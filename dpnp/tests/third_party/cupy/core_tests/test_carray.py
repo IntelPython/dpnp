@@ -9,7 +9,6 @@ pytest.skip("CArray is not supported", allow_module_level=True)
 
 
 class TestCArray(unittest.TestCase):
-
     def test_size(self):
         x = cupy.arange(3).astype("i")
         y = cupy.ElementwiseKernel(

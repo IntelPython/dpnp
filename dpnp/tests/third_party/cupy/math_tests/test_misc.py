@@ -7,7 +7,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestMisc:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def check_unary(self, name, xp, dtype, no_bool=False):
@@ -532,7 +531,6 @@ class TestMisc:
     )
 )
 class TestConvolveShapeCombination:
-
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-3)
     def test_convolve(self, xp, dtype):
@@ -543,7 +541,6 @@ class TestConvolveShapeCombination:
 
 @pytest.mark.parametrize("mode", ["valid", "same", "full"])
 class TestConvolve:
-
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_convolve_non_contiguous(self, xp, dtype, mode):
@@ -568,7 +565,6 @@ class TestConvolve:
 
 @testing.parameterize(*testing.product({"mode": ["valid", "same", "full"]}))
 class TestConvolveInvalid:
-
     @testing.for_all_dtypes()
     def test_convolve_empty(self, dtype):
         for xp in (numpy, cupy):

@@ -9,7 +9,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestSize(unittest.TestCase):
-
     # def tearDown(self):
     #     # Free huge memory for slow test
     #     cupy.get_default_memory_pool().free_all_blocks()
@@ -52,7 +51,6 @@ _orders = {
 
 @pytest.mark.skip("no cupy._core submodule")
 class TestOrder(unittest.TestCase):
-
     @testing.for_orders(_orders.keys())
     def test_ndarray(self, order):
         order_expect = _orders[order]
@@ -103,7 +101,6 @@ class TestMinScalarType:
 )
 @pytest.mark.skip("compiling cupy headers are not supported")
 class TestCuPyHeaders(unittest.TestCase):
-
     def setUp(self):
         self.temporary_cache_dir_context = test_raw.use_temporary_cache_dir()
         self.cache_dir = self.temporary_cache_dir_context.__enter__()

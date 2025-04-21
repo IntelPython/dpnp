@@ -9,7 +9,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestIndexing(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_take_by_scalar(self, xp):
         a = testing.shaped_arange((2, 4, 3), xp)
@@ -200,7 +199,6 @@ class TestIndexing(unittest.TestCase):
 
 
 class TestChoose(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_choose(self, xp, dtype):
@@ -266,7 +264,6 @@ class TestChoose(unittest.TestCase):
 
 
 class TestSelect(unittest.TestCase):
-
     @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()

@@ -129,7 +129,6 @@ else:
     },
 )
 class TestArrayIndexingParameterized(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_getitem(self, xp, dtype):
@@ -153,7 +152,6 @@ class TestArrayIndexingParameterized(unittest.TestCase):
     {"shape": (2, 3, 4), "transpose": None, "indexes": (Ellipsis, Ellipsis, 1)},
 )
 class TestArrayIndexIndexError(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_invalid_getitem(self, dtype):
         for xp in (numpy, cupy):
@@ -171,7 +169,6 @@ class TestArrayIndexIndexError(unittest.TestCase):
     {"error_class": TypeError, "indexes": (slice(None, None, (0, 0)),)},
 )
 class TestArrayIndexOtherError(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_invalid_getitem(self, dtype):
         for xp in (numpy, cupy):
@@ -181,7 +178,6 @@ class TestArrayIndexOtherError(unittest.TestCase):
 
 
 class TestArrayIndex(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_setitem_constant(self, xp, dtype):

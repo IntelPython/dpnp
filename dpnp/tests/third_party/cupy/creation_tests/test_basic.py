@@ -308,7 +308,6 @@ class TestBasic:
     )
 )
 class TestBasicReshape:
-
     @testing.with_requires("numpy>=1.17.0")
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()

@@ -4,7 +4,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestSplit(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_array_split1(self, xp):
         a = testing.shaped_arange((3, 11), xp)

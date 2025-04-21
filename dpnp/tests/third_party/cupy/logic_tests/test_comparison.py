@@ -9,7 +9,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestComparison(unittest.TestCase):
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-5)
     def check_binary(self, name, xp, dtype):
@@ -37,7 +36,6 @@ class TestComparison(unittest.TestCase):
 
 
 class TestComparisonOperator(unittest.TestCase):
-
     operators = [
         operator.lt,
         operator.le,
@@ -77,7 +75,6 @@ class TestComparisonOperator(unittest.TestCase):
 
 
 class TestArrayEqual(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_array_equal_not_equal(self, xp, dtype):
@@ -140,7 +137,6 @@ class TestArrayEqual(unittest.TestCase):
 
 
 class TestArrayEquiv(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_array_equiv_equal_not_equal(self, xp, dtype):
@@ -197,7 +193,6 @@ class TestArrayEquiv(unittest.TestCase):
 
 
 class TestAllclose(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_allclose_finite(self, xp, dtype):
@@ -241,7 +236,6 @@ class TestAllclose(unittest.TestCase):
 
 
 class TestIsclose(unittest.TestCase):
-
     # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_complex=True, no_int8=True)
     @testing.numpy_cupy_array_equal()

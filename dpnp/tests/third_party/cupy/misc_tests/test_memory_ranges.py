@@ -13,7 +13,6 @@ pytest.skip(
 
 
 class TestMayShareMemory(unittest.TestCase):
-
     @testing.numpy_cupy_equal()
     def test_different_arrays(self, xp):
         a = xp.array([1, 2, 3])
@@ -110,7 +109,6 @@ class TestMayShareMemory(unittest.TestCase):
 
 
 class TestSharesMemory(unittest.TestCase):
-
     def test_different_arrays(self):
         for xp in (numpy, cupy):
             a = xp.array([1, 2, 3])

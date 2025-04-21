@@ -164,8 +164,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             )
         elif not dpnp.is_supported_array_type(x):
             raise TypeError(
-                "Input array must be any of supported type, "
-                f"but got {type(x)}"
+                f"Input array must be any of supported type, but got {type(x)}"
             )
         elif dtype is not None and out is not None:
             raise TypeError(
@@ -179,7 +178,7 @@ class DPNPUnaryFunc(UnaryElementwiseFunc):
             order = order.upper()
         else:
             raise ValueError(
-                "order must be one of 'C', 'F', 'A', or 'K' " f"(got '{order}')"
+                f"order must be one of 'C', 'F', 'A', or 'K' (got '{order}')"
             )
 
         x_usm = dpnp.get_usm_ndarray(x)
@@ -715,8 +714,7 @@ def acceptance_fn_positive(arg_dtype, buf_dt, res_dt, sycl_dev):
     # positive is not defined for boolean data type
     if arg_dtype.char == "?":
         raise TypeError(
-            "The `positive` function is not supported for inputs of data type "
-            "bool"
+            "The `positive` function is not supported for inputs of data type bool"
         )
     else:
         return True

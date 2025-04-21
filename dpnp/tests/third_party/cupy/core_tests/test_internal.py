@@ -13,7 +13,6 @@ pytest.skip(
 
 
 class TestProd(unittest.TestCase):
-
     def test_empty(self):
         assert internal.prod([]) == 1
 
@@ -25,7 +24,6 @@ class TestProd(unittest.TestCase):
 
 
 class TestProdSequence(unittest.TestCase):
-
     def test_empty(self):
         assert internal.prod_sequence(()) == 1
 
@@ -37,7 +35,6 @@ class TestProdSequence(unittest.TestCase):
 
 
 class TestGetSize:
-
     def test_none(self):
         with testing.assert_warns(DeprecationWarning):
             assert internal.get_size(None) == ()
@@ -79,7 +76,6 @@ class TestGetSize:
 
 
 class TestVectorEqual(unittest.TestCase):
-
     def test_empty(self):
         assert internal.vector_equal([], []) is True
 
@@ -94,7 +90,6 @@ class TestVectorEqual(unittest.TestCase):
 
 
 class TestGetCContiguity(unittest.TestCase):
-
     def test_zero_in_shape(self):
         assert internal.get_c_contiguity((1, 0, 1), (1, 1, 1), 3)
 
@@ -127,7 +122,6 @@ class TestGetCContiguity(unittest.TestCase):
 
 
 class TestInferUnknownDimension(unittest.TestCase):
-
     def test_known_all(self):
         assert internal.infer_unknown_dimension((1, 2, 3), 6) == [1, 2, 3]
 
@@ -178,7 +172,6 @@ class TestInferUnknownDimension(unittest.TestCase):
     {"slice": (-11, -12, -1), "expect": (-1, -1, -1)},
 )
 class TestCompleteSlice(unittest.TestCase):
-
     def test_complete_slice(self):
         assert internal.complete_slice(slice(*self.slice), 10) == slice(
             *self.expect
@@ -186,7 +179,6 @@ class TestCompleteSlice(unittest.TestCase):
 
 
 class TestCompleteSliceError(unittest.TestCase):
-
     def test_invalid_step_value(self):
         with self.assertRaises(ValueError):
             internal.complete_slice(slice(1, 1, 0), 1)
@@ -221,7 +213,6 @@ class TestCompleteSliceError(unittest.TestCase):
     {"x": 2**40 + 1, "expect": 2**41},
 )
 class TestClp2(unittest.TestCase):
-
     def test_clp2(self):
         assert internal.clp2(self.x) == self.expect
 
@@ -246,14 +237,12 @@ class TestClp2(unittest.TestCase):
     )
 )
 class TestConvertFloat16(unittest.TestCase):
-
     def test_conversion(self):
         half = internal.to_float16(self.value)
         assert internal.from_float16(half) == self.value
 
 
 class TestConvertFloat16Nan(unittest.TestCase):
-
     def test_conversion(self):
         half = internal.to_float16(float("nan"))
         assert math.isnan(internal.from_float16(half))

@@ -14,7 +14,6 @@ pytest.skip("scan() is not supported", allow_module_level=True)
 
 
 class TestScan(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_scan(self, dtype):
         element_num = 10000

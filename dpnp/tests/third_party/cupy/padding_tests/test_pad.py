@@ -34,7 +34,6 @@ else:
     )
 )
 class TestPadDefault(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_pad_default(self, xp, dtype):
@@ -65,7 +64,6 @@ class TestPadDefault(unittest.TestCase):
     )
 )
 class TestPadDefaultMean(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_almost_equal(decimal=5)
     def test_pad_default(self, xp, dtype):
@@ -198,7 +196,6 @@ class TestPadDefaultMean(unittest.TestCase):
 )
 # Old numpy does not work with multi-dimensional constant_values
 class TestPad(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_pad(self, xp, dtype):
@@ -265,7 +262,6 @@ class TestPad(unittest.TestCase):
 )
 # Old numpy does not work with multi-dimensional constant_values
 class TestPadMean(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_almost_equal(decimal=5)
     def test_pad(self, xp, dtype):
@@ -293,7 +289,6 @@ class TestPadMean(unittest.TestCase):
 
 
 class TestPadNumpybug(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_pad_highdim_default(self, xp, dtype):
@@ -307,7 +302,6 @@ class TestPadNumpybug(unittest.TestCase):
 
 
 class TestPadEmpty(unittest.TestCase):
-
     @testing.with_requires("numpy>=1.17")
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
@@ -320,7 +314,6 @@ class TestPadEmpty(unittest.TestCase):
 
 
 class TestPadCustomFunction(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal()
     def test_pad_via_func(self, xp, dtype):
@@ -359,7 +352,6 @@ class TestPadCustomFunction(unittest.TestCase):
     {"array": [0, 1, 2, 3], "pad_width": [1, 2], "mode": "reflect"},
 )
 class TestPadSpecial(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal(type_check=has_support_aspect64())
     def test_pad_special(self, xp):
         array = xp.array(self.array)
@@ -433,7 +425,6 @@ class TestPadSpecial(unittest.TestCase):
 )
 @testing.with_requires("numpy>=1.17")
 class TestPadValueError(unittest.TestCase):
-
     def test_pad_failure(self):
         for xp in (numpy, cupy):
             array = xp.array(self.array)
@@ -454,7 +445,6 @@ class TestPadValueError(unittest.TestCase):
     {"array": [0, 1, 2, 3], "pad_width": [], "mode": "reflect", "kwargs": {}},
 )
 class TestPadTypeError(unittest.TestCase):
-
     def test_pad_failure(self):
         for xp in (numpy, cupy):
             array = xp.array(self.array)

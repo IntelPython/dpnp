@@ -138,7 +138,6 @@ class TestNdarrayInit(unittest.TestCase):
     )
 )
 class TestNdarrayInitStrides(unittest.TestCase):
-
     # Check the strides given shape, itemsize and order.
 
     @testing.numpy_cupy_equal()
@@ -151,7 +150,6 @@ class TestNdarrayInitStrides(unittest.TestCase):
 
 
 class TestNdarrayInitRaise(unittest.TestCase):
-
     def test_unsupported_type(self):
         arr = numpy.ndarray((2, 3), dtype=object)
         with pytest.raises(TypeError):
@@ -180,7 +178,6 @@ class TestNdarrayInitRaise(unittest.TestCase):
 )
 @pytest.mark.skip("deepcopy() is not supported")
 class TestNdarrayDeepCopy(unittest.TestCase):
-
     def _check_deepcopy(self, arr, arr2):
         assert arr.data is not arr2.data
         assert arr.shape == arr2.shape
@@ -222,7 +219,6 @@ void wait_and_write(long long *x) {
 
 
 class TestNdarrayCopy:
-
     @testing.multi_gpu(2)
     @testing.for_orders("CFA")
     def test_copy_multi_device_non_contiguous(self, order):
@@ -270,7 +266,6 @@ class TestNdarrayCopy:
 
 
 class TestNdarrayShape(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_shape_set(self, xp):
         arr = xp.ndarray((2, 3))
@@ -304,7 +299,6 @@ class TestNdarrayShape(unittest.TestCase):
 
 @pytest.mark.skip("CUDA interface is not supported")
 class TestNdarrayCudaInterface(unittest.TestCase):
-
     def test_cuda_array_interface(self):
         arr = cupy.zeros(shape=(2, 3), dtype=cupy.float64)
         iface = arr.__cuda_array_interface__
@@ -435,7 +429,6 @@ class TestNdarrayCudaInterfaceStream(unittest.TestCase):
 
 @pytest.mark.skip("CUDA interface is not supported")
 class TestNdarrayCudaInterfaceNoneCUDA(unittest.TestCase):
-
     def setUp(self):
         self.arr = cupy.zeros(shape=(2, 3), dtype=cupy.float64)
 
@@ -457,7 +450,6 @@ class TestNdarrayCudaInterfaceNoneCUDA(unittest.TestCase):
     )
 )
 class TestNdarrayTake(unittest.TestCase):
-
     shape = (3, 4, 5)
 
     @testing.for_all_dtypes()
@@ -481,7 +473,6 @@ class TestNdarrayTake(unittest.TestCase):
     )
 )
 class TestNdarrayTakeWithInt(unittest.TestCase):
-
     shape = (3, 4, 5)
 
     @testing.for_all_dtypes()
@@ -500,7 +491,6 @@ class TestNdarrayTakeWithInt(unittest.TestCase):
     )
 )
 class TestNdarrayTakeWithIntWithOutParam(unittest.TestCase):
-
     shape = (3, 4, 5)
 
     @testing.for_all_dtypes()
@@ -523,7 +513,6 @@ class TestNdarrayTakeWithIntWithOutParam(unittest.TestCase):
     )
 )
 class TestScalaNdarrayTakeWithIntWithOutParam(unittest.TestCase):
-
     shape = ()
 
     @testing.for_all_dtypes()
@@ -542,7 +531,6 @@ class TestScalaNdarrayTakeWithIntWithOutParam(unittest.TestCase):
     {"shape": (), "indices": (0,), "axis": 2},
 )
 class TestNdarrayTakeErrorAxisOverRun(unittest.TestCase):
-
     def test_axis_overrun1(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp)
@@ -560,7 +548,6 @@ class TestNdarrayTakeErrorAxisOverRun(unittest.TestCase):
     {"shape": (), "indices": (), "out_shape": (1,)},
 )
 class TestNdarrayTakeErrorShapeMismatch(unittest.TestCase):
-
     def test_shape_mismatch(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp)
@@ -575,7 +562,6 @@ class TestNdarrayTakeErrorShapeMismatch(unittest.TestCase):
     {"shape": (), "indices": (), "out_shape": ()},
 )
 class TestNdarrayTakeErrorTypeMismatch(unittest.TestCase):
-
     def test_output_type_mismatch(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp, numpy.int32)
@@ -591,7 +577,6 @@ class TestNdarrayTakeErrorTypeMismatch(unittest.TestCase):
     {"shape": (3, 0), "indices": (2,), "axis": 0},
 )
 class TestZeroSizedNdarrayTake(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_output_type_mismatch(self, xp):
         a = testing.shaped_arange(self.shape, xp, numpy.int32)
@@ -604,7 +589,6 @@ class TestZeroSizedNdarrayTake(unittest.TestCase):
     {"shape": (0,), "indices": (1, 1)},
 )
 class TestZeroSizedNdarrayTakeIndexError(unittest.TestCase):
-
     def test_output_type_mismatch(self):
         for xp in (numpy, cupy):
             a = testing.shaped_arange(self.shape, xp, numpy.int32)
@@ -614,7 +598,6 @@ class TestZeroSizedNdarrayTakeIndexError(unittest.TestCase):
 
 
 class TestSize(unittest.TestCase):
-
     @testing.numpy_cupy_equal()
     def test_size_without_axis(self, xp):
         x = testing.shaped_arange((3, 4, 5), xp, numpy.int32)
@@ -656,7 +639,6 @@ class TestSize(unittest.TestCase):
 
 @pytest.mark.skip("python interface is not supported")
 class TestPythonInterface(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test_bytes_tobytes(self, xp, dtype):
@@ -692,7 +674,6 @@ class TestPythonInterface(unittest.TestCase):
 
 
 class TestNdarrayImplicitConversion(unittest.TestCase):
-
     def test_array(self):
         a = testing.shaped_arange((3, 4, 5), cupy, numpy.int64)
         with pytest.raises(TypeError):
@@ -700,7 +681,6 @@ class TestNdarrayImplicitConversion(unittest.TestCase):
 
 
 class C(cupy.ndarray):
-
     def __new__(cls, *args, info=None, **kwargs):
         obj = super().__new__(cls, *args, **kwargs)
         obj.info = info
@@ -714,7 +694,6 @@ class C(cupy.ndarray):
 
 @pytest.mark.skip("SAT-7168: explicit constructor call is not supported")
 class TestNdarraySubclass:
-
     def test_explicit_constructor_call(self):
         a = C([0, 1, 2, 3], info="information")
         assert type(a) is C

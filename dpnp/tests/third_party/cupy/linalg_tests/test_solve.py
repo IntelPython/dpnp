@@ -22,7 +22,6 @@ from dpnp.tests.third_party.cupy.testing import _condition
 )
 @testing.fix_random()
 class TestSolve(unittest.TestCase):
-
     # def setUp(self):
     #     if self.batched_gesv_limit is not None:
     #         self.old_limit = get_batched_gesv_limit()
@@ -143,7 +142,6 @@ class TestSolve(unittest.TestCase):
 )
 @testing.fix_random()
 class TestTensorSolve(unittest.TestCase):
-
     @testing.for_dtypes("ifdFD")
     @testing.numpy_cupy_allclose(atol=0.02, type_check=has_support_aspect64())
     def test_tensorsolve(self, xp, dtype):
@@ -162,7 +160,6 @@ class TestTensorSolve(unittest.TestCase):
     )
 )
 class TestInv(unittest.TestCase):
-
     @testing.for_dtypes("ifdFD")
     @_condition.retry(10)
     def check_x(self, a_shape, dtype):
@@ -203,7 +200,6 @@ class TestInv(unittest.TestCase):
 
 
 class TestInvInvalid(unittest.TestCase):
-
     @testing.for_dtypes("ifdFD")
     def test_inv(self, dtype):
         for xp in (numpy, cupy):
@@ -226,7 +222,6 @@ class TestInvInvalid(unittest.TestCase):
 
 
 class TestPinv(unittest.TestCase):
-
     @testing.for_dtypes("ifdFD")
     @_condition.retry(10)
     def check_x(self, a_shape, rcond, dtype):
@@ -269,7 +264,6 @@ class TestPinv(unittest.TestCase):
 
 
 class TestLstsq:
-
     @testing.for_dtypes("ifdFD")
     @testing.numpy_cupy_allclose(atol=1e-3, type_check=has_support_aspect64())
     def check_lstsq_solution(
@@ -362,7 +356,6 @@ class TestLstsq:
 
 
 class TestTensorInv(unittest.TestCase):
-
     @testing.for_dtypes("ifdFD")
     @_condition.retry(10)
     def check_x(self, a_shape, ind, dtype):

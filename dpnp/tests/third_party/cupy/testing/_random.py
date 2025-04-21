@@ -66,7 +66,7 @@ _nest_count = 0
 @atexit.register
 def _check_teardown():
     assert _nest_count == 0, (
-        "_setup_random() and _teardown_random() " "must be called in pairs."
+        "_setup_random() and _teardown_random() must be called in pairs."
     )
 
 

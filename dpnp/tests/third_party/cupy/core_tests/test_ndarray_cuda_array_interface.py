@@ -16,7 +16,6 @@ pytest.skip(
 
 
 class DummyObjectWithCudaArrayInterface(object):
-
     def __init__(self, a, ver=3):
         self.a = a
         self.ver = ver
@@ -50,7 +49,6 @@ class DummyObjectWithCudaArrayInterface(object):
     cupy.cuda.runtime.is_hip, reason="HIP does not support this"
 )
 class TestArrayUfunc(unittest.TestCase):
-
     def setUp(self):
         if self.stream == "null":
             self.stream = cupy.cuda.Stream.null
@@ -92,7 +90,6 @@ class TestArrayUfunc(unittest.TestCase):
     cupy.cuda.runtime.is_hip, reason="HIP does not support this"
 )
 class TestElementwiseKernel(unittest.TestCase):
-
     def setUp(self):
         if self.stream == "null":
             self.stream = cupy.cuda.Stream.null
@@ -135,7 +132,6 @@ class TestElementwiseKernel(unittest.TestCase):
     cupy.cuda.runtime.is_hip, reason="HIP does not support this"
 )
 class TestSimpleReductionFunction(unittest.TestCase):
-
     def setUp(self):
         if self.stream == "null":
             self.stream = cupy.cuda.Stream.null
@@ -178,7 +174,6 @@ class TestSimpleReductionFunction(unittest.TestCase):
     cupy.cuda.runtime.is_hip, reason="HIP does not support this"
 )
 class TestReductionKernel(unittest.TestCase):
-
     def setUp(self):
         if self.stream == "null":
             self.stream = cupy.cuda.Stream.null
@@ -222,7 +217,6 @@ class TestReductionKernel(unittest.TestCase):
     cupy.cuda.runtime.is_hip, reason="HIP does not support this"
 )
 class TestSlicingMemoryPointer(unittest.TestCase):
-
     @testing.for_all_dtypes_combination(names=["dtype"])
     @testing.for_orders("CF")
     def test_shape_with_strides(self, dtype, order):
@@ -269,7 +263,6 @@ test_cases_with_stream = [
     cupy.cuda.runtime.is_hip, reason="HIP does not support this"
 )
 class TestCUDAArrayInterfaceCompliance(unittest.TestCase):
-
     def setUp(self):
         if self.stream == "null":
             self.stream = cupy.cuda.Stream.null

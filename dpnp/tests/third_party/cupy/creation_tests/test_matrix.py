@@ -9,7 +9,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestMatrix(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_diag1(self, xp):
         a = testing.shaped_arange((3, 3), xp)
@@ -109,7 +108,6 @@ class TestMatrix(unittest.TestCase):
     {"shape": (4, 3)},
 )
 class TestTri(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_tri(self, xp, dtype):
@@ -133,7 +131,6 @@ class TestTri(unittest.TestCase):
     {"shape": (2, 3, 4)},
 )
 class TestTriLowerAndUpper(unittest.TestCase):
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_tril(self, xp, dtype):
@@ -185,7 +182,6 @@ class TestTriLowerAndUpper(unittest.TestCase):
     *testing.product({"N": [None, 0, 1, 2, 3], "increasing": [False, True]})
 )
 class TestVander(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_vander(self, xp, dtype):

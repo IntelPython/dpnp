@@ -20,7 +20,6 @@ except ImportError:
 
 @pytest.mark.skip("dpnp.get_array_module() is not supported")
 class TestGetArrayModule(unittest.TestCase):
-
     def test_get_array_module_1(self):
         n1 = numpy.array([2], numpy.float32)
         c1 = cupy.array([2], numpy.float32)
@@ -65,7 +64,6 @@ class MockArray(numpy.lib.mixins.NDArrayOperatorsMixin):
 
 @pytest.mark.skip("dpnp.__array_ufunc__ is not supported")
 class TestArrayUfunc:
-
     def test_add(self):
         x = cupy.array([3, 7])
         y = MockArray()
@@ -122,7 +120,6 @@ class MockArray2:
 
 @pytest.mark.skip("dpnp.__array_ufunc__ is not supported")
 class TestArrayUfuncOptout:
-
     def test_add(self):
         x = cupy.array([3, 7])
         y = MockArray2()
@@ -143,7 +140,6 @@ class TestArrayUfuncOptout:
 
 
 class TestAsnumpy:
-
     def test_asnumpy(self):
         x = testing.shaped_random((2, 3, 4), cupy, cupy.default_float_type())
         y = cupy.asnumpy(x)

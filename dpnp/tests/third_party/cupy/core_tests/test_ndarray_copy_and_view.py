@@ -27,7 +27,6 @@ def get_strides(xp, a):
 
 @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
 class TestView:
-
     @testing.numpy_cupy_array_equal()
     def test_view(self, xp):
         a = testing.shaped_arange((4,), xp, dtype=numpy.float32)
@@ -189,7 +188,6 @@ class TestView:
 
 
 class TestArrayCopy:
-
     @testing.for_orders("CF")
     @testing.for_dtypes(
         [numpy.int16, numpy.int64, numpy.float16, numpy.float64]
@@ -232,7 +230,6 @@ class TestArrayCopy:
 
 
 class TestArrayFlatten:
-
     @testing.numpy_cupy_array_equal()
     def test_flatten(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -272,7 +269,6 @@ class TestArrayFlatten:
 
 
 class TestArrayFill:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_fill(self, xp, dtype):
@@ -316,7 +312,6 @@ class TestArrayFill:
 
 
 class TestArrayAsType:
-
     @testing.for_orders(["C", "F", "A", "K", None])
     @testing.for_all_dtypes_combination(("src_dtype", "dst_dtype"))
     @testing.numpy_cupy_array_equal()
@@ -396,7 +391,6 @@ class TestArrayAsType:
 
 
 class TestArrayDiagonal:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_diagonal1(self, xp, dtype):
@@ -429,7 +423,6 @@ class TestNumPyArrayCopyView:
 
 
 class C_cp(cupy.ndarray):
-
     def __new__(cls, *args, info=None, **kwargs):
         obj = super().__new__(cls, *args, **kwargs)
         obj.info = info
@@ -442,7 +435,6 @@ class C_cp(cupy.ndarray):
 
 
 class C_np(numpy.ndarray):
-
     def __new__(cls, *args, info=None, **kwargs):
         obj = super().__new__(cls, *args, **kwargs)
         obj.info = info
@@ -456,7 +448,6 @@ class C_np(numpy.ndarray):
 
 @pytest.mark.skip("'dpnp_array' object has no attribute 'view' yet")
 class TestSubclassArrayView:
-
     def test_view_casting(self):
         for xp, C in [(numpy, C_np), (cupy, C_cp)]:
             a = xp.arange(5, dtype="i").view("f")

@@ -9,7 +9,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestDims(unittest.TestCase):
-
     def check_atleast(self, func, xp):
         a = testing.shaped_arange((), xp)
         b = testing.shaped_arange((2,), xp)
@@ -295,7 +294,6 @@ class TestDims(unittest.TestCase):
     {"shapes": [(0, 1, 1, 0, 3), (5, 2, 0, 1, 0, 0, 3), (2, 1, 0, 0, 0, 3)]},
 )
 class TestBroadcast(unittest.TestCase):
-
     def _broadcast(self, xp, dtype, shapes):
         arrays = [testing.shaped_arange(s, xp, dtype) for s in shapes]
         return xp.broadcast(*arrays)
@@ -339,7 +337,6 @@ class TestBroadcast(unittest.TestCase):
     {"shapes": [(0,), (2,)]},
 )
 class TestInvalidBroadcast(unittest.TestCase):
-
     @pytest.mark.skip("broadcast() is not supported yet")
     @testing.for_all_dtypes()
     def test_invalid_broadcast(self, dtype):

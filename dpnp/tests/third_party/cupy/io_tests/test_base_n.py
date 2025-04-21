@@ -4,7 +4,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestBinaryRepr(testing.NumpyAliasBasicTestBase):
-
     func = "binary_repr"
 
 
@@ -28,13 +27,11 @@ class TestBinaryRepr(testing.NumpyAliasBasicTestBase):
     )
 )
 class TestBinaryReprValues(testing.NumpyAliasValuesTestBase):
-
     func = "binary_repr"
 
 
 @pytest.mark.skip("base_repr() is not implemented")
 class TestBaseRepr(testing.NumpyAliasBasicTestBase):
-
     func = "base_repr"
 
 
@@ -66,5 +63,4 @@ class TestBaseRepr(testing.NumpyAliasBasicTestBase):
 )
 @pytest.mark.skip("base_repr() is not implemented")
 class TestBaseReprValues(testing.NumpyAliasValuesTestBase):
-
     func = "base_repr"

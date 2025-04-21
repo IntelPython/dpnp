@@ -10,7 +10,6 @@ pytest.skip("get() method is not supported", allow_module_level=True)
 
 
 class TestSyncDetect(unittest.TestCase):
-
     def test_disallowed(self):
         a = cupy.array([2, 3])
         with cupyx.allow_synchronize(False):

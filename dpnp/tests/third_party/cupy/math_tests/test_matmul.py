@@ -59,7 +59,6 @@ from dpnp.tests.third_party.cupy import testing
     )
 )
 class TestMatmul(unittest.TestCase):
-
     # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(name="dtype1", no_int8=True)
     @testing.for_all_dtypes(name="dtype2", no_int8=True)
@@ -98,12 +97,13 @@ class TestMatmul(unittest.TestCase):
     )
 )
 class TestMatmulOut(unittest.TestCase):
-
     # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(name="dtype1", no_int8=True)
     @testing.for_all_dtypes(name="dtype2", no_int8=True)
     @testing.numpy_cupy_allclose(
-        rtol=1e-3, atol=1e-3, accept_error=TypeError  # required for uint8
+        rtol=1e-3,
+        atol=1e-3,
+        accept_error=TypeError,  # required for uint8
     )
     def test_cupy_matmul_noncontiguous(self, xp, dtype1, dtype2):
         x1 = testing.shaped_arange(self.shape_pair[0], xp, dtype1)
@@ -126,7 +126,6 @@ class TestMatmulOut(unittest.TestCase):
 
 
 class TestMatmulOutOverlap:
-
     @pytest.mark.parametrize(
         "shape",
         [
@@ -142,7 +141,6 @@ class TestMatmulOutOverlap:
 
 
 class TestMatmulStrides:
-
     # no_int8=True is added to avoid overflow
     @testing.for_all_dtypes(no_int8=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
@@ -172,7 +170,6 @@ class TestMatmulStrides:
     )
 )
 class TestMatmulLarge(unittest.TestCase):
-
     # Avoid overflow
     skip_dtypes = {
         (numpy.int8, numpy.int8),
@@ -228,7 +225,6 @@ class TestMatmulLarge(unittest.TestCase):
     ],
 )
 class TestMatmulIntegralLargeBatch:
-
     @testing.for_int_dtypes(name="dtype")
     @testing.numpy_cupy_array_equal()
     def test_operator_matmul(self, xp, dtype, shape1, shape2):
@@ -246,7 +242,6 @@ class TestMatmulIntegralLargeBatch:
 
 @pytest.mark.skip("overflow is undefined behavior.")
 class TestMatmulOverflow(unittest.TestCase):
-
     @testing.for_int_dtypes(name="dtype", no_bool=True)
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_overflow(self, xp, dtype):
@@ -258,7 +253,6 @@ class TestMatmulOverflow(unittest.TestCase):
 
 @pytest.mark.skip("set_compute_type() is not supported")
 class _TestMatmulComputeTypes(unittest.TestCase):
-
     def setUp(self):
         self.old_compute_type = cupy._core.get_compute_type(self.dtype)
         cupy._core.set_compute_type(self.dtype, self.compute_type)
@@ -392,7 +386,6 @@ class TestMatmulFp64ComputeTypes(_TestMatmulComputeTypes):
     )
 )
 class TestMatmulInvalidShape(unittest.TestCase):
-
     def test_invalid_shape(self):
         for xp in (numpy, cupy):
             shape1, shape2 = self.shape_pair
@@ -435,7 +428,6 @@ class TestMatmulInvalidShape(unittest.TestCase):
     )
 )
 class TestMatmulAxes(unittest.TestCase):
-
     @testing.numpy_cupy_allclose(rtol=1e-3, atol=1e-3)  # required for uint8
     def test_cupy_matmul_axes(self, xp):
         x1 = testing.shaped_arange(self.shapes_axes[0][0], xp)
@@ -455,7 +447,6 @@ class TestMatmulAxes(unittest.TestCase):
 
 @pytest.mark.skip("GUFunc is not supported")
 class TestMatmulDispatch(unittest.TestCase):
-
     def test_matmul_dispatch(self):
         x1 = testing.shaped_arange((2, 10, 5), cupy)
         x2 = testing.shaped_arange((10, 2, 5), cupy)

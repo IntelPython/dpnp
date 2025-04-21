@@ -74,7 +74,6 @@ def _get_size(size):
 
 
 class RandomGeneratorTestCase(common_distributions.BaseGeneratorTestCase):
-
     target_method = None
 
     def get_rng(self, xp, seed):
@@ -101,7 +100,6 @@ def _xp_random(xp, method_name):
 
 @testing.fix_random()
 class TestRandomState(unittest.TestCase):
-
     def setUp(self):
         self.rs = _generator.RandomState(seed=testing.generate_seed())
 
@@ -240,7 +238,6 @@ class TestHypergeometric(
 
 @testing.fix_random()
 class TestLaplace(RandomGeneratorTestCase):
-
     target_method = "laplace"
 
     def test_laplace_1(self):
@@ -262,7 +259,6 @@ class TestLaplace(RandomGeneratorTestCase):
 
 @testing.fix_random()
 class TestLogistic(RandomGeneratorTestCase):
-
     target_method = "logistic"
 
     def test_logistic_1(self):
@@ -301,7 +297,6 @@ class TestLogistic(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestLogNormal(RandomGeneratorTestCase):
-
     target_method = "lognormal"
 
     def check_lognormal(self, dtype):
@@ -378,7 +373,6 @@ class TestLogseries(common_distributions.Logseries, RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestMultivariateNormal(RandomGeneratorTestCase):
-
     target_method = "multivariate_normal"
 
     def check_multivariate_normal(self, dtype):
@@ -425,7 +419,6 @@ class TestNegativeBinomial(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestNoncentralChisquare(RandomGeneratorTestCase):
-
     target_method = "noncentral_chisquare"
 
     def test_noncentral_chisquare(self):
@@ -443,7 +436,6 @@ class TestNoncentralChisquare(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestNoncentralF(RandomGeneratorTestCase):
-
     target_method = "noncentral_f"
 
     def test_noncentral_f(self):
@@ -472,7 +464,6 @@ class TestNoncentralF(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestNormal(RandomGeneratorTestCase):
-
     target_method = "normal"
 
     def check_normal(self, dtype):
@@ -505,7 +496,6 @@ class TestNormal(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestPareto(RandomGeneratorTestCase):
-
     target_method = "pareto"
 
     def test_pareto(self):
@@ -530,7 +520,6 @@ class TestPoisson(common_distributions.Poisson, RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestStandardT(RandomGeneratorTestCase):
-
     target_method = "standard_t"
 
     def test_standard_t(self):
@@ -553,7 +542,6 @@ class TestStandardT(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestRandomSample(unittest.TestCase):
-
     def setUp(self):
         self.rs = _generator.RandomState(seed=testing.generate_seed())
 
@@ -577,7 +565,6 @@ class TestRandomSample(unittest.TestCase):
 
 @testing.fix_random()
 class TestRandomSampleDistrib(unittest.TestCase):
-
     @testing.for_dtypes("fd")
     @_condition.repeat_with_success_at_least(10, 3)
     @numpy_cupy_equal_continuous_distribution(0.05)
@@ -587,7 +574,6 @@ class TestRandomSampleDistrib(unittest.TestCase):
 
 @testing.fix_random()
 class TestRandAndRandN(unittest.TestCase):
-
     def setUp(self):
         self.rs = _generator.RandomState(seed=testing.generate_seed())
 
@@ -612,7 +598,6 @@ class TestPower(common_distributions.Power, RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestRayleigh(RandomGeneratorTestCase):
-
     target_method = "rayleigh"
 
     def test_rayleigh(self):
@@ -626,7 +611,6 @@ class TestRayleigh(RandomGeneratorTestCase):
 
 @testing.fix_random()
 class TestStandardCauchy(RandomGeneratorTestCase):
-
     target_method = "standard_cauchy"
 
     def test_standard_cauchy(self):
@@ -654,7 +638,6 @@ class TestStandardGamma(
 
 @testing.fix_random()
 class TestInterval(RandomGeneratorTestCase):
-
     target_method = "_interval"
 
     def test_zero(self):
@@ -740,7 +723,6 @@ class TestInterval(RandomGeneratorTestCase):
 
 @testing.fix_random()
 class TestTomaxint(RandomGeneratorTestCase):
-
     target_method = "tomaxint"
 
     def test_tomaxint_none(self):
@@ -774,7 +756,6 @@ class TestTomaxint(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestChoice1(RandomGeneratorTestCase):
-
     target_method = "choice"
 
     def test_dtype_shape(self):
@@ -808,7 +789,6 @@ class TestChoice1(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestChoice2(RandomGeneratorTestCase):
-
     target_method = "choice"
 
     def test_dtype_shape(self):
@@ -837,7 +817,6 @@ class TestChoice2(RandomGeneratorTestCase):
 
 @testing.fix_random()
 class TestChoiceChi(RandomGeneratorTestCase):
-
     target_method = "choice"
 
     @_condition.repeat_with_success_at_least(10, 9)
@@ -859,7 +838,6 @@ class TestChoiceChi(RandomGeneratorTestCase):
 
 @testing.fix_random()
 class TestChoiceMultinomial(unittest.TestCase):
-
     @_condition.repeat(3, 10)
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose(atol=0.02)
@@ -885,7 +863,6 @@ class TestChoiceMultinomial(unittest.TestCase):
 )
 @testing.fix_random()
 class TestChoiceFailure(unittest.TestCase):
-
     def setUp(self):
         self.rs = _generator.RandomState(seed=testing.generate_seed())
 
@@ -902,7 +879,6 @@ class TestChoiceFailure(unittest.TestCase):
 )
 @testing.fix_random()
 class TestChoiceReplaceFalse(RandomGeneratorTestCase):
-
     target_method = "choice"
 
     def test_dtype_shape(self):
@@ -931,7 +907,6 @@ class TestChoiceReplaceFalse(RandomGeneratorTestCase):
 
 @testing.fix_random()
 class TestGumbel(RandomGeneratorTestCase):
-
     target_method = "gumbel"
 
     def test_gumbel_1(self):
@@ -989,7 +964,6 @@ class TestRandint(RandomGeneratorTestCase):
 
 @testing.fix_random()
 class TestUniform(RandomGeneratorTestCase):
-
     target_method = "uniform"
 
     def test_uniform_1(self):
@@ -1019,7 +993,6 @@ class TestUniform(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestVonmises(RandomGeneratorTestCase):
-
     target_method = "vonmises"
 
     def test_vonmises(self):
@@ -1038,7 +1011,6 @@ class TestVonmises(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestWald(RandomGeneratorTestCase):
-
     target_method = "wald"
 
     def test_wald(self):
@@ -1058,7 +1030,6 @@ class TestWald(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestWeibull(RandomGeneratorTestCase):
-
     target_method = "weibull"
 
     def test_weibull(self):
@@ -1078,7 +1049,6 @@ class TestWeibull(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestZipf(RandomGeneratorTestCase):
-
     target_method = "zipf"
 
     def test_zipf(self):
@@ -1093,7 +1063,6 @@ class TestZipf(RandomGeneratorTestCase):
 )
 @testing.fix_random()
 class TestChoiceReplaceFalseFailure(unittest.TestCase):
-
     def test_choice_invalid_value(self):
         for xp in (numpy, cupy):
             rs = xp.random.RandomState(seed=testing.generate_seed())
@@ -1102,7 +1071,6 @@ class TestChoiceReplaceFalseFailure(unittest.TestCase):
 
 
 class TestResetStates(unittest.TestCase):
-
     def test_reset_states(self):
         _generator._random_states = "dummy"
         _generator.reset_states()
@@ -1110,7 +1078,6 @@ class TestResetStates(unittest.TestCase):
 
 
 class TestGetRandomState(unittest.TestCase):
-
     def setUp(self):
         self.device_id = cuda.Device().id
         self.rs_tmp = _generator._random_states
@@ -1135,7 +1102,6 @@ class TestGetRandomState(unittest.TestCase):
 
 
 class TestSetRandomState(unittest.TestCase):
-
     def setUp(self):
         self.rs_tmp = _generator._random_states
 
@@ -1166,7 +1132,6 @@ class TestStandardExponential(
 )
 @testing.fix_random()
 class TestTriangular(RandomGeneratorTestCase):
-
     target_method = "triangular"
 
     def test_triangular(self):
@@ -1176,7 +1141,6 @@ class TestTriangular(RandomGeneratorTestCase):
 
 
 class TestRandomStateThreadSafe(unittest.TestCase):
-
     def setUp(self):
         cupy.random.reset_states()
 
@@ -1230,7 +1194,6 @@ class TestRandomStateThreadSafe(unittest.TestCase):
 
 
 class TestGetRandomState2(unittest.TestCase):
-
     def setUp(self):
         self.rs_dict = _generator._random_states
         _generator._random_states = {}
@@ -1278,7 +1241,6 @@ class TestGetRandomState2(unittest.TestCase):
 
 
 class TestCheckAndGetDtype(unittest.TestCase):
-
     @testing.for_float_dtypes(no_float16=True)
     def test_float32_64_type(self, dtype):
         assert _generator._check_and_get_dtype(dtype) == numpy.dtype(dtype)

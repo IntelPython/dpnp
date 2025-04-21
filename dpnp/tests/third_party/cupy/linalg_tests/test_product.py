@@ -99,7 +99,6 @@ class TestDot(unittest.TestCase):
     )
 )
 class TestCrossProduct(unittest.TestCase):
-
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_cross(self, xp, dtype_a, dtype_b):
@@ -170,7 +169,6 @@ class TestCrossProductDeprecated(unittest.TestCase):
     )
 )
 class TestLinalgCrossProduct(unittest.TestCase):
-
     @testing.with_requires("numpy>=2.0")
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
@@ -198,7 +196,6 @@ class TestLinalgCrossProduct(unittest.TestCase):
     )
 )
 class TestDotFor0Dim(unittest.TestCase):
-
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b"])
     @testing.numpy_cupy_allclose(
         type_check=has_support_aspect64(), contiguous_check=False
@@ -217,7 +214,6 @@ class TestDotFor0Dim(unittest.TestCase):
 
 
 class TestProduct:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_dot_vec1(self, xp, dtype):
@@ -499,7 +495,6 @@ class TestProduct:
     )
 )
 class TestProductZeroLength(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_tensordot_zero_length(self, xp, dtype):
@@ -588,7 +583,6 @@ class TestMatrixPower(unittest.TestCase):
 )
 @pytest.mark.parametrize("n", [0, 5, -7])
 class TestMatrixPowerBatched:
-
     @testing.for_float_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=5e-5)
     def test_matrix_power_batched(self, xp, dtype, shape, n):

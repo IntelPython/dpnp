@@ -6,7 +6,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestUfuncOuter:
-
     @testing.numpy_cupy_array_equal()
     def test_add_outer(self, xp):
         x = testing.shaped_random((2, 3), xp=xp, dtype=numpy.int32, seed=0)
@@ -21,7 +20,6 @@ class TestUfuncOuter:
 
 @pytest.mark.skip("at() method is not supported")
 class TestUfuncAtAtomicOps:
-
     @testing.for_dtypes("iIQefd")
     @testing.numpy_cupy_array_equal()
     def test_at_add(self, xp, dtype):
@@ -203,7 +201,6 @@ class TestUfuncAtAtomicOps:
 
 @pytest.mark.skip("reduce() method is not supported")
 class TestUfuncReduce:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-3, "default": 1e-6})
     def test_reduce_add(self, xp, dtype):
@@ -219,7 +216,6 @@ class TestUfuncReduce:
 
 @pytest.mark.skip("accumulate() method is not supported")
 class TestUfuncAccumulate:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(rtol={numpy.float16: 1e-3, "default": 1e-6})
     def test_reduce_add(self, xp, dtype):
@@ -235,7 +231,6 @@ class TestUfuncAccumulate:
 
 @pytest.mark.skip("reduceat() method is not supported")
 class TestUfuncReduceAt:
-
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
     def test_reduce_add(self, xp, dtype):

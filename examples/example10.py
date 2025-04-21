@@ -82,7 +82,7 @@ def example():
                 verification = f"({result_dpnp} != {result_numpy})"
 
             msg = f"type:{type_name}:N:{size:4}:NumPy:{time_numpy:.3e}:DPNP:{time_dpnp:.3e}"
-            msg += f":ratio:{time_numpy/time_dpnp:6.2f}:verification:{verification}"
+            msg += f":ratio:{time_numpy / time_dpnp:6.2f}:verification:{verification}"
             print(msg)
 
 

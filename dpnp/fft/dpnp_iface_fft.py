@@ -344,8 +344,7 @@ def fftfreq(
 
     if dtype and not dpnp.issubdtype(dtype, dpnp.floating):
         raise ValueError(
-            "dtype must a real-valued floating-point data type, "
-            f"but got {dtype}"
+            f"dtype must a real-valued floating-point data type, but got {dtype}"
         )
 
     val = 1.0 / (n * d)
@@ -1665,8 +1664,7 @@ def rfftfreq(
 
     if dtype and not dpnp.issubdtype(dtype, dpnp.floating):
         raise ValueError(
-            "dtype must a real-valued floating-point data type, "
-            f"but got {dtype}"
+            f"dtype must a real-valued floating-point data type, but got {dtype}"
         )
 
     val = 1.0 / (n * d)

@@ -120,7 +120,6 @@ def _set_store_cb(code, element, data_type, callback_type, aux_type=None):
     cupy.cuda.runtime.is_hip, reason="hipFFT does not support callbacks"
 )
 class Test1dCallbacks:
-
     def _test_load_helper(self, xp, dtype, fft_func):
         fft = getattr(xp.fft, fft_func)
         code = _load_callback
@@ -488,7 +487,6 @@ class Test1dCallbacks:
     cupy.cuda.runtime.is_hip, reason="hipFFT does not support callbacks"
 )
 class TestNdCallbacks:
-
     def _test_load_helper(self, xp, dtype, fft_func):
         fft = getattr(xp.fft, fft_func)
         load_code = _load_callback

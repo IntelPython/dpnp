@@ -37,7 +37,6 @@ it contains:
 
 """
 
-
 import operator
 
 import dpctl.tensor as dpt

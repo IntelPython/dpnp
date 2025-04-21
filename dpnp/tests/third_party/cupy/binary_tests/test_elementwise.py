@@ -4,7 +4,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestElementwise(unittest.TestCase):
-
     @testing.for_int_dtypes()
     @testing.numpy_cupy_array_equal()
     def check_unary_int(self, name, xp, dtype):

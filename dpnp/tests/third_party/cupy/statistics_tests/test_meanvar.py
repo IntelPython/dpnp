@@ -14,7 +14,6 @@ ignore_runtime_warnings = pytest.mark.filterwarnings(
 
 
 class TestMedian:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_noaxis(self, xp, dtype):
@@ -93,7 +92,6 @@ class TestMedian:
     )
 )
 class TestMedianAxis:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_median_axis_sequence(self, xp, dtype):
@@ -112,7 +110,6 @@ class TestMedianAxis:
     )
 )
 class TestNanMedian:
-
     zero_density = 0.25
 
     def _make_array(self, dtype):
@@ -151,7 +148,6 @@ class TestNanMedian:
 
 
 class TestAverage:
-
     _multiprocess_can_split_ = True
 
     @testing.for_all_dtypes()
@@ -208,7 +204,6 @@ class TestAverage:
 
 
 class TestMeanVar:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_mean_all(self, xp, dtype):
@@ -358,7 +353,6 @@ class TestMeanVar:
     )
 )
 class TestNanMean:
-
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
     def test_nanmean_without_nan(self, xp, dtype):
@@ -379,7 +373,6 @@ class TestNanMean:
 
 
 class TestNanMeanAdditional:
-
     @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6)
@@ -433,7 +426,6 @@ class TestNanMeanAdditional:
     )
 )
 class TestNanVarStd:
-
     @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
@@ -458,7 +450,6 @@ class TestNanVarStd:
 
 
 class TestNanVarStdAdditional:
-
     @ignore_runtime_warnings
     @testing.for_all_dtypes(no_float16=True)
     @testing.numpy_cupy_allclose(rtol=1e-6, type_check=has_support_aspect64())
@@ -549,7 +540,6 @@ class TestNanVarStdAdditional:
     "suppress_mean_empty_slice_numpy_warnings",
 )
 class TestProductZeroLength:
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=has_support_aspect64())
     def test_external_mean_zero_len(self, xp, dtype):

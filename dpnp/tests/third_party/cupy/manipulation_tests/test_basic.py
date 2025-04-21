@@ -14,7 +14,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestBasic:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_copyto(self, xp, dtype):
@@ -209,7 +208,6 @@ class TestBasic:
     )
 )
 class TestCopytoFromScalar:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(accept_error=(TypeError, OverflowError))
     def test_copyto(self, xp, dtype):
@@ -233,7 +231,6 @@ class TestCopytoFromScalar:
     "casting", ["no", "equiv", "safe", "same_kind", "unsafe"]
 )
 class TestCopytoFromNumpyScalar:
-
     @testing.for_all_dtypes_combination(("dtype1", "dtype2"))
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def test_copyto(self, xp, dtype1, dtype2, casting):

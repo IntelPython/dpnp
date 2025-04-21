@@ -58,7 +58,6 @@ no_complex_types = [numpy.bool_] + float_types + int_types
     )
 )
 class TestArithmeticRaisesWithNumpyInput:
-
     def test_raises_with_numpy_input(self):
         nargs = self.nargs
         name = self.name
@@ -133,7 +132,6 @@ class TestArithmeticRaisesWithNumpyInput:
     )
 )
 class TestArithmeticUnary:
-
     @testing.numpy_cupy_allclose(atol=1e-5, type_check=has_support_aspect64())
     def test_unary(self, xp):
         arg1 = self.arg1
@@ -180,7 +178,6 @@ class TestArithmeticUnary:
     )
 )
 class TestComplex:
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_real_ndarray_nocomplex(self, xp, dtype):
@@ -265,7 +262,6 @@ class TestComplex:
 
 
 class ArithmeticBinaryBase:
-
     @testing.numpy_cupy_allclose(rtol=1e-4, type_check=has_support_aspect64())
     def check_binary(self, xp):
         arg1 = self.arg1
@@ -402,7 +398,6 @@ class ArithmeticBinaryBase:
     )
 )
 class TestArithmeticBinary(ArithmeticBinaryBase):
-
     def test_binary(self):
         self.use_dtype = False
         self.check_binary()
@@ -481,14 +476,12 @@ class TestArithmeticBinary(ArithmeticBinaryBase):
     )
 )
 class TestArithmeticBinary2(ArithmeticBinaryBase):
-
     def test_binary(self):
         self.check_binary()
 
 
 @testing.with_requires("numpy>=2.0")
 class TestArithmeticBinary3(ArithmeticBinaryBase):
-
     @pytest.mark.parametrize(
         "arg1",
         [
@@ -533,7 +526,6 @@ class TestArithmeticBinary3(ArithmeticBinaryBase):
 
 @pytest.mark.skip("'casting' keyword is not supported yet")
 class UfuncTestBase:
-
     @testing.numpy_cupy_allclose(accept_error=TypeError)
     def check_casting_out(self, in0_type, in1_type, out_type, casting, xp):
         a = testing.shaped_arange((2, 3), xp, in0_type)
@@ -578,7 +570,6 @@ class UfuncTestBase:
 
 
 class TestUfunc(UfuncTestBase):
-
     @pytest.mark.parametrize(
         "casting",
         [
@@ -738,7 +729,6 @@ class TestUfuncSlow(UfuncTestBase):
 
 
 class TestArithmeticModf:
-
     @testing.for_float_dtypes()
     @testing.numpy_cupy_allclose()
     def test_modf(self, xp, dtype):
@@ -754,7 +744,6 @@ class TestArithmeticModf:
     *testing.product({"xp": [numpy, cupy], "shape": [(3, 2), (), (3, 0, 2)]})
 )
 class TestBoolSubtract:
-
     def test_bool_subtract(self):
         xp = self.xp
         shape = self.shape

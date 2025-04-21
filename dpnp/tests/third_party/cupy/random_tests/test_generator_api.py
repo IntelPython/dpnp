@@ -15,7 +15,6 @@ pytest.skip("random.Generator() is not supported yet", allow_module_level=True)
 
 
 class GeneratorTestCase(common_distributions.BaseGeneratorTestCase):
-
     target_method = None
 
     def get_rng(self, xp, seed):
@@ -31,7 +30,6 @@ class GeneratorTestCase(common_distributions.BaseGeneratorTestCase):
 
 
 class InvalidOutsMixin:
-
     def invalid_dtype_out(self, **kwargs):
         out = cupy.zeros((3, 2), dtype=cupy.float32)
         with pytest.raises(TypeError):
@@ -122,7 +120,6 @@ class TestStandardGamma(
 
 @testing.fix_random()
 class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
-
     target_method = "standard_gamma"
 
     def test_invalid_dtype_out(self):
@@ -146,7 +143,6 @@ class TestStandardGammaInvalid(InvalidOutsMixin, GeneratorTestCase):
 
 @testing.fix_random()
 class TestStandardGammaEmpty(GeneratorTestCase):
-
     target_method = "standard_gamma"
 
     def test_empty_shape(self):
@@ -176,7 +172,6 @@ class TestStandardNormal(
 @testing.with_requires("numpy>=1.17.0")
 @testing.fix_random()
 class TestStandardNormalInvalid(InvalidOutsMixin, GeneratorTestCase):
-
     target_method = "standard_normal"
 
     def test_invalid_dtypes(self):
@@ -278,7 +273,6 @@ class TestPower(common_distributions.Power, GeneratorTestCase):
     reason="HIP<4.3 not supported ",
 )
 class TestRandomStateThreadSafe(unittest.TestCase):
-
     def test_default_rng_thread_safe(self):
         def _f(func, args=()):
             cupy.cuda.Device().use()

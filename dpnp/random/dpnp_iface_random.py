@@ -1630,7 +1630,6 @@ def shuffle(x1):
 
     x1_desc = dpnp.get_dpnp_descriptor(x1, copy_when_strides=False)
     if x1_desc:
-
         if dpnp.is_cuda_backend(x1_desc.get_array()):  # pragma: no cover
             raise NotImplementedError(
                 "Running on CUDA is currently not supported"

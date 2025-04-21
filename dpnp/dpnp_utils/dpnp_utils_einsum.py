@@ -791,8 +791,7 @@ def _parse_int_subscript(list_subscript):
                 s = operator.index(s)
             except TypeError as e:
                 raise TypeError(
-                    "For this input type lists must contain "
-                    "either int or Ellipsis"
+                    "For this input type lists must contain either int or Ellipsis"
                 ) from e
 
             if not 0 <= s < len(_einsum_symbols):

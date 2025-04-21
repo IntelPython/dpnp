@@ -11,7 +11,6 @@ pytest.skip("bit generator is not supported yet", allow_module_level=True)
 
 
 class BitGeneratorTestCase:
-
     def setUp(self):
         self.seed = testing.generate_seed()
 

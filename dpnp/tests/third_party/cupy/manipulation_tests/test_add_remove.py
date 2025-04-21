@@ -11,7 +11,6 @@ from dpnp.tests.third_party.cupy.testing._loops import (
 
 
 class TestDelete(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_delete_with_no_axis(self, xp):
         arr = xp.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9])
@@ -58,7 +57,6 @@ class TestDelete(unittest.TestCase):
 
 
 class TestAppend(unittest.TestCase):
-
     @testing.for_all_dtypes_combination(
         names=["dtype1", "dtype2"], no_bool=True
     )
@@ -123,7 +121,6 @@ class TestAppend(unittest.TestCase):
 
 
 class TestResize(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test(self, xp):
         return xp.resize(xp.arange(10), (10, 10))
@@ -161,7 +158,6 @@ class TestResize(unittest.TestCase):
 
 
 class TestUnique:
-
     @testing.for_all_dtypes(no_float16=True, no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_unique_no_axis(self, xp, dtype):
@@ -350,7 +346,6 @@ class TestUnique:
 
 @testing.parameterize(*testing.product({"trim": ["fb", "f", "b"]}))
 class TestTrim_zeros(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_trim_non_zeros(self, xp, dtype):

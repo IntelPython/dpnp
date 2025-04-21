@@ -11,7 +11,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestFromData(unittest.TestCase):
-
     @testing.for_orders("CFAK")
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
@@ -795,7 +794,6 @@ class DummyObjectWithCudaArrayInterface(object):
     )
 )
 class TestArrayPreservationOfShape(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_cupy_array(self, dtype):
         if self.xp is numpy and self.copy is False:
@@ -820,7 +818,6 @@ class TestArrayPreservationOfShape(unittest.TestCase):
     )
 )
 class TestArrayCopy(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_cupy_array(self, dtype):
         if self.xp is numpy and self.copy is False:
@@ -840,7 +837,6 @@ class TestArrayCopy(unittest.TestCase):
 
 
 class TestArrayInvalidObject(unittest.TestCase):
-
     def test_invalid_type(self):
         a = numpy.array([1, 2, 3], dtype=object)
         with self.assertRaises(TypeError):

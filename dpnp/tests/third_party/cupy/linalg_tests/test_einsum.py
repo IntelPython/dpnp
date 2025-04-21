@@ -61,7 +61,6 @@ def augment_einsum_testcases(*params):
 
 
 class TestEinSumError:
-
     def test_irregular_ellipsis1(self):
         for xp in (numpy, cupy):
             with pytest.raises(ValueError):
@@ -234,7 +233,6 @@ class TestEinSumError:
 
 
 class TestListArgEinSumError:
-
     @testing.with_requires("numpy>=1.19")
     def test_invalid_sub1(self):
         for xp in (numpy, cupy):
@@ -340,7 +338,6 @@ class TestListArgEinSum:
     )
 )
 class TestEinSumUnaryOperation:
-
     @testing.for_all_dtypes(no_bool=False)
     @testing.numpy_cupy_allclose(
         rtol={numpy.float16: 1e-1, "default": 1e-7}, contiguous_check=False
@@ -556,7 +553,6 @@ class TestEinSumBinaryOperationWithScalar:
     )
 )
 class TestEinSumTernaryOperation:
-
     @testing.for_all_dtypes_combination(["dtype_a", "dtype_b", "dtype_c"])
     @testing.numpy_cupy_allclose(
         type_check=has_support_aspect64(), contiguous_check=False
@@ -627,7 +623,6 @@ class TestEinSumTernaryOperation:
     )
 )
 class TestEinSumLarge:
-
     chars = "abcdefghij"
     sizes = (2, 3, 4, 5, 4, 3, 2, 6, 5, 4, 3)
     size_dict = {}

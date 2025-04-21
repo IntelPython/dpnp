@@ -9,7 +9,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestTranspose(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_moveaxis1(self, xp):
         a = testing.shaped_arange((2, 3, 4), xp)
@@ -179,7 +178,6 @@ ARRAY_SHAPES_TO_TEST = (
 
 
 class TestMatrixTranspose:
-
     @testing.with_requires("numpy>=2.0")
     def test_matrix_transpose_raises_error_for_1d(self):
         msg = "matrix transpose with ndim < 2 is undefined"

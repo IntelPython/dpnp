@@ -144,8 +144,7 @@ def _get_outer_edges(a, range):
         first_edge, last_edge = a.min(), a.max()
         if not (_is_finite(first_edge) and _is_finite(last_edge)):
             raise ValueError(
-                f"autodetected range of [{first_edge}, {last_edge}] "
-                "is not finite"
+                f"autodetected range of [{first_edge}, {last_edge}] is not finite"
             )
 
     # expand empty range to avoid divide by zero
@@ -894,8 +893,7 @@ def histogram2d(x, y, bins=10, range=None, density=None, weights=None):
 
     if len(x) != len(y):
         raise ValueError(
-            f"x and y must have the same length."
-            f"Got {len(x)} and {len(y)} respectively"
+            f"x and y must have the same length.Got {len(x)} and {len(y)} respectively"
         )
 
     usm_type, exec_q = get_usm_allocations([x, y, bins, range, weights])

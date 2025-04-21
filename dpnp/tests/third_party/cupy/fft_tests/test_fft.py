@@ -109,7 +109,6 @@ def multi_gpu_config(gpu_configs=None):
     )
 )
 class TestFft:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -149,7 +148,6 @@ class TestFft:
     )
 )
 class TestFftOrder:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -209,7 +207,6 @@ def _skip_multi_gpu_bug(shape, gpus):
 @pytest.mark.skip("multi GPU is not supported")
 @testing.multi_gpu(2)
 class TestMultiGpuFft:
-
     @multi_gpu_config(gpu_configs=[[0, 1], [1, 0]])
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(
@@ -282,7 +279,6 @@ class TestMultiGpuFftOrder:
 @pytest.mark.skip("default FFT function is not supported")
 @testing.with_requires("numpy>=2.0")
 class TestDefaultPlanType:
-
     @nd_planning_states()
     def test_default_fft_func(self, enable_nd):
         # test cases where nd cuFFT plan is possible
@@ -350,7 +346,6 @@ class TestDefaultPlanType:
 @testing.with_requires("numpy>=2.0")
 @testing.slow
 class TestFftAllocate:
-
     def test_fft_allocate(self):
         # Check CuFFTError is not raised when the GPU memory is enough.
         # See https://github.com/cupy/cupy/issues/1063
@@ -401,7 +396,6 @@ class TestFftAllocate:
     )
 )
 class TestFft2:
-
     @nd_planning_states()
     @testing.for_orders("CF")
     @testing.for_all_dtypes()
@@ -491,7 +485,6 @@ class TestFft2:
     )
 )
 class TestFftn:
-
     @nd_planning_states()
     @testing.for_orders("CF")
     @testing.for_all_dtypes()
@@ -577,7 +570,6 @@ class TestFftn:
     )
 )
 class TestPlanCtxManagerFftn:
-
     @pytest.fixture(autouse=True)
     def skip_buggy(self):
         if cupy.cuda.runtime.is_hip:
@@ -675,7 +667,6 @@ class TestPlanCtxManagerFftn:
     )
 )
 class TestPlanCtxManagerFft:
-
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
@@ -748,7 +739,6 @@ class TestPlanCtxManagerFft:
 @pytest.mark.skip("get_fft_plan() is not supported")
 @testing.multi_gpu(2)
 class TestMultiGpuPlanCtxManagerFft:
-
     @multi_gpu_config(gpu_configs=[[0, 1], [1, 0]])
     @testing.for_complex_dtypes()
     @testing.numpy_cupy_allclose(
@@ -842,7 +832,6 @@ class TestMultiGpuPlanCtxManagerFft:
 )
 @pytest.mark.skip("default FFT function is not supported")
 class TestFftnContiguity:
-
     @nd_planning_states([True])
     @testing.for_all_dtypes()
     def test_fftn_orders(self, dtype, enable_nd):
@@ -865,7 +854,6 @@ class TestFftnContiguity:
     @testing.for_all_dtypes()
     def test_ifftn_orders(self, dtype, enable_nd):
         for order in ["C", "F"]:
-
             a = testing.shaped_random(self.shape, cupy, dtype)
             if order == "F":
                 a = cupy.asfortranarray(a)
@@ -893,7 +881,6 @@ class TestFftnContiguity:
     )
 )
 class TestRfft:
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -933,7 +920,6 @@ class TestRfft:
 )
 @pytest.mark.skip("get_fft_plan() is not supported")
 class TestPlanCtxManagerRfft:
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(
         rtol=1e-3, atol=1e-7, accept_error=ValueError, contiguous_check=False
@@ -1017,7 +1003,6 @@ class TestPlanCtxManagerRfft:
     )
 )
 class TestRfft2:
-
     @nd_planning_states()
     @testing.for_orders("CF")
     @testing.for_all_dtypes(no_complex=True)
@@ -1063,7 +1048,6 @@ class TestRfft2:
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
 )
 class TestRfft2EmptyAxes:
-
     @testing.for_all_dtypes(no_complex=True)
     def test_rfft2(self, dtype):
         for xp in (np, cupy):
@@ -1107,7 +1091,6 @@ class TestRfft2EmptyAxes:
     )
 )
 class TestRfftn:
-
     @nd_planning_states()
     @testing.for_orders("CF")
     @testing.for_all_dtypes(no_complex=True)
@@ -1172,7 +1155,6 @@ class TestRfftn:
 )
 @pytest.mark.skip("get_fft_plan() is not supported")
 class TestPlanCtxManagerRfftn:
-
     @pytest.fixture(autouse=True)
     def skip_buggy(self):
         if cupy.cuda.runtime.is_hip:
@@ -1247,7 +1229,6 @@ class TestPlanCtxManagerRfftn:
 )
 @pytest.mark.skip("default FFT function is not supported")
 class TestRfftnContiguity:
-
     @nd_planning_states([True])
     @testing.for_float_dtypes()
     def test_rfftn_orders(self, dtype, enable_nd):
@@ -1272,7 +1253,6 @@ class TestRfftnContiguity:
     @testing.for_all_dtypes()
     def test_ifftn_orders(self, dtype, enable_nd):
         for order in ["C", "F"]:
-
             a = testing.shaped_random(self.shape, cupy, dtype)
             if order == "F":
                 a = cupy.asfortranarray(a)
@@ -1296,7 +1276,6 @@ class TestRfftnContiguity:
     {"shape": (2, 3, 4), "s": None, "axes": (), "norm": None},
 )
 class TestRfftnEmptyAxes:
-
     @testing.for_all_dtypes(no_complex=True)
     def test_rfftn(self, dtype):
         for xp in (np, cupy):
@@ -1324,7 +1303,6 @@ class TestRfftnEmptyAxes:
     )
 )
 class TestHfft:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -1358,7 +1336,6 @@ class TestHfft:
     {"n": 100, "d": 2},
 )
 class TestFftfreq:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -1391,7 +1368,6 @@ class TestFftfreq:
     {"shape": (10, 10), "axes": (0, 1)},
 )
 class TestFftshift:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol=1e-3,
@@ -1417,7 +1393,6 @@ class TestFftshift:
 
 @pytest.mark.skip("no threading support")
 class TestThreading:
-
     def test_threading1(self):
         import threading
 

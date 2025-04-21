@@ -59,7 +59,6 @@ class CubReductionTestBase(unittest.TestCase):
     )
 )
 class TestSimpleCubReductionKernelContiguity(CubReductionTestBase):
-
     @testing.for_contiguous_axes()
     def test_can_use_cub_contiguous(self, axis):
         r_axis = axis
@@ -87,7 +86,6 @@ class TestSimpleCubReductionKernelContiguity(CubReductionTestBase):
 
 
 class TestSimpleCubReductionKernelMisc(CubReductionTestBase):
-
     def test_can_use_cub_nonsense_input1(self):
         # two inputs are not allowed
         a = cupy.random.random((2, 3, 4))

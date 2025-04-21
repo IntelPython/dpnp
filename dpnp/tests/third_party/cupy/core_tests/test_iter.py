@@ -13,7 +13,6 @@ from dpnp.tests.third_party.cupy import testing
     )
 )
 class TestIter(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_list(self, xp, dtype):
@@ -28,7 +27,6 @@ class TestIter(unittest.TestCase):
 
 
 class TestIterInvalid(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_iter(self, dtype):
         for xp in (numpy, cupy):

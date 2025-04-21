@@ -13,7 +13,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestSumprod:
-
     @pytest.fixture(autouse=True)
     def tearDown(self):
         # Free huge memory for slow test
@@ -217,7 +216,6 @@ class TestSumprod:
 )
 @pytest.mark.skip("_cub_reduction is not supported")
 class TestCubReduction:
-
     @pytest.fixture(autouse=True)
     def setUp(self):
         old_routine_accelerators = _acc.get_routine_accelerators()
@@ -399,7 +397,6 @@ class TestCubReduction:
 )
 @pytest.mark.skip("cutensor is not supported")
 class TestCuTensorReduction:
-
     @pytest.fixture(autouse=True)
     def setUp(self):
         old_accelerators = cupy._core.get_routine_accelerators()
@@ -453,7 +450,6 @@ class TestCuTensorReduction:
     )
 )
 class TestNansumNanprodLong:
-
     def _do_transposed_axis_test(self):
         return not self.transpose_axes and self.axis != 1
 
@@ -512,7 +508,6 @@ class TestNansumNanprodLong:
     )
 )
 class TestNansumNanprodExtra:
-
     def test_nansum_axis_float16(self):
         # Note that the above test example overflows in float16. We use a
         # smaller array instead, just return if array is too large.
@@ -589,7 +584,6 @@ axes = [0, 1, 2]
 
 @testing.parameterize(*testing.product({"axis": axes}))
 class TestCumsum:
-
     def _cumsum(self, xp, a, *args, **kwargs):
         b = a.copy()
         res = xp.cumsum(a, *args, **kwargs)
@@ -705,7 +699,6 @@ class TestCumsum:
 
 
 class TestCumprod:
-
     def _cumprod(self, xp, a, *args, **kwargs):
         b = a.copy()
         res = xp.cumprod(a, *args, **kwargs)
@@ -812,7 +805,6 @@ class TestCumprod:
     )
 )
 class TestNanCumSumProd:
-
     zero_density = 0.25
 
     def _make_array(self, dtype):
@@ -860,7 +852,6 @@ class TestNanCumSumProd:
 
 
 class TestDiff:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose()
     def test_diff_1dim(self, xp, dtype):
@@ -960,7 +951,6 @@ class TestDiff:
     )
 )
 class TestGradient:
-
     def _gradient(self, xp, dtype, shape, spacing, axis, edge_order):
         if (
             not has_support_aspect64()
@@ -1025,7 +1015,6 @@ class TestGradient:
 
 
 class TestGradientErrors:
-
     def test_gradient_invalid_spacings1(self):
         # more spacings than axes
         spacing = (1.0, 2.0, 3.0)
@@ -1088,7 +1077,6 @@ class TestGradientErrors:
 
 
 class TestEdiff1d:
-
     @testing.for_all_dtypes(no_bool=True)
     @testing.numpy_cupy_allclose()
     def test_ediff1d_1dim(self, xp, dtype):
@@ -1160,7 +1148,6 @@ class TestEdiff1d:
 
 @testing.with_requires("numpy>=2.0")
 class TestTrapezoid:
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_allclose(
         rtol={numpy.float16: 1e-1, "default": 1e-7},

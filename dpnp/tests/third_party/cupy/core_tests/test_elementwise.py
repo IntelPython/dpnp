@@ -13,7 +13,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestElementwise(unittest.TestCase):
-
     def check_copy(self, dtype, src_id, dst_id):
         with cuda.Device(src_id):
             src = testing.shaped_arange((2, 3, 4), dtype=dtype)
@@ -75,7 +74,6 @@ class TestElementwise(unittest.TestCase):
 
 @pytest.mark.skip("`ElementwiseKernel` isn't supported")
 class TestElementwiseInvalidShape(unittest.TestCase):
-
     def test_invalid_shape(self):
         with self.assertRaisesRegex(ValueError, "Out shape is mismatched"):
             f = cupy.ElementwiseKernel("T x", "T y", "y += x")
@@ -86,14 +84,12 @@ class TestElementwiseInvalidShape(unittest.TestCase):
 
 @pytest.mark.skip("`ElementwiseKernel` isn't supported")
 class TestElementwiseInvalidArgument(unittest.TestCase):
-
     def test_invalid_kernel_name(self):
         with self.assertRaisesRegex(ValueError, "Invalid kernel name"):
             cupy.ElementwiseKernel("T x", "", "", "1")
 
 
 class TestElementwiseType(unittest.TestCase):
-
     @testing.with_requires("numpy>=2.0")
     @testing.for_int_dtypes(no_bool=True)
     @testing.numpy_cupy_array_equal(accept_error=OverflowError)

@@ -378,7 +378,6 @@ def _get_result_shape(x1, x2, out, func, _get_result_shape_fn, np_flag):
 
 
 def _get_result_shape_multiplication(x1, x2, func):
-
     x1_shape, x2_shape = x1.shape, x2.shape
     x1_ndim, x2_ndim = x1.ndim, x2.ndim
 
@@ -457,7 +456,6 @@ def _get_result_shape_multiplication(x1, x2, func):
 
 
 def _get_result_shape_vecdot(x1, x2, func):
-
     x1_shape, x2_shape = x1.shape, x2.shape
     x1_ndim, x2_ndim = x1.ndim, x2.ndim
 

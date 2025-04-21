@@ -8,7 +8,6 @@ pytest.skip("owndata attribute is not supported", allow_module_level=True)
 
 
 class TestArrayOwndata(unittest.TestCase):
-
     def setUp(self):
         self.a = _core.ndarray(())
 

@@ -15,7 +15,6 @@ pytest.skip("ElementwiseKernel() is not supported", allow_module_level=True)
 
 
 class TestUserkernel(unittest.TestCase):
-
     def test_manual_indexing(self, n=100):
         in1 = cupy.random.uniform(-1, 1, n).astype(cupy.float32)
         in2 = cupy.random.uniform(-1, 1, n).astype(cupy.float32)
@@ -247,7 +246,6 @@ class TestElementwiseKernelSize(unittest.TestCase):
     )
 )
 class TestUserkernelScalar(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test_scalar(self, xp, dtype):
@@ -261,7 +259,6 @@ class TestUserkernelScalar(unittest.TestCase):
 
 
 class TestUserkernelManualBlockSize(unittest.TestCase):
-
     def test_invalid_block_size(self):
         x = testing.shaped_arange((2, 3, 4), cupy, cupy.float32)
         kernel = cupy.ElementwiseKernel("T x, T y", "T z", "z = x + y")
@@ -286,7 +283,6 @@ class TestUserkernelManualBlockSize(unittest.TestCase):
     runtime.is_hip, reason="texture support on HIP is not yet implemented"
 )
 class TestElementwiseKernelTexture(unittest.TestCase):
-
     def _prep_texture(self):
         width, height, depth = self.dimensions
         dim = 3 if depth != 0 else 2 if height != 0 else 1
@@ -295,7 +291,9 @@ class TestElementwiseKernelTexture(unittest.TestCase):
         shape = (
             (depth, height, width)
             if dim == 3
-            else (height, width) if dim == 2 else (width,)
+            else (height, width)
+            if dim == 2
+            else (width,)
         )
         self.shape = shape
 

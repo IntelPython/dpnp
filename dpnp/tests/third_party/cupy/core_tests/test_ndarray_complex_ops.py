@@ -8,7 +8,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestConj(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal()
     def test_conj(self, xp, dtype):
@@ -39,7 +38,6 @@ class TestConj(unittest.TestCase):
 
 
 class TestAngle(unittest.TestCase):
-
     # For dtype=int8, uint8, NumPy returns float16, but dpnp returns float32
     # so type_check=False
     @testing.for_all_dtypes()
@@ -50,7 +48,6 @@ class TestAngle(unittest.TestCase):
 
 
 class TestRealImag(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_almost_equal(accept_error=False)
     def test_real(self, xp, dtype):
@@ -158,7 +155,6 @@ class TestRealImag(unittest.TestCase):
 
 
 class TestScalarConversion(unittest.TestCase):
-
     @testing.for_all_dtypes()
     def test_scalar_conversion(self, dtype):
         scalar = 1 + 1j if numpy.dtype(dtype).kind == "c" else 1

@@ -51,7 +51,6 @@ __all__ = ["bartlett", "blackman", "hamming", "hanning", "kaiser"]
 def _call_window_kernel(
     M, _window_kernel, device=None, usm_type=None, sycl_queue=None, beta=None
 ):
-
     try:
         M = int(M)
     except Exception as e:

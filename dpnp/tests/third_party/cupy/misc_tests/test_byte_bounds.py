@@ -3,7 +3,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestByteBounds:
-
     @testing.for_all_dtypes()
     def test_1d_contiguous(self, dtype):
         a = cupy.zeros(12, dtype=dtype)

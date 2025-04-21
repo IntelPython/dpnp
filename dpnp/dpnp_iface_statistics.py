@@ -328,8 +328,7 @@ def average(a, axis=None, weights=None, returned=False, *, keepdims=False):
                 )
             if weights.ndim != 1:
                 raise TypeError(
-                    "1D weights expected when shapes of input array and "
-                    "weights differ."
+                    "1D weights expected when shapes of input array and weights differ."
                 )
             if wgt_shape[0] != a_shape[axis]:
                 raise ValueError(

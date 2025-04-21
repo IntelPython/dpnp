@@ -8,7 +8,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestIsScalar(testing.NumpyAliasBasicTestBase):
-
     func = "isscalar"
 
     @testing.with_requires("numpy>=1.18")
@@ -38,7 +37,6 @@ class TestIsScalar(testing.NumpyAliasBasicTestBase):
     )
 )
 class TestIsScalarValues(testing.NumpyAliasValuesTestBase):
-
     func = "isscalar"
 
     def setUp(self):
@@ -46,7 +44,6 @@ class TestIsScalarValues(testing.NumpyAliasValuesTestBase):
 
 
 class TestIsScalarValues2(testing.NumpyAliasValuesTestBase):
-
     func = "isscalar"
 
     def setUp(self):
@@ -71,7 +68,6 @@ class TestIsScalarValues2(testing.NumpyAliasValuesTestBase):
     )
 )
 class TestIsFortran(unittest.TestCase):
-
     @testing.numpy_cupy_equal()
     def test(self, xp):
         return xp.isfortran(xp.asarray(self.value))
@@ -82,7 +78,6 @@ class TestIsFortran(unittest.TestCase):
     {"func": "isreal"},
 )
 class TestTypeTestingFunctions(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_array_equal()
     def test(self, xp, dtype):
@@ -108,7 +103,6 @@ class TestTypeTestingFunctions(unittest.TestCase):
     {"func": "isrealobj"},
 )
 class TestTypeTestingObjFunctions(unittest.TestCase):
-
     @testing.for_all_dtypes()
     @testing.numpy_cupy_equal()
     def test(self, xp, dtype):

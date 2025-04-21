@@ -45,7 +45,6 @@ def for_all_dtypes_combination_bincount(names):
 
 
 class TestHistogram(unittest.TestCase):
-
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(atol=1e-6, type_check=has_support_aspect64())
     def test_histogram(self, xp, dtype):
@@ -343,7 +342,6 @@ class TestHistogram(unittest.TestCase):
 # This class compares CUB results against NumPy's
 @unittest.skipUnless(False, "The CUB routine is not enabled")
 class TestCubHistogram(unittest.TestCase):
-
     def setUp(self):
         self.old_accelerators = _accelerator.get_routine_accelerators()
         _accelerator.set_routine_accelerators(["cub"])
@@ -461,7 +459,6 @@ class TestCubHistogram(unittest.TestCase):
     )
 )
 class TestDigitize:
-
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_array_equal()
     def test_digitize(self, xp, dtype):
@@ -476,7 +473,6 @@ class TestDigitize:
 
 @testing.parameterize({"right": True}, {"right": False})
 class TestDigitizeNanInf(unittest.TestCase):
-
     @testing.numpy_cupy_array_equal()
     def test_digitize_nan(self, xp):
         x = testing.shaped_arange((14,), xp, xp.float32)
@@ -546,7 +542,6 @@ class TestDigitizeNanInf(unittest.TestCase):
 
 
 class TestDigitizeInvalid(unittest.TestCase):
-
     def test_digitize_complex(self):
         for xp in (numpy, cupy):
             x = testing.shaped_arange((14,), xp, xp.complex64)
@@ -581,7 +576,6 @@ class TestDigitizeInvalid(unittest.TestCase):
     )
 )
 class TestHistogramdd:
-
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(
         atol=1e-3,
@@ -611,7 +605,6 @@ class TestHistogramdd:
 
 
 class TestHistogramddErrors(unittest.TestCase):
-
     def test_histogramdd_invalid_bins(self):
         for xp in (numpy, cupy):
             x = testing.shaped_random((16, 2), xp, scale=100)
@@ -669,7 +662,6 @@ class TestHistogramddErrors(unittest.TestCase):
     )
 )
 class TestHistogram2d:
-
     @testing.for_all_dtypes(no_bool=True, no_complex=True)
     @testing.numpy_cupy_allclose(
         atol=1e-2,
@@ -702,7 +694,6 @@ class TestHistogram2d:
 
 
 class TestHistogram2dErrors(unittest.TestCase):
-
     @pytest.mark.skip("list of bins is allowed")
     def test_histogram2d_disallow_arraylike_bins(self):
         x = testing.shaped_random((16,), cupy, scale=100)

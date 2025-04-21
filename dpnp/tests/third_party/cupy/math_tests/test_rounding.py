@@ -9,7 +9,6 @@ from dpnp.tests.third_party.cupy import testing
 
 
 class TestRounding(unittest.TestCase):
-
     @testing.for_all_dtypes(no_complex=True)
     @testing.numpy_cupy_allclose(type_check=False, atol=1e-5)
     def check_unary(self, name, xp, dtype):
@@ -88,7 +87,6 @@ class TestRounding(unittest.TestCase):
     )
 )
 class TestRound(unittest.TestCase):
-
     shape = (20,)
 
     @testing.for_all_dtypes()
@@ -126,7 +124,6 @@ class TestRound(unittest.TestCase):
     not has_support_aspect64(), reason="overflow encountered for float32 dtype"
 )
 class TestRoundExtreme(unittest.TestCase):
-
     shape = (20,)
 
     dtype_ = (
@@ -166,7 +163,6 @@ class TestRoundExtreme(unittest.TestCase):
     )
 )
 class TestRoundBorder(unittest.TestCase):
-
     @pytest.mark.skip("scalar input is not supported")
     @testing.numpy_cupy_allclose(atol=1e-5)
     def test_around_positive1(self, xp):
