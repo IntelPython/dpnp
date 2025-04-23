@@ -229,7 +229,7 @@ class TestRanges(unittest.TestCase):
         if xp.dtype(dtype_range).kind in "u":
             # to avoid overflow, limit `val` to be smaller
             # than xp.iinfo(dtype).max
-            if dtype_range == xp.uint8 or dtype_out == xp.uint8:
+            if dtype_range in [xp.uint8, xp.uint16] or dtype_out == xp.uint8:
                 val = 125
             else:
                 val = 160
