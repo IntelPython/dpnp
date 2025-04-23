@@ -108,14 +108,16 @@ $(function(){initNavTree('structstatistics_1_1partitioning_1_1_kth_element1d.htm
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a27a37f9050ebbfee56ec92103276b55f" id="r_a27a37f9050ebbfee56ec92103276b55f"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27a37f9050ebbfee56ec92103276b55f">FnT</a></td></tr>
-<tr class="separator:a27a37f9050ebbfee56ec92103276b55f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cd776e0c8272765237be65b3b206cab" id="r_a4cd776e0c8272765237be65b3b206cab"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4cd776e0c8272765237be65b3b206cab">RetT</a> = std::tuple&lt;bool, uint64_t, uint64_t, uint64_t, uint64_t&gt;</td></tr>
+<tr class="separator:a4cd776e0c8272765237be65b3b206cab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae68ee2025e4bad771184ae801ff09aa8" id="r_ae68ee2025e4bad771184ae801ff09aa8"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae68ee2025e4bad771184ae801ff09aa8">FnT</a></td></tr>
+<tr class="separator:ae68ee2025e4bad771184ae801ff09aa8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae9f670df33040bc7200d66072409d854" id="r_ae9f670df33040bc7200d66072409d854"><td class="memItemLeft" align="right" valign="top"><a id="ae9f670df33040bc7200d66072409d854" name="ae9f670df33040bc7200d66072409d854"></a>
-std::tuple&lt; bool, uint64_t, uint64_t, uint64_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>call</b> (const dpctl::tensor::usm_ndarray &amp;a, dpctl::tensor::usm_ndarray &amp;partitioned, uint64_t k, const std::vector&lt; sycl::event &gt; &amp;depends)</td></tr>
-<tr class="separator:ae9f670df33040bc7200d66072409d854"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb7313a05205f66f3ad018b5fa511c02" id="r_abb7313a05205f66f3ad018b5fa511c02"><td class="memItemLeft" align="right" valign="top"><a id="abb7313a05205f66f3ad018b5fa511c02" name="abb7313a05205f66f3ad018b5fa511c02"></a>
+RetT&#160;</td><td class="memItemRight" valign="bottom"><b>call</b> (const dpctl::tensor::usm_ndarray &amp;a, dpctl::tensor::usm_ndarray &amp;partitioned, uint64_t k, const std::vector&lt; sycl::event &gt; &amp;depends)</td></tr>
+<tr class="separator:abb7313a05205f66f3ad018b5fa511c02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
@@ -126,8 +128,8 @@ Public Attributes</h2></td></tr>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="kth__element1d_8hpp_source.html#l00034">34</a> of file <a class="el" href="kth__element1d_8hpp_source.html">kth_element1d.hpp</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
-<a id="a27a37f9050ebbfee56ec92103276b55f" name="a27a37f9050ebbfee56ec92103276b55f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27a37f9050ebbfee56ec92103276b55f">&#9670;&#160;</a></span>FnT</h2>
+<a id="ae68ee2025e4bad771184ae801ff09aa8" name="ae68ee2025e4bad771184ae801ff09aa8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae68ee2025e4bad771184ae801ff09aa8">&#9670;&#160;</a></span>FnT</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -137,7 +139,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Initial value:</b><div class="fragment"><div class="line"> std::tuple&lt;bool, uint64_t, uint64_t, uint64_t&gt; (*)(</div>
+<b>Initial value:</b><div class="fragment"><div class="line"> RetT (*)(</div>
 <div class="line">        sycl::queue &amp;,</div>
 <div class="line">        <span class="keyword">const</span> <span class="keywordtype">void</span> *,</div>
 <div class="line">        <span class="keywordtype">void</span> *,</div>
@@ -145,6 +147,22 @@ Public Attributes</h2></td></tr>
 <div class="line">        <span class="keyword">const</span> size_t,</div>
 <div class="line">        <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;)</div>
 </div><!-- fragment -->
+<p class="definition">Definition at line <a class="el" href="kth__element1d_8hpp_source.html#l00037">37</a> of file <a class="el" href="kth__element1d_8hpp_source.html">kth_element1d.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a4cd776e0c8272765237be65b3b206cab" name="a4cd776e0c8272765237be65b3b206cab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cd776e0c8272765237be65b3b206cab">&#9670;&#160;</a></span>RetT</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using statistics::partitioning::KthElement1d::RetT = std::tuple&lt;bool, uint64_t, uint64_t, uint64_t, uint64_t&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
 <p class="definition">Definition at line <a class="el" href="kth__element1d_8hpp_source.html#l00036">36</a> of file <a class="el" href="kth__element1d_8hpp_source.html">kth_element1d.hpp</a>.</p>
 
 </div>
@@ -162,7 +180,7 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="kth__element1d_8hpp_source.html#l00044">44</a> of file <a class="el" href="kth__element1d_8hpp_source.html">kth_element1d.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="kth__element1d_8hpp_source.html#l00045">45</a> of file <a class="el" href="kth__element1d_8hpp_source.html">kth_element1d.hpp</a>.</p>
 
 </div>
 </div>
