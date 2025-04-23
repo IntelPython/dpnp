@@ -205,6 +205,7 @@ void submit_partition_one_pivot(sycl::handler &cgh,
 {
     auto loc_counters =
         sycl::local_accessor<uint32_t, 1>(sycl::range<1>(4), cgh);
+    // sycl::stream str(8192, 1024, cgh);
     cgh.parallel_for<partition_one_pivot_kernel<T>>(
         work_sz, [=](sycl::nd_item<1> item) {
             if (state.stop[0])

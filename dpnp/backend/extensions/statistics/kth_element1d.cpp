@@ -40,7 +40,8 @@
 #include "kth_element1d.hpp"
 #include "partitioning.hpp"
 
-// #include <iostream>
+#include <iostream>
+#include <chrono>
 
 namespace sycl_exp = sycl::ext::oneapi::experimental;
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
@@ -67,6 +68,7 @@ struct KthElementF
                                       State<T> &state,
                                       uint64_t items_to_sort,
                                       uint64_t limit,
+                                      bool ret,
                                       const std::vector<sycl::event> &deps)
     {
         auto e = queue.submit([&](sycl::handler &cgh) {
@@ -84,6 +86,12 @@ struct KthElementF
             auto scratch = sycl::local_accessor<std::byte, 1>(
                 sycl::range<1>(temp_memory_size), cgh);
 
+            // std::cout << "temp_memory_size: " << temp_memory_size
+            //     << " items_to_sort: " << items_to_sort
+            //     << " limit: " << limit
+            //     << " group_size: " << group_size << "\n";
+
+            // auto str = sycl::stream(8192, 1024, cgh);
             cgh.parallel_for<pick_pivot_kernel<T>>(
                 work_sz, [=](sycl::nd_item<1> item) {
                     auto group = item.get_group();
@@ -129,7 +137,6 @@ struct KthElementF
                                 target_found = true;
                             }
                         }
-
                         state.reset_iteration_counters();
                     }
 
@@ -142,10 +149,15 @@ struct KthElementF
                         return;
                     }
 
+                    // if (group.leader()) {
+                    //     str << "num_elems: " << num_elems << "\n";
+                    // }
+
                     if (num_elems <= limit) {
                         auto gh = sycl_exp::group_with_scratchpad(
                             group, sycl::span{&scratch[0], temp_memory_size});
-                        sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems]);
+                        if (num_elems > 0)
+                            sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems]);
 
                         if (group.leader()) {
                             uint64_t offset = state.counters.less_count[0];
@@ -154,9 +166,18 @@ struct KthElementF
                                     state.counters.less_count[0] - num_elems;
                             }
 
-                            uint64_t idx = target - offset;
-                            state.values[0] = _in[idx];
-                            state.values[1] = _in[idx + 1];
+                            int64_t idx = target - offset;
+
+                            // if (idx + 1 > (in + state.n - _in) || idx < 0)
+                            // {
+                            //     str << "buffer access out of bounds idx = "
+                            //     << idx << " size " << (in + state.n - _in) << "\n";
+                            // }
+                            // else
+                            {
+                                state.values[0] = _in[idx];
+                                state.values[1] = _in[idx + 1];
+                            }
 
                             state.stop[0] = true;
                             state.target_found[0] = true;
@@ -164,6 +185,9 @@ struct KthElementF
 
                         return;
                     }
+
+                    // if (ret)
+                    //     return;
 
                     uint64_t step = num_elems / items_to_sort;
                     for (uint32_t i = llid; i < items_to_sort; i += local_size)
@@ -184,30 +208,30 @@ struct KthElementF
 
                     T new_pivot = loc_items[items_to_sort / 2];
 
-                    if (new_pivot != state.pivot[0]) {
+                    // if (new_pivot != state.pivot[0]) {
                         if (group.leader()) {
                             state.pivot[0] = new_pivot;
                             state.num_elems[0] = num_elems;
                         }
                         return;
-                    }
+                    // }
 
-                    auto start = llid + items_to_sort / 2 + 1;
-                    uint32_t index = start;
-                    for (uint32_t i = start; i < items_to_sort; i += local_size)
-                    {
-                        if (loc_items[i] != new_pivot) {
-                            index = i;
-                            break;
-                        }
-                    }
+                    // auto start = llid + items_to_sort / 2 + 1;
+                    // uint32_t index = start;
+                    // for (uint32_t i = start; i < items_to_sort; i += local_size)
+                    // {
+                    //     if (loc_items[i] != new_pivot) {
+                    //         index = i;
+                    //         break;
+                    //     }
+                    // }
 
-                    index = sycl::reduce_over_group(group, index,
-                                                    sycl::minimum<>());
-                    if (group.leader()) {
-                        state.pivot[0] = loc_items[index];
-                        state.num_elems[0] = num_elems;
-                    }
+                    // index = sycl::reduce_over_group(group, index,
+                    //                                 sycl::minimum<>());
+                    // if (group.leader()) {
+                    //     state.pivot[0] = loc_items[index];
+                    //     state.num_elems[0] = num_elems;
+                    // }
                 });
         });
 
@@ -225,7 +249,7 @@ struct KthElementF
         auto e = exec_q.submit([&](sycl::handler &cgh) {
             cgh.depends_on(deps);
 
-            constexpr uint32_t WorkPI = 4; // empirically found number
+            constexpr uint32_t WorkPI = 1; // empirically found number
 
             auto work_range = make_ndrange(state.n, group_size, WorkPI);
             submit_partition_one_pivot<T, WorkPI>(cgh, work_range, in, out,
@@ -243,34 +267,42 @@ struct KthElementF
                                        PartitionState<T> &pstate,
                                        const std::vector<sycl::event> &depends)
     {
-        uint32_t items_to_sort = 128;
-        uint32_t limit = 4 * items_to_sort;
+        uint32_t items_to_sort = 127;
+        uint32_t limit = 4 * (items_to_sort + 1);
         uint32_t iterations =
-            std::ceil(std::log(double(state.n) / limit) / std::log(2));
+            std::ceil(-std::log(double(state.n) / limit) / std::log(0.536)) + 1;
+        // Ensure iterations are odd so the final result is always stored in 'partitioned'
+        iterations += 1 - iterations % 2;
 
         auto temp_buff = dpctl_utils::smart_malloc<T>(state.n, exec_q,
                                                       sycl::usm::alloc::device);
 
+        std::cout << "Iteration " << 0 << std::endl;
         auto prev = run_pick_pivot(exec_q, const_cast<T *>(in), partitioned, k,
-                                   state, items_to_sort, limit, depends);
+                                   state, items_to_sort, limit, false, depends);
         prev = run_partition(exec_q, const_cast<T *>(in), partitioned, pstate,
                              {prev});
+        // prev.wait();
 
         T *_in = partitioned;
         T *_out = temp_buff.get();
         for (uint32_t i = 0; i < iterations - 1; ++i) {
-            prev = run_pick_pivot(exec_q, _in, _out, k, state, limit,
-                                  items_to_sort, {prev});
+            std::cout << "Iteration " << i + 1 << std::endl;
+            prev = run_pick_pivot(exec_q, _in, _out, k, state,
+                                  items_to_sort, limit, true, {prev});
             prev = run_partition(exec_q, _in, _out, pstate, {prev});
             std::swap(_in, _out);
+            // prev.wait();
+            // if (i % 5 == 0)
+            //     prev.wait();
         }
-        prev = run_pick_pivot(exec_q, _in, _out, k, state, limit, items_to_sort,
-                              {prev});
+        prev = run_pick_pivot(exec_q, _in, _out, k, state, items_to_sort, limit,
+                              true, {prev});
 
         return prev;
     }
 
-    static std::tuple<bool, uint64_t, uint64_t, uint64_t>
+    static KthElement1d::RetT
         impl(sycl::queue &exec_queue,
              const void *v_ain,
              void *v_partitioned,
@@ -278,12 +310,14 @@ struct KthElementF
              const size_t k,
              const std::vector<sycl::event> &depends)
     {
+        auto start = std::chrono::high_resolution_clock::now();
         const T *ain = static_cast<const T *>(v_ain);
         T *partitioned = static_cast<T *>(v_partitioned);
 
         State<T> state(exec_queue, a_size, partitioned);
         PartitionState<T> pstate(state);
 
+        exec_queue.wait();
         auto init_e = state.init(exec_queue, depends);
         init_e = pstate.init(exec_queue, {init_e});
 
@@ -295,6 +329,7 @@ struct KthElementF
         uint64_t less_count = 0;
         uint64_t greater_equal_count = 0;
         uint64_t num_elems = 0;
+        uint64_t nan_count = 0;
         auto copy_evt = exec_queue.copy(state.target_found, &found, 1, evt);
         copy_evt = exec_queue.copy(state.left, &left, 1, copy_evt);
         copy_evt = exec_queue.copy(state.counters.less_count, &less_count, 1,
@@ -302,27 +337,52 @@ struct KthElementF
         copy_evt = exec_queue.copy(state.counters.greater_equal_count,
                                    &greater_equal_count, 1, copy_evt);
         copy_evt = exec_queue.copy(state.num_elems, &num_elems, 1, copy_evt);
-
-        copy_evt.wait();
+        copy_evt = exec_queue.copy(state.counters.nan_count, &nan_count, 1, copy_evt);
 
         uint64_t buff_offset = 0;
         uint64_t elems_offset = less_count;
-        if (!found) {
-            if (left) {
-                elems_offset = less_count - num_elems;
+
+        try
+        {
+            copy_evt.wait();
+
+            if (!found) {
+                if (left) {
+                    elems_offset = less_count - num_elems;
+                }
+                else {
+                    buff_offset = a_size - num_elems;
+                }
             }
             else {
-                buff_offset = a_size - num_elems;
+                num_elems = 2;
+                elems_offset = k;
             }
+
+            state.cleanup(exec_queue);
+            auto end = std::chrono::high_resolution_clock::now();
+
+            auto duration =
+                std::chrono::duration_cast<std::chrono::microseconds>(end - start)
+                    .count();
+
+            std::cout << "KthElement1d took " << duration << " microseconds"
+                    << std::endl;
+
+            std::cout << "Found " << found << " left " << left
+                    << " less_count " << less_count
+                    << " greater_equal_count " << greater_equal_count
+                    << " num_elems " << num_elems
+                    << " nan_count " << nan_count
+                    << std::endl;
+            /* code */
         }
-        else {
-            num_elems = 2;
-            elems_offset = k;
+        catch (sycl::exception const &e)
+        {
+            std::cout << e.what() << std::endl;
         }
 
-        state.cleanup(exec_queue);
-
-        return {found, buff_offset, elems_offset, num_elems};
+        return {found, buff_offset, elems_offset, num_elems, nan_count};
     }
 };
 
@@ -335,7 +395,7 @@ KthElement1d::KthElement1d() : dispatch_table("a")
     dispatch_table.populate_dispatch_table<SupportedTypes, KthElementF>();
 }
 
-std::tuple<bool, uint64_t, uint64_t, uint64_t>
+KthElement1d::RetT
     KthElement1d::call(const dpctl::tensor::usm_ndarray &a,
                        dpctl::tensor::usm_ndarray &partitioned,
                        const size_t k,

@@ -33,7 +33,8 @@ namespace statistics::partitioning
 {
 struct KthElement1d
 {
-    using FnT = std::tuple<bool, uint64_t, uint64_t, uint64_t> (*)(
+    using RetT = std::tuple<bool, uint64_t, uint64_t, uint64_t, uint64_t>;
+    using FnT = RetT (*)(
         sycl::queue &,
         const void *,
         void *,
@@ -45,7 +46,7 @@ struct KthElement1d
 
     KthElement1d();
 
-    std::tuple<bool, uint64_t, uint64_t, uint64_t>
+    RetT
         call(const dpctl::tensor::usm_ndarray &a,
              dpctl::tensor::usm_ndarray &partitioned,
              uint64_t k,
