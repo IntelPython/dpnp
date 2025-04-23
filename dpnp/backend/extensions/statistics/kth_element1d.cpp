@@ -296,6 +296,7 @@ struct KthElementF
             // if (i % 5 == 0)
             //     prev.wait();
         }
+        prev.wait();
         prev = run_pick_pivot(exec_q, _in, _out, k, state, items_to_sort, limit,
                               true, {prev});
 
@@ -359,7 +360,6 @@ struct KthElementF
                 elems_offset = k;
             }
 
-            state.cleanup(exec_queue);
             auto end = std::chrono::high_resolution_clock::now();
 
             auto duration =
@@ -382,6 +382,7 @@ struct KthElementF
             std::cout << e.what() << std::endl;
         }
 
+        state.cleanup(exec_queue);
         return {found, buff_offset, elems_offset, num_elems, nan_count};
     }
 };
