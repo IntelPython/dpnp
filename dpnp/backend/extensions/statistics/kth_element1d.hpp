@@ -34,23 +34,21 @@ namespace statistics::partitioning
 struct KthElement1d
 {
     using RetT = std::tuple<bool, uint64_t, uint64_t, uint64_t, uint64_t>;
-    using FnT = RetT (*)(
-        sycl::queue &,
-        const void *,
-        void *,
-        const size_t,
-        const size_t,
-        const std::vector<sycl::event> &);
+    using FnT = RetT (*)(sycl::queue &,
+                         const void *,
+                         void *,
+                         const size_t,
+                         const size_t,
+                         const std::vector<sycl::event> &);
 
     ext::common::DispatchTable<FnT> dispatch_table;
 
     KthElement1d();
 
-    RetT
-        call(const dpctl::tensor::usm_ndarray &a,
-             dpctl::tensor::usm_ndarray &partitioned,
-             uint64_t k,
-             const std::vector<sycl::event> &depends);
+    RetT call(const dpctl::tensor::usm_ndarray &a,
+              dpctl::tensor::usm_ndarray &partitioned,
+              uint64_t k,
+              const std::vector<sycl::event> &depends);
 };
 
 void populate_kth_element1d(py::module_ m);

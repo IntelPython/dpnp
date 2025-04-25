@@ -347,7 +347,7 @@ void submit_partition_one_pivot(sycl::handler &cgh,
                         out[sbg_less_offset + le_item_offset + le_pos] =
                             values[_i];
                     }
-                    else if (!is_nan){
+                    else if (!is_nan) {
                         out[sbg_gr_offset + gr_item_offset + ge_pos] =
                             values[_i];
                     }

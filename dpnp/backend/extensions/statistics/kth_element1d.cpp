@@ -40,8 +40,8 @@
 #include "kth_element1d.hpp"
 #include "partitioning.hpp"
 
-#include <iostream>
 #include <chrono>
+#include <iostream>
 
 namespace sycl_exp = sycl::ext::oneapi::experimental;
 namespace dpctl_td_ns = dpctl::tensor::type_dispatch;
@@ -152,7 +152,8 @@ struct KthElementF
                         auto gh = sycl_exp::group_with_scratchpad(
                             group, sycl::span{&scratch[0], temp_memory_size});
                         if (num_elems > 0)
-                            sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems], Less<T>{});
+                            sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems],
+                                                 Less<T>{});
 
                         if (group.leader()) {
                             uint64_t offset = state.counters.less_count[0];
@@ -188,7 +189,8 @@ struct KthElementF
                     auto gh = sycl_exp::group_with_scratchpad(
                         group, sycl::span{&scratch[0], temp_memory_size});
                     sycl_exp::joint_sort(gh, &loc_items[0],
-                                         &loc_items[0] + items_to_sort, Less<T>{});
+                                         &loc_items[0] + items_to_sort,
+                                         Less<T>{});
 
                     T new_pivot = loc_items[items_to_sort / 2];
 
@@ -256,7 +258,8 @@ struct KthElementF
         uint32_t limit = 4 * (items_to_sort + 1);
         uint32_t iterations =
             std::ceil(-std::log(double(state.n) / limit) / std::log(0.536)) + 1;
-        // Ensure iterations are odd so the final result is always stored in 'partitioned'
+        // Ensure iterations are odd so the final result is always stored in
+        // 'partitioned'
         iterations += 1 - iterations % 2;
 
         auto prev = run_pick_pivot(exec_q, const_cast<T *>(in), partitioned, k,
@@ -267,8 +270,8 @@ struct KthElementF
         T *_in = partitioned;
         T *_out = temp_buff;
         for (uint32_t i = 0; i < iterations - 1; ++i) {
-            prev = run_pick_pivot(exec_q, _in, _out, k, state,
-                                  items_to_sort, limit, {prev});
+            prev = run_pick_pivot(exec_q, _in, _out, k, state, items_to_sort,
+                                  limit, {prev});
             prev = run_partition(exec_q, _in, _out, pstate, {prev});
             std::swap(_in, _out);
         }
@@ -278,13 +281,12 @@ struct KthElementF
         return prev;
     }
 
-    static KthElement1d::RetT
-        impl(sycl::queue &exec_queue,
-             const void *v_ain,
-             void *v_partitioned,
-             const size_t a_size,
-             const size_t k,
-             const std::vector<sycl::event> &depends)
+    static KthElement1d::RetT impl(sycl::queue &exec_queue,
+                                   const void *v_ain,
+                                   void *v_partitioned,
+                                   const size_t a_size,
+                                   const size_t k,
+                                   const std::vector<sycl::event> &depends)
     {
         auto start = std::chrono::high_resolution_clock::now();
         const T *ain = static_cast<const T *>(v_ain);
@@ -298,9 +300,9 @@ struct KthElementF
         init_e = pstate.init(exec_queue, {init_e});
 
         auto temp_buff = dpctl_utils::smart_malloc<T>(state.n, exec_queue,
-            sycl::usm::alloc::device);
-        auto evt = run_kth_element(exec_queue, ain, partitioned, temp_buff.get(), k, state,
-                                   pstate, {init_e});
+                                                      sycl::usm::alloc::device);
+        auto evt = run_kth_element(exec_queue, ain, partitioned,
+                                   temp_buff.get(), k, state, pstate, {init_e});
 
         bool found = false;
         bool left = false;
@@ -315,7 +317,8 @@ struct KthElementF
         copy_evt = exec_queue.copy(state.counters.greater_equal_count,
                                    &greater_equal_count, 1, copy_evt);
         copy_evt = exec_queue.copy(state.num_elems, &num_elems, 1, copy_evt);
-        copy_evt = exec_queue.copy(state.counters.nan_count, &nan_count, 1, copy_evt);
+        copy_evt =
+            exec_queue.copy(state.counters.nan_count, &nan_count, 1, copy_evt);
 
         uint64_t buff_offset = 0;
         uint64_t elems_offset = less_count;
@@ -344,13 +347,19 @@ struct KthElementF
                 .count();
 
         std::cout << "KthElement1d took " << duration << " microseconds"
-                << std::endl;
+                  << std::endl;
         return {found, buff_offset, elems_offset, num_elems, nan_count};
     }
 };
 
-using SupportedTypes =
-    std::tuple<uint32_t, int32_t, uint64_t, int64_t, float, double, std::complex<float>, std::complex<double>>;
+using SupportedTypes = std::tuple<uint32_t,
+                                  int32_t,
+                                  uint64_t,
+                                  int64_t,
+                                  float,
+                                  double,
+                                  std::complex<float>,
+                                  std::complex<double>>;
 } // namespace
 
 KthElement1d::KthElement1d() : dispatch_table("a")
@@ -358,11 +367,10 @@ KthElement1d::KthElement1d() : dispatch_table("a")
     dispatch_table.populate_dispatch_table<SupportedTypes, KthElementF>();
 }
 
-KthElement1d::RetT
-    KthElement1d::call(const dpctl::tensor::usm_ndarray &a,
-                       dpctl::tensor::usm_ndarray &partitioned,
-                       const size_t k,
-                       const std::vector<sycl::event> &depends)
+KthElement1d::RetT KthElement1d::call(const dpctl::tensor::usm_ndarray &a,
+                                      dpctl::tensor::usm_ndarray &partitioned,
+                                      const size_t k,
+                                      const std::vector<sycl::event> &depends)
 {
     // validate(a, partitioned, k);
 
