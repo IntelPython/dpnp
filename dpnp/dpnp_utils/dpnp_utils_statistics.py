@@ -261,7 +261,7 @@ def dpnp_median(
             )
         axis = -1
 
-    if not isinstance(a.dtype, dpnp.complexfloating) and not ignore_nan and a_ndim == 1:
+    if not ignore_nan and a_ndim == 1:
         return native_median(a)
 
     if overwrite_input:

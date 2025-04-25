@@ -68,7 +68,6 @@ struct KthElementF
                                       State<T> &state,
                                       uint64_t items_to_sort,
                                       uint64_t limit,
-                                      bool ret,
                                       const std::vector<sycl::event> &deps)
     {
         auto e = queue.submit([&](sycl::handler &cgh) {
@@ -149,15 +148,11 @@ struct KthElementF
                         return;
                     }
 
-                    // if (group.leader()) {
-                    //     str << "num_elems: " << num_elems << "\n";
-                    // }
-
                     if (num_elems <= limit) {
                         auto gh = sycl_exp::group_with_scratchpad(
                             group, sycl::span{&scratch[0], temp_memory_size});
                         if (num_elems > 0)
-                            sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems]);
+                            sycl_exp::joint_sort(gh, &_in[0], &_in[num_elems], Less<T>{});
 
                         if (group.leader()) {
                             uint64_t offset = state.counters.less_count[0];
@@ -168,16 +163,8 @@ struct KthElementF
 
                             int64_t idx = target - offset;
 
-                            // if (idx + 1 > (in + state.n - _in) || idx < 0)
-                            // {
-                            //     str << "buffer access out of bounds idx = "
-                            //     << idx << " size " << (in + state.n - _in) << "\n";
-                            // }
-                            // else
-                            {
-                                state.values[0] = _in[idx];
-                                state.values[1] = _in[idx + 1];
-                            }
+                            state.values[0] = _in[idx];
+                            state.values[1] = _in[idx + 1];
 
                             state.stop[0] = true;
                             state.target_found[0] = true;
@@ -185,9 +172,6 @@ struct KthElementF
 
                         return;
                     }
-
-                    // if (ret)
-                    //     return;
 
                     uint64_t step = num_elems / items_to_sort;
                     for (uint32_t i = llid; i < items_to_sort; i += local_size)
@@ -204,34 +188,34 @@ struct KthElementF
                     auto gh = sycl_exp::group_with_scratchpad(
                         group, sycl::span{&scratch[0], temp_memory_size});
                     sycl_exp::joint_sort(gh, &loc_items[0],
-                                         &loc_items[0] + items_to_sort);
+                                         &loc_items[0] + items_to_sort, Less<T>{});
 
                     T new_pivot = loc_items[items_to_sort / 2];
 
-                    // if (new_pivot != state.pivot[0]) {
+                    if (new_pivot != state.pivot[0]) {
                         if (group.leader()) {
                             state.pivot[0] = new_pivot;
                             state.num_elems[0] = num_elems;
                         }
                         return;
-                    // }
+                    }
 
-                    // auto start = llid + items_to_sort / 2 + 1;
-                    // uint32_t index = start;
-                    // for (uint32_t i = start; i < items_to_sort; i += local_size)
-                    // {
-                    //     if (loc_items[i] != new_pivot) {
-                    //         index = i;
-                    //         break;
-                    //     }
-                    // }
+                    auto start = llid + items_to_sort / 2 + 1;
+                    uint32_t index = start;
+                    for (uint32_t i = start; i < items_to_sort; i += local_size)
+                    {
+                        if (loc_items[i] != new_pivot) {
+                            index = i;
+                            break;
+                        }
+                    }
 
-                    // index = sycl::reduce_over_group(group, index,
-                    //                                 sycl::minimum<>());
-                    // if (group.leader()) {
-                    //     state.pivot[0] = loc_items[index];
-                    //     state.num_elems[0] = num_elems;
-                    // }
+                    index = sycl::reduce_over_group(group, index,
+                                                    sycl::minimum<>());
+                    if (group.leader()) {
+                        state.pivot[0] = loc_items[index];
+                        state.num_elems[0] = num_elems;
+                    }
                 });
         });
 
@@ -262,6 +246,7 @@ struct KthElementF
     static sycl::event run_kth_element(sycl::queue &exec_q,
                                        const T *in,
                                        T *partitioned,
+                                       T *temp_buff,
                                        const size_t k,
                                        State<T> &state,
                                        PartitionState<T> &pstate,
@@ -274,31 +259,21 @@ struct KthElementF
         // Ensure iterations are odd so the final result is always stored in 'partitioned'
         iterations += 1 - iterations % 2;
 
-        auto temp_buff = dpctl_utils::smart_malloc<T>(state.n, exec_q,
-                                                      sycl::usm::alloc::device);
-
-        std::cout << "Iteration " << 0 << std::endl;
         auto prev = run_pick_pivot(exec_q, const_cast<T *>(in), partitioned, k,
-                                   state, items_to_sort, limit, false, depends);
+                                   state, items_to_sort, limit, depends);
         prev = run_partition(exec_q, const_cast<T *>(in), partitioned, pstate,
                              {prev});
-        // prev.wait();
 
         T *_in = partitioned;
-        T *_out = temp_buff.get();
+        T *_out = temp_buff;
         for (uint32_t i = 0; i < iterations - 1; ++i) {
-            std::cout << "Iteration " << i + 1 << std::endl;
             prev = run_pick_pivot(exec_q, _in, _out, k, state,
-                                  items_to_sort, limit, true, {prev});
+                                  items_to_sort, limit, {prev});
             prev = run_partition(exec_q, _in, _out, pstate, {prev});
             std::swap(_in, _out);
-            // prev.wait();
-            // if (i % 5 == 0)
-            //     prev.wait();
         }
-        prev.wait();
         prev = run_pick_pivot(exec_q, _in, _out, k, state, items_to_sort, limit,
-                              true, {prev});
+                              {prev});
 
         return prev;
     }
@@ -322,7 +297,9 @@ struct KthElementF
         auto init_e = state.init(exec_queue, depends);
         init_e = pstate.init(exec_queue, {init_e});
 
-        auto evt = run_kth_element(exec_queue, ain, partitioned, k, state,
+        auto temp_buff = dpctl_utils::smart_malloc<T>(state.n, exec_queue,
+            sycl::usm::alloc::device);
+        auto evt = run_kth_element(exec_queue, ain, partitioned, temp_buff.get(), k, state,
                                    pstate, {init_e});
 
         bool found = false;
@@ -343,52 +320,37 @@ struct KthElementF
         uint64_t buff_offset = 0;
         uint64_t elems_offset = less_count;
 
-        try
-        {
-            copy_evt.wait();
+        copy_evt.wait();
 
-            if (!found) {
-                if (left) {
-                    elems_offset = less_count - num_elems;
-                }
-                else {
-                    buff_offset = a_size - num_elems;
-                }
+        if (!found) {
+            if (left) {
+                elems_offset = less_count - num_elems;
             }
             else {
-                num_elems = 2;
-                elems_offset = k;
+                buff_offset = a_size - num_elems;
             }
-
-            auto end = std::chrono::high_resolution_clock::now();
-
-            auto duration =
-                std::chrono::duration_cast<std::chrono::microseconds>(end - start)
-                    .count();
-
-            std::cout << "KthElement1d took " << duration << " microseconds"
-                    << std::endl;
-
-            std::cout << "Found " << found << " left " << left
-                    << " less_count " << less_count
-                    << " greater_equal_count " << greater_equal_count
-                    << " num_elems " << num_elems
-                    << " nan_count " << nan_count
-                    << std::endl;
-            /* code */
         }
-        catch (sycl::exception const &e)
-        {
-            std::cout << e.what() << std::endl;
+        else {
+            num_elems = 2;
+            elems_offset = k;
         }
 
         state.cleanup(exec_queue);
+
+        auto end = std::chrono::high_resolution_clock::now();
+
+        auto duration =
+            std::chrono::duration_cast<std::chrono::microseconds>(end - start)
+                .count();
+
+        std::cout << "KthElement1d took " << duration << " microseconds"
+                << std::endl;
         return {found, buff_offset, elems_offset, num_elems, nan_count};
     }
 };
 
 using SupportedTypes =
-    std::tuple<uint32_t, int32_t, uint64_t, int64_t, float, double>;
+    std::tuple<uint32_t, int32_t, uint64_t, int64_t, float, double, std::complex<float>, std::complex<double>>;
 } // namespace
 
 KthElement1d::KthElement1d() : dispatch_table("a")

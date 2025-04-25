@@ -256,14 +256,15 @@ void submit_partition_one_pivot(sycl::handler &cgh,
                 auto i = local_i_base + _i * sbg_size;
                 if (i < num_elems) {
                     values[_i] = _in[i];
-                    less_count += Less<T>{}(values[_i], value);
-                    equal_count += values[_i] == value;
-                    nan_count += IsNan<T>::isnan(values[_i]);
+                    auto is_nan = IsNan<T>::isnan(values[_i]);
+                    less_count += (Less<T>{}(values[_i], value) && !is_nan);
+                    equal_count += (values[_i] == value && !is_nan);
+                    nan_count += is_nan;
                     actual_count++;
                 }
             }
 
-            greater_equal_count = actual_count - less_count;
+            greater_equal_count = actual_count - less_count - nan_count;
 
             auto sbg_less_equal =
                 sycl::reduce_over_group(sbg, less_count, sycl::plus<>());
@@ -329,21 +330,24 @@ void submit_partition_one_pivot(sycl::handler &cgh,
             uint32_t gr_item_offset = 0;
 
             for (uint32_t _i = 0; _i < WorkPI; ++_i) {
-                uint32_t less = values[_i] < value;
+                uint32_t is_nan = IsNan<T>::isnan(values[_i]);
+                uint32_t less = (!is_nan && Less<T>{}(values[_i], value));
                 auto le_pos =
                     sycl::exclusive_scan_over_group(sbg, less, sycl::plus<>());
                 auto ge_pos = sbg.get_local_linear_id() - le_pos;
 
                 auto total_le =
                     sycl::reduce_over_group(sbg, less, sycl::plus<>());
-                auto total_gr = sbg_size - total_le;
+                auto total_nan =
+                    sycl::reduce_over_group(sbg, is_nan, sycl::plus<>());
+                auto total_gr = sbg_size - total_le - total_nan;
 
                 if (_i < actual_count) {
                     if (less) {
                         out[sbg_less_offset + le_item_offset + le_pos] =
                             values[_i];
                     }
-                    else {
+                    else if (!is_nan){
                         out[sbg_gr_offset + gr_item_offset + ge_pos] =
                             values[_i];
                     }
