@@ -149,46 +149,48 @@ $(function(){initNavTree('kernels_2elementwise__functions_2interpolate_8hpp_sour
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>                             <span class="keyword">const</span> std::size_t xp_size,</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>                             <span class="keyword">const</span> std::vector&lt;sycl::event&gt; &amp;depends)</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>{</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="keywordflow">return</span> q.submit([&amp;](sycl::handler &amp;h) {</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        h.depends_on(depends);</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        h.parallel_for(sycl::range&lt;1&gt;(n), [=](sycl::id&lt;1&gt; i) {</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            TValue left_val = left ? *left : fp[0];</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            TValue right_val = right ? *right : fp[xp_size - 1];</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            TCoord x_val = x[i];</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            std::int64_t x_idx = idx[i] - 1;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TCoord&gt;::isnan</a>(x_val)) {</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                out[i] = x_val;</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            }</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_idx &lt; 0) {</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                out[i] = left_val;</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            }</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_val == xp[xp_size - 1]) {</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                out[i] = fp[xp_size - 1];</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            }</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_idx &gt;= <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(xp_size - 1)) {</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                out[i] = right_val;</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            }</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>            <span class="keywordflow">else</span> {</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>                TValue slope =</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>                    (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                TValue res = slope * (x_val - xp[x_idx]) + fp[x_idx];</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res)) {</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>                    res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                    <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res) &amp;&amp;</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                        (fp[x_idx] == fp[x_idx + 1])) {</div>
-<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                        res = fp[x_idx];</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                    }</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                }</div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                out[i] = res;</div>
-<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>            }</div>
-<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>        });</div>
-<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    });</div>
-<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>}</div>
-<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
-<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>} <span class="comment">// namespace dpnp::kernels::interpolate</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    <span class="comment">// Selected over the work-group version</span></div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="comment">// due to simpler execution and slightly better performance.</span></div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    <span class="keywordflow">return</span> q.submit([&amp;](sycl::handler &amp;h) {</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        h.depends_on(depends);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        h.parallel_for(sycl::range&lt;1&gt;(n), [=](sycl::id&lt;1&gt; i) {</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            TValue left_val = left ? *left : fp[0];</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            TValue right_val = right ? *right : fp[xp_size - 1];</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            TCoord x_val = x[i];</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>            std::int64_t x_idx = idx[i] - 1;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TCoord&gt;::isnan</a>(x_val)) {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                out[i] = x_val;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>            }</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_idx &lt; 0) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                out[i] = left_val;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>            }</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_val == xp[xp_size - 1]) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                out[i] = fp[xp_size - 1];</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>            }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            <span class="keywordflow">else</span> <span class="keywordflow">if</span> (x_idx &gt;= <span class="keyword">static_cast&lt;</span>std::int64_t<span class="keyword">&gt;</span>(xp_size - 1)) {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                out[i] = right_val;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>            <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>                TValue slope =</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>                    (fp[x_idx + 1] - fp[x_idx]) / (xp[x_idx + 1] - xp[x_idx]);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                TValue res = slope * (x_val - xp[x_idx]) + fp[x_idx];</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span> </div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>                <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res)) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>                    res = slope * (x_val - xp[x_idx + 1]) + fp[x_idx + 1];</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>                    <span class="keywordflow">if</span> (<a class="code hl_struct" href="structext_1_1common_1_1_is_nan.html">IsNan&lt;TValue&gt;::isnan</a>(res) &amp;&amp;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>                        (fp[x_idx] == fp[x_idx + 1])) {</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>                        res = fp[x_idx];</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                    }</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>                }</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>                out[i] = res;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>            }</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>        });</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    });</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>}</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span> </div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>} <span class="comment">// namespace dpnp::kernels::interpolate</span></div>
 <div class="ttc" id="astructext_1_1common_1_1_is_nan_html"><div class="ttname"><a href="structext_1_1common_1_1_is_nan.html">ext::common::IsNan</a></div><div class="ttdef"><b>Definition</b> <a href="common_2ext_2common_8hpp_source.html#l00088">common.hpp:89</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
