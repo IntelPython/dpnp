@@ -1,3 +1,6 @@
+import warnings
+
+import numpy
 import numpy.testing
 
 import dpnp as cupy
@@ -6,7 +9,15 @@ import dpnp as cupy
 
 
 def assert_allclose(
-    actual, desired, rtol=1e-7, atol=0, err_msg="", verbose=True
+    actual,
+    desired,
+    rtol=1e-7,
+    atol=0,
+    equal_nan=True,
+    err_msg="",
+    verbose=True,
+    *,
+    strict=False,
 ):
     """Raises an AssertionError if objects are not equal up to desired tolerance.
 
@@ -22,17 +33,42 @@ def assert_allclose(
     .. seealso:: :func:`numpy.testing.assert_allclose`
 
     """
-    numpy.testing.assert_allclose(
-        cupy.asnumpy(actual),
-        cupy.asnumpy(desired),
-        rtol=rtol,
-        atol=atol,
-        err_msg=err_msg,
-        verbose=verbose,
-    )
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        numpy.testing.assert_allclose(
+            cupy.asnumpy(actual),
+            cupy.asnumpy(desired),
+            rtol=rtol,
+            atol=atol,
+            equal_nan=equal_nan,
+            err_msg=err_msg,
+            verbose=verbose,
+            strict=strict,
+        )
+    else:
+        if strict:
+            warnings.warn(
+                "`dpnp.tests.third_party.cupy.testing.assert_allclose` does not support `strict` "
+                "option with NumPy v1.",
+                RuntimeWarning,
+            )
+        numpy.testing.assert_allclose(
+            cupy.asnumpy(actual),
+            cupy.asnumpy(desired),
+            rtol=rtol,
+            atol=atol,
+            equal_nan=equal_nan,
+            err_msg=err_msg,
+            verbose=verbose,
+        )
 
 
-def assert_array_almost_equal(x, y, decimal=6, err_msg="", verbose=True):
+def assert_array_almost_equal(
+    actual,
+    desired,
+    decimal=6,
+    err_msg="",
+    verbose=True,
+):
     """Raises an AssertionError if objects are not equal up to desired precision.
 
     Args:
@@ -46,8 +82,8 @@ def assert_array_almost_equal(x, y, decimal=6, err_msg="", verbose=True):
     .. seealso:: :func:`numpy.testing.assert_array_almost_equal`
     """
     numpy.testing.assert_array_almost_equal(
-        cupy.asnumpy(x),
-        cupy.asnumpy(y),
+        cupy.asnumpy(actual),
+        cupy.asnumpy(desired),
         decimal=decimal,
         err_msg=err_msg,
         verbose=verbose,
@@ -87,7 +123,13 @@ def assert_array_max_ulp(a, b, maxulp=1, dtype=None):
 
 
 def assert_array_equal(
-    x, y, err_msg="", verbose=True, strides_check=False, **kwargs
+    actual,
+    desired,
+    err_msg="",
+    verbose=True,
+    *,
+    strict=False,
+    strides_check=False,
 ):
     """Raises an AssertionError if two array_like objects are not equal.
 
@@ -105,22 +147,36 @@ def assert_array_equal(
 
     .. seealso:: :func:`numpy.testing.assert_array_equal`
     """
-    numpy.testing.assert_array_equal(
-        cupy.asnumpy(x),
-        cupy.asnumpy(y),
-        err_msg=err_msg,
-        verbose=verbose,
-        **kwargs,
-    )
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "1.24.0":
+        numpy.testing.assert_array_equal(
+            cupy.asnumpy(actual),
+            cupy.asnumpy(desired),
+            err_msg=err_msg,
+            verbose=verbose,
+            strict=strict,
+        )
+    else:
+        if strict:
+            warnings.warn(
+                "`dpnp.tests.third_party.cupy.testing.assert_allclose` does not support `strict` "
+                "option with NumPy v1.",
+                RuntimeWarning,
+            )
+        numpy.testing.assert_array_equal(
+            cupy.asnumpy(actual),
+            cupy.asnumpy(desired),
+            err_msg=err_msg,
+            verbose=verbose,
+        )
 
     if strides_check:
-        if x.strides != y.strides:
+        if actual.strides != desired.strides:
             msg = ["Strides are not equal:"]
             if err_msg:
                 msg = [msg[0] + " " + err_msg]
             if verbose:
-                msg.append(" x: {}".format(x.strides))
-                msg.append(" y: {}".format(y.strides))
+                msg.append(" x: {}".format(actual.strides))
+                msg.append(" y: {}".format(desired.strides))
             raise AssertionError("\n".join(msg))
 
 
@@ -163,7 +219,7 @@ def assert_array_list_equal(xlist, ylist, err_msg="", verbose=True):
         )
 
 
-def assert_array_less(x, y, err_msg="", verbose=True):
+def assert_array_less(x, y, err_msg="", verbose=True, *, strict=False):
     """Raises an AssertionError if array_like objects are not ordered by less than.
 
     Args:
@@ -175,6 +231,24 @@ def assert_array_less(x, y, err_msg="", verbose=True):
 
     .. seealso:: :func:`numpy.testing.assert_array_less`
     """
-    numpy.testing.assert_array_less(
-        cupy.asnumpy(x), cupy.asnumpy(y), err_msg=err_msg, verbose=verbose
-    )
+    if numpy.lib.NumpyVersion(numpy.__version__) >= "2.0.0":
+        numpy.testing.assert_array_less(
+            cupy.asnumpy(x),
+            cupy.asnumpy(y),
+            err_msg=err_msg,
+            verbose=verbose,
+            strict=strict,
+        )
+    else:
+        if strict:
+            warnings.warn(
+                "`dpnp.tests.third_party.cupy.testing.assert_allclose` does not support `strict` "
+                "option with NumPy v1.",
+                RuntimeWarning,
+            )
+        numpy.testing.assert_array_less(
+            cupy.asnumpy(x),
+            cupy.asnumpy(y),
+            err_msg=err_msg,
+            verbose=verbose,
+        )

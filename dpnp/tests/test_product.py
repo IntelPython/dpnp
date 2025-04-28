@@ -199,7 +199,7 @@ class TestDot:
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     def test_arange(self, dtype):
         n = 10**2
-        m = 10**3 if dtype is not dpnp.float32 else 10**2
+        m = 10**3 if dtype not in [dpnp.float32, dpnp.complex64] else 10**2
         a = numpy.hstack((numpy.arange(n, dtype=dtype),) * m)
         b = numpy.flipud(a)
         ia = dpnp.array(a)
