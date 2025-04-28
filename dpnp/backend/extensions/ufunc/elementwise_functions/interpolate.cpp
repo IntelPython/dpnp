@@ -36,11 +36,13 @@
 
 #include "kernels/elementwise_functions/interpolate.hpp"
 
+#include "ext/common.hpp"
 #include "ext/validation_utils.hpp"
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
 
+using ext::common::value_type_of;
 using ext::validation::array_names;
 using ext::validation::array_ptr;
 using ext::validation::common_checks;
@@ -50,18 +52,6 @@ namespace dpnp::extensions::ufunc
 
 namespace impl
 {
-
-template <typename T>
-struct value_type_of
-{
-    using type = T;
-};
-
-template <typename T>
-struct value_type_of<std::complex<T>>
-{
-    using type = T;
-};
 
 template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;

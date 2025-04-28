@@ -106,6 +106,18 @@ struct IsNan
     }
 };
 
+template <typename T>
+struct value_type_of
+{
+    using type = T;
+};
+
+template <typename T>
+struct value_type_of<std::complex<T>>
+{
+    using type = T;
+};
+
 size_t get_max_local_size(const sycl::device &device);
 size_t get_max_local_size(const sycl::device &device,
                           int cpu_local_size_limit,
