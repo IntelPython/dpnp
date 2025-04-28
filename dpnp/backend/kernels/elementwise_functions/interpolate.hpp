@@ -47,6 +47,8 @@ sycl::event interpolate_impl(sycl::queue &q,
                              const std::size_t xp_size,
                              const std::vector<sycl::event> &depends)
 {
+    // Selected over the work-group version
+    // due to simpler execution and slightly better performance.
     return q.submit([&](sycl::handler &h) {
         h.depends_on(depends);
         h.parallel_for(sycl::range<1>(n), [=](sycl::id<1> i) {
