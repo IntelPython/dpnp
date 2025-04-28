@@ -180,6 +180,8 @@ var NAVTREEINDEX1 =
 "structext_1_1common_1_1one__of.html":[2,0,1,0,6],
 "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html":[2,0,1,0,8],
 "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_01_4_01_4.html":[2,0,1,0,7],
+"structext_1_1common_1_1value__type__of.html":[2,0,1,0,11],
+"structext_1_1common_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html":[2,0,1,0,12],
 "structis__any.html":[2,0,11],
 "structmcg59__struct.html":[2,0,12],
 "structmt19937__struct.html":[2,0,13],
