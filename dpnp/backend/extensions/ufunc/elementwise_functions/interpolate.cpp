@@ -31,8 +31,8 @@
 #include <pybind11/stl.h>
 
 // dpctl tensor headers
-#include "utils/output_validation.hpp"
 #include "utils/type_dispatch.hpp"
+#include "utils/type_utils.hpp"
 
 #include "kernels/elementwise_functions/interpolate.hpp"
 
@@ -41,6 +41,7 @@
 
 namespace py = pybind11;
 namespace td_ns = dpctl::tensor::type_dispatch;
+namespace type_utils = dpctl::tensor::type_utils;
 
 using ext::common::value_type_of;
 using ext::validation::array_names;
@@ -57,18 +58,18 @@ template <typename T>
 using value_type_of_t = typename value_type_of<T>::type;
 
 typedef sycl::event (*interpolate_fn_ptr_t)(sycl::queue &,
-                                            const void *, // x
-                                            const void *, // idx
-                                            const void *, // xp
-                                            const void *, // fp
-                                            const void *, // left
-                                            const void *, // right
-                                            void *,       // out
-                                            std::size_t,  // n
-                                            std::size_t,  // xp_size
+                                            const void *,      // x
+                                            const void *,      // idx
+                                            const void *,      // xp
+                                            const void *,      // fp
+                                            const void *,      // left
+                                            const void *,      // right
+                                            void *,            // out
+                                            const std::size_t, // n
+                                            const std::size_t, // xp_size
                                             const std::vector<sycl::event> &);
 
-template <typename T>
+template <typename T, typename TIdx = std::int64_t>
 sycl::event interpolate_call(sycl::queue &exec_q,
                              const void *vx,
                              const void *vidx,
@@ -77,15 +78,15 @@ sycl::event interpolate_call(sycl::queue &exec_q,
                              const void *vleft,
                              const void *vright,
                              void *vout,
-                             std::size_t n,
-                             std::size_t xp_size,
+                             const std::size_t n,
+                             const std::size_t xp_size,
                              const std::vector<sycl::event> &depends)
 {
-    using dpctl::tensor::type_utils::is_complex_v;
+    using type_utils::is_complex_v;
     using TCoord = std::conditional_t<is_complex_v<T>, value_type_of_t<T>, T>;
 
     const TCoord *x = static_cast<const TCoord *>(vx);
-    const std::int64_t *idx = static_cast<const std::int64_t *>(vidx);
+    const TIdx *idx = static_cast<const TIdx *>(vidx);
     const TCoord *xp = static_cast<const TCoord *>(vxp);
     const T *fp = static_cast<const T *>(vfp);
     const T *left = static_cast<const T *>(vleft);
@@ -114,6 +115,7 @@ void common_interpolate_checks(
 
     auto array_types = td_ns::usm_ndarray_types();
     int x_type_id = array_types.typenum_to_lookup_id(x.get_typenum());
+    int idx_type_id = array_types.typenum_to_lookup_id(idx.get_typenum());
     int xp_type_id = array_types.typenum_to_lookup_id(xp.get_typenum());
     int fp_type_id = array_types.typenum_to_lookup_id(fp.get_typenum());
     int out_type_id = array_types.typenum_to_lookup_id(out.get_typenum());
@@ -124,38 +126,41 @@ void common_interpolate_checks(
     if (fp_type_id != out_type_id) {
         throw py::value_error("fp and out must have the same dtype");
     }
+    if (idx_type_id != static_cast<int>(td_ns::typenum_t::INT64)) {
+        throw py::value_error("The type of idx must be int64");
+    }
 
-    if (left) {
-        const auto &l = left.value();
-        names.insert({&l, "left"});
-        if (l.get_ndim() != 0) {
+    auto left_v = left ? &left.value() : nullptr;
+    if (left_v) {
+        names.insert({left_v, "left"});
+        if (left_v->get_ndim() != 0) {
             throw py::value_error("left must be a zero-dimensional array");
         }
 
-        int left_type_id = array_types.typenum_to_lookup_id(l.get_typenum());
+        int left_type_id =
+            array_types.typenum_to_lookup_id(left_v->get_typenum());
         if (left_type_id != fp_type_id) {
             throw py::value_error(
                 "left must have the same dtype as fp and out");
         }
     }
 
-    if (right) {
-        const auto &r = right.value();
-        names.insert({&r, "right"});
-        if (r.get_ndim() != 0) {
+    auto right_v = right ? &right.value() : nullptr;
+    if (right_v) {
+        names.insert({right_v, "right"});
+        if (right_v->get_ndim() != 0) {
             throw py::value_error("right must be a zero-dimensional array");
         }
 
-        int right_type_id = array_types.typenum_to_lookup_id(r.get_typenum());
+        int right_type_id =
+            array_types.typenum_to_lookup_id(right_v->get_typenum());
         if (right_type_id != fp_type_id) {
             throw py::value_error(
                 "right must have the same dtype as fp and out");
         }
     }
 
-    common_checks({&x, &xp, &fp, left ? &left.value() : nullptr,
-                   right ? &right.value() : nullptr},
-                  {&out}, names);
+    common_checks({&x, &xp, &fp, left_v, right_v}, {&out}, names);
 
     if (x.get_ndim() != 1 || xp.get_ndim() != 1 || fp.get_ndim() != 1 ||
         idx.get_ndim() != 1 || out.get_ndim() != 1)
@@ -165,6 +170,10 @@ void common_interpolate_checks(
 
     if (xp.get_size() != fp.get_size()) {
         throw py::value_error("xp and fp must have the same size");
+    }
+
+    if (xp.get_size() == 0) {
+        throw py::value_error("array of sample points is empty");
     }
 
     if (x.get_size() != out.get_size() || x.get_size() != idx.get_size()) {
@@ -183,11 +192,11 @@ std::pair<sycl::event, sycl::event>
                    sycl::queue &exec_q,
                    const std::vector<sycl::event> &depends)
 {
+    common_interpolate_checks(x, idx, xp, fp, out, left, right);
+
     if (x.get_size() == 0) {
         return {sycl::event(), sycl::event()};
     }
-
-    common_interpolate_checks(x, idx, xp, fp, out, left, right);
 
     int out_typenum = out.get_typenum();
 
@@ -215,13 +224,10 @@ std::pair<sycl::event, sycl::event>
         args_ev = dpctl::utils::keep_args_alive(
             exec_q, {x, idx, xp, fp, out, left.value(), right.value()}, {ev});
     }
-    else if (left) {
+    else if (left || right) {
         args_ev = dpctl::utils::keep_args_alive(
-            exec_q, {x, idx, xp, fp, out, left.value()}, {ev});
-    }
-    else if (right) {
-        args_ev = dpctl::utils::keep_args_alive(
-            exec_q, {x, idx, xp, fp, out, right.value()}, {ev});
+            exec_q, {x, idx, xp, fp, out, left ? left.value() : right.value()},
+            {ev});
     }
     else {
         args_ev =

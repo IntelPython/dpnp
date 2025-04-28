@@ -1454,9 +1454,9 @@ def test_choose(device):
 
 
 @pytest.mark.parametrize("device", valid_dev, ids=dev_ids)
-@pytest.mark.parametrize("left", [None, dpnp.array(-1.0)])
-@pytest.mark.parametrize("right", [None, dpnp.array(99.0)])
-@pytest.mark.parametrize("period", [None, dpnp.array(180.0)])
+@pytest.mark.parametrize("left", [None, -1.0])
+@pytest.mark.parametrize("right", [None, 99.0])
+@pytest.mark.parametrize("period", [None, 180.0])
 def test_interp(device, left, right, period):
     x = dpnp.linspace(0.1, 9.9, 20, device=device)
     xp = dpnp.linspace(0.0, 10.0, 5, sycl_queue=x.sycl_queue)

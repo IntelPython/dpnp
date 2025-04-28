@@ -366,7 +366,8 @@ def _validate_interp_param(param, name, exec_q, usm_type, dtype=None):
             )
         if dpu.get_execution_queue([exec_q, param.sycl_queue]) is None:
             raise ValueError(
-                "input arrays and {name} must be on the same SYCL queue"
+                f"input arrays and {name} must be allocated "
+                "on the same SYCL queue"
             )
         if dtype is not None:
             param = param.astype(dtype)
