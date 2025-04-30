@@ -422,13 +422,9 @@ class TestDet:
         a = numpy.empty((0, 0, 2, 2), dtype=numpy.float32)
         ia = dpnp.array(a)
 
-        np_det = numpy.linalg.det(a)
-        dpnp_det = dpnp.linalg.det(ia)
-
-        assert dpnp_det.dtype == np_det.dtype
-        assert dpnp_det.shape == np_det.shape
-
-        assert_allclose(dpnp_det, np_det)
+        expected = numpy.linalg.det(a)
+        result = dpnp.linalg.det(ia)
+        assert_allclose(result, expected)
 
     @pytest.mark.parametrize(
         "matrix",
@@ -2851,25 +2847,6 @@ class TestSvd:
             tol = 1e-03
         self._tol = tol
 
-    def check_types_shapes(
-        self, dp_u, dp_s, dp_vt, np_u, np_s, np_vt, compute_vt=True
-    ):
-        if has_support_aspect64():
-            if compute_vt:
-                assert dp_u.dtype == np_u.dtype
-                assert dp_vt.dtype == np_vt.dtype
-            assert dp_s.dtype == np_s.dtype
-        else:
-            if compute_vt:
-                assert dp_u.dtype.kind == np_u.dtype.kind
-                assert dp_vt.dtype.kind == np_vt.dtype.kind
-            assert dp_s.dtype.kind == np_s.dtype.kind
-
-        if compute_vt:
-            assert dp_u.shape == np_u.shape
-            assert dp_vt.shape == np_vt.shape
-        assert dp_s.shape == np_s.shape
-
     # Checks the accuracy of singular value decomposition (SVD).
     # Compares the reconstructed matrix from the decomposed components
     # with the original matrix.
@@ -2922,7 +2899,6 @@ class TestSvd:
         result = dpnp.linalg.svd(dp_a)
         dp_u, dp_s, dp_vh = result.U, result.S, result.Vh
 
-        self.check_types_shapes(dp_u, dp_s, dp_vh, np_u, np_s, np_vh)
         self.get_tol(dtype)
         self.check_decomposition(
             dp_a, dp_u, dp_s, dp_vh, np_u, np_s, np_vh, True
@@ -2949,10 +2925,6 @@ class TestSvd:
             np_s = numpy.linalg.svd(a, compute_uv=compute_vt, hermitian=True)
             dp_s = dpnp.linalg.svd(dp_a, compute_uv=compute_vt, hermitian=True)
             np_u = np_vh = dp_u = dp_vh = None
-
-        self.check_types_shapes(
-            dp_u, dp_s, dp_vh, np_u, np_s, np_vh, compute_vt
-        )
 
         self.get_tol(dtype)
 
@@ -3029,14 +3001,6 @@ class TestPinv:
             tol = 1e-03
         self._tol = tol
 
-    def check_types_shapes(self, dp_B, np_B):
-        if has_support_aspect64():
-            assert dp_B.dtype == np_B.dtype
-        else:
-            assert dp_B.dtype.kind == np_B.dtype.kind
-
-        assert dp_B.shape == np_B.shape
-
     @pytest.mark.parametrize("dtype", get_all_dtypes(no_bool=True))
     @pytest.mark.parametrize(
         "shape",
@@ -3058,7 +3022,6 @@ class TestPinv:
         B = numpy.linalg.pinv(a)
         B_dp = dpnp.linalg.pinv(a_dp)
 
-        self.check_types_shapes(B_dp, B)
         self.get_tol(dtype)
         tol = self._tol
         assert_allclose(B_dp, B, rtol=tol, atol=tol)
@@ -3083,7 +3046,6 @@ class TestPinv:
         B = numpy.linalg.pinv(a, hermitian=True)
         B_dp = dpnp.linalg.pinv(a_dp, hermitian=True)
 
-        self.check_types_shapes(B_dp, B)
         self.get_tol(dtype)
         tol = self._tol
 

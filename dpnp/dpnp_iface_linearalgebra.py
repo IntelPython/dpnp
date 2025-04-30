@@ -71,18 +71,17 @@ __all__ = [
 # TODO: implement a specific scalar-array kernel
 def _call_multiply(a, b, out=None, outer_calc=False):
     """
-    Call multiply function for special cases of scalar-array dots.
+    Adjusted multiply function for handling special cases of scalar-array dot
+    products in linear algebra.
 
-    if `sc` is an scalar and `a` is an array of type float32, we have
-    dpnp.multiply(a, sc).dtype == dpnp.float32 and
-    numpy.multiply(a, sc).dtype == dpnp.float32.
-
-    However, for scalar-array dots such as dot function we have
-    dpnp.dot(a, sc).dtype == dpnp.float32 while
-    numpy.dot(a, sc).dtype == dpnp.float64.
-
-    We need to adjust the behavior of the multiply function when it is
-    used for special cases of scalar-array dots.
+    `dpnp.multiply` cannot directly be used for calculating scalar-array dots,
+    because the output dtype of multiply is not the same as the expected dtype
+    for scalar-array dots. For example, if `sc` is an scalar and `a` is an
+    array of type `float32`, then `dpnp.multiply(a, sc).dtype == dpnp.float32`
+    (similar to NumPy). However, for scalar-array dots, such as the dot
+    function, we need `dpnp.dot(a, sc).dtype == dpnp.float64` to align with
+    NumPy. This functions adjusts the behavior of `dpnp.multiply` function to
+    meet this requirement.
 
     """
 

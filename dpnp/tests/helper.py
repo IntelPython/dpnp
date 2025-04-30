@@ -18,6 +18,7 @@ def _assert_dtype(a_dt, b_dt, check_only_type_kind=False):
 
 
 def _assert_shape(a, b):
+    # it is assumed `a` is a `dpnp.ndarray` and so it has shape attribute
     if hasattr(b, "shape"):
         assert a.shape == b.shape, f"{a.shape} != {b.shape}"
     else:
