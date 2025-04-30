@@ -76,6 +76,12 @@ void check_same_dtype(const array_ptr &arr1,
                       const array_ptr &arr2,
                       const array_names &names);
 
+void check_same_size(const array_ptr &arr1,
+                     const array_ptr &arr2,
+                     const array_names &names);
+void check_same_size(const std::vector<array_ptr> &arrays,
+                     const array_names &names);
+
 void common_checks(const std::vector<array_ptr> &inputs,
                    const std::vector<array_ptr> &outputs,
                    const array_names &names);

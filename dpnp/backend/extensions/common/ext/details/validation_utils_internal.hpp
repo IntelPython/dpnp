@@ -233,13 +233,47 @@ inline void check_same_dtype(const array_ptr &arr1,
 inline void check_same_dtype(const std::vector<array_ptr> &arrays,
                              const array_names &names)
 {
-    if (arrays.size() < 2) {
+    if (arrays.empty()) {
         return;
     }
 
     const auto *first = arrays[0];
     for (size_t i = 1; i < arrays.size(); ++i) {
         check_same_dtype(first, arrays[i], names);
+    }
+}
+
+inline void check_same_size(const array_ptr &arr1,
+                            const array_ptr &arr2,
+                            const array_names &names)
+{
+    if (arr1 == nullptr || arr2 == nullptr) {
+        return;
+    }
+
+    auto size1 = arr1->get_size();
+    auto size2 = arr2->get_size();
+
+    if (size1 != size2) {
+        std::string msg =
+            "Arrays " + name_of(arr1, names) + " and " + name_of(arr2, names) +
+            " must have the same size, but got " + std::to_string(size1) +
+            " and " + std::to_string(size2);
+
+        throw py::value_error(msg);
+    }
+}
+
+inline void check_same_size(const std::vector<array_ptr> &arrays,
+                            const array_names &names)
+{
+    if (arrays.empty()) {
+        return;
+    }
+
+    auto first = arrays[0];
+    for (size_t i = 1; i < arrays.size(); ++i) {
+        check_same_size(first, arrays[i], names);
     }
 }
 

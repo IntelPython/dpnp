@@ -46,9 +46,11 @@ namespace type_utils = dpctl::tensor::type_utils;
 using ext::common::value_type_of;
 using ext::validation::array_names;
 using ext::validation::array_ptr;
+
 using ext::validation::check_has_dtype;
 using ext::validation::check_num_dims;
 using ext::validation::check_same_dtype;
+using ext::validation::check_same_size;
 using ext::validation::common_checks;
 
 namespace dpnp::extensions::ufunc
@@ -138,16 +140,11 @@ void common_interpolate_checks(
 
     check_num_dims({&x, &xp, &fp, &idx, &out}, 1, names);
 
-    if (xp.get_size() != fp.get_size()) {
-        throw py::value_error("xp and fp must have the same size");
-    }
+    check_same_size(&xp, &fp, names);
+    check_same_size({&x, &idx, &out}, names);
 
     if (xp.get_size() == 0) {
         throw py::value_error("array of sample points is empty");
-    }
-
-    if (x.get_size() != out.get_size() || x.get_size() != idx.get_size()) {
-        throw py::value_error("x, idx, and out must have the same size");
     }
 }
 
