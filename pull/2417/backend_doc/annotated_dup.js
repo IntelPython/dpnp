@@ -139,8 +139,9 @@ var annotated_dup =
         [ "one_of< T, std::tuple< Top, Rest... > >", "structext_1_1common_1_1one__of_3_01_t_00_01std_1_1tuple_3_01_top_00_01_rest_8_8_8_01_4_01_4.html", null ],
         [ "TableBuilder", "structext_1_1common_1_1_table_builder.html", "structext_1_1common_1_1_table_builder" ],
         [ "TableBuilder2", "structext_1_1common_1_1_table_builder2.html", "structext_1_1common_1_1_table_builder2" ],
-        [ "value_type_of", "structext_1_1common_1_1value__type__of.html", null ],
-        [ "value_type_of< std::complex< T > >", "structext_1_1common_1_1value__type__of_3_01std_1_1complex_3_01_t_01_4_01_4.html", null ]
+        [ "value_type_of_impl", "structext_1_1common_1_1value__type__of__impl.html", null ],
+        [ "value_type_of_impl< T, false >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01false_01_4.html", null ],
+        [ "value_type_of_impl< T, true >", "structext_1_1common_1_1value__type__of__impl_3_01_t_00_01true_01_4.html", null ]
       ] ]
     ] ],
     [ "statistics", null, [
