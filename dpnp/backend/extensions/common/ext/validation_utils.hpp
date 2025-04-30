@@ -64,6 +64,10 @@ void check_size_at_least(const array_ptr &arr,
                          const size_t size,
                          const array_names &names);
 
+void check_same_dtype(const array_ptr &arr1,
+                      const array_ptr &arr2,
+                      const array_names &names);
+
 void common_checks(const std::vector<array_ptr> &inputs,
                    const std::vector<array_ptr> &outputs,
                    const array_names &names);

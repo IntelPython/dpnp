@@ -23,6 +23,11 @@
 // THE POSSIBILITY OF SUCH DAMAGE.
 //*****************************************************************************
 
+#include <pybind11/numpy.h>
+#include <pybind11/pybind11.h>
+
+#include "ext/common.hpp"
+
 #include "ext/validation_utils.hpp"
 #include "utils/memory_overlap.hpp"
 
@@ -160,6 +165,46 @@ inline void check_size_at_least(const array_ptr &arr,
                               " must have at least " + std::to_string(size) +
                               " elements, but got " + std::to_string(arr_size) +
                               " elements.");
+    }
+}
+
+inline void check_same_dtype(const array_ptr &arr1,
+                             const array_ptr &arr2,
+                             const array_names &names)
+{
+    if (arr1 == nullptr || arr2 == nullptr) {
+        return;
+    }
+
+    auto array_types = dpctl::tensor::type_dispatch::usm_ndarray_types();
+    int first_type_id = array_types.typenum_to_lookup_id(arr1->get_typenum());
+    int second_type_id = array_types.typenum_to_lookup_id(arr2->get_typenum());
+
+    if (first_type_id != second_type_id) {
+        py::dtype first_dtype = ext::common::dtype_from_typenum(first_type_id);
+        py::dtype second_dtype =
+            ext::common::dtype_from_typenum(second_type_id);
+
+        std::string msg = "Arrays " + name_of(arr1, names) + " and " +
+                          name_of(arr2, names) +
+                          " must have the same dtype, but got " +
+                          std::string(py::str(first_dtype)) + " and " +
+                          std::string(py::str(second_dtype));
+
+        throw py::value_error(msg);
+    }
+}
+
+inline void check_same_dtype(const std::vector<array_ptr> &arrays,
+                             const array_names &names)
+{
+    if (arrays.size() < 2) {
+        return;
+    }
+
+    const auto *first = arrays[0];
+    for (size_t i = 1; i < arrays.size(); ++i) {
+        check_same_dtype(first, arrays[i], names);
     }
 }
 
